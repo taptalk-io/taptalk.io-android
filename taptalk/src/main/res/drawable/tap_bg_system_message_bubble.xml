@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid
-        android:color="@color/tapColorPrimaryDark" />
+        android:color="@color/tapSystemMessageBackgroundColor" />
     <corners
-        android:radius="4dp" />
+        android:radius="8dp" />
 </shape>

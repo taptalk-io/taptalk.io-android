@@ -12,6 +12,6 @@
         android:layout_height="20dp"
         android:layout_gravity="center"
         android:src="@drawable/tap_ic_loading_progress_circle_orange"
-        android:tint="@color/tapColorPrimaryDark" />
+        android:tint="@color/tapIconLoadingProgress" />
 
 </FrameLayout>

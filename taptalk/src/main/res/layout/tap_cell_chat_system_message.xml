@@ -5,8 +5,8 @@
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="2dp"
-    android:layout_marginTop="6dp">
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="2dp">
 
     <TextView
         android:id="@+id/tv_message"
@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:background="@drawable/tap_bg_transparent_white_82_rounded_8dp"
+        android:background="@drawable/tap_bg_system_message_bubble"
         android:elevation="1dp"
         android:gravity="center"
         android:paddingStart="10dp"

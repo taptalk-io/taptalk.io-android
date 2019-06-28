@@ -127,8 +127,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public TAPMessageAdapter(RequestManager glide, TAPChatListener chatListener) {
         myUserModel = TAPChatManager.getInstance().getActiveUser();
-        if (null == myUserModel)
+        if (null == myUserModel) {
             myUserModel = TAPChatManager.getInstance().getActiveUser();
+        }
         this.chatListener = chatListener;
         this.glide = glide;
     }
@@ -320,17 +321,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveReadEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
@@ -500,7 +501,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvMessageBody.setVisibility(View.GONE);
             }
 
-            // TODO: 18 January 2019 TEMP CHECK
             if (null != widthDimension && null != heightDimension) {
                 rcivImageBody.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
             }
@@ -574,15 +574,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_retry_white);
+                ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileRetryDownload)));
                 flProgress.setOnClickListener(v -> resendMessage(item));
             } else if ((null == TAPFileUploadManager.getInstance().getUploadProgressPercent(item.getLocalID())
                     && null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID()))
                     || null != TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_download_white);
+                ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileDownload)));
                 flProgress.setOnClickListener(v -> {
                 });
             } else {
                 ivButtonProgress.setImageResource(R.drawable.tap_ic_cancel_white);
+                ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileCancelDownload)));
                 flProgress.setOnClickListener(v -> TAPDataManager.getInstance()
                         .cancelUploadImage(itemView.getContext(), item.getLocalID()));
             }
@@ -590,17 +593,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveReadEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
@@ -765,6 +768,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 tvMediaInfo.setText(size == null ? "" : TAPUtils.getInstance().getStringSizeLengthFile(size.longValue()));
                 ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
+                ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileRetryDownload)));
                 pbProgress.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
 //                    flBubble.setForeground(bubbleOverlayRight);
@@ -785,6 +789,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Video has finished downloading or uploading
                 tvMediaInfo.setText(null == duration ? "" : TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
                 ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_play_white));
+                ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFilePlayMedia)));
                 pbProgress.setVisibility(View.GONE);
                 rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item)));
                 new Thread(() -> {
@@ -823,14 +828,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvMediaInfo.setText(String.format("%s%s%s", videoSize, (videoSize.isEmpty() || videoDuration.isEmpty()) ? "" : " - ", videoDuration));
                 if (TAPFileDownloadManager.getInstance().getFailedDownloads().contains(item.getLocalID())) {
                     ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
+                    ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileRetryDownload)));
                 } else {
                     ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
+                    ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileDownload)));
                 }
                 pbProgress.setVisibility(View.GONE);
                 rcivVideoThumbnail.setOnClickListener(v -> downloadVideo(item));
             } else {
                 // File is downloading or uploading
                 ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
+                ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileCancelDownload)));
                 pbProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
                 if (null != uploadProgressPercent) {
@@ -892,17 +900,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveReadEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
@@ -975,17 +983,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveReadEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
@@ -1009,6 +1017,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Message failed to send
                 tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
+                ivFileIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileRetryDownload)));
                 pbProgress.setVisibility(View.GONE);
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 if (isMessageFromMySelf(item)) {
@@ -1023,6 +1032,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvMessageStatus.setText(item.getMessageStatusText());
                 tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
+                ivFileIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFile)));
                 pbProgress.setVisibility(View.GONE);
                 flFileIcon.setOnClickListener(v -> openFile(item));
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
@@ -1032,15 +1042,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (TAPFileDownloadManager.getInstance().getFailedDownloads().contains(item.getLocalID())) {
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                     ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_retry_white));
+                    ivFileIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileRetryDownload)));
                 } else {
                     tvMessageStatus.setText(item.getMessageStatusText());
                     ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
+                    ivFileIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileDownload)));
                 }
                 pbProgress.setVisibility(View.GONE);
                 flFileIcon.setOnClickListener(v -> downloadFile(item));
             } else {
                 // File is downloading or uploading
                 ivFileIcon.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
+                ivFileIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileCancelDownload)));
                 pbProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
                 tvMessageStatus.setText(item.getMessageStatusText());
@@ -1193,17 +1206,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveReadEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
@@ -1339,6 +1352,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             markMessageAsRead(item, myUserModel);
+            // TODO: 28 June 2019 CHECK MESSAGE STATUS FOR DELETED MESSAGE
         }
     }
 
@@ -1382,11 +1396,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void receiveSentEmit(TAPMessageModel item, FrameLayout flBubble,
+    private void receiveSentEmit(TAPMessageModel item, View itemView, FrameLayout flBubble,
                                  TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
                                  @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);
+            ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageSent)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         // Show status text and reply button for non-text bubbles
@@ -1400,11 +1415,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         animateSend(item, flBubble, ivSending, ivMessageStatus, ivReply);
     }
 
-    private void receiveReadEmit(TAPMessageModel item, FrameLayout flBubble,
+    private void receiveReadEmit(TAPMessageModel item, View itemView, FrameLayout flBubble,
                                  TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
                                  @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageResource(R.drawable.tap_ic_message_read_green);
+            ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageRead)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         if (null != ivSending) {
@@ -1420,11 +1436,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void receiveDeliveredEmit(TAPMessageModel item, FrameLayout flBubble,
+    private void receiveDeliveredEmit(TAPMessageModel item, View itemView, FrameLayout flBubble,
                                       TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
                                       @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageResource(R.drawable.tap_ic_message_delivered_grey);
+            ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageDelivered)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         if (null != ivSending) {
@@ -1521,7 +1538,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     tvMessageStatus.setVisibility(View.VISIBLE);
                     ivReply.setVisibility(View.VISIBLE);
                 }
-                if (null == bubbleOverlayRight) {
+                if (null == bubbleOverlayLeft) {
                     bubbleOverlayLeft = itemView.getContext().getDrawable(R.drawable.tap_bg_transparent_black_1dp_8dp_8dp_8dp);
                 }
                 flBubble.setForeground(bubbleOverlayLeft);
@@ -1541,12 +1558,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     if (null != item.getIsRead() && item.getIsRead()) {
                         // Message has been read
                         ivMessageStatus.setImageResource(R.drawable.tap_ic_message_read_green);
+                        ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageRead)));
                     } else if (null != item.getDelivered() && item.getDelivered()) {
                         // Message is delivered
                         ivMessageStatus.setImageResource(R.drawable.tap_ic_message_delivered_grey);
+                        ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageDelivered)));
                     } else if (null != item.getSending() && !item.getSending()) {
                         // Message sent
                         ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);
+                        ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageSent)));
                     }
                     if (animate) {
                         // Animate shrink
@@ -1620,12 +1640,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (quote.getFileType().equals((String.valueOf(TYPE_FILE)))) {
                     // Load file icon
                     rcivQuoteImage.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_documents_white));
-                    // TODO: 11 June 2019 CHANGE COLOR TINT TO TEXT COLOR
-                    if (isMessageFromMySelf(item)) {
-                        rcivQuoteImage.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapWhite)));
-                    } else {
-                        rcivQuoteImage.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapBlack19)));
-                    }
+                    rcivQuoteImage.setImageTintList(tvQuoteTitle.getTextColors());
                     updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item));
                     rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 } else {
@@ -1661,9 +1676,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     private void updateQuoteBackground(View itemView, View vQuoteBackground, boolean isMessageFromMyself) {
         if (isMessageFromMyself) {
-            vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_primarydark_rounded_8dp));
+            vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_bubble_quote_right));
         } else {
-            vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_f3f3f3_rounded_8dp));
+            vQuoteBackground.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_bubble_quote_left));
         }
     }
 
@@ -1889,7 +1904,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     public void shrinkExpandedBubble() {
-        if (null == expandedBubble) return;
+        if (null == expandedBubble) {
+            return;
+        }
         expandedBubble.setExpanded(false);
         notifyItemChanged(getItems().indexOf(expandedBubble));
     }

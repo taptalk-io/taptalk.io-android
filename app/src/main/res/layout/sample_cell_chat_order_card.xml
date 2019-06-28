@@ -444,7 +444,7 @@
                 android:layout_width="6dp"
                 android:layout_height="6dp"
                 android:layout_marginStart="4dp"
-                android:background="@drawable/tap_bg_circle_primarydark"
+                android:background="@drawable/tap_bg_file_button_right"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tv_additional_cost_label"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -515,7 +515,7 @@
                 android:layout_width="6dp"
                 android:layout_height="6dp"
                 android:layout_marginStart="4dp"
-                android:background="@drawable/tap_bg_circle_primarydark"
+                android:background="@drawable/tap_bg_file_button_right"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tv_discount_label"
                 app:layout_constraintTop_toTopOf="parent" />
