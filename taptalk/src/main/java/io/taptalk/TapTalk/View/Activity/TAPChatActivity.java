@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -141,6 +142,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_PREVIEW;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
@@ -180,7 +182,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             clRoomOnlineStatus, clRoomTypingStatus, clDeletedUser;
     private EditText etChat;
     private ImageView ivButtonBack, ivRoomIcon, ivUnreadButtonImage, ivButtonCancelReply, ivChatMenu,
-            ivButtonChatMenu, ivButtonAttach, ivButtonSend, ivToBottom, ivRoomTypingIndicator;
+            ivButtonChatMenu, ivButtonAttach, ivSend, ivButtonSend, ivToBottom, ivRoomTypingIndicator;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
     private TAPRoundedCornerImageView rcivQuoteImage;
     private TextView tvRoomName, tvRoomStatus, tvUnreadButtonCount, tvChatEmptyGuide, tvProfileDescription, tvQuoteTitle,
@@ -419,6 +421,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         ivChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
         ivButtonChatMenu = (ImageView) findViewById(R.id.iv_chat_menu_area);
         ivButtonAttach = (ImageView) findViewById(R.id.iv_attach);
+        ivSend = (ImageView) findViewById(R.id.iv_send);
         ivButtonSend = (ImageView) findViewById(R.id.iv_send_area);
         ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
         ivRoomTypingIndicator = (ImageView) findViewById(R.id.iv_room_typing_indicator);
@@ -478,9 +481,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
             // Load room image
             loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
-        } else if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
+        } else if (null != vm.getRoom() && vm.getRoom().getRoomType() == TYPE_PERSONAL && null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
             // Load user avatar URL
-            // TODO: 1 February 2019 CHECK IF ROOM IS GROUP
             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomImage);
             vm.getRoom().setRoomImage(vm.getOtherUserModel().getAvatarURL());
         } else {
@@ -496,7 +498,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             ivRoomIcon.setVisibility(View.GONE);
         }
 
-        // Set room status
+        // Set typing status
         if (getIntent().getBooleanExtra(IS_TYPING, false)) {
             vm.setOtherUserTyping(true);
             showTypingIndicator();
@@ -527,7 +529,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST, 0);
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvMessageList.getItemAnimator();
-        if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
+        if (null != messageAnimator) {
+            messageAnimator.setSupportsChangeAnimations(false);
+        }
 
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TapTalk.requestCustomKeyboardItems(vm.getMyUserModel(), vm.getOtherUserModel()));
@@ -550,9 +554,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
-        // TODO: 1 February 2019 UPDATE WELCOME MESSAGE
-        tvChatEmptyGuide.setText(Html.fromHtml("Start a conversation with " + "<b><font color='#191919'>" + vm.getRoom().getRoomName() + "</font></b>"));
-        tvProfileDescription.setText("Say hi to " + vm.getRoom().getRoomName() + " and start a conversation");
+        tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_room_empty_guide_title), vm.getRoom().getRoomName())));
+        tvProfileDescription.setText(String.format(getString(R.string.tap_room_empty_guide_content), vm.getRoom().getRoomName()));
 
         //ini listener buat scroll pagination (di Init View biar kebuat cuman sekali aja)
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
@@ -654,13 +657,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
             hideUnreadButton();
         }
-        // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
-//        if (TapTalk.isOpenDefaultProfileEnabled) {
-//            Intent intent = new Intent(this, TAPChatProfileActivity.class);
-//            intent.putExtra(K_ROOM, vm.getRoom());
-//            startActivity(intent);
-//            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-//        }
     }
 
     private void loadProfilePicture(String image, ImageView imageView) {
@@ -713,7 +709,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             rvMessageList.scrollToPosition(0);
         } else {
             TAPChatManager.getInstance().checkAndSendForwardedMessage(vm.getRoom());
-            ivButtonSend.setImageResource(R.drawable.tap_bg_circle_d9d9d9);
+            ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+            ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive);
         }
     }
 
@@ -773,7 +770,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
-    // Previously addNewTextMessage
     private void addNewMessage(final TAPMessageModel newMessage) {
         if (vm.getContainerAnimationState() == vm.ANIMATING) {
             // Hold message if layout is animating
@@ -845,77 +841,66 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             return;
         }
         vm.setQuotedMessage(message, quoteAction);
+        boolean quotedOwnMessage = null != TAPChatManager.getInstance().getActiveUser() &&
+                TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUser().getUserID());
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
             // Add other quotable message type here
             if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO)
-                    && null != message.getData()
-                    && (null != TAPChatManager.getInstance().getActiveUser()
-                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUser().getUserID()))) {
-                // Show image quote
-                vQuoteDecoration.setVisibility(View.GONE);
-                // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
-                rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get(FILE_ID)));
-                rcivQuoteImage.setBackground(null);
-                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                rcivQuoteImage.setVisibility(View.VISIBLE);
-                tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
-                tvQuoteContent.setText(message.getBody());
-                tvQuoteContent.setMaxLines(1);
-            } else if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO)
                     && null != message.getData()) {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
                 rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get(FILE_ID)));
+                rcivQuoteImage.setColorFilter(null);
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
-                tvQuoteTitle.setText(message.getUser().getName());
+
+                if (quotedOwnMessage) {
+                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                } else {
+                    tvQuoteTitle.setText(message.getUser().getName());
+                }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
             } else if (message.getType() == TYPE_FILE && null != message.getData()) {
                 // Show file quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setImageDrawable(getDrawable(R.drawable.tap_ic_documents_white));
-                rcivQuoteImage.setBackground(getDrawable(R.drawable.tap_bg_circle_accentdark));
+                rcivQuoteImage.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconFile));
+                rcivQuoteImage.setBackground(getDrawable(R.drawable.tap_bg_quote_layout_file));
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteTitle.setText(TAPUtils.getInstance().getFileDisplayName(message));
                 tvQuoteContent.setText(TAPUtils.getInstance().getFileDisplayInfo(message));
                 tvQuoteContent.setMaxLines(1);
-            } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)
-                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUser().getUserID())) {
-                glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
-                rcivQuoteImage.setBackground(null);
-                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                rcivQuoteImage.setVisibility(View.VISIBLE);
-                vQuoteDecoration.setVisibility(View.GONE);
-                tvQuoteTitle.setText(getResources().getString(R.string.tap_you));
-                tvQuoteContent.setText(message.getBody());
-                tvQuoteContent.setMaxLines(1);
             } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
-                // Unknown message type
+                // Show image quote from URL
                 glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
+                rcivQuoteImage.setColorFilter(null);
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 vQuoteDecoration.setVisibility(View.GONE);
-                tvQuoteTitle.setText(message.getUser().getName());
+
+                if (quotedOwnMessage) {
+                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                } else {
+                    tvQuoteTitle.setText(message.getUser().getName());
+                }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
-            } else if (TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUser().getUserID())) {
-                // Show text quote
-                vQuoteDecoration.setVisibility(View.VISIBLE);
-                rcivQuoteImage.setVisibility(View.GONE);
-                tvQuoteTitle.setText(getResources().getString(R.string.tap_you));
-                tvQuoteContent.setText(message.getBody());
-                tvQuoteContent.setMaxLines(2);
             } else {
                 // Show text quote
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
-                tvQuoteTitle.setText(message.getUser().getName());
+
+                if (quotedOwnMessage) {
+                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                } else {
+                    tvQuoteTitle.setText(message.getUser().getName());
+                }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
             }
@@ -955,7 +940,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showNormalKeyboard() {
         rvCustomKeyboard.setVisibility(View.GONE);
+        ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
         ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
+        ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
         etChat.requestFocus();
     }
 
@@ -964,13 +951,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         etChat.clearFocus();
         new Handler().postDelayed(() -> {
             rvCustomKeyboard.setVisibility(View.VISIBLE);
+            ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_show_keyboard_ripple);
             ivChatMenu.setImageResource(R.drawable.tap_ic_keyboard_white);
+            ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerShowKeyboard));
         }, 150L);
     }
 
     private void hideKeyboards() {
         rvCustomKeyboard.setVisibility(View.GONE);
+        ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
         ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
+        ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
         TAPUtils.getInstance().dismissKeyboard(this);
     }
 
@@ -1249,7 +1240,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
-            // TODO: 06/09/18 HARUS DICEK LAGI NANTI SETELAH BISA
             updateMessageFromSocket(message);
         }
 
@@ -1692,27 +1682,32 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     && s.length() > 0 && s.toString().trim().length() > 0) {
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
-                ivButtonSend.setImageResource(R.drawable.tap_bg_circle_primarydark_ripple);
+                ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
+                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
             } else if (null != TAPChatActivity.this.getCurrentFocus() && TAPChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0) {
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
-                ivButtonSend.setImageResource(R.drawable.tap_bg_circle_d9d9d9);
+                ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive_ripple);
+                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
             } else if (s.length() > 0 && s.toString().trim().length() > 0) {
                 if (vm.isCustomKeyboardEnabled()) {
                     ivChatMenu.setVisibility(View.VISIBLE);
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
                 }
-                ivButtonSend.setImageResource(R.drawable.tap_bg_circle_primarydark_ripple);
+                ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
+                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
             } else {
                 if (vm.isCustomKeyboardEnabled()) {
                     ivChatMenu.setVisibility(View.VISIBLE);
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
                 }
                 if (vm.getQuoteAction() == FORWARD) {
-                    ivButtonSend.setImageResource(R.drawable.tap_bg_circle_primarydark_ripple);
+                    ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
+                    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
                 } else {
-                    ivButtonSend.setImageResource(R.drawable.tap_bg_circle_d9d9d9);
+                    ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive_ripple);
+                    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
                 }
             }
         }
@@ -1729,7 +1724,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             if (hasFocus && vm.isCustomKeyboardEnabled()) {
                 vm.setScrollFromKeyboard(true);
                 rvCustomKeyboard.setVisibility(View.GONE);
+                ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
                 ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
+                ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
                 TAPUtils.getInstance().showKeyboard(TAPChatActivity.this, etChat);
 
                 if (0 < etChat.getText().toString().length()) {
@@ -2024,7 +2021,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onSaveImageToGallery(TAPMessageModel message) {
-            if (null != message.getData().get(FILE_ID) && null != message.getData().get(MEDIA_TYPE)) {
+            if (null != message.getData() &&
+                    null != message.getData().get(FILE_ID) &&
+                    null != message.getData().get(MEDIA_TYPE)) {
                 TAPFileDownloadManager.getInstance().writeImageFileToDisk(TAPChatActivity.this,
                         System.currentTimeMillis(), TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable((String) message.getData().get(FILE_ID)).getBitmap(),
                         (String) message.getData().get(MEDIA_TYPE), new TapTalkActionInterface() {
@@ -2043,7 +2042,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onSaveVideoToGallery(TAPMessageModel message) {
-            if (null != message.getData().get(FILE_ID) &&
+            if (null != message.getData() &&
+                    null != message.getData().get(FILE_ID) &&
                     null != message.getData().get(MEDIA_TYPE) &&
                     null != message.getData().get(FILE_ID)) {
                 TAPFileDownloadManager.getInstance().writeFileToDisk(TAPChatActivity.this, message, new TapTalkActionInterface() {
@@ -2061,8 +2061,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         @Override
-        public void onSaveToDownload(TAPMessageModel message) {
-            if (null != message.getData().get(FILE_ID) &&
+        public void onSaveToDownloads(TAPMessageModel message) {
+            if (null != message.getData() &&
+                    null != message.getData().get(FILE_ID) &&
                     null != message.getData().get(MEDIA_TYPE) &&
                     null != message.getData().get(FILE_ID)) {
                 TAPFileDownloadManager.getInstance().writeFileToDisk(TAPChatActivity.this, message, new TapTalkActionInterface() {

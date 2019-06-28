@@ -146,7 +146,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
 
             <FrameLayout
-                android:id="@+id/fl_create_group_btn"
+                android:id="@+id/fl_update_group_btn"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginStart="16dp"

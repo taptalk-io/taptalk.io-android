@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_connection_status"
     android:layout_width="match_parent"
     android:layout_height="20dp"
@@ -24,7 +25,7 @@
         android:layout_width="9dp"
         android:layout_height="9dp"
         android:layout_marginStart="4dp"
-        android:src="@drawable/tap_ic_connected_white"
+        tools:src="@drawable/tap_ic_loading_progress_circle_white"
         android:tint="@color/tapWhite" />
 
 </LinearLayout>

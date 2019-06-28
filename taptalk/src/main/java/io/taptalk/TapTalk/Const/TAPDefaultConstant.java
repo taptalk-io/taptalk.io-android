@@ -102,6 +102,7 @@ public class TAPDefaultConstant {
     public static final class Extras {
         public static final String MESSAGE = "kTAPExtraMessage";
         public static final String ROOM = "kTAPExtraRoom";
+        public static final String ROOM_ID = "kTAPExtraRoomID";
         public static final String URL_MESSAGE = "kTAPExtraUrlMessage";
         public static final String COPY_MESSAGE = "kTAPExtraCopyMessage";
         public static final String MY_ID = "kTAPExtraMyID";

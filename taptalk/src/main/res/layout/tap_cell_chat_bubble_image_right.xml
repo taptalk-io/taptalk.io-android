@@ -57,7 +57,7 @@
                 android:id="@+id/cl_forwarded_quote"
                 android:layout_width="234dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/tap_bg_primary_rounded_8dp_1dp_0dp_0dp"
+                android:background="@drawable/tap_bg_chat_bubble_right_top"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -84,7 +84,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="10dp"
-                    android:background="@drawable/tap_bg_primarydark_rounded_4dp"
+                    android:background="@drawable/tap_bg_bubble_quote_right"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -160,7 +160,7 @@
 
             <TextView
                 android:id="@+id/tv_media_info"
-                style="@style/TapQuoteBody"
+                style="@style/tapBubbleMediaInfoStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -171,7 +171,6 @@
                 android:paddingTop="4dp"
                 android:paddingEnd="8dp"
                 android:paddingBottom="4dp"
-                android:textColor="@color/tapWhite"
                 android:visibility="gone"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
@@ -183,16 +182,14 @@
 
             <TextView
                 android:id="@+id/tv_message_body"
-                style="@style/TapMessageBody"
+                style="@style/tapRightBubbleMessageBodyStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/tap_bg_primary_rounded_0dp_0dp_8dp_8dp"
+                android:background="@drawable/tap_bg_chat_bubble_right_bottom"
                 android:paddingStart="10dp"
                 android:paddingTop="10dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="10dp"
-                android:textColor="@color/tapWhite"
-                android:textColorLink="@color/tapWhite"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"
@@ -205,13 +202,11 @@
 
     <TextView
         android:id="@+id/tv_message_status"
+        style="@style/tapBubbleMessageStatusStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:textColor="@color/tapGrey9b"
-        android:textSize="12sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/fl_bubble"
@@ -227,6 +222,7 @@
         android:layout_marginBottom="5dp"
         android:alpha="0"
         android:src="@drawable/tap_ic_message_sending_grey"
+        android:tint="@color/tapIconChatRoomMessageSending"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"

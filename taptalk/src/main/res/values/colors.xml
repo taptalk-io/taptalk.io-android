@@ -45,15 +45,18 @@
     <color name="tapSuccessIconColor">@color/tapColorSuccess</color>
     <color name="tapDestructiveIconColor">@color/tapColorError</color>
 
+    <color name="tapChatComposerBackgroundColor">@color/tapWhite</color>
+    <color name="tapQuoteLayoutDecorationBackgroundColor">@color/tapColorPrimaryExtraLight</color>
     <color name="tapRightBubbleBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapLeftBubbleBackgroundColor">@color/tapWhite</color>
     <color name="tapRightBubbleQuoteBackgroundColor">@color/tapColorPrimaryDark</color>
     <color name="tapLeftBubbleQuoteBackgroundColor">@color/tapWhiteF3</color>
-    <color name="tapQuoteLayoutDecorationBackgroundColor">@color/tapColorPrimaryExtraLight</color>
     <color name="tapRightFileButtonBackgroundColor">@color/tapColorPrimaryDark</color>
     <color name="tapLeftFileButtonBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
+    <color name="tapUnreadIdentifierBackgroundColor">@color/tapPumpkinOrange10</color>
     <color name="tapFileProgressBackgroundColor">@color/tapWhite</color>
+    <color name="tapDeletedChatRoomInfoBackgroundColor">@color/tapParchment</color>
 
     <!--Icon Component Colors-->
     <color name="tapRoomListUnreadBadgeBackgroundColor">@color/tapUnreadBadgeBackgroundColor</color>
@@ -137,11 +140,14 @@
     <color name="tapIconAttachGallery">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconAttachAudio">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconAttachContact">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconAttachLocation">@color/tapDefaultPrimaryIconColor</color>
 
     <color name="tapIconChatComposerSend">@color/tapWhite</color>
+    <color name="tapIconChatComposerSendInactive">@color/tapWhite</color>
     <color name="tapIconChatComposerBurgerMenu">@color/tapWhite</color>
     <color name="tapIconChatComposerShowKeyboard">@color/tapWhite</color>
     <color name="tapIconChatComposerSendBackground">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatComposerSendBackgroundInactive">@color/tapDefaultSecondaryIconColor</color>
     <color name="tapIconChatComposerBurgerMenuBackground">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconChatComposerShowKeyboardBackground">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconChatComposerAttach">@color/tapDefaultSecondaryIconColor</color>
@@ -149,10 +155,18 @@
     <color name="tapIconFileDownload">@color/tapWhite</color>
     <color name="tapIconFileCancelDownload">@color/tapWhite</color>
     <color name="tapIconFileRetryDownload">@color/tapWhite</color>
-    <color name="tapIconChatRoomUnreadButtonIcon">@color/tapDefaultPrimaryIconColor</color>
-    <color name="tapIconChatRoomScrollToBottomIcon">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconFilePlayMedia">@color/tapWhite</color>
+    <color name="tapIconChatRoomUnreadButton">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatRoomUnreadIdentifier">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatRoomScrollToBottom">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconChatRoomScrollToBottomBackground">@color/tapWhite</color>
     <color name="tapIconDeletedChatRoom">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconQuotedFileBackground">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatRoomMessageSending">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconChatRoomMessageSent">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconChatRoomMessageDelivered">@color/tapDefaultSecondaryIconColor</color>
+    <color name="tapIconChatRoomMessageRead">@color/tapSentGreen</color>
+    <color name="tapIconLocationBubbleMarker">@color/tapDefaultPrimaryIconColor</color>
 
     <!--Color Palette-->
     <color name="tapDarkPurple">#51276c</color>
@@ -172,6 +186,7 @@
     <color name="tapRed">#d90a0a</color>
     <color name="tapPumpkinOrangeDark">#e87200</color>
     <color name="tapPumpkinOrange">#ff7e00</color>
+    <color name="tapPumpkinOrange10">#1aff7e00</color>
     <color name="tapTangerine">#ffa107</color>
     <color name="tapOrangeish">#ff9049</color>
     <color name="tapOrangeYellow">#ff9f00</color>
