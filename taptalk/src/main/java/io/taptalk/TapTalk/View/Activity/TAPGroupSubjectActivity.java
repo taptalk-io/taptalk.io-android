@@ -47,6 +47,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSID
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
@@ -280,7 +281,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             updateGroupData(response);
 
             Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
-            intent.putExtra(ROOM, vm.getGroupData());
+            intent.putExtra(ROOM_ID, vm.getGroupData().getRoomID());
             startActivity(intent);
             setResult(RESULT_OK);
             finish();

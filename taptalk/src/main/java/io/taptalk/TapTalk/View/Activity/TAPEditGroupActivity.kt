@@ -9,9 +9,14 @@ import android.text.TextWatcher
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.ViewModel.TAPEditGroupViewModel
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_edit_group.*
@@ -32,7 +37,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
                 TAPUtils.getInstance().pickImageFromGallery(this, PICK_GROUP_IMAGE, false)
             }
 
-            R.id.fl_create_group_btn -> {
+            R.id.fl_update_group_btn -> {
 
                 if (groupViewModel?.isGroupPicChanged == true || groupViewModel?.isGroupNameChanged == true) {
                     groupViewModel?.groupData?.roomName = et_group_name.text.toString()
@@ -79,22 +84,24 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         et_group_name.onFocusChangeListener = groupNameFocusListener
         et_group_name.addTextChangedListener(groupNameWatcher)
 
-        groupViewModel?.groupData = intent.getParcelableExtra(ROOM)
+        TAPDataManager.getInstance().getChatRoomData(intent.getStringExtra(TAPDefaultConstant.Extras.ROOM_ID), getChatRoomDataView)
 
-        et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
+//        groupViewModel?.groupData = intent.getParcelableExtra(ROOM)
+//
+//        et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
 
         iv_remove_group_picture.setOnClickListener(this)
         ll_change_group_picture.setOnClickListener(this)
-        fl_create_group_btn.setOnClickListener(this)
+        fl_update_group_btn.setOnClickListener(this)
 
-        if (null != groupViewModel?.groupData?.roomImage && "" != groupViewModel?.groupData?.roomImage?.thumbnail) {
-            val imageURL = groupViewModel?.groupData?.roomImage
-            loadImage(imageURL?.thumbnail ?: "")
-        } else {
-            groupViewModel?.isGroupPicStartEmpty = true
-        }
+//        if (null != groupViewModel?.groupData?.roomImage && "" != groupViewModel?.groupData?.roomImage?.thumbnail) {
+//            val imageURL = groupViewModel?.groupData?.roomImage
+//            loadImage(imageURL?.thumbnail ?: "")
+//        } else {
+//            groupViewModel?.isGroupPicStartEmpty = true
+//        }
 
-        fl_create_group_btn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple)
+        fl_update_group_btn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple)
     }
 
     private val groupNameWatcher = object : TextWatcher {
@@ -126,9 +133,41 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun showingButton() {
         if (groupViewModel?.isGroupPicChanged == false && groupViewModel?.isGroupNameChanged == false) {
-            fl_create_group_btn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple)
+            fl_update_group_btn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple)
         } else {
-            fl_create_group_btn.setBackgroundResource(R.drawable.tap_bg_button_active_ripple)
+            fl_update_group_btn.setBackgroundResource(R.drawable.tap_bg_button_active_ripple)
+        }
+    }
+
+    private val getChatRoomDataView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+        }
+
+        override fun onSuccess(response: TAPCreateRoomResponse?) {
+            groupViewModel?.groupData = response?.room
+            groupViewModel?.groupData?.groupParticipants = response?.participants
+
+            et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
+
+            if (null != groupViewModel?.groupData?.roomImage && "" != groupViewModel?.groupData?.roomImage?.thumbnail) {
+                val imageURL = groupViewModel?.groupData?.roomImage
+                loadImage(imageURL?.thumbnail ?: "")
+            } else {
+                groupViewModel?.isGroupPicStartEmpty = true
+            }
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
         }
     }
 
