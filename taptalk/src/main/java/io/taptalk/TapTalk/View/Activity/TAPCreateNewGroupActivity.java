@@ -33,6 +33,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSIDs;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
@@ -95,7 +96,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
 
         // Add self as selected group member
-        vm.getSelectedContacts().add(myUser);
+        vm.addSelectedContact(myUser);
 
         // Show users from contact list
         vm.getContactListLive().observe(this, userModels -> {
@@ -127,13 +128,13 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                                 .show();
                         return false;
                     }
-                    vm.getSelectedContacts().add(contact);
+                    vm.addSelectedContact(contact);
                     selectedMembersAdapter.notifyItemInserted(vm.getSelectedContacts().size());
                     rvGroupMembers.scrollToPosition(vm.getSelectedContacts().size() - 1);
                     updateSelectedMemberDecoration();
                 } else {
                     int index = vm.getSelectedContacts().indexOf(contact);
-                    vm.getSelectedContacts().remove(contact);
+                    vm.removeSelectedContact(contact);
                     selectedMembersAdapter.notifyItemRemoved(index);
                 }
                 if (vm.getSelectedContacts().size() > 1) {
@@ -221,6 +222,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         Intent intent = new Intent(this, TAPGroupSubjectActivity.class);
         intent.putExtra(MY_ID, vm.getSelectedContacts().get(0).getUserID());
         intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
+        intent.putStringArrayListExtra(GROUP_MEMBERSIDs, new ArrayList<>(vm.getSelectedContactsIds()));
         if (null != vm.getGroupName()) intent.putExtra(GROUP_NAME, vm.getGroupName());
         if (null != vm.getGroupImage()) intent.putExtra(GROUP_IMAGE, vm.getGroupImage());
         startActivityForResult(intent, CREATE_GROUP);

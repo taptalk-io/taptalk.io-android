@@ -106,6 +106,7 @@ public class TAPDefaultConstant {
         public static final String COPY_MESSAGE = "kTAPExtraCopyMessage";
         public static final String MY_ID = "kTAPExtraMyID";
         public static final String GROUP_MEMBERS = "kTAPExtraGroupMembers";
+        public static final String GROUP_MEMBERSIDs = "kTAPExtraGroupMembersIDs";
         public static final String GROUP_NAME = "kTAPExtraGroupName";
         public static final String GROUP_IMAGE = "kTAPExtraGroupImage";
         public static final String IS_TYPING = "kTAPExtraIsTyping";

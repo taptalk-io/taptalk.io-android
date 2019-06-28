@@ -2,7 +2,7 @@ package io.taptalk.TapTalk.API.Subscriber;
 
 import android.util.Log;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.API.View.TapView;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import rx.Subscriber;
@@ -11,7 +11,7 @@ import rx.Subscriber;
  * MoseloUser by Fadhlan on 3/3/17.
  */
 
-public class TAPDefaultSubscriber<T extends TAPBaseResponse<D>, V extends TapDefaultDataView<D> &
+public class TAPDefaultSubscriber<T extends TAPBaseResponse<D>, V extends TAPDefaultDataView<D> &
         TapView<D>, D>
         extends Subscriber<T> {
     private static final String LOG_TAG = TAPDefaultSubscriber.class.getSimpleName();

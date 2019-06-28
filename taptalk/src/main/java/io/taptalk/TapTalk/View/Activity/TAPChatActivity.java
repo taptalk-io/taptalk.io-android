@@ -27,7 +27,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -48,7 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
@@ -1060,7 +1059,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     //ini Fungsi buat manggil Api Before
-    private void fetchBeforeMessageFromAPIAndUpdateUI(TapDefaultDataView<TAPGetMessageListByRoomResponse> beforeView) {
+    private void fetchBeforeMessageFromAPIAndUpdateUI(TAPDefaultDataView<TAPGetMessageListByRoomResponse> beforeView) {
         /*fetchBeforeMessageFromAPIAndUpdateUI rules:
          * parameternya max created adalah Created yang paling kecil dari yang ada di recyclerView*/
         new Thread(() -> {
@@ -1081,7 +1080,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         new Thread(() -> {
             if (TAPChatManager.getInstance().isNeedToCalledUpdateRoomStatusAPI() &&
                     TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
-                TAPDataManager.getInstance().getUserByIdFromApi(vm.getOtherUserID(), new TapDefaultDataView<TAPGetUserResponse>() {
+                TAPDataManager.getInstance().getUserByIdFromApi(vm.getOtherUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
                     @Override
                     public void onSuccess(TAPGetUserResponse response) {
                         TAPUserModel userResponse = response.getUser();
@@ -2082,7 +2081,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
+    private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
@@ -2253,7 +2252,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
-    private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
+    private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             //response message itu entity jadi buat disimpen ke database
@@ -2326,7 +2325,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     };
 
     //message before yang di panggil pas pagination db balikin data di bawah limit
-    private TapDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeViewPaging = new TapDefaultDataView<TAPGetMessageListByRoomResponse>() {
+    private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeViewPaging = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             hideLoadingOlderMessagesIndicator();
