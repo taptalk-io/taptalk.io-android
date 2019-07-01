@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -43,7 +44,13 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
                 if (groupViewModel?.isGroupPicChanged == true || groupViewModel?.isGroupNameChanged == true) {
                     groupViewModel?.groupData?.roomName = et_group_name.text.toString()
                     //TODO() API EDIT CALL
-                    TAPDataManager.getInstance().updateChatRoom(groupViewModel?.groupData?.roomID, et_group_name.text.toString(), updateRoomDataView)
+                    if (groupViewModel?.isGroupNameChanged == true)
+                        TAPDataManager.getInstance().updateChatRoom(groupViewModel?.groupData?.roomID, et_group_name.text.toString(), updateRoomDataView)
+                    else if (groupViewModel?.isGroupPicChanged == true) {
+                        TAPFileUploadManager.getInstance().uploadRoomPicture(this@TAPEditGroupActivity,
+                                groupViewModel?.groupPicUri, groupViewModel?.groupData?.roomID
+                                ?: "0", uploadGroupView)
+                    }
                 }
             }
         }
@@ -138,15 +145,19 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
     }
 
     private fun btnStartLoadingState() {
-        tv_update_group_btn.visibility = View.GONE
-        iv_loading_progress_update_group.visibility = View.VISIBLE
-        TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_progress_update_group)
+        runOnUiThread {
+            tv_update_group_btn.visibility = View.GONE
+            iv_loading_progress_update_group.visibility = View.VISIBLE
+            TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_progress_update_group)
+        }
     }
 
     private fun btnStopLoadingState() {
-        tv_update_group_btn.visibility = View.VISIBLE
-        iv_loading_progress_update_group.visibility = View.GONE
-        TAPUtils.getInstance().stopViewAnimation(iv_loading_progress_update_group)
+        runOnUiThread {
+            tv_update_group_btn.visibility = View.VISIBLE
+            iv_loading_progress_update_group.visibility = View.GONE
+            TAPUtils.getInstance().stopViewAnimation(iv_loading_progress_update_group)
+        }
     }
 
     private val getChatRoomDataView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
@@ -192,7 +203,8 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
                 startActivity(intent)
             } else {
                 TAPFileUploadManager.getInstance().uploadRoomPicture(this@TAPEditGroupActivity,
-                        groupViewModel?.groupPicUri, groupViewModel?.groupData?.roomID ?: "0", uploadGroupView)
+                        groupViewModel?.groupPicUri, groupViewModel?.groupData?.roomID
+                        ?: "0", uploadGroupView)
             }
         }
 
@@ -210,10 +222,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
     private val uploadGroupView = object : TAPDefaultDataView<TAPUpdateRoomResponse>() {
         override fun startLoading() {
             super.startLoading()
-        }
-
-        override fun endLoading() {
-            super.endLoading()
+            btnStartLoadingState()
         }
 
         override fun onSuccess(response: TAPUpdateRoomResponse?) {

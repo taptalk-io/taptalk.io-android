@@ -177,16 +177,13 @@ public class TAPFileUploadManager {
 
     public void uploadRoomPicture(Context context, Uri imageUri, String roomID,
                                   TAPDefaultDataView<TAPUpdateRoomResponse> uploadProfilePictureView) {
-        createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, new BitmapInterface() {
-            @Override
-            public void onBitmapReady(Bitmap bitmap) {
-                String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
-                MimeTypeMap mime = MimeTypeMap.getSingleton();
-                String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-                File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+        createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap -> {
+            String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+            File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
 
-                TAPDataManager.getInstance().uploadRoomPicture(imageFile, mimeType, roomID, uploadProfilePictureView);
-            }
+            TAPDataManager.getInstance().uploadRoomPicture(imageFile, mimeType, roomID, uploadProfilePictureView);
         });
     }
 
