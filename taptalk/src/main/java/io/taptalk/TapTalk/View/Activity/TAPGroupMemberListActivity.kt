@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Activity
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
@@ -32,6 +33,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
             R.id.iv_button_back -> {
                 onBackPressed()
+            }
+
+            R.id.ll_add_button -> {
+                val intent = Intent(this, TapAddMembersActivity::class.java)
+                startActivity(intent)
             }
         }
     }
@@ -82,6 +88,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
         iv_button_back.setOnClickListener(this)
         iv_button_action.setOnClickListener(this)
+        ll_add_button.setOnClickListener(this)
 
         et_search.addTextChangedListener(searchTextWatcher)
         et_search.setOnEditorActionListener(searchEditorActionListener)
