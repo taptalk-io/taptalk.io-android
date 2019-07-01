@@ -261,6 +261,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     private void updateGroupData(TAPCreateRoomResponse response) {
         vm.setGroupData(response.getRoom());
         vm.getGroupData().setGroupParticipants(response.getParticipants());
+        vm.getGroupData().setAdmins(response.getAdmins());
         //vm.getGroupData().setRoomImage();
     }
 

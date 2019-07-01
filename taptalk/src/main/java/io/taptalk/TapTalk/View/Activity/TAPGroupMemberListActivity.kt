@@ -71,7 +71,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 ?: mutableListOf()
 
         adapter = TAPGroupMemberAdapter(TAPGroupMemberAdapter.NORMAL_MODE, groupViewModel?.participantsList
-                ?: mutableListOf(), groupInterface)
+                ?: mutableListOf(), groupViewModel?.groupData?.admins ?: listOf(), groupInterface)
         rv_contact_list.adapter = adapter
         rv_contact_list.layoutManager = LinearLayoutManager(this)
         rv_contact_list.setHasFixedSize(true)
