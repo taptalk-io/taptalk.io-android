@@ -95,7 +95,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 //
 //        et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
 
-        iv_remove_group_picture.setOnClickListener(this)
+        //iv_remove_group_picture.setOnClickListener(this)
         ll_change_group_picture.setOnClickListener(this)
         fl_update_group_btn.setOnClickListener(this)
 
@@ -133,7 +133,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
     private fun loadImage(imageURL: String) {
         Glide.with(this).load(imageURL)
                 .apply(RequestOptions().centerCrop()).into(civ_group_picture)
-        iv_remove_group_picture.visibility = View.VISIBLE
+        //iv_remove_group_picture.visibility = View.VISIBLE
     }
 
     private fun showingButton() {
