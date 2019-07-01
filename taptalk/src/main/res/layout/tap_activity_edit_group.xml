@@ -161,14 +161,14 @@
                 app:layout_constraintVertical_bias="1">
 
                 <TextView
-                    android:id="@+id/tv_create_group_btn"
+                    android:id="@+id/tv_update_group_btn"
                     style="@style/tapButtonLabelStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="@string/tap_update" />
 
                 <ImageView
-                    android:id="@+id/iv_loading_progress_create_group"
+                    android:id="@+id/iv_loading_progress_update_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

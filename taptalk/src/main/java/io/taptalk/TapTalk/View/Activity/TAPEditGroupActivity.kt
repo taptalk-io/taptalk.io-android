@@ -43,10 +43,6 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
                     groupViewModel?.groupData?.roomName = et_group_name.text.toString()
                     //TODO() API EDIT CALL
                     TAPDataManager.getInstance().updateChatRoom(groupViewModel?.groupData?.roomID, et_group_name.text.toString(), updateRoomDataView)
-                    //TODO() Apus Setelah ada API CALL / Flow yang pasti
-                    val intent = Intent(this, TAPGroupMemberListActivity::class.java)
-                    intent.putExtra(ROOM, groupViewModel?.groupData)
-                    startActivity(intent)
                 }
             }
         }
@@ -139,13 +135,21 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         }
     }
 
+    private fun btnStartLoadingState() {
+        tv_update_group_btn.visibility = View.GONE
+        iv_loading_progress_update_group.visibility = View.VISIBLE
+        TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_progress_update_group)
+    }
+
+    private fun btnStopLoadingState() {
+        tv_update_group_btn.visibility = View.VISIBLE
+        iv_loading_progress_update_group.visibility = View.GONE
+        TAPUtils.getInstance().stopViewAnimation(iv_loading_progress_update_group)
+    }
+
     private val getChatRoomDataView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
         override fun startLoading() {
-            super.startLoading()
-        }
 
-        override fun endLoading() {
-            super.endLoading()
         }
 
         override fun onSuccess(response: TAPCreateRoomResponse?) {
@@ -173,15 +177,18 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
     private val updateRoomDataView = object : TAPDefaultDataView<TAPUpdateRoomResponse>() {
         override fun startLoading() {
-            super.startLoading()
+            btnStartLoadingState()
         }
 
         override fun endLoading() {
-            super.endLoading()
+            btnStopLoadingState()
         }
 
         override fun onSuccess(response: TAPUpdateRoomResponse?) {
-            super.onSuccess(response)
+            //TODO() Apus Setelah ada API CALL / Flow yang pasti
+            val intent = Intent(this@TAPEditGroupActivity, TAPGroupMemberListActivity::class.java)
+            intent.putExtra(ROOM, groupViewModel?.groupData)
+            startActivity(intent)
         }
 
         override fun onError(error: TAPErrorModel?) {
