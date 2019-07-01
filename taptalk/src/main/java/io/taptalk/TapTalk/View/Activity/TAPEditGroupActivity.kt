@@ -163,6 +163,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         override fun onSuccess(response: TAPCreateRoomResponse?) {
             groupViewModel?.groupData = response?.room
             groupViewModel?.groupData?.groupParticipants = response?.participants
+            groupViewModel?.groupData?.admins = response?.admins
 
             et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
 

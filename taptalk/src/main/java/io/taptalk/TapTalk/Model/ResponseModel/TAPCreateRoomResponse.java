@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -14,9 +15,10 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public class TAPCreateRoomResponse implements Parcelable {
     @Nullable @JsonProperty("room") private TAPRoomModel room;
     @Nullable @JsonProperty("participants") private List<TAPUserModel> participants;
-    @Nullable @JsonProperty("admins") private List<TAPUserModel> admins;
+    @Nullable @JsonProperty("adminUserIDs") @JsonAlias("admins")
+    private List<String> admins;
 
-    public TAPCreateRoomResponse(@Nullable TAPRoomModel room, @Nullable List<TAPUserModel> participants, @Nullable List<TAPUserModel> admins) {
+    public TAPCreateRoomResponse(@Nullable TAPRoomModel room, @Nullable List<TAPUserModel> participants, @Nullable List<String> admins) {
         this.room = room;
         this.participants = participants;
         this.admins = admins;
@@ -43,14 +45,13 @@ public class TAPCreateRoomResponse implements Parcelable {
     }
 
     @Nullable
-    public List<TAPUserModel> getAdmins() {
+    public List<String> getAdmins() {
         return admins;
     }
 
-    public void setAdmins(@Nullable List<TAPUserModel> admins) {
+    public void setAdmins(@Nullable List<String> admins) {
         this.admins = admins;
     }
-
 
     @Override
     public int describeContents() {
@@ -61,13 +62,13 @@ public class TAPCreateRoomResponse implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.room, flags);
         dest.writeTypedList(this.participants);
-        dest.writeTypedList(this.admins);
+        dest.writeStringList(this.admins);
     }
 
     protected TAPCreateRoomResponse(Parcel in) {
         this.room = in.readParcelable(TAPRoomModel.class.getClassLoader());
         this.participants = in.createTypedArrayList(TAPUserModel.CREATOR);
-        this.admins = in.createTypedArrayList(TAPUserModel.CREATOR);
+        this.admins = in.createStringArrayList();
     }
 
     public static final Creator<TAPCreateRoomResponse> CREATOR = new Creator<TAPCreateRoomResponse>() {
