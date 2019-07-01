@@ -133,4 +133,7 @@ public interface TAPTalkApiService {
 
     @POST("client/room/participants/remove")
     Observable<TAPBaseResponse<TAPCreateRoomResponse>> removeRoomParticipant(@Body TAPAddRoomParticipantRequest request);
+
+    @POST("client/room/leave")
+    Observable<TAPBaseResponse<TAPCommonResponse>> leaveChatRoom(@Body TAPCommonRequest request);
 }

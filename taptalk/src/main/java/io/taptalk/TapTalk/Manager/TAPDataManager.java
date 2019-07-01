@@ -962,6 +962,10 @@ public class TAPDataManager {
         TAPApiManager.getInstance().removeRoomParticipant(roomID, userIDs, new TAPDefaultSubscriber<>(view));
     }
 
+    public void leaveChatRoom(String roomID, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance().leaveChatRoom(roomID, new TAPDefaultSubscriber<>(view));
+    }
+
     // Search User
     private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TAPDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> searchUserSubscriber;
 

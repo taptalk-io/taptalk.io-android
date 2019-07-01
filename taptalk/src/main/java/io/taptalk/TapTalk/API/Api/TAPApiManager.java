@@ -453,4 +453,9 @@ public class TAPApiManager {
         TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
         execute(homingPigeon.removeRoomParticipant(request), subscriber);
     }
+
+    public void leaveChatRoom(String roomID, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPCommonRequest request = TAPCommonRequest.builderWithRoomID(roomID);
+        execute(homingPigeon.leaveChatRoom(request), subscriber);
+    }
 }
