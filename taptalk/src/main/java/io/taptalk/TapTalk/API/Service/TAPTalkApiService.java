@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.API.Service;
 
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPAddRoomParticipantRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
@@ -126,4 +127,10 @@ public interface TAPTalkApiService {
 
     @POST("client/room/update")
     Observable<TAPBaseResponse<TAPUpdateRoomResponse>> updateChatRoom(@Body TAPUpdateRoomRequest request);
+
+    @POST("client/room/participants/add")
+    Observable<TAPBaseResponse<TAPCreateRoomResponse>> addRoomParticipant(@Body TAPAddRoomParticipantRequest request);
+
+    @POST("client/room/participants/remove")
+    Observable<TAPBaseResponse<TAPCreateRoomResponse>> removeRoomParticipant(@Body TAPAddRoomParticipantRequest request);
 }
