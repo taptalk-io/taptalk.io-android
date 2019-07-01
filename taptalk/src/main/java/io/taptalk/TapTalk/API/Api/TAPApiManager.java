@@ -387,8 +387,20 @@ public class TAPApiManager {
         execute(tapMultipart.uploadProfilePicture(requestBody), subscriber);
     }
 
-    public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, Subscriber<ResponseBody> subscriber) {
+    public void uploadGroupPicture(File imageFile, String mimeType, String roomID,
+                                   Subscriber<TAPBaseResponse<TAPUpdateRoomResponse>> subscriber) {
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
 
+        ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", imageFile.getName(), reqFile)
+                .addFormDataPart("roomID", roomID)
+                .build();
+        execute(tapMultipart.uploadRoomPicture(requestBody), subscriber);
+    }
+
+    public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, Subscriber<ResponseBody> subscriber) {
         TAPTalkDownloadApiService tapDownload;
         if (null != fileSize) {
             tapDownload = TAPApiConnection.getInstance().getTapDownload(calculateTimeOutTimeWithFileSize(fileSize.longValue()));
