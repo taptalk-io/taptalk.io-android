@@ -20,6 +20,7 @@ import io.taptalk.TapTalk.Exception.TAPAuthException;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPAddRoomParticipantRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
@@ -441,5 +442,30 @@ public class TAPApiManager {
     public void updateChatRoom(String roomID, String roomName, Subscriber<TAPBaseResponse<TAPUpdateRoomResponse>> subscriber) {
         TAPUpdateRoomRequest request = new TAPUpdateRoomRequest(roomID, roomName);
         execute(homingPigeon.updateChatRoom(request), subscriber);
+    }
+
+    public void addRoomParticipant(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
+        execute(homingPigeon.addRoomParticipant(request), subscriber);
+    }
+
+    public void removeRoomParticipant(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
+        execute(homingPigeon.removeRoomParticipant(request), subscriber);
+    }
+
+    public void leaveChatRoom(String roomID, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPCommonRequest request = TAPCommonRequest.builderWithRoomID(roomID);
+        execute(homingPigeon.leaveChatRoom(request), subscriber);
+    }
+
+    public void promoteGroupAdmins(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
+        execute(homingPigeon.promoteGroupAdmins(request), subscriber);
+    }
+
+    public void demoteGroupAdmins(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
+        execute(homingPigeon.demoteGroupAdmins(request), subscriber);
     }
 }

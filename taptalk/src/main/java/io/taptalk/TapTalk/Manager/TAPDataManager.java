@@ -954,6 +954,26 @@ public class TAPDataManager {
         TAPApiManager.getInstance().updateChatRoom(roomID, roomName, new TAPDefaultSubscriber<>(view));
     }
 
+    public void addRoomParticipant(String roomID, List<String> userIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().addRoomParticipant(roomID, userIDs, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void removeRoomParticipant(String roomID, List<String> userIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().removeRoomParticipant(roomID, userIDs, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void leaveChatRoom(String roomID, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance().leaveChatRoom(roomID, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void promoteGroupAdmins(String roomID, List<String> userIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().promoteGroupAdmins(roomID, userIDs, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void demoteGroupAdmins(String roomID, List<String> userIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().demoteGroupAdmins(roomID, userIDs, new TAPDefaultSubscriber<>(view));
+    }
+
     // Search User
     private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TAPDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> searchUserSubscriber;
 
