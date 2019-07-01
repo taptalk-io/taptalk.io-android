@@ -193,7 +193,8 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener saveButtonListener = v -> saveImage();
-    private View.OnClickListener emptyListener = v -> {};
+    private View.OnClickListener emptyListener = v -> {
+    };
 
     private View.OnTouchListener touchListener = new View.OnTouchListener() {
         @SuppressLint("ClickableViewAccessibility")

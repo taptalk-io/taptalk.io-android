@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--Default Colors-->
+    <!--TapTalk Default Colors-->
     <color name="tapColorPrimaryExtraLight">@color/tapLightOrangeTwo</color>
     <color name="tapColorPrimaryLight">@color/tapMango</color>
     <color name="tapColorPrimary">@color/tapPumpkinOrange</color>
@@ -14,7 +14,7 @@
     <color name="tapColorSuccess">@color/tapAppleGreen</color>
     <color name="tapColorError">@color/tapWatermelonRed</color>
 
-    <!--General Component Colors-->
+    <!--TapTalk General Component Colors-->
     <color name="tapDefaultNavBarBackgroundColor">@color/tapWhite</color>
     <color name="tapDefaultBackgroundColor">@color/tapWhiteF3</color>
 
@@ -57,6 +57,9 @@
     <color name="tapUnreadIdentifierBackgroundColor">@color/tapPumpkinOrange10</color>
     <color name="tapFileProgressBackgroundColor">@color/tapWhite</color>
     <color name="tapDeletedChatRoomInfoBackgroundColor">@color/tapParchment</color>
+
+    <color name="tapSelectedMediaPreviewThumbnailBorderColor">@color/tapColorPrimary</color>
+    <color name="tapMediaPreviewWarningBackgroundColor">@color/tapColorError</color>
 
     <!--Icon Component Colors-->
     <color name="tapRoomListUnreadBadgeBackgroundColor">@color/tapUnreadBadgeBackgroundColor</color>
@@ -124,7 +127,8 @@
     <color name="tapIconMediaPreviewThumbnailWarning">@color/tapWhite</color>
     <color name="tapIconMediaPreviewThumbnailWarningBackground">@color/tapDestructiveIconColor</color>
     <color name="tapIconMediaPreviewThumbnailRemoveItem">@color/tapWhite</color>
-    <color name="tapIconMediaPreviewThumbnailRemoveItemBackground">@color/tapDestructiveIconColor</color>
+    <color name="tapIconMediaPreviewThumbnailRemoveItemBackground">@color/tapTransparentCharcoal50</color>
+    <color name="tapIconMediaPreviewThumbnailRemoveItemBackgroundWarning">@color/tapDestructiveIconColor</color>
     <color name="tapIconSaveImage">@color/tapWhite</color>
 
     <color name="tapIconLongPressActionCopy">@color/tapDefaultPrimaryIconColor</color>

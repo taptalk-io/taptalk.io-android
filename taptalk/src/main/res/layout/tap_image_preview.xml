@@ -40,13 +40,13 @@
             android:textColorHint="@color/tapWhite"
             android:theme="@style/EditTextTheme"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_typing_indicator"
+            app:layout_constraintEnd_toStartOf="@id/tv_caption_letter_count"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="@color/tapOrangeYellow" />
 
         <TextView
-            android:id="@+id/tv_typing_indicator"
+            android:id="@+id/tv_caption_letter_count"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
