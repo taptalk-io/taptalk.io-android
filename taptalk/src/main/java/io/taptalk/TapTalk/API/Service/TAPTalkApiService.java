@@ -136,4 +136,10 @@ public interface TAPTalkApiService {
 
     @POST("client/room/leave")
     Observable<TAPBaseResponse<TAPCommonResponse>> leaveChatRoom(@Body TAPCommonRequest request);
+
+    @POST("client/room/admins/promote")
+    Observable<TAPBaseResponse<TAPCreateRoomResponse>> promoteGroupAdmins(@Body TAPAddRoomParticipantRequest request);
+
+    @POST("client/room/admins/demote")
+    Observable<TAPBaseResponse<TAPCreateRoomResponse>> demoteGroupAdmins(@Body TAPAddRoomParticipantRequest request);
 }

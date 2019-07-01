@@ -458,4 +458,14 @@ public class TAPApiManager {
         TAPCommonRequest request = TAPCommonRequest.builderWithRoomID(roomID);
         execute(homingPigeon.leaveChatRoom(request), subscriber);
     }
+
+    public void promoteGroupAdmins(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
+        execute(homingPigeon.promoteGroupAdmins(request), subscriber);
+    }
+
+    public void demoteGroupAdmins(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
+        execute(homingPigeon.demoteGroupAdmins(request), subscriber);
+    }
 }
