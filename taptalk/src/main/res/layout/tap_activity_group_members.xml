@@ -26,16 +26,19 @@
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
             android:tint="@color/tapColorPrimaryDark"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="visible"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_title"
             style="@style/tapNavBarLabelTitleStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             android:text="@string/tap_new_group"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
@@ -114,10 +117,10 @@
         android:id="@+id/fl_add_members"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         android:background="@color/tapWhite"
         android:elevation="2dp"
         android:padding="16dp"
-        android:animateLayoutChanges="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sv_members"
@@ -143,10 +146,10 @@
                 style="@style/tapFontFamilyBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginStart="12dp"
                 android:lineSpacingExtra="6sp"
                 android:text="@string/tap_add_members"
-                android:layout_gravity="center"
                 android:textColor="@color/tapWhite"
                 android:textSize="16sp" />
 
@@ -170,10 +173,10 @@
                 style="@style/tapFontFamilyBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginStart="12dp"
                 android:lineSpacingExtra="6sp"
                 android:text="@string/tap_remove_group_members"
-                android:layout_gravity="center"
                 android:textColor="@color/tapWatermelonRed"
                 android:textSize="16sp" />
 

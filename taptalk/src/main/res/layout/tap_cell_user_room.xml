@@ -32,10 +32,10 @@
         android:id="@+id/iv_avatar_icon"
         android:layout_width="22dp"
         android:layout_height="22dp"
-        tools:src="@drawable/tap_ic_verified"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
-        app:layout_constraintEnd_toEndOf="@id/civ_avatar" />
+        app:layout_constraintEnd_toEndOf="@id/civ_avatar"
+        tools:src="@drawable/tap_ic_verified" />
 
     <TextView
         android:id="@+id/tv_full_name"
@@ -43,13 +43,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="1"
         app:layout_constrainedWidth="true"
-        app:layout_constraintVertical_bias="0"
         app:layout_constraintBottom_toTopOf="@id/tv_last_message"
         app:layout_constraintEnd_toEndOf="@id/iv_mute"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
         app:layout_constraintTop_toTopOf="@id/civ_avatar"
+        app:layout_constraintVertical_bias="0"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="Username" />
 
@@ -84,6 +87,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="8dp"
+        android:ellipsize="end"
+        android:gravity="start"
         android:maxLines="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/fl_status"
@@ -100,6 +105,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
+        android:gravity="end"
+        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@id/tv_full_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_mute"
@@ -132,6 +139,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:background="@drawable/tap_bg_room_list_unread_badge"
+            android:gravity="center"
             android:minWidth="18dp"
             android:paddingStart="2dp"
             android:paddingTop="2dp"

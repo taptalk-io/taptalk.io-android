@@ -6,8 +6,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingStart="0dp"
-    android:paddingEnd="8dp"
     android:paddingTop="1dp"
+    android:paddingEnd="8dp"
     android:paddingBottom="1dp"
     tools:background="@drawable/tap_bg_bubble_quote_right">
 
@@ -39,6 +39,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/tv_quote_content"
         app:layout_constraintEnd_toEndOf="parent"

@@ -68,6 +68,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="4dp"
+        android:gravity="end"
         app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail"
         app:layout_constraintEnd_toEndOf="@id/iv_thumbnail"
         app:layout_constraintHorizontal_bias="1"

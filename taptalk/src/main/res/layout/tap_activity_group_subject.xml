@@ -35,6 +35,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="?attr/actionBarSize"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             android:text="@string/tap_group_subject"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -68,8 +71,8 @@
                 android:id="@+id/civ_group_image"
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                android:layout_marginBottom="12dp"
                 android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:scaleType="centerCrop"
                 android:src="@drawable/tap_img_default_avatar"
@@ -96,6 +99,7 @@
                     style="@style/tapClickableLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:text="@string/tap_change" />
 
                 <ImageView
@@ -189,6 +193,7 @@
                         style="@style/tapButtonLabelStyle"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:gravity="center"
                         android:text="@string/tap_create_group" />
 
                     <ImageView

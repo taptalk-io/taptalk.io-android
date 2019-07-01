@@ -18,6 +18,7 @@
             style="@style/tapNavBarCloseButtonLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:text="@string/tap_cfp_action_close"
@@ -28,6 +29,9 @@
             style="@style/tapNavBarLabelTitleStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             android:text="@string/tap_select_country"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -68,8 +72,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:background="@color/tapTransparentWhite"
                 android:gravity="center_vertical"
-                android:hint="@string/tap_search_for_country" />
+                android:hint="@string/tap_search_for_country"
+                android:maxLines="1" />
 
         </LinearLayout>
 

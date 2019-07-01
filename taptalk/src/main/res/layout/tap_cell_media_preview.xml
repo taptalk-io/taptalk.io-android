@@ -73,6 +73,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="10dp"
             android:fontFamily="@font/tap_font_pt_root_bold"
             android:gravity="end"
             android:letterSpacing="0.04"
@@ -81,7 +82,6 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="10dp"
             tools:text="100/100" />
 
         <View
@@ -125,6 +125,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/tap_error_exceed_upload_limit"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toBottomOf="@id/iv_warning_icon"
