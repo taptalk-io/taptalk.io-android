@@ -15,6 +15,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
@@ -64,6 +65,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
                 when (requestCode) {
                     PICK_GROUP_IMAGE -> {
                         groupViewModel?.isGroupPicChanged = true
+                        groupViewModel?.groupPicUri = data?.data
                         loadImage(data?.data.toString())
                         showingButton()
                     }
@@ -180,23 +182,56 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             btnStartLoadingState()
         }
 
-        override fun endLoading() {
-            btnStopLoadingState()
-        }
-
         override fun onSuccess(response: TAPUpdateRoomResponse?) {
             //TODO() Apus Setelah ada API CALL / Flow yang pasti
-            val intent = Intent(this@TAPEditGroupActivity, TAPGroupMemberListActivity::class.java)
-            intent.putExtra(ROOM, groupViewModel?.groupData)
-            startActivity(intent)
+            if (null == groupViewModel?.groupPicUri) {
+                btnStopLoadingState()
+
+                val intent = Intent(this@TAPEditGroupActivity, TAPGroupMemberListActivity::class.java)
+                intent.putExtra(ROOM, groupViewModel?.groupData)
+                startActivity(intent)
+            } else {
+                TAPFileUploadManager.getInstance().uploadRoomPicture(this@TAPEditGroupActivity,
+                        groupViewModel?.groupPicUri, groupViewModel?.groupData?.roomID ?: "0", uploadGroupView)
+            }
         }
 
         override fun onError(error: TAPErrorModel?) {
             super.onError(error)
+            btnStopLoadingState()
         }
 
         override fun onError(errorMessage: String?) {
             super.onError(errorMessage)
+            btnStopLoadingState()
+        }
+    }
+
+    private val uploadGroupView = object : TAPDefaultDataView<TAPUpdateRoomResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+        }
+
+        override fun onSuccess(response: TAPUpdateRoomResponse?) {
+            super.onSuccess(response)
+            val intent = Intent(this@TAPEditGroupActivity, TAPGroupMemberListActivity::class.java)
+            intent.putExtra(ROOM, groupViewModel?.groupData)
+            startActivity(intent)
+            btnStopLoadingState()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            btnStopLoadingState()
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            btnStopLoadingState()
         }
     }
 
