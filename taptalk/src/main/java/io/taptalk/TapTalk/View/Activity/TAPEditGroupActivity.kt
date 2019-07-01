@@ -27,6 +27,10 @@ import kotlinx.android.synthetic.main.tap_activity_edit_group.*
 class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
+            R.id.iv_close_btn -> {
+                onBackPressed()
+            }
+
             R.id.iv_remove_group_picture -> {
                 groupViewModel?.groupData?.roomImage = null
                 civ_group_picture.setImageResource(R.drawable.tap_img_default_avatar)
@@ -44,6 +48,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
                 if (groupViewModel?.isGroupPicChanged == true || groupViewModel?.isGroupNameChanged == true) {
                     groupViewModel?.groupData?.roomName = et_group_name.text.toString()
                     //TODO() API EDIT CALL
+                    //Ini buat ngecek kalau dy cuman ubah gambar lgsg panggil api upload room pic aja
                     if (groupViewModel?.isGroupNameChanged == true)
                         TAPDataManager.getInstance().updateChatRoom(groupViewModel?.groupData?.roomID, et_group_name.text.toString(), updateRoomDataView)
                     else if (groupViewModel?.isGroupPicChanged == true) {
@@ -91,20 +96,10 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
         TAPDataManager.getInstance().getChatRoomData(intent.getStringExtra(TAPDefaultConstant.Extras.ROOM_ID), getChatRoomDataView)
 
-//        groupViewModel?.groupData = intent.getParcelableExtra(ROOM)
-//
-//        et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
-
         //iv_remove_group_picture.setOnClickListener(this)
         ll_change_group_picture.setOnClickListener(this)
         fl_update_group_btn.setOnClickListener(this)
-
-//        if (null != groupViewModel?.groupData?.roomImage && "" != groupViewModel?.groupData?.roomImage?.thumbnail) {
-//            val imageURL = groupViewModel?.groupData?.roomImage
-//            loadImage(imageURL?.thumbnail ?: "")
-//        } else {
-//            groupViewModel?.isGroupPicStartEmpty = true
-//        }
+        iv_close_btn.setOnClickListener(this)
 
         fl_update_group_btn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple)
     }

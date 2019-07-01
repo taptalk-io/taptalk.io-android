@@ -31,6 +31,7 @@
             android:id="@+id/iv_close_btn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:src="@drawable/tap_ic_close_pumpkin_orange"
