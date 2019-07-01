@@ -38,6 +38,11 @@ public class ProgressRequestBody extends RequestBody {
         this.mListener = mListener;
     }
 
+    public ProgressRequestBody(final File mFile, String content_type) {
+        this.content_type = content_type;
+        this.mFile = mFile;
+    }
+
     @Nullable
     @Override
     public MediaType contentType() {
@@ -66,7 +71,8 @@ public class ProgressRequestBody extends RequestBody {
             }
         } finally {
             in.close();
-            mListener.onFinish();
+            if (null != mListener)
+                mListener.onFinish();
         }
     }
 
@@ -81,7 +87,8 @@ public class ProgressRequestBody extends RequestBody {
 
         @Override
         public void run() {
-            mListener.onProgressUpdate((int) (100 * mUploaded / mTotal), mUploaded);
+            if (null != mListener)
+                mListener.onProgressUpdate((int) (100 * mUploaded / mTotal), mUploaded);
         }
     }
 }

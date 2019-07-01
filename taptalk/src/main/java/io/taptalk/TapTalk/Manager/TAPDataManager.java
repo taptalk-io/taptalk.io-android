@@ -1045,13 +1045,18 @@ public class TAPDataManager {
         TAPApiManager.getInstance().uploadProfilePicture(imageFile, mimeType, uploadCallback, uploadProfilePictureSubscriber);
     }
 
-    public void cancelUploadProfilePicture() {
+    private void cancelUploadProfilePicture() {
         if (null != uploadProfilePictureSubscriber) {
             uploadProfilePictureSubscriber.unsubscribe();
         }
     }
 
     private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TAPDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> uploadProfilePictureSubscriber;
+
+    //Upload Room Picture
+    public void uploadRoomPicture(File imageFile, String mimeType, String roomID, TAPDefaultDataView<TAPUpdateRoomResponse> view) {
+        TAPApiManager.getInstance().uploadGroupPicture(imageFile, mimeType, roomID, new TAPDefaultSubscriber<>(view));
+    }
 
     // File Download
     private HashMap<String, TAPBaseSubscriber<TAPDefaultDataView<ResponseBody>>> downloadSubscribers; // Key is message local ID
