@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -191,12 +192,14 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                         pbProgress.setMax(100);
                         pbProgress.setProgress(downloadProgressValue);
                         ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
+                        ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileCancelDownload)));
                         clContainer.setOnClickListener(v -> mediaInterface.onCancelDownloadClicked(item));
                     } else {
                         // Show download button
                         tvMediaInfo.setText(videoSize);
                         pbProgress.setProgress(0);
                         ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
+                        ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileDownload)));
                         clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
                     }
                     tvMediaInfo.setVisibility(View.VISIBLE);

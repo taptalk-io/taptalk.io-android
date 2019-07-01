@@ -182,6 +182,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             menuNotification = new TAPMenuItem(
                     MENU_NOTIFICATION,
                     R.drawable.tap_ic_notifications_grey,
+                    R.color.tapIconChatProfileNotificationInactive,
+                    R.style.tapChatProfileMenuLabelStyle,
                     true,
                     false,
                     getString(R.string.tap_notifications));
@@ -189,6 +191,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             menuNotification = new TAPMenuItem(
                     MENU_NOTIFICATION,
                     R.drawable.tap_ic_notifications_pumpkin_orange,
+                    R.color.tapIconChatProfileNotificationActive,
+                    R.style.tapChatProfileMenuLabelStyle,
                     true,
                     true,
                     getString(R.string.tap_notifications));
@@ -196,6 +200,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         TAPMenuItem menuRoomColor = new TAPMenuItem(
                 MENU_ROOM_COLOR,
                 R.drawable.tap_ic_color_grey,
+                R.color.tapIconChatProfileConversationColor,
+                R.style.tapChatProfileMenuLabelStyle,
                 false,
                 false,
                 getString(R.string.tap_conversation_color));
@@ -203,6 +209,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         TAPMenuItem menuRoomSearchChat = new TAPMenuItem(
                 MENU_ROOM_COLOR,
                 R.drawable.tap_ic_search_grey,
+                R.color.tapIconChatProfileSearchChat,
+                R.style.tapChatProfileMenuLabelStyle,
                 false,
                 false,
                 getString(R.string.tap_search_chat));
@@ -222,13 +230,16 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPMenuItem menuBlock = new TAPMenuItem(
                     MENU_BLOCK,
                     R.drawable.tap_ic_block_grey,
+                    R.color.tapIconChatProfileBlockUser,
+                    R.style.tapChatProfileMenuLabelStyle,
                     false,
                     false,
                     getString(R.string.tap_block_user));
             TAPMenuItem menuClearChat = new TAPMenuItem(
                     MENU_CLEAR_CHAT,
                     R.drawable.tap_ic_delete_red,
-                    R.color.tapTomato,
+                    R.color.tapIconChatProfileClearChat,
+                    R.style.tapChatProfileMenuDestructiveLabelStyle,
                     false,
                     false,
                     getString(R.string.tap_clear_chat));
@@ -240,13 +251,16 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPMenuItem menuViewMembers = new TAPMenuItem(
                     MENU_VIEW_MEMBERS,
                     R.drawable.tap_ic_members_grey,
+                    R.color.tapIconGroupProfileViewMembers,
+                    R.style.tapChatProfileMenuLabelStyle,
                     false,
                     false,
                     getString(R.string.tap_view_members));
             TAPMenuItem menuExitGroup = new TAPMenuItem(
                     MENU_EXIT_GROUP,
                     R.drawable.tap_ic_exit_red,
-                    R.color.tapTomato,
+                    R.color.tapIconChatProfileClearChat,
+                    R.style.tapChatProfileMenuDestructiveLabelStyle,
                     false,
                     false,
                     getString(R.string.tap_exit_group));
@@ -318,7 +332,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         private int nameTranslationY = TAPUtils.getInstance().dpToPx(8);
         private int scrimHeight;
 
-        private ValueAnimator transitionToGreen, transitionToWhite;
+        private ValueAnimator transitionToCollapse, transitionToExpand;
 
         @Override
         public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -347,8 +361,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         .alpha(1f)
                         .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
-                getTransitionWhite().cancel();
-                getTransitionPrimaryColor().start();
+                getTransitionToExpand().cancel();
+                getTransitionToCollapse().start();
             } else if (Math.abs(verticalOffset) < scrollRange && isShowing) {
                 // Hide Toolbar
                 isShowing = false;
@@ -366,33 +380,33 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         .alpha(0f)
                         .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
-                getTransitionPrimaryColor().cancel();
-                getTransitionWhite().start();
+                getTransitionToCollapse().cancel();
+                getTransitionToExpand().start();
             }
         }
 
-        private ValueAnimator getTransitionPrimaryColor() {
-            if (null == transitionToGreen) {
-                transitionToGreen = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.tapWhite),
-                        getResources().getColor(R.color.tapColorPrimaryDark));
-                transitionToGreen.setDuration(DEFAULT_ANIMATION_TIME);
-                transitionToGreen.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
+        private ValueAnimator getTransitionToCollapse() {
+            if (null == transitionToCollapse) {
+                transitionToCollapse = ValueAnimator.ofArgb(
+                        getResources().getColor(R.color.tapIconTransparentBackgroundBackButton),
+                        getResources().getColor(R.color.tapIconNavBarBackButton));
+                transitionToCollapse.setDuration(DEFAULT_ANIMATION_TIME);
+                transitionToCollapse.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
             }
-            return transitionToGreen;
+            return transitionToCollapse;
         }
 
-        private ValueAnimator getTransitionWhite() {
-            if (null == transitionToWhite) {
-                transitionToWhite = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.tapColorPrimaryDark),
-                        getResources().getColor(R.color.tapWhite));
-                transitionToWhite.setDuration(DEFAULT_ANIMATION_TIME);
-                transitionToWhite.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
+        private ValueAnimator getTransitionToExpand() {
+            if (null == transitionToExpand) {
+                transitionToExpand = ValueAnimator.ofArgb(
+                        getResources().getColor(R.color.tapIconNavBarBackButton),
+                        getResources().getColor(R.color.tapIconTransparentBackgroundBackButton));
+                transitionToExpand.setDuration(DEFAULT_ANIMATION_TIME);
+                transitionToExpand.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
             }
-            return transitionToWhite;
+            return transitionToExpand;
         }
     };
 

@@ -81,6 +81,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="4dp"
         android:src="@drawable/tap_ic_video_white_outline"
+        android:tint="@color/tapIconMediaListVideo"
         app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail"
         app:layout_constraintEnd_toStartOf="@id/tv_media_info"
         app:layout_constraintStart_toStartOf="@id/iv_thumbnail" />

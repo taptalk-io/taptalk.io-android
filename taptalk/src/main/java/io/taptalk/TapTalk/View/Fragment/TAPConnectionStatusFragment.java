@@ -123,8 +123,8 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
                 llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connected);
                 tvConnectionStatus.setText(getString(R.string.tap_connected));
                 ivConnectionStatus.setImageResource(R.drawable.tap_ic_connected_white);
-                ivConnectionStatus.clearAnimation();
                 llConnectionStatus.setVisibility(View.VISIBLE);
+                ivConnectionStatus.clearAnimation();
 
                 new Handler().postDelayed(() -> llConnectionStatus.setVisibility(View.GONE), 500L);
             });
@@ -142,8 +142,10 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
             tvConnectionStatus.setText(R.string.tap_connecting);
             ivConnectionStatus.setImageResource(R.drawable.tap_ic_loading_progress_circle_white);
-            TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivConnectionStatus);
             llConnectionStatus.setVisibility(View.VISIBLE);
+            if (null == ivConnectionStatus.getAnimation()) {
+                TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivConnectionStatus);
+            }
         });
     }
 
@@ -156,8 +158,10 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_offline);
             tvConnectionStatus.setText(R.string.tap_waiting_for_network);
             ivConnectionStatus.setImageResource(R.drawable.tap_ic_loading_progress_circle_white);
-            TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivConnectionStatus);
             llConnectionStatus.setVisibility(View.VISIBLE);
+            if (null == ivConnectionStatus.getAnimation()) {
+                TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivConnectionStatus);
+            }
         });
 
         this.hideUntilNextConnect = false;

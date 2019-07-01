@@ -1,20 +1,25 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPMenuItem;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.Taptalk.R;
@@ -41,7 +46,7 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
         private ConstraintLayout clContainer;
         private ImageView ivMenuIcon;
         private TextView tvMenuLabel;
-        private Switch swMenuSwitch;
+        private SwitchCompat swMenuSwitch;
 
         MenuButtonVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -51,17 +56,24 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
             swMenuSwitch = itemView.findViewById(R.id.sw_menu_switch);
         }
 
+        @SuppressLint("PrivateResource")
         @Override
         protected void onBind(TAPMenuItem item, int position) {
             ivMenuIcon.setImageResource(item.getIconRes());
+            ivMenuIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(item.getIconColorRes())));
+
             tvMenuLabel.setText(item.getMenuLabel());
-            tvMenuLabel.setTextColor(ContextCompat.getColor(itemView.getContext(), item.getTextColorRes()));
+            TypedArray typedArray = itemView.getContext().obtainStyledAttributes(item.getTextStyleRes(), R.styleable.TextAppearance);
+            tvMenuLabel.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
+            typedArray.recycle();
 
             if (item.isSwitchMenu()) {
                 swMenuSwitch.setVisibility(View.VISIBLE);
                 swMenuSwitch.setChecked(item.isChecked());
+                int switchColorRes = item.isChecked() ? R.color.tapSwitchActiveBackgroundColor : R.color.tapSwitchInactiveBackgroundColor;
+                changeSwitchColor(itemView.getResources().getColor(switchColorRes));
                 swMenuSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    private ValueAnimator transitionToPrimary, transitionToGrey;
+                    private ValueAnimator transitionToActive, transitionToInactive;
 
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -69,37 +81,40 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                         menuInterface.onMenuClicked(item);
                         if (isChecked) {
                             // Turn switch ON
-                            getTransitionGrey().cancel();
-                            getTransitionPrimary().start();
+                            getTransitionInactive().cancel();
+                            getTransitionActive().start();
+                            changeSwitchColor(itemView.getResources().getColor(R.color.tapSwitchActiveBackgroundColor));
+
                         } else {
                             // Turn switch OFF
-                            getTransitionPrimary().cancel();
-                            getTransitionGrey().start();
+                            getTransitionActive().cancel();
+                            getTransitionInactive().start();
+                            changeSwitchColor(itemView.getResources().getColor(R.color.tapSwitchInactiveBackgroundColor));
                         }
                     }
 
-                    private ValueAnimator getTransitionPrimary() {
-                        if (null == transitionToPrimary) {
-                            transitionToPrimary = ValueAnimator.ofArgb(
-                                    itemView.getContext().getResources().getColor(R.color.tapGrey9b),
-                                    itemView.getContext().getResources().getColor(R.color.tapColorPrimaryDark));
-                            transitionToPrimary.setDuration(DEFAULT_ANIMATION_TIME);
-                            transitionToPrimary.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
+                    private ValueAnimator getTransitionActive() {
+                        if (null == transitionToActive) {
+                            transitionToActive = ValueAnimator.ofArgb(
+                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileNotificationInactive),
+                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileNotificationActive));
+                            transitionToActive.setDuration(DEFAULT_ANIMATION_TIME);
+                            transitionToActive.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
                         }
-                        return transitionToPrimary;
+                        return transitionToActive;
                     }
 
-                    private ValueAnimator getTransitionGrey() {
-                        if (null == transitionToGrey) {
-                            transitionToGrey = ValueAnimator.ofArgb(
-                                    itemView.getContext().getResources().getColor(R.color.tapColorPrimaryDark),
-                                    itemView.getContext().getResources().getColor(R.color.tapGrey9b));
-                            transitionToGrey.setDuration(DEFAULT_ANIMATION_TIME);
-                            transitionToGrey.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
+                    private ValueAnimator getTransitionInactive() {
+                        if (null == transitionToInactive) {
+                            transitionToInactive = ValueAnimator.ofArgb(
+                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileNotificationActive),
+                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileNotificationInactive));
+                            transitionToInactive.setDuration(DEFAULT_ANIMATION_TIME);
+                            transitionToInactive.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
                         }
-                        return transitionToGrey;
+                        return transitionToInactive;
                     }
                 });
             } else {
@@ -113,6 +128,13 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                     menuInterface.onMenuClicked(item);
                 }
             });
+        }
+
+        private void changeSwitchColor(int color) {
+            DrawableCompat.setTintList(DrawableCompat.wrap(swMenuSwitch.getThumbDrawable()),
+                    ColorStateList.valueOf(color));
+            DrawableCompat.setTintList(DrawableCompat.wrap(swMenuSwitch.getTrackDrawable()),
+                    ColorStateList.valueOf(TAPUtils.getInstance().adjustAlpha(color, 0.3f)));
         }
     }
 }

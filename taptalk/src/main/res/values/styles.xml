@@ -276,6 +276,15 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="tapGroupRoomListSenderNameStyle" parent="tapFontFamilyRegular">
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">start</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:lineSpacingExtra">1sp</item>
+        <item name="android:textColor">@color/tapColorTextDark</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="tapRoomListMessageHighlightedStyle" parent="tapFontFamilyRegular">
         <item name="android:ellipsize">end</item>
         <item name="android:gravity">start</item>
@@ -304,6 +313,12 @@
         <item name="android:letterSpacing">-0.02</item>
         <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="tapChatProfileRoomNameStyle" parent="tapFontFamilyBold">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/tapColorTextLight</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="tapChatProfileMenuLabelStyle" parent="tapFontFamilyRegular">

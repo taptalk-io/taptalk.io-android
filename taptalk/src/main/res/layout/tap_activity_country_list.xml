@@ -60,7 +60,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:src="@drawable/tap_ic_search_grey"
-                android:tint="@color/tapDefaultSecondaryIconColor" />
+                android:tint="@color/tapIconSearchBarMagnifier" />
 
             <EditText
                 android:id="@+id/et_search"

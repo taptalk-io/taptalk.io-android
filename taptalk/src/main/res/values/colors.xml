@@ -109,7 +109,8 @@
     <color name="tapIconScanQRCode">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconCreateNewGroup">@color/tapDefaultPrimaryIconColor</color>
 
-    <color name="tapIconChatProfileNotifications">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatProfileNotificationActive">@color/tapDefaultPrimaryIconColor</color>
+    <color name="tapIconChatProfileNotificationInactive">@color/tapDefaultSecondaryIconColor</color>
     <color name="tapIconChatProfileConversationColor">@color/tapDefaultSecondaryIconColor</color>
     <color name="tapIconChatProfileBlockUser">@color/tapDefaultSecondaryIconColor</color>
     <color name="tapIconChatProfileSearchChat">@color/tapDefaultSecondaryIconColor</color>
@@ -160,6 +161,7 @@
     <color name="tapIconChatRoomUnreadIdentifier">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconChatRoomScrollToBottom">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconChatRoomScrollToBottomBackground">@color/tapWhite</color>
+    <color name="tapIconChatRoomCancelQuote">@color/tapDefaultSecondaryIconColor</color>
     <color name="tapIconDeletedChatRoom">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconQuotedFileBackground">@color/tapDefaultPrimaryIconColor</color>
     <color name="tapIconChatRoomMessageSending">@color/tapDefaultSecondaryIconColor</color>
