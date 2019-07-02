@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tapWhiteF8"
+    android:background="@color/tapDefaultBackgroundColor"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:animateLayoutChanges="true"
-        android:background="@color/tapWhite"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toTopOf="parent">
@@ -25,7 +25,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/tapColorPrimaryDark"
+            android:tint="@color/tapIconNavBarBackButton"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,12 +47,15 @@
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/TapSearchBar"
+            style="@style/tapNavBarSearchTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_search_for_contacts"
+            android:maxLines="1"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
+            android:textCursorDrawable="@drawable/tap_cursor_color"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
@@ -66,7 +69,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_search_grey"
-            android:tint="@color/tapColorPrimaryDark"
+            android:tint="@color/tapIconNavBarMagnifier"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -94,16 +97,13 @@
 
             <TextView
                 android:id="@+id/tv_member_count"
-                style="@style/tapFontFamilyBold"
+                style="@style/tapGroupMemberCountStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="21dp"
                 android:layout_marginEnd="16dp"
-                android:gravity="center_horizontal"
-                android:lineSpacingExtra="4sp"
-                android:textColor="@color/tapGrey9b"
-                android:textSize="16sp"
+                android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/rv_contact_list"
@@ -140,18 +140,16 @@
                 android:layout_height="16dp"
                 android:layout_gravity="center"
                 android:src="@drawable/tap_ic_add_members_black"
-                android:tint="@color/tapWhite" />
+                android:tint="@color/tapButtonIconColor" />
 
             <TextView
-                style="@style/tapFontFamilyBold"
+                style="@style/tapButtonLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="12dp"
                 android:lineSpacingExtra="6sp"
-                android:text="@string/tap_add_members"
-                android:textColor="@color/tapWhite"
-                android:textSize="16sp" />
+                android:text="@string/tap_add_members" />
 
         </LinearLayout>
 
@@ -167,18 +165,17 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center"
-                android:src="@drawable/tap_ic_delete_red" />
+                android:src="@drawable/tap_ic_delete_red"
+                android:tint="@color/tapButtonIconDestructiveColor" />
 
             <TextView
-                style="@style/tapFontFamilyBold"
+                style="@style/tapClickableDestructiveLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="12dp"
                 android:lineSpacingExtra="6sp"
-                android:text="@string/tap_remove_group_members"
-                android:textColor="@color/tapWatermelonRed"
-                android:textSize="16sp" />
+                android:text="@string/tap_remove_group_members" />
 
         </LinearLayout>
 

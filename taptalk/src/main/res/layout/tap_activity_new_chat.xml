@@ -298,7 +298,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/tap_ic_sync_white"
-                android:tint="@color/tapButtonImageColor" />
+                android:tint="@color/tapButtonIconColor" />
 
             <TextView
                 style="@style/tapButtonLabelStyle"

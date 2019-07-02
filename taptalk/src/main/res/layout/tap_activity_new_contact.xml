@@ -212,7 +212,7 @@
                     android:layout_height="14dp"
                     android:layout_marginStart="4dp"
                     android:src="@drawable/tap_ic_comment_white"
-                    android:tint="@color/tapButtonImageColor"
+                    android:tint="@color/tapButtonIconColor"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tv_button_text"

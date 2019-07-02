@@ -30,7 +30,7 @@
 
     <TextView
         android:id="@+id/tv_full_name"
-        style="@style/tapSelectedMemberListName"
+        style="@style/tapSelectedMemberListNameStyle"
         android:layout_width="52dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

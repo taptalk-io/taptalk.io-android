@@ -77,6 +77,7 @@
     <string name="tap_loading_older_messages">Loading Older Messages</string>
 
     <!--Group Chat-->
+    <string name="tap_add_members">Add Members</string>
     <string name="tap_group_member_count">Group Members (%d/%d)</string>
     <string name="tap_group_name">Group Name</string>
     <string name="tap_group_picture">Group Picture</string>
@@ -308,6 +309,5 @@
     <string name="tap_you">You</string>
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="tap_over_99">99+</string>
-    <string name="tap_add_members">Add Members</string>
 
 </resources>

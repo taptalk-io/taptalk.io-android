@@ -29,7 +29,8 @@
     <color name="tapButtonActiveBackgroundGradientLightColor">@color/tapColorPrimaryLight</color>
     <color name="tapButtonActiveBackgroundGradientDarkColor">@color/tapColorPrimary</color>
     <color name="tapButtonActiveBorderColor">@color/tapColorPrimary</color>
-    <color name="tapButtonImageColor">@color/tapColorTextLight</color>
+    <color name="tapButtonIconColor">@color/tapColorTextLight</color>
+    <color name="tapButtonIconDestructiveColor">@color/tapColorError</color>
 
     <color name="tapSwitchActiveBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapSwitchInactiveBackgroundColor">@color/tapGrey9b</color>
@@ -241,6 +242,8 @@
     <color name="tapLeftBubbleMessageBodyURLColor">@color/tapColorPrimary</color>
     <color name="tapRightBubbleMessageBodyURLHighlightedColor">@color/tapHighlightBlue</color>
     <color name="tapLeftBubbleMessageBodyURLHighlightedColor">@color/tapHighlightBlue</color>
+    <color name="tapRightBubbleDeletedMessageBodyColor">@color/tapColorTextLight</color>
+    <color name="tapLeftBubbleDeletedMessageBodyColor">@color/tapColorTextMedium</color>
     <color name="tapRightBubbleQuoteTitleColor">@color/tapColorTextLight</color>
     <color name="tapLeftBubbleQuoteTitleColor">@color/tapColorTextDark</color>
     <color name="tapRightBubbleQuoteContentColor">@color/tapColorTextLight</color>
@@ -280,7 +283,8 @@
     <color name="tapImageDetailMessageStatusColor">@color/tapColorTextLight</color>
     <color name="tapImageDetailCaptionColor">@color/tapColorTextLight</color>
 
-    <color name="tapSelectedMemberLisColor">@color/tapColorTextDark</color>
+    <color name="tapSelectedMemberListColor">@color/tapColorTextDark</color>
+    <color name="tapGroupMemberCountColor">@color/tapColorTextMedium</color>
 
     <color name="tapCountryListLabelColor">@color/tapColorTextDark</color>
 
@@ -289,6 +293,8 @@
     <color name="tapLoginVerificationStatusCountdownLabelColor">@color/tapColorTextMedium</color>
     <color name="tapLoginVerificationStatusLoadingLabelColor">@color/tapColorPrimary</color>
     <color name="tapLoginVerificationStatusSuccessLabelColor">@color/tapColorSuccess</color>
+
+    <color name="tapVideoPlayerTimeLabelColor">@color/tapTransparentWhite60</color>
 
     <!--Color Palette-->
     <color name="tapDarkPurple">#51276c</color>

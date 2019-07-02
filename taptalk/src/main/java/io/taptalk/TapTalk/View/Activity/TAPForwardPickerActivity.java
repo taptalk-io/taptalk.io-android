@@ -35,6 +35,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.EMPTY_STATE;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.ROOM_ITEM;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
@@ -254,7 +255,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                     TAPRoomModel room = new TAPRoomModel(
                             TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
                             contact.getName(),
-                            /* 1 ON 1 ROOM TYPE */ 1,
+                            TYPE_PERSONAL,
                             contact.getAvatarURL(),
                             /* SET DEFAULT ROOM COLOR*/""
                     );
@@ -265,9 +266,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                     }
                 }
                 vm.getSearchResults().get(vm.getSearchResults().size() - 1).setLastInSection(true);
-                runOnUiThread(() -> {
-                    adapter.setItems(vm.getSearchResults(), false);
-                });
+                runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
             } else if (vm.getSearchResults().size() == 0) {
                 setEmptyState();
             }
