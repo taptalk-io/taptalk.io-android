@@ -10,7 +10,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,7 +24,6 @@ import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -80,11 +78,19 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
         // Show users from contact list
         vm.getContactListLive().observe(this, userModels -> {
             vm.getContactList().clear();
-            vm.getContactList().addAll(userModels);
-            vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList(), existingMembers));
+            addFilteredContactList(userModels, existingMembers);
+            vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
             runOnUiThread(() -> contactListAdapter.setItems(vm.getSeparatedContacts()));
         });
         vm.getFilteredContacts().addAll(vm.getContactList());
+    }
+
+    private void addFilteredContactList(List<TAPUserModel> userModels, List<TAPUserModel> existingMembers) {
+        for (TAPUserModel contact : userModels) {
+            if (!existingMembers.contains(contact)) {
+                vm.getContactList().add(contact);
+            }
+        }
     }
 
     private void initListener() {
@@ -154,7 +160,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
         rvGroupMembers = findViewById(R.id.rv_group_members);
 
         getWindow().setBackgroundDrawable(null);
-        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts(), null));
+        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
         vm.setRoomID(null == getIntent().getStringExtra(ROOM_ID) ? "" : getIntent().getStringExtra(ROOM_ID));
 
         // All contacts adapter
@@ -228,7 +234,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
             }
             vm.getFilteredContacts().addAll(filteredContacts);
         }
-        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts(), null));
+        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
         contactListAdapter.setItems(vm.getSeparatedContacts());
     }
 

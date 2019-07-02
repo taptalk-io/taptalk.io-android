@@ -118,7 +118,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             if (null != userModels) {
                 vm.getContactList().clear();
                 vm.getContactList().addAll(userModels);
-                vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList(), null));
+                vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
                 runOnUiThread(() -> {
                     if (null != adapter) {
                         adapter.setItems(vm.getSeparatedContacts(), true);

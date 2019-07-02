@@ -295,14 +295,12 @@ public class TAPUtils {
     /**
      * separate contact list by initial
      */
-    public List<List<TAPUserModel>> separateContactsByInitial(List<TAPUserModel> contacts,
-                                                              @Nullable List<TAPUserModel> notShownContacts) {
+    public List<List<TAPUserModel>> separateContactsByInitial(List<TAPUserModel> contacts) {
         List<List<TAPUserModel>> separatedContacts = new ArrayList<>();
         List<TAPUserModel> nonAlphabeticContacts = new ArrayList<>();
         List<TAPUserModel> filteredContacts = new ArrayList<>();
         for (TAPUserModel contact : contacts) {
-            if (null != contact.getName() && !contact.getName().isEmpty() &&
-                    (null == notShownContacts || !notShownContacts.contains(contact))) {
+            if (null != contact.getName() && !contact.getName().isEmpty()) {
                 filteredContacts.add(contact);
             }
         }
