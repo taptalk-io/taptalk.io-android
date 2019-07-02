@@ -433,7 +433,7 @@
                     android:layout_height="0dp"
                     android:scaleType="center"
                     android:src="@drawable/tap_ic_icon_logout_watermelon"
-                    android:tint="@color/tapDestructiveIconColor"
+                    android:tint="@color/tapColorError"
                     app:layout_constraintBottom_toBottomOf="@id/tv_logout"
                     app:layout_constraintDimensionRatio="H, 1:1"
                     app:layout_constraintEnd_toEndOf="@id/tv_logout"

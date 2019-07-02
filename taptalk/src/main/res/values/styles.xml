@@ -73,7 +73,7 @@
 
     <style name="tapFormTextFieldStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">-0.01</item>
-        <item name="android:textColor">@color/tapColorTexColor</item>
+        <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textColorHint">@color/tapFormTextFieldColor</item>
         <item name="android:textSize">16sp</item>
     </style>
@@ -142,7 +142,7 @@
 
     <style name="tapNavBarSearchTextStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">-0.01</item>
-        <item name="android:textColor">@color/tapColorTexColor</item>
+        <item name="android:textColor">@color/tapColorTextDark</item>
         <item name="android:textColorHint">@color/tapNavBarSearchTextColor</item>
         <item name="android:textSize">16sp</item>
     </style>
