@@ -76,11 +76,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
     }
 
     private void initViewModel(List<TAPUserModel> existingMembers) {
-        TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
-
-        // Add self as selected group member
-        vm.addSelectedContact(myUser);
 
         // Show users from contact list
         vm.getContactListLive().observe(this, userModels -> {
@@ -121,7 +117,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
                     vm.removeSelectedContact(contact);
                     selectedMembersAdapter.notifyItemRemoved(index);
                 }
-                if (vm.getSelectedContacts().size() > 1) {
+                if (vm.getSelectedContacts().size() > 0) {
                     llGroupMembers.setVisibility(View.VISIBLE);
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
@@ -136,7 +132,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
                 selectedMembersAdapter.removeItem(contact);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 contactListAdapter.notifyDataSetChanged();
-                if (vm.getSelectedContacts().size() > 1) {
+                if (vm.getSelectedContacts().size() > 0) {
                     llGroupMembers.setVisibility(View.VISIBLE);
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
