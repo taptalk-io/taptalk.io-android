@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Activity
 
+import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +12,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.ADD_MEMBER
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
 import io.taptalk.TapTalk.Model.TAPUserModel
@@ -39,7 +42,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             R.id.ll_add_button -> {
                 val intent = Intent(this, TAPAddMembersActivity::class.java)
                 intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))
-                startActivity(intent)
+                intent.putExtra(ROOM_ID, groupViewModel?.groupData?.roomID)
+                startActivityForResult(intent, ADD_MEMBER)
             }
         }
     }
@@ -189,5 +193,22 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         ll_remove_button.visibility = View.VISIBLE
         ll_add_button.visibility = View.GONE
         adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                ADD_MEMBER -> {
+                    val updatedGroupParticipant = data?.getParcelableArrayListExtra<TAPUserModel>(GROUP_MEMBERS)
+                    groupViewModel?.groupData?.groupParticipants = updatedGroupParticipant?.toMutableList() ?: groupViewModel?.participantsList
+                    adapter?.items = groupViewModel?.groupData?.groupParticipants
+                    adapter?.notifyDataSetChanged()
+
+                    //set total member count
+                    tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+                    tv_member_count.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 }

@@ -19,23 +19,25 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 
 public class TAPAddMembersActivity extends TAPBaseActivity {
 
@@ -67,30 +69,9 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
-            case RESULT_OK:
-                switch (requestCode) {
-                    case CREATE_GROUP:
-                        onBackPressed();
-                        break;
-                }
-            case RESULT_CANCELED:
-                switch (requestCode) {
-                    case CREATE_GROUP:
-                        if (null != data) {
-                            vm.setGroupName(data.getStringExtra(GROUP_NAME));
-                            vm.setGroupImage(data.getParcelableExtra(GROUP_IMAGE));
-                        }
-                        break;
-                }
-        }
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
+        setResult(RESULT_CANCELED);
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 
@@ -178,6 +159,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
 
         getWindow().setBackgroundDrawable(null);
         vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts(), null));
+        vm.setRoomID(null == getIntent().getStringExtra(ROOM_ID) ? "" : getIntent().getStringExtra(ROOM_ID));
 
         // All contacts adapter
         contactListAdapter = new TAPContactInitialAdapter(TAPContactListAdapter.SELECT, vm.getSeparatedContacts(), vm.getSelectedContacts(), listener);
@@ -198,7 +180,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonAction.setOnClickListener(v -> toggleSearchBar());
-        btnContinue.setOnClickListener(v -> openGroupSubjectActivity());
+        btnContinue.setOnClickListener(v -> startAddMemberProcess());
     }
 
     private void toggleSearchBar() {
@@ -221,8 +203,10 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
         }
     }
 
-    private void openGroupSubjectActivity() {
-
+    private void startAddMemberProcess() {
+        if (!"".equals(vm.getRoomID())) {
+            TAPDataManager.getInstance().addRoomParticipant(vm.getRoomID(), vm.getSelectedContactsIds(), addMemberView);
+        }
     }
 
     private void updateSelectedMemberDecoration() {
@@ -291,6 +275,37 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
                 selectedMembersAdapter.setAnimating(false);
                 updateSelectedMemberDecoration();
             }
+        }
+    };
+
+    private TAPDefaultDataView<TAPCreateRoomResponse> addMemberView = new TAPDefaultDataView<TAPCreateRoomResponse>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+        }
+
+        @Override
+        public void onSuccess(TAPCreateRoomResponse response) {
+            super.onSuccess(response);
+            Intent intent = new Intent();
+            intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(response.getParticipants()));
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+
+        @Override
+        public void onError(TAPErrorModel error) {
+            super.onError(error);
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            super.onError(errorMessage);
         }
     };
 }
