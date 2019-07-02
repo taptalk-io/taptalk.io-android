@@ -73,7 +73,7 @@
 
         <TextView
             android:id="@+id/tv_collapsed_name"
-            style="@style/tapNavBarLabelTitleStyle"
+            style="@style/tapNavBarTitleLabelStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_marginStart="64dp"
