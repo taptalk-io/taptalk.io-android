@@ -76,8 +76,8 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
-import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.Taptalk.R;
@@ -295,12 +295,14 @@ public class TAPUtils {
     /**
      * separate contact list by initial
      */
-    public List<List<TAPUserModel>> separateContactsByInitial(List<TAPUserModel> contacts) {
+    public List<List<TAPUserModel>> separateContactsByInitial(List<TAPUserModel> contacts,
+                                                              @Nullable List<TAPUserModel> notShownContacts) {
         List<List<TAPUserModel>> separatedContacts = new ArrayList<>();
         List<TAPUserModel> nonAlphabeticContacts = new ArrayList<>();
         List<TAPUserModel> filteredContacts = new ArrayList<>();
         for (TAPUserModel contact : contacts) {
-            if (null != contact.getName() && !contact.getName().isEmpty()) {
+            if (null != contact.getName() && !contact.getName().isEmpty() &&
+                    (null == notShownContacts || !notShownContacts.contains(contact))) {
                 filteredContacts.add(contact);
             }
         }
@@ -577,7 +579,7 @@ public class TAPUtils {
             minute = String.format("0%s", minute);
         }
 
-        String second = current == 0? "00" : String.valueOf((current % minuteMs) / secondMs);
+        String second = current == 0 ? "00" : String.valueOf((current % minuteMs) / secondMs);
         if (second.length() < 2) {
             second = String.format("0%s", second);
         }
@@ -1034,7 +1036,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
         // try to get country code from TelephonyManager service
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if(tm != null) {
+        if (tm != null) {
             // query first getSimCountryIso()
             countryCode = tm.getSimCountryIso();
             if (countryCode != null && countryCode.length() == 2)
@@ -1060,7 +1062,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         }
 
         if (countryCode != null && countryCode.length() == 2)
-            return  countryCode.toLowerCase();
+            return countryCode.toLowerCase();
 
         // general fallback to "us"
         return "id";
@@ -1082,24 +1084,42 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
             // mapping just countries that actually use CDMA networks
             switch (mcc) {
-                case 330: return "PR";
-                case 310: return "US";
-                case 311: return "US";
-                case 312: return "US";
-                case 316: return "US";
-                case 283: return "AM";
-                case 460: return "CN";
-                case 455: return "MO";
-                case 414: return "MM";
-                case 619: return "SL";
-                case 450: return "KR";
-                case 634: return "SD";
-                case 434: return "UZ";
-                case 232: return "AT";
-                case 204: return "NL";
-                case 262: return "DE";
-                case 247: return "LV";
-                case 255: return "UA";
+                case 330:
+                    return "PR";
+                case 310:
+                    return "US";
+                case 311:
+                    return "US";
+                case 312:
+                    return "US";
+                case 316:
+                    return "US";
+                case 283:
+                    return "AM";
+                case 460:
+                    return "CN";
+                case 455:
+                    return "MO";
+                case 414:
+                    return "MM";
+                case 619:
+                    return "SL";
+                case 450:
+                    return "KR";
+                case 634:
+                    return "SD";
+                case 434:
+                    return "UZ";
+                case 232:
+                    return "AT";
+                case 204:
+                    return "NL";
+                case 262:
+                    return "DE";
+                case 247:
+                    return "LV";
+                case 255:
+                    return "UA";
             }
         } catch (ClassNotFoundException ignored) {
         } catch (NoSuchMethodException ignored) {

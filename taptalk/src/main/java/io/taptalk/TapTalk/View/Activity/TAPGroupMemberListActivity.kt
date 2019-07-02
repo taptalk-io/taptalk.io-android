@@ -10,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
 import io.taptalk.TapTalk.Model.TAPUserModel
@@ -36,7 +37,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             }
 
             R.id.ll_add_button -> {
-                val intent = Intent(this, TapAddMembersActivity::class.java)
+                val intent = Intent(this, TAPAddMembersActivity::class.java)
+                intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))
                 startActivity(intent)
             }
         }

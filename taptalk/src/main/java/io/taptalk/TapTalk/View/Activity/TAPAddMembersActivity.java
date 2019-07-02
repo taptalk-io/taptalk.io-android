@@ -33,13 +33,11 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSIDs;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 
-public class TapAddMembersActivity extends TAPBaseActivity {
+public class TAPAddMembersActivity extends TAPBaseActivity {
 
     private LinearLayout llGroupMembers;
     private ImageView ivButtonBack, ivButtonAction;
@@ -57,8 +55,13 @@ public class TapAddMembersActivity extends TAPBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_add_members);
+        ArrayList<TAPUserModel> existingMembers;
 
-        initViewModel();
+        //dapetin existing members dari group
+        existingMembers = null == getIntent().getParcelableArrayListExtra(GROUP_MEMBERS) ?
+                new ArrayList<>() : getIntent().getParcelableArrayListExtra(GROUP_MEMBERS);
+
+        initViewModel(existingMembers);
         initListener();
         initView();
     }
@@ -91,7 +94,7 @@ public class TapAddMembersActivity extends TAPBaseActivity {
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 
-    private void initViewModel() {
+    private void initViewModel(List<TAPUserModel> existingMembers) {
         TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
 
@@ -102,7 +105,7 @@ public class TapAddMembersActivity extends TAPBaseActivity {
         vm.getContactListLive().observe(this, userModels -> {
             vm.getContactList().clear();
             vm.getContactList().addAll(userModels);
-            vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
+            vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList(), existingMembers));
             runOnUiThread(() -> contactListAdapter.setItems(vm.getSeparatedContacts()));
         });
         vm.getFilteredContacts().addAll(vm.getContactList());
@@ -112,12 +115,12 @@ public class TapAddMembersActivity extends TAPBaseActivity {
         listener = new TapTalkContactListInterface() {
             @Override
             public boolean onContactSelected(TAPUserModel contact) {
-                TAPUtils.getInstance().dismissKeyboard(TapAddMembersActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(TAPAddMembersActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContacts().contains(contact)) {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
-                        new TapTalkDialog.Builder(TapAddMembersActivity.this)
+                        new TapTalkDialog.Builder(TAPAddMembersActivity.this)
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                 .setTitle(getString(R.string.tap_cannot_add_more_people))
                                 .setMessage(getString(R.string.tap_group_limit_reached))
@@ -148,7 +151,7 @@ public class TapAddMembersActivity extends TAPBaseActivity {
 
             @Override
             public void onContactDeselected(TAPUserModel contact) {
-                TAPUtils.getInstance().dismissKeyboard(TapAddMembersActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(TAPAddMembersActivity.this);
                 selectedMembersAdapter.removeItem(contact);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 contactListAdapter.notifyDataSetChanged();
@@ -174,7 +177,7 @@ public class TapAddMembersActivity extends TAPBaseActivity {
         rvGroupMembers = findViewById(R.id.rv_group_members);
 
         getWindow().setBackgroundDrawable(null);
-        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
+        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts(), null));
 
         // All contacts adapter
         contactListAdapter = new TAPContactInitialAdapter(TAPContactListAdapter.SELECT, vm.getSeparatedContacts(), vm.getSelectedContacts(), listener);
@@ -219,13 +222,7 @@ public class TapAddMembersActivity extends TAPBaseActivity {
     }
 
     private void openGroupSubjectActivity() {
-//        Intent intent = new Intent(this, TAPGroupSubjectActivity.class);
-//        intent.putExtra(MY_ID, vm.getSelectedContacts().get(0).getUserID());
-//        intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
-//        intent.putStringArrayListExtra(GROUP_MEMBERSIDs, new ArrayList<>(vm.getSelectedContactsIds()));
-//        if (null != vm.getGroupName()) intent.putExtra(GROUP_NAME, vm.getGroupName());
-//        if (null != vm.getGroupImage()) intent.putExtra(GROUP_IMAGE, vm.getGroupImage());
-//        startActivityForResult(intent, CREATE_GROUP);
+
     }
 
     private void updateSelectedMemberDecoration() {
@@ -251,7 +248,7 @@ public class TapAddMembersActivity extends TAPBaseActivity {
             }
             vm.getFilteredContacts().addAll(filteredContacts);
         }
-        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
+        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts(), null));
         contactListAdapter.setItems(vm.getSeparatedContacts());
     }
 
@@ -278,7 +275,7 @@ public class TapAddMembersActivity extends TAPBaseActivity {
         @Override
         public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
             updateFilteredContacts(etSearch.getText().toString().toLowerCase());
-            TAPUtils.getInstance().dismissKeyboard(TapAddMembersActivity.this);
+            TAPUtils.getInstance().dismissKeyboard(TAPAddMembersActivity.this);
             return true;
         }
     };

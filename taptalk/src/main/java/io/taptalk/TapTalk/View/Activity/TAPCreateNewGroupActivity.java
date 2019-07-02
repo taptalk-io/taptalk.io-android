@@ -102,7 +102,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         vm.getContactListLive().observe(this, userModels -> {
             vm.getContactList().clear();
             vm.getContactList().addAll(userModels);
-            vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
+            vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList(), null));
             runOnUiThread(() -> contactListAdapter.setItems(vm.getSeparatedContacts()));
         });
         vm.getFilteredContacts().addAll(vm.getContactList());
@@ -174,7 +174,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         rvGroupMembers = findViewById(R.id.rv_group_members);
 
         getWindow().setBackgroundDrawable(null);
-        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
+        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts(), null));
 
         // All contacts adapter
         contactListAdapter = new TAPContactInitialAdapter(TAPContactListAdapter.SELECT, vm.getSeparatedContacts(), vm.getSelectedContacts(), listener);
@@ -251,7 +251,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
             }
             vm.getFilteredContacts().addAll(filteredContacts);
         }
-        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
+        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts(), null));
         contactListAdapter.setItems(vm.getSeparatedContacts());
     }
 
