@@ -96,11 +96,10 @@
 
         <TextView
             android:id="@+id/tv_current_time"
-            style="@style/TapMessageStatus"
+            style="@style/tapVideoPlayerTimeLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:textColor="@color/tapTransparentWhite60"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/seek_bar"
             app:layout_constraintStart_toStartOf="parent"
@@ -109,11 +108,10 @@
 
         <TextView
             android:id="@+id/tv_duration"
-            style="@style/TapMessageStatus"
+            style="@style/tapVideoPlayerTimeLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:textColor="@color/tapTransparentWhite60"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/seek_bar"
@@ -141,19 +139,20 @@
                 android:layout_height="60dp"
                 android:layout_marginBottom="4dp"
                 android:src="@drawable/tap_ic_checklist_pumpkin"
-                android:tint="@color/tapColorPrimaryDark"
+                android:tint="@color/tapIconLoadingPopupSuccess"
                 app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
                 android:id="@+id/tv_loading_text"
-                style="@style/TapLoadingText"
+                style="@style/tapPopupLoadingLabelStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
+                android:gravity="center"
                 android:text="@string/tap_saving"
                 app:layout_constraintBottom_toBottomOf="parent" />
 

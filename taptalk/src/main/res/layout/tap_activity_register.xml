@@ -122,6 +122,7 @@
                     style="@style/tapClickableLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:text="@string/tap_change" />
 
                 <ImageView
@@ -130,7 +131,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/tap_ic_edit_orange"
-                    android:tint="@color/tapDefaultPrimaryIconColor" />
+                    android:tint="@color/tapIconEditPicture" />
 
             </LinearLayout>
 
@@ -160,6 +161,7 @@
                 android:inputType="textCapWords"
                 android:maxLines="1"
                 android:padding="15dp"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
 
             <TextView
@@ -202,6 +204,7 @@
                 android:inputType="text"
                 android:maxLines="1"
                 android:padding="15dp"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_username" />
 
             <TextView
@@ -287,6 +290,7 @@
                 android:inputType="number"
                 android:maxLines="1"
                 android:padding="15dp"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintBottom_toBottomOf="@id/ll_country_code"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ll_country_code"
@@ -344,6 +348,7 @@
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:padding="15dp"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_email_address" />
 
             <TextView
@@ -406,6 +411,7 @@
                     android:paddingTop="15dp"
                     android:paddingEnd="70dp"
                     android:paddingBottom="15dp"
+                    android:textCursorDrawable="@drawable/tap_cursor_color"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -498,6 +504,7 @@
                     android:paddingTop="15dp"
                     android:paddingEnd="70dp"
                     android:paddingBottom="15dp"
+                    android:textCursorDrawable="@drawable/tap_cursor_color"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -562,6 +569,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:gravity="center"
                     android:text="@string/tap_continue_s" />
 
                 <ImageView

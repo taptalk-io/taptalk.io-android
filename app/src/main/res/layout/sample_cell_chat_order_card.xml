@@ -103,7 +103,7 @@
 
             <TextView
                 android:id="@+id/tv_product_name"
-                style="@style/TapProductDetailsLabel"
+                style="@style/tapProductDetailsLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
@@ -199,7 +199,7 @@
 
             <TextView
                 android:id="@+id/tv_date_label"
-                style="@style/TapProductDetailsLabel"
+                style="@style/tapProductDetailsLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -212,7 +212,7 @@
 
             <TextView
                 android:id="@+id/tv_time_label"
-                style="@style/TapProductDetailsLabel"
+                style="@style/tapProductDetailsLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -225,7 +225,7 @@
 
             <TextView
                 android:id="@+id/tv_date"
-                style="@style/TapProductDescription"
+                style="@style/tapProductDescriptionLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -239,7 +239,7 @@
 
             <TextView
                 android:id="@+id/tv_time"
-                style="@style/TapProductDescription"
+                style="@style/tapProductDescriptionLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -278,7 +278,7 @@
 
             <TextView
                 android:id="@+id/tv_recipient_label"
-                style="@style/TapProductDetailsLabel"
+                style="@style/tapProductDetailsLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -291,7 +291,7 @@
 
             <TextView
                 android:id="@+id/tv_recipient_details"
-                style="@style/TapProductDescription"
+                style="@style/tapProductDescriptionLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -320,7 +320,7 @@
 
             <TextView
                 android:id="@+id/tv_courier_label"
-                style="@style/TapProductDetailsLabel"
+                style="@style/tapProductDetailsLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -333,7 +333,7 @@
 
             <TextView
                 android:id="@+id/tv_courier_type"
-                style="@style/TapProductDescription"
+                style="@style/tapProductDescriptionLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -346,7 +346,7 @@
 
             <TextView
                 android:id="@+id/tv_courier_cost"
-                style="@style/TapProductDescription"
+                style="@style/tapProductDescriptionLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -387,7 +387,7 @@
 
             <TextView
                 android:id="@+id/tv_notes_label"
-                style="@style/TapProductDetailsLabel"
+                style="@style/tapProductDetailsLabelStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -398,7 +398,7 @@
 
             <TextView
                 android:id="@+id/tv_notes"
-                style="@style/TapProductDescription"
+                style="@style/tapProductDescriptionLabelStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -427,7 +427,7 @@
 
             <TextView
                 android:id="@+id/tv_additional_cost_label"
-                style="@style/TapProductDetailsLabel"
+                style="@style/tapProductDetailsLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -451,7 +451,7 @@
 
             <TextView
                 android:id="@+id/tv_additional_cost"
-                style="@style/TapProductDescription"
+                style="@style/tapProductDescriptionLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -498,7 +498,7 @@
 
             <TextView
                 android:id="@+id/tv_discount_label"
-                style="@style/TapProductDetailsLabel"
+                style="@style/tapProductDetailsLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -522,7 +522,7 @@
 
             <TextView
                 android:id="@+id/tv_discount"
-                style="@style/TapProductDescription"
+                style="@style/tapProductDescriptionLabelStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -570,7 +570,7 @@
 
             <TextView
                 android:id="@+id/tv_total_price_label"
-                style="@style/TapProductDetailsLabel"
+                style="@style/tapProductDetailsLabelStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

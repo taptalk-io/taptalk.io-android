@@ -77,6 +77,7 @@
     <string name="tap_loading_older_messages">Loading Older Messages</string>
 
     <!--Group Chat-->
+    <string name="tap_add_members">Add Members</string>
     <string name="tap_group_member_count">Group Members (%d/%d)</string>
     <string name="tap_group_name">Group Name</string>
     <string name="tap_group_picture">Group Picture</string>
@@ -187,6 +188,7 @@
     <string name="tap_file_info_progress_dummy">9999.99 MB / %s</string>
     <string name="tap_save_to_gallery">Save to Gallery</string>
     <string name="tap_save_to_download">Save to Downloads</string>
+    <string name="tap_media_count">%d of %d</string>
 
     <!--Hints-->
     <string name="tap_hint_username">e.g user_1234</string>
@@ -262,6 +264,7 @@
     <string name="tap_from">From:</string>
     <string name="tap_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
     <string name="tap_image_saved">Image Saved</string>
+    <string name="tap_letter_count">%d/%d</string>
     <string name="tap_loading">Loading</string>
     <string name="tap_log_out">Log Out</string>
     <string name="tap_log_out_confirmation">Are you sure you want to log out?</string>
@@ -306,6 +309,5 @@
     <string name="tap_you">You</string>
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="tap_over_99">99+</string>
-    <string name="tap_add_members">Add Members</string>
 
 </resources>

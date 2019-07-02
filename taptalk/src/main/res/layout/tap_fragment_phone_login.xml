@@ -110,7 +110,10 @@
                 android:hint="@string/tap_hint_phone_number"
                 android:imeOptions="actionSend"
                 android:inputType="numberSigned"
-                android:padding="13dp" />
+                android:maxLines="1"
+                android:padding="13dp"
+                android:textCursorDrawable="@drawable/tap_cursor_color"
+                tools:ignore="TextFields" />
 
         </FrameLayout>
 
@@ -131,6 +134,7 @@
             style="@style/tapButtonLabelStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:text="@string/tap_continue_s" />
 
         <ImageView

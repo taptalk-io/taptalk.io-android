@@ -15,9 +15,10 @@
 
         <TextView
             android:id="@+id/tv_close_btn"
-            style="@style/tapNavBarCloseButtonLabelStyle"
+            style="@style/tapNavBarButtonLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:text="@string/tap_cfp_action_close"
@@ -25,9 +26,12 @@
 
         <TextView
             android:id="@+id/tv_toolbar_title"
-            style="@style/tapNavBarLabelTitleStyle"
+            style="@style/tapNavBarTitleLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             android:text="@string/tap_select_country"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -60,7 +64,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:src="@drawable/tap_ic_search_grey"
-                android:tint="@color/tapDefaultSecondaryIconColor" />
+                android:tint="@color/tapIconSearchBarMagnifier" />
 
             <EditText
                 android:id="@+id/et_search"
@@ -68,8 +72,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:background="@color/tapTransparentWhite"
                 android:gravity="center_vertical"
-                android:hint="@string/tap_search_for_country" />
+                android:hint="@string/tap_search_for_country"
+                android:maxLines="1" />
 
         </LinearLayout>
 

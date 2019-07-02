@@ -90,6 +90,7 @@
                 style="@style/tapClickableLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:maxLines="1"
                 android:text="@string/tap_chat_room_setup_failed_description"
                 app:layout_constrainedWidth="true"
