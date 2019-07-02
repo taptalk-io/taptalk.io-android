@@ -34,7 +34,9 @@ import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
@@ -46,7 +48,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSIDs;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
@@ -83,6 +85,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
                 switch (requestCode) {
                     case PICK_GROUP_IMAGE:
                         if (null == data.getData()) return;
+                        vm.setRoomImageUri(data.getData());
                         TAPImageURL groupImage = new TAPImageURL();
                         groupImage.setThumbnail(data.getData().toString());
                         groupImage.setFullsize(data.getData().toString());
@@ -258,6 +261,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     private void updateGroupData(TAPCreateRoomResponse response) {
         vm.setGroupData(response.getRoom());
         vm.getGroupData().setGroupParticipants(response.getParticipants());
+        vm.getGroupData().setAdmins(response.getAdmins());
         //vm.getGroupData().setRoomImage();
     }
 
@@ -268,19 +272,57 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         }
 
         @Override
-        public void endLoading() {
-            btnStopLoadingState();
-        }
-
-        @Override
         public void onSuccess(TAPCreateRoomResponse response) {
             //Intent intent = new Intent(this, TAPChatProfileActivity.class);
             //intent.putExtra(ROOM, vm.getGroupData());
             //startActivity(intent);
             updateGroupData(response);
+            if (null != vm.getRoomImageUri())
+                TAPFileUploadManager.getInstance().uploadRoomPicture(TAPGroupSubjectActivity.this,
+                        vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
+            else {
+                btnStopLoadingState();
+                Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
+                intent.putExtra(ROOM_ID, vm.getGroupData().getRoomID());
+                startActivity(intent);
+                setResult(RESULT_OK);
+                finish();
+                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+            }
+        }
+
+        @Override
+        public void onError(TAPErrorModel error) {
+            super.onError(error);
+            btnStopLoadingState();
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            super.onError(errorMessage);
+            btnStopLoadingState();
+        }
+    };
+
+    private TAPDefaultDataView<TAPUpdateRoomResponse> changeGroupPictureView = new TAPDefaultDataView<TAPUpdateRoomResponse>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+        }
+
+        @Override
+        public void onSuccess(TAPUpdateRoomResponse response) {
+            super.onSuccess(response);
+            vm.getGroupData().setRoomImage(response.getRoom().getRoomImage());
+            btnStopLoadingState();
 
             Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
-            intent.putExtra(ROOM, vm.getGroupData());
+            intent.putExtra(ROOM_ID, vm.getGroupData().getRoomID());
             startActivity(intent);
             setResult(RESULT_OK);
             finish();
@@ -290,11 +332,13 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onError(TAPErrorModel error) {
             super.onError(error);
+            btnStopLoadingState();
         }
 
         @Override
         public void onError(String errorMessage) {
             super.onError(errorMessage);
+            btnStopLoadingState();
         }
     };
 }

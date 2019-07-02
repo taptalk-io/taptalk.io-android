@@ -28,6 +28,7 @@ import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -172,6 +173,18 @@ public class TAPFileUploadManager {
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap) {
         getBitmapQueue().put(messageModel.getLocalID(), bitmap);
         addUploadQueue(context, roomID, messageModel);
+    }
+
+    public void uploadRoomPicture(Context context, Uri imageUri, String roomID,
+                                  TAPDefaultDataView<TAPUpdateRoomResponse> uploadProfilePictureView) {
+        createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap -> {
+            String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+            File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+
+            TAPDataManager.getInstance().uploadRoomPicture(imageFile, mimeType, roomID, uploadProfilePictureView);
+        });
     }
 
     public void uploadProfilePicture(Context context, Uri imageUri, String userID) {

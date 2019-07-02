@@ -2,7 +2,9 @@ package io.taptalk.TapTalk.ViewModel
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.net.Uri
 import io.taptalk.TapTalk.Model.TAPRoomModel
+import io.taptalk.TapTalk.Model.TAPUserModel
 
 class TAPEditGroupViewModel(application: Application) : AndroidViewModel(application) {
     var groupData: TAPRoomModel? = null
@@ -28,4 +30,6 @@ class TAPEditGroupViewModel(application: Application) : AndroidViewModel(applica
         set(value) {
             field = value
         }
+
+    var groupPicUri : Uri? = null
 }

@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -12,10 +13,12 @@ import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.Taptalk.R
 
-class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, groupInterface: TapTalkGroupMemberListInterface) : TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>>() {
+class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminList: List<String>, groupInterface: TapTalkGroupMemberListInterface) : TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>>() {
 
+    var adminList : MutableList<String> = mutableListOf()
     init {
         items = members
+        this.adminList = adminList.toMutableList()
     }
 
     var cellMode = cellMode
@@ -45,10 +48,14 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, groupInt
 
         override fun onBind(item: TAPUserModel?, position: Int) {
             //activate / show member role (Admin)
-            when (position) {
-                in 0..1 -> tvMemberRole.visibility = View.VISIBLE
-                else -> tvMemberRole.visibility = View.GONE
-            }
+//            when (position) {
+//                in 0..1 -> tvMemberRole.visibility = View.VISIBLE
+//                else -> tvMemberRole.visibility = View.GONE
+//            }
+            Log.e("><><><", "${groupAdapter.adminList.isNotEmpty()}")
+            if (groupAdapter.adminList.isNotEmpty() && groupAdapter.adminList.contains(item?.userID ?: "0")) {
+                tvMemberRole.visibility = View.VISIBLE
+            } else tvMemberRole.visibility = View.GONE
 
             //load member avatar
             if (item?.avatarURL?.thumbnail.isNullOrEmpty()) {

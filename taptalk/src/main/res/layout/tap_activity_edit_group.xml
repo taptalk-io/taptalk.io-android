@@ -34,6 +34,7 @@
             android:id="@+id/iv_close_btn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:src="@drawable/tap_ic_close_pumpkin_orange"
@@ -150,7 +151,7 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
 
             <FrameLayout
-                android:id="@+id/fl_create_group_btn"
+                android:id="@+id/fl_update_group_btn"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginStart="16dp"
@@ -165,7 +166,7 @@
                 app:layout_constraintVertical_bias="1">
 
                 <TextView
-                    android:id="@+id/tv_create_group_btn"
+                    android:id="@+id/tv_update_group_btn"
                     style="@style/tapButtonLabelStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -173,7 +174,7 @@
                     android:text="@string/tap_update" />
 
                 <ImageView
-                    android:id="@+id/iv_loading_progress_create_group"
+                    android:id="@+id/iv_loading_progress_update_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

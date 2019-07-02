@@ -46,6 +46,7 @@
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TapAddMembersActivity" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPMapActivity"
             android:windowSoftInputMode="adjustNothing" />
