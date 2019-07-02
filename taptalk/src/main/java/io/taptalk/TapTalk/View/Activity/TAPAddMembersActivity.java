@@ -42,10 +42,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
 public class TAPAddMembersActivity extends TAPBaseActivity {
 
     private LinearLayout llGroupMembers;
-    private ImageView ivButtonBack, ivButtonAction;
-    private TextView tvTitle, tvMemberCount;
+    private ImageView ivButtonBack, ivButtonAction, ivLoadingProgressAddMembers;
+    private TextView tvTitle, tvMemberCount, tvButtonAddMembers;
     private EditText etSearch;
-    private Button btnContinue;
     private RecyclerView rvContactList, rvGroupMembers;
 
     private TAPContactInitialAdapter contactListAdapter;
@@ -146,10 +145,11 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
         llGroupMembers = findViewById(R.id.ll_group_members);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonAction = findViewById(R.id.iv_button_action);
+        ivLoadingProgressAddMembers = findViewById(R.id.iv_loading_progress_add_members);
         tvTitle = findViewById(R.id.tv_title);
         tvMemberCount = findViewById(R.id.tv_member_count);
+        tvButtonAddMembers = findViewById(R.id.tv_add_members_btn);
         etSearch = findViewById(R.id.et_search);
-        btnContinue = findViewById(R.id.btn_continue);
         rvContactList = findViewById(R.id.rv_contact_list);
         rvGroupMembers = findViewById(R.id.rv_group_members);
 
@@ -176,7 +176,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonAction.setOnClickListener(v -> toggleSearchBar());
-        btnContinue.setOnClickListener(v -> startAddMemberProcess());
+        tvButtonAddMembers.setOnClickListener(v -> startAddMemberProcess());
     }
 
     private void toggleSearchBar() {
@@ -232,6 +232,18 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
         contactListAdapter.setItems(vm.getSeparatedContacts());
     }
 
+    private void btnStartLoadingState() {
+        tvButtonAddMembers.setVisibility(View.GONE);
+        ivLoadingProgressAddMembers.setVisibility(View.VISIBLE);
+        TAPUtils.getInstance().rotateAnimateInfinitely(this, ivLoadingProgressAddMembers);
+    }
+
+    private void btnStopLoadingState() {
+        tvButtonAddMembers.setVisibility(View.VISIBLE);
+        ivLoadingProgressAddMembers.setVisibility(View.GONE);
+        TAPUtils.getInstance().stopViewAnimation(ivLoadingProgressAddMembers);
+    }
+
     private TextWatcher searchTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -277,7 +289,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPCreateRoomResponse> addMemberView = new TAPDefaultDataView<TAPCreateRoomResponse>() {
         @Override
         public void startLoading() {
-            super.startLoading();
+            btnStartLoadingState();
         }
 
         @Override
@@ -292,16 +304,19 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
             intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(response.getParticipants()));
             setResult(RESULT_OK, intent);
             finish();
+            btnStopLoadingState();
         }
 
         @Override
         public void onError(TAPErrorModel error) {
             super.onError(error);
+            btnStopLoadingState();
         }
 
         @Override
         public void onError(String errorMessage) {
             super.onError(errorMessage);
+            btnStopLoadingState();
         }
     };
 }
