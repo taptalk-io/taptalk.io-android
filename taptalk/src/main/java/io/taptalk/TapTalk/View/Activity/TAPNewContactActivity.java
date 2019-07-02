@@ -1,7 +1,9 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
@@ -159,6 +161,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         clConnectionLost.setVisibility(View.VISIBLE);
     }
 
+    @SuppressLint("PrivateResource")
     private void showUserView() {
         tvSearchUsernameGuide.setVisibility(View.GONE);
         ivExpertCover.setVisibility(View.GONE);
@@ -190,7 +193,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            tvButtonText.setTextColor(getResources().getColor(R.color.tapColorPrimaryDark));
+            TypedArray typedArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance);
+            tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
+            typedArray.recycle();
             clButtonAction.setBackground(null);
         } else {
             // Check if user is in my contacts
@@ -202,6 +207,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         }
     }
 
+    @SuppressLint("PrivateResource")
     private void showExpertView() {
         tvSearchUsernameGuide.setVisibility(View.GONE);
         ivExpertCover.setVisibility(View.VISIBLE);
@@ -245,7 +251,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            tvButtonText.setTextColor(getResources().getColor(R.color.tapColorPrimaryDark));
+            TypedArray typedArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance);
+            tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
+            typedArray.recycle();
             clButtonAction.setBackground(null);
         } else {
             // Check if user is in my contacts
@@ -339,12 +347,15 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     };
 
     TAPDatabaseListener<TAPUserModel> dbListener = new TAPDatabaseListener<TAPUserModel>() {
+        @SuppressLint("PrivateResource")
         @Override
         public void onContactCheckFinished(int isContact) {
             // Update action button after contact check finishes
             runOnUiThread(() -> {
                 clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
-                tvButtonText.setTextColor(getResources().getColor(R.color.tapWhite));
+                TypedArray typedArray = obtainStyledAttributes(R.style.tapButtonLabelStyle, R.styleable.TextAppearance);
+                tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
+                typedArray.recycle();
                 if (isContact == 0) {
                     // Searched user is not a contact
                     runOnUiThread(() -> {

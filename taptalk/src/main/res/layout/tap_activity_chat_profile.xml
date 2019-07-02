@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tapWhiteF3"
+    android:background="@color/tapDefaultBackgroundColor"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -17,7 +17,7 @@
             android:id="@+id/collapsing_toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:contentScrim="@color/tapWhite"
+            app:contentScrim="@color/tapDefaultNavBarBackgroundColor"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:scrimAnimationDuration="200"
             app:title=" ">
@@ -31,7 +31,6 @@
                     android:id="@+id/iv_profile"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:background="@color/tapWhite"
                     android:scaleType="centerCrop"
                     app:layout_constraintDimensionRatio="H,1:1"
                     app:layout_constraintTop_toTopOf="parent"
@@ -48,15 +47,13 @@
 
             <TextView
                 android:id="@+id/tv_full_name"
+                style="@style/tapChatProfileRoomNameStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
-                android:fontFamily="@font/tap_font_pt_root_bold"
-                android:textColor="#ffffff"
-                android:textSize="20sp"
                 tools:text="Arsya Nafisa" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -68,7 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:alpha="0"
-        android:background="@color/tapWhite"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
         android:elevation="4dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -76,13 +73,15 @@
 
         <TextView
             android:id="@+id/tv_collapsed_name"
-            style="@style/tapNavBarLabelTitleStyle"
+            style="@style/tapNavBarTitleLabelStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_marginStart="64dp"
             android:layout_marginEnd="64dp"
             android:alpha="0"
-            android:background="@color/tapWhite"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             tools:text="Arsya Nafisa" />
 
     </LinearLayout>
@@ -94,7 +93,8 @@
         android:elevation="4dp"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:padding="16dp"
-        android:src="@drawable/tap_ic_back_white" />
+        android:src="@drawable/tap_ic_back_white"
+        android:tint="@color/tapIconTransparentBackgroundBackButton" />
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nsv_profile"
@@ -115,7 +115,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:alpha="0"
-                android:background="@color/tapGreyEa"
+                android:background="@color/tapGreyDc"
                 android:elevation="2dp" />
 
             <android.support.v7.widget.RecyclerView
@@ -151,7 +151,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="108dp"
                     android:src="@drawable/tap_ic_loading_progress_circle_orange"
-                    android:tint="@color/tapColorPrimaryDark" />
+                    android:tint="@color/tapIconLoadingProgress" />
 
                 <LinearLayout
                     android:id="@+id/ll_reload_shared_media"
@@ -167,9 +167,10 @@
                     android:visibility="gone">
 
                     <TextView
-                        style="@style/TapTextButtonDescription"
+                        style="@style/tapInfoLabelBodyStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="@string/tap_cant_find_contact" />
 
                     <TextView
@@ -177,6 +178,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:gravity="center"
                         android:text="@string/tap_view_blocked_contacts" />
 
                 </LinearLayout>

@@ -46,7 +46,7 @@
 
         <TextView
             android:id="@+id/tv_price_label"
-            style="@style/TapProductDetailsLabel"
+            style="@style/tapProductDetailsLabelStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -59,7 +59,7 @@
 
         <TextView
             android:id="@+id/tv_rating_label"
-            style="@style/TapProductDetailsLabel"
+            style="@style/tapProductDetailsLabelStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -72,7 +72,7 @@
 
         <TextView
             android:id="@+id/tv_price"
-            style="@style/TapProductDetail"
+            style="@style/tapProductDetailsLabelStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -97,7 +97,7 @@
 
         <TextView
             android:id="@+id/tv_rating"
-            style="@style/TapProductDetail"
+            style="@style/tapProductDetailsLabelStyle"
             android:layout_width="106dp"
             android:layout_height="wrap_content"
             android:paddingBottom="8dp"
@@ -126,7 +126,7 @@
 
         <TextView
             android:id="@+id/tv_product_description"
-            style="@style/TapProductDescription"
+            style="@style/tapProductDescriptionLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lineSpacingExtra="3sp"

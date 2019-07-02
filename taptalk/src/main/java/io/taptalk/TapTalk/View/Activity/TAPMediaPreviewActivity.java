@@ -66,7 +66,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tap_activity_image_preview);
+        setContentView(R.layout.tap_activity_media_preview);
         receiveIntent();
         initView();
     }
@@ -94,7 +94,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
 
         if (1 < medias.size()) {
             tvMultipleImageIndicator.setVisibility(View.VISIBLE);
-            tvMultipleImageIndicator.setText(1 + " of " + medias.size());
+            tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_media_count), 1, medias.size()));
 
             rvImageThumbnail.setVisibility(View.VISIBLE);
             rvImageThumbnail.setAdapter(thumbnailAdapter);
@@ -120,7 +120,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         @Override
         public void onPageSelected(int i) {
             if (View.VISIBLE == tvMultipleImageIndicator.getVisibility())
-                tvMultipleImageIndicator.setText((i + 1) + " of " + medias.size());
+                tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_media_count), i + 1, medias.size()));
 
             new Thread(() -> {
                 for (TAPMediaPreviewModel recyclerItem : thumbnailAdapter.getItems()) {
@@ -153,14 +153,14 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             case RESULT_OK:
                 switch (requestCode) {
                     case SEND_MEDIA_FROM_GALLERY:
-                        processImagesFromGallery(data);
+                        processMediaFromGallery(data);
                         break;
                 }
                 break;
         }
     }
 
-    private void processImagesFromGallery(Intent data) {
+    private void processMediaFromGallery(Intent data) {
         if (null == data) {
             return;
         }
@@ -180,7 +180,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             
         pagerAdapter.notifyDataSetChanged();
         if (1 < medias.size()) {
-            tvMultipleImageIndicator.setText((lastIndex + 1) + " of " + medias.size());
+            tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_media_count), lastIndex + 1, medias.size()));
             tvMultipleImageIndicator.setVisibility(View.VISIBLE);
             rvImageThumbnail.setVisibility(View.VISIBLE);
             rvImageThumbnail.setAdapter(thumbnailAdapter);
@@ -203,7 +203,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         }
         pagerAdapter.notifyDataSetChanged();
         thumbnailAdapter.notifyDataSetChanged();
-        tvMultipleImageIndicator.setText((tempPosition + 1) + " of " + medias.size());
+        tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_media_count), tempPosition + 1, medias.size()));
 
         if (1 == medias.size()) {
             rvImageThumbnail.setVisibility(View.GONE);

@@ -38,8 +38,10 @@
             android:hint="@string/tap_search_for_contacts"
             android:imeOptions="actionSearch"
             android:inputType="text"
+            android:maxLines="1"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
+            android:textCursorDrawable="@drawable/tap_cursor_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_cancel"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
@@ -92,6 +94,7 @@
                     style="@style/tapInfoLabelBodyStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:text="@string/tap_cant_find_person" />
 
                 <TextView
@@ -100,6 +103,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:gravity="center"
                     android:text="@string/tap_add_new_contact" />
 
             </LinearLayout>

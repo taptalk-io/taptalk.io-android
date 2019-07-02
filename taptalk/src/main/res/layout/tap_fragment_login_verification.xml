@@ -219,6 +219,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="34dp"
+            android:gravity="center"
             android:text="@string/tap_didnt_receive_the_6_digit_otp" />
 
         <FrameLayout
@@ -242,6 +243,7 @@
                 style="@style/tapClickableLabelStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="10dp"
                 android:text="@string/tap_request_again"
                 android:visibility="gone" />
@@ -296,7 +298,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
                     android:src="@drawable/tap_ic_check_green_background"
-                    android:tint="@color/tapSuccessIconColor" />
+                    android:tint="@color/tapColorSuccess" />
 
             </LinearLayout>
 

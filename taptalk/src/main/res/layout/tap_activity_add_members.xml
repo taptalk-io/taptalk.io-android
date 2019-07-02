@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tapWhiteF8"
+    android:background="@color/tapDefaultBackgroundColor"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:animateLayoutChanges="true"
-        android:background="@color/tapWhite"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toTopOf="parent">
@@ -25,16 +25,19 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_close_orange"
-            android:tint="@color/tapColorPrimaryDark"
+            android:tint="@color/tapIconNavBarCloseButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/tapNavBarLabelTitleStyle"
+            style="@style/tapNavBarTitleLabelStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             android:text="@string/tap_add_members"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
@@ -43,14 +46,16 @@
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/TapSearchBar"
+            style="@style/tapNavBarSearchTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_search_for_contacts"
             android:imeOptions="actionSearch"
             android:maxLines="1"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
+            android:textCursorDrawable="@drawable/tap_cursor_color"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
@@ -64,7 +69,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_search_grey"
-            android:tint="@color/tapColorPrimaryDark"
+            android:tint="@color/tapIconNavBarMagnifier"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

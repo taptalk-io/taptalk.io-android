@@ -115,6 +115,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="13dp"
+                        android:ellipsize="end"
+                        android:gravity="center_horizontal"
+                        android:maxLines="1"
                         tools:text="NAMANYABERNAMA" />
 
                     <TextView
@@ -123,6 +126,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
+                        android:ellipsize="end"
+                        android:gravity="center_horizontal"
+                        android:maxLines="1"
                         tools:text="Vivamus adipiscing fermentum quam " />
 
                 </LinearLayout>
@@ -151,6 +157,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="41dp"
+                        android:gravity="center"
                         android:text="@string/you_have_added_to_your_contacts" />
 
                 </LinearLayout>
@@ -163,6 +170,7 @@
                     android:layout_marginTop="64dp"
                     android:layout_marginBottom="40dp"
                     android:alpha="0"
+                    android:gravity="center"
                     android:text="@string/tap_is_already_in_your_contacts"
                     android:visibility="gone" />
 
@@ -195,7 +203,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/tap_ic_add_white"
-                    android:tint="@color/tapButtonImageColor" />
+                    android:tint="@color/tapButtonIconColor" />
 
                 <TextView
                     android:id="@+id/tv_button_title"
@@ -203,16 +211,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
+                    android:gravity="center"
                     android:text="@string/tap_add_to_contacts" />
 
             </LinearLayout>
 
             <TextView
                 android:id="@+id/tv_this_is_you"
-                style="@style/tapButtonLabelStyle"
+                style="@style/tapClickableLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
+                android:gravity="center"
                 android:text="@string/tap_this_is_you"
                 android:textColor="@color/tapButtonActiveBackgroundGradientDarkColor"
                 android:visibility="gone"

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tapBlack"
+    android:background="@color/tapCharcoal"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity">
 
     <io.taptalk.TapTalk.Helper.TAPTouchImageView
@@ -29,6 +29,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_back_white"
+            android:tint="@color/tapIconTransparentBackgroundBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,9 +37,11 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/TapImageDetailSender"
+            style="@style/tapImageDetailSenderNameStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             app:layout_constraintBottom_toTopOf="@id/tv_message_status"
             app:layout_constraintEnd_toStartOf="@id/iv_save"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
@@ -48,9 +51,11 @@
 
         <TextView
             android:id="@+id/tv_message_status"
-            style="@style/TapImageDetailStatus"
+            style="@style/tapImageDetailMessageStatusStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_save"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
@@ -64,6 +69,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_save_white"
+            android:tint="@color/tapIconSaveImage"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_title"
@@ -86,14 +92,13 @@
 
         <TextView
             android:id="@+id/tv_caption"
-            style="@style/TapMessageBody"
+            style="@style/tapImageDetailCaptionStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/tapTransparentCharcoal40"
             android:maxHeight="220dp"
             android:padding="16dp"
             android:scrollbars="vertical"
-            android:textColor="@color/tapWhite"
             tools:text="Lorem ipsum" />
 
     </LinearLayout>
@@ -117,19 +122,20 @@
                 android:layout_height="60dp"
                 android:layout_marginBottom="4dp"
                 android:src="@drawable/tap_ic_checklist_pumpkin"
-                android:tint="@color/tapColorPrimaryDark"
+                android:tint="@color/tapIconLoadingPopupSuccess"
                 app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
                 android:id="@+id/tv_loading_text"
-                style="@style/TapLoadingText"
+                style="@style/tapPopupLoadingLabelStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
+                android:gravity="center"
                 android:text="@string/tap_saving"
                 app:layout_constraintBottom_toBottomOf="parent" />
 

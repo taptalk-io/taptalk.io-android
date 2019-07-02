@@ -31,10 +31,13 @@
 
         <TextView
             android:id="@+id/tv_toolbar_title"
-            style="@style/tapNavBarLabelTitleStyle"
+            style="@style/tapNavBarTitleLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             tools:text="@string/tap_scan_qr_code" />
     </FrameLayout>
 

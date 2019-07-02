@@ -24,16 +24,17 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_gravity="center"
-            android:background="@drawable/tap_bg_circle_charcoal_50"
+            android:background="@drawable/tap_bg_remove_media_thumbnail_button_default"
             android:padding="8dp"
-            android:src="@drawable/tap_ic_remove_white" />
+            android:src="@drawable/tap_ic_remove_white"
+            android:tint="@color/tapIconMediaPreviewThumbnailRemoveItem"/>
 
         <ProgressBar
             android:id="@+id/pb_loading"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
-            android:indeterminateTint="@color/tapWhite"
+            android:indeterminateTint="@color/tapIconLoadingProgressLight"
             android:visibility="gone" />
 
     </FrameLayout>
