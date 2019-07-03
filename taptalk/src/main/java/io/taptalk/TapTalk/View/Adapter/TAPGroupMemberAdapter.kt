@@ -82,6 +82,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
             }
 
             if (SELECT_MODE == groupAdapter.cellMode && true == item?.isSelected) {
+                // TODO UPDATE ICON
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_active)
             } else {
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive)

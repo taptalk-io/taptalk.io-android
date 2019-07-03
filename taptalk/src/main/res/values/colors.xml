@@ -297,6 +297,7 @@
 
     <color name="tapSelectedMemberListColor">@color/tapColorTextDark</color>
     <color name="tapGroupMemberCountColor">@color/tapColorTextMedium</color>
+    <color name="tapGroupMemberListRoleColor">@color/tapColorTextMedium</color>
 
     <color name="tapCountryListLabelColor">@color/tapColorTextDark</color>
 
