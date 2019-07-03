@@ -83,10 +83,8 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="tapFormTextFieldPlaceholderStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing">-0.01</item>
+    <style name="tapFormTextFieldPlaceholderStyle" parent="tapFormTextFieldStyle">
         <item name="android:textColor">@color/tapFormTextFieldPlaceholderColor</item>
-        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="tapClickableLabelStyle" parent="tapFontFamilyBold">
@@ -524,14 +522,15 @@
     </style>
 
     <style name="tapLocationPickerTextFieldStyle" parent="tapFontFamilyRegular">
-        <!--TODO-->
-        <item name="android:maxLines">1</item>
-        <item name="android:textCursorDrawable">@drawable/tap_cursor_color</item>
-
         <item name="android:letterSpacing">-0.02</item>
         <item name="android:textColor">@color/tapLocationPickerTextFieldColor</item>
         <item name="android:textColorHint">@color/tapLocationPickerTextFieldPlaceholderColor</item>
         <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="tapLocationPickerTextFieldClearButtonStyle" parent="tapFontFamilyBold">
+        <item name="android:textColor">@color/tapLocationPickerTextFieldClearButtonColor</item>
+        <item name="android:textSize">10sp</item>
     </style>
 
     <style name="tapLocationPickerSearchResultStyle" parent="tapFontFamilyRegular">
@@ -544,15 +543,13 @@
         <item name="android:letterSpacing">-0.02</item>
         <item name="android:lineSpacingExtra">4sp</item>
         <item name="android:textColor">@color/tapLocationPickerAddressColor</item>
+        <item name="android:textColorHint">@color/tapLocationPickerAddressPlaceholderColor</item>
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="tapLocationPickerAddressPlaceholderStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing">-0.02</item>
-        <item name="android:lineSpacingExtra">4sp</item>
-        <item name="android:textColor">@color/tapLocationPickerAddressPlaceholderColor</item>
-        <item name="android:textSize">12sp</item>
-    </style>
+    <!--<style name="tapLocationPickerAddressPlaceholderStyle" parent="tapLocationPickerAddressStyle">-->
+        <!--<item name="android:textColor">@color/tapLocationPickerAddressPlaceholderColor</item>-->
+    <!--</style>-->
 
     <style name="tapLocationPickerSendLocationLabelButtonStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">-0.02</item>

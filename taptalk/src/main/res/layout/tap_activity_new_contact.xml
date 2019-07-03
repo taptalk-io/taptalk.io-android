@@ -271,8 +271,7 @@
         android:id="@+id/cl_connection_lost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/tapParchment"
-        android:orientation="vertical"
+        android:background="@color/tapSearchConnectionLostInfoBackgroundColor"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -287,7 +286,7 @@
             android:layout_marginBottom="10dp"
             android:padding="4dp"
             android:src="@drawable/tap_ic_connection_lost"
-            android:tint="@color/tapColorTextDark"
+            android:tint="@color/tapIconSearchConnectionLost"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

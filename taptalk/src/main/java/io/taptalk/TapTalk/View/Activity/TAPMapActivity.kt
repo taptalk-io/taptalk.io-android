@@ -11,7 +11,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityCompat.requestPermissions
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
@@ -36,6 +36,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
@@ -85,27 +86,33 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         centerOfMap = googleMap?.cameraPosition?.target
         latitude = centerOfMap?.latitude ?: 0.0
         longitude = centerOfMap?.longitude ?: 0.0
+
         ll_set_location.visibility = View.GONE
         iv_location.setImageResource(R.drawable.tap_ic_pin_location_grey)
-        tv_location.setTextColor(resources.getColor(R.color.tapGreyAa))
+        iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
+
         tv_location.setHint(R.string.tap_searching_for_address)
         tv_location.text = ""
+
         recycler_view.visibility = View.GONE
-        if (et_keyword.isFocused) {
-            et_keyword.clearFocus()
-        }
+        TAPUtils.getInstance().dismissKeyboard(this)
     }
 
     override fun onCameraIdle() {
-        getGeocoderAddress()
+        getGeoCoderAddress()
+
         iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
-        tv_location.setTextColor(resources.getColor(R.color.tapBlack44))
+        iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
+
         recycler_view.visibility = View.GONE
         isSearch = !isSameKeyword
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
+            R.id.iv_button_back -> {
+                onBackPressed()
+            }
             R.id.iv_current_location -> {
                 if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
@@ -143,7 +150,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(if (TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
                         getString(R.string.tap_error_message_general) else getString(R.string.tap_no_internet_show_error))
-                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .show()
         }
     }
@@ -188,9 +195,9 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 centerOfMap = place?.latLng
                 val curr: LatLng = LatLng(latitude, longitude)
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
-                getGeocoderAddress()
+                getGeoCoderAddress()
                 iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
-                tv_location.setTextColor(resources.getColor(R.color.tapBlack44))
+                iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
                 recycler_view.visibility = View.GONE
                 if (et_keyword.isFocused)
                     et_keyword.clearFocus()
@@ -227,12 +234,6 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_map)
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.title = ""
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.tap_ic_close_pumpkin_orange)
-
         latitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LATITUDE, 0.0)
         longitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LONGITUDE, 0.0)
         currentAddress = intent.getStringExtra(TAPDefaultConstant.Location.LOCATION_NAME) ?: ""
@@ -243,6 +244,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        iv_button_back.setOnClickListener(this)
         iv_current_location.setOnClickListener(this)
         ll_set_location.setOnClickListener(this)
         tv_clear.setOnClickListener(this)
@@ -250,11 +252,11 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         et_keyword.addTextChangedListener(textWatcher)
         et_keyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                rl_search.background = resources.getDrawable(R.drawable.tap_bg_text_field_active)
+                rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_active)
                 if (!TAPUtils.getInstance().isListEmpty(locationList) && et_keyword.text.isNotEmpty())
                     recycler_view.visibility = View.VISIBLE
             } else {
-                rl_search.background = resources.getDrawable(R.drawable.tap_bg_white_rounded_10dp_stroke_eaeaea_1dp)
+                rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_inactive)
             }
         }
         et_keyword.setOnEditorActionListener(object : TextView.OnEditorActionListener {
@@ -337,7 +339,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         }
     }
 
-    private fun getGeocoderAddress() {
+    private fun getGeoCoderAddress() {
         try {
             addresses = geoCoder?.getFromLocation(latitude, longitude, 1) ?: mutableListOf()
         } catch (e: Exception) {
@@ -386,16 +388,15 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                 item.prediction = prediction
                                 item.myReturnType = TAPLocationItem.MyReturnType.MIDDLE
                                 locationList.add(item)
-
                             }
 
                             if (!TAPUtils.getInstance().isListEmpty(locationList) && 1 == locationList.size) {
-                                locationList.get(0).myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
+                                locationList[0].myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
                                 adapter?.items = locationList
                                 recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
                             } else if (!TAPUtils.getInstance().isListEmpty(locationList)) {
-                                locationList.get(0).myReturnType = TAPLocationItem.MyReturnType.FIRST
-                                locationList.get(locationList.size - 1).myReturnType = TAPLocationItem.MyReturnType.LAST
+                                locationList[0].myReturnType = TAPLocationItem.MyReturnType.FIRST
+                                locationList[locationList.size - 1].myReturnType = TAPLocationItem.MyReturnType.LAST
 
                                 if (5 < locationList.size) {
                                     locationList.subList(0, 5)
@@ -423,10 +424,8 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
             isSearch = true
             recycler_view.visibility = View.GONE
             if (0 < et_keyword.text.toString().length) {
-                et_keyword.setTextColor(resources.getColor(R.color.tapBlack44))
                 tv_clear.visibility = View.VISIBLE
             } else {
-                et_keyword.setTextColor(resources.getColor(R.color.tapGrey9b))
                 tv_clear.visibility = View.GONE
             }
         }

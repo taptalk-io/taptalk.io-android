@@ -9,6 +9,7 @@
 
     <TextView
         android:id="@+id/tv_location"
+        style="@style/tapLocationPickerSearchResultStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -16,16 +17,12 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="10dp"
         android:ellipsize="end"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:letterSpacing="0.01"
-        android:lines="1"
-        android:textColor="@color/tapBlack44"
-        android:textSize="13sp"
+        android:maxLines="1"
         tools:text="Jalan Kyai Maja No. 25C, Gunung, Kebayoran Lama" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/tapGreyE4" />
+        android:background="@color/tapGreyDc" />
 
 </LinearLayout>

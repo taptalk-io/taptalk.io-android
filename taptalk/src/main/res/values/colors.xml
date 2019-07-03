@@ -57,6 +57,8 @@
     <color name="tapSelectedMediaPreviewThumbnailBorderColor">@color/tapColorPrimary</color>
     <color name="tapMediaPreviewWarningBackgroundColor">@color/tapColorError</color>
 
+    <color name="tapSearchConnectionLostInfoBackgroundColor">@color/tapParchment</color>
+
     <!--TapTalk Icon Colors-->
     <color name="tapRoomListUnreadBadgeBackgroundColor">@color/tapUnreadBadgeBackgroundColor</color>
     <color name="tapRoomListUnreadBadgeInactiveBackgroundColor">@color/tapUnreadBadgeInactiveBackgroundColor</color>
@@ -74,6 +76,7 @@
     <color name="tapIconChatNow">@color/tapWhite</color>
     <color name="tapIconMediaListVideo">@color/tapWhite</color>
     <color name="tapIconAddMember">@color/tapColorPrimary</color>
+    <color name="tapIconSearchConnectionLost">@color/tapColorTextDark</color>
 
     <color name="tapIconViewPasswordActive">@color/tapColorPrimary</color>
     <color name="tapIconViewPasswordInactive">@color/tapGrey9b</color>
@@ -166,6 +169,14 @@
     <color name="tapIconChatRoomMessageDelivered">@color/tapGrey9b</color>
     <color name="tapIconChatRoomMessageRead">@color/tapSentGreen</color>
     <color name="tapIconLocationBubbleMarker">@color/tapColorPrimary</color>
+
+    <color name="tapIconLocationPickerMarker">@color/tapColorPrimary</color>
+    <color name="tapIconLocationPickerRecenter">@color/tapColorPrimary</color>
+    <color name="tapIconLocationPickerRecenterBackground">@color/tapWhite</color>
+    <color name="tapIconLocationPickerSendLocation">@color/tapWhite</color>
+    <color name="tapIconLocationPickerSendLocationBackground">@color/tapColorPrimary</color>
+    <color name="tapIconLocationPickerAddressActive">@color/tapColorTextDark</color>
+    <color name="tapIconLocationPickerAddressInactive">@color/tapColorTextMedium</color>
 
     <!--TapTalk Text Colors-->
     <color name="tapTitleLabelColor">@color/tapColorTextDark</color>
@@ -264,7 +275,7 @@
 
     <color name="tapLocationPickerTextFieldColor">@color/tapColorTextDark</color>
     <color name="tapLocationPickerTextFieldPlaceholderColor">@color/tapColorTextMedium</color>
-    <color name="tapLocationPickerTextFieldCancelButtonColor">@color/tapColorTextMedium</color>
+    <color name="tapLocationPickerTextFieldClearButtonColor">@color/tapColorTextMedium</color>
     <color name="tapLocationPickerSearchResultColor">@color/tapColorTextDark</color>
     <color name="tapLocationPickerAddressColor">@color/tapColorTextDark</color>
     <color name="tapLocationPickerAddressPlaceholderColor">@color/tapColorTextMedium</color>

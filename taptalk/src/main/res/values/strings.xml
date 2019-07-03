@@ -251,6 +251,7 @@
     <string name="tap_change">Change</string>
     <string name="tap_logout">Logout</string>
     <string name="tap_chat_now">Chat Now</string>
+    <string name="tap_clear">Clear</string>
     <string name="tap_clear_history">Clear history</string>
     <string name="tap_continue_s">Continue</string>
     <string name="tap_s_unread_messages">%s unread messages</string>
