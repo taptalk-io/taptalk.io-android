@@ -347,7 +347,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .setTitle("Exit and Clear Chat")
                 .setMessage("Are you Sure to leave this chat?")
                 .setPrimaryButtonTitle("OK")
-                .setPrimaryButtonListener(v -> {})
+                .setPrimaryButtonListener(v -> {
+                    TAPDataManager.getInstance().leaveChatRoom(vm.getRoom().getRoomID(), exitChatView);
+                })
                 .setSecondaryButtonTitle("Cancel")
                 .setSecondaryButtonListener(v -> {})
                 .show();
@@ -588,6 +590,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPCommonResponse response) {
             super.onSuccess(response);
+            onBackPressed();
         }
 
         @Override
