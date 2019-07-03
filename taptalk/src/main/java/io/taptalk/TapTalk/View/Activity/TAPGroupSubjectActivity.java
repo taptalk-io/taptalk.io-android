@@ -195,7 +195,6 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     private void validateAndCreateGroup() {
         String groupName = etGroupName.getText().toString();
         if (!groupName.trim().isEmpty() && null != vm.getGroupData().getGroupParticipants() && vm.getGroupData().getGroupParticipants().size() > 0) {
-            // TODO: 19 September 2018 CREATE GROUP
             TAPDataManager.getInstance().createGroupChatRoom(groupName, vm.getParticipantsIDs(), createGroupRoomView);
         } else {
             Toast.makeText(this, R.string.tap_error_message_group_name_empty, Toast.LENGTH_SHORT).show();
