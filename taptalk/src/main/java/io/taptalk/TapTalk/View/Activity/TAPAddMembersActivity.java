@@ -10,7 +10,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,33 +18,31 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSIDs;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 
-public class TapAddMembersActivity extends TAPBaseActivity {
+public class TAPAddMembersActivity extends TAPBaseActivity {
 
     private LinearLayout llGroupMembers;
-    private ImageView ivButtonBack, ivButtonAction;
-    private TextView tvTitle, tvMemberCount;
+    private ImageView ivButtonBack, ivButtonAction, ivLoadingProgressAddMembers;
+    private TextView tvTitle, tvMemberCount, tvButtonAddMembers;
     private EditText etSearch;
-    private Button btnContinue;
     private RecyclerView rvContactList, rvGroupMembers;
 
     private TAPContactInitialAdapter contactListAdapter;
@@ -57,67 +54,55 @@ public class TapAddMembersActivity extends TAPBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_add_members);
+        ArrayList<TAPUserModel> existingMembers;
 
-        initViewModel();
+        //dapetin existing members dari group
+        existingMembers = null == getIntent().getParcelableArrayListExtra(GROUP_MEMBERS) ?
+                new ArrayList<>() : getIntent().getParcelableArrayListExtra(GROUP_MEMBERS);
+
+        initViewModel(existingMembers);
         initListener();
         initView();
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
-            case RESULT_OK:
-                switch (requestCode) {
-                    case CREATE_GROUP:
-                        onBackPressed();
-                        break;
-                }
-            case RESULT_CANCELED:
-                switch (requestCode) {
-                    case CREATE_GROUP:
-                        if (null != data) {
-                            vm.setGroupName(data.getStringExtra(GROUP_NAME));
-                            vm.setGroupImage(data.getParcelableExtra(GROUP_IMAGE));
-                        }
-                        break;
-                }
-        }
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
+        setResult(RESULT_CANCELED);
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 
-    private void initViewModel() {
-        TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
+    private void initViewModel(List<TAPUserModel> existingMembers) {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
-
-        // Add self as selected group member
-        vm.addSelectedContact(myUser);
 
         // Show users from contact list
         vm.getContactListLive().observe(this, userModels -> {
             vm.getContactList().clear();
-            vm.getContactList().addAll(userModels);
+            addFilteredContactList(userModels, existingMembers);
             vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
             runOnUiThread(() -> contactListAdapter.setItems(vm.getSeparatedContacts()));
         });
         vm.getFilteredContacts().addAll(vm.getContactList());
     }
 
+    private void addFilteredContactList(List<TAPUserModel> userModels, List<TAPUserModel> existingMembers) {
+        for (TAPUserModel contact : userModels) {
+            if (!existingMembers.contains(contact)) {
+                vm.getContactList().add(contact);
+            }
+        }
+    }
+
     private void initListener() {
         listener = new TapTalkContactListInterface() {
             @Override
             public boolean onContactSelected(TAPUserModel contact) {
-                TAPUtils.getInstance().dismissKeyboard(TapAddMembersActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(TAPAddMembersActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContacts().contains(contact)) {
                     if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
-                        new TapTalkDialog.Builder(TapAddMembersActivity.this)
+                        new TapTalkDialog.Builder(TAPAddMembersActivity.this)
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                 .setTitle(getString(R.string.tap_cannot_add_more_people))
                                 .setMessage(getString(R.string.tap_group_limit_reached))
@@ -137,7 +122,7 @@ public class TapAddMembersActivity extends TAPBaseActivity {
                     vm.removeSelectedContact(contact);
                     selectedMembersAdapter.notifyItemRemoved(index);
                 }
-                if (vm.getSelectedContacts().size() > 1) {
+                if (vm.getSelectedContacts().size() > 0) {
                     llGroupMembers.setVisibility(View.VISIBLE);
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
@@ -148,11 +133,11 @@ public class TapAddMembersActivity extends TAPBaseActivity {
 
             @Override
             public void onContactDeselected(TAPUserModel contact) {
-                TAPUtils.getInstance().dismissKeyboard(TapAddMembersActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(TAPAddMembersActivity.this);
                 selectedMembersAdapter.removeItem(contact);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 contactListAdapter.notifyDataSetChanged();
-                if (vm.getSelectedContacts().size() > 1) {
+                if (vm.getSelectedContacts().size() > 0) {
                     llGroupMembers.setVisibility(View.VISIBLE);
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
@@ -166,15 +151,17 @@ public class TapAddMembersActivity extends TAPBaseActivity {
         llGroupMembers = findViewById(R.id.ll_group_members);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonAction = findViewById(R.id.iv_button_action);
+        ivLoadingProgressAddMembers = findViewById(R.id.iv_loading_progress_add_members);
         tvTitle = findViewById(R.id.tv_title);
         tvMemberCount = findViewById(R.id.tv_member_count);
+        tvButtonAddMembers = findViewById(R.id.tv_add_members_btn);
         etSearch = findViewById(R.id.et_search);
-        btnContinue = findViewById(R.id.btn_continue);
         rvContactList = findViewById(R.id.rv_contact_list);
         rvGroupMembers = findViewById(R.id.rv_group_members);
 
         getWindow().setBackgroundDrawable(null);
         vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
+        vm.setRoomID(null == getIntent().getStringExtra(ROOM_ID) ? "" : getIntent().getStringExtra(ROOM_ID));
 
         // All contacts adapter
         contactListAdapter = new TAPContactInitialAdapter(TAPContactListAdapter.SELECT, vm.getSeparatedContacts(), vm.getSelectedContacts(), listener);
@@ -195,7 +182,7 @@ public class TapAddMembersActivity extends TAPBaseActivity {
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonAction.setOnClickListener(v -> toggleSearchBar());
-        btnContinue.setOnClickListener(v -> openGroupSubjectActivity());
+        tvButtonAddMembers.setOnClickListener(v -> startAddMemberProcess());
     }
 
     private void toggleSearchBar() {
@@ -218,14 +205,10 @@ public class TapAddMembersActivity extends TAPBaseActivity {
         }
     }
 
-    private void openGroupSubjectActivity() {
-//        Intent intent = new Intent(this, TAPGroupSubjectActivity.class);
-//        intent.putExtra(MY_ID, vm.getSelectedContacts().get(0).getUserID());
-//        intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
-//        intent.putStringArrayListExtra(GROUP_MEMBERSIDs, new ArrayList<>(vm.getSelectedContactsIds()));
-//        if (null != vm.getGroupName()) intent.putExtra(GROUP_NAME, vm.getGroupName());
-//        if (null != vm.getGroupImage()) intent.putExtra(GROUP_IMAGE, vm.getGroupImage());
-//        startActivityForResult(intent, CREATE_GROUP);
+    private void startAddMemberProcess() {
+        if (!"".equals(vm.getRoomID())) {
+            TAPDataManager.getInstance().addRoomParticipant(vm.getRoomID(), vm.getSelectedContactsIds(), addMemberView);
+        }
     }
 
     private void updateSelectedMemberDecoration() {
@@ -255,6 +238,18 @@ public class TapAddMembersActivity extends TAPBaseActivity {
         contactListAdapter.setItems(vm.getSeparatedContacts());
     }
 
+    private void btnStartLoadingState() {
+        tvButtonAddMembers.setVisibility(View.GONE);
+        ivLoadingProgressAddMembers.setVisibility(View.VISIBLE);
+        TAPUtils.getInstance().rotateAnimateInfinitely(this, ivLoadingProgressAddMembers);
+    }
+
+    private void btnStopLoadingState() {
+        tvButtonAddMembers.setVisibility(View.VISIBLE);
+        ivLoadingProgressAddMembers.setVisibility(View.GONE);
+        TAPUtils.getInstance().stopViewAnimation(ivLoadingProgressAddMembers);
+    }
+
     private TextWatcher searchTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -278,7 +273,7 @@ public class TapAddMembersActivity extends TAPBaseActivity {
         @Override
         public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
             updateFilteredContacts(etSearch.getText().toString().toLowerCase());
-            TAPUtils.getInstance().dismissKeyboard(TapAddMembersActivity.this);
+            TAPUtils.getInstance().dismissKeyboard(TAPAddMembersActivity.this);
             return true;
         }
     };
@@ -294,6 +289,40 @@ public class TapAddMembersActivity extends TAPBaseActivity {
                 selectedMembersAdapter.setAnimating(false);
                 updateSelectedMemberDecoration();
             }
+        }
+    };
+
+    private TAPDefaultDataView<TAPCreateRoomResponse> addMemberView = new TAPDefaultDataView<TAPCreateRoomResponse>() {
+        @Override
+        public void startLoading() {
+            btnStartLoadingState();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+        }
+
+        @Override
+        public void onSuccess(TAPCreateRoomResponse response) {
+            super.onSuccess(response);
+            Intent intent = new Intent();
+            intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(response.getParticipants()));
+            setResult(RESULT_OK, intent);
+            finish();
+            btnStopLoadingState();
+        }
+
+        @Override
+        public void onError(TAPErrorModel error) {
+            super.onError(error);
+            btnStopLoadingState();
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            super.onError(errorMessage);
+            btnStopLoadingState();
         }
     };
 }

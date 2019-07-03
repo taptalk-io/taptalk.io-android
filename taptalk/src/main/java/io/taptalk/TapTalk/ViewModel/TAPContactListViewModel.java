@@ -23,6 +23,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private List<List<TAPUserModel>> separatedContacts;
     private TAPImageURL groupImage;
     private String groupName;
+    private String roomID;
     private boolean isSelecting;
     private boolean isFirstContactSyncDone;
 
@@ -93,6 +94,14 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getRoomID() {
+        return roomID;
+    }
+
+    public void setRoomID(String roomID) {
+        this.roomID = roomID;
     }
 
     public boolean isSelecting() {

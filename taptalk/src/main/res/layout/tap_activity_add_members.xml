@@ -91,7 +91,7 @@
         android:background="@color/tapWhite"
         android:elevation="4dp"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
@@ -109,21 +109,38 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp" />
 
-        <Button
-            android:id="@+id/btn_continue"
-            style="@style/tapButtonLabelStyle"
+        <FrameLayout
+            android:id="@+id/fl_add_members_btn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="28dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/tap_bg_button_active_ripple"
-            android:gravity="center"
-            android:text="@string/tap_add_members"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rv_group_members">
+
+            <TextView
+                android:id="@+id/tv_add_members_btn"
+                style="@style/tapButtonLabelStyle"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/tap_add_members" />
+
+            <ImageView
+                android:id="@+id/iv_loading_progress_add_members"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/tap_ic_loading_progress_circle_white"
+                android:tint="@color/tapIconLoadingProgressLight"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
     </LinearLayout>
 
