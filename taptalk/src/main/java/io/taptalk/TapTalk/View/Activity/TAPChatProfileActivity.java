@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -51,7 +50,6 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMenuItem;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Adapter.TAPMediaListAdapter;
@@ -66,8 +64,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_BLOCK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_CLEAR_CHAT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EXIT_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_ROOM_COLOR;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_VIEW_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
@@ -79,13 +82,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 public class TAPChatProfileActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPChatProfileActivity.class.getSimpleName();
-
-    private final int MENU_NOTIFICATION = 1;
-    private final int MENU_ROOM_COLOR = 2;
-    private final int MENU_BLOCK = 3;
-    private final int MENU_CLEAR_CHAT = 4;
-    private final int MENU_VIEW_MEMBERS = 5;
-    private final int MENU_EXIT_GROUP = 6;
 
     private NestedScrollView nsvProfile;
     private LinearLayout llToolbarCollapsed, llReloadSharedMedia;
@@ -189,6 +185,52 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 getResources().getColor(R.color.tapTransparentBlack40)}));
 
         // Initialize menus
+        List<TAPMenuItem> menuItems = GenerateChatProfileMenu();
+
+        menuButtonAdapter = new TAPMenuButtonAdapter(menuItems, profileMenuInterface);
+        rvMenuButtons.setAdapter(menuButtonAdapter);
+        rvMenuButtons.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        TAPUtils.getInstance().rotateAnimateInfinitely(TAPChatProfileActivity.this, ivSharedMediaLoading);
+        tvSharedMediaLabel.setVisibility(View.GONE);
+        new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
+
+        appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
+
+        ivButtonBack.setOnClickListener(v -> onBackPressed());
+        ivButtonEdit.setOnClickListener(v -> openEditGroup());
+
+        if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
+            TAPDataManager.getInstance().getUserByIdFromApi(
+                    TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID()),
+                    getUserView);
+        } else if (vm.getRoom().getRoomType() == TYPE_GROUP) {
+            TAPDataManager.getInstance().getChatRoomData(vm.getRoom().getRoomID(), getRoomView);
+        }
+    }
+
+    private void updateView() {
+        //update room image
+        if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getFullsize().isEmpty()) {
+            glide.load(vm.getRoom().getRoomImage().getFullsize())
+                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
+                    .into(ivProfile);
+        } else {
+            ivProfile.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.tapGrey9b)));
+        }
+
+        //update room name
+        tvFullName.setText(vm.getRoom().getRoomName());
+        tvCollapsedName.setText(vm.getRoom().getRoomName());
+
+        if (TYPE_GROUP == vm.getRoom().getRoomType()) {
+            ivButtonEdit.setVisibility(View.VISIBLE);
+        } else {
+            ivButtonEdit.setVisibility(View.GONE);
+        }
+    }
+
+    private List<TAPMenuItem> GenerateChatProfileMenu() {
         List<TAPMenuItem> menuItems = new ArrayList<>();
         TAPMenuItem menuNotification;
         if (vm.getRoom().isMuted()) {
@@ -233,12 +275,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 //        menuItems.add(menuRoomColor);
 //        menuItems.add(menuRoomSearchChat);
 
-        menuButtonAdapter = new TAPMenuButtonAdapter(menuItems, profileMenuInterface);
-        rvMenuButtons.setAdapter(menuButtonAdapter);
-        rvMenuButtons.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
-        // TODO: 24 October 2018 CHECK IF ROOM TYPE IS GROUP
-        if (vm.getRoom().getRoomType() == 1) {
+        if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
             // 1-1 Room
             TAPMenuItem menuBlock = new TAPMenuItem(
                     MENU_BLOCK,
@@ -259,7 +296,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
 //            menuItems.add(2, menuBlock);
 //            menuItems.add(menuClearChat);
-        } else {
+        } else if (vm.getRoom().getRoomType() == TYPE_GROUP) {
             // Group
             TAPMenuItem menuViewMembers = new TAPMenuItem(
                     MENU_VIEW_MEMBERS,
@@ -271,54 +308,18 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     getString(R.string.tap_view_members));
             TAPMenuItem menuExitGroup = new TAPMenuItem(
                     MENU_EXIT_GROUP,
-                    R.drawable.tap_ic_exit_red,
+                    R.drawable.tap_ic_delete_red,
                     R.color.tapIconChatProfileClearChat,
                     R.style.tapChatProfileMenuDestructiveLabelStyle,
                     false,
                     false,
-                    getString(R.string.tap_exit_group));
+                    getString(R.string.tap_clear_and_exit_chat));
             // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
-//            menuItems.add(2, menuViewMembers);
-//            menuItems.add(menuExitGroup);
+            menuItems.add(menuViewMembers);
+            menuItems.add(menuExitGroup);
         }
 
-        TAPUtils.getInstance().rotateAnimateInfinitely(TAPChatProfileActivity.this, ivSharedMediaLoading);
-        tvSharedMediaLabel.setVisibility(View.GONE);
-        new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
-
-        appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
-
-        ivButtonBack.setOnClickListener(v -> onBackPressed());
-        ivButtonEdit.setOnClickListener(v -> openEditGroup());
-
-        if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
-            TAPDataManager.getInstance().getUserByIdFromApi(
-                    TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID()),
-                    getUserView);
-        } else if (vm.getRoom().getRoomType() == TYPE_GROUP) {
-            TAPDataManager.getInstance().getChatRoomData(vm.getRoom().getRoomID(), getRoomView);
-        }
-    }
-
-    private void updateView() {
-        //update room image
-        if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getFullsize().isEmpty()) {
-            glide.load(vm.getRoom().getRoomImage().getFullsize())
-                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
-                    .into(ivProfile);
-        } else {
-            ivProfile.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.tapGrey9b)));
-        }
-
-        //update room name
-        tvFullName.setText(vm.getRoom().getRoomName());
-        tvCollapsedName.setText(vm.getRoom().getRoomName());
-
-        if (TYPE_GROUP == vm.getRoom().getRoomType()) {
-            ivButtonEdit.setVisibility(View.VISIBLE);
-        } else {
-            ivButtonEdit.setVisibility(View.GONE);
-        }
+        return menuItems;
     }
 
     private void setNotification(boolean isNotificationOn) {

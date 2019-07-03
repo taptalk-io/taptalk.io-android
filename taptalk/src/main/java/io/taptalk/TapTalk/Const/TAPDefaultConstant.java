@@ -286,6 +286,15 @@ public class TAPDefaultConstant {
                     Uri.parse("mobilemanager://function/entry/AutoStart"))
     };
 
+    public static class ChatProfileMenuType {
+        public static final int MENU_NOTIFICATION = 1;
+        public static final int MENU_ROOM_COLOR = 2;
+        public static final int MENU_BLOCK = 3;
+        public static final int MENU_CLEAR_CHAT = 4;
+        public static final int MENU_VIEW_MEMBERS = 5;
+        public static final int MENU_EXIT_GROUP = 6;
+    }
+
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
     public static final String K_REFRESH_TOKEN_EXPIRY = "kTAPRefreshTokenExpiry";
     public static final String K_ACCESS_TOKEN = "kTAPAccessToken";

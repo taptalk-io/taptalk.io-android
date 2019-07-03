@@ -7,7 +7,6 @@ import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
@@ -25,6 +24,7 @@ import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_VIEW_MEMBERS;
 
 public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseViewHolder<TAPMenuItem>> {
 
@@ -44,7 +44,7 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
     private class MenuButtonVH extends TAPBaseViewHolder<TAPMenuItem> {
 
         private ConstraintLayout clContainer;
-        private ImageView ivMenuIcon;
+        private ImageView ivMenuIcon, ivRightArrow;
         private TextView tvMenuLabel;
         private SwitchCompat swMenuSwitch;
 
@@ -52,6 +52,7 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
             super(parent, itemLayoutId);
             clContainer = itemView.findViewById(R.id.cl_container);
             ivMenuIcon = itemView.findViewById(R.id.iv_menu_icon);
+            ivRightArrow = itemView.findViewById(R.id.iv_right_arrow);
             tvMenuLabel = itemView.findViewById(R.id.tv_menu_label);
             swMenuSwitch = itemView.findViewById(R.id.sw_menu_switch);
         }
@@ -120,6 +121,10 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
             } else {
                 swMenuSwitch.setVisibility(View.GONE);
             }
+
+            if (item.getMenuID() == MENU_VIEW_MEMBERS && !item.isSwitchMenu()) {
+                ivRightArrow.setVisibility(View.VISIBLE);
+            } else if (!item.isSwitchMenu()) ivRightArrow.setVisibility(View.GONE);
 
             clContainer.setOnClickListener(v -> {
                 if (item.isSwitchMenu()) {
