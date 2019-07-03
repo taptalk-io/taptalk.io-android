@@ -11,9 +11,8 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.ADD_MEMBER
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
 import io.taptalk.TapTalk.Model.TAPUserModel
@@ -43,7 +42,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 val intent = Intent(this, TAPAddMembersActivity::class.java)
                 intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))
                 intent.putExtra(ROOM_ID, groupViewModel?.groupData?.roomID)
-                startActivityForResult(intent, ADD_MEMBER)
+                startActivityForResult(intent, GROUP_ADD_MEMBER)
             }
         }
     }
@@ -146,10 +145,15 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     }
 
     override fun onBackPressed() {
-        if (groupViewModel?.isSelectionMode == true) {
-            cancelSelectionMode(true)
-        } else {
-            finish()
+        when {
+            groupViewModel?.isSelectionMode == true -> cancelSelectionMode(true)
+            groupViewModel?.isUpdateMember == true -> {
+                val intent = Intent()
+                intent.putExtra(ROOM, groupViewModel?.groupData)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }
+            else -> finish()
         }
     }
 
@@ -198,7 +202,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
             when(requestCode) {
-                ADD_MEMBER -> {
+                GROUP_ADD_MEMBER -> {
                     val updatedGroupParticipant = data?.getParcelableArrayListExtra<TAPUserModel>(GROUP_MEMBERS)
                     groupViewModel?.groupData?.groupParticipants = updatedGroupParticipant?.toMutableList() ?: groupViewModel?.participantsList
                     adapter?.items = groupViewModel?.groupData?.groupParticipants
@@ -207,6 +211,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     //set total member count
                     tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
                     tv_member_count.visibility = View.VISIBLE
+                    groupViewModel?.isUpdateMember = true
                 }
             }
         }

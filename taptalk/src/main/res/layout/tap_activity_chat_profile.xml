@@ -96,6 +96,19 @@
         android:src="@drawable/tap_ic_back_white"
         android:tint="@color/tapIconTransparentBackgroundBackButton" />
 
+    <ImageView
+        android:id="@+id/iv_button_edit"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:elevation="4dp"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:padding="16dp"
+        android:layout_gravity="end"
+        android:src="@drawable/tap_ic_edit_orange"
+        android:tint="@color/tapIconTransparentBackgroundBackButton"
+        android:visibility="gone"/>
+
+
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nsv_profile"
         android:layout_width="match_parent"

@@ -128,7 +128,8 @@ public class TAPDefaultConstant {
         public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
         public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
         public static final int REGISTER = 31;
-        public static final int ADD_MEMBER = 4;
+        public static final int GROUP_ADD_MEMBER = 4;
+        public static final int GROUP_UPDATE_DATA = 41;
         public static final int SEND_IMAGE_FROM_CAMERA = 51;
         public static final int SEND_MEDIA_FROM_GALLERY = 52;
         public static final int SEND_MEDIA_FROM_PREVIEW = 53;
@@ -284,6 +285,15 @@ public class TAPDefaultConstant {
             new Intent().setComponent(new ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.entry.FunctionActivity")).setData(
                     Uri.parse("mobilemanager://function/entry/AutoStart"))
     };
+
+    public static class ChatProfileMenuType {
+        public static final int MENU_NOTIFICATION = 1;
+        public static final int MENU_ROOM_COLOR = 2;
+        public static final int MENU_BLOCK = 3;
+        public static final int MENU_CLEAR_CHAT = 4;
+        public static final int MENU_VIEW_MEMBERS = 5;
+        public static final int MENU_EXIT_GROUP = 6;
+    }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
     public static final String K_REFRESH_TOKEN_EXPIRY = "kTAPRefreshTokenExpiry";

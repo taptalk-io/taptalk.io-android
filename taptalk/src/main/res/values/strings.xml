@@ -9,6 +9,7 @@
     <string name="tap_clear_chat">Clear Chat</string>
     <string name="tap_conversation_color">Conversation Color</string>
     <string name="tap_exit_group">Exit Group</string>
+    <string name="tap_clear_and_exit_chat">Clear And Exit Chat</string>
     <string name="tap_forward">Forward</string>
     <string name="tap_group_subject">Group Subject</string>
     <string name="tap_my_account">My Account</string>
@@ -24,7 +25,7 @@
     <string name="tap_shared_media">Shared Media</string>
     <string name="tap_scan_qr_code">Scan QR Code</string>
     <string name="tap_show_qr_code">Show QR Code</string>
-    <string name="tap_view_members">View Members</string>
+    <string name="tap_view_members">View Group Members</string>
     <string name="tap_welcome">Welcome</string>
 
     <!--Chat Room List-->
