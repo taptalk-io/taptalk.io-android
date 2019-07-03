@@ -81,7 +81,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     private NestedScrollView nsvProfile;
     private LinearLayout llToolbarCollapsed, llReloadSharedMedia;
-    private ImageView ivProfile, ivButtonBack, ivSharedMediaLoading;
+    private ImageView ivProfile, ivButtonBack, ivSharedMediaLoading, ivButtonEdit;
     private TextView tvFullName, tvCollapsedName, tvSharedMediaLabel;
     private View vGradient, vProfileSeparator;
     private RecyclerView rvMenuButtons, rvSharedMedia;
@@ -143,6 +143,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         llReloadSharedMedia = findViewById(R.id.ll_reload_shared_media);
         ivProfile = findViewById(R.id.iv_profile);
         ivButtonBack = findViewById(R.id.iv_button_back);
+        ivButtonEdit = findViewById(R.id.iv_button_edit);
         ivSharedMediaLoading = findViewById(R.id.iv_shared_media_loading);
         tvFullName = findViewById(R.id.tv_full_name);
         tvCollapsedName = findViewById(R.id.tv_collapsed_name);
