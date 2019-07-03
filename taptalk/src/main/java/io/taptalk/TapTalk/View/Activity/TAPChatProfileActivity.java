@@ -593,6 +593,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPCommonResponse response) {
             super.onSuccess(response);
+            // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN 
             TAPChatProfileActivity.this.endLoading();
             onBackPressed();
         }
