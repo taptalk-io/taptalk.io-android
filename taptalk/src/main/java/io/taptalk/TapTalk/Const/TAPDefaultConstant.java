@@ -128,7 +128,8 @@ public class TAPDefaultConstant {
         public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
         public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
         public static final int REGISTER = 31;
-        public static final int ADD_MEMBER = 4;
+        public static final int GROUP_ADD_MEMBER = 4;
+        public static final int GROUP_UPDATE_DATA = 41;
         public static final int SEND_IMAGE_FROM_CAMERA = 51;
         public static final int SEND_MEDIA_FROM_GALLERY = 52;
         public static final int SEND_MEDIA_FROM_PREVIEW = 53;

@@ -13,6 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
@@ -63,11 +64,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_UPDATE_DATA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 
 public class TAPChatProfileActivity extends TAPBaseActivity {
@@ -133,6 +136,20 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (RESULT_OK == resultCode) {
+            switch (requestCode) {
+                case GROUP_UPDATE_DATA: {
+                    if (null != data.getParcelableExtra(ROOM)) {
+                        vm.setRoom(data.getParcelableExtra(ROOM));
+                        updateView();
+                    }
+                }
+            }
+        }
+    }
+
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPProfileViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(ROOM));
@@ -159,22 +176,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         getWindow().setBackgroundDrawable(null);
 
-        if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getFullsize().isEmpty()) {
-            glide.load(vm.getRoom().getRoomImage().getFullsize())
-                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
-                    .into(ivProfile);
-        } else {
-            ivProfile.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.tapGrey9b)));
-        }
-
-        tvFullName.setText(vm.getRoom().getRoomName());
-        tvCollapsedName.setText(vm.getRoom().getRoomName());
-
-        if (TYPE_GROUP == vm.getRoom().getRoomType()) {
-            ivButtonEdit.setVisibility(View.VISIBLE);
-        } else {
-            ivButtonEdit.setVisibility(View.GONE);
-        }
+        updateView();
 
         // Set gradient for profile picture overlay
         vGradient.setBackground(new GradientDrawable(
@@ -285,6 +287,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
+        ivButtonEdit.setOnClickListener(v -> openEditGroup());
 
         if (vm.getRoom().getRoomType() == 1) {
             TAPDataManager.getInstance().getUserByIdFromApi(
@@ -293,8 +296,35 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         }
     }
 
+    private void updateView() {
+        //update room image
+        if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getFullsize().isEmpty()) {
+            glide.load(vm.getRoom().getRoomImage().getFullsize())
+                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
+                    .into(ivProfile);
+        } else {
+            ivProfile.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.tapGrey9b)));
+        }
+
+        //update room name
+        tvFullName.setText(vm.getRoom().getRoomName());
+        tvCollapsedName.setText(vm.getRoom().getRoomName());
+
+        if (TYPE_GROUP == vm.getRoom().getRoomType()) {
+            ivButtonEdit.setVisibility(View.VISIBLE);
+        } else {
+            ivButtonEdit.setVisibility(View.GONE);
+        }
+    }
+
     private void setNotification(boolean isNotificationOn) {
         Log.e(TAG, "setNotification: " + isNotificationOn);
+    }
+
+    private void openEditGroup() {
+        Intent intent = new Intent(TAPChatProfileActivity.this, TAPEditGroupActivity.class);
+        intent.putExtra(ROOM_ID, vm.getRoom().getRoomID());
+        startActivityForResult(intent, GROUP_UPDATE_DATA);
     }
 
     private void changeRoomColor() {

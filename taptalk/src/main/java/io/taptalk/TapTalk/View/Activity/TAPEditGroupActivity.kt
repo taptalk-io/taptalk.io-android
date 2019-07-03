@@ -193,10 +193,8 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             //TODO() Apus Setelah ada API CALL / Flow yang pasti
             if (null == groupViewModel?.groupPicUri) {
                 btnStopLoadingState()
-
-                val intent = Intent(this@TAPEditGroupActivity, TAPGroupMemberListActivity::class.java)
-                intent.putExtra(ROOM, groupViewModel?.groupData)
-                startActivity(intent)
+                groupViewModel?.groupData?.roomName = response?.room?.roomName
+                finishGroupUpdate()
             } else {
                 TAPFileUploadManager.getInstance().uploadRoomPicture(this@TAPEditGroupActivity,
                         groupViewModel?.groupPicUri, groupViewModel?.groupData?.roomID
@@ -223,10 +221,9 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
         override fun onSuccess(response: TAPUpdateRoomResponse?) {
             super.onSuccess(response)
-            val intent = Intent(this@TAPEditGroupActivity, TAPGroupMemberListActivity::class.java)
-            intent.putExtra(ROOM, groupViewModel?.groupData)
-            startActivity(intent)
             btnStopLoadingState()
+            groupViewModel?.groupData?.roomImage = response?.room?.roomImage
+            finishGroupUpdate()
         }
 
         override fun onError(error: TAPErrorModel?) {
@@ -238,6 +235,16 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             super.onError(errorMessage)
             btnStopLoadingState()
         }
+    }
+
+    fun finishGroupUpdate() {
+//        val intent = Intent(this@TAPEditGroupActivity, TAPGroupMemberListActivity::class.java)
+//        intent.putExtra(ROOM, groupViewModel?.groupData)
+//        startActivity(intent)
+        val intent = Intent()
+        intent.putExtra(ROOM, groupViewModel?.groupData)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 
 }

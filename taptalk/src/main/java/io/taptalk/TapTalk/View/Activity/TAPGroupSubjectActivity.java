@@ -320,13 +320,6 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             super.onSuccess(response);
             vm.getGroupData().setRoomImage(response.getRoom().getRoomImage());
             btnStopLoadingState();
-
-//            Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
-//            intent.putExtra(ROOM_ID, vm.getGroupData().getRoomID());
-//            startActivity(intent);
-//            setResult(RESULT_OK);
-//            finish();
-//            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
             openChatGroupProfile();
         }
 
