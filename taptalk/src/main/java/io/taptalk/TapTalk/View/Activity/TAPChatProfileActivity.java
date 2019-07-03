@@ -12,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -26,6 +27,7 @@ import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -87,8 +89,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     private NestedScrollView nsvProfile;
     private LinearLayout llToolbarCollapsed, llReloadSharedMedia;
-    private ImageView ivProfile, ivButtonBack, ivSharedMediaLoading, ivButtonEdit;
-    private TextView tvFullName, tvCollapsedName, tvSharedMediaLabel;
+    private FrameLayout flLoading;
+    private ImageView ivProfile, ivButtonBack, ivSharedMediaLoading, ivButtonEdit, ivSaving;
+    private TextView tvFullName, tvCollapsedName, tvSharedMediaLabel, tvLoadingText;
     private View vGradient, vProfileSeparator;
     private RecyclerView rvMenuButtons, rvSharedMedia;
 
@@ -161,13 +164,16 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         nsvProfile = findViewById(R.id.nsv_profile);
         llToolbarCollapsed = findViewById(R.id.ll_toolbar_collapsed);
         llReloadSharedMedia = findViewById(R.id.ll_reload_shared_media);
+        flLoading = findViewById(R.id.fl_loading);
         ivProfile = findViewById(R.id.iv_profile);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonEdit = findViewById(R.id.iv_button_edit);
+        ivSaving = findViewById(R.id.iv_saving);
         ivSharedMediaLoading = findViewById(R.id.iv_shared_media_loading);
         tvFullName = findViewById(R.id.tv_full_name);
         tvCollapsedName = findViewById(R.id.tv_collapsed_name);
         tvSharedMediaLabel = findViewById(R.id.tv_section_title);
+        tvLoadingText = findViewById(R.id.tv_loading_text);
         vGradient = findViewById(R.id.v_gradient);
         vProfileSeparator = findViewById(R.id.v_profile_separator);
         rvMenuButtons = findViewById(R.id.rv_menu_buttons);
@@ -201,6 +207,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonEdit.setOnClickListener(v -> openEditGroup());
+        flLoading.setOnClickListener(v -> {});
 
         if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
             TAPDataManager.getInstance().getUserByIdFromApi(
@@ -580,16 +587,13 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void startLoading() {
             super.startLoading();
-        }
-
-        @Override
-        public void endLoading() {
-            super.endLoading();
+            showLoading();
         }
 
         @Override
         public void onSuccess(TAPCommonResponse response) {
             super.onSuccess(response);
+            TAPChatProfileActivity.this.endLoading();
             onBackPressed();
         }
 
@@ -704,4 +708,30 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             }
         }
     };
+
+    private void showLoading() {
+        runOnUiThread(() -> {
+            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
+            if (null == ivSaving.getAnimation()) {
+                TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
+            }
+            tvLoadingText.setText(getString(R.string.tap_saving));
+            flLoading.setVisibility(View.VISIBLE);
+        });
+    }
+
+    private void endLoading() {
+        runOnUiThread(() -> {
+            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
+            ivSaving.clearAnimation();
+            tvLoadingText.setText(getString(R.string.tap_image_saved));
+            flLoading.setOnClickListener(v -> hideLoading());
+
+            new Handler().postDelayed(this::hideLoading, 1000L);
+        });
+    }
+
+    private void hideLoading() {
+        flLoading.setVisibility(View.GONE);
+    }
 }
