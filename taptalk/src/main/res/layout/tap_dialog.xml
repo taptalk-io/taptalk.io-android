@@ -4,38 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/tap_bg_white_rounded_4dp"
+    android:background="@drawable/tap_bg_dialog_secondary_button"
     android:padding="16dp"
-    tools:background="@color/tapBrightBlue">
-
+    tools:background="@color/tapParchment">
 
     <TextView
         android:id="@+id/tv_dialog_title"
+        style="@style/tapPopupDialogTitleStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="end"
-        android:fontFamily="@font/tap_font_pt_root_bold"
         android:gravity="start"
-        android:lineSpacingExtra="5sp"
         android:maxLines="1"
-        android:textColor="@color/tapBlack19"
-        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Title Here" />
 
     <TextView
         android:id="@+id/tv_dialog_message"
+        style="@style/tapPopupDialogBodyStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:ellipsize="end"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:letterSpacing="-0.01"
-        android:lineSpacingExtra="5sp"
         android:minLines="3"
-        android:textColor="@color/tapBlack19"
-        android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/tv_primary_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,41 +36,36 @@
 
     <TextView
         android:id="@+id/tv_primary_btn"
+        style="@style/tapPopupDialogButtonTextPrimaryStyle"
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_4dp"
-        android:fontFamily="@font/tap_font_pt_root_bold"
         android:gravity="center"
         android:paddingStart="5dp"
         android:paddingTop="9dp"
         android:paddingEnd="5dp"
         android:paddingBottom="9dp"
-        android:textColor="#ffffff"
-        android:textSize="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_dialog_message"
+        tools:background="@drawable/tap_bg_dialog_primary_button_success_ripple"
         tools:text="Primary" />
 
     <TextView
         android:id="@+id/tv_secondary_btn"
+        style="@style/tapPopupDialogButtonTextSecondaryStyle"
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="6dp"
-        android:background="@drawable/tap_bg_white_rounded_4dp_ripple"
-        android:fontFamily="@font/tap_font_pt_root_bold"
+        android:background="@drawable/tap_bg_dialog_secondary_button_ripple"
         android:gravity="center"
         android:paddingStart="5dp"
         android:paddingTop="9dp"
         android:paddingEnd="5dp"
         android:paddingBottom="9dp"
-        android:textColor="@color/tapGrey9b"
-        android:textSize="12dp"
         app:layout_constraintEnd_toStartOf="@id/tv_primary_btn"
         app:layout_constraintTop_toBottomOf="@id/tv_dialog_message"
         tools:text="Secondary" />
-
 
 </android.support.constraint.ConstraintLayout>

@@ -37,6 +37,7 @@
 
     <color name="tapPopupDialogPrimaryButtonBackgroundSuccessColor">@color/tapColorSuccess</color>
     <color name="tapPopupDialogPrimaryButtonBackgroundErrorColor">@color/tapColorError</color>
+    <color name="tapPopupDialogSecondaryButtonBackgroundColor">@color/tapWhite</color>
 
     <color name="tapUnreadBadgeBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapUnreadBadgeInactiveBackgroundColor">@color/tapGrey9b</color>
