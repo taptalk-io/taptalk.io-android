@@ -11,8 +11,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
@@ -146,10 +145,15 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     }
 
     override fun onBackPressed() {
-        if (groupViewModel?.isSelectionMode == true) {
-            cancelSelectionMode(true)
-        } else {
-            finish()
+        when {
+            groupViewModel?.isSelectionMode == true -> cancelSelectionMode(true)
+            groupViewModel?.isUpdateMember == true -> {
+                val intent = Intent()
+                intent.putExtra(ROOM, groupViewModel?.groupData)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }
+            else -> finish()
         }
     }
 
@@ -207,6 +211,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     //set total member count
                     tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
                     tv_member_count.visibility = View.VISIBLE
+                    groupViewModel?.isUpdateMember = true
                 }
             }
         }

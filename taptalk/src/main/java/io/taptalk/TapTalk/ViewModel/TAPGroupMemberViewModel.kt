@@ -8,6 +8,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel
 class TAPGroupMemberViewModel(application: Application) : AndroidViewModel(application) {
     var isSearchActive: Boolean = false
     var isSelectionMode: Boolean = false
+    var isUpdateMember : Boolean = false
     var participantsList : MutableList<TAPUserModel>? = mutableListOf()
     var groupData : TAPRoomModel? = null
     var selectedMembers : HashMap<String?, TAPUserModel?> = HashMap()
