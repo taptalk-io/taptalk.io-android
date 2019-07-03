@@ -39,6 +39,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPGroupViewModel;
 import io.taptalk.Taptalk.R;
@@ -48,6 +49,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSIDs;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
@@ -273,21 +275,19 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
         @Override
         public void onSuccess(TAPCreateRoomResponse response) {
-            //Intent intent = new Intent(this, TAPChatProfileActivity.class);
-            //intent.putExtra(ROOM, vm.getGroupData());
-            //startActivity(intent);
             updateGroupData(response);
             if (null != vm.getRoomImageUri())
                 TAPFileUploadManager.getInstance().uploadRoomPicture(TAPGroupSubjectActivity.this,
                         vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
             else {
                 btnStopLoadingState();
-                Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
-                intent.putExtra(ROOM_ID, vm.getGroupData().getRoomID());
-                startActivity(intent);
-                setResult(RESULT_OK);
-                finish();
-                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+//                Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
+//                intent.putExtra(ROOM_ID, vm.getGroupData().getRoomID());
+//                startActivity(intent);
+//                setResult(RESULT_OK);
+//                finish();
+//                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+                openChatGroupProfile();
             }
         }
 
@@ -321,12 +321,13 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             vm.getGroupData().setRoomImage(response.getRoom().getRoomImage());
             btnStopLoadingState();
 
-            Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
-            intent.putExtra(ROOM_ID, vm.getGroupData().getRoomID());
-            startActivity(intent);
-            setResult(RESULT_OK);
-            finish();
-            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+//            Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
+//            intent.putExtra(ROOM_ID, vm.getGroupData().getRoomID());
+//            startActivity(intent);
+//            setResult(RESULT_OK);
+//            finish();
+//            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+            openChatGroupProfile();
         }
 
         @Override
@@ -341,4 +342,13 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             btnStopLoadingState();
         }
     };
+
+    public void openChatGroupProfile() {
+        Intent intent = new Intent(this, TAPChatProfileActivity.class);
+        intent.putExtra(ROOM, vm.getGroupData());
+        startActivity(intent);
+        setResult(RESULT_OK);
+        finish();
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+    }
 }

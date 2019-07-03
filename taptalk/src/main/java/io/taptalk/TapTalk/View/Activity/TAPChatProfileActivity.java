@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -67,6 +68,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 
 public class TAPChatProfileActivity extends TAPBaseActivity {
 
@@ -167,6 +169,12 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         tvFullName.setText(vm.getRoom().getRoomName());
         tvCollapsedName.setText(vm.getRoom().getRoomName());
+
+        if (TYPE_GROUP == vm.getRoom().getRoomType()) {
+            ivButtonEdit.setVisibility(View.VISIBLE);
+        } else {
+            ivButtonEdit.setVisibility(View.GONE);
+        }
 
         // Set gradient for profile picture overlay
         vGradient.setBackground(new GradientDrawable(
@@ -394,6 +402,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 transitionToCollapse.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToCollapse.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
+                transitionToCollapse.addUpdateListener(valueAnimator -> ivButtonEdit.setColorFilter(
+                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
             }
             return transitionToCollapse;
         }
@@ -405,6 +415,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         getResources().getColor(R.color.tapIconTransparentBackgroundBackButton));
                 transitionToExpand.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToExpand.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
+                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
+                transitionToExpand.addUpdateListener(valueAnimator -> ivButtonEdit.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
             }
             return transitionToExpand;
