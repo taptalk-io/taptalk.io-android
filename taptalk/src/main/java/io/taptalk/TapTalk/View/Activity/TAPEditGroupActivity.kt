@@ -88,13 +88,21 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun initViewModel() {
         groupViewModel = ViewModelProviders.of(this).get(TAPEditGroupViewModel::class.java)
+        groupViewModel?.groupData = intent.getParcelableExtra(ROOM)
     }
 
     private fun initView() {
         et_group_name.onFocusChangeListener = groupNameFocusListener
         et_group_name.addTextChangedListener(groupNameWatcher)
 
-        TAPDataManager.getInstance().getChatRoomData(intent.getStringExtra(TAPDefaultConstant.Extras.ROOM_ID), getChatRoomDataView)
+        et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
+
+        if (null != groupViewModel?.groupData?.roomImage && "" != groupViewModel?.groupData?.roomImage?.thumbnail) {
+            val imageURL = groupViewModel?.groupData?.roomImage
+            loadImage(imageURL?.thumbnail ?: "")
+        } else {
+            groupViewModel?.isGroupPicStartEmpty = true
+        }
 
         //iv_remove_group_picture.setOnClickListener(this)
         ll_change_group_picture.setOnClickListener(this)
@@ -152,35 +160,6 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             tv_update_group_btn.visibility = View.VISIBLE
             iv_loading_progress_update_group.visibility = View.GONE
             TAPUtils.getInstance().stopViewAnimation(iv_loading_progress_update_group)
-        }
-    }
-
-    private val getChatRoomDataView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
-        override fun startLoading() {
-
-        }
-
-        override fun onSuccess(response: TAPCreateRoomResponse?) {
-            groupViewModel?.groupData = response?.room
-            groupViewModel?.groupData?.groupParticipants = response?.participants
-            groupViewModel?.groupData?.admins = response?.admins
-
-            et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
-
-            if (null != groupViewModel?.groupData?.roomImage && "" != groupViewModel?.groupData?.roomImage?.thumbnail) {
-                val imageURL = groupViewModel?.groupData?.roomImage
-                loadImage(imageURL?.thumbnail ?: "")
-            } else {
-                groupViewModel?.isGroupPicStartEmpty = true
-            }
-        }
-
-        override fun onError(error: TAPErrorModel?) {
-            super.onError(error)
-        }
-
-        override fun onError(errorMessage: String?) {
-            super.onError(errorMessage)
         }
     }
 

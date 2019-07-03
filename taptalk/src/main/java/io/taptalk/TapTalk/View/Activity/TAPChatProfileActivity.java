@@ -49,7 +49,9 @@ import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMenuItem;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Adapter.TAPMediaListAdapter;
@@ -72,6 +74,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_UPDATE_DATA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TAPChatProfileActivity extends TAPBaseActivity {
 
@@ -177,7 +180,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         getWindow().setBackgroundDrawable(null);
 
         updateView();
-
         // Set gradient for profile picture overlay
         vGradient.setBackground(new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM, new int[]{
@@ -289,10 +291,12 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonEdit.setOnClickListener(v -> openEditGroup());
 
-        if (vm.getRoom().getRoomType() == 1) {
+        if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
             TAPDataManager.getInstance().getUserByIdFromApi(
                     TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID()),
                     getUserView);
+        } else if (vm.getRoom().getRoomType() == TYPE_GROUP) {
+            TAPDataManager.getInstance().getChatRoomData(vm.getRoom().getRoomID(), getRoomView);
         }
     }
 
@@ -323,7 +327,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     private void openEditGroup() {
         Intent intent = new Intent(TAPChatProfileActivity.this, TAPEditGroupActivity.class);
-        intent.putExtra(ROOM_ID, vm.getRoom().getRoomID());
+        intent.putExtra(ROOM, vm.getRoom());
         startActivityForResult(intent, GROUP_UPDATE_DATA);
     }
 
@@ -531,6 +535,18 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         public void onCancelDownloadClicked(TAPMessageModel item) {
             TAPFileDownloadManager.getInstance().cancelFileDownload(item.getLocalID());
             sharedMediaAdapter.notifyItemChanged(sharedMediaAdapter.getItems().indexOf(item));
+        }
+    };
+
+    private TAPDefaultDataView<TAPCreateRoomResponse> getRoomView = new TAPDefaultDataView<TAPCreateRoomResponse>() {
+        @Override
+        public void onSuccess(TAPCreateRoomResponse response) {
+            super.onSuccess(response);
+            vm.setRoom(response.getRoom());
+            vm.getRoom().setGroupParticipants(response.getParticipants());
+            vm.getRoom().setAdmins(response.getAdmins());
+
+            updateView();
         }
     };
 
