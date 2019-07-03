@@ -48,8 +48,10 @@ import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMenuItem;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Adapter.TAPMediaListAdapter;
@@ -58,7 +60,7 @@ import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_BLOCK;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_CLEAR_CHAT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EXIT_AND_CLEAR_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EXIT_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_ROOM_COLOR;
@@ -286,7 +288,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     false,
                     getString(R.string.tap_block_user));
             TAPMenuItem menuClearChat = new TAPMenuItem(
-                    MENU_CLEAR_CHAT,
+                    MENU_EXIT_AND_CLEAR_CHAT,
                     R.drawable.tap_ic_delete_red,
                     R.color.tapIconChatProfileClearChat,
                     R.style.tapChatProfileMenuDestructiveLabelStyle,
@@ -340,8 +342,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         Log.e(TAG, "blockUser: ");
     }
 
-    private void clearChat() {
-        Log.e(TAG, "clearChat: ");
+    private void exitAndClearChat() {
+        new TapTalkDialog.Builder(this)
+                .setTitle("Exit and Clear Chat")
+                .setMessage("Are you Sure to leave this chat?")
+                .setPrimaryButtonTitle("OK")
+                .setPrimaryButtonListener(v -> {})
+                .setSecondaryButtonTitle("Cancel")
+                .setSecondaryButtonListener(v -> {})
+                .show();
     }
 
     private void viewMembers() {
@@ -350,7 +359,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         startActivityForResult(intent, GROUP_UPDATE_DATA);
     }
 
-    private void exitGroup() {
+    private void clearChat() {
         Log.e(TAG, "exitGroup: ");
     }
 
@@ -475,14 +484,14 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             case MENU_BLOCK:
                 blockUser();
                 break;
-            case MENU_CLEAR_CHAT:
+            case MENU_EXIT_AND_CLEAR_CHAT:
                 clearChat();
                 break;
             case MENU_VIEW_MEMBERS:
                 viewMembers();
                 break;
             case MENU_EXIT_GROUP:
-                exitGroup();
+                exitAndClearChat();
                 break;
         }
     };
@@ -562,6 +571,33 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             String name = response.getUser().getName();
             tvFullName.setText(name);
             tvCollapsedName.setText(name);
+        }
+    };
+
+    private TAPDefaultDataView<TAPCommonResponse> exitChatView = new TAPDefaultDataView<TAPCommonResponse>() {
+        @Override
+        public void startLoading() {
+            super.startLoading();
+        }
+
+        @Override
+        public void endLoading() {
+            super.endLoading();
+        }
+
+        @Override
+        public void onSuccess(TAPCommonResponse response) {
+            super.onSuccess(response);
+        }
+
+        @Override
+        public void onError(TAPErrorModel error) {
+            super.onError(error);
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            super.onError(errorMessage);
         }
     };
 

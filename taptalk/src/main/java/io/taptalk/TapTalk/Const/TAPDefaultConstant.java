@@ -290,7 +290,7 @@ public class TAPDefaultConstant {
         public static final int MENU_NOTIFICATION = 1;
         public static final int MENU_ROOM_COLOR = 2;
         public static final int MENU_BLOCK = 3;
-        public static final int MENU_CLEAR_CHAT = 4;
+        public static final int MENU_EXIT_AND_CLEAR_CHAT = 4;
         public static final int MENU_VIEW_MEMBERS = 5;
         public static final int MENU_EXIT_GROUP = 6;
     }
