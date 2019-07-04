@@ -167,7 +167,8 @@
                 android:background="@drawable/tap_bg_button_active_ripple"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:visibility="visible">
+                android:visibility="visible"
+                android:foreground="?attr/selectableItemBackgroundBorderless">
 
                 <ImageView
                     android:id="@+id/iv_promote_demote_icon"
@@ -183,6 +184,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginStart="6dp"
                     android:lineSpacingExtra="6sp"
                     android:text="@string/tap_appoint_admin" />
 
@@ -193,7 +195,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:foreground="?attr/selectableItemBackgroundBorderless">
 
                 <ImageView
                     android:layout_width="16dp"

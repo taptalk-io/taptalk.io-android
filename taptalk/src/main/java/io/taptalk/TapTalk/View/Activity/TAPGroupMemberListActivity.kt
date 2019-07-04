@@ -7,14 +7,17 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
 import io.taptalk.TapTalk.ViewModel.TAPGroupMemberViewModel
@@ -43,6 +46,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))
                 intent.putExtra(ROOM_ID, groupViewModel?.groupData?.roomID)
                 startActivityForResult(intent, GROUP_ADD_MEMBER)
+            }
+
+            R.id.ll_remove_button -> {
+                TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID ?: "",
+                        groupViewModel?.selectedMembers?.keys?.toList(), removeRoomMembersView)
             }
         }
     }
@@ -116,6 +124,12 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         rv_contact_list.layoutManager = LinearLayoutManager(this)
         rv_contact_list.setHasFixedSize(true)
 
+        if (groupViewModel?.isActiveUserIsAdmin == true) {
+            fl_add_members.visibility = View.VISIBLE
+        } else {
+            fl_add_members.visibility = View.GONE
+        }
+
         //set total member count
         tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
         tv_member_count.visibility = View.VISIBLE
@@ -123,6 +137,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         iv_button_back.setOnClickListener(this)
         iv_button_action.setOnClickListener(this)
         ll_add_button.setOnClickListener(this)
+        ll_remove_button.setOnClickListener(this)
 
         et_search.addTextChangedListener(searchTextWatcher)
         et_search.setOnEditorActionListener(searchEditorActionListener)
@@ -228,6 +243,28 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         ll_promote_demote_admin.visibility = View.VISIBLE
         ll_add_button.visibility = View.GONE
         adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
+    }
+
+    private val removeRoomMembersView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+        }
+
+        override fun onSuccess(response: TAPCreateRoomResponse?) {
+            super.onSuccess(response)
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
