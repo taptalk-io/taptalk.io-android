@@ -133,7 +133,7 @@
             android:background="@drawable/tap_bg_button_active_ripple"
             android:gravity="center"
             android:orientation="horizontal"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="16dp"
@@ -154,28 +154,62 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/ll_remove_button"
+            android:id="@+id/ll_button_admin_action"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center"
-                android:src="@drawable/tap_ic_delete_red"
-                android:tint="@color/tapButtonIconDestructiveColor" />
+            <LinearLayout
+                android:id="@+id/ll_make_admin"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@drawable/tap_bg_button_active_ripple"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="visible">
 
-            <TextView
-                style="@style/tapClickableDestructiveLabelStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="12dp"
-                android:lineSpacingExtra="6sp"
-                android:text="@string/tap_remove_group_members" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tap_ic_appoint_admin"
+                    android:tint="@color/tapButtonIconColor" />
+
+                <TextView
+                    style="@style/tapButtonLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:lineSpacingExtra="6sp"
+                    android:text="@string/tap_appoint_admin" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_remove_button"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tap_ic_delete_red"
+                    android:tint="@color/tapButtonIconDestructiveColor" />
+
+                <TextView
+                    style="@style/tapClickableDestructiveLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="12dp"
+                    android:lineSpacingExtra="6sp"
+                    android:text="@string/tap_remove_group_members" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

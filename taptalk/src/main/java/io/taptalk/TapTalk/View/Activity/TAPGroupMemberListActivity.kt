@@ -179,7 +179,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun cancelSelectionMode(isNeedClearAll: Boolean) {
         groupViewModel?.isSelectionMode = false
-        ll_remove_button.visibility = View.GONE
+        ll_button_admin_action.visibility = View.GONE
         ll_add_button.visibility = View.VISIBLE
         adapter?.updateCellMode(TAPGroupMemberAdapter.NORMAL_MODE)
 
@@ -194,7 +194,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun startSelectionMode() {
         groupViewModel?.isSelectionMode = true
-        ll_remove_button.visibility = View.VISIBLE
+        ll_button_admin_action.visibility = View.VISIBLE
         ll_add_button.visibility = View.GONE
         adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
     }
