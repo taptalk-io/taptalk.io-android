@@ -90,6 +90,7 @@
     <string name="tap_cannot_add_more_people">Cannot add more people</string>
     <string name="tap_admin">Admin</string>
     <string name="tap_appoint_admin">Appoint as Admin</string>
+    <string name="tap_remove_admin">Remove as Admin</string>
     <string name="tap_group_limit_reached">The max limit number of people in one group chat has been reached</string>
 
     <!--Guides-->

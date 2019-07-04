@@ -47,12 +47,6 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
         private val groupAdapter = adapter
 
         override fun onBind(item: TAPUserModel?, position: Int) {
-            //activate / show member role (Admin)
-//            when (position) {
-//                in 0..1 -> tvMemberRole.visibility = View.VISIBLE
-//                else -> tvMemberRole.visibility = View.GONE
-//            }
-            Log.e("><><><", "${groupAdapter.adminList.isNotEmpty()}")
             if (groupAdapter.adminList.isNotEmpty() && groupAdapter.adminList.contains(item?.userID ?: "0")) {
                 tvMemberRole.visibility = View.VISIBLE
             } else tvMemberRole.visibility = View.GONE

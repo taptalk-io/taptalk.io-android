@@ -7,10 +7,10 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -51,19 +51,47 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     var adapter: TAPGroupMemberAdapter? = null
     private val groupInterface = object : TapTalkGroupMemberListInterface {
         override fun onContactLongPress(contact: TAPUserModel?) {
-            groupViewModel?.addSelectedMember(contact)
-            startSelectionMode()
+            if (groupViewModel?.isActiveUserIsAdmin == true &&
+                    groupViewModel?.groupData?.admins?.contains(contact?.userID) == true) {
+                groupViewModel?.addSelectedMember(contact)
+                ll_promote_demote_admin.visibility = View.VISIBLE
+                iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_demote_admins)
+                tv_promote_demote_icon.text = resources.getText(R.string.tap_remove_admin)
+                startSelectionMode()
+            } else if (groupViewModel?.isActiveUserIsAdmin == true) {
+                groupViewModel?.addSelectedMember(contact)
+                ll_promote_demote_admin.visibility = View.VISIBLE
+                iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_appoint_admin)
+                tv_promote_demote_icon.text = resources.getText(R.string.tap_appoint_admin)
+                startSelectionMode()
+            }
         }
 
         override fun onContactSelected(contact: TAPUserModel?): Boolean {
-            groupViewModel?.addSelectedMember(contact)
+            if (groupViewModel?.isActiveUserIsAdmin == true) {
+                groupViewModel?.addSelectedMember(contact)
+                ll_promote_demote_admin.visibility = View.GONE
+            }
             return true
         }
 
         override fun onContactDeselected(contact: TAPUserModel?) {
-            groupViewModel?.removeSelectedMember(contact?.userID ?: "")
-            if (groupViewModel?.isSelectedMembersEmpty() == true) {
+            if (groupViewModel?.isActiveUserIsAdmin == true) {
+                groupViewModel?.removeSelectedMember(contact?.userID ?: "")
+            }
+
+            if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.isSelectedMembersEmpty() == true) {
                 cancelSelectionMode(false)
+            } else if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.selectedMembers?.size == 1 &&
+                    groupViewModel?.groupData?.admins?.contains(
+                            groupViewModel?.selectedMembers?.entries?.iterator()?.next()?.value?.userID) == true) {
+                ll_promote_demote_admin.visibility = View.VISIBLE
+                iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_demote_admins)
+                tv_promote_demote_icon.text = resources.getText(R.string.tap_remove_admin)
+            } else if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.selectedMembers?.size == 1) {
+                ll_promote_demote_admin.visibility = View.VISIBLE
+                iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_appoint_admin)
+                tv_promote_demote_icon.text = resources.getText(R.string.tap_appoint_admin)
             }
         }
     }
@@ -77,7 +105,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun initView() {
         tv_title.text = resources.getString(R.string.tap_group_members)
-        groupViewModel?.groupData = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
+        //groupViewModel?.groupData = intent.getParcelableExtra(ROOM)
+        groupViewModel?.setGroupDataAndCheckAdmin(intent.getParcelableExtra(ROOM))
         groupViewModel?.participantsList = groupViewModel?.groupData?.groupParticipants?.toMutableList()
                 ?: mutableListOf()
 
@@ -179,6 +208,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun cancelSelectionMode(isNeedClearAll: Boolean) {
         groupViewModel?.isSelectionMode = false
+        groupViewModel?.selectedMembers?.clear()
         ll_button_admin_action.visibility = View.GONE
         ll_add_button.visibility = View.VISIBLE
         adapter?.updateCellMode(TAPGroupMemberAdapter.NORMAL_MODE)
@@ -195,16 +225,18 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     private fun startSelectionMode() {
         groupViewModel?.isSelectionMode = true
         ll_button_admin_action.visibility = View.VISIBLE
+        ll_promote_demote_admin.visibility = View.VISIBLE
         ll_add_button.visibility = View.GONE
         adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
-            when(requestCode) {
+            when (requestCode) {
                 GROUP_ADD_MEMBER -> {
                     val updatedGroupParticipant = data?.getParcelableArrayListExtra<TAPUserModel>(GROUP_MEMBERS)
-                    groupViewModel?.groupData?.groupParticipants = updatedGroupParticipant?.toMutableList() ?: groupViewModel?.participantsList
+                    groupViewModel?.groupData?.groupParticipants = updatedGroupParticipant?.toMutableList()
+                            ?: groupViewModel?.participantsList
                     adapter?.items = groupViewModel?.groupData?.groupParticipants
                     adapter?.notifyDataSetChanged()
 

@@ -133,7 +133,7 @@
             android:background="@drawable/tap_bg_button_active_ripple"
             android:gravity="center"
             android:orientation="horizontal"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <ImageView
                 android:layout_width="16dp"
@@ -158,10 +158,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <LinearLayout
-                android:id="@+id/ll_make_admin"
+                android:id="@+id/ll_promote_demote_admin"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:background="@drawable/tap_bg_button_active_ripple"
@@ -170,6 +170,7 @@
                 android:visibility="visible">
 
                 <ImageView
+                    android:id="@+id/iv_promote_demote_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -177,6 +178,7 @@
                     android:tint="@color/tapButtonIconColor" />
 
                 <TextView
+                    android:id="@+id/tv_promote_demote_icon"
                     style="@style/tapButtonLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
