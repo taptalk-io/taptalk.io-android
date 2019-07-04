@@ -167,27 +167,27 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             // Message is read
             if (null != message.getIsRead() && message.getIsRead()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_read_orange);
-                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageRead)));
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageRead)));
             }
             // Message is delivered
             else if (null != message.getDelivered() && message.getDelivered()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
-                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageDelivered)));
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDelivered)));
             }
             // Message failed to send
             else if (null != message.getFailedSend() && message.getFailedSend()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_grey);
-                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageFailed)));
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageFailed)));
             }
             // Message sent
             else if (null != message.getSending() && !message.getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
-                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageSent)));
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSent)));
             }
             // Message is sending
             else if (null != message.getSending() && message.getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_sending_grey);
-                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageSending)));
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSending)));
             }
 
             clContainer.setOnClickListener(v -> {

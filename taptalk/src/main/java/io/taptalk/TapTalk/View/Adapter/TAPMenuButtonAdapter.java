@@ -97,8 +97,8 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                     private ValueAnimator getTransitionActive() {
                         if (null == transitionToActive) {
                             transitionToActive = ValueAnimator.ofArgb(
-                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileNotificationInactive),
-                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileNotificationActive));
+                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileMenuNotificationInactive),
+                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileMenuNotificationActive));
                             transitionToActive.setDuration(DEFAULT_ANIMATION_TIME);
                             transitionToActive.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -109,8 +109,8 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                     private ValueAnimator getTransitionInactive() {
                         if (null == transitionToInactive) {
                             transitionToInactive = ValueAnimator.ofArgb(
-                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileNotificationActive),
-                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileNotificationInactive));
+                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileMenuNotificationActive),
+                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileMenuNotificationInactive));
                             transitionToInactive.setDuration(DEFAULT_ANIMATION_TIME);
                             transitionToInactive.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));

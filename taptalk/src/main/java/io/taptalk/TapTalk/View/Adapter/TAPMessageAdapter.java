@@ -1402,7 +1402,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                  @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
-            ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageSent)));
+            ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSent)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         // Show status text and reply button for non-text bubbles
@@ -1421,7 +1421,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                  @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageResource(R.drawable.tap_ic_read_orange);
-            ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageRead)));
+            ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageRead)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         if (null != ivSending) {
@@ -1442,7 +1442,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                       @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
-            ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageDelivered)));
+            ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDelivered)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         if (null != ivSending) {
@@ -1560,15 +1560,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     if (null != item.getIsRead() && item.getIsRead()) {
                         // Message has been read
                         ivMessageStatus.setImageResource(R.drawable.tap_ic_read_orange);
-                        ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageRead)));
+                        ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageRead)));
                     } else if (null != item.getDelivered() && item.getDelivered()) {
                         // Message is delivered
                         ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
-                        ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageDelivered)));
+                        ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDelivered)));
                     } else if (null != item.getSending() && !item.getSending()) {
                         // Message sent
                         ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
-                        ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageSent)));
+                        ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSent)));
                     }
                     if (animate) {
                         // Animate shrink

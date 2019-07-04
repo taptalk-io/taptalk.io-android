@@ -222,7 +222,7 @@
         android:layout_marginBottom="5dp"
         android:alpha="0"
         android:src="@drawable/tap_ic_sending_grey"
-        android:tint="@color/tapIconChatRoomMessageSending"
+        android:tint="@color/tapIconMessageSending"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"

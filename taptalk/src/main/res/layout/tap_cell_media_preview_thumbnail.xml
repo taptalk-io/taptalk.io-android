@@ -34,7 +34,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
-            android:indeterminateTint="@color/tapIconLoadingProgressLight"
+            android:indeterminateTint="@color/tapIconLoadingProgressWhite"
             android:visibility="gone" />
 
     </FrameLayout>

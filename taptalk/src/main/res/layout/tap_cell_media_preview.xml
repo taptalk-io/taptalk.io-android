@@ -33,7 +33,7 @@
         android:background="@drawable/tap_bg_circle_6604040f"
         android:padding="8dp"
         android:src="@drawable/tap_ic_loading_progress_circle_white"
-        android:tint="@color/tapIconLoadingProgressLight"
+        android:tint="@color/tapIconLoadingProgressWhite"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

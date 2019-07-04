@@ -200,7 +200,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:src="@drawable/tap_ic_loading_progress_circle_white"
-                        android:tint="@color/tapIconLoadingProgressLight"
+                        android:tint="@color/tapIconLoadingProgressWhite"
                         android:visibility="gone" />
 
                 </FrameLayout>

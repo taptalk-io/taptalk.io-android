@@ -246,7 +246,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             menuNotification = new TAPMenuItem(
                     MENU_NOTIFICATION,
                     R.drawable.tap_ic_notifications_grey,
-                    R.color.tapIconChatProfileNotificationInactive,
+                    R.color.tapIconChatProfileMenuNotificationInactive,
                     R.style.tapChatProfileMenuLabelStyle,
                     true,
                     false,
@@ -255,7 +255,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             menuNotification = new TAPMenuItem(
                     MENU_NOTIFICATION,
                     R.drawable.tap_ic_notifications_pumpkin_orange,
-                    R.color.tapIconChatProfileNotificationActive,
+                    R.color.tapIconChatProfileMenuNotificationActive,
                     R.style.tapChatProfileMenuLabelStyle,
                     true,
                     true,
@@ -264,7 +264,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         TAPMenuItem menuRoomColor = new TAPMenuItem(
                 MENU_ROOM_COLOR,
                 R.drawable.tap_ic_color_grey,
-                R.color.tapIconChatProfileConversationColor,
+                R.color.tapIconChatProfileMenuConversationColor,
                 R.style.tapChatProfileMenuLabelStyle,
                 false,
                 false,
@@ -273,7 +273,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         TAPMenuItem menuRoomSearchChat = new TAPMenuItem(
                 MENU_ROOM_COLOR,
                 R.drawable.tap_ic_search_grey,
-                R.color.tapIconChatProfileSearchChat,
+                R.color.tapIconChatProfileMenuSearchChat,
                 R.style.tapChatProfileMenuLabelStyle,
                 false,
                 false,
@@ -289,7 +289,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPMenuItem menuBlock = new TAPMenuItem(
                     MENU_BLOCK,
                     R.drawable.tap_ic_block_grey,
-                    R.color.tapIconChatProfileBlockUser,
+                    R.color.tapIconChatProfileMenuBlockUser,
                     R.style.tapChatProfileMenuLabelStyle,
                     false,
                     false,
@@ -297,7 +297,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPMenuItem menuClearChat = new TAPMenuItem(
                     MENU_EXIT_AND_CLEAR_CHAT,
                     R.drawable.tap_ic_delete_red,
-                    R.color.tapIconChatProfileClearChat,
+                    R.color.tapIconChatProfileMenuClearChat,
                     R.style.tapChatProfileMenuDestructiveLabelStyle,
                     false,
                     false,
@@ -310,7 +310,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPMenuItem menuViewMembers = new TAPMenuItem(
                     MENU_VIEW_MEMBERS,
                     R.drawable.tap_ic_members_grey,
-                    R.color.tapIconGroupProfileViewMembers,
+                    R.color.tapIconGroupProfileMenuViewMembers,
                     R.style.tapChatProfileMenuLabelStyle,
                     false,
                     false,
@@ -318,7 +318,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPMenuItem menuExitGroup = new TAPMenuItem(
                     MENU_EXIT_GROUP,
                     R.drawable.tap_ic_delete_red,
-                    R.color.tapIconChatProfileClearChat,
+                    R.color.tapIconChatProfileMenuClearChat,
                     R.style.tapChatProfileMenuDestructiveLabelStyle,
                     false,
                     false,
@@ -712,7 +712,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     private void showLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
+            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }
