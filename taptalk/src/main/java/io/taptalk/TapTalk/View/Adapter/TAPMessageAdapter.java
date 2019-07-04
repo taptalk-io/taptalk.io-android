@@ -1364,6 +1364,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
             if (null != ivMessageStatus) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_circle_transparent);
+                ivMessageStatus.setImageTintList(null);
                 ivMessageStatus.setVisibility(View.VISIBLE);
             }
             if (null != ivSending) {
@@ -1553,6 +1554,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivReply.setVisibility(View.GONE);
                     ivMessageStatus.setVisibility(View.VISIBLE);
                     ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_circle_transparent);
+                    ivMessageStatus.setImageTintList(null);
                     tvMessageStatus.setVisibility(View.VISIBLE);
                 } else if (null != item.getSending() && !item.getSending()) {
                     if (null != item.getIsRead() && item.getIsRead()) {

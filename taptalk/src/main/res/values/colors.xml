@@ -100,7 +100,7 @@
     <color name="tapIconRoomListMessageFailed">@color/tapGrey9b</color>
     <color name="tapIconRoomListMessageSent">@color/tapGrey9b</color>
     <color name="tapIconRoomListMessageDelivered">@color/tapGrey9b</color>
-    <color name="tapIconRoomListMessageRead">@color/tapSentGreen</color>
+    <color name="tapIconRoomListMessageRead">@color/tapColorPrimary</color>
     <color name="tapIconRoomListMessageDeleted">@color/tapGrey9b</color>
     <color name="tapIconRoomListMuted">@color/tapGrey9b</color>
     <color name="tapIconStartNewChatButton">@color/tapWhite</color>
