@@ -439,7 +439,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         iv_remove_profile_picture.setOnClickListener(null)
         fl_button_continue.setOnClickListener(null)
 
-        iv_button_back.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_orange))
+        iv_button_back.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
         TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_button_back)
 
         et_full_name.isEnabled = false
@@ -466,7 +466,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         fl_button_continue.setOnClickListener { register() }
 
-        iv_button_back.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_back_arrow_pumpkin_orange))
+        iv_button_back.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_orange))
         iv_button_back.clearAnimation()
 
         et_full_name.isEnabled = true

@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
@@ -167,7 +166,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             // Change Status Message Icon
             // Message is read
             if (null != message.getIsRead() && message.getIsRead()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_read_green);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_read_orange);
                 ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageRead)));
             }
             // Message is delivered

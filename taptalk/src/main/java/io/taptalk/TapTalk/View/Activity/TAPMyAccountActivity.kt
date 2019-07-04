@@ -400,7 +400,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_remove_profile_picture.setOnClickListener(null)
         fl_button_update.setOnClickListener(null)
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_orange))
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_white))
         TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
 
         // TODO temporarily disable editing
@@ -452,7 +452,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         civ_profile_picture.setOnClickListener(null)
         ll_change_profile_picture.setOnClickListener(null)
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_orange))
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
         TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_button_close)
 
         tv_label_change_profile_picture.text = getString(R.string.tap_uploading)

@@ -163,7 +163,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
             // Message is read
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_read_green);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_read_orange);
                 ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconRoomListMessageRead)));
                 ivMessageStatus.setPadding(0, 0, 0, 0);
             }

@@ -121,7 +121,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private TAPMessageModel expandedBubble;
     private TAPUserModel myUserModel;
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
-    private float initialTranslationX = TAPUtils.getInstance().dpToPx(-16);
+    private float initialTranslationX = TAPUtils.getInstance().dpToPx(-22);
     private long defaultAnimationTime = 200L;
     private RequestManager glide;
 
@@ -1400,7 +1400,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                  TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
                                  @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
-            ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);
+            ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
             ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageSent)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
@@ -1419,7 +1419,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                  TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
                                  @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
-            ivMessageStatus.setImageResource(R.drawable.tap_ic_message_read_green);
+            ivMessageStatus.setImageResource(R.drawable.tap_ic_read_orange);
             ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageRead)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
@@ -1440,7 +1440,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                       TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
                                       @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
-            ivMessageStatus.setImageResource(R.drawable.tap_ic_message_delivered_grey);
+            ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
             ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageDelivered)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
@@ -1557,15 +1557,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else if (null != item.getSending() && !item.getSending()) {
                     if (null != item.getIsRead() && item.getIsRead()) {
                         // Message has been read
-                        ivMessageStatus.setImageResource(R.drawable.tap_ic_message_read_green);
+                        ivMessageStatus.setImageResource(R.drawable.tap_ic_read_orange);
                         ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageRead)));
                     } else if (null != item.getDelivered() && item.getDelivered()) {
                         // Message is delivered
-                        ivMessageStatus.setImageResource(R.drawable.tap_ic_message_delivered_grey);
+                        ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
                         ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageDelivered)));
                     } else if (null != item.getSending() && !item.getSending()) {
                         // Message sent
-                        ivMessageStatus.setImageResource(R.drawable.tap_ic_message_sent_grey);
+                        ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
                         ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconChatRoomMessageSent)));
                     }
                     if (animate) {

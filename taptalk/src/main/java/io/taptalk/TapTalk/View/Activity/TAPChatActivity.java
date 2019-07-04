@@ -1628,7 +1628,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void showUnreadButtonLoading() {
         runOnUiThread(() -> {
             tvUnreadButtonCount.setText(getString(R.string.tap_loading));
-            ivUnreadButtonImage.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
+            ivUnreadButtonImage.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivUnreadButtonImage.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivUnreadButtonImage);
             }

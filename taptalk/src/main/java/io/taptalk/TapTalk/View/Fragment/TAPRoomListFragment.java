@@ -505,7 +505,7 @@ public class TAPRoomListFragment extends Fragment {
 
     private void showChatRoomSettingUp() {
         ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
+        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
         ivSetupChat.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapIconRoomListSettingUp));
         ivSetupChatLoading.setColorFilter(ContextCompat.getColor(getContext(), R.color.tapIconLoadingProgress));
         tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));

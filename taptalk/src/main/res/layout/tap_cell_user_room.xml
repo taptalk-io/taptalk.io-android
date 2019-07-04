@@ -126,11 +126,10 @@
 
         <ImageView
             android:id="@+id/iv_message_status"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_gravity="end"
-            android:src="@drawable/tap_ic_message_sending_grey"
-            android:visibility="invisible" />
+            tools:src="@drawable/tap_ic_sending_grey" />
 
         <TextView
             android:id="@+id/tv_badge_unread"
@@ -145,6 +144,7 @@
             android:paddingTop="2dp"
             android:paddingEnd="2dp"
             android:paddingBottom="2dp"
+            android:visibility="invisible"
             tools:text="1" />
 
     </FrameLayout>
@@ -154,7 +154,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
-        android:background="@color/tapGreyEa"
+        android:background="@color/tapGreyDc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/civ_avatar" />
 
@@ -162,7 +162,7 @@
         android:id="@+id/v_separator_full"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@color/tapGreyEa"
+        android:background="@color/tapGreyDc"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

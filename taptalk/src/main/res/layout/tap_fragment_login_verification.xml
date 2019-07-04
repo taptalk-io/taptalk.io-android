@@ -14,7 +14,7 @@
         android:paddingTop="12dp"
         android:paddingEnd="15dp"
         android:paddingBottom="12dp"
-        android:src="@drawable/tap_ic_back_arrow_pumpkin_orange"
+        android:src="@drawable/tap_ic_chevron_left_orange"
         android:tint="@color/tapIconNavBarBackButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -269,7 +269,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_loading_progress_circle_orange"
+                    android:src="@drawable/tap_ic_loading_progress_circle_white"
                     android:tint="@color/tapIconLoadingProgress" />
 
             </LinearLayout>

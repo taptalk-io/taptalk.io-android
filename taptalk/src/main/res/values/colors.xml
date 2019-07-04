@@ -168,7 +168,7 @@
     <color name="tapIconChatRoomMessageSending">@color/tapGrey9b</color>
     <color name="tapIconChatRoomMessageSent">@color/tapGrey9b</color>
     <color name="tapIconChatRoomMessageDelivered">@color/tapGrey9b</color>
-    <color name="tapIconChatRoomMessageRead">@color/tapSentGreen</color>
+    <color name="tapIconChatRoomMessageRead">@color/tapColorPrimary</color>
     <color name="tapIconLocationBubbleMarker">@color/tapColorPrimary</color>
 
     <color name="tapIconLocationPickerMarker">@color/tapColorPrimary</color>
