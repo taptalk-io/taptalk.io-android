@@ -30,6 +30,7 @@ import kotlinx.android.synthetic.main.tap_activity_create_new_group.rv_contact_l
 import kotlinx.android.synthetic.main.tap_activity_create_new_group.tv_member_count
 import kotlinx.android.synthetic.main.tap_activity_create_new_group.tv_title
 import kotlinx.android.synthetic.main.tap_activity_group_members.*
+import kotlinx.android.synthetic.main.tap_loading_layout_block_screen.*
 
 class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
@@ -139,6 +140,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         iv_button_action.setOnClickListener(this)
         ll_add_button.setOnClickListener(this)
         ll_remove_button.setOnClickListener(this)
+        fl_loading.setOnClickListener {}
 
         et_search.addTextChangedListener(searchTextWatcher)
         et_search.setOnEditorActionListener(searchEditorActionListener)
@@ -248,11 +250,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private val removeRoomMembersView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
         override fun startLoading() {
-            super.startLoading()
-        }
-
-        override fun endLoading() {
-            super.endLoading()
+            showLoading()
         }
 
         override fun onSuccess(response: TAPCreateRoomResponse?) {
@@ -270,15 +268,18 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
             Handler().postDelayed({
                 cancelSelectionMode(true)
+                this@TAPGroupMemberListActivity.endLoading()
             }, 400L)
         }
 
         override fun onError(error: TAPErrorModel?) {
             super.onError(error)
+            this@TAPGroupMemberListActivity.endLoading()
         }
 
         override fun onError(errorMessage: String?) {
             super.onError(errorMessage)
+            this@TAPGroupMemberListActivity.endLoading()
         }
     }
 
@@ -299,5 +300,32 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 }
             }
         }
+    }
+
+    private fun showLoading() {
+        runOnUiThread {
+            iv_saving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_orange))
+            if (null == iv_saving.animation)
+                TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_saving)
+            tv_loading_text.text = getString(R.string.tap_loading)
+            iv_button_action.setOnClickListener(null)
+            fl_loading.visibility = View.VISIBLE
+        }
+    }
+
+    private fun endLoading() {
+        runOnUiThread {
+            iv_saving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
+            iv_saving.clearAnimation()
+            tv_loading_text.text = getString(R.string.tap_finished)
+            Handler().postDelayed({
+                hideLoading()
+                iv_button_action.setOnClickListener(this)
+            }, 1000L)
+        }
+    }
+
+    private fun hideLoading() {
+        fl_loading.visibility = View.GONE
     }
 }

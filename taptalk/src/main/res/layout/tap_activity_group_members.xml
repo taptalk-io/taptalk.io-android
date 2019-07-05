@@ -14,7 +14,7 @@
         android:layout_height="?attr/actionBarSize"
         android:animateLayoutChanges="true"
         android:background="@color/tapDefaultNavBarBackgroundColor"
-        android:elevation="2dp"
+        android:elevation="3dp"
         android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -119,7 +119,7 @@
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
         android:background="@color/tapWhite"
-        android:elevation="2dp"
+        android:elevation="1dp"
         android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -219,5 +219,7 @@
         </LinearLayout>
 
     </FrameLayout>
+
+    <include layout="@layout/tap_loading_layout_block_screen" />
 
 </android.support.constraint.ConstraintLayout>

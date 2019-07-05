@@ -269,6 +269,7 @@
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_letter_count">%d/%d</string>
     <string name="tap_loading">Loading</string>
+    <string name="tap_finished">Finished</string>
     <string name="tap_log_out">Log Out</string>
     <string name="tap_log_out_confirmation">Are you sure you want to log out?</string>
     <string name="tap_messages">Messages</string>
