@@ -280,13 +280,9 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
                         vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
             else {
                 btnStopLoadingState();
-//                Intent intent = new Intent(TAPGroupSubjectActivity.this, TAPEditGroupActivity.class);
-//                intent.putExtra(ROOM_ID, vm.getGroupData().getRoomID());
-//                startActivity(intent);
-//                setResult(RESULT_OK);
-//                finish();
 //                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-                openChatGroupProfile();
+                //openChatGroupProfile();
+                openChatRoom();
             }
         }
 
@@ -319,7 +315,8 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             super.onSuccess(response);
             vm.getGroupData().setRoomImage(response.getRoom().getRoomImage());
             btnStopLoadingState();
-            openChatGroupProfile();
+            //openChatGroupProfile();
+            openChatRoom();
         }
 
         @Override
@@ -339,6 +336,13 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         Intent intent = new Intent(this, TAPChatProfileActivity.class);
         intent.putExtra(ROOM, vm.getGroupData());
         startActivity(intent);
+        setResult(RESULT_OK);
+        finish();
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+    }
+
+    public void openChatRoom() {
+        TAPUtils.getInstance().startChatActivity(this, vm.getGroupData());
         setResult(RESULT_OK);
         finish();
         overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);

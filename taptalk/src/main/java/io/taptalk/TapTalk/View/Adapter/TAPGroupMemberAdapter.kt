@@ -1,12 +1,14 @@
 package io.taptalk.TapTalk.View.Adapter
 
-import android.util.Log
+import android.support.v7.util.DiffUtil
+import android.support.v7.util.DiffUtil.DiffResult
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import io.taptalk.TapTalk.DiffCallback.TAPGroupMemberDiffCallback
 import io.taptalk.TapTalk.Helper.CircleImageView
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder
 import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
@@ -15,7 +17,8 @@ import io.taptalk.Taptalk.R
 
 class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminList: List<String>, groupInterface: TapTalkGroupMemberListInterface) : TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>>() {
 
-    var adminList : MutableList<String> = mutableListOf()
+    var adminList: MutableList<String> = mutableListOf()
+
     init {
         items = members
         this.adminList = adminList.toMutableList()
@@ -38,6 +41,12 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
         notifyDataSetChanged()
     }
 
+    fun setMemberItems(newList: List<TAPUserModel>) {
+        val diffResult: DiffResult = DiffUtil.calculateDiff(TAPGroupMemberDiffCallback(items, newList), true)
+        setItemsWithoutNotify(newList)
+        diffResult.dispatchUpdatesTo(this@TAPGroupMemberAdapter)
+    }
+
     class MemberViewHolder(adapter: TAPGroupMemberAdapter, parent: ViewGroup, itemLayoutId: Int) : TAPBaseViewHolder<TAPUserModel>(parent, itemLayoutId) {
         private val civAvatar: CircleImageView = itemView.findViewById(R.id.civ_avatar)
         private val tvFullName: TextView = itemView.findViewById(R.id.tv_full_name)
@@ -47,13 +56,8 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
         private val groupAdapter = adapter
 
         override fun onBind(item: TAPUserModel?, position: Int) {
-            //activate / show member role (Admin)
-//            when (position) {
-//                in 0..1 -> tvMemberRole.visibility = View.VISIBLE
-//                else -> tvMemberRole.visibility = View.GONE
-//            }
-            Log.e("><><><", "${groupAdapter.adminList.isNotEmpty()}")
-            if (groupAdapter.adminList.isNotEmpty() && groupAdapter.adminList.contains(item?.userID ?: "0")) {
+            if (groupAdapter.adminList.isNotEmpty() && groupAdapter.adminList.contains(item?.userID
+                            ?: "0")) {
                 tvMemberRole.visibility = View.VISIBLE
             } else tvMemberRole.visibility = View.GONE
 

@@ -89,6 +89,8 @@
     <string name="tap_type_group_name">Type group name</string>
     <string name="tap_cannot_add_more_people">Cannot add more people</string>
     <string name="tap_admin">Admin</string>
+    <string name="tap_appoint_admin">Appoint as Admin</string>
+    <string name="tap_remove_admin">Remove as Admin</string>
     <string name="tap_group_limit_reached">The max limit number of people in one group chat has been reached</string>
 
     <!--Guides-->
@@ -268,6 +270,7 @@
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_letter_count">%d/%d</string>
     <string name="tap_loading">Loading</string>
+    <string name="tap_finished">Finished</string>
     <string name="tap_log_out">Log Out</string>
     <string name="tap_log_out_confirmation">Are you sure you want to log out?</string>
     <string name="tap_messages">Messages</string>

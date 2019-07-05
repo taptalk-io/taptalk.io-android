@@ -593,9 +593,13 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPCommonResponse response) {
             super.onSuccess(response);
-            // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN 
-            TAPChatProfileActivity.this.endLoading();
-            onBackPressed();
+            if (response.getSuccess()) {
+                // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
+                TAPChatProfileActivity.this.endLoading();
+                onBackPressed();
+            } else {
+                TAPChatProfileActivity.this.endLoading();
+            }
         }
 
         @Override
@@ -716,7 +720,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }
-            tvLoadingText.setText(getString(R.string.tap_saving));
+            tvLoadingText.setText(getString(R.string.tap_loading));
             flLoading.setVisibility(View.VISIBLE);
         });
     }
@@ -725,7 +729,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
-            tvLoadingText.setText(getString(R.string.tap_image_saved));
+            tvLoadingText.setText(getString(R.string.tap_finished));
             flLoading.setOnClickListener(v -> hideLoading());
 
             new Handler().postDelayed(this::hideLoading, 1000L);
