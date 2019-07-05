@@ -14,6 +14,11 @@ class TAPGroupMemberViewModel(application: Application) : AndroidViewModel(appli
     var participantsList : MutableList<TAPUserModel>? = mutableListOf()
     var groupData : TAPRoomModel? = null
     var selectedMembers : LinkedHashMap<String?, TAPUserModel?> = linkedMapOf()
+    var adminButtonStatus : AdminButtonShowed = AdminButtonShowed.NOT_SHOWED
+
+    enum class AdminButtonShowed {
+        PROMOTE, DEMOTE, NOT_SHOWED
+    }
 
     fun setGroupDataAndCheckAdmin(groupData: TAPRoomModel?) {
         this.groupData = groupData

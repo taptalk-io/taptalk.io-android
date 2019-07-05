@@ -54,6 +54,21 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID ?: "",
                         groupViewModel?.selectedMembers?.keys?.toList(), removeRoomMembersView)
             }
+
+            R.id.ll_promote_demote_admin -> {
+                when(groupViewModel?.adminButtonStatus) {
+                    TAPGroupMemberViewModel.AdminButtonShowed.PROMOTE -> {
+                        TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.groupData?.roomID ?: "",
+                                groupViewModel?.getSelectedUserIDs(), appointAdminView)
+                    }
+
+                    TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE -> {
+                        TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.groupData?.roomID ?: "",
+                                groupViewModel?.getSelectedUserIDs(), appointAdminView)
+                    }
+                    else -> {}
+                }
+            }
         }
     }
 
@@ -67,12 +82,14 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 ll_promote_demote_admin.visibility = View.VISIBLE
                 iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_demote_admins)
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_remove_admin)
+                groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE
                 startSelectionMode()
             } else if (groupViewModel?.isActiveUserIsAdmin == true) {
                 groupViewModel?.addSelectedMember(contact)
                 ll_promote_demote_admin.visibility = View.VISIBLE
                 iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_appoint_admin)
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_appoint_admin)
+                groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.PROMOTE
                 startSelectionMode()
             }
         }
@@ -81,6 +98,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             if (groupViewModel?.isActiveUserIsAdmin == true) {
                 groupViewModel?.addSelectedMember(contact)
                 ll_promote_demote_admin.visibility = View.GONE
+                groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.NOT_SHOWED
             }
             return true
         }
@@ -92,16 +110,19 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
             if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.isSelectedMembersEmpty() == true) {
                 cancelSelectionMode(false)
+                groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.NOT_SHOWED
             } else if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.selectedMembers?.size == 1 &&
                     groupViewModel?.groupData?.admins?.contains(
                             groupViewModel?.selectedMembers?.entries?.iterator()?.next()?.value?.userID) == true) {
                 ll_promote_demote_admin.visibility = View.VISIBLE
                 iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_demote_admins)
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_remove_admin)
+                groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE
             } else if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.selectedMembers?.size == 1) {
                 ll_promote_demote_admin.visibility = View.VISIBLE
                 iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_appoint_admin)
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_appoint_admin)
+                groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.PROMOTE
             }
         }
     }
@@ -140,6 +161,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         iv_button_action.setOnClickListener(this)
         ll_add_button.setOnClickListener(this)
         ll_remove_button.setOnClickListener(this)
+        ll_promote_demote_admin.setOnClickListener(this)
         fl_loading.setOnClickListener {}
 
         et_search.addTextChangedListener(searchTextWatcher)
@@ -279,6 +301,39 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
         override fun onError(errorMessage: String?) {
             super.onError(errorMessage)
+            this@TAPGroupMemberListActivity.endLoading()
+        }
+    }
+
+    private val appointAdminView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
+        override fun startLoading() {
+            showLoading()
+        }
+
+        override fun onSuccess(response: TAPCreateRoomResponse?) {
+            groupViewModel?.groupData = response?.room
+            groupViewModel?.groupData?.groupParticipants = response?.participants
+            groupViewModel?.groupData?.admins = response?.admins
+            //adapter?.items = groupViewModel?.groupData?.groupParticipants
+            adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
+            adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
+
+            //set total member count
+            tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+            tv_member_count.visibility = View.VISIBLE
+            groupViewModel?.isUpdateMember = true
+
+            Handler().postDelayed({
+                cancelSelectionMode(true)
+                this@TAPGroupMemberListActivity.endLoading()
+            }, 400L)
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            this@TAPGroupMemberListActivity.endLoading()
+        }
+
+        override fun onError(errorMessage: String?) {
             this@TAPGroupMemberListActivity.endLoading()
         }
     }
