@@ -79,6 +79,7 @@ import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -249,7 +250,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
         if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-
+            callApiGetGroupData();
         } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
             callApiGetUserByUserID();
 
@@ -633,7 +634,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
                     if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-
+                        callApiGetGroupData();
                     } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
                         callApiGetUserByUserID();
                 } else if (vm.getMessageModels().size() > 0) {
@@ -1099,6 +1100,29 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         System.currentTimeMillis(),
                         beforeView);
             }
+        }).start();
+    }
+
+    private void callApiGetGroupData() {
+        new Thread(() -> {
+            TAPDataManager.getInstance().getChatRoomData(vm.getRoom().getRoomID(), new TAPDefaultDataView<TAPCreateRoomResponse>() {
+                @Override
+                public void onSuccess(TAPCreateRoomResponse response) {
+                    vm.setRoom(response.getRoom());
+                    vm.getRoom().setAdmins(response.getAdmins());
+                    vm.getRoom().setGroupParticipants(response.getParticipants());
+
+                    if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
+                        // Load room image
+                        loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
+                    } else {
+                        // Use default profile picture if image is empty
+                        civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+                    }
+
+                    tvRoomName.setText(vm.getRoom().getRoomName());
+                }
+            });
         }).start();
     }
 
