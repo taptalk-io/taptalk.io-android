@@ -62,6 +62,7 @@ import java.util.Random;
 
 import io.taptalk.TapTalk.API.Api.TAPApiConnection;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -104,6 +105,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TAPUtils {
 
@@ -410,10 +412,11 @@ public class TAPUtils {
     }
 
     private void startChatActivity(Context context, TAPRoomModel roomModel, boolean isTyping, @Nullable String jumpToMessageLocalID) {
-        if (TAPDataManager.getInstance().getActiveUser().getUserID().equals(
+        if (TYPE_PERSONAL == roomModel.getRoomType() && TAPDataManager.getInstance().getActiveUser().getUserID().equals(
                 TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
             return;
         }
+
         Activity activity = (Activity) context;
         activity.runOnUiThread(() -> dismissKeyboard(activity));
         TAPChatManager.getInstance().saveUnsentMessage();
