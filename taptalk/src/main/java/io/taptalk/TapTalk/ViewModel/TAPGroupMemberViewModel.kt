@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.ViewModel
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 
@@ -9,9 +10,17 @@ class TAPGroupMemberViewModel(application: Application) : AndroidViewModel(appli
     var isSearchActive: Boolean = false
     var isSelectionMode: Boolean = false
     var isUpdateMember : Boolean = false
+    var isActiveUserIsAdmin : Boolean = false
     var participantsList : MutableList<TAPUserModel>? = mutableListOf()
     var groupData : TAPRoomModel? = null
-    var selectedMembers : HashMap<String?, TAPUserModel?> = HashMap()
+    var selectedMembers : LinkedHashMap<String?, TAPUserModel?> = linkedMapOf()
+
+    fun setGroupDataAndCheckAdmin(groupData: TAPRoomModel?) {
+        this.groupData = groupData
+        if (groupData?.admins?.contains(TAPChatManager.getInstance().activeUser?.userID) == true) {
+            isActiveUserIsAdmin = true
+        }
+    }
 
     fun addSelectedMember(member: TAPUserModel?) {
         selectedMembers[member?.userID] = member
@@ -23,5 +32,9 @@ class TAPGroupMemberViewModel(application: Application) : AndroidViewModel(appli
 
     fun isSelectedMembersEmpty() : Boolean {
         return selectedMembers.size == 0
+    }
+
+    fun getSelectedUserIDs() : List<String?> {
+        return selectedMembers.keys.toList()
     }
 }
