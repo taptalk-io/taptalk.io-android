@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.DiffCallback.TAPRoomListDiffCallback;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
@@ -28,6 +29,9 @@ import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>> {
 
@@ -226,11 +230,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
 
             String myUserID = myUser.getUserID();
-            String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ?
-                    TAPChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getUser().getUserID()) :
-                    TAPChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getRecipientID());
 
-            if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
+            if (TYPE_PERSONAL == item.getLastMessage().getRoom().getRoomType() && !(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
+                String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ?
+                        TAPChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getUser().getUserID()) :
+                        TAPChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getRecipientID());
+
                 TAPUtils.getInstance().startChatActivity(
                         itemView.getContext(),
                         roomID,
@@ -241,6 +246,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                         item.getLastMessage().getRoom().getUnreadCount(),
                         item.isTyping());
                 TAPDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
+            } else if (TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
+                TAPUtils.getInstance().startChatActivity(itemView.getContext(), item.getLastMessage().getRoom());
             } else {
                 Toast.makeText(itemView.getContext(), "Invalid Room.", Toast.LENGTH_SHORT).show();
             }

@@ -18,9 +18,9 @@ public class TAPRoomModel implements Parcelable {
     @JsonProperty("type") private int roomType;
     @JsonProperty("unreadCount") private int unreadCount;
     @Nullable @JsonProperty("imageURL") private TAPImageURL roomImage;
-    @Nullable @JsonProperty("groupParticipants") private List<TAPUserModel> groupParticipants;
-    @Nullable @JsonProperty("numOfParticipants") private Integer numOfParticipants;
-    @Nullable @JsonProperty("admins") private List<String> admins;
+    @Nullable @JsonIgnore private List<TAPUserModel> groupParticipants;
+    @Nullable @JsonIgnore private Integer numOfParticipants;
+    @Nullable @JsonIgnore @JsonProperty("admins") private List<String> admins;
     @JsonIgnore private boolean isMuted;
 
     public TAPRoomModel(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor) {

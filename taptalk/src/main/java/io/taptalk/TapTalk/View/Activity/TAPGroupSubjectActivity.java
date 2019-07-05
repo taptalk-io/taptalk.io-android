@@ -281,7 +281,6 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
                         vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
             else {
                 btnStopLoadingState();
-
 //                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
                 //openChatGroupProfile();
                 openChatRoom();

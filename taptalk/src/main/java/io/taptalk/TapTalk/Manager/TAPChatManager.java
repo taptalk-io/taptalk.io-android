@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -73,6 +74,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 
 public class TAPChatManager {
@@ -444,7 +446,7 @@ public class TAPChatManager {
                     room,
                     TYPE_TEXT,
                     System.currentTimeMillis(),
-                    user, getOtherUserIdFromRoom(room.getRoomID()),
+                    user, TYPE_PERSONAL == room.getRoomType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
                     null
             );
         } else {
@@ -457,7 +459,7 @@ public class TAPChatManager {
                     room,
                     TYPE_TEXT,
                     System.currentTimeMillis(),
-                    user, getOtherUserIdFromRoom(room.getRoomID()),
+                    user, TYPE_PERSONAL == room.getRoomType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
                     data,
                     getQuotedMessages().get(room.getRoomID())
             );
