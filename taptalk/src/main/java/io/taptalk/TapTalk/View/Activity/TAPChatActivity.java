@@ -79,6 +79,7 @@ import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -142,6 +143,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_PREVIEW;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
@@ -247,7 +249,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
-        callApiGetUserByUserID();
+        if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+            callApiGetGroupData();
+        } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
+            callApiGetUserByUserID();
+
         if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
             callApiAfter();
         } else if (vm.isInitialAPICallFinished() && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
@@ -455,7 +461,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null == vm.getMyUserModel()) {
             vm.setMyUserModel(TAPChatManager.getInstance().getActiveUser());
         }
-        if (null == vm.getOtherUserModel()) {
+        if (null == vm.getOtherUserModel() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
         }
         if (null == vm.getRoom()) {
@@ -469,7 +475,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         getInitialUnreadCount();
 
-        return null != vm.getMyUserModel() && null != vm.getOtherUserModel();
+        return null != vm.getMyUserModel() && (null != vm.getOtherUserModel() || TYPE_GROUP == vm.getRoom().getRoomType());
     }
 
     private void initView() {
@@ -481,7 +487,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
             // Load room image
             loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
-        } else if (null != vm.getRoom() && vm.getRoom().getRoomType() == TYPE_PERSONAL && null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
+        } else if (null != vm.getRoom() && null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getRoomType() && null != vm.getOtherUserModel() &&
+                null != vm.getOtherUserModel().getAvatarURL().getThumbnail() &&
+                !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
             // Load user avatar URL
             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomImage);
             vm.getRoom().setRoomImage(vm.getOtherUserModel().getAvatarURL());
@@ -491,7 +500,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         // TODO: 1 February 2019 SET ROOM ICON FROM ROOM MODEL
-        if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getUserRole() && null != vm.getOtherUserModel().getUserRole().getRoleIconURL() && !vm.getOtherUserModel().getUserRole().getRoleIconURL().isEmpty()) {
+        if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getUserRole() &&
+                null != vm.getOtherUserModel().getUserRole().getRoleIconURL() && null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getRoomType() &&
+                !vm.getOtherUserModel().getUserRole().getRoleIconURL().isEmpty()) {
             glide.load(vm.getOtherUserModel().getUserRole().getRoleIconURL()).into(ivRoomIcon);
             ivRoomIcon.setVisibility(View.VISIBLE);
         } else {
@@ -535,7 +547,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TapTalk.requestCustomKeyboardItems(vm.getMyUserModel(), vm.getOtherUserModel()));
-        if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
+        if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0 &&
+                null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             // Enable custom keyboard
             vm.setCustomKeyboardEnabled(true);
             customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), customKeyboardItemModel -> {
@@ -620,7 +633,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             public void onSocketConnected() {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
-                    callApiGetUserByUserID();
+                    if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+                        callApiGetGroupData();
+                    } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
+                        callApiGetUserByUserID();
                 } else if (vm.getMessageModels().size() > 0) {
                     callApiAfter();
                 } else {
@@ -650,13 +666,24 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void openRoomProfile() {
-        if (null != vm.getOtherUserModel()) {
+        if (null != vm.getOtherUserModel() && null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
                 // TODO: 21 December 2018 HANDLE GROUP CHAT
                 tapListener.onUserProfileClicked(TAPChatActivity.this, vm.getOtherUserModel());
             }
             hideUnreadButton();
+        } else if (null != vm.getRoom() &&
+                TYPE_GROUP == vm.getRoom().getRoomType()) {
+            openChatGroupProfile(vm.getRoom());
         }
+    }
+
+    public void openChatGroupProfile(TAPRoomModel roomModel) {
+        Intent intent = new Intent(this, TAPChatProfileActivity.class);
+        intent.putExtra(ROOM, roomModel);
+        startActivity(intent);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void loadProfilePicture(String image, ImageView imageView) {
@@ -1076,6 +1103,29 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }).start();
     }
 
+    private void callApiGetGroupData() {
+        new Thread(() -> {
+            TAPDataManager.getInstance().getChatRoomData(vm.getRoom().getRoomID(), new TAPDefaultDataView<TAPCreateRoomResponse>() {
+                @Override
+                public void onSuccess(TAPCreateRoomResponse response) {
+                    vm.setRoom(response.getRoom());
+                    vm.getRoom().setAdmins(response.getAdmins());
+                    vm.getRoom().setGroupParticipants(response.getParticipants());
+
+                    if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
+                        // Load room image
+                        loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
+                    } else {
+                        // Use default profile picture if image is empty
+                        civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+                    }
+
+                    tvRoomName.setText(vm.getRoom().getRoomName());
+                }
+            });
+        }).start();
+    }
+
     private void callApiGetUserByUserID() {
         new Thread(() -> {
             if (TAPChatManager.getInstance().isNeedToCalledUpdateRoomStatusAPI() &&
@@ -1109,6 +1159,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
         }).start();
     }
+
 
     private void callApiAfter() {
         /*call api after rules:
@@ -1818,7 +1869,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         }
                         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civOtherUserAvatar);
-                        } else if (null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
+                        } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType() &&
+                                null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civOtherUserAvatar);
                         } else {
                             civOtherUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
