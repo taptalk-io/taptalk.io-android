@@ -4,6 +4,7 @@ import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
@@ -256,6 +257,20 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
         override fun onSuccess(response: TAPCreateRoomResponse?) {
             super.onSuccess(response)
+            groupViewModel?.groupData = response?.room
+            groupViewModel?.groupData?.groupParticipants = response?.participants
+            groupViewModel?.groupData?.admins = response?.admins
+            //adapter?.items = groupViewModel?.groupData?.groupParticipants
+            adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
+
+            //set total member count
+            tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+            tv_member_count.visibility = View.VISIBLE
+            groupViewModel?.isUpdateMember = true
+
+            Handler().postDelayed({
+                cancelSelectionMode(true)
+            }, 400L)
         }
 
         override fun onError(error: TAPErrorModel?) {
