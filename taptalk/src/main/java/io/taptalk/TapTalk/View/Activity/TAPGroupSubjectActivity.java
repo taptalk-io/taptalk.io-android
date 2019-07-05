@@ -182,7 +182,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         Glide.with(this).load(vm.getGroupData().getRoomImage().getThumbnail()).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                civGroupImage.setImageResource(R.drawable.tap_bg_circle_d9d9d9);
+                civGroupImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
                 Toast.makeText(TAPGroupSubjectActivity.this, R.string.tap_failed_to_load_image, Toast.LENGTH_SHORT).show();
                 return false;
             }

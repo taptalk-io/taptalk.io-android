@@ -192,14 +192,14 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                         pbProgress.setMax(100);
                         pbProgress.setProgress(downloadProgressValue);
                         ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
-                        ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileCancelDownload)));
+                        ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileCancelUploadDownload)));
                         clContainer.setOnClickListener(v -> mediaInterface.onCancelDownloadClicked(item));
                     } else {
                         // Show download button
                         tvMediaInfo.setText(videoSize);
                         pbProgress.setProgress(0);
                         ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
-                        ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileDownload)));
+                        ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileUploadDownload)));
                         clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
                     }
                     tvMediaInfo.setVisibility(View.VISIBLE);

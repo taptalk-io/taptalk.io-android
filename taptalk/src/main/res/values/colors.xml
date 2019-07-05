@@ -155,10 +155,12 @@
     <color name="tapIconChatComposerShowKeyboardBackground">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatComposerAttach">@color/tapColorGrayIcon</color>
     <color name="tapIconFile">@color/tapColorWhiteIcon</color>
-    <color name="tapIconFileDownload">@color/tapColorWhiteIcon</color>
-    <color name="tapIconFileCancelDownload">@color/tapColorWhiteIcon</color>
-    <color name="tapIconFileRetryDownload">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileUploadDownload">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileCancelUploadDownload">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileRetryUploadDownload">@color/tapColorWhiteIcon</color>
     <color name="tapIconFilePlayMedia">@color/tapColorWhiteIcon</color>
+    <color name="tapIconDeletedRightMessageBubble">@color/tapColorWhiteIcon</color>
+    <color name="tapIconDeletedLeftMessageBubble">@color/tapColorGrayIcon</color>
     <color name="tapIconChatRoomUnreadButton">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatRoomUnreadIdentifier">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatRoomScrollToBottom">@color/tapColorPrimaryIcon</color>

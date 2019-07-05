@@ -193,7 +193,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 getResources().getColor(R.color.tapTransparentBlack40)}));
 
         // Initialize menus
-        List<TAPMenuItem> menuItems = GenerateChatProfileMenu();
+        List<TAPMenuItem> menuItems = generateChatProfileMenu();
 
         menuButtonAdapter = new TAPMenuButtonAdapter(menuItems, profileMenuInterface);
         rvMenuButtons.setAdapter(menuButtonAdapter);
@@ -239,13 +239,13 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         }
     }
 
-    private List<TAPMenuItem> GenerateChatProfileMenu() {
+    private List<TAPMenuItem> generateChatProfileMenu() {
         List<TAPMenuItem> menuItems = new ArrayList<>();
         TAPMenuItem menuNotification;
         if (vm.getRoom().isMuted()) {
             menuNotification = new TAPMenuItem(
                     MENU_NOTIFICATION,
-                    R.drawable.tap_ic_notifications_grey,
+                    R.drawable.tap_ic_notification_orange,
                     R.color.tapIconChatProfileMenuNotificationInactive,
                     R.style.tapChatProfileMenuLabelStyle,
                     true,
@@ -254,7 +254,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         } else {
             menuNotification = new TAPMenuItem(
                     MENU_NOTIFICATION,
-                    R.drawable.tap_ic_notifications_pumpkin_orange,
+                    R.drawable.tap_ic_notification_orange,
                     R.color.tapIconChatProfileMenuNotificationActive,
                     R.style.tapChatProfileMenuLabelStyle,
                     true,
@@ -272,7 +272,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         TAPMenuItem menuRoomSearchChat = new TAPMenuItem(
                 MENU_ROOM_COLOR,
-                R.drawable.tap_ic_search_grey,
+                R.drawable.tap_ic_search_grey_small,
                 R.color.tapIconChatProfileMenuSearchChat,
                 R.style.tapChatProfileMenuLabelStyle,
                 false,

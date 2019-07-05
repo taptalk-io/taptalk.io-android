@@ -153,43 +153,36 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Message Sender is not the active User
             if (null != item.getLastMessage() && !item.getLastMessage().getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
                 ivMessageStatus.setImageDrawable(null);
-                ivMessageStatus.setPadding(0, 0, 0, 0);
             }
             // Message is deleted
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
-               ivMessageStatus.setImageResource(R.drawable.tap_ic_deleted_white);
+               ivMessageStatus.setImageResource(R.drawable.tap_ic_block_grey);
                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDeleted)));
-               ivMessageStatus.setPadding(TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5),TAPUtils.getInstance().dpToPx(5));
             }
             // Message is read
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_read_orange);
                 ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageRead)));
-                ivMessageStatus.setPadding(0, 0, 0, 0);
             }
             // Message is delivered
             else if (null != item.getLastMessage() && null != item.getLastMessage().getDelivered() && item.getLastMessage().getDelivered()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
                 ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDelivered)));
-                ivMessageStatus.setPadding(0, 0, 0, 0);
             }
             // Message failed to send
             else if (null != item.getLastMessage() && null != item.getLastMessage().getFailedSend() && item.getLastMessage().getFailedSend()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_failed_grey);
                 ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageFailed)));
-                ivMessageStatus.setPadding(0, 0, 0, 0);
             }
             // Message sent
             else if (null != item.getLastMessage() && null != item.getLastMessage().getSending() && !item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
                 ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSent)));
-                ivMessageStatus.setPadding(0, 0, 0, 0);
             }
             // Message is sending
             else if (null != item.getLastMessage() && null != item.getLastMessage().getSending() && item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_sending_grey);
                 ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSending)));
-                ivMessageStatus.setPadding(0, 0, 0, 0);
             }
 
             // Show unread count

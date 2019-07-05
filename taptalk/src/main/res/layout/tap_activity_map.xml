@@ -23,7 +23,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_close_orange"
+            android:src="@drawable/tap_ic_close_grey"
             android:tint="@color/tapIconNavBarCloseButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -121,7 +121,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:background="@drawable/tap_bg_send_location_button_color"
-                            android:src="@drawable/tap_ic_checked_location"
+                            android:src="@drawable/tap_ic_send_white"
                             android:tint="@color/tapIconLocationPickerSendLocation" />
 
                     </LinearLayout>
@@ -170,7 +170,7 @@
                 android:layout_height="14dp"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="8dp"
-                android:src="@drawable/tap_ic_search_grey"
+                android:src="@drawable/tap_ic_search_orange"
                 android:tint="@color/tapIconSearchBarMagnifier" />
 
             <EditText

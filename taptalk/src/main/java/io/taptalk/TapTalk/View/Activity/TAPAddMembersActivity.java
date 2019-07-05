@@ -2,8 +2,10 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -22,6 +24,7 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -193,7 +196,8 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
             etSearch.setVisibility(View.GONE);
             etSearch.setText("");
             etSearch.clearFocus();
-            ivButtonAction.setImageResource(R.drawable.tap_ic_search_grey);
+            ivButtonAction.setImageResource(R.drawable.tap_ic_search_orange);
+            ivButtonAction.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconNavBarMagnifier)));
             TAPUtils.getInstance().dismissKeyboard(this);
         } else {
             // Show Search Bar
@@ -201,6 +205,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
             tvTitle.setVisibility(View.GONE);
             etSearch.setVisibility(View.VISIBLE);
             ivButtonAction.setImageResource(R.drawable.tap_ic_close_grey);
+            ivButtonAction.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconClearTextButton)));
             TAPUtils.getInstance().showKeyboard(this, etSearch);
         }
     }

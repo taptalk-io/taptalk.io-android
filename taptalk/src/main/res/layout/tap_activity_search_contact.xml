@@ -52,7 +52,7 @@
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="13dp"
+            android:padding="16dp"
             android:src="@drawable/tap_ic_close_grey"
             android:tint="@color/tapIconClearTextButton"
             app:layout_constraintBottom_toBottomOf="parent"

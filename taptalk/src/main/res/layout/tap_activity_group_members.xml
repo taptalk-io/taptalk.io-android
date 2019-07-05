@@ -68,7 +68,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_search_grey"
+            android:src="@drawable/tap_ic_search_orange"
             android:tint="@color/tapIconNavBarMagnifier"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -136,10 +136,10 @@
             android:visibility="visible">
 
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:src="@drawable/tap_ic_add_members_black"
+                android:src="@drawable/tap_ic_add_circle_grey"
                 android:tint="@color/tapButtonIconColor" />
 
             <TextView
@@ -147,7 +147,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="4dp"
                 android:lineSpacingExtra="6sp"
                 android:text="@string/tap_add_members" />
 

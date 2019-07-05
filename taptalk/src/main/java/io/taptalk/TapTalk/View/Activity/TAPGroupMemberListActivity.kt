@@ -3,7 +3,9 @@ package io.taptalk.TapTalk.View.Activity
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +16,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
@@ -111,7 +114,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 tv_title.visibility = View.VISIBLE
                 et_search.visibility = View.GONE
                 et_search.setText("")
-                iv_button_action.setImageResource(R.drawable.tap_ic_search_grey)
+                iv_button_action.setImageResource(R.drawable.tap_ic_search_orange)
+                iv_button_action.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconNavBarMagnifier))
                 TAPUtils.getInstance().dismissKeyboard(this@TAPGroupMemberListActivity, et_search)
             }
 
@@ -122,6 +126,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 et_search.visibility = View.VISIBLE
                 et_search.requestFocus()
                 iv_button_action.setImageResource(R.drawable.tap_ic_close_grey)
+                iv_button_action.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconClearTextButton))
                 TAPUtils.getInstance().showKeyboard(this, et_search)
             }
         }
@@ -201,10 +206,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK) {
-            when(requestCode) {
+            when (requestCode) {
                 GROUP_ADD_MEMBER -> {
                     val updatedGroupParticipant = data?.getParcelableArrayListExtra<TAPUserModel>(GROUP_MEMBERS)
-                    groupViewModel?.groupData?.groupParticipants = updatedGroupParticipant?.toMutableList() ?: groupViewModel?.participantsList
+                    groupViewModel?.groupData?.groupParticipants = updatedGroupParticipant?.toMutableList()
+                            ?: groupViewModel?.participantsList
                     adapter?.items = groupViewModel?.groupData?.groupParticipants
                     adapter?.notifyDataSetChanged()
 

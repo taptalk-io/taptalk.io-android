@@ -33,8 +33,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="center"
-            android:src="@drawable/tap_ic_close_orange"
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_close_grey"
             android:tint="@color/tapIconNavBarCloseButton"
             app:layout_constraintDimensionRatio="H, 1:1"
             app:layout_constraintEnd_toEndOf="parent" />

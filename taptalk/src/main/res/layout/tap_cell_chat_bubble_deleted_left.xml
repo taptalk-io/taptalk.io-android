@@ -39,13 +39,17 @@
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
             android:background="@drawable/tap_bg_chat_bubble_left_default"
-            android:padding="10dp">
+            android:paddingStart="6dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp">
 
             <TextView
                 android:id="@+id/tv_user_name"
                 style="@style/tapLeftBubbleSenderNameStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:layout_marginBottom="4dp"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toTopOf="@id/iv_deleted_icon"
@@ -57,10 +61,10 @@
 
             <ImageView
                 android:id="@+id/iv_deleted_icon"
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:src="@drawable/tap_ic_deleted_white"
-                android:tint="@color/tapColorTextMedium"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/tap_ic_block_grey"
+                android:tint="@color/tapIconDeletedLeftMessageBubble"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_body"
                 app:layout_constraintEnd_toStartOf="@id/tv_message_body"
                 app:layout_constraintHorizontal_bias="0"
@@ -73,7 +77,6 @@
                 style="@style/tapLeftBubbleDeletedMessageBodyStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
                 android:layout_marginTop="2dp"
                 android:text="@string/tap_this_deleted_message"
                 app:layout_constrainedWidth="true"

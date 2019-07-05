@@ -425,7 +425,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         //fl_button_update.setOnClickListener { updateProfile() }
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_orange))
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey))
         iv_button_close.clearAnimation()
 
         tv_label_change_profile_picture.text = getString(R.string.tap_change)
