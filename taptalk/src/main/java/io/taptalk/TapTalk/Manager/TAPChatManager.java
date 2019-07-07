@@ -25,7 +25,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -38,8 +37,8 @@ import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPDataLocationModel;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
-import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
@@ -651,7 +650,7 @@ public class TAPChatManager {
 
         // Build message model
         TAPMessageModel messageModel;
-        Log.e(TAG, "createImageMessageModel: "+activeRoom.getRoomType() );
+        Log.e(TAG, "createImageMessageModel: " + activeRoom.getRoomType());
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
                     generateImageCaption(caption),
@@ -1383,5 +1382,26 @@ public class TAPChatManager {
         getReplyMessageLocalIDs().clear();
         getQuoteActions().clear();
         setActiveUser(null);
+    }
+
+    public String formattingSystemMessage(TAPMessageModel message) {
+        String systemMessageBody;
+        LinkedHashMap targetUserModel = (LinkedHashMap) message.getData().get("target");
+
+        if (null == targetUserModel) {
+            systemMessageBody = message.getBody()
+                    .replace("{", "")
+                    .replace("}", "")
+                    .replaceFirst("sender", message.getUser().getName());
+        } else {
+            systemMessageBody = message.getBody()
+                    .replace("{", "")
+                    .replace("}", "")
+                    .replaceFirst("sender", message.getUser().getName())
+                    .replaceFirst("target", targetUserModel.get("fullname") == null ? "" :
+                            (String) targetUserModel.get("fullname"));
+        }
+
+        return systemMessageBody;
     }
 }

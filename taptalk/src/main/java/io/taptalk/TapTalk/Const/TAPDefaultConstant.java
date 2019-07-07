@@ -242,6 +242,17 @@ public class TAPDefaultConstant {
         public static final int FORWARD = 2;
     }
 
+    public static final class SystemMessageAction {
+        public static final String CREATE_ROOM = "room/create";
+        public static final String UPDATE_ROOM = "room/update";
+        public static final String DELETE_ROOM = "room/delete";
+        public static final String LEAVE_ROOM = "room/leave";
+        public static final String ROOM_ADD_PARTICIPANT = "room/addParticipant";
+        public static final String ROOM_REMOVE_PARTICIPANT = "room/removeParticipant";
+        public static final String ROOM_PROMOTE_ADMIN = "room/promoteAdmin";
+        public static final String ROOM_DEMOTE_ADMIN = "room/demoteAdmin";
+    }
+
     public static final class CustomHeaderKey {
         public static final String USER_AGENT = "kTAPUserAgent";
         public static final String APP_ID = "kTAPApplicationID";

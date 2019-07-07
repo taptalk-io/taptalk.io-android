@@ -27,6 +27,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -589,6 +590,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             // Show/hide ivToBottom
             rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                 if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+                    vm.setOnBottom(true);
+                    ivToBottom.setVisibility(View.INVISIBLE);
+                    tvBadgeUnread.setVisibility(View.INVISIBLE);
+                    vm.clearUnreadMessages();
+                } else if (null != messageAdapter && !messageAdapter.getItems().isEmpty() &&
+                        null != messageAdapter.getItems().get(0) &&
+                        null != messageAdapter.getItems().get(0).getHidden() &&
+                        messageAdapter.getItems().get(0).getHidden()) {
                     vm.setOnBottom(true);
                     ivToBottom.setVisibility(View.INVISIBLE);
                     tvBadgeUnread.setVisibility(View.INVISIBLE);
@@ -1282,6 +1291,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
             updateMessage(message);
+            Log.e(TAG, "onReceiveMessageInActiveRoom: "+TAPUtils.getInstance().toJsonString(message) );
         }
 
         @Override

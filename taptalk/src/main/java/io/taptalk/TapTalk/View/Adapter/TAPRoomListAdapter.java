@@ -30,6 +30,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
@@ -135,6 +136,9 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 ivRoomTypingIndicator.setVisibility(View.GONE);
             } else if (null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
                 tvLastMessage.setText(itemView.getResources().getString(R.string.tap_this_deleted_message));
+                ivRoomTypingIndicator.setVisibility(View.GONE);
+            } else if (TYPE_SYSTEM_MESSAGE == item.getLastMessage().getType()) {
+                tvLastMessage.setText(TAPChatManager.getInstance().formattingSystemMessage(item.getLastMessage()));
                 ivRoomTypingIndicator.setVisibility(View.GONE);
             } else {
                 // Set last message as text

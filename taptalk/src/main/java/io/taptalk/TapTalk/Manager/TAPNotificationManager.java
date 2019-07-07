@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -22,6 +23,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
 
 public class TAPNotificationManager {
@@ -54,8 +56,16 @@ public class TAPNotificationManager {
 
     public void addNotifMessageToMap(TAPMessageModel notifMessage) {
         String messageRoomID = notifMessage.getRoom().getRoomID();
-        if (checkMapContainsRoomID(messageRoomID)) {
+        if (checkMapContainsRoomID(messageRoomID) && TYPE_SYSTEM_MESSAGE == notifMessage.getType()) {
+            notifMessage.setBody(TAPChatManager.getInstance().formattingSystemMessage(notifMessage));
             getNotifMessagesMap().get(messageRoomID).add(notifMessage);
+        } else if (checkMapContainsRoomID(messageRoomID)) {
+            getNotifMessagesMap().get(messageRoomID).add(notifMessage);
+        } else if (TYPE_SYSTEM_MESSAGE == notifMessage.getType()) {
+            notifMessage.setBody(TAPChatManager.getInstance().formattingSystemMessage(notifMessage));
+            List<TAPMessageModel> listNotifMessagePerRoomID = new ArrayList<>();
+            listNotifMessagePerRoomID.add(notifMessage);
+            getNotifMessagesMap().put(messageRoomID, listNotifMessagePerRoomID);
         } else {
             List<TAPMessageModel> listNotifMessagePerRoomID = new ArrayList<>();
             listNotifMessagePerRoomID.add(notifMessage);

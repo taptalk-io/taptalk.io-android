@@ -110,6 +110,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.CREATE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_ADD_PARTICIPANT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_DEMOTE_ADMIN;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_PROMOTE_ADMIN;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_REMOVE_PARTICIPANT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
@@ -1288,8 +1296,33 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null != item.getData()) {
+                String systemMessageAction = item.getData().get("action") != null ?
+                        (String) item.getData().get("action") : "";
+
+                switch (systemMessageAction) {
+                    case CREATE_ROOM:
+                    case UPDATE_ROOM:
+                    case DELETE_ROOM:
+                    case LEAVE_ROOM:
+                        item.setBody(TAPChatManager.getInstance().formattingSystemMessage(item));
+                        break;
+
+                    case ROOM_ADD_PARTICIPANT:
+                    case ROOM_REMOVE_PARTICIPANT:
+                    case ROOM_PROMOTE_ADMIN:
+                    case ROOM_DEMOTE_ADMIN:
+                        item.setBody(TAPChatManager.getInstance().formattingSystemMessage(item));
+                        break;
+
+                    default:
+                        item.setBody(TAPChatManager.getInstance().formattingSystemMessage(item));
+                }
+            }
             tv_message.setText(item.getBody());
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            enableLongPress(itemView.getContext(), clContainer, item);
+            markMessageAsRead(item, myUserModel);
         }
     }
 
