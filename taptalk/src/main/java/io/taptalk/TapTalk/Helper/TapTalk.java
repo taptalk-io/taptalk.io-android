@@ -427,7 +427,7 @@ public class TapTalk {
             this.notificationMessage = notificationMessage;
             TAPNotificationManager.getInstance().addNotifMessageToMap(notificationMessage);
             setChatMessage(notificationMessage.getBody());
-            setChatSender(notificationMessage.getUser().getName());
+            setChatSender(notificationMessage.getRoom().getRoomName());
             return this;
         }
 
