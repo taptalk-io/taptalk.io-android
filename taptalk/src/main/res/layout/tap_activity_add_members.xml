@@ -91,7 +91,7 @@
         android:background="@color/tapWhite"
         android:elevation="4dp"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
