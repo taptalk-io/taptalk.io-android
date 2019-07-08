@@ -22,6 +22,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPContactManager
@@ -144,7 +145,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                     R.style.tapChatProfileMenuLabelStyle,
                     false,
                     false,
-                    getString(R.string.tap_remove_admin))
+                    getString(R.string.tap_demote_admin))
             menuItems.add(menuDemoteAdmin)
         } else if (null != groupViewModel?.groupMemberUser && null != groupViewModel?.groupMemberUser?.userID
                 && null != groupViewModel?.room && null != groupViewModel?.room?.roomID && null != groupViewModel?.room?.admins
@@ -156,7 +157,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                     R.style.tapChatProfileMenuLabelStyle,
                     false,
                     false,
-                    getString(R.string.tap_appoint_admin))
+                    getString(R.string.tap_promote_admin))
             menuItems.add(menuPromoteAdmin)
         }
 
@@ -181,17 +182,44 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             it.menuID == MENU_ADD_TO_CONTACTS -> TAPDataManager.getInstance().addContactApi(groupViewModel?.groupMemberUser?.userID
                     ?: "0", addContactView)
             it.menuID == MENU_PROMOTE_ADMIN -> {
-                TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.room?.roomID,
-                        listOf(groupViewModel?.groupMemberUser?.userID), appointAdminView)
+                TapTalkDialog.Builder(this)
+                        .setTitle(resources.getString(R.string.tap_promote_admin))
+                        .setMessage("Are you sure you want to promote this member to admin?")
+                        .setPrimaryButtonTitle("OK")
+                        .setPrimaryButtonListener {
+                            TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.room?.roomID,
+                                    listOf(groupViewModel?.groupMemberUser?.userID), appointAdminView)
+                        }
+                        .setSecondaryButtonTitle("Cancel")
+                        .setSecondaryButtonListener {}
+                        .show()
             }
             it.menuID == MENU_DEMOTE_ADMIN -> {
-                TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.room?.roomID,
-                        listOf(groupViewModel?.groupMemberUser?.userID), appointAdminView)
+                TapTalkDialog.Builder(this)
+                        .setTitle(resources.getString(R.string.tap_demote_admin))
+                        .setMessage("Are you sure you want to demote this admin?")
+                        .setPrimaryButtonTitle("OK")
+                        .setPrimaryButtonListener {
+                            TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.room?.roomID,
+                                    listOf(groupViewModel?.groupMemberUser?.userID), appointAdminView)
+                        }
+                        .setSecondaryButtonTitle("Cancel")
+                        .setSecondaryButtonListener {}
+                        .show()
             }
 
             it.menuID == MENU_REMOVE_MEMBER -> {
-                TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.room?.roomID,
-                        listOf(groupViewModel?.groupMemberUser?.userID), removeRoomMembersView)
+                TapTalkDialog.Builder(this)
+                        .setTitle(resources.getString(R.string.tap_remove_group_members))
+                        .setMessage("Are you sure you want to remove this member?")
+                        .setPrimaryButtonTitle("OK")
+                        .setPrimaryButtonListener {
+                            TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.room?.roomID,
+                                    listOf(groupViewModel?.groupMemberUser?.userID), removeRoomMembersView)
+                        }
+                        .setSecondaryButtonTitle("Cancel")
+                        .setSecondaryButtonListener {}
+                        .show()
             }
         }
     }
