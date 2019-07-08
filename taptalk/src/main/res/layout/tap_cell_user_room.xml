@@ -81,6 +81,25 @@
         app:layout_constraintTop_toTopOf="@id/tv_last_message" />
 
     <TextView
+        android:id="@+id/tv_group_sender_name"
+        style="@style/tapRoomListMessageStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="8dp"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="2"
+        android:textColor="@color/tapBlack19"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/fl_status"
+        app:layout_constraintStart_toEndOf="@id/iv_room_typing_indicator"
+        app:layout_constraintTop_toBottomOf="@id/tv_full_name"
+        app:layout_constraintVertical_bias="0"
+        app:layout_goneMarginStart="8dp"
+        tools:text="Jony" />
+
+    <TextView
         android:id="@+id/tv_last_message"
         style="@style/tapRoomListMessageStyle"
         android:layout_width="0dp"
@@ -93,7 +112,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/fl_status"
         app:layout_constraintStart_toEndOf="@id/iv_room_typing_indicator"
-        app:layout_constraintTop_toBottomOf="@id/tv_full_name"
+        app:layout_constraintTop_toBottomOf="@id/tv_group_sender_name"
         app:layout_constraintVertical_bias="0"
         app:layout_goneMarginStart="8dp"
         tools:text="Last Message" />
