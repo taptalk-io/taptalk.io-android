@@ -322,12 +322,26 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
         public void onError(TAPErrorModel error) {
             super.onError(error);
             btnStopLoadingState();
+            new TapTalkDialog.Builder(TAPAddMembersActivity.this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(error.getMessage())
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                    .setPrimaryButtonListener(v -> onBackPressed())
+                    .show();
         }
 
         @Override
         public void onError(String errorMessage) {
             super.onError(errorMessage);
             btnStopLoadingState();
+            new TapTalkDialog.Builder(TAPAddMembersActivity.this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(getString(R.string.tap_error_message_general))
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                    .setPrimaryButtonListener(v -> onBackPressed())
+                    .show();
         }
     };
 }

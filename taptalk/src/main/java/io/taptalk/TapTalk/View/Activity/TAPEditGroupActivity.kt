@@ -15,6 +15,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
@@ -184,11 +185,26 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         override fun onError(error: TAPErrorModel?) {
             super.onError(error)
             btnStopLoadingState()
+            TapTalkDialog.Builder(this@TAPEditGroupActivity)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(error!!.message)
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                    .setPrimaryButtonListener(true) { }
+                    .setCancelable(true)
+                    .show()
         }
 
         override fun onError(errorMessage: String?) {
             super.onError(errorMessage)
             btnStopLoadingState()
+            TapTalkDialog.Builder(this@TAPEditGroupActivity)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(getString(R.string.tap_error_message_general))
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                    .setPrimaryButtonListener { v -> onBackPressed() }
+                    .show()
         }
     }
 
@@ -208,11 +224,26 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         override fun onError(error: TAPErrorModel?) {
             super.onError(error)
             btnStopLoadingState()
+            TapTalkDialog.Builder(this@TAPEditGroupActivity)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(error!!.message)
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                    .setPrimaryButtonListener(true) { }
+                    .setCancelable(true)
+                    .show()
         }
 
         override fun onError(errorMessage: String?) {
             super.onError(errorMessage)
             btnStopLoadingState()
+            TapTalkDialog.Builder(this@TAPEditGroupActivity)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(getString(R.string.tap_error_message_general))
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                    .setPrimaryButtonListener { v -> onBackPressed() }
+                    .show()
         }
     }
 
