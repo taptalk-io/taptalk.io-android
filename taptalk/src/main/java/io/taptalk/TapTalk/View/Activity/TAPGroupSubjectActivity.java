@@ -36,6 +36,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -264,6 +265,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         vm.setGroupData(response.getRoom());
         vm.getGroupData().setGroupParticipants(response.getParticipants());
         vm.getGroupData().setAdmins(response.getAdmins());
+        TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getGroupData());
         //vm.getGroupData().setRoomImage();
     }
 

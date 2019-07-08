@@ -77,6 +77,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
@@ -467,21 +468,29 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null == vm.getMyUserModel()) {
             vm.setMyUserModel(TAPChatManager.getInstance().getActiveUser());
         }
-        if (null == vm.getOtherUserModel() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
-            vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
-        }
+
         if (null == vm.getRoom()) {
             Toast.makeText(TapTalk.appContext, getString(R.string.tap_error_room_not_found), Toast.LENGTH_SHORT).show();
             finish();
             return false;
         }
+
+        if (null == vm.getOtherUserModel() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
+            vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
+        }
+
+        if (TYPE_GROUP == vm.getRoom().getRoomType() && TAPGroupManager.Companion
+                .getGetInstance().checkIsRoomDataAvailable(vm.getRoom().getRoomID())) {
+            vm.setRoom(TAPGroupManager.Companion.getGetInstance().getGroupData(vm.getRoom().getRoomID()));
+        }
+
         if (null != getIntent().getStringExtra(JUMP_TO_MESSAGE) && !vm.isInitialAPICallFinished()) {
             vm.setTappedMessageLocalID(getIntent().getStringExtra(JUMP_TO_MESSAGE));
         }
 
         getInitialUnreadCount();
 
-        return null != vm.getMyUserModel() && (null != vm.getOtherUserModel() || TYPE_GROUP == vm.getRoom().getRoomType());
+        return null != vm.getMyUserModel() && (null != vm.getOtherUserModel() || (TYPE_GROUP == vm.getRoom().getRoomType()));
     }
 
     private void initView() {
@@ -1133,6 +1142,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 vm.setRoom(response.getRoom());
                 vm.getRoom().setAdmins(response.getAdmins());
                 vm.getRoom().setGroupParticipants(response.getParticipants());
+                TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getRoom());
 
                 if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
                     // Load room image
