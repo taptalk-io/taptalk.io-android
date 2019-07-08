@@ -140,9 +140,9 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                 groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
             val menuDemoteAdmin = TAPMenuItem(
                     MENU_DEMOTE_ADMIN,
-                    R.drawable.tap_ic_delete_red,
-                    R.color.tapIconChatProfileMenuClearChat,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle,
+                    R.drawable.tap_ic_icon_remove_circle_grey,
+                    R.color.tapIconGroupProfileMenuViewMembers,
+                    R.style.tapChatProfileMenuLabelStyle,
                     false,
                     false,
                     getString(R.string.tap_remove_admin))
@@ -164,7 +164,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
         if (null != groupViewModel?.room && null != groupViewModel?.room?.admins
                 && groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
             val menuKickMember = TAPMenuItem(
-                    MENU_KICK_MEMBER,
+                    MENU_REMOVE_MEMBER,
                     R.drawable.tap_ic_delete_red,
                     R.color.tapIconChatProfileMenuClearChat,
                     R.style.tapChatProfileMenuDestructiveLabelStyle,
@@ -188,6 +188,11 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             it.menuID == MENU_DEMOTE_ADMIN -> {
                 TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.room?.roomID,
                         listOf(groupViewModel?.groupMemberUser?.userID), appointAdminView)
+            }
+
+            it.menuID == MENU_REMOVE_MEMBER -> {
+                TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.room?.roomID,
+                        listOf(groupViewModel?.groupMemberUser?.userID), removeRoomMembersView)
             }
         }
     }
@@ -370,6 +375,31 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
         }
 
         override fun onError(errorMessage: String?) {
+            this@TAPGroupMemberProfileActivity.endLoading(false)
+        }
+    }
+
+    private val removeRoomMembersView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
+        override fun startLoading() {
+            showLoading()
+        }
+
+        override fun onSuccess(response: TAPCreateRoomResponse?) {
+            super.onSuccess(response)
+            groupViewModel?.room = response?.room
+            groupViewModel?.room?.groupParticipants = response?.participants
+            groupViewModel?.room?.admins = response?.admins
+
+            this@TAPGroupMemberProfileActivity.endLoading(true)
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            this@TAPGroupMemberProfileActivity.endLoading(false)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
             this@TAPGroupMemberProfileActivity.endLoading(false)
         }
     }
