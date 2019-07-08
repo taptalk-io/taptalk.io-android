@@ -64,8 +64,8 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
@@ -89,6 +89,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentDevelopment;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentProduction;
@@ -426,8 +427,15 @@ public class TapTalk {
         public NotificationBuilder setNotificationMessage(TAPMessageModel notificationMessage) {
             this.notificationMessage = notificationMessage;
             TAPNotificationManager.getInstance().addNotifMessageToMap(notificationMessage);
-            setChatMessage(notificationMessage.getBody());
-            setChatSender(notificationMessage.getRoom().getRoomName());
+            if (null != notificationMessage &&
+                    null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
+                    TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
+                setChatMessage(notificationMessage.getUser().getName()+ ": " + notificationMessage.getBody());
+                setChatSender(notificationMessage.getRoom().getRoomName());
+            } else if (null != notificationMessage) {
+                setChatMessage(notificationMessage.getBody());
+                setChatSender(notificationMessage.getRoom().getRoomName());
+            }
             return this;
         }
 

@@ -490,8 +490,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         getInitialUnreadCount();
 
-        return null != vm.getMyUserModel() &&
-                (null != vm.getOtherUserModel() || (TYPE_GROUP == vm.getRoom().getRoomType()));
+        return null != vm.getMyUserModel() && (null != vm.getOtherUserModel() || (TYPE_GROUP == vm.getRoom().getRoomType()));
     }
 
     private void initView() {
