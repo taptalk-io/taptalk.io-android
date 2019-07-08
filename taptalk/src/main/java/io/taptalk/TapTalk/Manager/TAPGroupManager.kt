@@ -7,14 +7,14 @@ class TAPGroupManager {
     private var groupDataMap : LinkedHashMap<String, TAPRoomModel>? = null
 
     companion object {
-        private lateinit var instance : TAPGroupManager
+        private var instance : TAPGroupManager? = null
 
         val getInstance : TAPGroupManager
         get() {
             if (null == instance) {
                 instance = TAPGroupManager()
             }
-            return instance
+            return instance!!
         }
     }
 
@@ -30,12 +30,15 @@ class TAPGroupManager {
     fun getGroupData(roomID: String) : TAPRoomModel? {
         return if (!getGroupDataMap().containsKey(roomID)) null
         else {
-            getGroupData(roomID)
+            getGroupDataMap()[roomID]
         }
     }
 
     fun checkIsRoomDataAvailable(roomID: String) : Boolean {
-        return getGroupDataMap().containsKey(roomID)
+        return getGroupDataMap().containsKey(roomID) && null != getGroupData(roomID)
     }
-    
+
+    fun clearGroupData() {
+        getGroupDataMap().clear()
+    }
 }

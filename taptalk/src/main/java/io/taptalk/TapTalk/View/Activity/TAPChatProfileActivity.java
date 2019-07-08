@@ -50,6 +50,7 @@ import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -580,6 +581,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             vm.getRoom().setGroupParticipants(response.getParticipants());
             vm.getRoom().setAdmins(response.getAdmins());
 
+            TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getRoom());
             updateView();
         }
     };

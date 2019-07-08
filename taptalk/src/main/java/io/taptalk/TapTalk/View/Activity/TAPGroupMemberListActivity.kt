@@ -24,6 +24,7 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGroupMemberListListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPGroupManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
@@ -351,6 +352,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             groupViewModel?.groupData = response?.room
             groupViewModel?.groupData?.groupParticipants = response?.participants
             groupViewModel?.groupData?.admins = response?.admins
+
+            if (null != groupViewModel?.groupData) TAPGroupManager.getInstance.addGroupData(groupViewModel?.groupData!!)
             //adapter?.items = groupViewModel?.groupData?.groupParticipants
             adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
 
@@ -385,6 +388,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             groupViewModel?.groupData = response?.room
             groupViewModel?.groupData?.groupParticipants = response?.participants
             groupViewModel?.groupData?.admins = response?.admins
+
+            if (null != groupViewModel?.groupData) TAPGroupManager.getInstance.addGroupData(groupViewModel?.groupData!!)
             //adapter?.items = groupViewModel?.groupData?.groupParticipants
             adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
             adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
