@@ -1203,7 +1203,8 @@ public class TAPChatManager {
         // Receive message outside active room (not in room List)
         else if (!TAPNotificationManager.getInstance().isRoomListAppear() && !chatListenersCopy.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
             if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
-                    null != newMessage.getHidden() && !newMessage.getHidden()) {
+                    null != newMessage.getHidden() && !newMessage.getHidden() && null != newMessage.getIsDeleted()
+                    && !newMessage.getIsDeleted()) {
                 // Show notification for new messages from other users
                 TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
             }
