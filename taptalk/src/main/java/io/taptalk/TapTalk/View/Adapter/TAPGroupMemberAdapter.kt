@@ -12,10 +12,11 @@ import io.taptalk.TapTalk.DiffCallback.TAPGroupMemberDiffCallback
 import io.taptalk.TapTalk.Helper.CircleImageView
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder
 import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
+import io.taptalk.TapTalk.Listener.TAPGroupMemberListListener
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.Taptalk.R
 
-class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminList: List<String>, groupInterface: TapTalkGroupMemberListInterface) : TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>>() {
+class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminList: List<String>, groupInterface: TAPGroupMemberListListener) : TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>>() {
 
     var adminList: MutableList<String> = mutableListOf()
 
@@ -102,6 +103,8 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                     groupAdapter.groupInterface.onContactDeselected(item)
                     item.isSelected = false
                     ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive)
+                } else {
+                    groupAdapter.groupInterface.onGroupMemberClicked(item)
                 }
             }
 

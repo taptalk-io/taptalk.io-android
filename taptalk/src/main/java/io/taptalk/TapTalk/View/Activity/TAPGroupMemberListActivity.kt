@@ -14,11 +14,13 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
+import io.taptalk.TapTalk.Listener.TAPGroupMemberListListener
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
@@ -77,7 +79,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     var groupViewModel: TAPGroupMemberViewModel? = null
     var adapter: TAPGroupMemberAdapter? = null
-    private val groupInterface = object : TapTalkGroupMemberListInterface {
+    private val groupInterface = object : TAPGroupMemberListListener() {
         override fun onContactLongPress(contact: TAPUserModel?) {
             if (groupViewModel?.isActiveUserIsAdmin == true &&
                     groupViewModel?.groupData?.admins?.contains(contact?.userID) == true) {
@@ -127,6 +129,14 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_appoint_admin)
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.PROMOTE
             }
+        }
+
+        override fun onGroupMemberClicked(member: TAPUserModel?, isAdmin: Boolean) {
+            val intent = Intent(this@TAPGroupMemberListActivity, TAPChatProfileActivity::class.java)
+            intent.putExtra(ROOM, groupViewModel?.groupData)
+            intent.putExtra(TAPDefaultConstant.K_USER, member)
+            intent.putExtra(IS_ADMIN, isAdmin)
+            startActivityForResult(intent, )
         }
     }
 

@@ -298,6 +298,7 @@
     <string name="tap_send">Send</string>
     <string name="tap_sending">Sending…</string>
     <string name="tap_send_a_message">Send a message…</string>
+    <string name="tap_send_message">Send Message…</string>
     <string name="tap_sent_at">Sent at</string>
     <string name="tap_select_country">Select Country</string>
     <string name="tap_skip">Skip</string>

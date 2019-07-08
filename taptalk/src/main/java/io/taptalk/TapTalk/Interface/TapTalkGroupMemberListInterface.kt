@@ -14,4 +14,8 @@ interface TapTalkGroupMemberListInterface : TapTalkContactListInterface {
     fun onContactLongPress(contact: TAPUserModel?) {
 
     }
+
+    fun onGroupMemberClicked(member: TAPUserModel?, isAdmin: Boolean) {
+
+    }
 }

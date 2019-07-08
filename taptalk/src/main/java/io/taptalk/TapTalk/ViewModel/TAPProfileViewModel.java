@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPProfileViewModel extends AndroidViewModel {
 
@@ -17,8 +18,9 @@ public class TAPProfileViewModel extends AndroidViewModel {
     private List<TAPMessageModel> sharedMedias;
     private HashMap<String, TAPMessageModel> sharedMediasMap;
     private TAPMessageModel pendingDownloadMessage;
+    private TAPUserModel groupMemberUser;
     private long lastSharedMediaTimestamp;
-    private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia;
+    private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isAdminGroup;
 
     public TAPProfileViewModel(@NonNull Application application) {
         super(application);
@@ -79,5 +81,23 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setFinishedLoadingSharedMedia(boolean finishedLoadingSharedMedia) {
         isFinishedLoadingSharedMedia = finishedLoadingSharedMedia;
+    }
+
+    //Untuk Group Member Profile
+
+    public TAPUserModel getGroupMemberUser() {
+        return groupMemberUser;
+    }
+
+    public void setGroupMemberUser(TAPUserModel groupMemberUser) {
+        this.groupMemberUser = groupMemberUser;
+    }
+
+    public boolean isAdminGroup() {
+        return isAdminGroup;
+    }
+
+    public void setAdminGroup(boolean adminGroup) {
+        isAdminGroup = adminGroup;
     }
 }
