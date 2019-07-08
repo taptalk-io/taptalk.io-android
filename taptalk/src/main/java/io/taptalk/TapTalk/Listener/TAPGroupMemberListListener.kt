@@ -17,6 +17,6 @@ abstract class TAPGroupMemberListListener : TapTalkGroupMemberListInterface {
     }
 
     override fun onGroupMemberClicked(member: TAPUserModel?, isAdmin: Boolean) {
-        super.onGroupMemberClicked(member)
+        super.onGroupMemberClicked(member, isAdmin)
     }
 }

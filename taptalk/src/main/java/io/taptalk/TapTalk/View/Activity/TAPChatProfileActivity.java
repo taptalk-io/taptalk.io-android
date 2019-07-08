@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -62,28 +61,19 @@ import io.taptalk.TapTalk.View.Adapter.TAPMenuButtonAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_ADD_TO_CONTACTS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_BLOCK;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_DEMOTE_ADMIN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EXIT_AND_CLEAR_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EXIT_GROUP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_KICK_MEMBER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_PROMOTE_ADMIN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_ROOM_COLOR;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_SEND_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_VIEW_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -167,8 +157,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPProfileViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(ROOM));
-        vm.setGroupMemberUser(getIntent().getParcelableExtra(K_USER));
-        vm.setAdminGroup(getIntent().getBooleanExtra(IS_ADMIN, false));
         vm.getSharedMedias().clear();
     }
 
@@ -213,13 +201,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         TAPUtils.getInstance().rotateAnimateInfinitely(TAPChatProfileActivity.this, ivSharedMediaLoading);
         tvSharedMediaLabel.setVisibility(View.GONE);
+
         new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
 
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonEdit.setOnClickListener(v -> openEditGroup());
-        flLoading.setOnClickListener(v -> {});
+        flLoading.setOnClickListener(v -> {
+        });
 
         if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
             TAPDataManager.getInstance().getUserByIdFromApi(
@@ -297,83 +287,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 //        menuItems.add(menuRoomColor);
 //        menuItems.add(menuRoomSearchChat);
 
-        if (null != vm.getGroupMemberUser() && vm.isAdminGroup()) {
-            //Group Member Profile
-            TAPMenuItem menuAddToContact = new TAPMenuItem(
-                    MENU_ADD_TO_CONTACTS,
-                    R.drawable.tap_ic_add_circle_grey,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_add_to_contacts));
-            TAPMenuItem menuSendMessage = new TAPMenuItem(
-                    MENU_SEND_MESSAGE,
-                    R.drawable.tap_ic_send_message_grey,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_send_message));
-            TAPMenuItem menuDemoteAdmin = new TAPMenuItem(
-                    MENU_DEMOTE_ADMIN,
-                    R.drawable.tap_ic_delete_red,
-                    R.color.tapIconChatProfileMenuClearChat,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_remove_admin));
-            TAPMenuItem menuKickMember = new TAPMenuItem(
-                    MENU_KICK_MEMBER,
-                    R.drawable.tap_ic_delete_red,
-                    R.color.tapIconChatProfileMenuClearChat,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_remove_group_members));
-            menuItems.add(menuAddToContact);
-            menuItems.add(menuSendMessage);
-            menuItems.add(menuDemoteAdmin);
-            menuItems.add(menuKickMember);
-        } else if (null != vm.getGroupMemberUser()) {
-            TAPMenuItem menuAddToContact = new TAPMenuItem(
-                    MENU_ADD_TO_CONTACTS,
-                    R.drawable.tap_ic_add_circle_grey,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_add_to_contacts));
-            TAPMenuItem menuSendMessage = new TAPMenuItem(
-                    MENU_SEND_MESSAGE,
-                    R.drawable.tap_ic_send_message_grey,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_send_message));
-            TAPMenuItem menuPromoteAdmin = new TAPMenuItem(
-                    MENU_PROMOTE_ADMIN,
-                    R.drawable.tap_ic_appoint_admin,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_appoint_admin));
-            TAPMenuItem menuKickMember = new TAPMenuItem(
-                    MENU_KICK_MEMBER,
-                    R.drawable.tap_ic_delete_red,
-                    R.color.tapIconChatProfileMenuClearChat,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_remove_group_members));
-            // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
-            menuItems.add(menuAddToContact);
-            menuItems.add(menuSendMessage);
-            menuItems.add(menuPromoteAdmin);
-            menuItems.add(menuKickMember);
-        } else if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
+        if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
             // 1-1 Room
             TAPMenuItem menuBlock = new TAPMenuItem(
                     MENU_BLOCK,
@@ -447,7 +361,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     TAPDataManager.getInstance().leaveChatRoom(vm.getRoom().getRoomID(), exitChatView);
                 })
                 .setSecondaryButtonTitle("Cancel")
-                .setSecondaryButtonListener(v -> {})
+                .setSecondaryButtonListener(v -> {
+                })
                 .show();
     }
 

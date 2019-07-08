@@ -55,12 +55,17 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
         private val vSeparator: View = itemView.findViewById(R.id.v_separator)
         private val ivSelection: ImageView = itemView.findViewById(R.id.iv_selection)
         private val groupAdapter = adapter
+        private var isAdmin : Boolean = false;
 
         override fun onBind(item: TAPUserModel?, position: Int) {
             if (groupAdapter.adminList.isNotEmpty() && groupAdapter.adminList.contains(item?.userID
                             ?: "0")) {
+                isAdmin = true
                 tvMemberRole.visibility = View.VISIBLE
-            } else tvMemberRole.visibility = View.GONE
+            } else {
+                isAdmin = false
+                tvMemberRole.visibility = View.GONE
+            }
 
             //load member avatar
             if (item?.avatarURL?.thumbnail.isNullOrEmpty()) {
@@ -104,7 +109,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                     item.isSelected = false
                     ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive)
                 } else {
-                    groupAdapter.groupInterface.onGroupMemberClicked(item)
+                    groupAdapter.groupInterface.onGroupMemberClicked(item, isAdmin)
                 }
             }
 

@@ -132,11 +132,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         }
 
         override fun onGroupMemberClicked(member: TAPUserModel?, isAdmin: Boolean) {
-            val intent = Intent(this@TAPGroupMemberListActivity, TAPChatProfileActivity::class.java)
+            val intent = Intent(this@TAPGroupMemberListActivity, TAPGroupMemberProfileActivity::class.java)
             intent.putExtra(ROOM, groupViewModel?.groupData)
             intent.putExtra(TAPDefaultConstant.K_USER, member)
             intent.putExtra(IS_ADMIN, isAdmin)
-            startActivityForResult(intent, )
+            startActivityForResult(intent, TAPDefaultConstant.RequestCode.GROUP_OPEN_MEMBER_PROFILE)
         }
     }
 
