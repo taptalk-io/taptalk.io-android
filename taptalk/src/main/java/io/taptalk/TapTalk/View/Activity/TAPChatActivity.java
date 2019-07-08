@@ -571,6 +571,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_personal_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(String.format(getString(R.string.tap_personal_chat_room_empty_guide_content), vm.getRoom().getRoomName()));
+        } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType() && null != vm.getRoom().getGroupParticipants()) {
+            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
+            tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
+            tvRoomStatus.setText(String.format("%d Members", vm.getRoom().getGroupParticipants().size()));
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
@@ -1118,26 +1122,27 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void callApiGetGroupData() {
-        new Thread(() -> {
-            TAPDataManager.getInstance().getChatRoomData(vm.getRoom().getRoomID(), new TAPDefaultDataView<TAPCreateRoomResponse>() {
-                @Override
-                public void onSuccess(TAPCreateRoomResponse response) {
-                    vm.setRoom(response.getRoom());
-                    vm.getRoom().setAdmins(response.getAdmins());
-                    vm.getRoom().setGroupParticipants(response.getParticipants());
+        new Thread(() -> TAPDataManager.getInstance().getChatRoomData(vm.getRoom().getRoomID(), new TAPDefaultDataView<TAPCreateRoomResponse>() {
+            @Override
+            public void onSuccess(TAPCreateRoomResponse response) {
+                vm.setRoom(response.getRoom());
+                vm.getRoom().setAdmins(response.getAdmins());
+                vm.getRoom().setGroupParticipants(response.getParticipants());
 
-                    if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
-                        // Load room image
-                        loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
-                    } else {
-                        // Use default profile picture if image is empty
-                        civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-                    }
-
-                    tvRoomName.setText(vm.getRoom().getRoomName());
+                if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
+                    // Load room image
+                    loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
+                } else {
+                    // Use default profile picture if image is empty
+                    civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
                 }
-            });
-        }).start();
+
+                tvRoomName.setText(vm.getRoom().getRoomName());
+
+                if (null != vm.getRoom().getGroupParticipants())
+                    tvRoomStatus.setText(String.format("%d Members", vm.getRoom().getGroupParticipants().size()));
+            }
+        })).start();
     }
 
     private void callApiGetUserByUserID() {
@@ -1296,7 +1301,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
             updateMessage(message);
-            Log.e(TAG, "onReceiveMessageInActiveRoom: "+TAPUtils.getInstance().toJsonString(message) );
+            Log.e(TAG, "onReceiveMessageInActiveRoom: " + TAPUtils.getInstance().toJsonString(message));
         }
 
         @Override

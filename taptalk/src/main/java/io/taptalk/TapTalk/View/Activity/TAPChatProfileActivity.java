@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -232,7 +233,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         tvFullName.setText(vm.getRoom().getRoomName());
         tvCollapsedName.setText(vm.getRoom().getRoomName());
 
-        if (TYPE_GROUP == vm.getRoom().getRoomType()) {
+        if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType() && null != vm.getRoom().getAdmins() &&
+                vm.getRoom().getAdmins().contains(TAPChatManager.getInstance().getActiveUser().getUserID())) {
             ivButtonEdit.setVisibility(View.VISIBLE);
         } else {
             ivButtonEdit.setVisibility(View.GONE);
