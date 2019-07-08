@@ -62,7 +62,6 @@ import java.util.Random;
 
 import io.taptalk.TapTalk.API.Api.TAPApiConnection;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -1144,5 +1143,13 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
     public boolean listEqualsIgnoreOrder(List<TAPUserModel> list1, List<TAPUserModel> list2) {
         return new HashSet<>(list1).equals(new HashSet<>(list2));
+    }
+
+    public static String getFirstWordOfString(String text) {
+        if (text.contains(" ")) {
+            return text.substring(0, text.indexOf(' '));
+        } else {
+            return text;
+        }
     }
 }
