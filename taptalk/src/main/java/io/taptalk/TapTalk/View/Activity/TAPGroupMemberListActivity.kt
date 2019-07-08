@@ -380,16 +380,25 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 }
 
                 GROUP_OPEN_MEMBER_PROFILE -> {
-                    val roomModel : TAPRoomModel? = data?.getParcelableExtra(ROOM)
-                    groupViewModel?.groupData = roomModel
-                    //adapter?.items = groupViewModel?.groupData?.groupParticipants
-                    adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
-                    adapter?.items = groupViewModel?.groupData?.groupParticipants ?: listOf()
+                    if (null != data?.getParcelableExtra(ROOM)) {
+                        val roomModel: TAPRoomModel? = data?.getParcelableExtra(ROOM)
+                        groupViewModel?.groupData = roomModel
+                        //adapter?.items = groupViewModel?.groupData?.groupParticipants
+                        adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
+                        adapter?.items = groupViewModel?.groupData?.groupParticipants ?: listOf()
 
-                    //set total member count
-                    tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
-                    tv_member_count.visibility = View.VISIBLE
-                    groupViewModel?.isUpdateMember = true
+                        //set total member count
+                        tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+                        tv_member_count.visibility = View.VISIBLE
+                        groupViewModel?.isUpdateMember = true
+                    }
+
+                    if (data?.getBooleanExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, false) == true) {
+                        val intent = Intent()
+                        intent.putExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, true)
+                        setResult(Activity.RESULT_OK, intent)
+                        onBackPressed()
+                    }
                 }
             }
         }

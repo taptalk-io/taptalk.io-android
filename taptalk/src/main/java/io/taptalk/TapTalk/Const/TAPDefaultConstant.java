@@ -121,11 +121,13 @@ public class TAPDefaultConstant {
         public static final String COUNTRY_FLAG_URL = "kTAPExtraCountryFlagUrl";
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
         public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
+        public static final String IS_NEED_TO_CLOSE_ACTIVITY_BEFORE = "kTAPIsNeedToCloseActivityBefore";
     }
 
     public static final class RequestCode {
         public static final int COUNTRY_PICK = 11;
         public static final int EDIT_PROFILE = 21;
+        public static final int OPEN_PROFILE = 22;
         public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
         public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
         public static final int REGISTER = 31;

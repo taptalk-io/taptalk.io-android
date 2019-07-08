@@ -72,6 +72,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NEED_TO_CLOSE_ACTIVITY_BEFORE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
@@ -148,6 +149,13 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     if (null != data.getParcelableExtra(ROOM)) {
                         vm.setRoom(data.getParcelableExtra(ROOM));
                         updateView();
+                    }
+
+                    if (data.getBooleanExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, false)) {
+                        Intent intent = new Intent();
+                        intent.putExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, true);
+                        setResult(RESULT_OK);
+                        onBackPressed();
                     }
                     break;
             }

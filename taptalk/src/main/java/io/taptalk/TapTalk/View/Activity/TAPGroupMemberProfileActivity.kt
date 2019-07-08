@@ -18,8 +18,7 @@ import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -218,7 +217,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             if (abs(verticalOffset) >= scrollRange && !isShowing) {
                 // Show Toolbar
                 isShowing = true
-                ll_toolbar_collapsed.setVisibility(View.VISIBLE)
+                ll_toolbar_collapsed.visibility = View.VISIBLE
                 ll_toolbar_collapsed.animate()
                         .alpha(1f)
                         .setDuration(DEFAULT_ANIMATION_TIME.toLong())
@@ -354,7 +353,10 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                 TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().activeUser.userID,
                         userModel?.userID ?: "0"), userModel?.name ?: "",
                 userModel?.avatarURL, TYPE_PERSONAL, "FFFFFF")
-        finish()
+        val intent = Intent()
+        intent.putExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, true)
+        setResult(Activity.RESULT_OK, intent)
+        onBackPressed()
     }
 
     private val appointAdminView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
