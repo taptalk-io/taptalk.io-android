@@ -13,12 +13,17 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Manager.TAPChatManager
+import io.taptalk.TapTalk.Manager.TAPContactManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPMenuItem
 import io.taptalk.TapTalk.View.Adapter.TAPMenuButtonAdapter
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
@@ -26,12 +31,13 @@ import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_chat_profile.*
 import kotlinx.android.synthetic.main.tap_loading_layout_block_screen.*
 import java.util.*
+import kotlin.math.abs
 
 class TAPGroupMemberProfileActivity : TAPBaseActivity() {
 
     lateinit var glide: RequestManager
     var groupViewModel: TAPProfileViewModel? = null
-    var menuAdapter : TAPMenuButtonAdapter? = null
+    var menuAdapter: TAPMenuButtonAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,8 +75,8 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
         app_bar_layout.addOnOffsetChangedListener(offsetChangedListener)
         iv_shared_media_loading.visibility = View.GONE
 
-        iv_button_back.setOnClickListener{ onBackPressed() }
-        fl_loading.setOnClickListener{}
+        iv_button_back.setOnClickListener { onBackPressed() }
+        fl_loading.setOnClickListener {}
 
     }
 
@@ -93,8 +99,10 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
 
     private fun generateGroupMemberMenu(): ArrayList<TAPMenuItem> {
         val menuItems = ArrayList<TAPMenuItem>()
-        if (null != groupViewModel?.groupMemberUser && groupViewModel?.isAdminGroup == true) run {
-            //Group Member Profile
+        //Group Member Profile
+        if (null == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID ?: "0")
+                || (null != TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID ?: "0")
+                        && 0 == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID ?: "0").isContact)) {
             val menuAddToContact = TAPMenuItem(
                     MENU_ADD_TO_CONTACTS,
                     R.drawable.tap_ic_add_circle_grey,
@@ -103,14 +111,23 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                     false,
                     false,
                     getString(R.string.tap_add_to_contacts))
-            val menuSendMessage = TAPMenuItem(
-                    MENU_SEND_MESSAGE,
-                    R.drawable.tap_ic_send_message_grey,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_send_message))
+
+            menuItems.add(menuAddToContact)
+        }
+        val menuSendMessage = TAPMenuItem(
+                MENU_SEND_MESSAGE,
+                R.drawable.tap_ic_send_message_grey,
+                R.color.tapIconGroupProfileMenuViewMembers,
+                R.style.tapChatProfileMenuLabelStyle,
+                false,
+                false,
+                getString(R.string.tap_send_message))
+        menuItems.add(menuSendMessage)
+
+        if (null != groupViewModel?.groupMemberUser && null != groupViewModel?.groupMemberUser?.userID
+                && null != groupViewModel?.room && null != groupViewModel?.room?.admins
+                && groupViewModel?.room?.admins?.contains(groupViewModel?.groupMemberUser?.userID) == true &&
+                groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
             val menuDemoteAdmin = TAPMenuItem(
                     MENU_DEMOTE_ADMIN,
                     R.drawable.tap_ic_delete_red,
@@ -119,35 +136,10 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                     false,
                     false,
                     getString(R.string.tap_remove_admin))
-            val menuKickMember = TAPMenuItem(
-                    MENU_KICK_MEMBER,
-                    R.drawable.tap_ic_delete_red,
-                    R.color.tapIconChatProfileMenuClearChat,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_remove_group_members))
-            menuItems.add(menuAddToContact)
-            menuItems.add(menuSendMessage)
             menuItems.add(menuDemoteAdmin)
-            menuItems.add(menuKickMember)
-        } else if (null != groupViewModel?.groupMemberUser) run {
-            val menuAddToContact = TAPMenuItem(
-                    MENU_ADD_TO_CONTACTS,
-                    R.drawable.tap_ic_add_circle_grey,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_add_to_contacts))
-            val menuSendMessage = TAPMenuItem(
-                    MENU_SEND_MESSAGE,
-                    R.drawable.tap_ic_send_message_grey,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_send_message))
+        } else if (null != groupViewModel?.groupMemberUser && null != groupViewModel?.groupMemberUser?.userID
+                && null != groupViewModel?.room && null != groupViewModel?.room?.roomID && null != groupViewModel?.room?.admins
+                && groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
             val menuPromoteAdmin = TAPMenuItem(
                     MENU_PROMOTE_ADMIN,
                     R.drawable.tap_ic_appoint_admin,
@@ -156,6 +148,11 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                     false,
                     false,
                     getString(R.string.tap_appoint_admin))
+            menuItems.add(menuPromoteAdmin)
+        }
+
+        if (null != groupViewModel?.room && null != groupViewModel?.room?.admins
+                && groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
             val menuKickMember = TAPMenuItem(
                     MENU_KICK_MEMBER,
                     R.drawable.tap_ic_delete_red,
@@ -164,10 +161,6 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                     false,
                     false,
                     getString(R.string.tap_remove_group_members))
-            // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
-            menuItems.add(menuAddToContact)
-            menuItems.add(menuSendMessage)
-            menuItems.add(menuPromoteAdmin)
             menuItems.add(menuKickMember)
         }
         return menuItems
@@ -192,10 +185,10 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                 // Initialize
                 scrimHeight = ll_toolbar_collapsed.getLayoutParams().height * 3 / 2
                 scrollRange = appBarLayout.totalScrollRange - scrimHeight
-                collapsing_toolbar_layout.setScrimVisibleHeightTrigger(scrimHeight)
+                collapsing_toolbar_layout.scrimVisibleHeightTrigger = scrimHeight
             }
 
-            if (Math.abs(verticalOffset) >= scrollRange && !isShowing) {
+            if (abs(verticalOffset) >= scrollRange && !isShowing) {
                 // Show Toolbar
                 isShowing = true
                 ll_toolbar_collapsed.setVisibility(View.VISIBLE)
@@ -203,7 +196,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                         .alpha(1f)
                         .setDuration(DEFAULT_ANIMATION_TIME.toLong())
                         .start()
-                tv_collapsed_name.setTranslationY(nameTranslationY.toFloat())
+                tv_collapsed_name.translationY = nameTranslationY.toFloat()
                 tv_collapsed_name.animate()
                         .translationY(0f)
                         .alpha(1f)
@@ -215,7 +208,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                         .start()
                 getTransitionToExpand()!!.cancel()
                 getTransitionToCollapse()!!.start()
-            } else if (Math.abs(verticalOffset) < scrollRange && isShowing) {
+            } else if (abs(verticalOffset) < scrollRange && isShowing) {
                 // Hide Toolbar
                 isShowing = false
                 ll_toolbar_collapsed.animate()
@@ -290,5 +283,28 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
 
     private fun hideLoading() {
         fl_loading.visibility = View.GONE
+    }
+
+    val addContact = object : TAPDefaultDataView<TAPCommonResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+            showLoading()
+        }
+
+        override fun onSuccess(response: TAPCommonResponse?) {
+            super.onSuccess(response)
+            finish()
+            this@TAPGroupMemberProfileActivity.endLoading()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            this@TAPGroupMemberProfileActivity.endLoading()
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            this@TAPGroupMemberProfileActivity.endLoading()
+        }
     }
 }

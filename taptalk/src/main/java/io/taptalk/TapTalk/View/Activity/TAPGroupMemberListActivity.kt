@@ -5,8 +5,8 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.os.Handler
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,8 +19,8 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
-import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
 import io.taptalk.TapTalk.Listener.TAPGroupMemberListListener
+import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
@@ -56,22 +56,26 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             }
 
             R.id.ll_remove_button -> {
-                TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID ?: "",
+                TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID
+                        ?: "",
                         groupViewModel?.selectedMembers?.keys?.toList(), removeRoomMembersView)
             }
 
             R.id.ll_promote_demote_admin -> {
-                when(groupViewModel?.adminButtonStatus) {
+                when (groupViewModel?.adminButtonStatus) {
                     TAPGroupMemberViewModel.AdminButtonShowed.PROMOTE -> {
-                        TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.groupData?.roomID ?: "",
+                        TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.groupData?.roomID
+                                ?: "",
                                 groupViewModel?.getSelectedUserIDs(), appointAdminView)
                     }
 
                     TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE -> {
-                        TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.groupData?.roomID ?: "",
+                        TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.groupData?.roomID
+                                ?: "",
                                 groupViewModel?.getSelectedUserIDs(), appointAdminView)
                     }
-                    else -> {}
+                    else -> {
+                    }
                 }
             }
         }
@@ -132,11 +136,13 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         }
 
         override fun onGroupMemberClicked(member: TAPUserModel?, isAdmin: Boolean) {
-            val intent = Intent(this@TAPGroupMemberListActivity, TAPGroupMemberProfileActivity::class.java)
-            intent.putExtra(ROOM, groupViewModel?.groupData)
-            intent.putExtra(TAPDefaultConstant.K_USER, member)
-            intent.putExtra(IS_ADMIN, isAdmin)
-            startActivityForResult(intent, TAPDefaultConstant.RequestCode.GROUP_OPEN_MEMBER_PROFILE)
+            if (member?.userID ?: "0" != TAPChatManager.getInstance().activeUser.userID) {
+                val intent = Intent(this@TAPGroupMemberListActivity, TAPGroupMemberProfileActivity::class.java)
+                intent.putExtra(ROOM, groupViewModel?.groupData)
+                intent.putExtra(TAPDefaultConstant.K_USER, member)
+                intent.putExtra(IS_ADMIN, isAdmin)
+                startActivityForResult(intent, TAPDefaultConstant.RequestCode.GROUP_OPEN_MEMBER_PROFILE)
+            }
         }
     }
 
