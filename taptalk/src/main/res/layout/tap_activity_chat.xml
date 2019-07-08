@@ -222,7 +222,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/civ_my_avatar"
-                tools:text="@string/tap_room_empty_guide_title" />
+                tools:text="@string/tap_personal_chat_room_empty_guide_title" />
 
             <TextView
                 android:id="@+id/tv_profile_description"
@@ -236,7 +236,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_chat_empty_guide"
-                tools:text="@string/tap_room_empty_guide_content" />
+                tools:text="@string/tap_personal_chat_room_empty_guide_content" />
 
         </android.support.constraint.ConstraintLayout>
 

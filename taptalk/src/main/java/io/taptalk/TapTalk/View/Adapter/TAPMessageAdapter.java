@@ -1524,7 +1524,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     civAvatar.setVisibility(View.VISIBLE);
                 }
                 if (null != tvUserName) {
-                    tvUserName.setText(item.getUser().getUsername());
+                    tvUserName.setText(item.getUser().getName());
                     tvUserName.setVisibility(View.VISIBLE);
                 }
             } else {

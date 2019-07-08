@@ -98,8 +98,10 @@
     <string name="tap_guide_show_qr_code">Show your QR code by tapping the button below</string>
     <string name="tap_search_username_welcome_message">Usernames are <b>not case sensitive</b>, but make sure you input the <b>exact characters</b></string>
     <string name="tap_change_group_image_guide">Tap icon to change group profile image</string>
-    <string name="tap_room_empty_guide_title"><![CDATA[Start a conversation with <b>%s</b>]]></string>
-    <string name="tap_room_empty_guide_content">Say hi to %s and start a conversation</string>
+    <string name="tap_personal_chat_room_empty_guide_title"><![CDATA[Start a conversation with <b>%s</b>]]></string>
+    <string name="tap_group_chat_room_empty_guide_title"><![CDATA[It seems to be quiet in <b>%s</b>]]></string>
+    <string name="tap_personal_chat_room_empty_guide_content">Say hi to %s and start a conversation</string>
+    <string name="tap_group_chat_room_empty_guide_content">Say hi to the group and start the conversation</string>
     <string name="tap_write_storage_permission">TapTalk requires storage permission to save chat images to storage.</string>
     <string name="tap_warning_files_may_not_be_sent">Some files may not be sent</string>
     <string name="tap_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>

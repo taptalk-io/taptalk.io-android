@@ -568,8 +568,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
-        tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_room_empty_guide_title), vm.getRoom().getRoomName())));
-        tvProfileDescription.setText(String.format(getString(R.string.tap_room_empty_guide_content), vm.getRoom().getRoomName()));
+        if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
+            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_personal_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
+            tvProfileDescription.setText(String.format(getString(R.string.tap_personal_chat_room_empty_guide_content), vm.getRoom().getRoomName()));
+        } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
+            tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
+        }
 
         //ini listener buat scroll pagination (di Init View biar kebuat cuman sekali aja)
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
