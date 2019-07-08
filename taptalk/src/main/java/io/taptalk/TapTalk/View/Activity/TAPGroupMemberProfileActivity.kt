@@ -5,14 +5,12 @@ import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.support.design.widget.AppBarLayout
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -109,9 +107,12 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
     private fun generateGroupMemberMenu(): ArrayList<TAPMenuItem> {
         val menuItems = ArrayList<TAPMenuItem>()
         //Group Member Profile
-        if (null == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID ?: "0")
-                || (null != TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID ?: "0")
-                        && 0 == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID ?: "0").isContact)) {
+        if (null == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID
+                        ?: "0")
+                || (null != TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID
+                        ?: "0")
+                        && 0 == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID
+                        ?: "0").isContact)) {
             val menuAddToContact = TAPMenuItem(
                     MENU_ADD_TO_CONTACTS,
                     R.drawable.tap_ic_add_circle_grey,
@@ -178,9 +179,14 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
     private val profileMenuInterface = TAPChatProfileActivity.ProfileMenuInterface {
         when {
             it.menuID == MENU_SEND_MESSAGE -> openChatRoom(groupViewModel?.groupMemberUser)
-            it.menuID == MENU_ADD_TO_CONTACTS -> TAPDataManager.getInstance().addContactApi(groupViewModel?.groupMemberUser?.userID ?: "0", addContactView)
+            it.menuID == MENU_ADD_TO_CONTACTS -> TAPDataManager.getInstance().addContactApi(groupViewModel?.groupMemberUser?.userID
+                    ?: "0", addContactView)
             it.menuID == MENU_PROMOTE_ADMIN -> {
                 TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.room?.roomID,
+                        listOf(groupViewModel?.groupMemberUser?.userID), appointAdminView)
+            }
+            it.menuID == MENU_DEMOTE_ADMIN -> {
+                TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.room?.roomID,
                         listOf(groupViewModel?.groupMemberUser?.userID), appointAdminView)
             }
         }
