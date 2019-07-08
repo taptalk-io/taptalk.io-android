@@ -33,6 +33,7 @@ import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
@@ -290,12 +291,26 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         public void onError(TAPErrorModel error) {
             super.onError(error);
             btnStopLoadingState();
+            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(error.getMessage())
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                    .setPrimaryButtonListener(v -> onBackPressed())
+                    .show();
         }
 
         @Override
         public void onError(String errorMessage) {
             super.onError(errorMessage);
             btnStopLoadingState();
+            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(getString(R.string.tap_error_message_general))
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                    .setPrimaryButtonListener(v -> onBackPressed())
+                    .show();
         }
     };
 
@@ -323,12 +338,26 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         public void onError(TAPErrorModel error) {
             super.onError(error);
             btnStopLoadingState();
+            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(error.getMessage())
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                    .setPrimaryButtonListener(v -> onBackPressed())
+                    .show();
         }
 
         @Override
         public void onError(String errorMessage) {
             super.onError(errorMessage);
             btnStopLoadingState();
+            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(getString(R.string.tap_error_message_general))
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                    .setPrimaryButtonListener(v -> onBackPressed())
+                    .show();
         }
     };
 
