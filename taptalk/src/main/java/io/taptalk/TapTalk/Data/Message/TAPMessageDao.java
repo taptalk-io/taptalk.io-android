@@ -54,10 +54,10 @@ public interface TAPMessageDao {
             "and RoomID like :roomID order by created desc")
     List<TAPMessageEntity> getAllMessageTimeStamp(Long lastTimestamp, String roomID);
 
-    @Query("select * from Message_Table where body like :keyword escape '\\' and type != 9001 order by created desc")
+    @Query("select * from Message_Table where body like :keyword escape '\\' and type != 9001 and isHidden = 0 order by created desc")
     List<TAPMessageEntity> searchAllMessages(String keyword);
 
-    @Query("select * from (select roomID, max(created) as max_created from Message_Table group by roomID) secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created " +
+    @Query("select * from (select roomID, max(created) as max_created from Message_Table where isHidden = 0 group by roomID) secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created " +
             "group by firstQuery.roomID order by firstQuery.created desc")
     List<TAPMessageEntity> getAllRoomList();
 

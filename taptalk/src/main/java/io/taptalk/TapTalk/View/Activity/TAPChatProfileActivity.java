@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -73,6 +72,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NEED_TO_CLOSE_ACTIVITY_BEFORE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
@@ -150,6 +150,13 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         vm.setRoom(data.getParcelableExtra(ROOM));
                         updateView();
                     }
+
+                    if (data.getBooleanExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, false)) {
+                        Intent intent = new Intent();
+                        intent.putExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, true);
+                        setResult(RESULT_OK);
+                        onBackPressed();
+                    }
                     break;
             }
         }
@@ -202,13 +209,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         TAPUtils.getInstance().rotateAnimateInfinitely(TAPChatProfileActivity.this, ivSharedMediaLoading);
         tvSharedMediaLabel.setVisibility(View.GONE);
+
         new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
 
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonEdit.setOnClickListener(v -> openEditGroup());
-        flLoading.setOnClickListener(v -> {});
+        flLoading.setOnClickListener(v -> {
+        });
 
         if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
             TAPDataManager.getInstance().getUserByIdFromApi(
@@ -360,7 +369,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     TAPDataManager.getInstance().leaveChatRoom(vm.getRoom().getRoomID(), exitChatView);
                 })
                 .setSecondaryButtonTitle("Cancel")
-                .setSecondaryButtonListener(v -> {})
+                .setSecondaryButtonListener(v -> {
+                })
                 .show();
     }
 

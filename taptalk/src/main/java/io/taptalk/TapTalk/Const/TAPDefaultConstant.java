@@ -111,6 +111,7 @@ public class TAPDefaultConstant {
         public static final String GROUP_NAME = "kTAPExtraGroupName";
         public static final String GROUP_IMAGE = "kTAPExtraGroupImage";
         public static final String IS_TYPING = "kTAPExtraIsTyping";
+        public static final String IS_ADMIN = "kTAPExtraIsAdmin";
         public static final String QUOTE = "kTAPExtraQuote";
         public static final String URI = "kTAPExtraUri";
         public static final String MEDIA_PREVIEWS = "kTAPExtraMediaPreviews";
@@ -120,16 +121,19 @@ public class TAPDefaultConstant {
         public static final String COUNTRY_FLAG_URL = "kTAPExtraCountryFlagUrl";
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
         public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
+        public static final String IS_NEED_TO_CLOSE_ACTIVITY_BEFORE = "kTAPIsNeedToCloseActivityBefore";
     }
 
     public static final class RequestCode {
         public static final int COUNTRY_PICK = 11;
         public static final int EDIT_PROFILE = 21;
+        public static final int OPEN_PROFILE = 22;
         public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
         public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
         public static final int REGISTER = 31;
         public static final int GROUP_ADD_MEMBER = 4;
         public static final int GROUP_UPDATE_DATA = 41;
+        public static final int GROUP_OPEN_MEMBER_PROFILE = 42;
         public static final int SEND_IMAGE_FROM_CAMERA = 51;
         public static final int SEND_MEDIA_FROM_GALLERY = 52;
         public static final int SEND_MEDIA_FROM_PREVIEW = 53;
@@ -304,6 +308,11 @@ public class TAPDefaultConstant {
         public static final int MENU_EXIT_AND_CLEAR_CHAT = 4;
         public static final int MENU_VIEW_MEMBERS = 5;
         public static final int MENU_EXIT_GROUP = 6;
+        public static final int MENU_ADD_TO_CONTACTS = 7;
+        public static final int MENU_SEND_MESSAGE = 8;
+        public static final int MENU_PROMOTE_ADMIN = 9;
+        public static final int MENU_DEMOTE_ADMIN = 10;
+        public static final int MENU_REMOVE_MEMBER = 11;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";

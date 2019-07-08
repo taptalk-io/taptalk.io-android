@@ -390,7 +390,7 @@ public class TAPRoomListFragment extends Fragment {
         String messageRoomID = message.getRoom().getRoomID();
         TAPRoomListModel roomList = vm.getRoomPointer().get(messageRoomID);
 
-        if (null != roomList) {
+        if (null != roomList && null != message.getHidden() && !message.getHidden()) {
             //room nya ada di listnya
             roomList.setLastMessageTimestamp(message.getCreated());
             TAPMessageModel roomLastMessage = roomList.getLastMessage();
@@ -424,7 +424,7 @@ public class TAPRoomListFragment extends Fragment {
                         rvContactList.scrollToPosition(0);
                 });
             }
-        } else if (null != getActivity()) {
+        } else if (null != getActivity() && null != message.getHidden() && !message.getHidden()) {
             //kalau room yang masuk baru
 
             //TAPRoomListModel newRoomList = new TAPRoomListModel(message, 1);

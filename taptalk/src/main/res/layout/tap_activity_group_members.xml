@@ -186,7 +186,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="6dp"
                     android:lineSpacingExtra="6sp"
-                    android:text="@string/tap_appoint_admin" />
+                    android:text="@string/tap_promote_admin" />
 
             </LinearLayout>
 

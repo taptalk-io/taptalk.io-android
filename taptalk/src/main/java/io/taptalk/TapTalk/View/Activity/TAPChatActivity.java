@@ -139,6 +139,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
@@ -353,6 +354,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                                         .show();
                             }
                         }
+                        break;
+
+                    case OPEN_PROFILE:
+                        onBackPressed();
                         break;
                 }
         }
@@ -700,7 +705,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     public void openChatGroupProfile(TAPRoomModel roomModel) {
         Intent intent = new Intent(this, TAPChatProfileActivity.class);
         intent.putExtra(ROOM, roomModel);
-        startActivity(intent);
+        startActivityForResult(intent, OPEN_PROFILE);
         overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
