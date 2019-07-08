@@ -309,10 +309,10 @@ public class TAPDefaultConstant {
         public static final int MENU_VIEW_MEMBERS = 5;
         public static final int MENU_EXIT_GROUP = 6;
         public static final int MENU_ADD_TO_CONTACTS = 7;
-        public static final int MENU_SEND_MESSAGE = 7;
-        public static final int MENU_PROMOTE_ADMIN = 8;
-        public static final int MENU_DEMOTE_ADMIN = 9;
-        public static final int MENU_REMOVE_MEMBER = 10;
+        public static final int MENU_SEND_MESSAGE = 8;
+        public static final int MENU_PROMOTE_ADMIN = 9;
+        public static final int MENU_DEMOTE_ADMIN = 10;
+        public static final int MENU_REMOVE_MEMBER = 11;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
