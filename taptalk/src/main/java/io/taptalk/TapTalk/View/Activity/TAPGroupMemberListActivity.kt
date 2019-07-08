@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
@@ -17,6 +18,7 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_OPEN_MEMBER_PROFILE
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPGroupMemberListListener
@@ -24,6 +26,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
+import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
 import io.taptalk.TapTalk.ViewModel.TAPGroupMemberViewModel
@@ -37,6 +40,7 @@ import kotlinx.android.synthetic.main.tap_activity_create_new_group.tv_title
 import kotlinx.android.synthetic.main.tap_activity_group_members.*
 import kotlinx.android.synthetic.main.tap_loading_layout_block_screen.*
 
+@Suppress("CAST_NEVER_SUCCEEDS")
 class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
@@ -141,7 +145,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 intent.putExtra(ROOM, groupViewModel?.groupData)
                 intent.putExtra(TAPDefaultConstant.K_USER, member)
                 intent.putExtra(IS_ADMIN, isAdmin)
-                startActivityForResult(intent, TAPDefaultConstant.RequestCode.GROUP_OPEN_MEMBER_PROFILE)
+                startActivityForResult(intent, GROUP_OPEN_MEMBER_PROFILE)
             }
         }
     }
@@ -368,6 +372,19 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                             ?: groupViewModel?.participantsList
                     adapter?.items = groupViewModel?.groupData?.groupParticipants
                     adapter?.notifyDataSetChanged()
+
+                    //set total member count
+                    tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+                    tv_member_count.visibility = View.VISIBLE
+                    groupViewModel?.isUpdateMember = true
+                }
+
+                GROUP_OPEN_MEMBER_PROFILE -> {
+                    val roomModel : TAPRoomModel? = data?.getParcelableExtra(ROOM)
+                    groupViewModel?.groupData = roomModel
+                    //adapter?.items = groupViewModel?.groupData?.groupParticipants
+                    adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
+                    adapter?.items = groupViewModel?.groupData?.groupParticipants ?: listOf()
 
                     //set total member count
                     tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"

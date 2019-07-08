@@ -1,14 +1,18 @@
 package io.taptalk.TapTalk.View.Activity
 
 import android.animation.ValueAnimator
+import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.support.design.widget.AppBarLayout
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -19,12 +23,17 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Listener.TAPDatabaseListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPContactManager
+import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPMenuItem
+import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Adapter.TAPMenuButtonAdapter
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
 import io.taptalk.Taptalk.R
@@ -167,7 +176,14 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
     }
 
     private val profileMenuInterface = TAPChatProfileActivity.ProfileMenuInterface {
-
+        when {
+            it.menuID == MENU_SEND_MESSAGE -> openChatRoom(groupViewModel?.groupMemberUser)
+            it.menuID == MENU_ADD_TO_CONTACTS -> TAPDataManager.getInstance().addContactApi(groupViewModel?.groupMemberUser?.userID ?: "0", addContactView)
+            it.menuID == MENU_PROMOTE_ADMIN -> {
+                TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.room?.roomID,
+                        listOf(groupViewModel?.groupMemberUser?.userID), appointAdminView)
+            }
+        }
     }
 
     private val offsetChangedListener = object : AppBarLayout.OnOffsetChangedListener {
@@ -214,7 +230,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                 ll_toolbar_collapsed.animate()
                         .alpha(0f)
                         .setDuration(DEFAULT_ANIMATION_TIME.toLong())
-                        .withEndAction({ ll_toolbar_collapsed.setVisibility(View.GONE) })
+                        .withEndAction { ll_toolbar_collapsed.setVisibility(View.GONE) }
                         .start()
                 tv_collapsed_name.animate()
                         .translationY(nameTranslationY.toFloat())
@@ -270,14 +286,22 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
         }
     }
 
-    private fun endLoading() {
+    private fun endLoading(isDirectFinish: Boolean) {
         runOnUiThread {
             iv_saving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
             iv_saving.clearAnimation()
             tv_loading_text.text = getString(R.string.tap_finished)
             fl_loading.setOnClickListener { hideLoading() }
 
-            Handler().postDelayed({ this.hideLoading() }, 1000L)
+            Handler().postDelayed({
+                this.hideLoading()
+                if (isDirectFinish) {
+                    val intent = Intent()
+                    intent.putExtra(ROOM, groupViewModel?.room)
+                    setResult(Activity.RESULT_OK, intent)
+                    finish()
+                }
+            }, 1000L)
         }
     }
 
@@ -285,7 +309,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
         fl_loading.visibility = View.GONE
     }
 
-    val addContact = object : TAPDefaultDataView<TAPCommonResponse>() {
+    private val addContactView = object : TAPDefaultDataView<TAPCommonResponse>() {
         override fun startLoading() {
             super.startLoading()
             showLoading()
@@ -293,18 +317,54 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
 
         override fun onSuccess(response: TAPCommonResponse?) {
             super.onSuccess(response)
-            finish()
-            this@TAPGroupMemberProfileActivity.endLoading()
+            val newContact = groupViewModel?.groupMemberUser?.setUserAsContact()
+            TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, newContact)
+            TAPContactManager.getInstance().updateUserDataMap(newContact)
+            this@TAPGroupMemberProfileActivity.endLoading(true)
         }
 
         override fun onError(error: TAPErrorModel?) {
             super.onError(error)
-            this@TAPGroupMemberProfileActivity.endLoading()
+            this@TAPGroupMemberProfileActivity.endLoading(false)
         }
 
         override fun onError(errorMessage: String?) {
             super.onError(errorMessage)
-            this@TAPGroupMemberProfileActivity.endLoading()
+            this@TAPGroupMemberProfileActivity.endLoading(false)
+        }
+    }
+
+    private val dbListener = object : TAPDatabaseListener<TAPUserModel>() {
+        override fun onInsertFinished() {}
+    }
+
+    private fun openChatRoom(userModel: TAPUserModel?) {
+        TAPUtils.getInstance().startChatActivity(this,
+                TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().activeUser.userID,
+                        userModel?.userID ?: "0"), userModel?.name ?: "",
+                userModel?.avatarURL, TYPE_PERSONAL, "FFFFFF")
+        finish()
+    }
+
+    private val appointAdminView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
+        override fun startLoading() {
+            showLoading()
+        }
+
+        override fun onSuccess(response: TAPCreateRoomResponse?) {
+            groupViewModel?.room = response?.room
+            groupViewModel?.room?.groupParticipants = response?.participants
+            groupViewModel?.room?.admins = response?.admins
+
+            this@TAPGroupMemberProfileActivity.endLoading(true)
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            this@TAPGroupMemberProfileActivity.endLoading(false)
+        }
+
+        override fun onError(errorMessage: String?) {
+            this@TAPGroupMemberProfileActivity.endLoading(false)
         }
     }
 }
