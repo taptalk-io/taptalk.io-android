@@ -184,6 +184,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             it.menuID == MENU_PROMOTE_ADMIN -> {
                 TapTalkDialog.Builder(this)
                         .setTitle(resources.getString(R.string.tap_promote_admin))
+                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                         .setMessage("Are you sure you want to promote this member to admin?")
                         .setPrimaryButtonTitle("OK")
                         .setPrimaryButtonListener {
@@ -197,6 +198,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             it.menuID == MENU_DEMOTE_ADMIN -> {
                 TapTalkDialog.Builder(this)
                         .setTitle(resources.getString(R.string.tap_demote_admin))
+                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                         .setMessage("Are you sure you want to demote this admin?")
                         .setPrimaryButtonTitle("OK")
                         .setPrimaryButtonListener {
@@ -211,6 +213,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             it.menuID == MENU_REMOVE_MEMBER -> {
                 TapTalkDialog.Builder(this)
                         .setTitle(resources.getString(R.string.tap_remove_group_members))
+                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                         .setMessage("Are you sure you want to remove this member?")
                         .setPrimaryButtonTitle("OK")
                         .setPrimaryButtonListener {

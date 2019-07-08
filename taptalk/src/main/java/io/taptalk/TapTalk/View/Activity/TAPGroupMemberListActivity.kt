@@ -63,6 +63,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 if (groupViewModel?.selectedMembers?.size!! > 1) {
                     TapTalkDialog.Builder(this)
                             .setTitle("${resources.getString(R.string.tap_remove_group_members)}s")
+                            .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                             .setMessage("Are you sure you want to remove selected members?")
                             .setPrimaryButtonTitle("OK")
                             .setPrimaryButtonListener {
@@ -76,6 +77,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 } else {
                     TapTalkDialog.Builder(this)
                             .setTitle(resources.getString(R.string.tap_remove_group_members))
+                            .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                             .setMessage("Are you sure you want to remove this member?")
                             .setPrimaryButtonTitle("OK")
                             .setPrimaryButtonListener {
@@ -94,6 +96,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     TAPGroupMemberViewModel.AdminButtonShowed.PROMOTE -> {
                         TapTalkDialog.Builder(this)
                                 .setTitle(resources.getString(R.string.tap_promote_admin))
+                                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                 .setMessage("Are you sure you want to promote this member to admin?")
                                 .setPrimaryButtonTitle("OK")
                                 .setPrimaryButtonListener {
@@ -109,6 +112,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE -> {
                         TapTalkDialog.Builder(this)
                                 .setTitle(resources.getString(R.string.tap_demote_admin))
+                                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                 .setMessage("Are you sure you want to demote this admin?")
                                 .setPrimaryButtonTitle("OK")
                                 .setPrimaryButtonListener {

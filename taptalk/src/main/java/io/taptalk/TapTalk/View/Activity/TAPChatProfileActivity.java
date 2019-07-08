@@ -363,6 +363,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private void exitAndClearChat() {
         new TapTalkDialog.Builder(this)
                 .setTitle("Exit and Clear Chat")
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setMessage("Are you Sure to leave this chat?")
                 .setPrimaryButtonTitle("OK")
                 .setPrimaryButtonListener(v -> {
