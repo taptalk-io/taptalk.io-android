@@ -328,6 +328,7 @@ public class TAPDefaultConstant {
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
     public static final String K_IS_WRITE_STORAGE_PERMISSION_REQUESTED = "kTAPIsWriteStoragePermissionRequested";
     public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
+    public static final String K_GROUP_DATA_MAP = "kGroupDataMap";
     public static final String K_FILE_URI_MAP = "kTAPFileUriMap";
     public static final String K_FILE_PATH_MAP = "kTAPFilePathMap";
     public static final String K_MEDIA_VOLUME = "kTAPMediaVolume";

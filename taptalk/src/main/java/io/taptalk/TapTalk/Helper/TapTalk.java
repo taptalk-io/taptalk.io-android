@@ -49,6 +49,7 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
@@ -196,7 +197,11 @@ public class TapTalk {
             @Override
             public void onAppGotoForeground() {
                 isForeground = true;
+
+                //Load Back Group and User Data to Manager
                 TAPContactManager.getInstance().loadAllUserDataFromDatabase();
+                TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
+
                 TAPChatManager.getInstance().setFinishChatFlow(false);
                 TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();

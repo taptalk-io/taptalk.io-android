@@ -1,7 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,10 +21,10 @@ public class TAPContactManager {
     private TAPContactManager() {
         //loadAllUserDataFromDatabase();
         TAPConnectionManager.getInstance().addSocketListener(new TAPSocketListener() {
-            @Override
-            public void onSocketConnected() {
-                //loadAllUserDataFromDatabase();
-            }
+//            @Override
+//            public void onSocketConnected() {
+//                //loadAllUserDataFromDatabase();
+//            }
 
             @Override
             public void onSocketDisconnected() {

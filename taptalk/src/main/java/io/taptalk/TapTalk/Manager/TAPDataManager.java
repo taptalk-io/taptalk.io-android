@@ -63,6 +63,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_WRITE_STORAGE_PERMISSION_REQUESTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
@@ -356,6 +357,25 @@ public class TAPDataManager {
 
     public void removeUserLastActivityMap() {
         Hawk.delete(K_USER_LAST_ACTIVITY);
+    }
+
+    /**
+     * SAVE GROUP DATA
+     */
+    public HashMap<String, TAPRoomModel> getRoomDataMap() {
+        return Hawk.get(K_GROUP_DATA_MAP);
+    }
+
+    public void saveRoomDataMap(HashMap<String, TAPRoomModel> roomDataMap) {
+        Hawk.put(K_GROUP_DATA_MAP, roomDataMap);
+    }
+
+    public void removeRoomDataMap() {
+        Hawk.delete(K_GROUP_DATA_MAP);
+    }
+
+    public boolean isRoomDataMapAvailable() {
+        return Hawk.contains(K_GROUP_DATA_MAP) && null != Hawk.get(K_GROUP_DATA_MAP);
     }
 
     /**
