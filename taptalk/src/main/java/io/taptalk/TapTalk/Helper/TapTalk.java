@@ -55,10 +55,12 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
+import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -249,10 +251,21 @@ public class TapTalk {
                     TAPDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
                     registerFcmToken();
 
+                    new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(new TAPDefaultDataView<TAPContactResponse>() {
+                        @Override
+                        public void onSuccess(TAPContactResponse response) {
+                            List<TAPUserModel> userModels = new ArrayList<>();
+                            for (TAPContactModel contact : response.getContacts()) {
+                                userModels.add(contact.getUser().setUserAsContact());
+                            }
+                            TAPDataManager.getInstance().insertMyContactToDatabase(userModels);
+                            TAPContactManager.getInstance().updateUserDataMap(userModels);
+                        }
+                    })).start();
+
                     TAPDataManager.getInstance().saveActiveUser(response.getUser());
                     TAPApiManager.getInstance().setLogout(false);
-                    if (isForeground)
-                        TAPConnectionManager.getInstance().connect();
+                    if (isForeground) TAPConnectionManager.getInstance().connect();
                     verifyOTPInterface.verifyOTPSuccessToLogin();
 
                     if (isRefreshTokenExpired) {
@@ -436,7 +449,7 @@ public class TapTalk {
             if (null != notificationMessage &&
                     null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
                     TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
-                setChatMessage(notificationMessage.getUser().getName()+ ": " + notificationMessage.getBody());
+                setChatMessage(notificationMessage.getUser().getName() + ": " + notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             } else if (null != notificationMessage) {
                 setChatMessage(notificationMessage.getBody());
