@@ -191,16 +191,17 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                 tvFullName.setText(fullName);
             }
 
-            // TODO: 19 September 2018 UPDATE ICONS
             // Update avatar icon
             if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("1")*/) {
                 ivAvatarIcon.setVisibility(View.GONE);
             } else if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("2")*/) {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
                 ivAvatarIcon.setImageResource(R.drawable.tap_ic_verified);
+                ivAvatarIcon.setBackground(null);
             } else {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
-                ivAvatarIcon.setImageResource(R.drawable.tap_ic_close_red_circle_border);
+                ivAvatarIcon.setImageResource(R.drawable.tap_ic_remove_red_circle_background);
+                ivAvatarIcon.setBackgroundResource(R.drawable.tap_bg_circle_remove_item);
             }
 
             itemView.setOnClickListener(v -> deselectContact(item));

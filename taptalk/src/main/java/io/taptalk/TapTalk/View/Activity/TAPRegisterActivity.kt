@@ -178,7 +178,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         iv_button_back.setOnClickListener { onBackPressed() }
         civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
+        fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         iv_view_password.setOnClickListener { togglePasswordVisibility(et_password, iv_view_password) }
         iv_view_password_retype.setOnClickListener { togglePasswordVisibility(et_retype_password, iv_view_password_retype) }
 
@@ -217,14 +217,14 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (null == vm.profilePictureUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
             glide.load(R.drawable.tap_img_default_avatar).into(civ_profile_picture)
-            iv_remove_profile_picture.visibility = View.GONE
+            fl_remove_profile_picture.visibility = View.GONE
             if (showErrorMessage) {
                 Toast.makeText(this@TAPRegisterActivity, getString(R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
             }
         } else {
             vm.formCheck[indexProfilePicture] = stateValid
             glide.load(vm.profilePictureUri).into(civ_profile_picture)
-            iv_remove_profile_picture.visibility = View.VISIBLE
+            fl_remove_profile_picture.visibility = View.VISIBLE
         }
     }
 
@@ -436,7 +436,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         iv_button_back.setOnClickListener(null)
         civ_profile_picture.setOnClickListener(null)
         ll_change_profile_picture.setOnClickListener(null)
-        iv_remove_profile_picture.setOnClickListener(null)
+        fl_remove_profile_picture.setOnClickListener(null)
         fl_button_continue.setOnClickListener(null)
 
         iv_button_back.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
@@ -463,7 +463,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         iv_button_back.setOnClickListener { onBackPressed() }
         civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
+        fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         fl_button_continue.setOnClickListener { register() }
 
         iv_button_back.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_orange))

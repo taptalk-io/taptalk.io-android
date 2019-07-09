@@ -77,18 +77,26 @@
                 app:layout_constraintStart_toStartOf="@id/iv_group_pic_background"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/iv_remove_group_picture"
+            <FrameLayout
+                android:id="@+id/fl_remove_group_picture"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:elevation="2dp"
-                android:padding="6dp"
-                android:src="@drawable/tap_ic_close_red_circle_border"
-                android:translationX="6dp"
-                android:translationY="-6dp"
+                android:translationX="5dp"
+                android:translationY="-5dp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@id/civ_group_picture"
-                app:layout_constraintTop_toTopOf="@id/civ_group_picture" />
+                app:layout_constraintTop_toTopOf="@id/civ_group_picture">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/tap_bg_circle_remove_item"
+                    android:src="@drawable/tap_ic_remove_red_circle_background"
+                    android:tint="@color/tapIconRemoveItemBackground" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/ll_change_group_picture"
