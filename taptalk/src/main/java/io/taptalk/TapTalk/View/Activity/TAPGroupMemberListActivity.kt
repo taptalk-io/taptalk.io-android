@@ -200,14 +200,25 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_group_members)
-        initViewModel()
-        initView()
+
+        if (initViewModel()) initView()
+        else stateLoadingMember()
+    }
+
+    private fun stateLoadingMember() {
+        sv_members.visibility = View.GONE
+        ll_member_loading.visibility = View.VISIBLE
+        TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_progress)
     }
 
     private fun initView() {
         tv_title.text = resources.getString(R.string.tap_group_members)
         //groupViewModel?.groupData = intent.getParcelableExtra(ROOM)
-        groupViewModel?.setGroupDataAndCheckAdmin(intent.getParcelableExtra(ROOM))
+        //groupViewModel?.setGroupDataAndCheckAdmin(intent.getParcelableExtra(ROOM))
+        sv_members.visibility = View.VISIBLE
+        ll_member_loading.visibility = View.GONE
+        iv_loading_progress.clearAnimation()
+
         groupViewModel?.participantsList = groupViewModel?.groupData?.groupParticipants?.toMutableList()
                 ?: mutableListOf()
 
@@ -238,8 +249,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         et_search.setOnEditorActionListener(searchEditorActionListener)
     }
 
-    private fun initViewModel() {
+    private fun initViewModel() : Boolean {
         groupViewModel = ViewModelProviders.of(this).get(TAPGroupMemberViewModel::class.java)
+        groupViewModel?.setGroupDataAndCheckAdmin(intent.getParcelableExtra(ROOM))
+
+        return null != groupViewModel?.groupData?.groupParticipants
     }
 
     private fun toggleSearchBar() {
