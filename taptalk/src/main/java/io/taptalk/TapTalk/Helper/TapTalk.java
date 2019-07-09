@@ -196,6 +196,7 @@ public class TapTalk {
             @Override
             public void onAppGotoForeground() {
                 isForeground = true;
+                TAPContactManager.getInstance().loadAllUserDataFromDatabase();
                 TAPChatManager.getInstance().setFinishChatFlow(false);
                 TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();

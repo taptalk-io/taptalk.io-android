@@ -25,7 +25,7 @@ public class TAPContactManager {
         TAPConnectionManager.getInstance().addSocketListener(new TAPSocketListener() {
             @Override
             public void onSocketConnected() {
-                loadAllUserDataFromDatabase();
+                //loadAllUserDataFromDatabase();
             }
 
             @Override
@@ -136,11 +136,9 @@ public class TAPContactManager {
         if ('0' == tempPhone.charAt(0)) {
             tempPhone = tempPhone.replaceFirst("0", getMyCountryCode());
         } else if (!prefix.equals(getMyCountryCode())) {
-            Log.e(TAG, "isUserPhoneNumberAlreadyExist: " + prefix);
             tempPhone = getMyCountryCode() + tempPhone;
         }
 
-        Log.e(TAG, "convertPhoneNumber: " + tempPhone);
         return tempPhone;
     }
 
