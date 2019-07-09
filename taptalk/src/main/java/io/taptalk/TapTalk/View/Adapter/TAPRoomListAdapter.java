@@ -106,11 +106,13 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             clContainer.setBackgroundColor(resource.getColor(R.color.tapWhite));
             //ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
             if (item.getLastMessage().getRoom().getRoomType() == TYPE_GROUP) {
+                // TODO: 2019-07-08 GROUP
                 ivAvatarIcon.setVisibility(View.VISIBLE);
                 Glide.with(itemView.getContext()).load(R.drawable.tap_ic_group_icon).into(ivAvatarIcon);
                 tvGroupSenderName.setVisibility(View.VISIBLE);
-                tvGroupSenderName.setText(item.getLastMessage().getUser().getName());
+                tvGroupSenderName.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) ? itemView.getContext().getString(R.string.tap_you) : item.getLastMessage().getUser().getName());
             } else {
+                // TODO: 2019-07-08 NON GROUP
                 tvGroupSenderName.setVisibility(View.GONE);
                 ivAvatarIcon.setVisibility(View.GONE);
             }

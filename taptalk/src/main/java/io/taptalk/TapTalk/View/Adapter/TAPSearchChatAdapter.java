@@ -141,7 +141,10 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             TypedArray typedArray = itemView.getContext().obtainStyledAttributes(R.style.tapRoomListMessageHighlightedStyle, R.styleable.TextAppearance);
             String colorCode = Integer.toHexString(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
             typedArray.recycle();
-            String colorSender = Integer.toHexString(ContextCompat.getColor(itemView.getContext(), R.color.tapBlack19));
+
+            TypedArray typedArraySender = itemView.getContext().obtainStyledAttributes(R.style.tapGroupRoomListSenderNameStyle, R.styleable.TextAppearance);
+            String colorSender = Integer.toHexString(typedArraySender.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
+            typedArray.recycle();
 
             // Set message body with highlighted text
             String highlightedText;
