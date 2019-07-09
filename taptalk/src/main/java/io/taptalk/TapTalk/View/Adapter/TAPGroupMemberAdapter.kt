@@ -13,6 +13,7 @@ import io.taptalk.TapTalk.Helper.CircleImageView
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder
 import io.taptalk.TapTalk.Interface.TapTalkGroupMemberListInterface
 import io.taptalk.TapTalk.Listener.TAPGroupMemberListListener
+import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.Taptalk.R
 
@@ -85,7 +86,8 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
             else vSeparator.visibility = View.VISIBLE
 
             //Show and Hide Selection
-            if (groupAdapter.cellMode == SELECT_MODE) {
+            if (groupAdapter.cellMode == SELECT_MODE &&
+                    item?.userID != TAPChatManager.getInstance().activeUser.userID) {
                 ivSelection.visibility = View.VISIBLE
             } else {
                 ivSelection.visibility = View.GONE
@@ -100,22 +102,24 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
 
             //setListener for Click
             itemView.setOnClickListener {
-                if (SELECT_MODE == groupAdapter.cellMode && false == item?.isSelected) {
+                if (SELECT_MODE == groupAdapter.cellMode && false == item?.isSelected &&
+                        item.userID != TAPChatManager.getInstance().activeUser.userID) {
                     groupAdapter.groupInterface.onContactSelected(item)
                     item.isSelected = true
                     ivSelection.setImageResource(R.drawable.tap_ic_circle_active)
-                } else if (SELECT_MODE == groupAdapter.cellMode && true == item?.isSelected) {
+                } else if (SELECT_MODE == groupAdapter.cellMode && true == item?.isSelected &&
+                        item.userID != TAPChatManager.getInstance().activeUser.userID) {
                     groupAdapter.groupInterface.onContactDeselected(item)
                     item.isSelected = false
                     ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive)
-                } else {
+                } else if (NORMAL_MODE == groupAdapter.cellMode) {
                     groupAdapter.groupInterface.onGroupMemberClicked(item, isAdmin)
                 }
             }
 
             //Set Listener for long press
             itemView.setOnLongClickListener {
-                if (NORMAL_MODE == groupAdapter.cellMode) {
+                if (NORMAL_MODE == groupAdapter.cellMode && item?.userID != TAPChatManager.getInstance().activeUser.userID) {
                     item?.isSelected = true
                     groupAdapter.groupInterface.onContactLongPress(item)
                     return@setOnLongClickListener true

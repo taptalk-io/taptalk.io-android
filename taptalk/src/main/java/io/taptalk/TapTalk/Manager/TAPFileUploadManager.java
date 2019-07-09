@@ -198,11 +198,13 @@ public class TAPFileUploadManager {
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 }
 
-                @Override public void onError() {
+                @Override
+                public void onError() {
                     removeUploadProgressMap(userID);
                 }
 
-                @Override public void onFinish() {
+                @Override
+                public void onFinish() {
                     removeUploadProgressMap(userID);
                 }
             };
