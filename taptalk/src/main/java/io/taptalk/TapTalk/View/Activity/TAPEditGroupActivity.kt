@@ -6,19 +6,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
+import io.taptalk.TapTalk.Manager.TAPGroupManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.ViewModel.TAPEditGroupViewModel
@@ -174,6 +172,9 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             if (null == groupViewModel?.groupPicUri) {
                 btnStopLoadingState()
                 groupViewModel?.groupData?.roomName = response?.room?.roomName
+                if (null != response && null != response.room)
+                    TAPGroupManager.getInstance.updateRoomDataNameAndImage(response.room!!)
+
                 finishGroupUpdate()
             } else {
                 TAPFileUploadManager.getInstance().uploadRoomPicture(this@TAPEditGroupActivity,
@@ -218,6 +219,8 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             super.onSuccess(response)
             btnStopLoadingState()
             groupViewModel?.groupData?.roomImage = response?.room?.roomImage
+            if (null != response && null != response.room)
+                TAPGroupManager.getInstance.updateRoomDataNameAndImage(response.room!!)
             finishGroupUpdate()
         }
 

@@ -279,6 +279,9 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             if (null != vm.getRoomImageUri())
                 TAPFileUploadManager.getInstance().uploadRoomPicture(TAPGroupSubjectActivity.this,
                         vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
+            if (null != response.getRoom())
+                TAPGroupManager.Companion.getGetInstance().updateRoomDataNameAndImage(response.getRoom());
+
             else {
                 btnStopLoadingState();
 //                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);

@@ -54,6 +54,13 @@ class TAPGroupManager {
         getGroupDataMap().clear()
     }
 
+    fun updateRoomDataNameAndImage(roomModel: TAPRoomModel) {
+        if (checkIsRoomDataAvailable(roomModel.roomID)) {
+            getGroupData(roomModel.roomID)?.roomName = roomModel.roomName
+            getGroupData(roomModel.roomID)?.roomImage = roomModel.roomImage
+        }
+    }
+
     fun loadAllRoomDataFromPreference() {
         groupDataMap = TAPDataManager.getInstance().roomDataMap
     }
