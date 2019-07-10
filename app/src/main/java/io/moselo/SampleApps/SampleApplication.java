@@ -38,7 +38,7 @@ public class SampleApplication extends Application {
         public List<TAPCustomKeyboardItemModel> onRequestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
             // DUMMY CUSTOM KEYBOARD ITEMS
             TAPCustomKeyboardItemModel customKeyboard1 = new TAPCustomKeyboardItemModel("1", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_new_group_orange), "Say Hello to " + otherUser.getName());
-            TAPCustomKeyboardItemModel customKeyboard2 = new TAPCustomKeyboardItemModel("2", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_view_orange), "View Profile");
+            TAPCustomKeyboardItemModel customKeyboard2 = new TAPCustomKeyboardItemModel("2", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_view_grey), "View Profile");
             TAPCustomKeyboardItemModel customKeyboard3 = new TAPCustomKeyboardItemModel("3", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_exit_red), "Leave Room");
             List<TAPCustomKeyboardItemModel> customKeyboards = new ArrayList<>();
             customKeyboards.add(customKeyboard1);

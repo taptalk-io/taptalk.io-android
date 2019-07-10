@@ -387,7 +387,7 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:scaleType="center"
-                    android:src="@drawable/tap_ic_chevron_white"
+                    android:src="@drawable/tap_ic_chevron_right_grey"
                     android:tint="@color/tapIconChevronRightPrimary"
                     app:layout_constraintBottom_toBottomOf="@id/tv_password"
                     app:layout_constraintDimensionRatio="H, 1:1"

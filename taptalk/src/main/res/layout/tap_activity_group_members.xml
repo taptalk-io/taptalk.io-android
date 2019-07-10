@@ -24,7 +24,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_back_white"
+            android:src="@drawable/tap_ic_chevron_left_orange"
             android:tint="@color/tapIconNavBarBackButton"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"

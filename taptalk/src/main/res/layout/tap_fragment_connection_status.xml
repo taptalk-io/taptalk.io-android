@@ -5,27 +5,27 @@
     android:id="@+id/ll_connection_status"
     android:layout_width="match_parent"
     android:layout_height="20dp"
-    android:background="@drawable/tap_bg_status_connecting"
     android:gravity="center"
     android:orientation="horizontal"
     app:layout_constraintBottom_toTopOf="@id/rv_contact_list"
-    app:layout_constraintTop_toBottomOf="@+id/cl_button_search">
+    app:layout_constraintTop_toBottomOf="@+id/cl_button_search"
+    tools:background="@drawable/tap_bg_status_connected">
 
     <TextView
         android:id="@+id/tv_connection_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/tap_font_pt_root_bold"
-        android:text="@string/tap_connecting"
         android:textColor="@color/tapWhite"
-        android:textSize="12dp" />
+        android:textSize="12dp"
+        tools:text="@string/tap_connected" />
 
     <ImageView
         android:id="@+id/iv_connection_status"
-        android:layout_width="9dp"
-        android:layout_height="9dp"
-        android:layout_marginStart="4dp"
-        tools:src="@drawable/tap_ic_loading_progress_circle_white"
-        android:tint="@color/tapWhite" />
+        android:layout_width="13dp"
+        android:layout_height="13dp"
+        android:layout_marginStart="2dp"
+        android:tint="@color/tapWhite"
+        tools:src="@drawable/tap_ic_checklist_pumpkin" />
 
 </LinearLayout>
