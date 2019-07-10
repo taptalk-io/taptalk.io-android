@@ -1,40 +1,46 @@
-<FrameLayout android:id="@+id/fl_loading"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl_loading"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tapTransparentCharcoal40"
-    android:visibility="gone"
     android:elevation="2dp"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:visibility="gone">
 
     <android.support.constraint.ConstraintLayout
-        android:layout_width="128dp"
-        android:layout_height="128dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/tap_bg_white_rounded_6dp">
+        android:animateLayoutChanges="true"
+        android:background="@drawable/tap_bg_white_rounded_6dp"
+        android:minWidth="128dp"
+        android:minHeight="128dp">
 
         <ImageView
             android:id="@+id/iv_saving"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginBottom="4dp"
-            android:src="@drawable/tap_ic_checklist_pumpkin"
             android:tint="@color/tapIconLoadingPopupSuccess"
             app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:src="@drawable/tap_ic_checklist_pumpkin" />
 
         <TextView
             android:id="@+id/tv_loading_text"
             style="@style/tapPopupLoadingLabelStyle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:gravity="center"
-            android:text="@string/tap_loading"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="@string/tap_loading" />
 
     </android.support.constraint.ConstraintLayout>
 

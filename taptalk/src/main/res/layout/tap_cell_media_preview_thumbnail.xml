@@ -27,7 +27,7 @@
             android:background="@drawable/tap_bg_remove_media_thumbnail_button_default"
             android:padding="8dp"
             android:src="@drawable/tap_ic_remove_white"
-            android:tint="@color/tapIconMediaPreviewThumbnailRemoveItem"/>
+            android:tint="@color/tapIconRemoveItem"/>
 
         <ProgressBar
             android:id="@+id/pb_loading"

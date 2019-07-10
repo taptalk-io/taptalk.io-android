@@ -32,10 +32,10 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
                 onBackPressed()
             }
 
-            R.id.iv_remove_group_picture -> {
+            R.id.fl_remove_group_picture -> {
                 groupViewModel?.groupData?.roomImage = null
                 civ_group_picture.setImageResource(R.drawable.tap_img_default_avatar)
-                iv_remove_group_picture.visibility = View.GONE
+                fl_remove_group_picture.visibility = View.GONE
                 groupViewModel?.isGroupPicChanged = groupViewModel?.isGroupPicStartEmpty != true
                 showingButton()
             }
@@ -105,7 +105,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             groupViewModel?.isGroupPicStartEmpty = true
         }
 
-        //iv_remove_group_picture.setOnClickListener(this)
+        //fl_remove_group_picture.setOnClickListener(this)
         ll_change_group_picture.setOnClickListener(this)
         fl_update_group_btn.setOnClickListener(this)
         iv_close_btn.setOnClickListener(this)
@@ -137,7 +137,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
     private fun loadImage(imageURL: String) {
         Glide.with(this).load(imageURL)
                 .apply(RequestOptions().centerCrop()).into(civ_group_picture)
-        //iv_remove_group_picture.visibility = View.VISIBLE
+        //fl_remove_group_picture.visibility = View.VISIBLE
     }
 
     private fun showingButton() {

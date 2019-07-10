@@ -74,7 +74,7 @@
                     app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_room_status"
-                    tools:background="@drawable/tap_bg_circle_vibrantgreen" />
+                    tools:background="@drawable/tap_bg_circle_active" />
 
                 <TextView
                     android:id="@+id/tv_room_status"

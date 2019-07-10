@@ -338,7 +338,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             } else {
                 tvConnectionStatus.setText(String.format(getString(R.string.tap_synced_d_contacts), contactSynced));
             }
-            ivConnectionStatus.setImageResource(R.drawable.tap_ic_connected_white);
+            ivConnectionStatus.setImageResource(R.drawable.tap_ic_checklist_pumpkin);
             ivConnectionStatus.clearAnimation();
             flSyncStatus.setVisibility(View.VISIBLE);
 

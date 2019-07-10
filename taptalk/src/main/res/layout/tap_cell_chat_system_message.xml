@@ -4,11 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="3dp"
-    android:layout_marginBottom="6dp"
-    app:layout_goneMarginBottom="3dp"
-    app:layout_goneMarginTop="6dp">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/tv_message"
@@ -16,8 +12,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="6dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/tap_bg_system_message_bubble"
+        android:elevation="1dp"
         android:gravity="center"
         android:paddingStart="10dp"
         android:paddingTop="5dp"
@@ -26,6 +25,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="System Message" />
 
 </android.support.constraint.ConstraintLayout>

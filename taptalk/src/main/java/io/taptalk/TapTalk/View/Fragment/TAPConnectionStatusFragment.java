@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -30,6 +29,8 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     private ImageView ivConnectionStatus;
 
     private boolean hideUntilNextConnect;
+
+    private final int padding = TAPUtils.getInstance().dpToPx(2);
 
     public TAPConnectionStatusFragment() {
     }
@@ -122,7 +123,8 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
             activity.runOnUiThread(() -> {
                 llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connected);
                 tvConnectionStatus.setText(getString(R.string.tap_connected));
-                ivConnectionStatus.setImageResource(R.drawable.tap_ic_connected_white);
+                ivConnectionStatus.setImageResource(R.drawable.tap_ic_checklist_pumpkin);
+                ivConnectionStatus.setPadding(0, 0, 0, 0);
                 llConnectionStatus.setVisibility(View.VISIBLE);
                 ivConnectionStatus.clearAnimation();
 
@@ -142,6 +144,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
             tvConnectionStatus.setText(R.string.tap_connecting);
             ivConnectionStatus.setImageResource(R.drawable.tap_ic_loading_progress_circle_white);
+            ivConnectionStatus.setPadding(padding, padding, padding, padding);
             llConnectionStatus.setVisibility(View.VISIBLE);
             if (null == ivConnectionStatus.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivConnectionStatus);
@@ -150,7 +153,10 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     private void setStatusWaitingForNetwork() {
-        if (TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) {
+//        if (TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) {
+//            return;
+//        }
+        if (hideUntilNextConnect) {
             return;
         }
 
@@ -158,6 +164,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_offline);
             tvConnectionStatus.setText(R.string.tap_waiting_for_network);
             ivConnectionStatus.setImageResource(R.drawable.tap_ic_loading_progress_circle_white);
+            ivConnectionStatus.setPadding(padding, padding, padding, padding);
             llConnectionStatus.setVisibility(View.VISIBLE);
             if (null == ivConnectionStatus.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivConnectionStatus);

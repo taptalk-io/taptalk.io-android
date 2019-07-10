@@ -17,12 +17,11 @@
 
         <ImageView
             android:id="@+id/iv_close_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             android:foreground="?attr/selectableItemBackgroundBorderless"
-            android:paddingStart="21dp"
-            android:paddingEnd="21dp"
-            android:src="@drawable/tap_ic_close_white"
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_close_grey"
             android:tint="@color/tapWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ll_title_url"
