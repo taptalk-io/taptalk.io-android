@@ -358,7 +358,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void setNotification(boolean isNotificationOn) {
-        Log.e(TAG, "setNotification: " + isNotificationOn);
+        //Log.e(TAG, "setNotification: " + isNotificationOn);
     }
 
     private void openEditGroup() {

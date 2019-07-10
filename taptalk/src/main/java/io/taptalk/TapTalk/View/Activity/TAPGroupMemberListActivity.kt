@@ -201,6 +201,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_group_members)
 
+        tv_title.text = resources.getString(R.string.tap_group_members)
         if (initViewModel()) initView()
         else stateLoadingMember()
     }
