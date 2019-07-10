@@ -15,6 +15,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
+import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
@@ -116,6 +118,9 @@ public class TAPRoomListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (TAPGroupManager.Companion.getGetInstance().getRefreshRoomList()) {
+            runFullRefreshSequence();
+        }
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
         TAPNotificationManager.getInstance().setRoomListAppear(true);
         new Thread(() -> TAPChatManager.getInstance().saveMessageToDatabase()).start();
@@ -342,6 +347,7 @@ public class TAPRoomListFragment extends Fragment {
             //kalau recyclerView masih kosong, kita tampilin room dlu baru update unreadnya
             TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, dbListener);
         }
+        TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(false);
     }
 
     private void fetchDataFromAPI() {

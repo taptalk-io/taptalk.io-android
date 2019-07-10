@@ -132,6 +132,7 @@
     <string name="tap_error_message_general">Something went wrong, please try again.</string>
     <string name="tap_could_not_find_any_results">Could not find any results</string>
     <string name="tap_failed_to_load_image">Failed to load image.</string>
+    <string name="tap_failed">Failed</string>
     <string name="tap_message_send_failed">Failed to send, tap to retry</string>
     <string name="tap_error_message_group_name_empty">Please enter a group name.</string>
     <string name="tap_internet_connection_lost">Internet Connection Lost</string>
