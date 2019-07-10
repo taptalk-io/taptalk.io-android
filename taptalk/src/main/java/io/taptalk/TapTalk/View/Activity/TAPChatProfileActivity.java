@@ -364,7 +364,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void setNotification(boolean isNotificationOn) {
-        Log.e(TAG, "setNotification: " + isNotificationOn);
+        //Log.e(TAG, "setNotification: " + isNotificationOn);
     }
 
     private void openEditGroup() {
@@ -649,9 +649,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 TAPChatProfileActivity.this.hideLoading();
                 new TapTalkDialog.Builder(TAPChatProfileActivity.this)
                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                        .setTitle(getString(R.string.tap_error))
-                        .setMessage(response.getMessage())
+                        .setTitle(getString(R.string.tap_failed))
+                        .setMessage(null != response.getMessage() ? response.getMessage()
+                                : getResources().getString(R.string.tap_error_message_general))
                         .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                    .setPrimaryButtonListener(v -> onBackPressed())
                         .show();
             }
         }

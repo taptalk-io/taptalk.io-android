@@ -1395,14 +1395,18 @@ public class TAPChatManager {
             systemMessageBody = message.getBody()
                     .replace("{", "")
                     .replace("}", "")
-                    .replaceFirst("sender", message.getUser().getName());
+                    .replaceFirst("sender",
+                            message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                                    "You" : message.getUser().getName());
         } else {
             systemMessageBody = message.getBody()
                     .replace("{", "")
                     .replace("}", "")
-                    .replaceFirst("sender", message.getUser().getName())
-                    .replaceFirst("target", message.getTarget().getTargetName() == null ? "" :
-                            message.getTarget().getTargetName());
+                    .replaceFirst("sender", message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                            "You" : message.getUser().getName())
+                    .replaceFirst("target", message.getTarget().getTargetID() != null ?
+                            message.getTarget().getTargetID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                            "You" : message.getTarget().getTargetName() == null ? "" : message.getTarget().getTargetName() : "");
         }
 
         return systemMessageBody;

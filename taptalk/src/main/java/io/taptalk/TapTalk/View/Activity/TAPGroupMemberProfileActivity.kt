@@ -162,18 +162,18 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             menuItems.add(menuPromoteAdmin)
         }
 
-        if (null != groupViewModel?.room && null != groupViewModel?.room?.admins
-                && groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
-            val menuKickMember = TAPMenuItem(
-                    MENU_REMOVE_MEMBER,
-                    R.drawable.tap_ic_delete_red,
-                    R.color.tapIconChatProfileMenuClearChat,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_remove_group_members))
-            menuItems.add(menuKickMember)
-        }
+//        if (null != groupViewModel?.room && null != groupViewModel?.room?.admins
+//                && groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
+//            val menuKickMember = TAPMenuItem(
+//                    MENU_REMOVE_MEMBER,
+//                    R.drawable.tap_ic_delete_red,
+//                    R.color.tapIconChatProfileMenuClearChat,
+//                    R.style.tapChatProfileMenuDestructiveLabelStyle,
+//                    false,
+//                    false,
+//                    getString(R.string.tap_remove_group_members))
+//            menuItems.add(menuKickMember)
+//        }
         return menuItems
     }
 
