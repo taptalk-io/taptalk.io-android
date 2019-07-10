@@ -334,7 +334,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     R.style.tapChatProfileMenuDestructiveLabelStyle,
                     false,
                     false,
-                    getString(R.string.tap_clear_and_exit_chat));
+                    getString(R.string.tap_leave_group));
             // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
             menuItems.add(menuViewMembers);
             menuItems.add(menuExitGroup);

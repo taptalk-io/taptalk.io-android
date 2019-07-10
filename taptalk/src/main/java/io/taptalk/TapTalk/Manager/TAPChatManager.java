@@ -317,7 +317,8 @@ public class TAPChatManager {
                 entity.getIsRead(),
                 entity.getHidden(),
                 entity.getUpdated(),
-                entity.getUserDeleted());
+                entity.getUserDeleted(),
+                entity.getAction(), entity.getTarget());
     }
 
     /**
@@ -344,7 +345,8 @@ public class TAPChatManager {
                 TAPUtils.getInstance().toJsonString(model.getUser().getUserRole()),
                 model.getUser().getLastLogin(), model.getUser().getLastActivity(),
                 model.getUser().getRequireChangePassword(),
-                model.getUser().getCreated(), model.getUser().getUpdated(), model.getUser().getDeleted()
+                model.getUser().getCreated(), model.getUser().getUpdated(), model.getUser().getDeleted(),
+                model.getAction(), model.getTarget()
         );
     }
 
@@ -1388,9 +1390,8 @@ public class TAPChatManager {
 
     public String formattingSystemMessage(TAPMessageModel message) {
         String systemMessageBody;
-        LinkedHashMap targetUserModel = (LinkedHashMap) message.getData().get("target");
 
-        if (null == targetUserModel) {
+        if (null == message.getTarget()) {
             systemMessageBody = message.getBody()
                     .replace("{", "")
                     .replace("}", "")
@@ -1400,8 +1401,8 @@ public class TAPChatManager {
                     .replace("{", "")
                     .replace("}", "")
                     .replaceFirst("sender", message.getUser().getName())
-                    .replaceFirst("target", targetUserModel.get("fullname") == null ? "" :
-                            (String) targetUserModel.get("fullname"));
+                    .replaceFirst("target", message.getTarget().getTargetName() == null ? "" :
+                            message.getTarget().getTargetName());
         }
 
         return systemMessageBody;

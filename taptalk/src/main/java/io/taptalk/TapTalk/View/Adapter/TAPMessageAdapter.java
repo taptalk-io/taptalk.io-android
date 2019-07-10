@@ -1296,9 +1296,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (null != item.getData()) {
-                String systemMessageAction = item.getData().get("action") != null ?
-                        (String) item.getData().get("action") : "";
+            if (null != item.getAction()) {
+                String systemMessageAction = item.getAction() != null ?
+                        item.getAction() : "";
 
                 switch (systemMessageAction) {
                     case CREATE_ROOM:

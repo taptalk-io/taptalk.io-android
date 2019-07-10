@@ -1,10 +1,12 @@
 package io.taptalk.TapTalk.Manager
 
+import io.taptalk.TapTalk.Interface.TapTalkSocketInterface
+import io.taptalk.TapTalk.Listener.TAPSocketListener
 import io.taptalk.TapTalk.Model.TAPRoomModel
 
 class TAPGroupManager {
 
-    private var groupDataMap : LinkedHashMap<String, TAPRoomModel>? = null
+    private var groupDataMap : HashMap<String, TAPRoomModel>? = null
 
     companion object {
         private var instance : TAPGroupManager? = null
@@ -18,7 +20,15 @@ class TAPGroupManager {
         }
     }
 
-    private fun getGroupDataMap() : LinkedHashMap<String, TAPRoomModel> {
+    init {
+      TAPConnectionManager.getInstance().addSocketListener(object : TAPSocketListener() {
+          override fun onSocketDisconnected() {
+              saveRoomDataMapToPreference()
+          }
+      })
+    }
+
+    private fun getGroupDataMap() : HashMap<String, TAPRoomModel> {
         if (null == groupDataMap) groupDataMap = linkedMapOf()
         return groupDataMap!!
     }
@@ -40,5 +50,14 @@ class TAPGroupManager {
 
     fun clearGroupData() {
         getGroupDataMap().clear()
+    }
+
+    fun loadAllRoomDataFromPreference() {
+        groupDataMap = TAPDataManager.getInstance().roomDataMap
+    }
+
+    fun saveRoomDataMapToPreference() {
+        TAPDataManager.getInstance().saveRoomDataMap(groupDataMap)
+        groupDataMap?.clear()
     }
 }

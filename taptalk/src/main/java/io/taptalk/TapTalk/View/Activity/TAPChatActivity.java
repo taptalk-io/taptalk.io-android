@@ -1316,7 +1316,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
             updateMessage(message);
-            Log.e(TAG, "onReceiveMessageInActiveRoom: " + TAPUtils.getInstance().toJsonString(message));
         }
 
         @Override

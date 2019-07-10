@@ -9,7 +9,7 @@
     <string name="tap_clear_chat">Clear Chat</string>
     <string name="tap_conversation_color">Conversation Color</string>
     <string name="tap_exit_group">Exit Group</string>
-    <string name="tap_clear_and_exit_chat">Clear And Exit Chat</string>
+    <string name="tap_leave_group">Leave Group</string>
     <string name="tap_forward">Forward</string>
     <string name="tap_group_subject">Group Subject</string>
     <string name="tap_my_account">My Account</string>
