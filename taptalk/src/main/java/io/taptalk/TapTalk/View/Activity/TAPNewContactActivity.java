@@ -134,7 +134,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         llEmpty.setVisibility(View.GONE);
         clConnectionLost.setVisibility(View.GONE);
         ivButtonCancel.setVisibility(View.VISIBLE);
-        ivProgressSearch.setVisibility(View.INVISIBLE);
+        ivProgressSearch.setVisibility(View.GONE);
+        ivProgressSearch.clearAnimation();
     }
 
     private void showResultNotFound() {
@@ -337,7 +338,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         }
     };
 
-    private CountDownTimer searchTimer = new CountDownTimer(400L, 100L) {
+    private CountDownTimer searchTimer = new CountDownTimer(300L, 100L) {
         @Override
         public void onTick(long millisUntilFinished) {
 
@@ -482,13 +483,13 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     };
 
     private void startLoading() {
-        ivButtonCancel.setVisibility(View.INVISIBLE);
+        ivButtonCancel.setVisibility(View.GONE);
         ivProgressSearch.setVisibility(View.VISIBLE);
         TAPUtils.getInstance().rotateAnimateInfinitely(TAPNewContactActivity.this, ivProgressSearch);
     }
 
     private void endLoading() {
-        ivProgressSearch.setVisibility(View.INVISIBLE);
+        ivProgressSearch.setVisibility(View.GONE);
         ivProgressSearch.clearAnimation();
         ivButtonCancel.setVisibility(View.VISIBLE);
     }
