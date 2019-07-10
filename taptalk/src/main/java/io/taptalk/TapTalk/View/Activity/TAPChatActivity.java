@@ -1360,7 +1360,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReplyMessage(TAPMessageModel message) {
-            if (null != vm.getOtherUserModel()) {
+            if (null != vm.getRoom()) {
                 showQuoteLayout(message, REPLY, true);
                 TAPChatManager.getInstance().removeUserInfo(vm.getRoom().getRoomID());
             }

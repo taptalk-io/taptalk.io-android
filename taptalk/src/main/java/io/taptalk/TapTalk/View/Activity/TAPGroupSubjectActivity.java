@@ -276,13 +276,11 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPCreateRoomResponse response) {
             updateGroupData(response);
-            if (null != vm.getRoomImageUri())
+
+            if (null != vm.getRoomImageUri()) {
                 TAPFileUploadManager.getInstance().uploadRoomPicture(TAPGroupSubjectActivity.this,
                         vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
-            if (null != response.getRoom())
-                TAPGroupManager.Companion.getGetInstance().updateRoomDataNameAndImage(response.getRoom());
-
-            else {
+            } else {
                 btnStopLoadingState();
 //                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
                 //openChatGroupProfile();
@@ -333,6 +331,8 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             super.onSuccess(response);
             vm.getGroupData().setRoomImage(response.getRoom().getRoomImage());
             btnStopLoadingState();
+            if (null != response.getRoom())
+                TAPGroupManager.Companion.getGetInstance().updateRoomDataNameAndImage(response.getRoom());
             //openChatGroupProfile();
             openChatRoom();
         }
