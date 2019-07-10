@@ -85,6 +85,11 @@ public interface TAPMessageDao {
             "and roomID = :roomID and created < :minimumTimestamp")
     List<TAPMessageEntity> getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp);
 
+    @Query("select * from message_table where" +
+            " type in (" + TYPE_IMAGE + ", " + TYPE_FILE + ", " + TYPE_VIDEO + ") " +
+            "and roomID = :roomID")
+    List<TAPMessageEntity> getRoomMediaMessage(String roomID);
+
     @Query("select localID, roomName, roomImage, roomType, roomColor from Message_Table where roomID = :roomID")
     TAPMessageEntity getRoom(String roomID);
 
@@ -106,4 +111,7 @@ public interface TAPMessageDao {
 
     @Query("update Message_Table set isFailedSend = 0, isSending = 1 where localID = :localID")
     void updateFailedStatusToSending(String localID);
+
+    @Query("delete from Message_Table where roomID = :roomId")
+    void deleteMessageByRoomId(String roomId);
 }

@@ -214,6 +214,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private STATE state = STATE.WORKING;
 
+    private boolean leaveGroup = false;
+
     //endless scroll Listener
     TAPEndlessScrollListener endlessScrollListener;
 
@@ -280,7 +282,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         } else {
             //TAPNotificationManager.getInstance().updateUnreadCount();
             new Thread(() -> TAPChatManager.getInstance().putUnsentMessageToList()).start();
-            super.onBackPressed();
+            setResult(RESULT_OK);
+            finish();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
         }
     }
@@ -358,6 +361,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         break;
 
                     case OPEN_PROFILE:
+                        leaveGroup = true;
                         onBackPressed();
                         break;
                 }
