@@ -15,7 +15,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +40,7 @@ import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Helper.WrapContentLinearLayoutManager;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
@@ -83,7 +83,7 @@ public class TAPRoomListFragment extends Fragment {
     private View vButtonMyAccount;
 
     private RecyclerView rvContactList;
-    private LinearLayoutManager llm;
+    private WrapContentLinearLayoutManager llm;
     private TAPRoomListAdapter adapter;
     private TapTalkRoomListInterface tapTalkRoomListInterface;
     private TAPRoomListViewModel vm;
@@ -263,7 +263,7 @@ public class TAPRoomListFragment extends Fragment {
         vm.setDoneFirstApiSetup(TAPDataManager.getInstance().isRoomListSetupFinished());
 
         adapter = new TAPRoomListAdapter(vm, tapTalkRoomListInterface);
-        llm = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        llm = new WrapContentLinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(llm);
         rvContactList.setHasFixedSize(true);
@@ -447,6 +447,9 @@ public class TAPRoomListFragment extends Fragment {
                 if (0 == adapter.getItems().size())
                     adapter.addItem(newRoomList);
                 adapter.notifyItemInserted(0);
+
+                if (llm.findFirstCompletelyVisibleItemPosition() == 0)
+                    rvContactList.scrollToPosition(0);
             });
         }
     }
@@ -665,6 +668,7 @@ public class TAPRoomListFragment extends Fragment {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
+            vm.getRoomPointer().clear();
             //ngubah entity yang dari database jadi model
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
@@ -695,6 +699,7 @@ public class TAPRoomListFragment extends Fragment {
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
+            vm.getRoomPointer().clear();
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
