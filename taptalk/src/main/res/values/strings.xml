@@ -79,7 +79,8 @@
 
     <!--Group Chat-->
     <string name="tap_add_members">Add Members</string>
-    <string name="tap_group_member_count">Group Members (%d/%d)</string>
+    <string name="tap_selected_member_count">Group Members (%d/%d)</string>
+    <string name="tap_group_member_count">%d Members</string>
     <string name="tap_group_name">Group Name</string>
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>
@@ -92,6 +93,20 @@
     <string name="tap_promote_admin">Promote to Admin</string>
     <string name="tap_demote_admin">Demote from Admin</string>
     <string name="tap_group_limit_reached">The max limit number of people in one group chat has been reached</string>
+    <string name="tap_loading_members">Loading Members</string>
+    <string name="tap_promote_admin_confirmation">Are you sure you want to promote this member to admin?</string>
+    <string name="tap_demote_admin_confirmation">Are you sure you want to demote this admin?</string>
+    <string name="tap_remove_member_confirmation">Are you sure you want to remove this member?</string>
+    <string name="tap_adding">Adding…</string>
+    <string name="tap_removing">Removing…</string>
+    <string name="tap_updating">Updating…</string>
+    <string name="tap_changes_saved">Changes Saved</string>
+    <string name="tap_added_contact">Added to Contacts</string>
+    <string name="tap_added_member">Member Added</string>
+    <string name="tap_removed_member">Member Removed</string>
+    <string name="tap_promoted_admin">Admin Promoted</string>
+    <string name="tap_demoted_admin">Admin Demoted</string>
+    <string name="tap_left_group">Left Group</string>
 
     <!--Guides-->
     <string name="tap_scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
@@ -298,7 +313,7 @@
     <string name="tap_send">Send</string>
     <string name="tap_sending">Sending…</string>
     <string name="tap_send_a_message">Send a message…</string>
-    <string name="tap_send_message">Send Message…</string>
+    <string name="tap_send_message">Send Message</string>
     <string name="tap_sent_at">Sent at</string>
     <string name="tap_select_country">Select Country</string>
     <string name="tap_skip">Skip</string>
@@ -317,5 +332,7 @@
     <string name="tap_you">You</string>
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="tap_over_99">99+</string>
+    <string name="tap_clear_and_exit_chat">Clear and Exit Chat</string>
+    <string name="tap_leave_group_confirmation">All messages and shared medias from this room will be inaccessible. Are you sure you want to leave?</string>
 
 </resources>

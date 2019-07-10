@@ -235,7 +235,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         }
 
         //set total member count
-        tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+        //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+        tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
         tv_member_count.visibility = View.VISIBLE
 
         iv_button_back.setOnClickListener(this)
@@ -249,7 +250,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         et_search.setOnEditorActionListener(searchEditorActionListener)
     }
 
-    private fun initViewModel() : Boolean {
+    private fun initViewModel(): Boolean {
         groupViewModel = ViewModelProviders.of(this).get(TAPGroupMemberViewModel::class.java)
         groupViewModel?.setGroupDataAndCheckAdmin(intent.getParcelableExtra(ROOM))
 
@@ -358,7 +359,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private val removeRoomMembersView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
         override fun startLoading() {
-            showLoading()
+            showLoading(getString(R.string.tap_removing))
         }
 
         override fun onSuccess(response: TAPCreateRoomResponse?) {
@@ -371,31 +372,32 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             //adapter?.items = groupViewModel?.groupData?.groupParticipants
             adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
 
-            //set total member count
-            tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+            // Set total member count
+            //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+            tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
             tv_member_count.visibility = View.VISIBLE
             groupViewModel?.isUpdateMember = true
 
             Handler().postDelayed({
                 cancelSelectionMode(true)
-                this@TAPGroupMemberListActivity.endLoading()
+                this@TAPGroupMemberListActivity.endLoading(getString(R.string.tap_removed_member))
             }, 400L)
         }
 
         override fun onError(error: TAPErrorModel?) {
-            super.onError(error)
-            this@TAPGroupMemberListActivity.endLoading()
+            this@TAPGroupMemberListActivity.hideLoading()
+            showErrorDialog(getString(R.string.tap_error), error!!.message)
         }
 
         override fun onError(errorMessage: String?) {
-            super.onError(errorMessage)
-            this@TAPGroupMemberListActivity.endLoading()
+            this@TAPGroupMemberListActivity.hideLoading()
+            showErrorDialog(getString(R.string.tap_error), getString(R.string.tap_error_message_general))
         }
     }
 
     private val appointAdminView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
         override fun startLoading() {
-            showLoading()
+            showLoading(getString(R.string.tap_updating))
         }
 
         override fun onSuccess(response: TAPCreateRoomResponse?) {
@@ -408,23 +410,26 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
             adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
 
-            //set total member count
-            tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+            // Set total member count
+            //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+            tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
             tv_member_count.visibility = View.VISIBLE
             groupViewModel?.isUpdateMember = true
 
             Handler().postDelayed({
                 cancelSelectionMode(true)
-                this@TAPGroupMemberListActivity.endLoading()
+                this@TAPGroupMemberListActivity.endLoading(getString(R.string.tap_promoted_admin))
             }, 400L)
         }
 
         override fun onError(error: TAPErrorModel?) {
-            this@TAPGroupMemberListActivity.endLoading()
+            this@TAPGroupMemberListActivity.hideLoading()
+            showErrorDialog(getString(R.string.tap_error), error!!.message)
         }
 
         override fun onError(errorMessage: String?) {
-            this@TAPGroupMemberListActivity.endLoading()
+            this@TAPGroupMemberListActivity.hideLoading()
+            showErrorDialog(getString(R.string.tap_error), getString(R.string.tap_error_message_general))
         }
     }
 
@@ -439,7 +444,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     adapter?.notifyDataSetChanged()
 
                     //set total member count
-                    tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+                    //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+                    tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
                     tv_member_count.visibility = View.VISIBLE
                     groupViewModel?.isUpdateMember = true
                 }
@@ -452,8 +458,9 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                         adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
                         adapter?.items = groupViewModel?.groupData?.groupParticipants ?: listOf()
 
-                        //set total member count
-                        tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+                        // Set total member count
+                        //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+                        tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
                         tv_member_count.visibility = View.VISIBLE
                         groupViewModel?.isUpdateMember = true
                     }
@@ -469,22 +476,22 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         }
     }
 
-    private fun showLoading() {
+    private fun showLoading(message: String) {
         runOnUiThread {
             iv_saving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white))
             if (null == iv_saving.animation)
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_saving)
-            tv_loading_text.text = getString(R.string.tap_loading)
+            tv_loading_text.text = message
             iv_button_action.setOnClickListener(null)
             fl_loading.visibility = View.VISIBLE
         }
     }
 
-    private fun endLoading() {
+    private fun endLoading(message: String) {
         runOnUiThread {
             iv_saving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
             iv_saving.clearAnimation()
-            tv_loading_text.text = getString(R.string.tap_finished)
+            tv_loading_text.text = message
             Handler().postDelayed({
                 hideLoading()
                 iv_button_action.setOnClickListener(this)
@@ -494,5 +501,15 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun hideLoading() {
         fl_loading.visibility = View.GONE
+    }
+
+    private fun showErrorDialog(title: String, message: String) {
+        TapTalkDialog.Builder(this@TAPGroupMemberListActivity)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(title)
+                .setMessage(message)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setPrimaryButtonListener {}
+                .show()
     }
 }

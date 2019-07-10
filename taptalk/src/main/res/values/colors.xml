@@ -73,7 +73,7 @@
     <color name="tapIconChevronRightGray">@color/tapColorGrayIcon</color>
     <color name="tapIconChecklist">@color/tapColorPrimaryIcon</color>
     <color name="tapIconCircleSelectionActive">@color/tapColorPrimaryIcon</color>
-    <color name="tapIconCircleSelectionInactive">@color/tapColorWhiteIcon</color>
+    <color name="tapIconCircleSelectionInactive">@color/tapColorGrayIcon</color>
     <color name="tapIconLoadingPopupSuccess">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatNow">@color/tapColorWhiteIcon</color>
     <color name="tapIconMediaListVideo">@color/tapColorWhiteIcon</color>
@@ -119,8 +119,11 @@
     <color name="tapIconChatProfileMenuSearchChat">@color/tapColorGrayIcon</color>
     <color name="tapIconChatProfileMenuClearChat">@color/tapColorDestructiveIcon</color>
     <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorGrayIcon</color>
-    <color name="tapGroupMemberProfileMenuAppointAdmin">@color/tapColorGrayIcon</color>
-    <color name="tapGroupMemberProfileMenuRemoveMember">@color/tapColorDestructiveIcon</color>
+    <color name="tapIconGroupMemberProfileMenuAddToContacts">@color/tapColorGrayIcon</color>
+    <color name="tapIconGroupMemberProfileMenuSendMessage">@color/tapColorGrayIcon</color>
+    <color name="tapIconGroupMemberProfileMenuPromoteAdmin">@color/tapColorGrayIcon</color>
+    <color name="tapIconGroupMemberProfileMenuDemoteAdmin">@color/tapColorGrayIcon</color>
+    <color name="tapIconGroupMemberProfileMenuRemoveMember">@color/tapColorDestructiveIcon</color>
 
     <color name="tapIconMediaPreviewAdd">@color/tapColorWhiteIcon</color>
     <color name="tapIconMediaPreviewWarning">@color/tapColorWhiteIcon</color>

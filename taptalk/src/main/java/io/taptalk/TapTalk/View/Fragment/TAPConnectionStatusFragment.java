@@ -156,6 +156,9 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
 //        if (TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) {
 //            return;
 //        }
+        if (hideUntilNextConnect) {
+            return;
+        }
 
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_offline);

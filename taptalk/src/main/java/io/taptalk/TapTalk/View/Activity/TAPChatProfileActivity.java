@@ -361,18 +361,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         Log.e(TAG, "blockUser: ");
     }
 
-    private void exitAndClearChat() {
+    private void clearAndExitChat() {
         new TapTalkDialog.Builder(this)
-                .setTitle("Exit and Clear Chat")
+                .setTitle(this.getString(R.string.tap_clear_and_exit_chat))
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                .setMessage("Are you Sure to leave this chat?")
-                .setPrimaryButtonTitle("OK")
-                .setPrimaryButtonListener(v -> {
-                    TAPDataManager.getInstance().leaveChatRoom(vm.getRoom().getRoomID(), exitChatView);
-                })
-                .setSecondaryButtonTitle("Cancel")
-                .setSecondaryButtonListener(v -> {
-                })
+                .setMessage(this.getString(R.string.tap_leave_group_confirmation))
+                .setPrimaryButtonTitle(this.getString(R.string.tap_ok))
+                .setPrimaryButtonListener(v -> TAPDataManager.getInstance().leaveChatRoom(vm.getRoom().getRoomID(), exitChatView))
+                .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
+                .setSecondaryButtonListener(v -> {})
                 .show();
     }
 
@@ -514,7 +511,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 viewMembers();
                 break;
             case MENU_EXIT_GROUP:
-                exitAndClearChat();
+                clearAndExitChat();
                 break;
         }
     };
@@ -601,8 +598,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPCommonResponse> exitChatView = new TAPDefaultDataView<TAPCommonResponse>() {
         @Override
         public void startLoading() {
-            super.startLoading();
-            showLoading();
+            showLoading(getString(R.string.tap_loading));
         }
 
         @Override
@@ -610,35 +606,23 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             super.onSuccess(response);
             if (response.getSuccess()) {
                 // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
-                TAPChatProfileActivity.this.endLoading();
+                TAPChatProfileActivity.this.endLoading(getString(R.string.tap_left_group));
                 onBackPressed();
             } else {
-                TAPChatProfileActivity.this.endLoading();
+                TAPChatProfileActivity.this.endLoading(getString(R.string.tap_left_group));
             }
         }
 
         @Override
         public void onError(TAPErrorModel error) {
-            super.onError(error);
-            new TapTalkDialog.Builder(TAPChatProfileActivity.this)
-                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setTitle(getString(R.string.tap_error))
-                    .setMessage(error.getMessage())
-                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
-//                    .setPrimaryButtonListener(v -> onBackPressed())
-                    .show();
+            hideLoading();
+            showErrorDialog(getString(R.string.tap_error), error.getMessage());
         }
 
         @Override
         public void onError(String errorMessage) {
-            super.onError(errorMessage);
-            new TapTalkDialog.Builder(TAPChatProfileActivity.this)
-                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setTitle(getString(R.string.tap_error))
-                    .setMessage(getString(R.string.tap_error_message_general))
-                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
-//                    .setPrimaryButtonListener(v -> onBackPressed())
-                    .show();
+            hideLoading();
+            showErrorDialog(getString(R.string.tap_error), getString(R.string.tap_error_message_general));
         }
     };
 
@@ -743,22 +727,22 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         }
     };
 
-    private void showLoading() {
+    private void showLoading(String message) {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }
-            tvLoadingText.setText(getString(R.string.tap_loading));
+            tvLoadingText.setText(message);
             flLoading.setVisibility(View.VISIBLE);
         });
     }
 
-    private void endLoading() {
+    private void endLoading(String message) {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
-            tvLoadingText.setText(getString(R.string.tap_finished));
+            tvLoadingText.setText(message);
             flLoading.setOnClickListener(v -> hideLoading());
 
             new Handler().postDelayed(this::hideLoading, 1000L);
@@ -767,5 +751,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     private void hideLoading() {
         flLoading.setVisibility(View.GONE);
+    }
+
+    private void showErrorDialog(String title, String message) {
+        new TapTalkDialog.Builder(this)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(title)
+                .setCancelable(true)
+                .setMessage(message)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .show();
     }
 }
