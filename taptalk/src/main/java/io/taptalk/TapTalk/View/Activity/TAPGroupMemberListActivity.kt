@@ -254,6 +254,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
         et_search.addTextChangedListener(searchTextWatcher)
         et_search.setOnEditorActionListener(searchEditorActionListener)
+        et_search.hint = resources.getString(R.string.tap_search_for_group_members)
     }
 
     private fun initViewModel(): Boolean {

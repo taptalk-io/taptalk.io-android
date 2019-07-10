@@ -1521,10 +1521,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             // Message from others
             if (item.getRoom().getRoomType() == TYPE_GROUP) {
                 // Load avatar and name if room type is group
-                if (null != civAvatar && null != item.getUser().getAvatarURL()) {
+                if (null != civAvatar && null != item.getUser().getAvatarURL() && !item.getUser().getAvatarURL().getThumbnail().isEmpty()) {
                     glide.load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
                     civAvatar.setVisibility(View.VISIBLE);
+                } else {
+                    civAvatar.setImageDrawable(vh.itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+                    civAvatar.setVisibility(View.VISIBLE);
                 }
+
                 if (null != tvUserName) {
                     tvUserName.setText(item.getUser().getName());
                     tvUserName.setVisibility(View.VISIBLE);

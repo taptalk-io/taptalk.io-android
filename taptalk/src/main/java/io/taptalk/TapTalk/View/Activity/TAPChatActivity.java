@@ -1434,7 +1434,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReceiveStartTyping(TAPTypingModel typingModel) {
-            if (typingModel.getRoomID().equals(vm.getRoom().getRoomID())) {
+            if (typingModel.getRoomID().equals(vm.getRoom().getRoomID()) &&
+                    TYPE_PERSONAL == vm.getRoom().getRoomType()) {
                 showTypingIndicator();
             }
         }
@@ -1902,9 +1903,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                         if (null != vm.getMyUserModel().getAvatarURL() && !vm.getMyUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getMyUserModel().getAvatarURL().getThumbnail(), civMyAvatar);
+                        } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()){
+                            civMyAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
                         } else {
                             civMyAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
                         }
+
                         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civOtherUserAvatar);
                         } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType() &&
