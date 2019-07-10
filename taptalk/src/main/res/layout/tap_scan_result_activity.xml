@@ -42,16 +42,24 @@
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true">
 
-            <!--TODO CHANGE ICON-->
-            <ImageView
-                android:id="@+id/iv_button_close"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <FrameLayout
+                android:id="@+id/fl_button_close"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:padding="24dp"
-                android:src="@drawable/tap_close_icon_white_black_rounded"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/tap_bg_circle_charcoal_50"
+                    android:padding="5dp"
+                    android:src="@drawable/tap_ic_close_grey"
+                    android:tint="@color/tapIconCloseScanResult" />
+
+            </FrameLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_avatar"

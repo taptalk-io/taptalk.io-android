@@ -74,7 +74,7 @@ public class TAPAttachmentModel {
     public static List<TAPAttachmentModel> createAttachMenu() {
         // TODO: 31 January 2019 TEMPORARILY DISABLED FEATURE, REMOVED MENU FROM ATTACHMENT
         int[] imageResIds = {
-                R.drawable.tap_ic_documents_pumpkin_orange,
+                R.drawable.tap_ic_documents_white,
                 R.drawable.tap_ic_camera_pumpkin_orange,
                 R.drawable.tap_ic_gallery_pumpkin_orange,
 //                R.drawable.tap_ic_audio_pumpkin_orange,
@@ -199,7 +199,7 @@ public class TAPAttachmentModel {
             // Show Copy option to copy caption
             imageResIds.add(R.drawable.tap_ic_reply_pumpkin_orange);
             imageResIds.add(R.drawable.tap_ic_copy_pumpkin_orange);
-            imageResIds.add(R.drawable.tap_ic_download_pumpkin_orange);
+            imageResIds.add(R.drawable.tap_ic_save_orange);
 
             titleResIds.add(R.string.tap_reply);
             titleResIds.add(R.string.tap_copy);
@@ -223,7 +223,7 @@ public class TAPAttachmentModel {
         } else if (TAPCacheManager.getInstance(TapTalk.appContext).containsCache((String) messageModel.getData().get(FILE_ID))) {
             // Show only forward and reply
             imageResIds.add(R.drawable.tap_ic_reply_pumpkin_orange);
-            imageResIds.add(R.drawable.tap_ic_download_pumpkin_orange);
+            imageResIds.add(R.drawable.tap_ic_save_orange);
 
             titleResIds.add(R.string.tap_reply);
             titleResIds.add(R.string.tap_save_to_gallery);
@@ -264,7 +264,7 @@ public class TAPAttachmentModel {
             // Show Copy option to copy caption
             imageResIds.add(R.drawable.tap_ic_reply_pumpkin_orange);
             imageResIds.add(R.drawable.tap_ic_copy_pumpkin_orange);
-            imageResIds.add(R.drawable.tap_ic_download_pumpkin_orange);
+            imageResIds.add(R.drawable.tap_ic_save_orange);
 
             titleResIds.add(R.string.tap_reply);
             titleResIds.add(R.string.tap_copy);
@@ -288,7 +288,7 @@ public class TAPAttachmentModel {
         } else if (TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(messageModel)) {
             // Show only forward and reply
             imageResIds.add(R.drawable.tap_ic_reply_pumpkin_orange);
-            imageResIds.add(R.drawable.tap_ic_download_pumpkin_orange);
+            imageResIds.add(R.drawable.tap_ic_save_orange);
 
             titleResIds.add(R.string.tap_reply);
             titleResIds.add(R.string.tap_save_to_gallery);
@@ -325,7 +325,7 @@ public class TAPAttachmentModel {
 
         if (TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(messageModel)) {
             imageResIds.add(R.drawable.tap_ic_reply_pumpkin_orange);
-            imageResIds.add(R.drawable.tap_ic_download_pumpkin_orange);
+            imageResIds.add(R.drawable.tap_ic_save_orange);
 
             titleResIds.add(R.string.tap_reply);
             titleResIds.add(R.string.tap_save_to_download);

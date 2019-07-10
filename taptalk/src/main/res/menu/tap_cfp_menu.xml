@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_close"
+        android:icon="@drawable/tap_ic_close_grey"
+        android:iconTint="@color/tapWhite"
         android:title="@string/tap_cfp_action_close"
-        app:showAsAction="always"
-        android:icon="@drawable/tap_ic_close_white" />
+        app:showAsAction="always" />
 </menu>

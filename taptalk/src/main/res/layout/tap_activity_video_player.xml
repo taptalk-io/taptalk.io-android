@@ -23,10 +23,11 @@
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/tap_bg_b3474747_rounded_16dp_ripple"
+        android:alpha="0.7"
+        android:background="@drawable/tap_bg_474747_rounded_16dp_ripple"
         android:padding="9dp"
         android:src="@drawable/tap_ic_close_grey"
-        android:tint="@color/tapTransparentWhite60"
+        android:tint="@color/tapWhite"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,10 +37,11 @@
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/tap_bg_b3474747_rounded_16dp_ripple"
-        android:padding="12dp"
-        android:src="@drawable/tap_ic_save_white"
-        android:tint="@color/tapTransparentWhite60"
+        android:alpha="0.7"
+        android:background="@drawable/tap_bg_474747_rounded_16dp_ripple"
+        android:padding="8dp"
+        android:src="@drawable/tap_ic_save_orange"
+        android:tint="@color/tapWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -49,9 +51,11 @@
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/tap_bg_b3474747_rounded_16dp_ripple"
+        android:alpha="0.7"
+        android:background="@drawable/tap_bg_474747_rounded_16dp_ripple"
         android:padding="14dp"
         android:src="@drawable/tap_ic_volume_on"
+        android:tint="@color/tapWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

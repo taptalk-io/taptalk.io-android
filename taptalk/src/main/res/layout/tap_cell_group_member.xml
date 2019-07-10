@@ -17,13 +17,12 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/tap_img_default_avatar" />
 
-    <!--TODO UPDATE ICON-->
     <ImageView
         android:id="@+id/iv_avatar_icon"
         android:layout_width="22dp"
         android:layout_height="22dp"
-        android:layout_marginBottom="2dp"
-        android:src="@drawable/tap_ic_close_red_circle_border"
+        android:background="@drawable/tap_bg_circle_remove_item"
+        android:src="@drawable/tap_ic_remove_red_circle_background"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
         app:layout_constraintEnd_toEndOf="@id/civ_avatar" />

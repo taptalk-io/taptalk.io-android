@@ -54,7 +54,6 @@ import kotlinx.android.synthetic.main.tap_activity_register.et_full_name
 import kotlinx.android.synthetic.main.tap_activity_register.et_mobile_number
 import kotlinx.android.synthetic.main.tap_activity_register.et_username
 import kotlinx.android.synthetic.main.tap_activity_register.fl_container
-import kotlinx.android.synthetic.main.tap_activity_register.iv_remove_profile_picture
 import kotlinx.android.synthetic.main.tap_activity_register.tv_country_code
 import kotlinx.android.synthetic.main.tap_activity_register.tv_label_email_address_error
 import kotlinx.android.synthetic.main.tap_activity_register.tv_label_full_name_error
@@ -165,7 +164,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_form_container.setOnClickListener { clearAllFocus() }
         civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
+        fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         cl_password.setOnClickListener { openChangePasswordPage() }
         cl_logout.setOnClickListener { promptUserLogout() }
 
@@ -219,7 +218,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             vm.formCheck[indexProfilePicture] = stateEmpty
             glide.load(R.drawable.tap_img_default_avatar).into(civ_profile_picture)
             // TODO temporarily disabled removing profile picture
-//            iv_remove_profile_picture.visibility = View.GONE
+//            fl_remove_profile_picture.visibility = View.GONE
             if (showErrorMessage) {
                 Toast.makeText(this@TAPMyAccountActivity, getString(R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
             }
@@ -227,7 +226,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             vm.formCheck[indexProfilePicture] = stateValid
             glide.load(imageUri).into(civ_profile_picture)
             // TODO temporarily disabled removing profile picture
-//            iv_remove_profile_picture.visibility = View.VISIBLE
+//            fl_remove_profile_picture.visibility = View.VISIBLE
 
             if (uploadPicture) {
                 uploadProfilePicture()
@@ -240,12 +239,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             vm.formCheck[indexProfilePicture] = stateEmpty
             glide.load(R.drawable.tap_img_default_avatar).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
             // TODO temporarily disabled removing profile picture
-//            iv_remove_profile_picture.visibility = View.GONE
+//            fl_remove_profile_picture.visibility = View.GONE
         } else {
             vm.formCheck[indexProfilePicture] = stateValid
             glide.load(imageUrl).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
             // TODO temporarily disabled removing profile picture
-//            iv_remove_profile_picture.visibility = View.VISIBLE
+//            fl_remove_profile_picture.visibility = View.VISIBLE
         }
     }
 
@@ -397,7 +396,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setOnClickListener(null)
         civ_profile_picture.setOnClickListener(null)
         ll_change_profile_picture.setOnClickListener(null)
-        iv_remove_profile_picture.setOnClickListener(null)
+        fl_remove_profile_picture.setOnClickListener(null)
         fl_button_update.setOnClickListener(null)
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_white))
@@ -422,7 +421,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setOnClickListener { onBackPressed() }
         civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
+        fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         //fl_button_update.setOnClickListener { updateProfile() }
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey))

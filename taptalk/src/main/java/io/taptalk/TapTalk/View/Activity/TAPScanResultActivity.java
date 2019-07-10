@@ -9,6 +9,7 @@ import android.text.Html;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,9 +41,10 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
     private CardView cvResult;
     private ConstraintLayout clContainer;
+    private FrameLayout flButtonClose;
     private CircleImageView civMyUserAvatar, civTheirContactAvatar;
     private LinearLayout llButton, llTextUsername, llAddSuccess;
-    private ImageView ivButtonIcon, ivButtonClose, ivLoading, ivAddLoading;
+    private ImageView ivButtonIcon, ivLoading, ivAddLoading;
     private TextView tvButtonTitle, tvAlreadyContact, tvThisIsYou, tvContactUsername, tvContactFullName, tvAddSuccess;
 
     private TAPUserModel addedContactUserModel;
@@ -71,13 +73,13 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         ivLoading = findViewById(R.id.iv_loading);
         ivAddLoading = findViewById(R.id.iv_add_loading);
         clContainer = findViewById(R.id.cl_container);
+        flButtonClose = findViewById(R.id.fl_button_close);
         civMyUserAvatar = findViewById(R.id.civ_my_avatar);
         civTheirContactAvatar = findViewById(R.id.civ_contact_avatar);
         llButton = findViewById(R.id.ll_button);
         llTextUsername = findViewById(R.id.ll_text_username);
         llAddSuccess = findViewById(R.id.ll_add_success);
         ivButtonIcon = findViewById(R.id.iv_button_icon);
-        ivButtonClose = findViewById(R.id.iv_button_close);
         tvButtonTitle = findViewById(R.id.tv_button_title);
         tvAlreadyContact = findViewById(R.id.tv_already_contact);
         tvThisIsYou = findViewById(R.id.tv_this_is_you);
@@ -89,7 +91,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         TAPUtils.getInstance().rotateAnimateInfinitely(this, ivLoading);
 
-        ivButtonClose.setOnClickListener(v -> onBackPressed());
+        flButtonClose.setOnClickListener(v -> onBackPressed());
 
         addedContactUserModel = getIntent().getParcelableExtra(ADDED_CONTACT);
         scanResult = getIntent().getStringExtra(SCAN_RESULT);
@@ -280,7 +282,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     llTextUsername.setVisibility(View.GONE);
                     tvAlreadyContact.setVisibility(View.VISIBLE);
                     llButton.setVisibility(View.VISIBLE);
-                    ivButtonIcon.setImageResource(R.drawable.tap_ic_chat_white);
+                    ivButtonIcon.setImageResource(R.drawable.tap_ic_send_message_grey);
                     tvButtonTitle.setText(getString(R.string.tap_chat_now));
                     llButton.animate().alpha(1f).start();
                     civMyUserAvatar.animate()
@@ -325,7 +327,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     llTextUsername.setVisibility(View.GONE);
                     llAddSuccess.setVisibility(View.VISIBLE);
                     llButton.setVisibility(View.VISIBLE);
-                    ivButtonIcon.setImageResource(R.drawable.tap_ic_chat_white);
+                    ivButtonIcon.setImageResource(R.drawable.tap_ic_send_message_grey);
                     tvButtonTitle.setText(getString(R.string.tap_chat_now));
                     llButton.animate().alpha(1f).start();
                     civMyUserAvatar.animate()

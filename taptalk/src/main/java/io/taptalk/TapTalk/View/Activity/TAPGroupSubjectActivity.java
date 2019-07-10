@@ -41,7 +41,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPGroupViewModel;
 import io.taptalk.Taptalk.R;
@@ -52,7 +51,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSID
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
@@ -161,7 +159,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
                 0, 0));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
-        tvMemberCount.setText(String.format(getString(R.string.tap_group_member_count), adapter.getItemCount(), GROUP_MEMBER_LIMIT));
+        tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), adapter.getItemCount(), GROUP_MEMBER_LIMIT));
         flCreateGroupBtn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
         loadGroupName();
         loadGroupImage();
@@ -281,6 +279,9 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             if (null != vm.getRoomImageUri())
                 TAPFileUploadManager.getInstance().uploadRoomPicture(TAPGroupSubjectActivity.this,
                         vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
+            if (null != response.getRoom())
+                TAPGroupManager.Companion.getGetInstance().updateRoomDataNameAndImage(response.getRoom());
+
             else {
                 btnStopLoadingState();
 //                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);

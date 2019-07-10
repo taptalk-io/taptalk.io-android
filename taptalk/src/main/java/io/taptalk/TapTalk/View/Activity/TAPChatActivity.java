@@ -1052,7 +1052,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
             vStatusBadge.setVisibility(View.VISIBLE);
-            vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_vibrantgreen));
+            vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_active));
             tvRoomStatus.setText(getString(R.string.tap_active_now));
             vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
         });
