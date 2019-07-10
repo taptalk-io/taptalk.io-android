@@ -627,7 +627,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 TAPChatProfileActivity.this.endLoading();
                 onBackPressed();
             } else {
-                TAPChatProfileActivity.this.endLoading();
+                TAPChatProfileActivity.this.hideLoading();
+                new TapTalkDialog.Builder(TAPChatProfileActivity.this)
+                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                        .setTitle(getString(R.string.tap_failed))
+                        .setMessage(null != response.getMessage() ? response.getMessage()
+                                : getResources().getString(R.string.tap_error_message_general))
+                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                    .setPrimaryButtonListener(v -> onBackPressed())
+                        .show();
             }
         }
 
