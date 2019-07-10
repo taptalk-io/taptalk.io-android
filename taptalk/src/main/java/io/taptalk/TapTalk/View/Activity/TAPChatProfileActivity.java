@@ -317,8 +317,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
 //            menuItems.add(2, menuBlock);
 //            menuItems.add(menuClearChat);
-        } else if (vm.getRoom().getRoomType() == TYPE_GROUP) {
-            // Group
+        } else if (vm.getRoom().getRoomType() == TYPE_GROUP &&
+                null != vm.getRoom().getGroupParticipants() &&
+                1 < vm.getRoom().getGroupParticipants().size()) {
+            // Group if has more than one member
             TAPMenuItem menuViewMembers = new TAPMenuItem(
                     MENU_VIEW_MEMBERS,
                     R.drawable.tap_ic_members_grey,
@@ -338,6 +340,18 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
             menuItems.add(menuViewMembers);
             menuItems.add(menuExitGroup);
+        } else if (vm.getRoom().getRoomType() == TYPE_GROUP &&
+                null != vm.getRoom().getGroupParticipants()) {
+            // Group that has only one member
+            TAPMenuItem menuViewMembers = new TAPMenuItem(
+                    MENU_VIEW_MEMBERS,
+                    R.drawable.tap_ic_members_grey,
+                    R.color.tapIconGroupProfileMenuViewMembers,
+                    R.style.tapChatProfileMenuLabelStyle,
+                    false,
+                    false,
+                    getString(R.string.tap_view_members));
+            menuItems.add(menuViewMembers);
         }
 
         return menuItems;
