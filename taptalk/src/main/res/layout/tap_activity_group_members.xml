@@ -155,7 +155,7 @@
         android:id="@+id/fl_add_members"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
+        android:animateLayoutChanges="false"
         android:background="@color/tapWhite"
         android:elevation="1dp"
         android:padding="16dp"
@@ -234,7 +234,8 @@
                 android:layout_height="45dp"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="16dp"
