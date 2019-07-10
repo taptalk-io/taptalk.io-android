@@ -8,7 +8,7 @@ android {
         applicationId "io.taptalk.TapTalkSample"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 14
+        versionCode 15
         versionName "1.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
