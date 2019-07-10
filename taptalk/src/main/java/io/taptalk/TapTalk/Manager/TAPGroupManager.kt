@@ -6,6 +6,8 @@ import io.taptalk.TapTalk.Model.TAPRoomModel
 
 class TAPGroupManager {
 
+    var refreshRoomList = false
+
     private var groupDataMap : HashMap<String, TAPRoomModel>? = null
 
     companion object {

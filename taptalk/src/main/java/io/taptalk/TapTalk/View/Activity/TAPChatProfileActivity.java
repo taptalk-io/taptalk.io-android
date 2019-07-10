@@ -51,6 +51,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPGroupManager;
+import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -103,6 +104,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TAPMediaListAdapter sharedMediaAdapter;
     private GridLayoutManager sharedMediaLayoutManager;
     private ViewTreeObserver.OnScrollChangedListener sharedMediaPagingScrollListener;
+    private boolean leaveRoom = false;
 
     private TAPProfileViewModel vm;
 
@@ -127,7 +129,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (leaveRoom) {
+            setResult(RESULT_OK);
+            TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
+        }
+        finish();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 
@@ -624,8 +630,21 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             super.onSuccess(response);
             if (response.getSuccess()) {
                 // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
-                TAPChatProfileActivity.this.endLoading();
-                onBackPressed();
+                TAPOldDataManager.getInstance().startCleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+                    @Override
+                    public void onDeleteFinished() {
+                        super.onDeleteFinished();
+                        TAPDataManager.getInstance().deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+                            @Override
+                            public void onDeleteFinished() {
+                                super.onDeleteFinished();
+                                TAPChatProfileActivity.this.endLoading();
+                                leaveRoom = true;
+                                runOnUiThread(() -> onBackPressed());
+                            }
+                        });
+                    }
+                });
             } else {
                 TAPChatProfileActivity.this.hideLoading();
                 new TapTalkDialog.Builder(TAPChatProfileActivity.this)
@@ -642,24 +661,24 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onError(TAPErrorModel error) {
             super.onError(error);
+            TAPChatProfileActivity.this.hideLoading();
             new TapTalkDialog.Builder(TAPChatProfileActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
-//                    .setPrimaryButtonListener(v -> onBackPressed())
                     .show();
         }
 
         @Override
         public void onError(String errorMessage) {
             super.onError(errorMessage);
+            TAPChatProfileActivity.this.hideLoading();
             new TapTalkDialog.Builder(TAPChatProfileActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_error_message_general))
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
-//                    .setPrimaryButtonListener(v -> onBackPressed())
                     .show();
         }
     };

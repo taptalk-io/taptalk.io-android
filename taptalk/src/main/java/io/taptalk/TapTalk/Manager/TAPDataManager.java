@@ -21,7 +21,6 @@ import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.Subscriber.TAPBaseSubscriber;
 import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -742,6 +741,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getRoomMediaMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
     }
 
+    public void getRoomMediaMessage(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance().getRoomMediaMessage(roomID, listener);
+    }
+
     public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;
@@ -765,6 +768,10 @@ public class TAPDataManager {
 
     public void deleteAllMessage() {
         TAPDatabaseManager.getInstance().deleteAllMessage();
+    }
+
+    public void deleteMessageByRoomId(String roomId, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().deleteMessageByRoomId(roomId, listener);
     }
 
     // Recent Search

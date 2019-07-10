@@ -17,6 +17,7 @@ import io.taptalk.TapTalk.Data.TapTalkDatabase;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -196,6 +197,13 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getRoomMediaMessage(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> messages = messageDao.getRoomMediaMessage(roomID);
+            listener.onSelectFinished(messages);
+        }).start();
+    }
+
     public void getRoom(String myID, TAPUserModel otherUserModel, final TAPDatabaseListener listener) {
         new Thread(() -> {
             String roomID = TAPChatManager.getInstance().arrangeRoomId(myID, otherUserModel.getUserID());
@@ -272,5 +280,12 @@ public class TAPMessageRepository {
 
     public void updateFailedStatusToSending(final String localID) {
         new Thread(() -> messageDao.updateFailedStatusToSending(localID)).start();
+    }
+
+    public void deleteMessageByRoomId(final String roomId, TAPDatabaseListener listener) {
+        new Thread(() -> {
+            messageDao.deleteMessageByRoomId(roomId);
+            listener.onDeleteFinished();
+        }).start();
     }
 }
