@@ -1319,10 +1319,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         item.setBody(TAPChatManager.getInstance().formattingSystemMessage(item));
                 }
             }
+            markMessageAsRead(item, myUserModel);
             tv_message.setText(item.getBody());
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             enableLongPress(itemView.getContext(), clContainer, item);
-            markMessageAsRead(item, myUserModel);
         }
     }
 
@@ -1361,6 +1361,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == ivLoadingProgress.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(itemView.getContext(), ivLoadingProgress);
             }
+            markMessageAsRead(item, myUserModel);
         }
     }
 
@@ -1373,6 +1374,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             super.onBind(item, position);
+            markMessageAsRead(item, myUserModel);
         }
     }
 
