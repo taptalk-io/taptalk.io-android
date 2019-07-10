@@ -116,7 +116,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
         tvLoadingText = findViewById(R.id.tv_loading_text);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonSave = findViewById(R.id.iv_save);
-        ivSaving = findViewById(R.id.iv_saving);
+        ivSaving = findViewById(R.id.iv_loading_image);
         tivImageDetail = findViewById(R.id.tiv_image_detail);
 
         tvTitle.setText(title);

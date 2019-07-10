@@ -202,6 +202,6 @@
 
     </android.support.v4.widget.NestedScrollView>
 
-    <include layout="@layout/tap_loading_layout_block_screen"/>
+    <include layout="@layout/tap_layout_popup_loading_screen"/>
 
 </android.support.design.widget.CoordinatorLayout>

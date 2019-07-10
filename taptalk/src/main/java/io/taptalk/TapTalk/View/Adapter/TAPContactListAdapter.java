@@ -1,7 +1,9 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,6 +17,7 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -113,13 +116,14 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
             }
 
             // Show/hide selection
-            // TODO: 20 June 2019 UPDATE ICONS
             if (viewType == SELECT && selectedContacts.contains(item)) {
                 ivSelection.setVisibility(View.VISIBLE);
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_active);
+                ivSelection.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive)));
             } else if (viewType == SELECT && !selectedContacts.contains(item)) {
                 ivSelection.setVisibility(View.VISIBLE);
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive);
+                ivSelection.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive)));
             } else {
                 ivSelection.setVisibility(View.GONE);
             }

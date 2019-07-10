@@ -95,7 +95,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         ivButtonSave = findViewById(R.id.iv_button_save);
         ivButtonMute = findViewById(R.id.iv_button_mute);
         ivButtonPlayPause = findViewById(R.id.iv_button_play_pause);
-        ivSaving = findViewById(R.id.iv_saving);
+        ivSaving = findViewById(R.id.iv_loading_image);
         seekBar = findViewById(R.id.seek_bar);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());

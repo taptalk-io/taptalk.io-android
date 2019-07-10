@@ -62,7 +62,6 @@ import io.taptalk.TapTalk.View.Adapter.TAPMediaListAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMenuButtonAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
 import io.taptalk.Taptalk.R;
-import retrofit2.http.HEAD;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_BLOCK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EXIT_AND_CLEAR_CHAT;
@@ -184,7 +183,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         ivProfile = findViewById(R.id.iv_profile);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonEdit = findViewById(R.id.iv_button_edit);
-        ivSaving = findViewById(R.id.iv_saving);
+        ivSaving = findViewById(R.id.iv_loading_image);
         ivSharedMediaLoading = findViewById(R.id.iv_shared_media_loading);
         tvFullName = findViewById(R.id.tv_full_name);
         tvCollapsedName = findViewById(R.id.tv_collapsed_name);
