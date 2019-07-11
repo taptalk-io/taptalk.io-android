@@ -968,6 +968,10 @@ public class TAPDataManager {
         TAPApiManager.getInstance().register(fullName, username, countryID, phone, email, password, new TAPDefaultSubscriber<>(view));
     }
 
+    public void logout(TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance().logout(new TAPDefaultSubscriber<>(view));
+    }
+
     //Group and Chat Room
     public void createGroupChatRoom(String roomName, List<String> participantIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
         TAPApiManager.getInstance().createChatRoom(roomName, TYPE_GROUP, participantIDs, new TAPDefaultSubscriber<>(view));

@@ -104,7 +104,6 @@
     <string name="tap_updating">Updating…</string>
     <string name="tap_changes_saved">Changes Saved</string>
     <string name="tap_added_contact">Added to Contacts</string>
-    <string name="tap_added_member">Member Added</string>
     <string name="tap_removed_member">Member Removed</string>
     <string name="tap_promoted_admin">Admin Promoted</string>
     <string name="tap_demoted_admin">Admin Demoted</string>
@@ -292,6 +291,7 @@
     <string name="tap_loading">Loading</string>
     <string name="tap_finished">Finished</string>
     <string name="tap_log_out">Log Out</string>
+    <string name="tap_logging_out">Logging Out…</string>
     <string name="tap_log_out_confirmation">Are you sure you want to log out?</string>
     <string name="tap_messages">Messages</string>
     <string name="tap_mobile_number">Mobile Number</string>

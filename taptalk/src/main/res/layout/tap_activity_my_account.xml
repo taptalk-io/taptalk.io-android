@@ -500,4 +500,6 @@
 
     </ScrollView>
 
+    <include layout="@layout/tap_layout_popup_loading_screen" />
+
 </FrameLayout>
