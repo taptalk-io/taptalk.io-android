@@ -52,6 +52,7 @@
             android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_search_for_contacts"
             android:imeOptions="actionSearch"
+            android:inputType="text"
             android:maxLines="1"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
