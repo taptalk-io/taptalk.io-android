@@ -466,7 +466,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         fl_button_continue.setOnClickListener { register() }
 
-        iv_button_back.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_orange))
+        iv_button_back.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white))
         iv_button_back.clearAnimation()
 
         et_full_name.isEnabled = true

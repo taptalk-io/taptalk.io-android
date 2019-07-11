@@ -143,7 +143,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                 groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
             val menuDemoteAdmin = TAPMenuItem(
                     MENU_DEMOTE_ADMIN,
-                    R.drawable.tap_ic_icon_remove_circle_grey,
+                    R.drawable.tap_ic_remove_circle_grey,
                     R.color.tapIconGroupMemberProfileMenuDemoteAdmin,
                     R.style.tapChatProfileMenuLabelStyle,
                     false,

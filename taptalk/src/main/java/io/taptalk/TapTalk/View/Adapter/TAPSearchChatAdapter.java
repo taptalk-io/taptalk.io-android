@@ -187,7 +187,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
             // Message failed to send
             else if (null != message.getFailedSend() && message.getFailedSend()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_failed_grey);
                 ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageFailed)));
             }
             // Message sent

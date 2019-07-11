@@ -72,7 +72,7 @@
             android:paddingTop="22dp"
             android:paddingEnd="16dp"
             android:paddingBottom="12dp"
-            android:src="@drawable/tap_ic_icon_add_image"
+            android:src="@drawable/tap_ic_add_image"
             android:tint="@color/tapIconMediaPreviewAdd"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

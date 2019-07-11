@@ -22,7 +22,7 @@
             android:paddingTop="18dp"
             android:paddingEnd="10.5dp"
             android:paddingBottom="18dp"
-            android:src="@drawable/tap_ic_chevron_left_orange"
+            android:src="@drawable/tap_ic_chevron_left_white"
             android:tint="@color/tapIconNavBarBackButton" />
 
     </FrameLayout>

@@ -105,15 +105,15 @@
                 tools:background="@color/tapCreamWhite" />
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/tap_ic_location_marker"
+                android:layout_width="53dp"
+                android:layout_height="62dp"
+                android:src="@drawable/tap_ic_location_pumpkin_orange"
                 android:tint="@color/tapIconLocationBubbleMarker"
                 app:layout_constraintBottom_toBottomOf="@id/map_view"
                 app:layout_constraintEnd_toEndOf="@id/map_view"
                 app:layout_constraintStart_toStartOf="@id/map_view"
                 app:layout_constraintTop_toTopOf="@id/map_view"
-                app:layout_constraintVertical_bias="0.385" />
+                app:layout_constraintVertical_bias="0.355" />
 
             <View
                 android:id="@+id/v_map_border"
