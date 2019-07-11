@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Activity
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
@@ -251,13 +253,18 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
     }
 
     fun finishGroupUpdate() {
-//        val intent = Intent(this@TAPEditGroupActivity, TAPGroupMemberListActivity::class.java)
-//        intent.putExtra(ROOM, groupViewModel?.groupData)
-//        startActivity(intent)
         val intent = Intent()
         intent.putExtra(ROOM, groupViewModel?.groupData)
         setResult(Activity.RESULT_OK, intent)
         finish()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            when (requestCode) {
+                PERMISSION_READ_EXTERNAL_STORAGE_GALLERY -> TAPUtils.getInstance().pickImageFromGallery(this@TAPEditGroupActivity, PICK_GROUP_IMAGE, false)
+            }
+        }
     }
 
 }
