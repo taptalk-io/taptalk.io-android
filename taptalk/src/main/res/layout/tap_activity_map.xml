@@ -68,22 +68,24 @@
             android:layout_height="match_parent"
             tools:context=".activity.MapAddressActivity" />
 
-        <LinearLayout
-            android:id="@+id/ll_center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <View
+            android:id="@+id/v_center"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:background="@color/tapWhite" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="@id/ll_center"
+            android:translationY="13dp"
+            app:layout_constraintBottom_toBottomOf="@id/v_center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -137,10 +139,10 @@
             </LinearLayout>
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="-6dp"
-                android:src="@drawable/tap_ic_location_marker"
+                android:layout_width="53dp"
+                android:layout_height="62dp"
+                android:layout_marginTop="-12dp"
+                android:src="@drawable/tap_ic_location_pumpkin_orange"
                 android:tint="@color/tapIconLocationPickerMarker" />
 
         </LinearLayout>
@@ -248,7 +250,7 @@
             android:id="@+id/iv_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/tap_ic_pin_location_grey" />
+            android:src="@drawable/tap_ic_location_pumpkin_orange" />
 
         <TextView
             android:id="@+id/tv_location"

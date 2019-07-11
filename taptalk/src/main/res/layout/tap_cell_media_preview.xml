@@ -102,18 +102,19 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/tap_bg_media_preview_warning"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+            android:visibility="gone"
 
             <ImageView
                 android:id="@+id/iv_warning_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:src="@drawable/tap_ic_failed_red"
+                android:src="@drawable/tap_ic_failed_grey"
                 android:tint="@color/tapIconMediaPreviewWarning"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_error_title"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -122,6 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:layout_marginStart="4dp"
                 android:text="@string/tap_error_exceed_upload_limit"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toBottomOf="@id/iv_warning_icon"
@@ -139,7 +141,7 @@
                 android:text="@string/tap_error_media_will_not_be_sent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iv_warning_icon"
+                app:layout_constraintStart_toStartOf="@id/tv_error_title"
                 app:layout_constraintTop_toBottomOf="@id/tv_error_title" />
 
         </android.support.constraint.ConstraintLayout>

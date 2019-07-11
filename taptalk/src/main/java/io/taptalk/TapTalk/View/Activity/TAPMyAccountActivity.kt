@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
 import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,6 +23,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.Api.TAPApiManager
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -35,6 +37,8 @@ import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
@@ -58,6 +62,7 @@ import kotlinx.android.synthetic.main.tap_activity_register.tv_country_code
 import kotlinx.android.synthetic.main.tap_activity_register.tv_label_email_address_error
 import kotlinx.android.synthetic.main.tap_activity_register.tv_label_full_name_error
 import kotlinx.android.synthetic.main.tap_activity_register.v_password_separator
+import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
 class TAPMyAccountActivity : TAPBaseActivity() {
 
@@ -353,7 +358,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 .setMessage(getString(R.string.tap_log_out_confirmation))
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_log_out))
-                .setPrimaryButtonListener { logout() }
+                .setPrimaryButtonListener { TAPDataManager.getInstance().logout(logoutView) }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setSecondaryButtonListener(true) {}
@@ -367,6 +372,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPApiManager.getInstance().isLogout = true
         TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
         TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
+
+        hideLoading()
 
         val intent = Intent(this, TAPLoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -500,6 +507,43 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
     }
 
+    private fun showLoading(message: String) {
+        runOnUiThread {
+            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == iv_loading_image.animation)
+                TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_image)
+            tv_loading_text.text = message
+            fl_loading.visibility = View.VISIBLE
+        }
+    }
+
+    private fun endLoading(message: String) {
+        runOnUiThread {
+            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
+            iv_loading_image.clearAnimation()
+            tv_loading_text.text = message
+            fl_loading.setOnClickListener { hideLoading() }
+
+            Handler().postDelayed({
+                this.hideLoading()
+            }, 1000L)
+        }
+    }
+
+    private fun hideLoading() {
+        fl_loading.visibility = View.GONE
+    }
+
+    private fun showErrorDialog(title: String, message: String) {
+        TapTalkDialog.Builder(this@TAPMyAccountActivity)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(title)
+                .setMessage(message)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setPrimaryButtonListener {}
+                .show()
+    }
+
     private val fullNameWatcher = object : TextWatcher {
         override fun afterTextChanged(p0: Editable?) {}
 
@@ -552,6 +596,26 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(1).toFloat()
             else ->
                 cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(2).toFloat()
+        }
+    }
+
+    private val logoutView = object : TAPDefaultDataView<TAPCommonResponse>() {
+        override fun startLoading() {
+            this@TAPMyAccountActivity.showLoading(getString(R.string.tap_logging_out))
+        }
+
+        override fun onSuccess(response: TAPCommonResponse?) {
+            logout()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            hideLoading()
+            showErrorDialog(error!!.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            hideLoading()
+            showErrorDialog(getString(R.string.tap_error_message_general))
         }
     }
 

@@ -27,7 +27,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1702,7 +1701,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
             tvUnreadButtonCount.setText(String.format(getString(R.string.tap_s_unread_messages),
                     vm.getInitialUnreadCount() > 99 ? getString(R.string.tap_over_99) : vm.getInitialUnreadCount()));
-            ivUnreadButtonImage.setImageDrawable(getDrawable(R.drawable.tap_ic_up_chevron_circle_orange));
+            ivUnreadButtonImage.setImageDrawable(getDrawable(R.drawable.tap_ic_chevron_up_circle_orange));
             ivUnreadButtonImage.clearAnimation();
             clUnreadButton.setVisibility(View.VISIBLE);
             clUnreadButton.setOnClickListener(v -> scrollToMessage(UNREAD_INDICATOR_LOCAL_ID));

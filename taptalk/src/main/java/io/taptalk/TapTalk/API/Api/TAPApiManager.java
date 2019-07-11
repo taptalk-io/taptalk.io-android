@@ -419,6 +419,10 @@ public class TAPApiManager {
         execute(homingPigeon.register(request), subscriber);
     }
 
+    public void logout(Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        execute(homingPigeon.logout(), subscriber);
+    }
+
     public void checkUsernameExists(String username, Subscriber<TAPBaseResponse<TAPCheckUsernameResponse>> subscriber) {
         TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username, false);
         execute(homingPigeon.checkUsernameExists(request), subscriber);

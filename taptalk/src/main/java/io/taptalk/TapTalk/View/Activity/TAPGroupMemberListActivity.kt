@@ -39,7 +39,7 @@ import kotlinx.android.synthetic.main.tap_activity_create_new_group.rv_contact_l
 import kotlinx.android.synthetic.main.tap_activity_create_new_group.tv_member_count
 import kotlinx.android.synthetic.main.tap_activity_create_new_group.tv_title
 import kotlinx.android.synthetic.main.tap_activity_group_members.*
-import kotlinx.android.synthetic.main.tap_loading_layout_block_screen.*
+import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
 @Suppress("CAST_NEVER_SUCCEEDS")
 class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
@@ -487,9 +487,9 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun showLoading(message: String) {
         runOnUiThread {
-            iv_saving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white))
-            if (null == iv_saving.animation)
-                TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_saving)
+            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == iv_loading_image.animation)
+                TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_image)
             tv_loading_text.text = message
             iv_button_action.setOnClickListener(null)
             fl_loading.visibility = View.VISIBLE
@@ -498,8 +498,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun endLoading(message: String) {
         runOnUiThread {
-            iv_saving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
-            iv_saving.clearAnimation()
+            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
+            iv_loading_image.clearAnimation()
             tv_loading_text.text = message
             Handler().postDelayed({
                 hideLoading()

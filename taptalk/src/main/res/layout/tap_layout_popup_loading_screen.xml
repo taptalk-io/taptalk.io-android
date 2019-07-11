@@ -18,7 +18,7 @@
         android:minHeight="128dp">
 
         <ImageView
-            android:id="@+id/iv_saving"
+            android:id="@+id/iv_loading_image"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginBottom="4dp"

@@ -89,7 +89,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         longitude = centerOfMap?.longitude ?: 0.0
 
         ll_set_location.visibility = View.GONE
-        iv_location.setImageResource(R.drawable.tap_ic_pin_location_grey)
+        iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
         iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
 
         tv_location.setHint(R.string.tap_searching_for_address)
@@ -102,7 +102,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     override fun onCameraIdle() {
         getGeoCoderAddress()
 
-        iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
+        iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
         iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
 
         recycler_view.visibility = View.GONE
@@ -193,7 +193,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 val curr: LatLng = LatLng(latitude, longitude)
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
                 getGeoCoderAddress()
-                iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
+                iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
                 iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
                 recycler_view.visibility = View.GONE
                 if (et_keyword.isFocused)
