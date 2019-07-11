@@ -88,6 +88,7 @@
             android:layout_height="match_parent"
             android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_search_forward_placeholder"
+            android:inputType="text"
             android:maxLines="1"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"

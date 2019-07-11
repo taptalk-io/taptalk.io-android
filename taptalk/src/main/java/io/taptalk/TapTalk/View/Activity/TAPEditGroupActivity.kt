@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.ViewTreeObserver
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
@@ -105,6 +106,8 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             groupViewModel?.isGroupPicStartEmpty = true
         }
 
+        sv_group_data.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
+
         //fl_remove_group_picture.setOnClickListener(this)
         ll_change_group_picture.setOnClickListener(this)
         fl_update_group_btn.setOnClickListener(this)
@@ -161,6 +164,19 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             tv_update_group_btn.visibility = View.VISIBLE
             iv_loading_progress_update_group.visibility = View.GONE
             TAPUtils.getInstance().stopViewAnimation(iv_loading_progress_update_group)
+        }
+    }
+
+    private val scrollViewListener = ViewTreeObserver.OnScrollChangedListener {
+        val y = sv_group_data.scrollY
+        val h = iv_group_pic_background.height
+        when {
+            y == 0 ->
+                cl_action_bar.elevation = 0f
+            y < h ->
+                cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(1).toFloat()
+            else ->
+                cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(2).toFloat()
         }
     }
 

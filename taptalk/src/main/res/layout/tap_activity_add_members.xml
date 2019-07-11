@@ -52,6 +52,7 @@
             android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_search_for_contacts"
             android:imeOptions="actionSearch"
+            android:inputType="text"
             android:maxLines="1"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
@@ -126,9 +127,9 @@
             <TextView
                 android:id="@+id/tv_add_members_btn"
                 style="@style/tapButtonLabelStyle"
-                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="@string/tap_add_members" />
 
             <ImageView
