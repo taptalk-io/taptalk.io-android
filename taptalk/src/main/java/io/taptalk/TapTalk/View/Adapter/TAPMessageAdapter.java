@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -180,9 +181,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_EMPTY:
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
             case TYPE_BUBBLE_DELETED_RIGHT:
-                return new EmptyVH(parent, R.layout.tap_cell_chat_bubble_deleted_right);
+                return new DeletedVH(parent, R.layout.tap_cell_chat_bubble_deleted_right, viewType);
             case TYPE_BUBBLE_DELETED_LEFT:
-                return new EmptyVH(parent, R.layout.tap_cell_chat_bubble_deleted_left);
+                return new DeletedVH(parent, R.layout.tap_cell_chat_bubble_deleted_left, viewType);
             case TYPE_BUBBLE_SYSTEM_MESSAGE:
                 return new SystemMessageVH(parent, R.layout.tap_cell_chat_system_message);
             default:
@@ -1112,7 +1113,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivQuoteImage;
         private ImageView ivMessageStatus, ivReply, ivSending;
-        private TextView tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
+        private TextView tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent, tvUserName;
         private View vQuoteBackground, vQuoteDecoration, vMapBorder;
         private MapView mapView;
 
@@ -1129,6 +1130,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
             tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
+            tvUserName = itemView.findViewById(R.id.tv_user_name);
             tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
@@ -1139,7 +1141,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             if (bubbleType == TYPE_BUBBLE_LOCATION_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
-//                tvUserName = itemView.findViewById(R.id.tv_user_name);
+                tvUserName = itemView.findViewById(R.id.tv_user_name);
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivSending = itemView.findViewById(R.id.iv_sending);
@@ -1154,7 +1156,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             if (!item.isAnimating()) {
-                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, null);
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvUserName);
             }
 
             if (null == item.getFailedSend() || (null != item.getFailedSend() && !item.getFailedSend())) {
@@ -1166,7 +1168,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             fixBubbleMarginForGroupRoom(item, flBubble);
 
             if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
-                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
+                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty()) ||
+                    (null != tvUserName && View.VISIBLE == tvUserName.getVisibility() && null != item.getRoom() && TYPE_GROUP == item.getRoom().getRoomType())) {
                 // Fix layout when quote/forward exists
                 mapView.setOutlineProvider(null);
                 clForwardedQuote.setVisibility(View.VISIBLE);
@@ -1391,6 +1394,27 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
+    public class DeletedVH extends TAPBaseChatViewHolder {
+
+        CircleImageView civAvatar;
+        TextView tvUserName;
+
+        protected DeletedVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
+            super(parent, itemLayoutId);
+            if (bubbleType == TYPE_BUBBLE_DELETED_LEFT) {
+                civAvatar = itemView.findViewById(R.id.civ_avatar);
+                tvUserName = itemView.findViewById(R.id.tv_user_name);
+            }
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            if (!item.isAnimating()) {
+                checkAndUpdateMessageStatus(this, item, null, null, civAvatar, tvUserName);
+            }
+        }
+    }
+
     private void setMessageItem(TAPMessageModel item, View itemView, FrameLayout flBubble,
                                 TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
                                 @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
@@ -1524,7 +1548,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (null != civAvatar && null != item.getUser().getAvatarURL() && !item.getUser().getAvatarURL().getThumbnail().isEmpty()) {
                     glide.load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
                     civAvatar.setVisibility(View.VISIBLE);
-                } else {
+                } else if (null != civAvatar) {
                     civAvatar.setImageDrawable(vh.itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
                     civAvatar.setVisibility(View.VISIBLE);
                 }
