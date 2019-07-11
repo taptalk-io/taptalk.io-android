@@ -77,6 +77,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
 
     private void initViewModel(List<TAPUserModel> existingMembers) {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
+        vm.setGroupSize(existingMembers.size());
 
         // Show users from contact list
         vm.getContactListLive().observe(this, userModels -> {
@@ -103,7 +104,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
                 TAPUtils.getInstance().dismissKeyboard(TAPAddMembersActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContacts().contains(contact)) {
-                    if (vm.getSelectedContacts().size() >= GROUP_MEMBER_LIMIT) {
+                    if (vm.getSelectedContacts().size() + vm.getGroupSize() >= GROUP_MEMBER_LIMIT) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         new TapTalkDialog.Builder(TAPAddMembersActivity.this)
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
@@ -130,7 +131,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
+                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getGroupSize() + vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
                 return true;
             }
 
