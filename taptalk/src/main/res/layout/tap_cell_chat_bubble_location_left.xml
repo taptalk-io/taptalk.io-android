@@ -36,28 +36,30 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@drawable/tap_bg_chat_bubble_left_top">
+
+            <TextView
+                android:id="@+id/tv_user_name"
+                style="@style/tapLeftBubbleSenderNameStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                app:layout_constraintBottom_toTopOf="@id/cl_forwarded_quote"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="User Name" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_forwarded_quote"
                 android:layout_width="234dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/tap_bg_chat_bubble_left_top"
-                android:padding="10dp"
+                android:paddingStart="10dp"
+                android:paddingBottom="10dp"
+                android:paddingEnd="10dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <!--<TextView-->
-                <!--android:id="@+id/tv_user_name"-->
-                <!--style="@style/TapMessageUserName"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginBottom="4dp"-->
-                <!--app:layout_constraintBottom_toTopOf="@id/cl_forwarded"-->
-                <!--app:layout_constraintStart_toStartOf="parent"-->
-                <!--app:layout_constraintTop_toTopOf="parent"-->
-                <!--app:layout_constraintEnd_toEndOf="parent"-->
-                <!--tools:text="User Name" />-->
+                app:layout_constraintTop_toBottomOf="@id/tv_user_name">
 
                 <include
                     android:id="@+id/cl_forwarded"

@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -118,11 +119,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                         != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(this, PERMISSIONS, PERMISSION_LOCATION)
                 } else {
-                    latitude = currentLatitude
-                    longitude = currentLongitude
-                    centerOfMap = LatLng(currentLatitude, currentLongitude)
-                    val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
-                    googleMap?.animateCamera(locations)
+                    moveToCurrentLocation()
                 }
             }
             R.id.ll_set_location -> {
@@ -322,9 +319,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 return
             }
             locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0.toLong(), 0.toFloat(), this)
-        }
-
-        if (locationManager?.allProviders?.contains(LocationManager.NETWORK_PROVIDER) == true) {
+        } else if (locationManager?.allProviders?.contains(LocationManager.NETWORK_PROVIDER) == true) {
             locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0.toLong(), 0.toFloat(), this)
         }
 
@@ -438,5 +433,13 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         } else {
             super.onBackPressed()
         }
+    }
+
+    private fun moveToCurrentLocation() {
+        latitude = currentLatitude
+        longitude = currentLongitude
+        centerOfMap = LatLng(currentLatitude, currentLongitude)
+        val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
+        googleMap?.animateCamera(locations)
     }
 }

@@ -39,7 +39,7 @@
     <string name="tap_search_forward_placeholder">Search chats or contacts</string>
 
     <!--Contacts-->
-    <string name="tap_search_for_contacts">Search for Contacts</string>
+    <string name="tap_search_for_contacts">Search for contacts</string>
     <string name="tap_cant_find_contact">Can’t find the contact you were looking for?</string>
     <string name="tap_cant_find_person">Can’t find who you are looking for?</string>
     <string name="tap_view_blocked_contacts">View Blocked Contacts</string>
@@ -108,6 +108,7 @@
     <string name="tap_promoted_admin">Admin Promoted</string>
     <string name="tap_demoted_admin">Admin Demoted</string>
     <string name="tap_left_group">Left Group</string>
+    <string name="tap_search_for_group_members">Search for group members</string>
 
     <!--Guides-->
     <string name="tap_scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>

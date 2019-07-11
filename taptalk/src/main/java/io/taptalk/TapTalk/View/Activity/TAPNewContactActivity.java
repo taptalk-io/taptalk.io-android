@@ -134,7 +134,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         llEmpty.setVisibility(View.GONE);
         clConnectionLost.setVisibility(View.GONE);
         ivButtonCancel.setVisibility(View.VISIBLE);
-        ivProgressSearch.setVisibility(View.INVISIBLE);
+        ivProgressSearch.setVisibility(View.GONE);
+        ivProgressSearch.clearAnimation();
     }
 
     private void showResultNotFound() {
@@ -147,6 +148,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         clButtonAction.setVisibility(View.GONE);
         llEmpty.setVisibility(View.VISIBLE);
         clConnectionLost.setVisibility(View.GONE);
+        ivProgressSearch.setVisibility(View.INVISIBLE);
     }
 
     private void showConnectionLost() {
@@ -159,6 +161,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         clButtonAction.setVisibility(View.GONE);
         llEmpty.setVisibility(View.GONE);
         clConnectionLost.setVisibility(View.VISIBLE);
+        ivProgressSearch.setVisibility(View.INVISIBLE);
     }
 
     @SuppressLint("PrivateResource")
@@ -319,6 +322,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             TAPDataManager.getInstance().cancelUserSearchApiCall();
+            endLoading();
             searchTimer.cancel();
             if (s.length() > 0) {
                 searchTimer.start();
@@ -390,16 +394,12 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     TAPDefaultDataView<TAPGetUserResponse> getUserView = new TAPDefaultDataView<TAPGetUserResponse>() {
         @Override
         public void startLoading() {
-            ivButtonCancel.setVisibility(View.INVISIBLE);
-            ivProgressSearch.setVisibility(View.VISIBLE);
-            TAPUtils.getInstance().rotateAnimateInfinitely(TAPNewContactActivity.this, ivProgressSearch);
+            TAPNewContactActivity.this.startLoading();
         }
 
         @Override
         public void endLoading() {
-            ivProgressSearch.setVisibility(View.INVISIBLE);
-            ivProgressSearch.clearAnimation();
-            ivButtonCancel.setVisibility(View.VISIBLE);
+            TAPNewContactActivity.this.endLoading();
         }
 
         @Override
@@ -413,9 +413,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void onError(TAPErrorModel error) {
 //            if (error.getCode().equals(String.valueOf(API_PARAMETER_VALIDATION_FAILED))) {
-                // User not found
-                showResultNotFound();
-                endLoading();
+            // User not found
+            showResultNotFound();
+            endLoading();
 //            }
         }
 
@@ -481,4 +481,16 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             vm.setPendingSearch("");
         }
     };
+
+    private void startLoading() {
+        ivButtonCancel.setVisibility(View.GONE);
+        ivProgressSearch.setVisibility(View.VISIBLE);
+        TAPUtils.getInstance().rotateAnimateInfinitely(TAPNewContactActivity.this, ivProgressSearch);
+    }
+
+    private void endLoading() {
+        ivProgressSearch.setVisibility(View.GONE);
+        ivProgressSearch.clearAnimation();
+        ivButtonCancel.setVisibility(View.VISIBLE);
+    }
 }
