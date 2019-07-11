@@ -1153,6 +1153,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
                     // Load room image
                     loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
+                } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+                    civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_group_avatar_blank));
                 } else {
                     // Use default profile picture if image is empty
                     civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
