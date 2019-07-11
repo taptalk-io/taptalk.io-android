@@ -506,13 +506,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
             // Load room image
             loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
-        } else if (null != vm.getRoom() && null != vm.getRoom() &&
+        } else if (null != vm.getRoom() &&
                 TYPE_PERSONAL == vm.getRoom().getRoomType() && null != vm.getOtherUserModel() &&
                 null != vm.getOtherUserModel().getAvatarURL().getThumbnail() &&
                 !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
             // Load user avatar URL
             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomImage);
             vm.getRoom().setRoomImage(vm.getOtherUserModel().getAvatarURL());
+        } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+            civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_group_avatar_blank));
         } else {
             // Use default profile picture if image is empty
             civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
@@ -1904,7 +1906,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         if (null != vm.getMyUserModel().getAvatarURL() && !vm.getMyUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getMyUserModel().getAvatarURL().getThumbnail(), civMyAvatar);
                         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()){
-                            civMyAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+                            civMyAvatar.setImageDrawable(getDrawable(R.drawable.tap_group_avatar_blank));
                         } else {
                             civMyAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
                         }

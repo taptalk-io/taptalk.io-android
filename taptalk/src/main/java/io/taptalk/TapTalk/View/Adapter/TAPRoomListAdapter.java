@@ -88,6 +88,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Set room image
             if (null != item.getLastMessage().getRoom().getRoomImage() && !item.getLastMessage().getRoom().getRoomImage().getThumbnail().isEmpty()) {
                 Glide.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).into(civAvatar);
+            } else if (null != item.getLastMessage() && null != item.getLastMessage().getRoom() && TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
+                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_group_avatar_blank));
             } else {
                 civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
             }
