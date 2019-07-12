@@ -241,8 +241,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             glide.load(vm.getRoom().getRoomImage().getFullsize())
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
                     .into(ivProfile);
+        } else if(null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+            ivProfile.setImageResource(R.drawable.tap_group_avatar_blank);
         } else {
-            ivProfile.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.tapGrey9b)));
+            ivProfile.setImageResource(R.drawable.tap_img_default_avatar);
         }
 
         //update room name
