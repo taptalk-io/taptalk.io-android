@@ -200,7 +200,6 @@
                     android:src="@drawable/tap_ic_send_message_grey"
                     android:tint="@color/tapButtonIconColor"
                     android:visibility="gone"
-
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/tv_button_text"
                     app:layout_constraintHorizontal_chainStyle="packed"

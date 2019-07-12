@@ -125,7 +125,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/tap_ic_edit_orange"
-                    android:tint="@color/tapIconEditPicture" />
+                    android:tint="@color/tapIconChangePicture" />
 
             </LinearLayout>
 

@@ -63,16 +63,29 @@
                     android:id="@+id/civ_my_avatar_image"
                     android:layout_width="56dp"
                     android:layout_height="50dp"
-                    android:paddingStart="12dp"
-                    android:paddingTop="9dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="9dp"
+                    android:paddingStart="13dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="13dp"
+                    android:paddingBottom="10dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/tap_bg_circle_9b9b9b"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/tv_search_text"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_my_avatar_image_label"
+                    style="@style/tapDefaultRoomAvatarSmallFontStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    app:layout_constraintBottom_toBottomOf="@id/civ_my_avatar_image"
+                    app:layout_constraintEnd_toEndOf="@id/civ_my_avatar_image"
+                    app:layout_constraintStart_toStartOf="@id/civ_my_avatar_image"
+                    app:layout_constraintTop_toTopOf="@id/civ_my_avatar_image"
+                    tools:text="A" />
 
                 <!--Clickable area for avatar image-->
                 <View
