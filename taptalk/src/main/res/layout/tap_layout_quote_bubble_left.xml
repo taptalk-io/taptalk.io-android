@@ -6,14 +6,13 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingStart="0dp"
-    android:paddingEnd="8dp"
-    tools:background="@drawable/tap_bg_accent_rounded_4dp">
+    android:paddingEnd="8dp">
 
     <View
         android:id="@+id/v_quote_decoration"
         android:layout_width="4dp"
         android:layout_height="0dp"
-        android:background="@drawable/tap_bg_primarylight_rounded_4dp_0dp_4dp_0dp"
+        android:background="@drawable/tap_bg_quote_decoration"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -32,14 +31,13 @@
 
     <TextView
         android:id="@+id/tv_quote_title"
-        style="@style/TapQuoteTitle"
+        style="@style/tapLeftBubbleQuoteTitleStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="@color/tap_black_19"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/tv_quote_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +50,7 @@
 
     <TextView
         android:id="@+id/tv_quote_content"
-        style="@style/TapQuoteBody"
+        style="@style/tapLeftBubbleQuoteContentStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -61,7 +59,6 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:paddingStart="0dp"
-        android:textColor="@color/tap_black_19"
         android:paddingEnd="8dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@id/v_quote_decoration"

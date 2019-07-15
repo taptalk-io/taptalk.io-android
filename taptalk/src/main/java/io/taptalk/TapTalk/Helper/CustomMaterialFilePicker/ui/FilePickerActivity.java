@@ -120,7 +120,7 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
         // Show back button
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.tap_ic_back_white);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.tap_ic_chevron_left_white);
         }
 
         // Truncate start of path

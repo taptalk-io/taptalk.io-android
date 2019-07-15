@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="70dp"
     android:animateLayoutChanges="true"
-    android:background="@color/tap_white"
+    android:background="@color/tapWhite"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical">
 
@@ -34,18 +34,21 @@
 
     <TextView
         android:id="@+id/tv_room_name"
-        style="@style/TapContactName"
+        style="@style/tapRoomListNameStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="28dp"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
         app:layout_constraintEnd_toStartOf="@id/tv_badge_unread"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
         app:layout_constraintTop_toTopOf="@id/civ_avatar"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="Username" />
+        tools:text="User Name" />
 
     <!--<View-->
     <!--android:id="@+id/v_room_status_badge"-->
@@ -70,10 +73,17 @@
 
     <TextView
         android:id="@+id/tv_badge_unread"
-        style="@style/TapUnreadBadge"
+        style="@style/tapRoomListUnreadBadgeLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
+        android:background="@drawable/tap_bg_room_list_unread_badge"
+        android:gravity="center"
+        android:minWidth="18dp"
+        android:paddingStart="2dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="2dp"
+        android:paddingBottom="2dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -85,7 +95,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="62dp"
-        android:background="@color/tap_grey_ea"
+        android:background="@color/tapGreyDc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

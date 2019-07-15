@@ -2,9 +2,7 @@ package io.taptalk.TapTalk.View.Adapter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -99,7 +97,6 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
 
             Glide.with(itemView).load(item.getCountryListItem().getFlagIconUrl())
                     .apply(new RequestOptions().centerCrop()).into(ivCountryFlag);
-            Log.e("<<><>", "onBind: "+item.getCountryListItem().getFlagIconUrl() );
 
             itemView.setOnClickListener(v -> countryPickInterface.onPick(item.getCountryListItem()));
 
@@ -114,7 +111,7 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
     public class CountryInitialViewHolder extends TAPBaseViewHolder<TAPCountryRecycleItem> {
         private TextView tvCountryInitial;
 
-        protected CountryInitialViewHolder(ViewGroup parent, int itemLayoutId) {
+        CountryInitialViewHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             tvCountryInitial = itemView.findViewById(R.id.tv_country_initial);
         }

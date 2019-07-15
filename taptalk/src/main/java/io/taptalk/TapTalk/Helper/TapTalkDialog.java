@@ -115,15 +115,11 @@ public class TapTalkDialog extends Dialog {
         Resources res = getContext().getResources();
         switch (dialogType) {
             case ERROR_DIALOG:
-                primary.setBackground(res.getDrawable(R.drawable.tap_bg_watermelon_rounded_4dp_ripple));
-                //secondary.setBackground(res.getDrawable(R.drawable.tap_bg_white_stroke_grey9b_1dp_rounded_4dp));
-                //secondary.setTextColor(res.getColor(R.color.tap_grey_9b));
+                primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_error_ripple));
                 break;
             case DEFAULT:
             default:
-                primary.setBackground(res.getDrawable(R.drawable.tap_bg_apple_green_rounded_4dp_ripple));
-                //secondary.setBackground(res.getDrawable(R.drawable.tap_bg_white_stroke_tealish_1dp_rounded_4dp));
-                //secondary.setTextColor(res.getColor(R.color.tap_tealish));
+                primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_success_ripple));
                 break;
         }
     }

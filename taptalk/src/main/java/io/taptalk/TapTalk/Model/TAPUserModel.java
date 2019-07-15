@@ -43,6 +43,7 @@ public class TAPUserModel implements Parcelable {
     @Nullable @JsonProperty("countryID") private Integer countryID;
     @Nullable @JsonProperty("countryCallingCode") private String countryCallingCode;
     @Nullable @JsonIgnore private Integer isContact;
+    @Nullable @Ignore @JsonIgnore private boolean isSelected;
 
     @Override
     public boolean equals(Object obj) {
@@ -326,6 +327,14 @@ public class TAPUserModel implements Parcelable {
         this.countryCallingCode = countryCallingCode;
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
     // Update when adding fields to model
     public void updateValue(TAPUserModel userModel) {
         this.userID = userModel.getUserID();
@@ -353,7 +362,6 @@ public class TAPUserModel implements Parcelable {
             this.isContact = userModel.isContact;
         }
     }
-
 
     @Override
     public int describeContents() {
@@ -385,6 +393,7 @@ public class TAPUserModel implements Parcelable {
         dest.writeValue(this.countryID);
         dest.writeString(this.countryCallingCode);
         dest.writeValue(this.isContact);
+        dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
     }
 
     protected TAPUserModel(Parcel in) {
@@ -411,6 +420,7 @@ public class TAPUserModel implements Parcelable {
         this.countryID = (Integer) in.readValue(Integer.class.getClassLoader());
         this.countryCallingCode = in.readString();
         this.isContact = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.isSelected = in.readByte() != 0;
     }
 
     public static final Creator<TAPUserModel> CREATOR = new Creator<TAPUserModel>() {

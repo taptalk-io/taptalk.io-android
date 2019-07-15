@@ -4,14 +4,14 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
     android:layout_marginBottom="16dp"
-    android:background="@color/tap_transparent_white">
+    android:background="@color/tapTransparentWhite">
 
     <ImageView
         android:id="@+id/iv_loading_progress"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_gravity="center"
-        android:src="@drawable/tap_ic_loading_progress_circle_orange"
-        android:tint="@color/colorPrimaryDark" />
+        android:src="@drawable/tap_ic_loading_progress_circle_white"
+        android:tint="@color/tapIconLoadingProgressPrimary" />
 
 </FrameLayout>

@@ -5,17 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tap_white_f8"
-    tools:context=".View.Activity.TAPCreateNewGroupActivity">
+    android:background="@color/tapDefaultBackgroundColor"
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:animateLayoutChanges="true"
-        android:background="@color/tap_white"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
         android:elevation="2dp"
-        android:foreground="?attr/selectableItemBackground">
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/iv_button_back"
@@ -23,18 +24,20 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/tap_greenBlue"
+            android:src="@drawable/tap_ic_chevron_left_white"
+            android:tint="@color/tapIconNavBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
         <TextView
             android:id="@+id/tv_title"
-            style="@style/TapToolbarTitle"
+            style="@style/tapNavBarTitleLabelStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             android:text="@string/tap_new_group"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
@@ -43,12 +46,17 @@
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/TapSearchBar"
+            style="@style/tapNavBarSearchTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_search_for_contacts"
-            android:paddingEnd="16dp"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
             android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textCursorDrawable="@drawable/tap_cursor_color"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_action"
@@ -61,7 +69,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_search_grey"
+            android:src="@drawable/tap_ic_search_orange"
+            android:tint="@color/tapIconNavBarMagnifier"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -80,23 +89,19 @@
         android:id="@+id/ll_group_members"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/tap_white"
+        android:background="@color/tapWhite"
+        android:elevation="4dp"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/tap_grey_d9" />
-
         <TextView
             android:id="@+id/tv_member_count"
-            style="@style/TapSectionLabel"
+            style="@style/tapSectionHeaderLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             tools:text="Group Members (5/50)" />
 
         <android.support.v7.widget.RecyclerView
@@ -107,15 +112,19 @@
 
         <Button
             android:id="@+id/btn_continue"
-            style="@style/TapButton"
+            style="@style/tapButtonLabelStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="28dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/tap_bg_button_active_ripple"
+            android:gravity="center"
             android:text="@string/tap_continue_s"
-            android:textAllCaps="false" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </LinearLayout>
 

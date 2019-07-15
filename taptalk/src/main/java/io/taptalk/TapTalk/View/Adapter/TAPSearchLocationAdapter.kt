@@ -49,6 +49,5 @@ class TAPSearchLocationAdapter : TAPBaseAdapter<TAPLocationItem, TAPBaseViewHold
         override fun onClick(v: View?) {
             generalListener?.onClick(position, item)
         }
-
     }
 }

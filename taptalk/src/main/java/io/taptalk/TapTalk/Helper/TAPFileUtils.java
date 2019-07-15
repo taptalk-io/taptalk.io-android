@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
-import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
@@ -394,7 +393,7 @@ public class TAPFileUtils {
         BufferedInputStream bis;
         BufferedOutputStream bos;
         String fileName = getFileName(context, uri);
-        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.app_name) + "/Videos");
+        File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + TapTalk.appContext.getString(R.string.tap_app_name) + "/Videos");
         dir.mkdirs();
         File file = new File(dir, fileName);
         bis = new BufferedInputStream(inputStream);

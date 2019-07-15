@@ -116,7 +116,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
         tvLoadingText = findViewById(R.id.tv_loading_text);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonSave = findViewById(R.id.iv_save);
-        ivSaving = findViewById(R.id.iv_saving);
+        ivSaving = findViewById(R.id.iv_loading_image);
         tivImageDetail = findViewById(R.id.tiv_image_detail);
 
         tvTitle.setText(title);
@@ -165,7 +165,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
 
     private void showLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
+            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }
@@ -193,7 +193,8 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener saveButtonListener = v -> saveImage();
-    private View.OnClickListener emptyListener = v -> {};
+    private View.OnClickListener emptyListener = v -> {
+    };
 
     private View.OnTouchListener touchListener = new View.OnTouchListener() {
         @SuppressLint("ClickableViewAccessibility")

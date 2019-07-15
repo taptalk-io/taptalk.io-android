@@ -15,14 +15,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/tap_ic_search_grey" />
+        tools:src="@drawable/tap_ic_search_orange" />
 
     <TextView
         android:id="@+id/tv_menu_label"
-        style="@style/TapMenuLabel"
+        style="@style/tapCustomKeyboardItemLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
+        app:layout_goneMarginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_menu_icon"
         app:layout_constraintTop_toTopOf="parent"
@@ -31,7 +32,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/tap_grey_ea"
+        android:background="@color/tapGreyDc"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

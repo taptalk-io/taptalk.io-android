@@ -3,9 +3,9 @@
     android:insetTop="-1dp"
     android:insetBottom="-1dp">
     <shape android:shape="rectangle">
-        <solid android:color="@color/tap_transparent_white" />
+        <solid android:color="@color/tapTransparentWhite" />
         <stroke
             android:width="1dp"
-            android:color="@color/tap_grey_e4" />
+            android:color="@color/tapGreyE4" />
     </shape>
 </inset>

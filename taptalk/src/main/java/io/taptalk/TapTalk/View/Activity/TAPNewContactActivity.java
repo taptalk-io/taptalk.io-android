@@ -1,7 +1,9 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
@@ -12,14 +14,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
@@ -45,11 +46,10 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private ConstraintLayout clSearchResult, clButtonAction, clConnectionLost;
     private LinearLayout llEmpty;
-    private ImageView ivButtonBack, ivButtonCancel, ivExpertCover, ivAvatarIcon, ivButtonImage, ivProgressSearch;
+    private ImageView ivButtonBack, ivButtonCancel, ivExpertCover, ivAvatarIcon, ivButtonImage, ivProgressSearch, ivResultButtonLoading;
     private CircleImageView civAvatar;
     private TextView tvSearchUsernameGuide, tvFullName, tvUsername, tvButtonText;
     private EditText etSearch;
-    private ProgressBar pbButton;
 
     private TAPNewContactViewModel vm;
 
@@ -77,6 +77,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     private void initView() {
+        getWindow().setBackgroundDrawable(null);
+
         clSearchResult = findViewById(R.id.cl_search_result);
         clButtonAction = findViewById(R.id.cl_button_action);
         clConnectionLost = findViewById(R.id.cl_connection_lost);
@@ -87,13 +89,13 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         ivAvatarIcon = findViewById(R.id.iv_avatar_icon);
         ivButtonImage = findViewById(R.id.iv_button_image);
         ivProgressSearch = findViewById(R.id.iv_progress_search);
+        ivResultButtonLoading = findViewById(R.id.iv_loading_progress);
         civAvatar = findViewById(R.id.civ_avatar);
         tvSearchUsernameGuide = findViewById(R.id.tv_search_username_guide);
         tvFullName = findViewById(R.id.tv_full_name);
         tvUsername = findViewById(R.id.tv_username);
         tvButtonText = findViewById(R.id.tv_button_text);
         etSearch = findViewById(R.id.et_search);
-        pbButton = findViewById(R.id.pb_button);
 
         glide = Glide.with(this);
 
@@ -132,7 +134,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         llEmpty.setVisibility(View.GONE);
         clConnectionLost.setVisibility(View.GONE);
         ivButtonCancel.setVisibility(View.VISIBLE);
-        ivProgressSearch.setVisibility(View.INVISIBLE);
+        ivProgressSearch.setVisibility(View.GONE);
+        ivProgressSearch.clearAnimation();
     }
 
     private void showResultNotFound() {
@@ -145,6 +148,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         clButtonAction.setVisibility(View.GONE);
         llEmpty.setVisibility(View.VISIBLE);
         clConnectionLost.setVisibility(View.GONE);
+        ivProgressSearch.setVisibility(View.INVISIBLE);
     }
 
     private void showConnectionLost() {
@@ -157,8 +161,10 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         clButtonAction.setVisibility(View.GONE);
         llEmpty.setVisibility(View.GONE);
         clConnectionLost.setVisibility(View.VISIBLE);
+        ivProgressSearch.setVisibility(View.INVISIBLE);
     }
 
+    @SuppressLint("PrivateResource")
     private void showUserView() {
         tvSearchUsernameGuide.setVisibility(View.GONE);
         ivExpertCover.setVisibility(View.GONE);
@@ -190,17 +196,21 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            tvButtonText.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            TypedArray typedArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance);
+            tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
+            typedArray.recycle();
             clButtonAction.setBackground(null);
         } else {
             // Check if user is in my contacts
             tvButtonText.setVisibility(View.GONE);
             ivButtonImage.setVisibility(View.GONE);
-            pbButton.setVisibility(View.VISIBLE);
+            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivResultButtonLoading);
+            ivResultButtonLoading.setVisibility(View.VISIBLE);
             TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
         }
     }
 
+    @SuppressLint("PrivateResource")
     private void showExpertView() {
         tvSearchUsernameGuide.setVisibility(View.GONE);
         ivExpertCover.setVisibility(View.VISIBLE);
@@ -244,13 +254,16 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
-            tvButtonText.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            TypedArray typedArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance);
+            tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
+            typedArray.recycle();
             clButtonAction.setBackground(null);
         } else {
             // Check if user is in my contacts
             tvButtonText.setVisibility(View.GONE);
             ivButtonImage.setVisibility(View.GONE);
-            pbButton.setVisibility(View.VISIBLE);
+            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivResultButtonLoading);
+            ivResultButtonLoading.setVisibility(View.VISIBLE);
             TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
         }
     }
@@ -291,7 +304,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     private void disableInput() {
         runOnUiThread(() -> {
             tvButtonText.setVisibility(View.GONE);
-            pbButton.setVisibility(View.VISIBLE);
+            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivResultButtonLoading);
+            ivResultButtonLoading.setVisibility(View.VISIBLE);
             etSearch.setEnabled(false);
             etSearch.removeTextChangedListener(contactSearchWatcher);
             ivButtonCancel.setOnClickListener(null);
@@ -308,6 +322,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             TAPDataManager.getInstance().cancelUserSearchApiCall();
+            endLoading();
             searchTimer.cancel();
             if (s.length() > 0) {
                 searchTimer.start();
@@ -336,18 +351,22 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     };
 
     TAPDatabaseListener<TAPUserModel> dbListener = new TAPDatabaseListener<TAPUserModel>() {
+        @SuppressLint("PrivateResource")
         @Override
         public void onContactCheckFinished(int isContact) {
             // Update action button after contact check finishes
             runOnUiThread(() -> {
-                clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple));
-                tvButtonText.setTextColor(getResources().getColor(R.color.tap_white));
+                clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
+                TypedArray typedArray = obtainStyledAttributes(R.style.tapButtonLabelStyle, R.styleable.TextAppearance);
+                tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
+                typedArray.recycle();
                 if (isContact == 0) {
                     // Searched user is not a contact
                     runOnUiThread(() -> {
                         ivButtonImage.setVisibility(View.GONE);
                         tvButtonText.setVisibility(View.VISIBLE);
-                        pbButton.setVisibility(View.GONE);
+                        ivResultButtonLoading.clearAnimation();
+                        ivResultButtonLoading.setVisibility(View.GONE);
                         tvButtonText.setText(getString(R.string.tap_add_to_contacts));
                         clButtonAction.setOnClickListener(v -> addToContact());
                     });
@@ -356,7 +375,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                     runOnUiThread(() -> {
                         ivButtonImage.setVisibility(View.VISIBLE);
                         tvButtonText.setVisibility(View.VISIBLE);
-                        pbButton.setVisibility(View.GONE);
+                        ivResultButtonLoading.clearAnimation();
+                        ivResultButtonLoading.setVisibility(View.GONE);
                         tvButtonText.setText(getString(R.string.tap_chat_now));
                         clButtonAction.setOnClickListener(v -> openChatRoom());
                     });
@@ -371,19 +391,15 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         }
     };
 
-    TapDefaultDataView<TAPGetUserResponse> getUserView = new TapDefaultDataView<TAPGetUserResponse>() {
+    TAPDefaultDataView<TAPGetUserResponse> getUserView = new TAPDefaultDataView<TAPGetUserResponse>() {
         @Override
         public void startLoading() {
-            ivButtonCancel.setVisibility(View.INVISIBLE);
-            ivProgressSearch.setVisibility(View.VISIBLE);
-            TAPUtils.getInstance().rotateAnimateInfinitely(TAPNewContactActivity.this, ivProgressSearch);
+            TAPNewContactActivity.this.startLoading();
         }
 
         @Override
         public void endLoading() {
-            ivProgressSearch.setVisibility(View.INVISIBLE);
-            ivProgressSearch.clearAnimation();
-            ivButtonCancel.setVisibility(View.VISIBLE);
+            TAPNewContactActivity.this.endLoading();
         }
 
         @Override
@@ -397,9 +413,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void onError(TAPErrorModel error) {
 //            if (error.getCode().equals(String.valueOf(API_PARAMETER_VALIDATION_FAILED))) {
-                // User not found
-                showResultNotFound();
-                endLoading();
+            // User not found
+            showResultNotFound();
+            endLoading();
 //            }
         }
 
@@ -414,7 +430,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         }
     };
 
-    TapDefaultDataView<TAPCommonResponse> addContactView = new TapDefaultDataView<TAPCommonResponse>() {
+    TAPDefaultDataView<TAPCommonResponse> addContactView = new TAPDefaultDataView<TAPCommonResponse>() {
         @Override
         public void startLoading() {
             // Disable editing when loading
@@ -465,4 +481,16 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             vm.setPendingSearch("");
         }
     };
+
+    private void startLoading() {
+        ivButtonCancel.setVisibility(View.GONE);
+        ivProgressSearch.setVisibility(View.VISIBLE);
+        TAPUtils.getInstance().rotateAnimateInfinitely(TAPNewContactActivity.this, ivProgressSearch);
+    }
+
+    private void endLoading() {
+        ivProgressSearch.setVisibility(View.GONE);
+        ivProgressSearch.clearAnimation();
+        ivButtonCancel.setVisibility(View.VISIBLE);
+    }
 }

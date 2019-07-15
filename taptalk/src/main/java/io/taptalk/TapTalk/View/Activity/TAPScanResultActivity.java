@@ -9,15 +9,15 @@ import android.text.Html;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
@@ -40,22 +40,12 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     private TAPScanResultViewModel mViewModel;
 
     private CardView cvResult;
-    private ProgressBar pbLoading;
-    private ProgressBar pbAddLoading;
     private ConstraintLayout clContainer;
-    private CircleImageView civMyUserAvatar;
-    private CircleImageView civTheirContactAvatar;
-    private LinearLayout llButton;
-    private LinearLayout llTextUsername;
-    private LinearLayout llAddSuccess;
-    private ImageView ivButtonIcon;
-    private ImageView ivButtonClose;
-    private TextView tvButtonTitle;
-    private TextView tvAlreadyContact;
-    private TextView tvThisIsYou;
-    private TextView tvContactUsername;
-    private TextView tvContactFullname;
-    private TextView tvAddSuccess;
+    private FrameLayout flButtonClose;
+    private CircleImageView civMyUserAvatar, civTheirContactAvatar;
+    private LinearLayout llButton, llTextUsername, llAddSuccess;
+    private ImageView ivButtonIcon, ivLoading, ivAddLoading;
+    private TextView tvButtonTitle, tvAlreadyContact, tvThisIsYou, tvContactUsername, tvContactFullName, tvAddSuccess;
 
     private TAPUserModel addedContactUserModel;
     private String scanResult;
@@ -80,44 +70,50 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
     private void initView() {
         cvResult = findViewById(R.id.cv_result);
-        pbLoading = findViewById(R.id.pb_loading);
-        pbAddLoading = findViewById(R.id.pb_add_loading);
+        ivLoading = findViewById(R.id.iv_loading);
+        ivAddLoading = findViewById(R.id.iv_add_loading);
         clContainer = findViewById(R.id.cl_container);
+        flButtonClose = findViewById(R.id.fl_button_close);
         civMyUserAvatar = findViewById(R.id.civ_my_avatar);
         civTheirContactAvatar = findViewById(R.id.civ_contact_avatar);
         llButton = findViewById(R.id.ll_button);
         llTextUsername = findViewById(R.id.ll_text_username);
         llAddSuccess = findViewById(R.id.ll_add_success);
         ivButtonIcon = findViewById(R.id.iv_button_icon);
-        ivButtonClose = findViewById(R.id.iv_button_close);
         tvButtonTitle = findViewById(R.id.tv_button_title);
         tvAlreadyContact = findViewById(R.id.tv_already_contact);
         tvThisIsYou = findViewById(R.id.tv_this_is_you);
-        tvContactFullname = findViewById(R.id.tv_contact_fullname);
-        tvContactUsername = findViewById(R.id.tv_contact_username);
+        tvContactFullName = findViewById(R.id.tv_contact_username);
+        tvContactUsername = findViewById(R.id.tv_contact_full_name);
         tvAddSuccess = findViewById(R.id.tv_add_success);
 
         glide = Glide.with(this);
 
-        ivButtonClose.setOnClickListener(v -> onBackPressed());
+        TAPUtils.getInstance().rotateAnimateInfinitely(this, ivLoading);
+
+        flButtonClose.setOnClickListener(v -> onBackPressed());
 
         addedContactUserModel = getIntent().getParcelableExtra(ADDED_CONTACT);
         scanResult = getIntent().getStringExtra(SCAN_RESULT);
         myUserModel = TAPChatManager.getInstance().getActiveUser();
 
-        if (null != addedContactUserModel) setUpFromNewContact();
-        else if (null != scanResult) setUpFromScanQR();
+        if (null != addedContactUserModel) {
+            setUpFromNewContact();
+        } else if (null != scanResult) {
+            setUpFromScanQR();
+        }
     }
 
     private void setUpFromNewContact() {
-        pbLoading.setVisibility(View.GONE);
+        ivLoading.clearAnimation();
+        ivLoading.setVisibility(View.GONE);
         cvResult.setVisibility(View.VISIBLE);
         if (null != addedContactUserModel.getAvatarURL() && !addedContactUserModel.getAvatarURL().getThumbnail().isEmpty()) {
             glide.load(addedContactUserModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
         } else {
             civTheirContactAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
         }
-        tvContactFullname.setText(addedContactUserModel.getName());
+        tvContactFullName.setText(addedContactUserModel.getName());
         tvContactUsername.setText(addedContactUserModel.getUsername());
         animateAddSuccess(addedContactUserModel);
         llButton.setOnClickListener(v -> {
@@ -132,20 +128,21 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void setUpFromScanQR() {
-        TAPDataManager.getInstance().getUserByIdFromApi(scanResult, getUserView);
+        TAPDataManager.getInstance().getUserByIdFromApi(scanResult.replace("id:",""), getUserView);
     }
 
     private void validateScanResult(TAPUserModel userModel) {
         TAPContactManager.getInstance().updateUserDataMap(userModel);
         cvResult.setVisibility(View.VISIBLE);
-        pbLoading.setVisibility(View.GONE);
+        ivLoading.clearAnimation();
+        ivLoading.setVisibility(View.GONE);
         contactModel = userModel;
         if (null != userModel.getAvatarURL() && !userModel.getAvatarURL().getThumbnail().isEmpty()) {
             glide.load(userModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
         } else {
             civTheirContactAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
         }
-        tvContactFullname.setText(userModel.getName());
+        tvContactFullName.setText(userModel.getName());
         tvContactUsername.setText(userModel.getUsername());
 
         if (scanResult.equals(myUserModel.getUserID())) {
@@ -169,24 +166,24 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         runOnUiThread(() -> llButton.setOnClickListener(v -> TAPDataManager.getInstance().addContactApi(contactModel.getUserID(), addContactView)));
     }
 
-    TapDefaultDataView<TAPCommonResponse> addContactView = new TapDefaultDataView<TAPCommonResponse>() {
+    TAPDefaultDataView<TAPCommonResponse> addContactView = new TAPDefaultDataView<TAPCommonResponse>() {
         @Override
         public void startLoading() {
-            super.startLoading();
             tvButtonTitle.setVisibility(View.GONE);
             ivButtonIcon.setVisibility(View.GONE);
-            pbAddLoading.setVisibility(View.VISIBLE);
+            ivAddLoading.setVisibility(View.VISIBLE);
+            TAPUtils.getInstance().rotateAnimateInfinitely(TAPScanResultActivity.this, ivAddLoading);
         }
 
         @Override
         public void onSuccess(TAPCommonResponse response) {
-            super.onSuccess(response);
             TAPUserModel newContact = contactModel.setUserAsContact();
             TAPDataManager.getInstance().insertMyContactToDatabase(newContact);
             TAPContactManager.getInstance().updateUserDataMap(newContact);
             tvButtonTitle.setVisibility(View.VISIBLE);
             ivButtonIcon.setVisibility(View.VISIBLE);
-            pbAddLoading.setVisibility(View.GONE);
+            ivAddLoading.clearAnimation();
+            ivAddLoading.setVisibility(View.GONE);
             animateAddSuccess(contactModel);
             llButton.setOnClickListener(v -> {
                 TAPUtils.getInstance().startChatActivity(
@@ -202,10 +199,10 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            super.onError(error);
             tvButtonTitle.setVisibility(View.VISIBLE);
             ivButtonIcon.setVisibility(View.VISIBLE);
-            pbAddLoading.setVisibility(View.GONE);
+            ivAddLoading.clearAnimation();
+            ivAddLoading.setVisibility(View.GONE);
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
@@ -217,31 +214,18 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         @Override
         public void onError(Throwable throwable) {
-            super.onError(throwable);
-            tvButtonTitle.setVisibility(View.VISIBLE);
-            ivButtonIcon.setVisibility(View.VISIBLE);
-            pbAddLoading.setVisibility(View.GONE);
-            // TODO: 31/10/18 ini textnya masih dummy
-            new TapTalkDialog.Builder(TAPScanResultActivity.this)
-                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setTitle(getString(R.string.tap_error))
-                    .setMessage(getString(R.string.tap_api_call_return_error))
-                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                    .setPrimaryButtonListener(v -> {
-                    }).show();
+            onError(throwable.getMessage());
         }
     };
 
-    TapDefaultDataView<TAPGetUserResponse> getUserView = new TapDefaultDataView<TAPGetUserResponse>() {
+    TAPDefaultDataView<TAPGetUserResponse> getUserView = new TAPDefaultDataView<TAPGetUserResponse>() {
         @Override
         public void onSuccess(TAPGetUserResponse response) {
-            super.onSuccess(response);
             validateScanResult(response.getUser());
         }
 
         @Override
         public void onError(TAPErrorModel error) {
-            super.onError(error);
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
@@ -298,8 +282,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     llTextUsername.setVisibility(View.GONE);
                     tvAlreadyContact.setVisibility(View.VISIBLE);
                     llButton.setVisibility(View.VISIBLE);
-                    ivButtonIcon.setImageResource(R.drawable.tap_ic_chat_white);
-                    tvButtonTitle.setText("Chat Now");
+                    ivButtonIcon.setImageResource(R.drawable.tap_ic_send_message_grey);
+                    tvButtonTitle.setText(getString(R.string.tap_chat_now));
                     llButton.animate().alpha(1f).start();
                     civMyUserAvatar.animate()
                             .setInterpolator(new AccelerateInterpolator())
@@ -343,8 +327,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     llTextUsername.setVisibility(View.GONE);
                     llAddSuccess.setVisibility(View.VISIBLE);
                     llButton.setVisibility(View.VISIBLE);
-                    ivButtonIcon.setImageResource(R.drawable.tap_ic_chat_white);
-                    tvButtonTitle.setText("Chat Now");
+                    ivButtonIcon.setImageResource(R.drawable.tap_ic_send_message_grey);
+                    tvButtonTitle.setText(getString(R.string.tap_chat_now));
                     llButton.animate().alpha(1f).start();
                     civMyUserAvatar.animate()
                             .setInterpolator(new AccelerateInterpolator())

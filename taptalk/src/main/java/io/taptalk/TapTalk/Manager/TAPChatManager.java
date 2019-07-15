@@ -37,8 +37,8 @@ import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPDataLocationModel;
 import io.taptalk.TapTalk.Model.TAPEmitModel;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
-import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
@@ -73,6 +73,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 
 public class TAPChatManager {
@@ -316,7 +317,8 @@ public class TAPChatManager {
                 entity.getIsRead(),
                 entity.getHidden(),
                 entity.getUpdated(),
-                entity.getUserDeleted());
+                entity.getUserDeleted(),
+                entity.getAction(), entity.getTarget());
     }
 
     /**
@@ -343,7 +345,8 @@ public class TAPChatManager {
                 TAPUtils.getInstance().toJsonString(model.getUser().getUserRole()),
                 model.getUser().getLastLogin(), model.getUser().getLastActivity(),
                 model.getUser().getRequireChangePassword(),
-                model.getUser().getCreated(), model.getUser().getUpdated(), model.getUser().getDeleted()
+                model.getUser().getCreated(), model.getUser().getUpdated(), model.getUser().getDeleted(),
+                model.getAction(), model.getTarget()
         );
     }
 
@@ -444,7 +447,7 @@ public class TAPChatManager {
                     room,
                     TYPE_TEXT,
                     System.currentTimeMillis(),
-                    user, getOtherUserIdFromRoom(room.getRoomID()),
+                    user, TYPE_PERSONAL == room.getRoomType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
                     null
             );
         } else {
@@ -457,7 +460,7 @@ public class TAPChatManager {
                     room,
                     TYPE_TEXT,
                     System.currentTimeMillis(),
-                    user, getOtherUserIdFromRoom(room.getRoomID()),
+                    user, TYPE_PERSONAL == room.getRoomType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
                     data,
                     getQuotedMessages().get(room.getRoomID())
             );
@@ -476,7 +479,7 @@ public class TAPChatManager {
                 TYPE_PRODUCT,
                 System.currentTimeMillis(),
                 activeUser,
-                recipientUserModel.getUserID(),
+                TYPE_PERSONAL == activeRoom.getRoomType() ? recipientUserModel.getUserID() : "0",
                 product
         );
     }
@@ -492,7 +495,7 @@ public class TAPChatManager {
                     TYPE_LOCATION,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
                     new TAPDataLocationModel(address, latitude, longitude).toHashMap());
         } else {
             HashMap<String, Object> data = new TAPDataLocationModel(address, latitude, longitude).toHashMap();
@@ -505,7 +508,7 @@ public class TAPChatManager {
                     TYPE_LOCATION,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
                     data,
                     getQuotedMessage());
         }
@@ -532,7 +535,7 @@ public class TAPChatManager {
                     TYPE_FILE,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
                     data);
         } else {
             if (null != getUserInfo()) {
@@ -544,7 +547,7 @@ public class TAPChatManager {
                     TYPE_FILE,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
                     data,
                     getQuotedMessage());
         }
@@ -622,7 +625,7 @@ public class TAPChatManager {
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
                     new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, imageUri).toHashMap());
         } else {
             HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, imageUri).toHashMap();
@@ -635,7 +638,7 @@ public class TAPChatManager {
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
                     data,
                     getQuotedMessage());
         }
@@ -649,6 +652,7 @@ public class TAPChatManager {
 
         // Build message model
         TAPMessageModel messageModel;
+        Log.e(TAG, "createImageMessageModel: " + activeRoom.getRoomType());
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
                     generateImageCaption(caption),
@@ -656,7 +660,7 @@ public class TAPChatManager {
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
                     new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, null).toHashMap());
         } else {
             HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, null).toHashMap();
@@ -669,7 +673,7 @@ public class TAPChatManager {
                     TYPE_IMAGE,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
                     data,
                     getQuotedMessage());
         }
@@ -713,7 +717,7 @@ public class TAPChatManager {
                     TYPE_VIDEO,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
                     data);
         } else {
             if (null != getUserInfo()) {
@@ -725,7 +729,7 @@ public class TAPChatManager {
                     TYPE_VIDEO,
                     System.currentTimeMillis(),
                     activeUser,
-                    getOtherUserIdFromRoom(activeRoom.getRoomID()),
+                    TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
                     data,
                     getQuotedMessage());
         }
@@ -884,7 +888,7 @@ public class TAPChatManager {
                 room,
                 System.currentTimeMillis(),
                 getActiveUser(),
-                getOtherUserIdFromRoom(room.getRoomID()));
+                TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0");
     }
 
     private void triggerSendMessageListener(TAPMessageModel messageModel) {
@@ -1200,7 +1204,9 @@ public class TAPChatManager {
         }
         // Receive message outside active room (not in room List)
         else if (!TAPNotificationManager.getInstance().isRoomListAppear() && !chatListenersCopy.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
-            if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())) {
+            if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
+                    null != newMessage.getHidden() && !newMessage.getHidden() && null != newMessage.getIsDeleted()
+                    && !newMessage.getIsDeleted()) {
                 // Show notification for new messages from other users
                 TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
             }
@@ -1380,5 +1386,29 @@ public class TAPChatManager {
         getReplyMessageLocalIDs().clear();
         getQuoteActions().clear();
         setActiveUser(null);
+    }
+
+    public String formattingSystemMessage(TAPMessageModel message) {
+        String systemMessageBody;
+
+        if (null == message.getTarget()) {
+            systemMessageBody = message.getBody()
+                    .replace("{", "")
+                    .replace("}", "")
+                    .replaceFirst("sender",
+                            message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                                    "You" : message.getUser().getName());
+        } else {
+            systemMessageBody = message.getBody()
+                    .replace("{", "")
+                    .replace("}", "")
+                    .replaceFirst("sender", message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                            "You" : message.getUser().getName())
+                    .replaceFirst("target", message.getTarget().getTargetID() != null ?
+                            message.getTarget().getTargetID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                            "you" : message.getTarget().getTargetName() == null ? "" : message.getTarget().getTargetName() : "");
+        }
+
+        return systemMessageBody;
     }
 }

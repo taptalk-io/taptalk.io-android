@@ -5,15 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:background="@color/tap_amethyst">
+    tools:background="@color/tapAmethyst">
 
     <ImageView
         android:id="@+id/iv_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="center"
-        tools:background="@color/colorPrimaryDark" />
+        tools:background="@color/tapColorPrimaryDark" />
 
+    <!--TODO CHANGE ICON-->
     <ImageView
         android:id="@+id/iv_video_icon"
         android:layout_width="wrap_content"
@@ -25,13 +26,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ProgressBar
-        android:id="@+id/pb_loading"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+    <ImageView
+        android:id="@+id/iv_loading"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:background="@drawable/tap_bg_circle_6604040f"
-        android:indeterminateTint="@color/tap_white"
-        android:padding="4dp"
+        android:padding="8dp"
+        android:src="@drawable/tap_ic_loading_progress_circle_white"
+        android:tint="@color/tapIconLoadingProgressWhite"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,39 +51,34 @@
 
         <EditText
             android:id="@+id/et_caption"
+            style="@style/tapMediaPreviewCaptionStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="9dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="9dp"
-            android:background="@color/tap_transparent_white"
+            android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_add_a_caption"
             android:maxHeight="75sp"
             android:maxLength="100"
             android:minHeight="36sp"
-            android:textColor="@color/tap_white"
-            android:textColorHint="@color/tap_white"
-            android:theme="@style/EditTextTheme"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_typing_indicator"
+            app:layout_constraintEnd_toStartOf="@id/tv_caption_letter_count"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_typing_indicator"
+            android:id="@+id/tv_caption_letter_count"
+            style="@style/tapMediaPreviewCaptionLetterCountStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/tap_font_pt_root_bold"
+            android:layout_marginBottom="10dp"
             android:gravity="end"
-            android:letterSpacing="0.04"
-            android:textColor="@color/tap_white"
-            android:textSize="12sp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="10dp"
             tools:text="100/100" />
 
         <View
@@ -91,7 +88,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="16dp"
-            android:background="@color/tap_white"
+            android:background="@color/tapWhite"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/et_caption" />
@@ -104,27 +101,29 @@
             android:layout_marginTop="34dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/tap_bg_watermelon_rounded_8dp"
-            android:visibility="gone"
+            android:background="@drawable/tap_bg_media_preview_warning"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+            android:visibility="gone"
 
             <ImageView
                 android:id="@+id/iv_warning_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:src="@drawable/tap_ic_failed_red"
-                android:tint="@color/tap_white"
+                android:src="@drawable/tap_ic_failed_grey"
+                android:tint="@color/tapIconMediaPreviewWarning"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_error_title"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_error_title"
-                style="@style/TapErrorMessageTitle"
+                style="@style/tapMediaPreviewWarningTitleStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:layout_marginStart="4dp"
                 android:text="@string/tap_error_exceed_upload_limit"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toBottomOf="@id/iv_warning_icon"
@@ -133,7 +132,7 @@
 
             <TextView
                 android:id="@+id/tv_error_message"
-                style="@style/TapErrorMessageBody"
+                style="@style/tapMediaPreviewWarningBodyStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -142,7 +141,7 @@
                 android:text="@string/tap_error_media_will_not_be_sent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iv_warning_icon"
+                app:layout_constraintStart_toStartOf="@id/tv_error_title"
                 app:layout_constraintTop_toBottomOf="@id/tv_error_title" />
 
         </android.support.constraint.ConstraintLayout>

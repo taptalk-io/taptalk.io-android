@@ -22,12 +22,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -174,6 +175,18 @@ public class TAPFileUploadManager {
         addUploadQueue(context, roomID, messageModel);
     }
 
+    public void uploadRoomPicture(Context context, Uri imageUri, String roomID,
+                                  TAPDefaultDataView<TAPUpdateRoomResponse> uploadProfilePictureView) {
+        createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap -> {
+            String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+            File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+
+            TAPDataManager.getInstance().uploadRoomPicture(imageFile, mimeType, roomID, uploadProfilePictureView);
+        });
+    }
+
     public void uploadProfilePicture(Context context, Uri imageUri, String userID) {
         createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap -> {
             ProgressRequestBody.UploadCallbacks uploadCallbacks = new ProgressRequestBody.UploadCallbacks() {
@@ -185,16 +198,18 @@ public class TAPFileUploadManager {
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 }
 
-                @Override public void onError() {
+                @Override
+                public void onError() {
                     removeUploadProgressMap(userID);
                 }
 
-                @Override public void onFinish() {
+                @Override
+                public void onFinish() {
                     removeUploadProgressMap(userID);
                 }
             };
 
-            TapDefaultDataView<TAPGetUserResponse> uploadProfilePictureView = new TapDefaultDataView<TAPGetUserResponse>() {
+            TAPDefaultDataView<TAPGetUserResponse> uploadProfilePictureView = new TAPDefaultDataView<TAPGetUserResponse>() {
                 @Override
                 public void onSuccess(TAPGetUserResponse response) {
                     TAPDataManager.getInstance().saveActiveUser(response.getUser());
@@ -454,7 +469,7 @@ public class TAPFileUploadManager {
             }
         };
 
-        TapDefaultDataView<TAPUploadFileResponse> uploadView = new TapDefaultDataView<TAPUploadFileResponse>() {
+        TAPDefaultDataView<TAPUploadFileResponse> uploadView = new TAPDefaultDataView<TAPUploadFileResponse>() {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
@@ -512,7 +527,7 @@ public class TAPFileUploadManager {
             }
         };
 
-        TapDefaultDataView<TAPUploadFileResponse> uploadView = new TapDefaultDataView<TAPUploadFileResponse>() {
+        TAPDefaultDataView<TAPUploadFileResponse> uploadView = new TAPDefaultDataView<TAPUploadFileResponse>() {
 
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
@@ -564,7 +579,7 @@ public class TAPFileUploadManager {
             }
         };
 
-        TapDefaultDataView<TAPUploadFileResponse> uploadView = new TapDefaultDataView<TAPUploadFileResponse>() {
+        TAPDefaultDataView<TAPUploadFileResponse> uploadView = new TAPDefaultDataView<TAPUploadFileResponse>() {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);

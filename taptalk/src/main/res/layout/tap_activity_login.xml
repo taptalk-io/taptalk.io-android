@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_white"
+    android:background="@color/tapWhite"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPLoginActivity">
 
     <FrameLayout

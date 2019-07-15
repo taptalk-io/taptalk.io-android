@@ -13,6 +13,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.View.Activity.TAPMediaPreviewActivity;
 import io.taptalk.Taptalk.R;
@@ -26,6 +27,7 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
         this.thumbInterface = thumbInterface;
     }
 
+    @NonNull
     @Override
     public TAPBaseViewHolder<TAPMediaPreviewModel> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         return new ImagePreviewVH(viewGroup, R.layout.tap_cell_media_preview_thumbnail);
@@ -37,7 +39,7 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
         private FrameLayout flImagePreview, flDelete;
         private ProgressBar pbLoading;
 
-        protected ImagePreviewVH(ViewGroup parent, int itemLayoutId) {
+        ImagePreviewVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             ivImagePreview = itemView.findViewById(R.id.iv_image_preview);
             ivDelete = itemView.findViewById(R.id.iv_delete);
@@ -51,39 +53,53 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
             Glide.with(itemView.getContext()).load(item.getUri()).apply(new RequestOptions().centerCrop()).into(ivImagePreview);
 
             if (item.isSelected() && item.isLoading()) {
-                flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_transparent_stroke_primarydark_2dp));
+                // Selected - Media is loading
+                int padding = TAPUtils.getInstance().dpToPx(9);
+                flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_selected_media_preview_thumbnail));
                 ivDelete.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_remove_white));
                 ivDelete.setBackground(null);
+                ivDelete.setPadding(padding, padding, padding, padding);
                 flDelete.setVisibility(View.VISIBLE);
                 pbLoading.setVisibility(View.VISIBLE);
             } else if (item.isLoading()) {
+                // Not selected - Media is loading
                 flImagePreview.setBackground(null);
                 ivDelete.setImageDrawable(null);
                 ivDelete.setBackground(null);
                 flDelete.setVisibility(View.VISIBLE);
                 pbLoading.setVisibility(View.VISIBLE);
             } else if (item.isSelected() && (null == item.isSizeExceedsLimit() || !item.isSizeExceedsLimit())) {
-                flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_transparent_stroke_primarydark_2dp));
+                // Selected - Media ready
+                int padding = TAPUtils.getInstance().dpToPx(9);
+                flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_selected_media_preview_thumbnail));
                 ivDelete.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_remove_white));
-                ivDelete.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_charcoal_50));
+                ivDelete.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_remove_media_thumbnail_button_default));
+                ivDelete.setPadding(padding, padding, padding, padding);
                 flDelete.setVisibility(View.VISIBLE);
                 pbLoading.setVisibility(View.GONE);
             } else if (item.isSelected()) {
-                flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_transparent_stroke_primarydark_2dp));
+                // Selected - Media size exceeds limit
+                int padding = TAPUtils.getInstance().dpToPx(9);
+                flImagePreview.setBackground(itemView.getResources().getDrawable(R.drawable.tap_bg_selected_media_preview_thumbnail));
                 ivDelete.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_remove_white));
-                ivDelete.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_coralpink));
+                ivDelete.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_remove_media_thumbnail_button_warning));
+                ivDelete.setPadding(padding, padding, padding, padding);
                 flDelete.setVisibility(View.VISIBLE);
                 pbLoading.setVisibility(View.GONE);
             } else if (!item.isSelected() && (null == item.isSizeExceedsLimit() || !item.isSizeExceedsLimit())) {
+                // Not selected - Media ready
                 flImagePreview.setBackground(null);
                 ivDelete.setImageDrawable(null);
                 ivDelete.setBackground(null);
                 flDelete.setVisibility(View.GONE);
                 pbLoading.setVisibility(View.GONE);
             } else {
+                // Not selected - Media size exceeds limit
+                int padding = TAPUtils.getInstance().dpToPx(4);
                 flImagePreview.setBackground(null);
                 ivDelete.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_exclamation_white));
-                ivDelete.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_coralpink));
+                ivDelete.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_remove_media_thumbnail_button_warning));
+                ivDelete.setPadding(padding, padding, padding, padding);
                 flDelete.setVisibility(View.VISIBLE);
                 pbLoading.setVisibility(View.GONE);
             }

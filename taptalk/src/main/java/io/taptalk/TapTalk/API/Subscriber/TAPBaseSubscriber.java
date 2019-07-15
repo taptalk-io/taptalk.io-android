@@ -1,11 +1,11 @@
 package io.taptalk.TapTalk.API.Subscriber;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import okhttp3.ResponseBody;
 import rx.Subscriber;
 
-public class TAPBaseSubscriber<V extends TapDefaultDataView<ResponseBody>> extends Subscriber<ResponseBody> {
+public class TAPBaseSubscriber<V extends TAPDefaultDataView<ResponseBody>> extends Subscriber<ResponseBody> {
 
     protected V view;
 

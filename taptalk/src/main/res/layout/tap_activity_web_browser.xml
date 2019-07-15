@@ -11,18 +11,18 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_purply_two"
+        android:background="@color/tapColorPrimary"
         android:elevation="2dp"
         app:layout_scrollFlags="scroll|snap|enterAlways">
 
         <ImageView
             android:id="@+id/iv_close_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
             android:foreground="?attr/selectableItemBackgroundBorderless"
-            android:paddingStart="21dp"
-            android:paddingEnd="21dp"
-            android:src="@drawable/tap_ic_close_white"
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_close_grey"
+            android:tint="@color/tapWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ll_title_url"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,9 +32,9 @@
             android:id="@+id/ll_title_url"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
             android:gravity="center_vertical"
             android:orientation="vertical"
-            android:animateLayoutChanges="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_close_btn"
@@ -49,7 +49,7 @@
                 android:fontFamily="@font/tap_font_pt_root_bold"
                 android:lineSpacingExtra="10sp"
                 android:maxLines="1"
-                android:textColor="@color/tap_white"
+                android:textColor="@color/tapWhite"
                 android:textSize="14sp"
                 android:textStyle="normal"
                 tools:text="A place to find unique products, services,…" />
@@ -63,7 +63,7 @@
                 android:fontFamily="@font/tap_font_pt_root_regular"
                 android:lineSpacingExtra="4sp"
                 android:maxLines="1"
-                android:textColor="@color/tap_white"
+                android:textColor="@color/tapWhite"
                 android:textSize="12sp"
                 android:textStyle="normal"
                 tools:text="www.moselo.com" />
@@ -74,12 +74,12 @@
 
     <ProgressBar
         android:id="@+id/pb_loading_webview"
-        style="@style/TapMyProgressBarNoPadding"
+        style="@style/tapNoPaddingProgressBar"
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:background="@color/tap_purply_two"
+        android:background="@color/tapColorPrimary"
         android:max="100"
-        android:progress="0" />
+        tools:progress="40" />
 
     <WebView
         android:id="@+id/webView"

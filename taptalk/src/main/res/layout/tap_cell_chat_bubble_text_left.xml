@@ -8,11 +8,10 @@
 
     <io.taptalk.TapTalk.Helper.CircleImageView
         android:id="@+id/civ_avatar"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:visibility="gone"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toStartOf="@id/fl_bubble"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -31,7 +30,7 @@
         app:layout_constraintBottom_toTopOf="@id/tv_message_status"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
-        app:layout_constraintTop_toTopOf="@id/barrier_top"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_goneMarginBottom="8dp"
         app:layout_goneMarginStart="16dp">
 
@@ -39,22 +38,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:background="@drawable/tap_bg_white_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp"
-            android:paddingStart="10dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="10dp">
+            android:background="@drawable/tap_bg_chat_bubble_left_default"
+            android:padding="10dp">
 
             <TextView
                 android:id="@+id/tv_user_name"
-                style="@style/TapMessageUserName"
+                style="@style/tapLeftBubbleSenderNameStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:textColor="@color/colorAccentDark"
-                android:visibility="gone"
+                android:layout_marginBottom="4dp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toTopOf="@id/cl_forwarded"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/cl_quote"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="User Name" />
 
@@ -64,40 +61,54 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toTopOf="@id/cl_quote"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
 
             <View
                 android:id="@+id/v_quote_background"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@drawable/tap_bg_f3f3f3_rounded_4dp"
+                android:background="@drawable/tap_bg_bubble_quote_left"
                 app:layout_constraintBottom_toBottomOf="@id/cl_quote"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/cl_quote" />
 
             <include
                 android:id="@+id/cl_quote"
                 layout="@layout/tap_layout_quote_bubble_left"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@id/tv_message_body"
-                app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cl_forwarded" />
 
             <TextView
                 android:id="@+id/tv_message_body"
-                style="@style/TapMessageBody"
+                style="@style/tapLeftBubbleMessageBodyStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textColor="@color/tap_black_2c"
-                android:textColorLink="@color/colorPrimaryDark"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_quote"
                 tools:text="Hey there, love your work!" />
+
+            <android.support.constraint.Barrier
+                android:id="@+id/barrier_end"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="tv_user_name, cl_forwarded, cl_quote, v_quote_background, tv_message_body" />
 
         </android.support.constraint.ConstraintLayout>
 
@@ -105,13 +116,11 @@
 
     <TextView
         android:id="@+id/tv_message_status"
+        style="@style/tapBubbleMessageStatusStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:textColor="@color/tap_grey_9b"
-        android:textSize="12sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/fl_bubble"
@@ -129,12 +138,5 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintStart_toEndOf="@id/fl_bubble" />
-
-    <android.support.constraint.Barrier
-        android:id="@+id/barrier_top"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:barrierDirection="top"
-        app:constraint_referenced_ids="fl_bubble" />
 
 </android.support.constraint.ConstraintLayout>

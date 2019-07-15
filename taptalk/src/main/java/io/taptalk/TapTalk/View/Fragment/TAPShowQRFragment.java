@@ -45,7 +45,7 @@ public class TAPShowQRFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.tap_fragment_show_qr, container, false);
     }
@@ -57,7 +57,7 @@ public class TAPShowQRFragment extends Fragment {
         btnScanQRCode = view.findViewById(R.id.btn_scan_qr_code);
 
         try {
-            bitmap = encodeAsBitmap(TAPChatManager.getInstance().getActiveUser().getUserID());
+            bitmap = encodeAsBitmap("id:"+TAPChatManager.getInstance().getActiveUser().getUserID());
             ivQRCode.setImageBitmap(bitmap);
         } catch (Exception e) {
             e.printStackTrace();

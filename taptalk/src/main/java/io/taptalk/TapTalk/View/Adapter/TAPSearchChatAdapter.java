@@ -1,6 +1,9 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
@@ -86,9 +90,9 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
         @Override
         protected void onBind(TAPSearchChatModel item, int position) {
+            tvRecentTitle.setText(item.getSectionTitle());
             if (TAPSearchChatModel.Type.SECTION_TITLE == item.getType()) {
                 tvClearHistory.setVisibility(View.GONE);
-                tvRecentTitle.setText(item.getSectionTitle());
             } else {
                 tvClearHistory.setVisibility(View.VISIBLE);
                 //ini ngecek karena VH ini di pake di section title jga biar ga slalu ke set listenernya
@@ -116,21 +120,34 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
         }
 
+        @SuppressLint("PrivateResource")
         @Override
         protected void onBind(TAPSearchChatModel item, int position) {
-            if (item.isLastInSection())
+            if (item.isLastInSection()) {
                 vSeparator.setVisibility(View.GONE);
-            else vSeparator.setVisibility(View.VISIBLE);
+            } else {
+                vSeparator.setVisibility(View.VISIBLE);
+            }
 
             TAPMessageEntity message = item.getMessage();
-            if (null == message) return;
+            if (null == message) {
+                return;
+            }
 
             // Set Room Name
             tvUserName.setText(message.getRoomName());
 
+            // Get highlighted color code
+            TypedArray typedArray = itemView.getContext().obtainStyledAttributes(R.style.tapRoomListMessageHighlightedStyle, R.styleable.TextAppearance);
+            String colorCode = Integer.toHexString(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
+            typedArray.recycle();
+
+            TypedArray typedArraySender = itemView.getContext().obtainStyledAttributes(R.style.tapGroupRoomListSenderNameStyle, R.styleable.TextAppearance);
+            String colorSender = Integer.toHexString(typedArraySender.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
+            typedArray.recycle();
+
             // Set message body with highlighted text
             String highlightedText;
-            String colorCode = Integer.toHexString(ContextCompat.getColor(itemView.getContext(), R.color.colorPrimaryDark)).substring(2);
             try {
                 highlightedText = message.getBody().replaceAll("(?i)([" + searchKeyword + "])",
                         String.format(itemView.getContext().getString(R.string.tap_highlighted_string),
@@ -145,8 +162,13 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                         "(?i)(" + searchKeyword.replaceAll("[^A-Za-z0-9 ]", "") + ")",
                         String.format(itemView.getContext().getString(R.string.tap_highlighted_string), colorCode, "$1"));
             }
-            tvLastMessage.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
-                    Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.tap_you), highlightedText)) : Html.fromHtml(highlightedText));
+
+            if (null != item.getMessage() && null != item.getMessage().getRoomType() && item.getMessage().getRoomType() == TAPDefaultConstant.RoomType.TYPE_GROUP) {
+                tvLastMessage.setText(Html.fromHtml(String.format("<font color='#%s'>%s: </font> %s", colorSender.length() > 6 ? colorSender.substring(colorSender.length() - 6) : colorSender, TAPUtils.getFirstWordOfString(item.getMessage().getUserFullName()), highlightedText)));
+            } else {
+                tvLastMessage.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
+                        Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.tap_you), highlightedText)) : Html.fromHtml(highlightedText));
+            }
 
             // Set message timestamp
             // TODO: 17 October 2018 PROCESS DATE OUTSIDE BIND
@@ -155,27 +177,31 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             // Change Status Message Icon
             // Message is read
             if (null != message.getIsRead() && message.getIsRead()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_read_green);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_read_orange);
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageRead)));
             }
             // Message is delivered
             else if (null != message.getDelivered() && message.getDelivered()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDelivered)));
             }
             // Message failed to send
             else if (null != message.getFailedSend() && message.getFailedSend()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_retry_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_failed_grey);
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageFailed)));
             }
             // Message sent
             else if (null != message.getSending() && !message.getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSent)));
             }
             // Message is sending
             else if (null != message.getSending() && message.getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_sending_grey);
+                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSending)));
             }
 
             clContainer.setOnClickListener(v -> {
-                // TODO: 17 October 2018 OPEN CHAT ROOM & SCROLL POSITION TO MESSAGE
                 TAPUtils.getInstance().startChatActivity(itemView.getContext(),
                         message.getRoomID(),
                         message.getRoomName(),
@@ -209,16 +235,21 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
         }
 
+        @SuppressLint("PrivateResource")
         @Override
         protected void onBind(TAPSearchChatModel item, int position) {
             Resources resource = itemView.getContext().getResources();
 
-            if (item.isLastInSection())
+            if (item.isLastInSection()) {
                 vSeparator.setVisibility(View.GONE);
-            else vSeparator.setVisibility(View.VISIBLE);
+            } else {
+                vSeparator.setVisibility(View.VISIBLE);
+            }
 
             TAPRoomModel room = item.getRoom();
-            if (null == room) return;
+            if (null == room) {
+                return;
+            }
 
             // Load avatar
             if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
@@ -227,12 +258,15 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                 civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
             }
 
+            // Get highlighted color code
+            TypedArray typedArray = itemView.getContext().obtainStyledAttributes(R.style.tapRoomListNameHighlightedStyle, R.styleable.TextAppearance);
+            String colorCode = Integer.toHexString(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
+            typedArray.recycle();
+
             // Set room name with highlighted text
             String highlightedText = room.getRoomName().replaceAll(
                     "(?i)(" + searchKeyword + ")",
-                    String.format(itemView.getContext().getString(R.string.tap_highlighted_string),
-                            Integer.toHexString(ContextCompat.getColor(itemView.getContext(),
-                                    R.color.colorPrimaryDark)).substring(2), "$1"));
+                    String.format(itemView.getContext().getString(R.string.tap_highlighted_string), colorCode, "$1"));
             tvRoomName.setText(Html.fromHtml(highlightedText));
 
             // Change avatar icon
@@ -255,9 +289,9 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             // Check if room is muted
             if (room.isMuted()) {
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_9b9b9b_rounded_10dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_room_list_unread_badge_inactive));
             } else {
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_12dp));
+                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_room_list_unread_badge));
             }
 
             clContainer.setOnClickListener(v -> {

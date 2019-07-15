@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -138,7 +138,7 @@ public class TAPFileDownloadManager {
 
         addDownloadProgressMap(localID, 0, 0);
 
-        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, fileSize, new TapDefaultDataView<ResponseBody>() {
+        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, fileSize, new TAPDefaultDataView<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody response) {
                 writeFileToDiskAndSendBroadcast(context, message, response);
@@ -175,7 +175,7 @@ public class TAPFileDownloadManager {
         addDownloadProgressMap(localID, 0, 0);
 
         // Download image
-        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, fileSize, new TapDefaultDataView<ResponseBody>() {
+        TAPDataManager.getInstance().downloadFile(message.getRoom().getRoomID(), localID, fileID, fileSize, new TAPDefaultDataView<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody response) {
                 new Thread(() -> {
@@ -239,8 +239,8 @@ public class TAPFileDownloadManager {
         } else {
             filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
         }
-        File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.appContext.getString(R.string.app_name) + (message.getType() == TYPE_VIDEO ? "/" + TapTalk.appContext.getString(R.string.app_name) + "Videos" :
-                "/" + TapTalk.appContext.getString(R.string.app_name) + " Files"));
+        File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.appContext.getString(R.string.tap_app_name) + (message.getType() == TYPE_VIDEO ? "/" + TapTalk.appContext.getString(R.string.tap_app_name) + "Videos" :
+                "/" + TapTalk.appContext.getString(R.string.tap_app_name) + " Files"));
         dir.mkdirs();
 
         File noMediaFile = new File(dir, ".nomedia");
@@ -276,6 +276,9 @@ public class TAPFileDownloadManager {
             intent.putExtra(FILE_ID, fileID);
             intent.putExtra(FILE_URI, fileProviderUri);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            if (null != fileID && null != fileProviderUri) {
+                TAPFileDownloadManager.getInstance().saveFileMessageUri(message.getRoom().getRoomID(), fileID, fileProviderUri);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             setDownloadFailed(localID);
@@ -287,7 +290,7 @@ public class TAPFileDownloadManager {
         new Thread(() -> {
             String imageFormat = mimeType.equals(IMAGE_PNG) ? ".png" : ".jpeg";
             String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
-            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.appContext.getString(R.string.app_name));
+            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.appContext.getString(R.string.tap_app_name));
             dir.mkdirs();
 
             File file = new File(dir, filename);
@@ -323,7 +326,7 @@ public class TAPFileDownloadManager {
                     filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
                 }
 
-                File dir = new File(TYPE_VIDEO == message.getType() ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + appContext.getString(R.string.app_name)
+                File dir = new File(TYPE_VIDEO == message.getType() ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + appContext.getString(R.string.tap_app_name)
                         : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "");
                 dir.mkdirs();
 

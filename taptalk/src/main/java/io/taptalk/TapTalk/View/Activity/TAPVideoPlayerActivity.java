@@ -95,7 +95,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         ivButtonSave = findViewById(R.id.iv_button_save);
         ivButtonMute = findViewById(R.id.iv_button_mute);
         ivButtonPlayPause = findViewById(R.id.iv_button_play_pause);
-        ivSaving = findViewById(R.id.iv_saving);
+        ivSaving = findViewById(R.id.iv_loading_image);
         seekBar = findViewById(R.id.seek_bar);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
@@ -287,7 +287,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
 
     private void showLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
+            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/tapDefaultBackgroundColor"
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:animateLayoutChanges="true"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
+        android:elevation="3dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_button_back"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_chevron_left_white"
+            android:tint="@color/tapIconNavBarBackButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/tapNavBarTitleLabelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="@string/tap_new_group"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_action"
+            app:layout_constraintStart_toEndOf="@id/iv_button_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/et_search"
+            style="@style/tapNavBarSearchTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@color/tapTransparentWhite"
+            android:hint="@string/tap_search_for_contacts"
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textCursorDrawable="@drawable/tap_cursor_color"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_action"
+            app:layout_constraintStart_toEndOf="@id/iv_button_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_button_action"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_search_orange"
+            android:tint="@color/tapIconNavBarMagnifier"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/fl_add_members"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+
+        <ScrollView
+            android:id="@+id/sv_members"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_contact_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_member_count"
+                    style="@style/tapGroupMemberCountStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="21dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="28dp"
+                    android:gravity="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/rv_contact_list"
+                    tools:text="12 Members" />
+
+            </android.support.constraint.ConstraintLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/ll_member_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/iv_loading_progress"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:src="@drawable/tap_ic_loading_progress_circle_white"
+                android:tint="@color/tapIconLoadingProgressPrimary" />
+
+            <TextView
+                android:id="@+id/tv_loading_member"
+                style="@style/tapPopupLoadingLabelStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="end"
+                android:text="@string/tap_loading_members" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_add_members"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="false"
+        android:background="@color/tapWhite"
+        android:elevation="1dp"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fl_content"
+        app:layout_constraintVertical_bias="1">
+
+        <LinearLayout
+            android:id="@+id/ll_add_button"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/tap_bg_button_active_ripple"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/tap_ic_add_circle_grey"
+                android:tint="@color/tapButtonIconColor" />
+
+            <TextView
+                style="@style/tapButtonLabelStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="4dp"
+                android:lineSpacingExtra="6sp"
+                android:text="@string/tap_add_members" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_button_admin_action"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/ll_promote_demote_admin"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/tap_bg_button_active_ripple"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/iv_promote_demote_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tap_ic_appoint_admin"
+                    android:tint="@color/tapButtonIconColor" />
+
+                <TextView
+                    android:id="@+id/tv_promote_demote_icon"
+                    style="@style/tapButtonLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="4dp"
+                    android:text="@string/tap_promote_admin" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_remove_button"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/tap_bg_button_white_ripple"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/tap_ic_delete_red"
+                    android:tint="@color/tapButtonIconDestructiveColor" />
+
+                <TextView
+                    style="@style/tapClickableDestructiveLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="4dp"
+                    android:text="@string/tap_remove_group_members" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <include layout="@layout/tap_layout_popup_loading_screen" />
+
+</android.support.constraint.ConstraintLayout>

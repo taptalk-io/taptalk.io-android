@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,6 +17,7 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -102,8 +104,6 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
             // Change avatar icon and background
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE
-            //if (null != item.getAvatarURL())
-            //  Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).apply(new RequestOptions().centerCrop()).into(ivAvatar);
 
             // Set name
             tvFullName.setText(item.getName());
@@ -119,9 +119,11 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
             if (viewType == SELECT && selectedContacts.contains(item)) {
                 ivSelection.setVisibility(View.VISIBLE);
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_active);
+                ivSelection.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive)));
             } else if (viewType == SELECT && !selectedContacts.contains(item)) {
                 ivSelection.setVisibility(View.VISIBLE);
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive);
+                ivSelection.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive)));
             } else {
                 ivSelection.setVisibility(View.GONE);
             }
@@ -160,14 +162,14 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
     class SelectedGroupMemberHolder extends TAPBaseViewHolder<TAPUserModel> {
 
-        private CircleImageView ivAvatar;
+        private CircleImageView civAvatar;
         private ImageView ivAvatarIcon;
         private TextView tvFullName;
 
         SelectedGroupMemberHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
-            ivAvatar = itemView.findViewById(R.id.civ_avatar);
+            civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
         }
@@ -175,12 +177,12 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
         @Override
         protected void onBind(TAPUserModel item, int position) {
             if (null != item.getAvatarURL() && !item.getAvatarURL().getThumbnail().isEmpty()) {
-                Glide.with(itemView.getContext()).load(item.getAvatarURL().getThumbnail()).into(ivAvatar);
-                ivAvatar.setBackground(null);
+                Glide.with(itemView.getContext())
+                        .load(item.getAvatarURL().getThumbnail())
+                        .apply(new RequestOptions().centerCrop())
+                        .into(civAvatar);
             } else {
-                ivAvatar.setImageDrawable(null);
-                ivAvatar.setBackground(itemView.getContext().getDrawable(R.drawable.tap_bg_circle_9b9b9b));
-                ivAvatar.setBackgroundTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getName())));
+                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
             }
 
             // Set name
@@ -189,18 +191,21 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                 tvFullName.setText(R.string.tap_you);
             } else if (fullName.contains(" ")) {
                 tvFullName.setText(fullName.substring(0, fullName.indexOf(' ')));
-            } else tvFullName.setText(fullName);
+            } else {
+                tvFullName.setText(fullName);
+            }
 
-            // TODO: 19 September 2018 UPDATE EXPERT ICON
             // Update avatar icon
             if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("1")*/) {
                 ivAvatarIcon.setVisibility(View.GONE);
             } else if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("2")*/) {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
                 ivAvatarIcon.setImageResource(R.drawable.tap_ic_verified);
+                ivAvatarIcon.setBackground(null);
             } else {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
-                ivAvatarIcon.setImageResource(R.drawable.tap_ic_close_red_circle_border);
+                ivAvatarIcon.setImageResource(R.drawable.tap_ic_remove_red_circle_background);
+                ivAvatarIcon.setBackgroundResource(R.drawable.tap_bg_circle_remove_item);
             }
 
             itemView.setOnClickListener(v -> deselectContact(item));

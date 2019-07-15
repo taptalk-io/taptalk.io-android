@@ -26,13 +26,14 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
 import io.taptalk.TapTalk.Interface.TAPGetUserInterface;
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface;
@@ -48,23 +49,26 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
+import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
@@ -88,6 +92,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentDevelopment;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentProduction;
@@ -157,7 +162,7 @@ public class TapTalk {
         TAPDataManager.getInstance().initDatabaseManager(MY_CONTACT_DB, (Application) appContext);
         //ini buat ambil context dr app utama karena library module ga bsa punya app context sndiri
         TapTalk.appContext = appContext;
-        clientAppName = appContext.getResources().getString(R.string.app_name);
+        clientAppName = appContext.getResources().getString(R.string.tap_app_name);
 
         //save header requirement
         new Thread(() -> {
@@ -194,6 +199,11 @@ public class TapTalk {
             @Override
             public void onAppGotoForeground() {
                 isForeground = true;
+
+                //Load Back Group and User Data to Manager
+                TAPContactManager.getInstance().loadAllUserDataFromDatabase();
+                TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
+
                 TAPChatManager.getInstance().setFinishChatFlow(false);
                 TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();
@@ -229,7 +239,7 @@ public class TapTalk {
             verifyOTPInterface.verifyOTPFailed("401", "Invalid Auth Ticket");
         } else {
             TAPDataManager.getInstance().saveAuthTicket(authTicket);
-            TAPDataManager.getInstance().getAccessTokenFromApi(new TapDefaultDataView<TAPGetAccessTokenResponse>() {
+            TAPDataManager.getInstance().getAccessTokenFromApi(new TAPDefaultDataView<TAPGetAccessTokenResponse>() {
                 @Override
                 public void onSuccess(TAPGetAccessTokenResponse response) {
                     super.onSuccess(response);
@@ -241,10 +251,21 @@ public class TapTalk {
                     TAPDataManager.getInstance().saveAccessTokenExpiry(response.getAccessTokenExpiry());
                     registerFcmToken();
 
+                    new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(new TAPDefaultDataView<TAPContactResponse>() {
+                        @Override
+                        public void onSuccess(TAPContactResponse response) {
+                            List<TAPUserModel> userModels = new ArrayList<>();
+                            for (TAPContactModel contact : response.getContacts()) {
+                                userModels.add(contact.getUser().setUserAsContact());
+                            }
+                            TAPDataManager.getInstance().insertMyContactToDatabase(userModels);
+                            TAPContactManager.getInstance().updateUserDataMap(userModels);
+                        }
+                    })).start();
+
                     TAPDataManager.getInstance().saveActiveUser(response.getUser());
                     TAPApiManager.getInstance().setLogout(false);
-                    if (isForeground)
-                        TAPConnectionManager.getInstance().connect();
+                    if (isForeground) TAPConnectionManager.getInstance().connect();
                     verifyOTPInterface.verifyOTPSuccessToLogin();
 
                     if (isRefreshTokenExpired) {
@@ -270,7 +291,7 @@ public class TapTalk {
     }
 
     public static void loginWithRequestOTP(int countryID, String phoneNumber, TAPRequestOTPInterface requestOTPInterface) {
-        TAPDataManager.getInstance().requestOTPLogin(countryID, phoneNumber, new TapDefaultDataView<TAPLoginOTPResponse>() {
+        TAPDataManager.getInstance().requestOTPLogin(countryID, phoneNumber, new TAPDefaultDataView<TAPLoginOTPResponse>() {
             @Override
             public void onSuccess(TAPLoginOTPResponse response) {
                 super.onSuccess(response);
@@ -291,7 +312,7 @@ public class TapTalk {
     }
 
     public static void verifyOTP(long otpID, String otpKey, String otpCode, TAPVerifyOTPInterface verifyOTPInterface) {
-        TAPDataManager.getInstance().verifyingOTPLogin(otpID, otpKey, otpCode, new TapDefaultDataView<TAPLoginOTPVerifyResponse>() {
+        TAPDataManager.getInstance().verifyingOTPLogin(otpID, otpKey, otpCode, new TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
             @Override
             public void onSuccess(TAPLoginOTPVerifyResponse response) {
                 if (response.isRegistered())
@@ -425,8 +446,17 @@ public class TapTalk {
         public NotificationBuilder setNotificationMessage(TAPMessageModel notificationMessage) {
             this.notificationMessage = notificationMessage;
             TAPNotificationManager.getInstance().addNotifMessageToMap(notificationMessage);
-            setChatMessage(notificationMessage.getBody());
-            setChatSender(notificationMessage.getUser().getName());
+            if (null != notificationMessage &&
+                    null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
+                    TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
+                Log.e(TAG, "setNotificationMessage: "+TAPUtils.getInstance().toJsonString(notificationMessage) );
+                setChatMessage(notificationMessage.getUser().getName() + ": " + notificationMessage.getBody());
+                setChatSender(notificationMessage.getRoom().getRoomName());
+            } else if (null != notificationMessage) {
+                Log.e(TAG, "setNotificationMessage:2 "+TAPUtils.getInstance().toJsonString(notificationMessage) );
+                setChatMessage(notificationMessage.getBody());
+                setChatSender(notificationMessage.getRoom().getRoomName());
+            }
             return this;
         }
 
@@ -540,17 +570,18 @@ public class TapTalk {
     }
 
     public static void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
+        WeakReference<Context> contextWeakReference = new WeakReference<>(context);
         TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {
             @Override
             public void onSelectFinished(TAPRoomModel roomModel) {
-                if (null == context) {
+                if (null == contextWeakReference.get()) {
                     return;
                 }
-                Intent intent = new Intent(context, TAPChatProfileActivity.class);
+                Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
                 intent.putExtra(ROOM, roomModel);
-                context.startActivity(intent);
-                if (context instanceof Activity) {
-                    ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+                contextWeakReference.get().startActivity(intent);
+                if (contextWeakReference.get() instanceof Activity) {
+                    ((Activity) contextWeakReference.get()).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
                 }
             }
         });
@@ -714,7 +745,7 @@ public class TapTalk {
                             .addOnCompleteListener(task -> {
                                 if (null != task.getResult()) {
                                     String fcmToken = task.getResult().getToken();
-                                    TAPDataManager.getInstance().registerFcmTokenToServer(fcmToken, new TapDefaultDataView<TAPCommonResponse>() {
+                                    TAPDataManager.getInstance().registerFcmTokenToServer(fcmToken, new TAPDefaultDataView<TAPCommonResponse>() {
                                     });
                                     TAPDataManager.getInstance().saveFirebaseToken(fcmToken);
                                 }
@@ -724,7 +755,7 @@ public class TapTalk {
                     Log.e(TAG, "registerFcmToken: ", e);
                 }
             } else {
-                TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TapDefaultDataView<TAPCommonResponse>() {
+                TAPDataManager.getInstance().registerFcmTokenToServer(TAPDataManager.getInstance().getFirebaseToken(), new TAPDefaultDataView<TAPCommonResponse>() {
                 });
             }
         }).start();
@@ -852,7 +883,7 @@ public class TapTalk {
     public static void refreshActiveUser() {
         new Thread(() -> {
             if (null != TAPChatManager.getInstance().getActiveUser()) {
-                TAPDataManager.getInstance().getUserByIdFromApi(TAPChatManager.getInstance().getActiveUser().getUserID(), new TapDefaultDataView<TAPGetUserResponse>() {
+                TAPDataManager.getInstance().getUserByIdFromApi(TAPChatManager.getInstance().getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
                     @Override
                     public void onSuccess(TAPGetUserResponse response) {
                         TAPDataManager.getInstance().saveActiveUser(response.getUser());
@@ -867,7 +898,7 @@ public class TapTalk {
     }
 
     public static void getTaptalkUserWithClientUserID(String clientUserID, TAPGetUserInterface getUserInterface) {
-        TAPDataManager.getInstance().getUserByXcUserIdFromApi(clientUserID, new TapDefaultDataView<TAPGetUserResponse>() {
+        TAPDataManager.getInstance().getUserByXcUserIdFromApi(clientUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
                 getUserInterface.getUserSuccess(response.getUser());

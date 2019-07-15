@@ -11,11 +11,12 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityCompat.requestPermissions
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -36,6 +37,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
@@ -45,7 +47,7 @@ import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_map.*
 import java.util.*
 
-class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
+class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener, View.OnClickListener,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -85,37 +87,39 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         centerOfMap = googleMap?.cameraPosition?.target
         latitude = centerOfMap?.latitude ?: 0.0
         longitude = centerOfMap?.longitude ?: 0.0
+
         ll_set_location.visibility = View.GONE
-        iv_location.setImageResource(R.drawable.tap_ic_pin_location_grey)
-        tv_location.setTextColor(resources.getColor(R.color.tap_grey_aa))
+        iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
+        iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
+
         tv_location.setHint(R.string.tap_searching_for_address)
         tv_location.text = ""
+
         recycler_view.visibility = View.GONE
-        if (et_keyword.isFocused) {
-            et_keyword.clearFocus()
-        }
+        TAPUtils.getInstance().dismissKeyboard(this)
     }
 
     override fun onCameraIdle() {
-        getGeocoderAddress()
-        iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
-        tv_location.setTextColor(resources.getColor(R.color.tap_black_44))
+        getGeoCoderAddress()
+
+        iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
+        iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
+
         recycler_view.visibility = View.GONE
         isSearch = !isSameKeyword
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
+            R.id.iv_button_back -> {
+                onBackPressed()
+            }
             R.id.iv_current_location -> {
                 if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(this, PERMISSIONS, PERMISSION_LOCATION)
                 } else {
-                    latitude = currentLatitude
-                    longitude = currentLongitude
-                    centerOfMap = LatLng(currentLatitude, currentLongitude)
-                    val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
-                    googleMap?.animateCamera(locations)
+                    moveToCurrentLocation()
                 }
             }
             R.id.ll_set_location -> {
@@ -143,7 +147,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(if (TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
                         getString(R.string.tap_error_message_general) else getString(R.string.tap_no_internet_show_error))
-                    .setPrimaryButtonTitle("OK")
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .show()
         }
     }
@@ -188,9 +192,9 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
                 centerOfMap = place?.latLng
                 val curr: LatLng = LatLng(latitude, longitude)
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
-                getGeocoderAddress()
-                iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
-                tv_location.setTextColor(resources.getColor(R.color.tap_black_44))
+                getGeoCoderAddress()
+                iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
+                iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
                 recycler_view.visibility = View.GONE
                 if (et_keyword.isFocused)
                     et_keyword.clearFocus()
@@ -227,12 +231,6 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_map)
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.title = ""
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.tap_ic_close_pumpkin_orange)
-
         latitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LATITUDE, 0.0)
         longitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LONGITUDE, 0.0)
         currentAddress = intent.getStringExtra(TAPDefaultConstant.Location.LOCATION_NAME) ?: ""
@@ -243,6 +241,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        iv_button_back.setOnClickListener(this)
         iv_current_location.setOnClickListener(this)
         ll_set_location.setOnClickListener(this)
         tv_clear.setOnClickListener(this)
@@ -250,11 +249,11 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         et_keyword.addTextChangedListener(textWatcher)
         et_keyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                rl_search.background = resources.getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+                rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_active)
                 if (!TAPUtils.getInstance().isListEmpty(locationList) && et_keyword.text.isNotEmpty())
                     recycler_view.visibility = View.VISIBLE
             } else {
-                rl_search.background = resources.getDrawable(R.drawable.tap_bg_white_rounded_10dp_stroke_eaeaea_1dp)
+                rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_inactive)
             }
         }
         et_keyword.setOnEditorActionListener(object : TextView.OnEditorActionListener {
@@ -320,9 +319,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
                 return
             }
             locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0.toLong(), 0.toFloat(), this)
-        }
-
-        if (locationManager?.allProviders?.contains(LocationManager.NETWORK_PROVIDER) == true) {
+        } else if (locationManager?.allProviders?.contains(LocationManager.NETWORK_PROVIDER) == true) {
             locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0.toLong(), 0.toFloat(), this)
         }
 
@@ -337,7 +334,7 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         }
     }
 
-    private fun getGeocoderAddress() {
+    private fun getGeoCoderAddress() {
         try {
             addresses = geoCoder?.getFromLocation(latitude, longitude, 1) ?: mutableListOf()
         } catch (e: Exception) {
@@ -386,16 +383,15 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
                                 item.prediction = prediction
                                 item.myReturnType = TAPLocationItem.MyReturnType.MIDDLE
                                 locationList.add(item)
-
                             }
 
                             if (!TAPUtils.getInstance().isListEmpty(locationList) && 1 == locationList.size) {
-                                locationList.get(0).myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
+                                locationList[0].myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
                                 adapter?.items = locationList
                                 recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
                             } else if (!TAPUtils.getInstance().isListEmpty(locationList)) {
-                                locationList.get(0).myReturnType = TAPLocationItem.MyReturnType.FIRST
-                                locationList.get(locationList.size - 1).myReturnType = TAPLocationItem.MyReturnType.LAST
+                                locationList[0].myReturnType = TAPLocationItem.MyReturnType.FIRST
+                                locationList[locationList.size - 1].myReturnType = TAPLocationItem.MyReturnType.LAST
 
                                 if (5 < locationList.size) {
                                     locationList.subList(0, 5)
@@ -423,10 +419,8 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
             isSearch = true
             recycler_view.visibility = View.GONE
             if (0 < et_keyword.text.toString().length) {
-                et_keyword.setTextColor(resources.getColor(R.color.tap_black_44))
                 tv_clear.visibility = View.VISIBLE
             } else {
-                et_keyword.setTextColor(resources.getColor(R.color.tap_grey_9b))
                 tv_clear.visibility = View.GONE
             }
         }
@@ -439,5 +433,13 @@ class TAPMapActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnCame
         } else {
             super.onBackPressed()
         }
+    }
+
+    private fun moveToCurrentLocation() {
+        latitude = currentLatitude
+        longitude = currentLongitude
+        centerOfMap = LatLng(currentLatitude, currentLongitude)
+        val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
+        googleMap?.animateCamera(locations)
     }
 }

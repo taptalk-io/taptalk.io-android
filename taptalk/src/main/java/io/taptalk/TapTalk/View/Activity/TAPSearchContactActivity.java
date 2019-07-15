@@ -47,14 +47,13 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
+        vm.setContactList(getIntent().getParcelableArrayListExtra(CONTACT_LIST));
+        vm.getFilteredContacts().addAll(vm.getContactList());
     }
 
     private void initView() {
         getWindow().setBackgroundDrawable(null);
 
-        //ini buat set data yang di pass dari new chat activity
-        setData();
-        
         llAddNewContact = findViewById(R.id.ll_add_new_contact);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonCancel = findViewById(R.id.iv_button_cancel);
@@ -72,6 +71,11 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
         llAddNewContact.setOnClickListener(v -> openNewContactActivity());
 
         TAPUtils.getInstance().animateClickButton(llAddNewContact, 0.97f);
+
+        etSearch.setOnEditorActionListener((textView, i, keyEvent) -> {
+            TAPUtils.getInstance().dismissKeyboard(TAPSearchContactActivity.this);
+            return false;
+        });
     }
 
     private void clearSearch() {
@@ -97,7 +101,7 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
             vm.getFilteredContacts().clear();
             String searchKeyword = etSearch.getText().toString().toLowerCase().trim();
             if (searchKeyword.isEmpty()) {
-                vm.getFilteredContacts().clear();
+                vm.getFilteredContacts().addAll(vm.getContactList());
             } else {
                 for (TAPUserModel user : vm.getContactList()) {
                     if (user.getName().toLowerCase().contains(searchKeyword)) {
@@ -113,8 +117,4 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
 
         }
     };
-
-    private void setData() {
-        vm.setContactList(getIntent().getParcelableArrayListExtra(CONTACT_LIST));
-    }
 }

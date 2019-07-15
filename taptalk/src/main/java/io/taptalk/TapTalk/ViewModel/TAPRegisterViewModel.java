@@ -10,7 +10,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPRegisterViewModel extends AndroidViewModel {
     private int[] formCheck = {0, 0, 0, 0, 0, 0, 0};
-    private int countryID = 0;
+    private int countryID = 0, fontResourceId, textFieldFontColor, textFieldFontColorHint, clickableLabelFontColor;
     private boolean isUpdatingProfile, isUploadingProfilePicture;
     private String countryCallingCode = "62", countryFlagUrl, currentProfilePicture;
     private Uri profilePictureUri;
@@ -34,6 +34,38 @@ public class TAPRegisterViewModel extends AndroidViewModel {
 
     public void setCountryID(int countryID) {
         this.countryID = countryID;
+    }
+
+    public int getFontResourceId() {
+        return fontResourceId;
+    }
+
+    public void setFontResourceId(int fontResourceId) {
+        this.fontResourceId = fontResourceId;
+    }
+
+    public int getTextFieldFontColor() {
+        return textFieldFontColor;
+    }
+
+    public void setTextFieldFontColor(int textFieldFontColor) {
+        this.textFieldFontColor = textFieldFontColor;
+    }
+
+    public int getTextFieldFontColorHint() {
+        return textFieldFontColorHint;
+    }
+
+    public void setTextFieldFontColorHint(int textFieldFontColorHint) {
+        this.textFieldFontColorHint = textFieldFontColorHint;
+    }
+
+    public int getClickableLabelFontColor() {
+        return clickableLabelFontColor;
+    }
+
+    public void setClickableLabelFontColor(int clickableLabelFontColor) {
+        this.clickableLabelFontColor = clickableLabelFontColor;
     }
 
     public String getCountryCallingCode() {

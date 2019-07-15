@@ -20,7 +20,7 @@ import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.Subscriber.TAPBaseSubscriber;
 import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -32,6 +32,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
@@ -42,6 +44,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -59,6 +62,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_WRITE_STORAGE_PERMISSION_REQUESTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
@@ -74,6 +78,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_FLAG_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 
@@ -351,6 +356,25 @@ public class TAPDataManager {
 
     public void removeUserLastActivityMap() {
         Hawk.delete(K_USER_LAST_ACTIVITY);
+    }
+
+    /**
+     * SAVE GROUP DATA
+     */
+    public HashMap<String, TAPRoomModel> getRoomDataMap() {
+        return Hawk.get(K_GROUP_DATA_MAP);
+    }
+
+    public void saveRoomDataMap(HashMap<String, TAPRoomModel> roomDataMap) {
+        Hawk.put(K_GROUP_DATA_MAP, roomDataMap);
+    }
+
+    public void removeRoomDataMap() {
+        Hawk.delete(K_GROUP_DATA_MAP);
+    }
+
+    public boolean isRoomDataMapAvailable() {
+        return Hawk.contains(K_GROUP_DATA_MAP) && null != Hawk.get(K_GROUP_DATA_MAP);
     }
 
     /**
@@ -709,12 +733,16 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getRoom(getActiveUser().getUserID(), userModel, listener);
     }
 
-    public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener listener) {
+    public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance().getRoomMedias(lastTimestamp, roomID, listener);
     }
 
     public void getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance().getRoomMediaMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
+    }
+
+    public void getRoomMediaMessage(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance().getRoomMediaMessage(roomID, listener);
     }
 
     public void getUnreadCountPerRoom(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
@@ -740,6 +768,10 @@ public class TAPDataManager {
 
     public void deleteAllMessage() {
         TAPDatabaseManager.getInstance().deleteAllMessage();
+    }
+
+    public void deleteMessageByRoomId(String roomId, TAPDatabaseListener listener) {
+        TAPDatabaseManager.getInstance().deleteMessageByRoomId(roomId, listener);
     }
 
     // Recent Search
@@ -840,104 +872,155 @@ public class TAPDataManager {
      */
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
-            , String fullname, String email, String phone, String username, TapDefaultDataView<TAPAuthTicketResponse> view) {
+            , String fullname, String email, String phone, String username, TAPDefaultDataView<TAPAuthTicketResponse> view) {
         TAPApiManager.getInstance().getAuthTicket(ipAddress, userAgent, userPlatform, userDeviceID, xcUserID,
                 fullname, email, phone, username, new TAPDefaultSubscriber<>(view));
     }
 
-    public void sendCustomMessage(Integer messageType, String body, String filterID, String senderUserID, String recipientUserID, TapDefaultDataView<TAPSendCustomMessageResponse> view) {
+    public void sendCustomMessage(Integer messageType, String body, String filterID, String senderUserID, String recipientUserID, TAPDefaultDataView<TAPSendCustomMessageResponse> view) {
         TAPApiManager.getInstance().sendCustomMessage(messageType, body, filterID, senderUserID, recipientUserID, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getAccessTokenFromApi(TapDefaultDataView<TAPGetAccessTokenResponse> view) {
+    public void getAccessTokenFromApi(TAPDefaultDataView<TAPGetAccessTokenResponse> view) {
         TAPApiManager.getInstance().getAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void requestOTPLogin(int countryID, String phone, TapDefaultDataView<TAPLoginOTPResponse> view) {
+    public void requestOTPLogin(int countryID, String phone, TAPDefaultDataView<TAPLoginOTPResponse> view) {
         TAPApiManager.getInstance().requestOTPLogin("phone", countryID, phone, new TAPDefaultSubscriber<>(view));
     }
 
-    public void verifyingOTPLogin(long otpID, String otpKey, String otpCode, TapDefaultDataView<TAPLoginOTPVerifyResponse> view) {
+    public void verifyingOTPLogin(long otpID, String otpKey, String otpCode, TAPDefaultDataView<TAPLoginOTPVerifyResponse> view) {
         TAPApiManager.getInstance().verifyingOTPLogin(otpID, otpKey, otpCode, new TAPDefaultSubscriber<>(view));
     }
 
-    public void refreshAccessToken(TapDefaultDataView<TAPGetAccessTokenResponse> view) {
+    public void refreshAccessToken(TAPDefaultDataView<TAPGetAccessTokenResponse> view) {
         TAPApiManager.getInstance().refreshAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void validateAccessToken(TapDefaultDataView<TAPErrorModel> view) {
+    public void validateAccessToken(TAPDefaultDataView<TAPErrorModel> view) {
         if (TAPDataManager.getInstance().checkAccessTokenAvailable())
             TAPApiManager.getInstance().validateAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void registerFcmTokenToServer(String fcmToken, TapDefaultDataView<TAPCommonResponse> view) {
+    public void registerFcmTokenToServer(String fcmToken, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance().registerFcmTokenToServer(fcmToken, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMessageRoomListAndUnread(String userID, TapDefaultDataView<TAPGetRoomListResponse> view) {
+    public void getMessageRoomListAndUnread(String userID, TAPDefaultDataView<TAPGetRoomListResponse> view) {
         TAPApiManager.getInstance().getRoomList(userID, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getNewAndUpdatedMessage(TapDefaultDataView<TAPGetRoomListResponse> view) {
+    public void getNewAndUpdatedMessage(TAPDefaultDataView<TAPGetRoomListResponse> view) {
         TAPApiManager.getInstance().getPendingAndUpdatedMessage(new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, TapDefaultDataView<TAPGetMessageListByRoomResponse> view) {
+    public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, TAPDefaultDataView<TAPGetMessageListByRoomResponse> view) {
         TAPApiManager.getInstance().getMessageListByRoomAfter(roomID, minCreated, lastUpdated, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMessageListByRoomBefore(String roomID, Long maxCreated, TapDefaultDataView<TAPGetMessageListByRoomResponse> view) {
+    public void getMessageListByRoomBefore(String roomID, Long maxCreated, TAPDefaultDataView<TAPGetMessageListByRoomResponse> view) {
         TAPApiManager.getInstance().getMessageListByRoomBefore(roomID, maxCreated, new TAPDefaultSubscriber<>(view));
     }
 
-    public void updateMessageStatusAsDelivered(List<String> messageIDs, TapDefaultDataView<TAPUpdateMessageStatusResponse> view) {
+    public void updateMessageStatusAsDelivered(List<String> messageIDs, TAPDefaultDataView<TAPUpdateMessageStatusResponse> view) {
         TAPApiManager.getInstance().updateMessageStatusAsDelivered(messageIDs, new TAPDefaultSubscriber<>(view));
     }
 
-    public void updateMessageStatusAsRead(List<String> messageIDs, TapDefaultDataView<TAPUpdateMessageStatusResponse> view) {
+    public void updateMessageStatusAsRead(List<String> messageIDs, TAPDefaultDataView<TAPUpdateMessageStatusResponse> view) {
         TAPApiManager.getInstance().updateMessageStatusAsRead(messageIDs, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMyContactListFromAPI(TapDefaultDataView<TAPContactResponse> view) {
+    public void deleteMessagesAPI(String roomID, List<String> messageIDs, boolean isForEveryone, TAPDefaultDataView<TAPDeleteMessageResponse> view) {
+        TAPApiManager.getInstance().deleteMessagesAPI(roomID, messageIDs, isForEveryone, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void deleteMessagesAPI(String roomID, String messageID, boolean isForEveryone, TAPDefaultDataView<TAPDeleteMessageResponse> view) {
+        List<String> messageIDs = new ArrayList<>();
+        messageIDs.add(messageID);
+        TAPApiManager.getInstance().deleteMessagesAPI(roomID, messageIDs, isForEveryone, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void deleteMessagesAPI(String roomID, String messageID, boolean isForEveryone) {
+        deleteMessagesAPI(roomID, messageID, isForEveryone, new TAPDefaultDataView<TAPDeleteMessageResponse>() {});
+    }
+
+    public void getMyContactListFromAPI(TAPDefaultDataView<TAPContactResponse> view) {
         TAPApiManager.getInstance().getMyContactListFromAPI(new TAPDefaultSubscriber<>(view));
     }
 
-    public void addContactApi(String userID, TapDefaultDataView<TAPCommonResponse> view) {
+    public void addContactApi(String userID, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance().addContact(userID, new TAPDefaultSubscriber<>(view));
     }
 
-    public void addContactByPhone(List<String> phones, TapDefaultDataView<TAPAddContactByPhoneResponse> view) {
+    public void addContactByPhone(List<String> phones, TAPDefaultDataView<TAPAddContactByPhoneResponse> view) {
         TAPApiManager.getInstance().addContactByPhone(phones, new TAPDefaultSubscriber<>(view));
     }
 
-    public void removeContactApi(String userID, TapDefaultDataView<TAPCommonResponse> view) {
+    public void removeContactApi(String userID, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance().removeContact(userID, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getCountryList(TapDefaultDataView<TAPCountryListResponse> view) {
+    public void getCountryList(TAPDefaultDataView<TAPCountryListResponse> view) {
         TAPApiManager.getInstance().getCountryList(new TAPDefaultSubscriber<>(view));
     }
 
-    public void register(String fullName, String username, Integer countryID, String phone, String email, String password, TapDefaultDataView<TAPRegisterResponse> view) {
+    public void register(String fullName, String username, Integer countryID, String phone, String email, String password, TAPDefaultDataView<TAPRegisterResponse> view) {
         TAPApiManager.getInstance().register(fullName, username, countryID, phone, email, password, new TAPDefaultSubscriber<>(view));
     }
 
-    // Search User
-    private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TapDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> searchUserSubscriber;
+    public void logout(TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance().logout(new TAPDefaultSubscriber<>(view));
+    }
 
-    public void getUserByIdFromApi(String id, TapDefaultDataView<TAPGetUserResponse> view) {
+    //Group and Chat Room
+    public void createGroupChatRoom(String roomName, List<String> participantIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().createChatRoom(roomName, TYPE_GROUP, participantIDs, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getChatRoomData(String roomID, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().getChatRoomData(roomID, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void updateChatRoom(String roomID, String roomName, TAPDefaultDataView<TAPUpdateRoomResponse> view) {
+        TAPApiManager.getInstance().updateChatRoom(roomID, roomName, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void addRoomParticipant(String roomID, List<String> userIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().addRoomParticipant(roomID, userIDs, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void removeRoomParticipant(String roomID, List<String> userIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().removeRoomParticipant(roomID, userIDs, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void leaveChatRoom(String roomID, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance().leaveChatRoom(roomID, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void promoteGroupAdmins(String roomID, List<String> userIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().promoteGroupAdmins(roomID, userIDs, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void demoteGroupAdmins(String roomID, List<String> userIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().demoteGroupAdmins(roomID, userIDs, new TAPDefaultSubscriber<>(view));
+    }
+
+    // Search User
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TAPDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> searchUserSubscriber;
+
+    public void getUserByIdFromApi(String id, TAPDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance().getUserByID(id, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void getUserByXcUserIdFromApi(String xcUserID, TapDefaultDataView<TAPGetUserResponse> view) {
+    public void getUserByXcUserIdFromApi(String xcUserID, TAPDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance().getUserByXcUserID(xcUserID, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void getUserByUsernameFromApi(String username, boolean ignoreCase, TapDefaultDataView<TAPGetUserResponse> view) {
+    public void getUserByUsernameFromApi(String username, boolean ignoreCase, TAPDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance().getUserByUsername(username, ignoreCase, searchUserSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMultipleUsersByIdFromApi(List<String> ids, TapDefaultDataView<TAPGetMultipleUserResponse> view) {
+    public void getMultipleUsersByIdFromApi(List<String> ids, TAPDefaultDataView<TAPGetMultipleUserResponse> view) {
         TAPApiManager.getInstance().getMultipleUserByID(ids, new TAPDefaultSubscriber<>(view));
     }
 
@@ -948,9 +1031,9 @@ public class TAPDataManager {
     }
 
     // Check Username
-    private TAPDefaultSubscriber<TAPBaseResponse<TAPCheckUsernameResponse>, TapDefaultDataView<TAPCheckUsernameResponse>, TAPCheckUsernameResponse> checkUsernameSubscriber;
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPCheckUsernameResponse>, TAPDefaultDataView<TAPCheckUsernameResponse>, TAPCheckUsernameResponse> checkUsernameSubscriber;
 
-    public void checkUsernameExists(String username, TapDefaultDataView<TAPCheckUsernameResponse> view) {
+    public void checkUsernameExists(String username, TAPDefaultDataView<TAPCheckUsernameResponse> view) {
         TAPApiManager.getInstance().checkUsernameExists(username, checkUsernameSubscriber = new TAPDefaultSubscriber<>(view));
     }
 
@@ -961,33 +1044,33 @@ public class TAPDataManager {
     }
 
     // Upload File
-    private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>> uploadSubscribers;
+    private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TAPDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>> uploadSubscribers;
 
     public void uploadImage(String localID, File imageFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
-                            TapDefaultDataView<TAPUploadFileResponse> view) {
+                            TAPDefaultDataView<TAPUploadFileResponse> view) {
         TAPApiManager.getInstance().uploadImage(imageFile, roomID, caption, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
     }
 
     public void uploadVideo(String localID, File videoFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
-                            TapDefaultDataView<TAPUploadFileResponse> view) {
+                            TAPDefaultDataView<TAPUploadFileResponse> view) {
         TAPApiManager.getInstance().uploadVideo(videoFile, roomID, caption, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
     }
 
     public void uploadFile(String localID, File file, String roomID, String mimeType,
                            ProgressRequestBody.UploadCallbacks uploadCallback,
-                           TapDefaultDataView<TAPUploadFileResponse> view) {
+                           TAPDefaultDataView<TAPUploadFileResponse> view) {
         TAPApiManager.getInstance().uploadFile(file, roomID, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
     }
 
-    private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>>
+    private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TAPDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>>
     getUploadSubscribers() {
         return null == uploadSubscribers ? uploadSubscribers = new HashMap<>() : uploadSubscribers;
     }
 
-    private TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TapDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>
-    getUploadSubscriber(String roomID, String localID, TapDefaultDataView<TAPUploadFileResponse> view) {
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TAPDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>
+    getUploadSubscriber(String roomID, String localID, TAPDefaultDataView<TAPUploadFileResponse> view) {
         getUploadSubscribers().put(roomID, new TAPDefaultSubscriber<>(view, localID));
         return getUploadSubscribers().get(roomID);
     }
@@ -1007,29 +1090,34 @@ public class TAPDataManager {
 
     public void uploadProfilePicture(File imageFile, String mimeType,
                                      ProgressRequestBody.UploadCallbacks uploadCallback,
-                                     TapDefaultDataView<TAPGetUserResponse> view) {
+                                     TAPDefaultDataView<TAPGetUserResponse> view) {
         cancelUploadProfilePicture();
         uploadProfilePictureSubscriber = new TAPDefaultSubscriber<>(view);
         TAPApiManager.getInstance().uploadProfilePicture(imageFile, mimeType, uploadCallback, uploadProfilePictureSubscriber);
     }
 
-    public void cancelUploadProfilePicture() {
+    private void cancelUploadProfilePicture() {
         if (null != uploadProfilePictureSubscriber) {
             uploadProfilePictureSubscriber.unsubscribe();
         }
     }
 
-    private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TapDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> uploadProfilePictureSubscriber;
+    private TAPDefaultSubscriber<TAPBaseResponse<TAPGetUserResponse>, TAPDefaultDataView<TAPGetUserResponse>, TAPGetUserResponse> uploadProfilePictureSubscriber;
+
+    //Upload Room Picture
+    public void uploadRoomPicture(File imageFile, String mimeType, String roomID, TAPDefaultDataView<TAPUpdateRoomResponse> view) {
+        TAPApiManager.getInstance().uploadGroupPicture(imageFile, mimeType, roomID, new TAPDefaultSubscriber<>(view));
+    }
 
     // File Download
-    private HashMap<String, TAPBaseSubscriber<TapDefaultDataView<ResponseBody>>> downloadSubscribers; // Key is message local ID
+    private HashMap<String, TAPBaseSubscriber<TAPDefaultDataView<ResponseBody>>> downloadSubscribers; // Key is message local ID
 
-    public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, TapDefaultDataView<ResponseBody> view) {
+    public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, TAPDefaultDataView<ResponseBody> view) {
         TAPApiManager.getInstance().downloadFile(roomID, localID, fileID, fileSize, getNewDownloadSubscriber(localID, view));
     }
 
     public void cancelFileDownload(String localID) {
-        TAPBaseSubscriber downloadSubscriber = getDownloadSubscribers().get(localID);
+        TAPBaseSubscriber<TAPDefaultDataView<ResponseBody>> downloadSubscriber = getDownloadSubscribers().get(localID);
         if (null != downloadSubscriber) {
             downloadSubscriber.unsubscribe();
             removeDownloadSubscriber(localID);
@@ -1040,11 +1128,11 @@ public class TAPDataManager {
         getDownloadSubscribers().remove(localID);
     }
 
-    private HashMap<String, TAPBaseSubscriber<TapDefaultDataView<ResponseBody>>> getDownloadSubscribers() {
+    private HashMap<String, TAPBaseSubscriber<TAPDefaultDataView<ResponseBody>>> getDownloadSubscribers() {
         return null == downloadSubscribers ? downloadSubscribers = new HashMap<>() : downloadSubscribers;
     }
 
-    private TAPBaseSubscriber<TapDefaultDataView<ResponseBody>> getNewDownloadSubscriber(String localID, TapDefaultDataView<ResponseBody> view) {
+    private TAPBaseSubscriber<TAPDefaultDataView<ResponseBody>> getNewDownloadSubscriber(String localID, TAPDefaultDataView<ResponseBody> view) {
         getDownloadSubscribers().put(localID, new TAPBaseSubscriber<>(view));
         return getDownloadSubscribers().get(localID);
     }

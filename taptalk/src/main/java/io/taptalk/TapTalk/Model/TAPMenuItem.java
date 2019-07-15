@@ -4,26 +4,18 @@ import io.taptalk.Taptalk.R;
 
 public class TAPMenuItem {
 
-    private int menuID, iconRes, textColorRes;
+    private int menuID, iconRes, iconColorRes, textStyleRes;
     private boolean isSwitchMenu, isChecked;
     private String menuLabel;
 
     public TAPMenuItem() {
     }
 
-    public TAPMenuItem(int menuID, int iconRes, boolean isSwitchMenu, boolean isChecked, String menuLabel) {
+    public TAPMenuItem(int menuID, int iconRes, int iconColorRes, int textStyleRes, boolean isSwitchMenu, boolean isChecked, String menuLabel) {
         this.menuID = menuID;
         this.iconRes = iconRes;
-        this.textColorRes = R.color.tap_black_44;
-        this.isSwitchMenu = isSwitchMenu;
-        this.isChecked = isChecked;
-        this.menuLabel = menuLabel;
-    }
-
-    public TAPMenuItem(int menuID, int iconRes, int textColorRes, boolean isSwitchMenu, boolean isChecked, String menuLabel) {
-        this.menuID = menuID;
-        this.iconRes = iconRes;
-        this.textColorRes = textColorRes;
+        this.iconColorRes = iconColorRes;
+        this.textStyleRes = textStyleRes;
         this.isSwitchMenu = isSwitchMenu;
         this.isChecked = isChecked;
         this.menuLabel = menuLabel;
@@ -45,12 +37,20 @@ public class TAPMenuItem {
         this.iconRes = iconRes;
     }
 
-    public int getTextColorRes() {
-        return textColorRes;
+    public int getIconColorRes() {
+        return iconColorRes;
     }
 
-    public void setTextColorRes(int textColorRes) {
-        this.textColorRes = textColorRes;
+    public int getTextStyleRes() {
+        return textStyleRes;
+    }
+
+    public void setTextStyleRes(int textStyleRes) {
+        this.textStyleRes = textStyleRes;
+    }
+
+    public void setIconColorRes(int iconColorRes) {
+        this.iconColorRes = iconColorRes;
     }
 
     public boolean isSwitchMenu() {

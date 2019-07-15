@@ -2,8 +2,10 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -22,6 +24,7 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -33,6 +36,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSIDs;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
@@ -69,7 +73,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
             case RESULT_OK:
                 switch (requestCode) {
                     case CREATE_GROUP:
-                        finish();
+                        onBackPressed();
                         break;
                 }
             case RESULT_CANCELED:
@@ -95,7 +99,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
 
         // Add self as selected group member
-        vm.getSelectedContacts().add(myUser);
+        vm.addSelectedContact(myUser);
 
         // Show users from contact list
         vm.getContactListLive().observe(this, userModels -> {
@@ -127,13 +131,13 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                                 .show();
                         return false;
                     }
-                    vm.getSelectedContacts().add(contact);
+                    vm.addSelectedContact(contact);
                     selectedMembersAdapter.notifyItemInserted(vm.getSelectedContacts().size());
                     rvGroupMembers.scrollToPosition(vm.getSelectedContacts().size() - 1);
                     updateSelectedMemberDecoration();
                 } else {
                     int index = vm.getSelectedContacts().indexOf(contact);
-                    vm.getSelectedContacts().remove(contact);
+                    vm.removeSelectedContact(contact);
                     selectedMembersAdapter.notifyItemRemoved(index);
                 }
                 if (vm.getSelectedContacts().size() > 1) {
@@ -141,7 +145,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_group_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
+                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
                 return true;
             }
 
@@ -156,7 +160,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_group_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
+                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
             }
         };
     }
@@ -166,7 +170,6 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonAction = findViewById(R.id.iv_button_action);
         tvTitle = findViewById(R.id.tv_title);
-        tvMemberCount = findViewById(R.id.tv_member_count);
         tvMemberCount = findViewById(R.id.tv_member_count);
         etSearch = findViewById(R.id.et_search);
         btnContinue = findViewById(R.id.btn_continue);
@@ -206,7 +209,8 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
             etSearch.setVisibility(View.GONE);
             etSearch.setText("");
             etSearch.clearFocus();
-            ivButtonAction.setImageResource(R.drawable.tap_ic_search_grey);
+            ivButtonAction.setImageResource(R.drawable.tap_ic_search_orange);
+            ivButtonAction.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconNavBarMagnifier)));
             TAPUtils.getInstance().dismissKeyboard(this);
         } else {
             // Show Search Bar
@@ -214,6 +218,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
             tvTitle.setVisibility(View.GONE);
             etSearch.setVisibility(View.VISIBLE);
             ivButtonAction.setImageResource(R.drawable.tap_ic_close_grey);
+            ivButtonAction.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconClearTextButton)));
             TAPUtils.getInstance().showKeyboard(this, etSearch);
         }
     }
@@ -222,6 +227,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         Intent intent = new Intent(this, TAPGroupSubjectActivity.class);
         intent.putExtra(MY_ID, vm.getSelectedContacts().get(0).getUserID());
         intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
+        intent.putStringArrayListExtra(GROUP_MEMBERSIDs, new ArrayList<>(vm.getSelectedContactsIds()));
         if (null != vm.getGroupName()) intent.putExtra(GROUP_NAME, vm.getGroupName());
         if (null != vm.getGroupImage()) intent.putExtra(GROUP_IMAGE, vm.getGroupImage());
         startActivityForResult(intent, CREATE_GROUP);
@@ -277,6 +283,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         @Override
         public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
             updateFilteredContacts(etSearch.getText().toString().toLowerCase());
+            TAPUtils.getInstance().dismissKeyboard(TAPCreateNewGroupActivity.this);
             return true;
         }
     };

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:animateLayoutChanges="true"
-    android:background="@color/tap_white"
+    android:background="@color/tapWhite"
     android:elevation="2dp"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical">
@@ -16,56 +16,72 @@
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_marginStart="16dp"
-        android:background="@drawable/tap_bg_circle_9b9b9b"
         android:gravity="center"
-        android:textColor="#ffffff"
-        android:textSize="24dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/tv_full_name"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="A" />
+        tools:src="@drawable/tap_img_default_avatar" />
 
     <ImageView
         android:id="@+id/iv_avatar_icon"
         android:layout_width="22dp"
         android:layout_height="22dp"
-        android:src="@drawable/tap_ic_verified"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
-        app:layout_constraintEnd_toEndOf="@id/civ_avatar" />
+        app:layout_constraintEnd_toEndOf="@id/civ_avatar"
+        tools:src="@drawable/tap_ic_verified" />
 
     <TextView
         android:id="@+id/tv_full_name"
-        style="@style/TapContactName"
+        style="@style/tapContactListNameStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="68dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="1"
+        app:layout_constraintBottom_toTopOf="@id/tv_member_role"
+        app:layout_constraintEnd_toStartOf="@id/iv_selection"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
         app:layout_constraintTop_toTopOf="@id/civ_avatar"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="Username" />
+
+    <TextView
+        android:id="@+id/tv_member_role"
+        style="@style/tapGroupMemberListRoleStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/tap_admin"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+        app:layout_constraintEnd_toStartOf="@id/iv_selection"
+        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintTop_toBottomOf="@id/tv_full_name" />
 
     <ImageView
         android:id="@+id/iv_selection"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/tap_ic_circle_inactive"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/tap_ic_circle_inactive" />
 
     <View
         android:id="@+id/v_separator"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
-        android:background="@color/tap_grey_ea"
+        android:background="@color/tapGreyEa"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/civ_avatar" />
 

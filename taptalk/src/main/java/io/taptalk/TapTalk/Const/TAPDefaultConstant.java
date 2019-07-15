@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
-        public static final int kDatabaseVersion = 5;
+        public static final int kDatabaseVersion = 6;
     }
 
     public static final class ConnectionEvent {
@@ -31,6 +31,12 @@ public class TAPDefaultConstant {
         public static final String MY_CONTACT_DB = "kTAPMyContactDB";
     }
 
+    public static final class RoomType {
+        public static final int TYPE_PERSONAL = 1;
+        public static final int TYPE_GROUP = 2;
+        public static final int TYPE_CHANNEL = 3;
+    }
+
     public static final class MessageType {
         public static final int TYPE_TEXT = 1001;
         public static final int TYPE_IMAGE = 1002;
@@ -48,8 +54,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_HIDDEN = 0x9196;
 
         public static final int TYPE_SYSTEM_MESSAGE = 9001;
-        public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9002;
-        public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9003;
+        public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9003;
+        public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9004;
     }
 
     public static final class BubbleType {
@@ -66,8 +72,11 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_LOCATION_LEFT = 10052;
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
         public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
+        public static final int TYPE_BUBBLE_SYSTEM_MESSAGE = 9001;
         public static final int TYPE_BUBBLE_UNREAD_STATUS = 9002;
         public static final int TYPE_BUBBLE_LOADING = 9003;
+        public static final int TYPE_BUBBLE_DELETED_RIGHT = 90041;
+        public static final int TYPE_BUBBLE_DELETED_LEFT = 90042;
         public static final int TYPE_EMPTY = 9999;
     }
 
@@ -93,13 +102,16 @@ public class TAPDefaultConstant {
     public static final class Extras {
         public static final String MESSAGE = "kTAPExtraMessage";
         public static final String ROOM = "kTAPExtraRoom";
+        public static final String ROOM_ID = "kTAPExtraRoomID";
         public static final String URL_MESSAGE = "kTAPExtraUrlMessage";
         public static final String COPY_MESSAGE = "kTAPExtraCopyMessage";
         public static final String MY_ID = "kTAPExtraMyID";
         public static final String GROUP_MEMBERS = "kTAPExtraGroupMembers";
+        public static final String GROUP_MEMBERSIDs = "kTAPExtraGroupMembersIDs";
         public static final String GROUP_NAME = "kTAPExtraGroupName";
         public static final String GROUP_IMAGE = "kTAPExtraGroupImage";
         public static final String IS_TYPING = "kTAPExtraIsTyping";
+        public static final String IS_ADMIN = "kTAPExtraIsAdmin";
         public static final String QUOTE = "kTAPExtraQuote";
         public static final String URI = "kTAPExtraUri";
         public static final String MEDIA_PREVIEWS = "kTAPExtraMediaPreviews";
@@ -109,14 +121,19 @@ public class TAPDefaultConstant {
         public static final String COUNTRY_FLAG_URL = "kTAPExtraCountryFlagUrl";
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
         public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
+        public static final String IS_NEED_TO_CLOSE_ACTIVITY_BEFORE = "kTAPIsNeedToCloseActivityBefore";
     }
 
     public static final class RequestCode {
         public static final int COUNTRY_PICK = 11;
         public static final int EDIT_PROFILE = 21;
+        public static final int OPEN_PROFILE = 22;
         public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
         public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
         public static final int REGISTER = 31;
+        public static final int GROUP_ADD_MEMBER = 4;
+        public static final int GROUP_UPDATE_DATA = 41;
+        public static final int GROUP_OPEN_MEMBER_PROFILE = 42;
         public static final int SEND_IMAGE_FROM_CAMERA = 51;
         public static final int SEND_MEDIA_FROM_GALLERY = 52;
         public static final int SEND_MEDIA_FROM_PREVIEW = 53;
@@ -229,6 +246,17 @@ public class TAPDefaultConstant {
         public static final int FORWARD = 2;
     }
 
+    public static final class SystemMessageAction {
+        public static final String CREATE_ROOM = "room/create";
+        public static final String UPDATE_ROOM = "room/update";
+        public static final String DELETE_ROOM = "room/delete";
+        public static final String LEAVE_ROOM = "room/leave";
+        public static final String ROOM_ADD_PARTICIPANT = "room/addParticipant";
+        public static final String ROOM_REMOVE_PARTICIPANT = "room/removeParticipant";
+        public static final String ROOM_PROMOTE_ADMIN = "room/promoteAdmin";
+        public static final String ROOM_DEMOTE_ADMIN = "room/demoteAdmin";
+    }
+
     public static final class CustomHeaderKey {
         public static final String USER_AGENT = "kTAPUserAgent";
         public static final String APP_ID = "kTAPApplicationID";
@@ -243,17 +271,17 @@ public class TAPDefaultConstant {
     }
 
     public static final class BaseUrl {
-        public static final String BASE_URL_API_PRODUCTION = "https://taptalk-production.moselo.com/api/v1/";
-        public static final String BASE_URL_SOCKET_PRODUCTION = "https://taptalk-production.moselo.com/";
-        public static final String BASE_WSS_PRODUCTION = "wss://taptalk-production.moselo.com/pigeon";
+        public static final String BASE_URL_API_PRODUCTION = "https://engine.taptalk.io/api/v1/";
+        public static final String BASE_URL_SOCKET_PRODUCTION = "https://engine.taptalk.io/";
+        public static final String BASE_WSS_PRODUCTION = "wss://engine.taptalk.io/connect";
 
-        public static final String BASE_URL_API_STAGING = "https://hp-staging.moselo.com/api/v1/";
-        public static final String BASE_URL_SOCKET_STAGING = "https://hp-staging.moselo.com/";
-        public static final String BASE_WSS_STAGING = "wss://hp-staging.moselo.com/connect";
+        public static final String BASE_URL_API_STAGING = "https://engine-stg.taptalk.io/api/v1/";
+        public static final String BASE_URL_SOCKET_STAGING = "https://engine-stg.taptalk.io/";
+        public static final String BASE_WSS_STAGING = "wss://engine-stg.taptalk.io/connect";
 
-        public static final String BASE_URL_API_DEVELOPMENT = "https://hp-dev.moselo.com/api/v1/";
-        public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://hp-dev.moselo.com/";
-        public static final String BASE_WSS_DEVELOPMENT = "wss://hp-dev.moselo.com/connect";
+        public static final String BASE_URL_API_DEVELOPMENT = "https://engine-dev.taptalk.io/api/v1/";
+        public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://engine-dev.taptalk.io/";
+        public static final String BASE_WSS_DEVELOPMENT = "wss://engine-dev.taptalk.io/connect";
     }
 
     public static final Intent[] AUTO_START_INTENTS = {
@@ -273,6 +301,20 @@ public class TAPDefaultConstant {
                     Uri.parse("mobilemanager://function/entry/AutoStart"))
     };
 
+    public static class ChatProfileMenuType {
+        public static final int MENU_NOTIFICATION = 1;
+        public static final int MENU_ROOM_COLOR = 2;
+        public static final int MENU_BLOCK = 3;
+        public static final int MENU_EXIT_AND_CLEAR_CHAT = 4;
+        public static final int MENU_VIEW_MEMBERS = 5;
+        public static final int MENU_EXIT_GROUP = 6;
+        public static final int MENU_ADD_TO_CONTACTS = 7;
+        public static final int MENU_SEND_MESSAGE = 8;
+        public static final int MENU_PROMOTE_ADMIN = 9;
+        public static final int MENU_DEMOTE_ADMIN = 10;
+        public static final int MENU_REMOVE_MEMBER = 11;
+    }
+
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
     public static final String K_REFRESH_TOKEN_EXPIRY = "kTAPRefreshTokenExpiry";
     public static final String K_ACCESS_TOKEN = "kTAPAccessToken";
@@ -286,6 +328,7 @@ public class TAPDefaultConstant {
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
     public static final String K_IS_WRITE_STORAGE_PERMISSION_REQUESTED = "kTAPIsWriteStoragePermissionRequested";
     public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
+    public static final String K_GROUP_DATA_MAP = "kGroupDataMap";
     public static final String K_FILE_URI_MAP = "kTAPFileUriMap";
     public static final String K_FILE_PATH_MAP = "kTAPFilePathMap";
     public static final String K_MEDIA_VOLUME = "kTAPMediaVolume";

@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Activity
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
@@ -10,6 +11,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
 import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
@@ -21,6 +23,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.Api.TAPApiManager
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -34,6 +37,8 @@ import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
@@ -53,12 +58,11 @@ import kotlinx.android.synthetic.main.tap_activity_register.et_full_name
 import kotlinx.android.synthetic.main.tap_activity_register.et_mobile_number
 import kotlinx.android.synthetic.main.tap_activity_register.et_username
 import kotlinx.android.synthetic.main.tap_activity_register.fl_container
-import kotlinx.android.synthetic.main.tap_activity_register.iv_remove_profile_picture
-import kotlinx.android.synthetic.main.tap_activity_register.ll_change_profile_picture
 import kotlinx.android.synthetic.main.tap_activity_register.tv_country_code
 import kotlinx.android.synthetic.main.tap_activity_register.tv_label_email_address_error
 import kotlinx.android.synthetic.main.tap_activity_register.tv_label_full_name_error
 import kotlinx.android.synthetic.main.tap_activity_register.v_password_separator
+import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
 class TAPMyAccountActivity : TAPBaseActivity() {
 
@@ -136,6 +140,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         vm.countryFlagUrl = TAPDataManager.getInstance().myCountryFlagUrl
     }
 
+    @SuppressLint("PrivateResource")
     private fun initView() {
         window?.setBackgroundDrawable(null)
 
@@ -159,39 +164,43 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         et_mobile_number.setText(vm.myUserModel.phoneNumber)
         et_email_address.setText(vm.myUserModel.email)
 
-        et_username.isEnabled = false
-        et_mobile_number.isEnabled = false
-
         iv_button_close.setOnClickListener { onBackPressed() }
         fl_container.setOnClickListener { clearAllFocus() }
         cl_form_container.setOnClickListener { clearAllFocus() }
         civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
+        fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         cl_password.setOnClickListener { openChangePasswordPage() }
+        cl_logout.setOnClickListener { promptUserLogout() }
 
         sv_profile.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
 
+        // Obtain text field style attributes
+        val textFieldArray = obtainStyledAttributes(R.style.tapFormTextFieldStyle, R.styleable.TextAppearance)
+        vm.fontResourceId = textFieldArray.getResourceId(R.styleable.TextAppearance_android_fontFamily, -1)
+        vm.textFieldFontColor = textFieldArray.getColor(R.styleable.TextAppearance_android_textColor, -1)
+        vm.textFieldFontColorHint = textFieldArray.getColor(R.styleable.TextAppearance_android_textColorHint, -1)
+        textFieldArray.recycle()
+
+        val clickableLabelArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance)
+        vm.clickableLabelFontColor = clickableLabelArray.getColor(R.styleable.TextAppearance_android_textColor, -1)
+        clickableLabelArray.recycle()
+
         // TODO temporarily disable editing
         et_full_name.isEnabled = false
+        et_username.isEnabled = false
+        et_mobile_number.isEnabled = false
         et_email_address.isEnabled = false
-        et_full_name.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
-        et_email_address.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
+
+        et_full_name.setTextColor(vm.textFieldFontColorHint)
+        et_username.setTextColor(vm.textFieldFontColorHint)
+        tv_country_code.setTextColor(vm.textFieldFontColorHint)
+        et_mobile_number.setTextColor(vm.textFieldFontColorHint)
+        et_email_address.setTextColor(vm.textFieldFontColorHint)
+
         tv_label_password.visibility = View.GONE
         cl_password.visibility = View.GONE
         fl_button_update.visibility = View.GONE
-        cl_logout.setOnClickListener {
-            TapTalkDialog.Builder(this)
-                    .setTitle("Log Out")
-                    .setMessage("Are you sure you want to log out?")
-                    .setCancelable(false)
-                    .setPrimaryButtonTitle("Log Out")
-                    .setPrimaryButtonListener { logout() }
-                    .setSecondaryButtonTitle("Cancel")
-                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setSecondaryButtonListener(true) {}
-                    .show()
-        }
     }
 
     private fun registerBroadcastReceiver() {
@@ -214,7 +223,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             vm.formCheck[indexProfilePicture] = stateEmpty
             glide.load(R.drawable.tap_img_default_avatar).into(civ_profile_picture)
             // TODO temporarily disabled removing profile picture
-//            iv_remove_profile_picture.visibility = View.GONE
+//            fl_remove_profile_picture.visibility = View.GONE
             if (showErrorMessage) {
                 Toast.makeText(this@TAPMyAccountActivity, getString(R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
             }
@@ -222,7 +231,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             vm.formCheck[indexProfilePicture] = stateValid
             glide.load(imageUri).into(civ_profile_picture)
             // TODO temporarily disabled removing profile picture
-//            iv_remove_profile_picture.visibility = View.VISIBLE
+//            fl_remove_profile_picture.visibility = View.VISIBLE
 
             if (uploadPicture) {
                 uploadProfilePicture()
@@ -235,12 +244,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             vm.formCheck[indexProfilePicture] = stateEmpty
             glide.load(R.drawable.tap_img_default_avatar).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
             // TODO temporarily disabled removing profile picture
-//            iv_remove_profile_picture.visibility = View.GONE
+//            fl_remove_profile_picture.visibility = View.GONE
         } else {
             vm.formCheck[indexProfilePicture] = stateValid
             glide.load(imageUrl).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
             // TODO temporarily disabled removing profile picture
-//            iv_remove_profile_picture.visibility = View.VISIBLE
+//            fl_remove_profile_picture.visibility = View.VISIBLE
         }
     }
 
@@ -264,7 +273,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             // Invalid full name
             vm.formCheck[indexFullName] = stateInvalid
             tv_label_full_name_error.visibility = View.VISIBLE
-            et_full_name.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
+            et_full_name.background = getDrawable(R.drawable.tap_bg_text_field_error)
         }
         checkContinueButtonAvailability()
     }
@@ -289,22 +298,22 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             // Invalid email address
             vm.formCheck[indexEmail] = stateInvalid
             tv_label_email_address_error.visibility = View.VISIBLE
-            et_email_address.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_watermelon_1dp)
+            et_email_address.background = getDrawable(R.drawable.tap_bg_text_field_error)
         }
         checkContinueButtonAvailability()
     }
 
     private fun updateEditTextBackground(view: View, hasFocus: Boolean) {
         if (hasFocus) {
-            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+            view.background = getDrawable(R.drawable.tap_bg_text_field_active)
         } else {
-            view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp)
+            view.background = getDrawable(R.drawable.tap_bg_text_field_inactive)
         }
         if (view == cl_password) {
             if (hasFocus) {
-                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccentDark))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTextFieldBorderActiveColor))
             } else {
-                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tap_grey_dc))
+                v_password_separator.setBackgroundColor(ContextCompat.getColor(this, R.color.tapGreyDc))
             }
         }
     }
@@ -325,12 +334,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun enableContinueButton() {
-        fl_button_update.background = getDrawable(R.drawable.tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple)
+        fl_button_update.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
         //fl_button_update.setOnClickListener { register() }
     }
 
     private fun disableContinueButton() {
-        fl_button_update.background = getDrawable(R.drawable.tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp)
+        fl_button_update.background = getDrawable(R.drawable.tap_bg_button_inactive)
         fl_button_update.setOnClickListener(null)
     }
 
@@ -341,6 +350,34 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun openChangePasswordPage() {
         // TODO
+    }
+
+    private fun promptUserLogout() {
+        TapTalkDialog.Builder(this)
+                .setTitle(getString(R.string.tap_log_out))
+                .setMessage(getString(R.string.tap_log_out_confirmation))
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_log_out))
+                .setPrimaryButtonListener { TAPDataManager.getInstance().logout(logoutView) }
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setSecondaryButtonListener(true) {}
+                .show()
+    }
+
+    private fun logout() {
+        TAPDataManager.getInstance().deleteAllPreference()
+        TAPDataManager.getInstance().deleteAllFromDatabase()
+        TAPDataManager.getInstance().deleteAllManagerData()
+        TAPApiManager.getInstance().isLogout = true
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
+        TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
+
+        hideLoading()
+
+        val intent = Intent(this, TAPLoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
     private fun uploadProfilePicture() {
@@ -366,10 +403,10 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setOnClickListener(null)
         civ_profile_picture.setOnClickListener(null)
         ll_change_profile_picture.setOnClickListener(null)
-        iv_remove_profile_picture.setOnClickListener(null)
+        fl_remove_profile_picture.setOnClickListener(null)
         fl_button_update.setOnClickListener(null)
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_orange))
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_white))
         TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
 
         // TODO temporarily disable editing
@@ -391,15 +428,14 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setOnClickListener { onBackPressed() }
         civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        iv_remove_profile_picture.setOnClickListener { removeProfilePicture() }
+        fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         //fl_button_update.setOnClickListener { updateProfile() }
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_orange))
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey))
         iv_button_close.clearAnimation()
 
-
         tv_label_change_profile_picture.text = getString(R.string.tap_change)
-        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+        tv_label_change_profile_picture.setTextColor(vm.clickableLabelFontColor)
         iv_edit_profile_picture_icon.visibility = View.VISIBLE
         civ_profile_picture_overlay.visibility = View.GONE
         pb_profile_picture_progress.visibility = View.GONE
@@ -422,11 +458,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         civ_profile_picture.setOnClickListener(null)
         ll_change_profile_picture.setOnClickListener(null)
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_orange))
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
         TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_button_close)
 
         tv_label_change_profile_picture.text = getString(R.string.tap_uploading)
-        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tap_grey_9b))
+        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
         iv_edit_profile_picture_icon.visibility = View.GONE
         civ_profile_picture_overlay.visibility = View.VISIBLE
         pb_profile_picture_progress.visibility = View.VISIBLE
@@ -447,7 +483,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexFullName] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_text_field_active)
             }
         } else {
             view.elevation = 0f
@@ -461,7 +497,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (hasFocus) {
             view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
             if (vm.formCheck[indexEmail] != stateInvalid) {
-                view.background = getDrawable(R.drawable.tap_bg_white_rounded_8dp_stroke_accent_1dp)
+                view.background = getDrawable(R.drawable.tap_bg_text_field_active)
             }
         } else {
             view.elevation = 0f
@@ -471,17 +507,41 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
     }
 
-    private fun logout() {
-        TAPDataManager.getInstance().deleteAllPreference()
-        TAPDataManager.getInstance().deleteAllFromDatabase()
-        TAPDataManager.getInstance().deleteAllManagerData()
-        TAPApiManager.getInstance().isLogout = true
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
-        TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
+    private fun showLoading(message: String) {
+        runOnUiThread {
+            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == iv_loading_image.animation)
+                TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_image)
+            tv_loading_text.text = message
+            fl_loading.visibility = View.VISIBLE
+        }
+    }
 
-        val intent = Intent(this, TAPLoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+    private fun endLoading(message: String) {
+        runOnUiThread {
+            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
+            iv_loading_image.clearAnimation()
+            tv_loading_text.text = message
+            fl_loading.setOnClickListener { hideLoading() }
+
+            Handler().postDelayed({
+                this.hideLoading()
+            }, 1000L)
+        }
+    }
+
+    private fun hideLoading() {
+        fl_loading.visibility = View.GONE
+    }
+
+    private fun showErrorDialog(title: String, message: String) {
+        TapTalkDialog.Builder(this@TAPMyAccountActivity)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(title)
+                .setMessage(message)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setPrimaryButtonListener {}
+                .show()
     }
 
     private val fullNameWatcher = object : TextWatcher {
@@ -536,6 +596,26 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(1).toFloat()
             else ->
                 cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(2).toFloat()
+        }
+    }
+
+    private val logoutView = object : TAPDefaultDataView<TAPCommonResponse>() {
+        override fun startLoading() {
+            this@TAPMyAccountActivity.showLoading(getString(R.string.tap_logging_out))
+        }
+
+        override fun onSuccess(response: TAPCommonResponse?) {
+            logout()
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            hideLoading()
+            showErrorDialog(error!!.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            hideLoading()
+            showErrorDialog(getString(R.string.tap_error_message_general))
         }
     }
 

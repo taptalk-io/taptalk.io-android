@@ -13,12 +13,12 @@
         android:layout_marginEnd="2dp"
         android:layout_marginBottom="2dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/tap_ic_message_sent_grey"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toStartOf="@id/fl_bubble"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:src="@drawable/tap_ic_sent_grey" />
 
     <ImageView
         android:id="@+id/iv_reply"
@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:background="@drawable/tap_bg_primary_rounded_8dp_1dp_8dp_8dp"
+            android:background="@drawable/tap_bg_chat_bubble_right_default"
             android:paddingStart="10dp"
             android:paddingTop="10dp"
             android:paddingEnd="10dp"
@@ -73,7 +73,7 @@
                 android:id="@+id/v_quote_background"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@drawable/tap_bg_accent_rounded_4dp"
+                android:background="@drawable/tap_bg_bubble_quote_right"
                 app:layout_constraintBottom_toBottomOf="@id/cl_quote"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +104,7 @@
                     android:id="@+id/fl_file_icon"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/tap_bg_circle_primarydark_ripple"
+                    android:background="@drawable/tap_bg_file_button_right_ripple"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -117,7 +117,7 @@
                         android:layout_gravity="center"
                         android:indeterminate="false"
                         android:max="100"
-                        android:progressDrawable="@drawable/tap_circular_progress_white_3dp"
+                        android:progressDrawable="@drawable/tap_file_circular_progress"
                         tools:progress="65" />
 
                     <ImageView
@@ -125,20 +125,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:tint="@color/tap_white"
                         tools:src="@drawable/tap_ic_download_white" />
 
                 </FrameLayout>
 
                 <TextView
                     android:id="@+id/tv_file_name"
-                    style="@style/TapQuoteTitle"
+                    style="@style/tapRightFileBubbleNameStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@color/tap_white"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toTopOf="@id/tv_file_info"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -150,14 +148,13 @@
 
                 <TextView
                     android:id="@+id/tv_file_info"
-                    style="@style/TapQuoteBody"
+                    style="@style/tapRightFileBubbleInfoStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="2dp"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="@color/tap_white"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -168,7 +165,7 @@
 
                 <TextView
                     android:id="@+id/tv_file_info_dummy"
-                    style="@style/TapQuoteBody"
+                    style="@style/tapRightFileBubbleInfoStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -176,8 +173,7 @@
                     android:alpha="0"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="9999.99 MB / 9999.99 MB"
-                    android:textColor="@color/tap_white"
+                    android:text="@string/tap_file_info_progress_dummy"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -193,13 +189,11 @@
 
     <TextView
         android:id="@+id/tv_message_status"
+        style="@style/tapBubbleMessageStatusStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:textColor="@color/tap_grey_9b"
-        android:textSize="12sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/fl_bubble"
@@ -214,7 +208,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="5dp"
         android:alpha="0"
-        android:src="@drawable/tap_ic_message_sending_grey"
+        android:src="@drawable/tap_ic_sending_grey"
+        android:tint="@color/tapIconMessageSending"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"

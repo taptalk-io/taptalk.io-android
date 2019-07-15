@@ -13,12 +13,12 @@
         android:layout_marginEnd="2dp"
         android:layout_marginBottom="2dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/tap_ic_message_sent_grey"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toStartOf="@id/fl_bubble"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:src="@drawable/tap_ic_sent_grey" />
 
     <ImageView
         android:id="@+id/iv_reply"
@@ -54,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="false"
-            android:background="@drawable/tap_bg_primary_rounded_8dp_1dp_8dp_8dp"
+            android:background="@drawable/tap_bg_chat_bubble_right_default"
             android:paddingStart="10dp"
             android:paddingTop="10dp"
             android:paddingEnd="10dp"
@@ -73,7 +73,7 @@
                 android:id="@+id/v_quote_background"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@drawable/tap_bg_primarydark_rounded_4dp"
+                android:background="@drawable/tap_bg_bubble_quote_right"
                 app:layout_constraintBottom_toBottomOf="@id/cl_quote"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -90,11 +90,9 @@
 
             <TextView
                 android:id="@+id/tv_message_body"
-                style="@style/TapMessageBody"
+                style="@style/tapRightBubbleMessageBodyStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/tap_white"
-                android:textColorLink="@color/tap_white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_quote"
@@ -106,13 +104,11 @@
 
     <TextView
         android:id="@+id/tv_message_status"
+        style="@style/tapBubbleMessageStatusStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:textColor="@color/tap_grey_9b"
-        android:textSize="12sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/fl_bubble"
@@ -127,7 +123,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="5dp"
         android:alpha="0"
-        android:src="@drawable/tap_ic_message_sending_grey"
+        android:src="@drawable/tap_ic_sending_grey"
+        android:tint="@color/tapIconMessageSending"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
