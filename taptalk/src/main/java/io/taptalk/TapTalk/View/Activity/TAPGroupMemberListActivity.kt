@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_OPEN_MEMBER_PROFILE
+import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
@@ -249,9 +250,10 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         }
 
         //set total member count
-        //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
         tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
         tv_member_count.visibility = View.VISIBLE
+
+        OverScrollDecoratorHelper.setUpOverScroll(sv_members)
 
         iv_button_back.setOnClickListener(this)
         iv_button_action.setOnClickListener(this)
@@ -393,7 +395,6 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
 
             // Set total member count
-            //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
             tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
             tv_member_count.visibility = View.VISIBLE
             groupViewModel?.isUpdateMember = true
@@ -431,7 +432,6 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
 
             // Set total member count
-            //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
             tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
             tv_member_count.visibility = View.VISIBLE
             groupViewModel?.isUpdateMember = true
@@ -468,7 +468,6 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     }
 
                     //set total member count
-                    //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
                     tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
                     tv_member_count.visibility = View.VISIBLE
                     groupViewModel?.isUpdateMember = true
@@ -483,7 +482,6 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                         adapter?.items = groupViewModel?.groupData?.groupParticipants ?: listOf()
 
                         // Set total member count
-                        //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
                         tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
                         tv_member_count.visibility = View.VISIBLE
                         groupViewModel?.isUpdateMember = true

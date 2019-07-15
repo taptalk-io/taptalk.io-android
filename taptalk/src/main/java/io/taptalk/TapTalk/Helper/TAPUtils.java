@@ -257,12 +257,16 @@ public class TAPUtils {
      * generate random color
      */
     public int getRandomColor(String s) {
-        int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.pastel_colors);
-        int hash = 7;
-        for (int i = 0, len = s.length(); i < len; i++) {
-            hash = s.codePointAt(i) + (hash << 5) - hash;
-        }
-        int index = Math.abs(hash % randomColors.length);
+        int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.tapDefaultRoomAvatarBackgroundColors);
+
+//        int hash = 7;
+//        for (int i = 0, len = s.length(); i < len; i++) {
+//            hash = s.codePointAt(i) + (hash << 5) - hash;
+//        }
+//        int index = Math.abs(hash % randomColors.length);
+
+        int index = (((int) s.charAt(0)) + s.length()) % randomColors.length;
+
         return randomColors[index];
     }
 

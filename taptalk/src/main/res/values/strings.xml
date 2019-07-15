@@ -212,6 +212,8 @@
     <string name="tap_save_to_gallery">Save to Gallery</string>
     <string name="tap_save_to_download">Save to Downloads</string>
     <string name="tap_media_count">%d of %d</string>
+    <string name="tap_unable_to_load_shared_media">Unable to load shared media</string>
+    <string name="tap_try_again">Try Again?</string>
 
     <!--Hints-->
     <string name="tap_hint_username">e.g user_1234</string>

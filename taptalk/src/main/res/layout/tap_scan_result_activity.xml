@@ -54,7 +54,7 @@
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:layout_gravity="center"
-                    android:background="@drawable/tap_bg_circle_charcoal_50"
+                    android:background="@drawable/tap_bg_circle_close_scan_result"
                     android:padding="5dp"
                     android:src="@drawable/tap_ic_close_grey"
                     android:tint="@color/tapIconCloseScanResult" />
