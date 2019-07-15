@@ -78,7 +78,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon, ivSelection;
-        private TextView tvFullName;
+        private TextView tvAvatarLabel, tvFullName;
         private View vSeparator;
 
         ContactListHolder(ViewGroup parent, int itemLayoutId) {
@@ -87,6 +87,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
             civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             ivSelection = itemView.findViewById(R.id.iv_selection);
+            tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
             vSeparator = itemView.findViewById(R.id.v_separator);
         }
@@ -98,8 +99,14 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                         .load(item.getAvatarURL().getThumbnail())
                         .apply(new RequestOptions().centerCrop())
                         .into(civAvatar);
+                civAvatar.setImageTintList(null);
+                tvAvatarLabel.setVisibility(View.GONE);
             } else {
-                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+//                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+                civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getName())));
+                civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(item.getName()));
+                tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
             // Change avatar icon and background

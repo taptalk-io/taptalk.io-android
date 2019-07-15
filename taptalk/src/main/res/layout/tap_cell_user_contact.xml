@@ -23,7 +23,20 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/tv_full_name"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/tap_img_default_avatar" />
+        tools:src="@drawable/tap_bg_circle_9b9b9b" />
+
+    <TextView
+        android:id="@+id/tv_avatar_label"
+        style="@style/tapDefaultRoomAvatarMediumFontStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textAllCaps="true"
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+        app:layout_constraintEnd_toEndOf="@id/civ_avatar"
+        app:layout_constraintStart_toStartOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="@id/civ_avatar"
+        tools:text="A" />
 
     <ImageView
         android:id="@+id/iv_avatar_icon"

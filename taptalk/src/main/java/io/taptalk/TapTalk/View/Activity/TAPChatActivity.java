@@ -9,6 +9,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -189,8 +190,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             ivButtonChatMenu, ivButtonAttach, ivSend, ivButtonSend, ivToBottom, ivRoomTypingIndicator;
     private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
     private TAPRoundedCornerImageView rcivQuoteImage;
-    private TextView tvRoomName, tvRoomStatus, tvUnreadButtonCount, tvChatEmptyGuide, tvProfileDescription, tvQuoteTitle,
-            tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
+    private TextView tvRoomName, tvRoomStatus, tvRoomImageLabel, tvUnreadButtonCount, tvChatEmptyGuide,
+            tvProfileDescription, tvQuoteTitle, tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
     private View vRoomImage, vStatusBadge, vQuoteDecoration;
     private TAPConnectionStatusFragment fConnectionStatus;
 
@@ -447,6 +448,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         rcivQuoteImage = (TAPRoundedCornerImageView) findViewById(R.id.rciv_quote_image);
         tvRoomName = (TextView) findViewById(R.id.tv_room_name);
         tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
+        tvRoomImageLabel = (TextView) findViewById(R.id.tv_room_image_label);
         tvRoomTypingStatus = (TextView) findViewById(R.id.tv_room_typing_status);
         tvUnreadButtonCount = (TextView) findViewById(R.id.tv_unread_button_count);
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
@@ -512,11 +514,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             // Load user avatar URL
             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomImage);
             vm.getRoom().setRoomImage(vm.getOtherUserModel().getAvatarURL());
-        } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-            civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_group_avatar_blank));
         } else {
-            // Use default profile picture if image is empty
-            civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+            loadInitialsToProfilePicture();
         }
 
         // TODO: 1 February 2019 SET ROOM ICON FROM ROOM MODEL
@@ -727,15 +726,24 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         glide.load(image).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                imageView.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+                loadInitialsToProfilePicture();
                 return false;
             }
 
             @Override
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                civRoomImage.setImageTintList(null);
+                tvRoomImageLabel.setVisibility(View.GONE);
                 return false;
             }
         }).into(imageView);
+    }
+
+    private void loadInitialsToProfilePicture() {
+        civRoomImage.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
+        civRoomImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+        tvRoomImageLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName()));
+        tvRoomImageLabel.setVisibility(View.VISIBLE);
     }
 
     private void updateUnreadCount() {
@@ -1152,11 +1160,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
                     // Load room image
                     loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
-                } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-                    civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_group_avatar_blank));
                 } else {
-                    // Use default profile picture if image is empty
-                    civRoomImage.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+                    // Room image is empty
+                    loadInitialsToProfilePicture();
                 }
 
                 tvRoomName.setText(vm.getRoom().getRoomName());
@@ -1906,10 +1912,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                         if (null != vm.getMyUserModel().getAvatarURL() && !vm.getMyUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getMyUserModel().getAvatarURL().getThumbnail(), civMyAvatar);
-                        } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()){
-                            civMyAvatar.setImageDrawable(getDrawable(R.drawable.tap_group_avatar_blank));
                         } else {
-                            civMyAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+                            loadInitialsToProfilePicture();
                         }
 
                         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
@@ -1918,7 +1922,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                                 null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civOtherUserAvatar);
                         } else {
-                            civOtherUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
+                            loadInitialsToProfilePicture();
                         }
                         if (vm.isCustomKeyboardEnabled() && 0 == etChat.getText().toString().trim().length()) {
                             showCustomKeyboard();

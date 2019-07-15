@@ -222,7 +222,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
         private ConstraintLayout clContainer;
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon;
-        private TextView tvRoomName, tvBadgeUnread;
+        private TextView tvAvatarLabel, tvRoomName, tvBadgeUnread;
 
         RoomItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -230,6 +230,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             clContainer = itemView.findViewById(R.id.cl_container);
             civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
+            tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
             tvRoomName = itemView.findViewById(R.id.tv_room_name);
             tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
         }
@@ -253,8 +254,14 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             // Load avatar
             if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
                 Glide.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
+                civAvatar.setImageTintList(null);
+                tvAvatarLabel.setVisibility(View.GONE);
             } else {
-                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+//                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+                civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(room.getRoomName())));
+                civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName()));
+                tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
             // Get highlighted color code
