@@ -88,6 +88,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Set room image
             if (null != item.getLastMessage().getRoom().getRoomImage() && !item.getLastMessage().getRoom().getRoomImage().getThumbnail().isEmpty()) {
                 Glide.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).into(civAvatar);
+            } else if (null != item.getLastMessage() && null != item.getLastMessage().getRoom() && TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
+                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_group_avatar_blank));
             } else {
                 civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
             }
@@ -169,7 +171,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
             // Change Status Message Icon
             // Message Sender is not the active User
-            if (null != item.getLastMessage() && !item.getLastMessage().getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+            if (null != item.getLastMessage() && (!item.getLastMessage().getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ||
+                    TYPE_SYSTEM_MESSAGE == item.getLastMessage().getType())) {
                 ivMessageStatus.setImageDrawable(null);
             }
             // Message is deleted

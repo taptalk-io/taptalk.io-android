@@ -888,7 +888,7 @@ public class TAPChatManager {
                 room,
                 System.currentTimeMillis(),
                 getActiveUser(),
-                getOtherUserIdFromRoom(room.getRoomID()));
+                TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0");
     }
 
     private void triggerSendMessageListener(TAPMessageModel messageModel) {
@@ -1406,7 +1406,7 @@ public class TAPChatManager {
                             "You" : message.getUser().getName())
                     .replaceFirst("target", message.getTarget().getTargetID() != null ?
                             message.getTarget().getTargetID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
-                            "You" : message.getTarget().getTargetName() == null ? "" : message.getTarget().getTargetName() : "");
+                            "you" : message.getTarget().getTargetName() == null ? "" : message.getTarget().getTargetName() : "");
         }
 
         return systemMessageBody;

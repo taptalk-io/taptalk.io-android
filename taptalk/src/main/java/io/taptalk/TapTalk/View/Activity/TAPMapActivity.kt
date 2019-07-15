@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -88,7 +89,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         longitude = centerOfMap?.longitude ?: 0.0
 
         ll_set_location.visibility = View.GONE
-        iv_location.setImageResource(R.drawable.tap_ic_pin_location_grey)
+        iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
         iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
 
         tv_location.setHint(R.string.tap_searching_for_address)
@@ -101,7 +102,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     override fun onCameraIdle() {
         getGeoCoderAddress()
 
-        iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
+        iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
         iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
 
         recycler_view.visibility = View.GONE
@@ -118,11 +119,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                         != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(this, PERMISSIONS, PERMISSION_LOCATION)
                 } else {
-                    latitude = currentLatitude
-                    longitude = currentLongitude
-                    centerOfMap = LatLng(currentLatitude, currentLongitude)
-                    val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
-                    googleMap?.animateCamera(locations)
+                    moveToCurrentLocation()
                 }
             }
             R.id.ll_set_location -> {
@@ -196,7 +193,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 val curr: LatLng = LatLng(latitude, longitude)
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
                 getGeoCoderAddress()
-                iv_location.setImageResource(R.drawable.tap_ic_pin_location_black44)
+                iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
                 iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
                 recycler_view.visibility = View.GONE
                 if (et_keyword.isFocused)
@@ -322,9 +319,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 return
             }
             locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0.toLong(), 0.toFloat(), this)
-        }
-
-        if (locationManager?.allProviders?.contains(LocationManager.NETWORK_PROVIDER) == true) {
+        } else if (locationManager?.allProviders?.contains(LocationManager.NETWORK_PROVIDER) == true) {
             locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0.toLong(), 0.toFloat(), this)
         }
 
@@ -438,5 +433,13 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         } else {
             super.onBackPressed()
         }
+    }
+
+    private fun moveToCurrentLocation() {
+        latitude = currentLatitude
+        longitude = currentLongitude
+        centerOfMap = LatLng(currentLatitude, currentLongitude)
+        val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
+        googleMap?.animateCamera(locations)
     }
 }

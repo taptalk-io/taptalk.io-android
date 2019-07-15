@@ -113,6 +113,9 @@ public interface TAPTalkApiService {
     @POST("client/register")
     Observable<TAPBaseResponse<TAPRegisterResponse>> register(@Body TAPRegisterRequest request);
 
+    @POST("client/logout")
+    Observable<TAPBaseResponse<TAPCommonResponse>> logout();
+
     @POST("client/user/exists/username")
     Observable<TAPBaseResponse<TAPCheckUsernameResponse>> checkUsernameExists(@Body TAPGetUserByUsernameRequest request);
 

@@ -449,9 +449,11 @@ public class TapTalk {
             if (null != notificationMessage &&
                     null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
                     TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
+                Log.e(TAG, "setNotificationMessage: "+TAPUtils.getInstance().toJsonString(notificationMessage) );
                 setChatMessage(notificationMessage.getUser().getName() + ": " + notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             } else if (null != notificationMessage) {
+                Log.e(TAG, "setNotificationMessage:2 "+TAPUtils.getInstance().toJsonString(notificationMessage) );
                 setChatMessage(notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             }

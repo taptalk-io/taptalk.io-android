@@ -3,14 +3,17 @@ package io.taptalk.TapTalk.View.Activity
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.ViewTreeObserver
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
@@ -103,6 +106,8 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             groupViewModel?.isGroupPicStartEmpty = true
         }
 
+        sv_group_data.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
+
         //fl_remove_group_picture.setOnClickListener(this)
         ll_change_group_picture.setOnClickListener(this)
         fl_update_group_btn.setOnClickListener(this)
@@ -159,6 +164,19 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
             tv_update_group_btn.visibility = View.VISIBLE
             iv_loading_progress_update_group.visibility = View.GONE
             TAPUtils.getInstance().stopViewAnimation(iv_loading_progress_update_group)
+        }
+    }
+
+    private val scrollViewListener = ViewTreeObserver.OnScrollChangedListener {
+        val y = sv_group_data.scrollY
+        val h = iv_group_pic_background.height
+        when {
+            y == 0 ->
+                cl_action_bar.elevation = 0f
+            y < h ->
+                cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(1).toFloat()
+            else ->
+                cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(2).toFloat()
         }
     }
 
@@ -251,13 +269,18 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
     }
 
     fun finishGroupUpdate() {
-//        val intent = Intent(this@TAPEditGroupActivity, TAPGroupMemberListActivity::class.java)
-//        intent.putExtra(ROOM, groupViewModel?.groupData)
-//        startActivity(intent)
         val intent = Intent()
         intent.putExtra(ROOM, groupViewModel?.groupData)
         setResult(Activity.RESULT_OK, intent)
         finish()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            when (requestCode) {
+                PERMISSION_READ_EXTERNAL_STORAGE_GALLERY -> TAPUtils.getInstance().pickImageFromGallery(this@TAPEditGroupActivity, PICK_GROUP_IMAGE, false)
+            }
+        }
     }
 
 }
