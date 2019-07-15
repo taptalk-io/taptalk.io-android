@@ -171,7 +171,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
             // Change Status Message Icon
             // Message Sender is not the active User
-            if (null != item.getLastMessage() && !item.getLastMessage().getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+            if (null != item.getLastMessage() && (!item.getLastMessage().getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ||
+                    TYPE_SYSTEM_MESSAGE == item.getLastMessage().getType())) {
                 ivMessageStatus.setImageDrawable(null);
             }
             // Message is deleted

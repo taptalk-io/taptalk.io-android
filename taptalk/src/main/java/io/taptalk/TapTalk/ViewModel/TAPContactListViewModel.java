@@ -26,6 +26,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private String roomID;
     private boolean isSelecting;
     private boolean isFirstContactSyncDone;
+    private int groupSize = 0;
 
     public TAPContactListViewModel(@NonNull Application application) {
         super(application);
@@ -118,6 +119,14 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setFirstContactSyncDone(boolean firstContactSyncDone) {
         isFirstContactSyncDone = firstContactSyncDone;
+    }
+
+    public int getGroupSize() {
+        return groupSize;
+    }
+
+    public void setGroupSize(int groupSize) {
+        this.groupSize = groupSize;
     }
 
     public void addSelectedContact(TAPUserModel contactModel) {
