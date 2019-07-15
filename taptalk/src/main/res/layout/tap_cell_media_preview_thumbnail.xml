@@ -2,40 +2,51 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fl_image_preview"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="56dp"
+    android:layout_height="56dp">
 
     <ImageView
         android:id="@+id/iv_image_preview"
-        android:layout_width="58dp"
-        android:layout_height="58dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_margin="2dp"
         tools:background="@color/tapBrightBlue" />
 
     <FrameLayout
-        android:id="@+id/fl_delete"
-        android:layout_width="58dp"
-        android:layout_height="58dp"
+        android:id="@+id/fl_remove"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_margin="2dp"
         android:background="@color/tapTransparentCharcoal40">
 
         <ImageView
-            android:id="@+id/iv_delete"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:id="@+id/iv_remove"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:layout_gravity="center"
             android:background="@drawable/tap_bg_remove_media_thumbnail_button_default"
-            android:padding="8dp"
+            android:padding="7dp"
             android:src="@drawable/tap_ic_remove_white"
-            android:tint="@color/tapIconRemoveItem"/>
+            android:tint="@color/tapIconRemoveItem" />
 
-        <ProgressBar
-            android:id="@+id/pb_loading"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+        <ImageView
+            android:id="@+id/iv_warning"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_gravity="center"
-            android:indeterminateTint="@color/tapIconLoadingProgressWhite"
-            android:visibility="gone" />
+            android:background="@drawable/tap_bg_remove_media_thumbnail_button_warning"
+            android:tint="@color/tapIconRemoveItemBackground"
+            android:visibility="gone"
+            tools:src="@drawable/tap_ic_warning_red_circle_background" />
+
+        <ImageView
+            android:id="@+id/iv_loading"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:padding="2dp"
+            android:src="@drawable/tap_ic_loading_progress_circle_white"
+            android:tint="@color/tapIconRemoveItem" />
 
     </FrameLayout>
 
