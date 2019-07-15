@@ -132,9 +132,15 @@ public class TAPFileDownloadManager {
         if (null == message.getData()) {
             return;
         }
+        
         String localID = message.getLocalID();
         String fileID = (String) message.getData().get(FILE_ID);
         Number fileSize = (Number) message.getData().get(SIZE);
+
+        // Return if same download ID is already in progress
+        if (null != getDownloadProgressPercent(localID)) {
+            return;
+        }
 
         addDownloadProgressMap(localID, 0, 0);
 
@@ -168,9 +174,15 @@ public class TAPFileDownloadManager {
         if (null == message.getData()) {
             return;
         }
+
         String localID = message.getLocalID();
         String fileID = (String) message.getData().get(FILE_ID);
         Number fileSize = (Number) message.getData().get(SIZE);
+
+        // Return if same download ID is already in progress
+        if (null != getDownloadProgressPercent(localID)) {
+            return;
+        }
 
         addDownloadProgressMap(localID, 0, 0);
 
