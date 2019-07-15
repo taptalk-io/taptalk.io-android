@@ -62,7 +62,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -292,6 +291,7 @@ public class TAPApiManager {
         TAPDeleteMessageRequest request = new TAPDeleteMessageRequest(roomID, messageIDs, isForEveryone);
         execute(homingPigeon.deleteMessages(request), subscriber);
     }
+
     public void getMyContactListFromAPI(Subscriber<TAPBaseResponse<TAPContactResponse>> subscriber) {
         execute(homingPigeon.getMyContactListFromAPI(), subscriber);
     }
@@ -332,11 +332,12 @@ public class TAPApiManager {
         //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
+        String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("roomID", roomID)
-                .addFormDataPart("file", imageFile.getName(), reqFile)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
                 .addFormDataPart("caption", caption)
                 .addFormDataPart("fileType", "image")
                 .build();
@@ -348,11 +349,12 @@ public class TAPApiManager {
                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(videoFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(videoFile, mimeType, uploadCallback);
+        String extension = videoFile.getAbsolutePath().substring(videoFile.getAbsolutePath().lastIndexOf("."));
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("roomID", roomID)
-                .addFormDataPart("file", videoFile.getName(), reqFile)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
                 .addFormDataPart("caption", caption)
                 .addFormDataPart("fileType", "video")
                 .build();
@@ -364,11 +366,12 @@ public class TAPApiManager {
                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(file.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType, uploadCallback);
+        String extension = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf("."));
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("roomID", roomID)
-                .addFormDataPart("file", file.getName(), reqFile)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
                 .addFormDataPart("fileType", "file")
                 .build();
         execute(tapMultipart.uploadFile(requestBody), subscriber);
@@ -379,10 +382,11 @@ public class TAPApiManager {
                                      Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
+        String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file", imageFile.getName(), reqFile)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
                 .addFormDataPart("fileType", "image")
                 .build();
         execute(tapMultipart.uploadProfilePicture(requestBody), subscriber);
@@ -391,11 +395,12 @@ public class TAPApiManager {
     public void uploadGroupPicture(File imageFile, String mimeType, String roomID,
                                    Subscriber<TAPBaseResponse<TAPUpdateRoomResponse>> subscriber) {
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
+        String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType);
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file", imageFile.getName(), reqFile)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
                 .addFormDataPart("roomID", roomID)
                 .build();
         execute(tapMultipart.uploadRoomPicture(requestBody), subscriber);

@@ -105,8 +105,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_forwarded_quote"
-                app:minHeight="100dp"
-                app:minWidth="78dp"
+                app:minHeight="178dp"
+                app:minWidth="158dp"
                 app:topLeftRadius="2dp"
                 tools:src="@drawable/tap_img_default_avatar" />
 
