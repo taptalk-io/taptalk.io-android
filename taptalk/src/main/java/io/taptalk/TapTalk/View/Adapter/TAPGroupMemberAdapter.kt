@@ -13,6 +13,7 @@ import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.DiffCallback.TAPGroupMemberDiffCallback
 import io.taptalk.TapTalk.Helper.CircleImageView
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder
+import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPGroupMemberListListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
@@ -53,6 +54,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
 
     class MemberViewHolder(adapter: TAPGroupMemberAdapter, parent: ViewGroup, itemLayoutId: Int) : TAPBaseViewHolder<TAPUserModel>(parent, itemLayoutId) {
         private val civAvatar: CircleImageView = itemView.findViewById(R.id.civ_avatar)
+        private val tvAvatarLabel: TextView = itemView.findViewById(R.id.tv_avatar_label)
         private val tvFullName: TextView = itemView.findViewById(R.id.tv_full_name)
         private val tvMemberRole: TextView = itemView.findViewById(R.id.tv_member_role)
         private val vSeparator: View = itemView.findViewById(R.id.v_separator)
@@ -70,31 +72,34 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                 tvMemberRole.visibility = View.GONE
             }
 
-            //load member avatar
+            // Load member avatar
             if (item?.avatarURL?.thumbnail.isNullOrEmpty()) {
-                civAvatar.setImageDrawable(itemView.context.getDrawable(R.drawable.tap_img_default_avatar))
+                civAvatar.imageTintList = ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item?.name))
+                civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b)
+                tvAvatarLabel.text = TAPUtils.getInstance().getInitials(item?.name, 2)
+                tvAvatarLabel.visibility = View.VISIBLE
             } else {
                 Glide.with(itemView.context)
                         .load(item?.avatarURL?.thumbnail)
-                        .apply(RequestOptions().centerCrop())
                         .into(civAvatar)
+                civAvatar.imageTintList = null
+                tvAvatarLabel.visibility = View.GONE
             }
 
-            //set name
+            // Set name
             tvFullName.text = item?.name ?: ""
 
-            //hide separator on last item
+            // Hide separator on last item
             if (position == groupAdapter.itemCount - 1) vSeparator.visibility = View.GONE
             else vSeparator.visibility = View.VISIBLE
 
-            //Show and Hide Selection
+            // Show or hide selection
             if (groupAdapter.cellMode == SELECT_MODE &&
                     item?.userID != TAPChatManager.getInstance().activeUser.userID) {
                 ivSelection.visibility = View.VISIBLE
             } else {
                 ivSelection.visibility = View.GONE
             }
-
             if (SELECT_MODE == groupAdapter.cellMode && true == item?.isSelected) {
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_active)
                 ivSelection.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive))
@@ -103,7 +108,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                 ivSelection.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive))
             }
 
-            //setListener for Click
+            // Set listener for click
             itemView.setOnClickListener {
                 if (SELECT_MODE == groupAdapter.cellMode && false == item?.isSelected &&
                         item.userID != TAPChatManager.getInstance().activeUser.userID) {
@@ -122,7 +127,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                 }
             }
 
-            //Set Listener for long press
+            // Set listener for long press
             itemView.setOnLongClickListener {
                 if (NORMAL_MODE == groupAdapter.cellMode && item?.userID != TAPChatManager.getInstance().activeUser.userID) {
                     item?.isSelected = true

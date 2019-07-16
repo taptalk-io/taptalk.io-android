@@ -126,7 +126,7 @@
                 app:minHeight="200dp"
                 app:minWidth="178dp"
                 app:topRightRadius="2dp"
-                tools:src="@drawable/tap_img_default_avatar" />
+                tools:src="@drawable/tap_ic_setup_success_green" />
 
             <FrameLayout
                 android:id="@+id/fl_progress"
