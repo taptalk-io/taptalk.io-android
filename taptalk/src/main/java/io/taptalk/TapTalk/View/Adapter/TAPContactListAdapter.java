@@ -105,7 +105,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 //                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
                 civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getName())));
                 civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(item.getName()));
+                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(item.getName(), 2));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
@@ -195,7 +195,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 //                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
                 civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getName())));
                 civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(item.getName()));
+                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(item.getName(), 2));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 

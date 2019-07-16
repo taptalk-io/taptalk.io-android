@@ -1560,7 +1560,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                    civAvatar.setImageDrawable(vh.itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
                     civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getUser().getName())));
                     civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-                    tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(item.getUser().getName()));
+                    tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(item.getUser().getName(), 2));
                     civAvatar.setVisibility(View.VISIBLE);
                     tvAvatarLabel.setVisibility(View.VISIBLE);
                 }

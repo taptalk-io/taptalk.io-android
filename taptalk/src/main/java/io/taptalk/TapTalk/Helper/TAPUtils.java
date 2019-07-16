@@ -262,12 +262,9 @@ public class TAPUtils {
     public String getInitials(String s, int maxLength) {
         String initials = s.replaceAll("([^\\s])[^\\s]+", "$1").replaceAll("\\s", "");
         if (initials.length() > maxLength) {
-            return initials.substring(0, 1);
+            return initials.substring(0, maxLength);
         }
         return initials;
-    }
-    public String getInitials(String s) {
-        return getInitials(s, 2);
     }
 
     public void dismissKeyboard(Activity activity) {

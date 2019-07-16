@@ -742,7 +742,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void loadInitialsToProfilePicture() {
         civRoomImage.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
         civRoomImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-        tvRoomImageLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName()));
+        tvRoomImageLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName(), vm.getRoom().getRoomType() == TYPE_PERSONAL ? 2 : 1));
         tvRoomImageLabel.setVisibility(View.VISIBLE);
     }
 

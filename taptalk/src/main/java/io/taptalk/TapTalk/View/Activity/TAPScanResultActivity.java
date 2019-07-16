@@ -1,11 +1,13 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.CardView;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -28,6 +30,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.ViewModel.TAPScanResultViewModel;
 import io.taptalk.Taptalk.R;
@@ -37,7 +40,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SCAN_RESULT;
 
 public class TAPScanResultActivity extends TAPBaseActivity {
 
-    private TAPScanResultViewModel mViewModel;
+    private TAPScanResultViewModel vm;
 
     private CardView cvResult;
     private ConstraintLayout clContainer;
@@ -45,7 +48,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     private CircleImageView civMyUserAvatar, civTheirContactAvatar;
     private LinearLayout llButton, llTextUsername, llAddSuccess;
     private ImageView ivButtonIcon, ivLoading, ivAddLoading;
-    private TextView tvButtonTitle, tvAlreadyContact, tvThisIsYou, tvContactUsername, tvContactFullName, tvAddSuccess;
+    private TextView tvButtonTitle, tvMyAvatarLabel, tvContactAvatarLabel, tvAlreadyContact,
+            tvThisIsYou, tvContactUsername, tvContactFullName, tvAddSuccess;
 
     private TAPUserModel addedContactUserModel;
     private String scanResult;
@@ -58,7 +62,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_scan_result_activity);
-        mViewModel = ViewModelProviders.of(this).get(TAPScanResultViewModel.class);
+        vm = ViewModelProviders.of(this).get(TAPScanResultViewModel.class);
         initView();
     }
 
@@ -81,6 +85,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         llAddSuccess = findViewById(R.id.ll_add_success);
         ivButtonIcon = findViewById(R.id.iv_button_icon);
         tvButtonTitle = findViewById(R.id.tv_button_title);
+        tvMyAvatarLabel = findViewById(R.id.tv_my_avatar_label);
+        tvContactAvatarLabel = findViewById(R.id.tv_contact_avatar_label);
         tvAlreadyContact = findViewById(R.id.tv_already_contact);
         tvThisIsYou = findViewById(R.id.tv_this_is_you);
         tvContactFullName = findViewById(R.id.tv_contact_username);
@@ -100,6 +106,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         if (null != addedContactUserModel) {
             setUpFromNewContact();
         } else if (null != scanResult) {
+            scanResult = scanResult.replace("id:", "");
             setUpFromScanQR();
         }
     }
@@ -108,14 +115,14 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         ivLoading.clearAnimation();
         ivLoading.setVisibility(View.GONE);
         cvResult.setVisibility(View.VISIBLE);
-        if (null != addedContactUserModel.getAvatarURL() && !addedContactUserModel.getAvatarURL().getThumbnail().isEmpty()) {
-            glide.load(addedContactUserModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
-        } else {
-            civTheirContactAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-        }
+
+        loadProfilePicture(civTheirContactAvatar, tvContactAvatarLabel, addedContactUserModel);
+
         tvContactFullName.setText(addedContactUserModel.getName());
         tvContactUsername.setText(addedContactUserModel.getUsername());
+
         animateAddSuccess(addedContactUserModel);
+
         llButton.setOnClickListener(v -> {
             TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
                     TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), addedContactUserModel.getUserID()),
@@ -128,7 +135,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void setUpFromScanQR() {
-        TAPDataManager.getInstance().getUserByIdFromApi(scanResult.replace("id:",""), getUserView);
+        TAPDataManager.getInstance().getUserByIdFromApi(scanResult, getUserView);
     }
 
     private void validateScanResult(TAPUserModel userModel) {
@@ -137,11 +144,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         ivLoading.clearAnimation();
         ivLoading.setVisibility(View.GONE);
         contactModel = userModel;
-        if (null != userModel.getAvatarURL() && !userModel.getAvatarURL().getThumbnail().isEmpty()) {
-            glide.load(userModel.getAvatarURL().getThumbnail()).into(civTheirContactAvatar);
-        } else {
-            civTheirContactAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-        }
+
+        loadProfilePicture(civTheirContactAvatar, tvContactAvatarLabel, userModel);
+
         tvContactFullName.setText(userModel.getName());
         tvContactUsername.setText(userModel.getUsername());
 
@@ -236,8 +241,6 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         @Override
         public void onError(Throwable throwable) {
-            super.onError(throwable);
-            // TODO: 31/10/18 ini textnya masih dummy
             new TapTalkDialog.Builder(TAPScanResultActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
@@ -246,6 +249,19 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     .setPrimaryButtonListener(v -> onBackPressed()).show();
         }
     };
+
+    private void loadProfilePicture(CircleImageView imageView, TextView avatarLabel, TAPUserModel userModel) {
+        if (null != userModel.getAvatarURL() && !userModel.getAvatarURL().getThumbnail().isEmpty()) {
+            glide.load(userModel.getAvatarURL().getThumbnail()).into(imageView);
+            imageView.setImageTintList(null);
+            avatarLabel.setVisibility(View.GONE);
+        } else {
+            imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(userModel.getName())));
+            imageView.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            avatarLabel.setText(TAPUtils.getInstance().getInitials(userModel.getName(), 2));
+            avatarLabel.setVisibility(View.VISIBLE);
+        }
+    }
 
     public void viewThisIsYou() {
         runOnUiThread(() -> {
@@ -257,13 +273,11 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     public void animateAlreadyContact() {
         runOnUiThread(() -> {
             llButton.setAlpha(0f);
-            if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
-                glide.load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
-            } else {
-                civMyUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-            }
+            loadProfilePicture(civMyUserAvatar, tvMyAvatarLabel, myUserModel);
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
+            tvMyAvatarLabel.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
+            tvContactAvatarLabel.setTranslationX(0);
             llButton.setOnClickListener(v -> {
                 TAPUtils.getInstance().startChatActivity(
                         TAPScanResultActivity.this,
@@ -294,18 +308,38 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                                         .setDuration(100)
                                         .translationX(TAPUtils.getInstance().dpToPx(-24))
                                         .start();
+                                tvMyAvatarLabel.animate()
+                                        .setInterpolator(new DecelerateInterpolator())
+                                        .setDuration(100)
+                                        .translationX(TAPUtils.getInstance().dpToPx(-24))
+                                        .start();
+
                                 civTheirContactAvatar.animate()
                                         .setInterpolator(new DecelerateInterpolator())
                                         .setDuration(150)
                                         .translationX(TAPUtils.getInstance().dpToPx(48))
-                                        .withEndAction(() ->
-                                                civTheirContactAvatar.animate()
-                                                        .setInterpolator(new AccelerateInterpolator())
-                                                        .setDuration(150)
-                                                        .translationX(TAPUtils.getInstance().dpToPx(24))
-                                                        .start())
+                                        .withEndAction(() -> {
+                                            civTheirContactAvatar.animate()
+                                                    .setInterpolator(new AccelerateInterpolator())
+                                                    .setDuration(150)
+                                                    .translationX(TAPUtils.getInstance().dpToPx(24))
+                                                    .start();
+                                            tvContactAvatarLabel.animate()
+                                                    .setInterpolator(new AccelerateInterpolator())
+                                                    .setDuration(150)
+                                                    .translationX(TAPUtils.getInstance().dpToPx(24))
+                                                    .start();
+                                        }).start();
+                                tvContactAvatarLabel.animate()
+                                        .setInterpolator(new DecelerateInterpolator())
+                                        .setDuration(150)
+                                        .translationX(TAPUtils.getInstance().dpToPx(48))
                                         .start();
                             }).start();
+                    tvMyAvatarLabel.animate()
+                            .setInterpolator(new AccelerateInterpolator())
+                            .translationX(TAPUtils.getInstance().dpToPx(-54))
+                            .start();
                 }).start();
             }).start();
         });
@@ -314,11 +348,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     public void animateAddSuccess(TAPUserModel contactModel) {
         runOnUiThread(() -> {
             tvAddSuccess.setText(Html.fromHtml(String.format(getString(R.string.you_have_added_to_your_contacts), contactModel.getName())));
-            if (null != myUserModel.getAvatarURL() && !myUserModel.getAvatarURL().getThumbnail().isEmpty()) {
-                glide.load(myUserModel.getAvatarURL().getThumbnail()).into(civMyUserAvatar);
-            } else {
-                civMyUserAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-            }
+            loadProfilePicture(civMyUserAvatar, tvMyAvatarLabel, myUserModel);
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
             cvResult.animate().alpha(1f).withEndAction(() -> {
@@ -339,18 +369,38 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                                         .setDuration(100)
                                         .translationX(TAPUtils.getInstance().dpToPx(-24))
                                         .start();
+                                tvMyAvatarLabel.animate().
+                                        setInterpolator(new DecelerateInterpolator())
+                                        .setDuration(100)
+                                        .translationX(TAPUtils.getInstance().dpToPx(-24))
+                                        .start();
+
                                 civTheirContactAvatar.animate()
                                         .setInterpolator(new DecelerateInterpolator())
                                         .setDuration(150)
                                         .translationX(TAPUtils.getInstance().dpToPx(48))
-                                        .withEndAction(() ->
-                                                civTheirContactAvatar.animate()
-                                                        .setInterpolator(new AccelerateInterpolator())
-                                                        .setDuration(150)
-                                                        .translationX(TAPUtils.getInstance().dpToPx(24))
-                                                        .start())
+                                        .withEndAction(() -> {
+                                            civTheirContactAvatar.animate()
+                                                    .setInterpolator(new AccelerateInterpolator())
+                                                    .setDuration(150)
+                                                    .translationX(TAPUtils.getInstance().dpToPx(24))
+                                                    .start();
+                                            tvContactAvatarLabel.animate()
+                                                    .setInterpolator(new AccelerateInterpolator())
+                                                    .setDuration(150)
+                                                    .translationX(TAPUtils.getInstance().dpToPx(24))
+                                                    .start();
+                                        }).start();
+                                tvContactAvatarLabel.animate()
+                                        .setInterpolator(new DecelerateInterpolator())
+                                        .setDuration(150)
+                                        .translationX(TAPUtils.getInstance().dpToPx(48))
                                         .start();
                             }).start();
+                    tvMyAvatarLabel.animate()
+                            .setInterpolator(new AccelerateInterpolator())
+                            .translationX(TAPUtils.getInstance().dpToPx(-54))
+                            .start();
                 }).start();
             }).start();
         });

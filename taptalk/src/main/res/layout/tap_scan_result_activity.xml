@@ -29,13 +29,13 @@
         android:alpha="1"
         android:animateLayoutChanges="true"
         android:clipToPadding="true"
-        android:visibility="gone"
         app:cardCornerRadius="32dp"
         app:cardUseCompatPadding="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+        android:visibility="gone"
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -81,7 +81,20 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:background="@color/tapBrightBlue" />
+                    tools:src="@drawable/tap_bg_circle_butterscotch" />
+
+                <TextView
+                    android:id="@+id/tv_my_avatar_label"
+                    style="@style/tapDefaultRoomAvatarLargeFontStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    app:layout_constraintBottom_toBottomOf="@id/civ_my_avatar"
+                    app:layout_constraintEnd_toEndOf="@id/civ_my_avatar"
+                    app:layout_constraintStart_toStartOf="@id/civ_my_avatar"
+                    app:layout_constraintTop_toTopOf="@id/civ_my_avatar"
+                    tools:text="A" />
 
                 <io.taptalk.TapTalk.Helper.CircleImageView
                     android:id="@+id/civ_contact_avatar"
@@ -93,7 +106,20 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:background="@color/tapRed" />
+                    tools:src="@drawable/tap_bg_circle_active" />
+
+                <TextView
+                    android:id="@+id/tv_contact_avatar_label"
+                    style="@style/tapDefaultRoomAvatarLargeFontStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    app:layout_constraintBottom_toBottomOf="@id/civ_contact_avatar"
+                    app:layout_constraintEnd_toEndOf="@id/civ_contact_avatar"
+                    app:layout_constraintStart_toStartOf="@id/civ_contact_avatar"
+                    app:layout_constraintTop_toTopOf="@id/civ_contact_avatar"
+                    tools:text="A" />
 
             </android.support.constraint.ConstraintLayout>
 

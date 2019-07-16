@@ -308,7 +308,7 @@ public class TAPRoomListFragment extends Fragment {
 //                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
             civMyAvatarImage.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
             civMyAvatarImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-            tvMyAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName()));
+            tvMyAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
             tvMyAvatarLabel.setVisibility(View.VISIBLE);
         }
     }

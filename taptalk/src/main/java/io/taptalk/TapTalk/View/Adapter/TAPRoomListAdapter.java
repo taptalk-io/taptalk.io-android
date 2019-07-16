@@ -100,7 +100,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             } else {
                 civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(room.getRoomName())));
                 civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName()));
+                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
