@@ -318,9 +318,9 @@ public class TAPFileUploadManager {
         messageModel.putData(imageData.toHashMap());
 
         //untuk ngecek skali lagi sebelum manggil api, udah d cancel atau belom
-        if (isUploadQueueEmpty(roomID))
+        if (isUploadQueueEmpty(roomID)) {
             return;
-        else if (0 < getUploadQueue(roomID).size() &&
+        } else if (0 < getUploadQueue(roomID).size() &&
                 !getUploadQueue(roomID).get(0).getLocalID().equals(messageModel.getLocalID())) {
             uploadNextSequence(context, roomID);
             return;
@@ -461,7 +461,6 @@ public class TAPFileUploadManager {
 
             @Override
             public void onError() {
-
             }
 
             @Override
