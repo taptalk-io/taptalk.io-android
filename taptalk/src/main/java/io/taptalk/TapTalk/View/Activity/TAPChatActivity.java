@@ -188,10 +188,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private EditText etChat;
     private ImageView ivButtonBack, ivRoomIcon, ivUnreadButtonImage, ivButtonCancelReply, ivChatMenu,
             ivButtonChatMenu, ivButtonAttach, ivSend, ivButtonSend, ivToBottom, ivRoomTypingIndicator;
-    private CircleImageView civRoomImage, civMyAvatar, civOtherUserAvatar;
+    private CircleImageView civRoomImage, civMyAvatarEmpty, civRoomAvatarEmpty;
     private TAPRoundedCornerImageView rcivQuoteImage;
-    private TextView tvRoomName, tvRoomStatus, tvRoomImageLabel, tvUnreadButtonCount, tvChatEmptyGuide,
-            tvProfileDescription, tvQuoteTitle, tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
+    private TextView tvRoomName, tvRoomStatus, tvRoomImageLabel, tvUnreadButtonCount,
+            tvChatEmptyGuide, tvMyAvatarLabelEmpty, tvRoomAvatarLabelEmpty, tvProfileDescription,
+            tvQuoteTitle, tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
     private View vRoomImage, vStatusBadge, vQuoteDecoration;
     private TAPConnectionStatusFragment fConnectionStatus;
 
@@ -443,8 +444,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
         ivRoomTypingIndicator = (ImageView) findViewById(R.id.iv_room_typing_indicator);
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
-        civMyAvatar = (CircleImageView) findViewById(R.id.civ_my_avatar);
-        civOtherUserAvatar = (CircleImageView) findViewById(R.id.civ_other_user_avatar);
+        civMyAvatarEmpty = (CircleImageView) findViewById(R.id.civ_my_avatar_empty);
+        civRoomAvatarEmpty = (CircleImageView) findViewById(R.id.civ_room_avatar_empty);
         rcivQuoteImage = (TAPRoundedCornerImageView) findViewById(R.id.rciv_quote_image);
         tvRoomName = (TextView) findViewById(R.id.tv_room_name);
         tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
@@ -452,6 +453,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         tvRoomTypingStatus = (TextView) findViewById(R.id.tv_room_typing_status);
         tvUnreadButtonCount = (TextView) findViewById(R.id.tv_unread_button_count);
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
+        tvMyAvatarLabelEmpty = (TextView) findViewById(R.id.tv_my_avatar_label_empty);
+        tvRoomAvatarLabelEmpty = (TextView) findViewById(R.id.tv_room_avatar_label_empty);
         tvProfileDescription = (TextView) findViewById(R.id.tv_profile_description);
         tvQuoteTitle = (TextView) findViewById(R.id.tv_quote_title);
         tvQuoteContent = (TextView) findViewById(R.id.tv_quote_content);
@@ -506,16 +509,16 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
             // Load room image
-            loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
+            loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage, tvRoomImageLabel);
         } else if (null != vm.getRoom() &&
                 TYPE_PERSONAL == vm.getRoom().getRoomType() && null != vm.getOtherUserModel() &&
                 null != vm.getOtherUserModel().getAvatarURL().getThumbnail() &&
                 !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
             // Load user avatar URL
-            loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomImage);
+            loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
             vm.getRoom().setRoomImage(vm.getOtherUserModel().getAvatarURL());
         } else {
-            loadInitialsToProfilePicture();
+            loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
         }
 
         // TODO: 1 February 2019 SET ROOM ICON FROM ROOM MODEL
@@ -722,28 +725,28 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
-    private void loadProfilePicture(String image, ImageView imageView) {
+    private void loadProfilePicture(String image, ImageView imageView, TextView tvAvatarLabel) {
         glide.load(image).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                loadInitialsToProfilePicture();
+                loadInitialsToProfilePicture(imageView, tvAvatarLabel);
                 return false;
             }
 
             @Override
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                civRoomImage.setImageTintList(null);
-                tvRoomImageLabel.setVisibility(View.GONE);
+                imageView.setImageTintList(null);
+                tvAvatarLabel.setVisibility(View.GONE);
                 return false;
             }
         }).into(imageView);
     }
 
-    private void loadInitialsToProfilePicture() {
-        civRoomImage.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
-        civRoomImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-        tvRoomImageLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName(), vm.getRoom().getRoomType() == TYPE_PERSONAL ? 2 : 1));
-        tvRoomImageLabel.setVisibility(View.VISIBLE);
+    private void loadInitialsToProfilePicture(ImageView imageView, TextView tvAvatarLabel) {
+        imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
+        imageView.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+        tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName(), vm.getRoom().getRoomType() == TYPE_PERSONAL ? 2 : 1));
+        tvAvatarLabel.setVisibility(View.VISIBLE);
     }
 
     private void updateUnreadCount() {
@@ -1159,10 +1162,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
                     // Load room image
-                    loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage);
+                    loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage, tvRoomImageLabel);
                 } else {
                     // Room image is empty
-                    loadInitialsToProfilePicture();
+                    loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
                 }
 
                 tvRoomName.setText(vm.getRoom().getRoomName());
@@ -1910,19 +1913,21 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         // TODO: 24 September 2018 CHECK ROOM TYPE
                         clEmptyChat.setVisibility(View.VISIBLE);
 
+                        // Load my avatar
                         if (null != vm.getMyUserModel().getAvatarURL() && !vm.getMyUserModel().getAvatarURL().getThumbnail().isEmpty()) {
-                            loadProfilePicture(vm.getMyUserModel().getAvatarURL().getThumbnail(), civMyAvatar);
+                            loadProfilePicture(vm.getMyUserModel().getAvatarURL().getThumbnail(), civMyAvatarEmpty, tvMyAvatarLabelEmpty);
                         } else {
-                            loadInitialsToProfilePicture();
+                            loadInitialsToProfilePicture(civMyAvatarEmpty, tvMyAvatarLabelEmpty);
                         }
 
+                        // Load room avatar
                         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
-                            loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civOtherUserAvatar);
+                            loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                         } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType() &&
                                 null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
-                            loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civOtherUserAvatar);
+                            loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                         } else {
-                            loadInitialsToProfilePicture();
+                            loadInitialsToProfilePicture(civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                         }
                         if (vm.isCustomKeyboardEnabled() && 0 == etChat.getText().toString().trim().length()) {
                             showCustomKeyboard();
