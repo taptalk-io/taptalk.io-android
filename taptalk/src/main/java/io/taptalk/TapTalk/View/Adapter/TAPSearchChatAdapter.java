@@ -34,6 +34,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAPBaseViewHolder<TAPSearchChatModel>> {
@@ -277,9 +278,13 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                     String.format(itemView.getContext().getString(R.string.tap_highlighted_string), colorCode, "$1"));
             tvRoomName.setText(Html.fromHtml(highlightedText));
 
-            // Change avatar icon
-            // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
-            ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
+            // Set avatar icon
+            if (room.getRoomType() == TYPE_GROUP) {
+                ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_group_icon));
+                ivAvatarIcon.setVisibility(View.VISIBLE);
+            } else {
+                ivAvatarIcon.setVisibility(View.GONE);
+            }
 
             // TODO: 18 October 2018 UPDATE ONLINE STATUS
 

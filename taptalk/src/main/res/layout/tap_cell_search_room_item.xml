@@ -40,10 +40,10 @@
         android:id="@+id/iv_avatar_icon"
         android:layout_width="22dp"
         android:layout_height="22dp"
-        android:src="@drawable/tap_ic_verified"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
-        app:layout_constraintEnd_toEndOf="@id/civ_avatar" />
+        app:layout_constraintEnd_toEndOf="@id/civ_avatar"
+        tools:src="@drawable/tap_ic_verified" />
 
     <TextView
         android:id="@+id/tv_room_name"
