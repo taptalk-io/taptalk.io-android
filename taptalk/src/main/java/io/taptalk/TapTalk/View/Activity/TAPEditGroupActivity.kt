@@ -273,6 +273,12 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         intent.putExtra(ROOM, groupViewModel?.groupData)
         setResult(Activity.RESULT_OK, intent)
         finish()
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
