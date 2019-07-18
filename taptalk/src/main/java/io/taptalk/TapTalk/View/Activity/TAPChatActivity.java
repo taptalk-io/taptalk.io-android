@@ -182,7 +182,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private SwipeBackLayout sblChat;
     private TAPChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
-    private FrameLayout flMessageList;
+    private FrameLayout flMessageList, flRoomUnavailable;
     private ConstraintLayout clContainer, clUnreadButton, clEmptyChat, clQuote, clChatComposer,
             clRoomOnlineStatus, clRoomTypingStatus, clDeletedUser;
     private EditText etChat;
@@ -424,6 +424,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void bindViews() {
         sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
+        flRoomUnavailable = (FrameLayout) findViewById(R.id.fl_room_unavailable);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
@@ -2346,6 +2347,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
                     }
                 });
+    }
+
+    private void showroomIsUnavailableState() {
+        flRoomUnavailable.setVisibility(View.VISIBLE);
+        flMessageList.setVisibility(View.GONE);
+        clEmptyChat.setVisibility(View.GONE);
+        clChatComposer.setVisibility(View.GONE);
+        clDeletedUser.setVisibility(View.GONE);
     }
 
     private void markMessageAsRead(TAPMessageModel readMessage) {
