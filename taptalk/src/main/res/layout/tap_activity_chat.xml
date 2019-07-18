@@ -184,9 +184,9 @@
         android:id="@+id/cl_empty_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
+        android:visibility="gone">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="0dp"
@@ -197,31 +197,59 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <io.taptalk.TapTalk.Helper.CircleImageView
-                android:id="@+id/civ_my_avatar"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:id="@+id/civ_my_avatar_empty"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/tap_bg_circle_9b9b9b"
-                android:translationX="14dp"
+                android:translationX="8dp"
                 app:civ_border_color="@color/tapWhite"
                 app:civ_border_width="4dp"
-                app:layout_constraintEnd_toStartOf="@id/civ_other_user_avatar"
+                app:layout_constraintEnd_toStartOf="@id/civ_room_avatar_empty"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/tv_my_avatar_label_empty"
+                style="@style/tapDefaultRoomAvatarLargeFontStyle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:translationX="8dp"
+                app:layout_constraintBottom_toBottomOf="@id/civ_my_avatar_empty"
+                app:layout_constraintEnd_toEndOf="@id/civ_my_avatar_empty"
+                app:layout_constraintStart_toStartOf="@id/civ_my_avatar_empty"
+                app:layout_constraintTop_toTopOf="@id/civ_my_avatar_empty"
+                tools:text="M" />
+
             <io.taptalk.TapTalk.Helper.CircleImageView
-                android:id="@+id/civ_other_user_avatar"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:id="@+id/civ_room_avatar_empty"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/tap_bg_circle_9b9b9b"
-                android:translationX="-14dp"
+                android:translationX="-8dp"
                 app:civ_border_color="@color/tapWhite"
                 app:civ_border_width="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/civ_my_avatar"
+                app:layout_constraintStart_toEndOf="@id/civ_my_avatar_empty"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_room_avatar_label_empty"
+                style="@style/tapDefaultRoomAvatarLargeFontStyle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:translationX="-8dp"
+                app:layout_constraintBottom_toBottomOf="@id/civ_room_avatar_empty"
+                app:layout_constraintEnd_toEndOf="@id/civ_room_avatar_empty"
+                app:layout_constraintStart_toStartOf="@id/civ_room_avatar_empty"
+                app:layout_constraintTop_toTopOf="@id/civ_room_avatar_empty"
+                tools:text="A" />
 
             <TextView
                 android:id="@+id/tv_chat_empty_guide"
@@ -234,7 +262,7 @@
                 android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/civ_my_avatar"
+                app:layout_constraintTop_toBottomOf="@id/civ_my_avatar_empty"
                 tools:text="@string/tap_personal_chat_room_empty_guide_title" />
 
             <TextView

@@ -67,28 +67,28 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     TapTalkDialog.Builder(this)
                             .setTitle("${resources.getString(R.string.tap_remove_group_members)}s")
                             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                            .setMessage("Are you sure you want to remove selected members?")
-                            .setPrimaryButtonTitle("OK")
+                            .setMessage(getString(R.string.tap_remove_multiple_members_confirmation))
+                            .setPrimaryButtonTitle(getString(R.string.tap_ok))
                             .setPrimaryButtonListener {
                                 TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID
                                         ?: "",
                                         groupViewModel?.selectedMembers?.keys?.toList(), removeRoomMembersView)
                             }
-                            .setSecondaryButtonTitle("Cancel")
+                            .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                             .setSecondaryButtonListener {}
                             .show()
                 } else {
                     TapTalkDialog.Builder(this)
                             .setTitle(resources.getString(R.string.tap_remove_group_members))
                             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                            .setMessage("Are you sure you want to remove this member?")
-                            .setPrimaryButtonTitle("OK")
+                            .setMessage(getString(R.string.tap_remove_member_confirmation))
+                            .setPrimaryButtonTitle(getString(R.string.tap_ok))
                             .setPrimaryButtonListener {
                                 TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID
                                         ?: "",
                                         groupViewModel?.selectedMembers?.keys?.toList(), removeRoomMembersView)
                             }
-                            .setSecondaryButtonTitle("Cancel")
+                            .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                             .setSecondaryButtonListener {}
                             .show()
                 }
@@ -100,14 +100,14 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                         TapTalkDialog.Builder(this)
                                 .setTitle(resources.getString(R.string.tap_promote_admin))
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                                .setMessage("Are you sure you want to promote this member to admin?")
-                                .setPrimaryButtonTitle("OK")
+                                .setMessage(getString(R.string.tap_promote_admin_confirmation))
+                                .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                 .setPrimaryButtonListener {
                                     TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.groupData?.roomID
                                             ?: "",
                                             groupViewModel?.getSelectedUserIDs(), appointAdminView)
                                 }
-                                .setSecondaryButtonTitle("Cancel")
+                                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                                 .setSecondaryButtonListener {}
                                 .show()
                     }
@@ -116,14 +116,14 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                         TapTalkDialog.Builder(this)
                                 .setTitle(resources.getString(R.string.tap_demote_admin))
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                                .setMessage("Are you sure you want to demote this admin?")
-                                .setPrimaryButtonTitle("OK")
+                                .setMessage(getString(R.string.tap_demote_admin_confirmation))
+                                .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                 .setPrimaryButtonListener {
                                     TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.groupData?.roomID
                                             ?: "",
                                             groupViewModel?.getSelectedUserIDs(), appointAdminView)
                                 }
-                                .setSecondaryButtonTitle("Cancel")
+                                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                                 .setSecondaryButtonListener {}
                                 .show()
                     }

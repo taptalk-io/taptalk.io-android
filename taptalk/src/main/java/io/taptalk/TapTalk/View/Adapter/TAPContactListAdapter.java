@@ -78,7 +78,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon, ivSelection;
-        private TextView tvFullName;
+        private TextView tvAvatarLabel, tvFullName;
         private View vSeparator;
 
         ContactListHolder(ViewGroup parent, int itemLayoutId) {
@@ -87,6 +87,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
             civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
             ivSelection = itemView.findViewById(R.id.iv_selection);
+            tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
             vSeparator = itemView.findViewById(R.id.v_separator);
         }
@@ -98,8 +99,14 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                         .load(item.getAvatarURL().getThumbnail())
                         .apply(new RequestOptions().centerCrop())
                         .into(civAvatar);
+                civAvatar.setImageTintList(null);
+                tvAvatarLabel.setVisibility(View.GONE);
             } else {
-                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+//                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+                civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getName())));
+                civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(item.getName(), 2));
+                tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
             // Change avatar icon and background
@@ -164,13 +171,14 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon;
-        private TextView tvFullName;
+        private TextView tvAvatarLabel, tvFullName;
 
         SelectedGroupMemberHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
 
             civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
+            tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
         }
 
@@ -181,8 +189,14 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
                         .load(item.getAvatarURL().getThumbnail())
                         .apply(new RequestOptions().centerCrop())
                         .into(civAvatar);
+                civAvatar.setImageTintList(null);
+                tvAvatarLabel.setVisibility(View.GONE);
             } else {
-                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+//                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+                civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getName())));
+                civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(item.getName(), 2));
+                tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
             // Set name
@@ -198,14 +212,15 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
             // Update avatar icon
             if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("1")*/) {
                 ivAvatarIcon.setVisibility(View.GONE);
-            } else if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("2")*/) {
-                ivAvatarIcon.setVisibility(View.VISIBLE);
-                ivAvatarIcon.setImageResource(R.drawable.tap_ic_verified);
-                ivAvatarIcon.setBackground(null);
+//            } else if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("2")*/) {
+//                ivAvatarIcon.setVisibility(View.VISIBLE);
+//                ivAvatarIcon.setImageResource(R.drawable.tap_ic_verified);
+//                ivAvatarIcon.setBackground(null);
             } else {
-                ivAvatarIcon.setVisibility(View.VISIBLE);
                 ivAvatarIcon.setImageResource(R.drawable.tap_ic_remove_red_circle_background);
+                ivAvatarIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconRemoveItemBackground)));
                 ivAvatarIcon.setBackgroundResource(R.drawable.tap_bg_circle_remove_item);
+                ivAvatarIcon.setVisibility(View.VISIBLE);
             }
 
             itemView.setOnClickListener(v -> deselectContact(item));

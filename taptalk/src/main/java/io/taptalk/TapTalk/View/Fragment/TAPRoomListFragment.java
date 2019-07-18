@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -59,6 +60,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
@@ -76,7 +78,7 @@ public class TAPRoomListFragment extends Fragment {
     private ConstraintLayout clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
     private LinearLayout llRoomEmpty, llRetrySetup;
-    private TextView tvSelectionCount, tvStartNewChat, tvSetupChat, tvSetupChatDescription;
+    private TextView tvSelectionCount, tvMyAvatarLabel, tvStartNewChat, tvSetupChat, tvSetupChatDescription;
     private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivSetupChat, ivSetupChatLoading;
     private CircleImageView civMyAvatarImage;
     private CardView cvButtonSearch;
@@ -234,6 +236,7 @@ public class TAPRoomListFragment extends Fragment {
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
         llRetrySetup = view.findViewById(R.id.ll_retry_setup);
         //tvSelectionCount = view.findViewById(R.id.tv_selection_count);
+        tvMyAvatarLabel = view.findViewById(R.id.tv_my_avatar_image_label);
         tvStartNewChat = view.findViewById(R.id.tv_start_new_chat);
         tvSetupChat = view.findViewById(R.id.tv_setup_chat);
         tvSetupChatDescription = view.findViewById(R.id.tv_setup_chat_description);
@@ -293,14 +296,20 @@ public class TAPRoomListFragment extends Fragment {
 
     private void reloadProfilePicture() {
         // TODO: 7 May 2019 CHECK IF PROFILE IS HIDDEN
-        if (null != getContext() && null != TAPChatManager.getInstance().getActiveUser()
-                && null != TAPChatManager.getInstance().getActiveUser().getAvatarURL()
+        TAPUserModel user = TAPChatManager.getInstance().getActiveUser();
+        if (null != getContext() && null != user && null != user.getAvatarURL()
                 && !TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail().isEmpty()) {
             Glide.with(getContext()).load(TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail())
                     .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
-        } else if (null != getContext()) {
-            Glide.with(getContext()).load(getContext().getDrawable(R.drawable.tap_img_default_avatar))
-                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
+            civMyAvatarImage.setImageTintList(null);
+            tvMyAvatarLabel.setVisibility(View.GONE);
+        } else if (null != getContext() && null != user) {
+//            Glide.with(getContext()).load(getContext().getDrawable(R.drawable.tap_img_default_avatar))
+//                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
+            civMyAvatarImage.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
+            civMyAvatarImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            tvMyAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
+            tvMyAvatarLabel.setVisibility(View.VISIBLE);
         }
     }
 

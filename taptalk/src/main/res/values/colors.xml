@@ -201,9 +201,10 @@
     <color name="tapPopupLoadingLabelColor">@color/tapColorPrimary</color>
     <color name="tapSearchConnectionLostTitleColor">@color/tapColorTextDark</color>
     <color name="tapSearchConnectionLostDescriptionColor">@color/tapColorTextDark</color>
-    <color name="tapDefaultRoomAvatarLargeFontColor">@color/tapColorTextLight</color>
-    <color name="tapDefaultRoomAvatarMediumFontColor">@color/tapColorTextLight</color>
     <color name="tapDefaultRoomAvatarSmallFontColor">@color/tapColorTextLight</color>
+    <color name="tapDefaultRoomAvatarMediumFontColor">@color/tapColorTextLight</color>
+    <color name="tapDefaultRoomAvatarLargeFontColor">@color/tapColorTextLight</color>
+    <color name="tapDefaultRoomAvatarExtraLargeFontColor">@color/tapColorTextLight</color>
 
     <color name="tapSearchBarTextColor">@color/tapColorTextDark</color>
     <color name="tapSearchBarTextPlaceholderColor">@color/tapColorTextMedium</color>

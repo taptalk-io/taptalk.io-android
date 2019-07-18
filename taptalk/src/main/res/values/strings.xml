@@ -36,14 +36,14 @@
     <string name="tap_chat_room_setup_success_description">You are all set and ready to go!</string>
     <string name="tap_chat_room_setup_failed_description">Retry Setup</string>
     <string name="tap_search_chat_placeholder">Chats, groups, and contacts</string>
-    <string name="tap_search_forward_placeholder">Search chats or contacts</string>
+    <string name="tap_search_forward_placeholder">Search for chats or contacts</string>
 
     <!--Contacts-->
     <string name="tap_search_for_contacts">Search for contacts</string>
     <string name="tap_cant_find_contact">Can’t find the contact you were looking for?</string>
     <string name="tap_cant_find_person">Can’t find who you are looking for?</string>
     <string name="tap_view_blocked_contacts">View Blocked Contacts</string>
-    <string name="tap_search_by_username">Search by Username</string>
+    <string name="tap_search_by_username">Search by username</string>
     <string name="tap_add_new_contact">Add New Contact</string>
     <string name="tap_this_is_you">This is you</string>
     <string name="you_have_added_to_your_contacts"><![CDATA[You have added <b>%s</b> to your contacts]]></string>
@@ -98,6 +98,7 @@
     <string name="tap_promote_admin_confirmation">Are you sure you want to promote this member to admin?</string>
     <string name="tap_demote_admin_confirmation">Are you sure you want to demote this admin?</string>
     <string name="tap_remove_member_confirmation">Are you sure you want to remove this member?</string>
+    <string name="tap_remove_multiple_members_confirmation">Are you sure you want to remove selected members?</string>
     <string name="tap_leave_group_confirmation">All messages and shared medias from this room will be inaccessible. Are you sure you want to leave?</string>
     <string name="tap_adding">Adding…</string>
     <string name="tap_removing">Removing…</string>
@@ -108,7 +109,7 @@
     <string name="tap_promoted_admin">Admin Promoted</string>
     <string name="tap_demoted_admin">Admin Demoted</string>
     <string name="tap_left_group">Left Group</string>
-    <string name="tap_search_for_group_members">Search for group members</string>
+    <string name="tap_search_for_group_members">Search for members</string>
 
     <!--Guides-->
     <string name="tap_scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>

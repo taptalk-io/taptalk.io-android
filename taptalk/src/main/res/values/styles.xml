@@ -143,9 +143,10 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="tapDefaultRoomAvatarLargeFontStyle" parent="tapFontFamilyBold">
+    <style name="tapDefaultRoomAvatarSmallFontStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapDefaultRoomAvatarLargeFontColor</item>
+        <item name="android:textColor">@color/tapDefaultRoomAvatarSmallFontColor</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="tapDefaultRoomAvatarMediumFontStyle" parent="tapFontFamilyBold">
@@ -154,10 +155,16 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="tapDefaultRoomAvatarSmallFontStyle" parent="tapFontFamilyBold">
+    <style name="tapDefaultRoomAvatarLargeFontStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">0.01</item>
-        <item name="android:textColor">@color/tapDefaultRoomAvatarSmallFontColor</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/tapDefaultRoomAvatarLargeFontColor</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="tapDefaultRoomAvatarExtraLargeFontStyle" parent="tapFontFamilyBold">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/tapDefaultRoomAvatarExtraLargeFontColor</item>
+        <item name="android:textSize">32sp</item>
     </style>
 
     <style name="tapNavBarSearchTextStyle" parent="tapFontFamilyRegular">

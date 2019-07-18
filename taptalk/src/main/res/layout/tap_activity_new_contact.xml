@@ -125,8 +125,8 @@
 
             <io.taptalk.TapTalk.Helper.CircleImageView
                 android:id="@+id/civ_avatar"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:scaleType="centerCrop"
                 android:visibility="gone"
                 app:civ_border_color="@color/tapWhite"
@@ -135,6 +135,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/iv_expert_cover"
                 app:layout_goneMarginTop="16dp" />
+
+            <TextView
+                android:id="@+id/tv_avatar_label"
+                style="@style/tapDefaultRoomAvatarLargeFontStyle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+                app:layout_constraintEnd_toEndOf="@id/civ_avatar"
+                app:layout_constraintStart_toStartOf="@id/civ_avatar"
+                app:layout_constraintTop_toTopOf="@id/civ_avatar" />
 
             <ImageView
                 android:id="@+id/iv_avatar_icon"

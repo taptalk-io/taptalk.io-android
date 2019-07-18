@@ -253,26 +253,20 @@ public class TAPUtils {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
-    /**
-     * generate random color
-     */
     public int getRandomColor(String s) {
         int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.tapDefaultRoomAvatarBackgroundColors);
-
-//        int hash = 7;
-//        for (int i = 0, len = s.length(); i < len; i++) {
-//            hash = s.codePointAt(i) + (hash << 5) - hash;
-//        }
-//        int index = Math.abs(hash % randomColors.length);
-
         int index = (((int) s.charAt(0)) + s.length()) % randomColors.length;
-
         return randomColors[index];
     }
 
-    /**
-     * dismiss Keyboard
-     */
+    public String getInitials(String s, int maxLength) {
+        String initials = s.replaceAll("([^\\s])[^\\s]+", "$1").replaceAll("\\s", "");
+        if (initials.length() > maxLength) {
+            return initials.substring(0, maxLength);
+        }
+        return initials;
+    }
+
     public void dismissKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
@@ -290,9 +284,6 @@ public class TAPUtils {
         view.clearFocus();
     }
 
-    /**
-     * Show Keyboard
-     */
     public void showKeyboard(Activity activity, View view) {
         view.requestFocus();
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);

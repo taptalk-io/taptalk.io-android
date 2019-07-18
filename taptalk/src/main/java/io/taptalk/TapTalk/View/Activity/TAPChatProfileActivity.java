@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -242,7 +241,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
                     .into(ivProfile);
         } else if(null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-            ivProfile.setImageResource(R.drawable.tap_group_avatar_blank);
+            ivProfile.setImageResource(R.drawable.tap_img_default_group_avatar);
         } else {
             ivProfile.setImageResource(R.drawable.tap_img_default_avatar);
         }

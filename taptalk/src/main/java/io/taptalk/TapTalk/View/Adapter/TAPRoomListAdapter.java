@@ -25,6 +25,7 @@ import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.R;
@@ -61,7 +62,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         private ConstraintLayout clContainer;
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon, ivMute, ivMessageStatus, ivRoomTypingIndicator;
-        private TextView tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread, tvGroupSenderName;
+        private TextView tvAvatarLabel, tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread, tvGroupSenderName;
         private View vSeparator, vSeparatorFull;
 
         RoomListVH(ViewGroup parent, int itemLayoutId) {
@@ -72,6 +73,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             ivMute = itemView.findViewById(R.id.iv_mute);
             ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
             ivRoomTypingIndicator = itemView.findViewById(R.id.iv_room_typing_indicator);
+            tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
             tvGroupSenderName = itemView.findViewById(R.id.tv_group_sender_name);
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
@@ -84,18 +86,26 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         @Override
         protected void onBind(TAPRoomListModel item, int position) {
             Resources resource = itemView.getContext().getResources();
+            TAPRoomModel room = item.getLastMessage().getRoom();
 
             // Set room image
-            if (null != item.getLastMessage().getRoom().getRoomImage() && !item.getLastMessage().getRoom().getRoomImage().getThumbnail().isEmpty()) {
-                Glide.with(itemView.getContext()).load(item.getLastMessage().getRoom().getRoomImage().getThumbnail()).into(civAvatar);
-            } else if (null != item.getLastMessage() && null != item.getLastMessage().getRoom() && TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
-                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_group_avatar_blank));
+            if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
+                Glide.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
+                civAvatar.setImageTintList(null);
+                tvAvatarLabel.setVisibility(View.GONE);
+//            } else if (null != item.getLastMessage() && null != room && TYPE_GROUP == room.getRoomType()) {
+//                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_group_avatar_blank));
+//            } else {
+//                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
             } else {
-                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+                civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(room.getRoomName())));
+                civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
+                tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
             // Change avatar icon and background
-            //if (vm.getSelectedRooms().containsKey(item.getLastMessage().getRoom().getRoomID())) {
+            //if (vm.getSelectedRooms().containsKey(room.getRoomID())) {
             // Item is selected
             //    clContainer.setBackgroundColor(resource.getColor(R.color.tap_transparent_black_18));
             //    ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_select));
@@ -107,14 +117,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
             clContainer.setBackgroundColor(resource.getColor(R.color.tapWhite));
             //ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
-            if (item.getLastMessage().getRoom().getRoomType() == TYPE_GROUP) {
-                // TODO: 2019-07-08 GROUP
+            if (room.getRoomType() == TYPE_GROUP) {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
                 Glide.with(itemView.getContext()).load(R.drawable.tap_ic_group_icon).into(ivAvatarIcon);
                 tvGroupSenderName.setVisibility(View.VISIBLE);
                 tvGroupSenderName.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) ? itemView.getContext().getString(R.string.tap_you) : item.getLastMessage().getUser().getName());
             } else {
-                // TODO: 2019-07-08 NON GROUP
                 tvGroupSenderName.setVisibility(View.GONE);
                 ivAvatarIcon.setVisibility(View.GONE);
             }
@@ -128,7 +136,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             //}
 
             // Set name and timestamp text
-            tvFullName.setText(item.getLastMessage().getRoom().getRoomName());
+            tvFullName.setText(room.getRoomName());
             tvLastMessageTime.setText(item.getLastMessageTimestamp());
 
             if (item.isTyping()) {
@@ -161,7 +169,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Check if room is muted
-            if (item.getLastMessage().getRoom().isMuted()) {
+            if (room.isMuted()) {
                 ivMute.setVisibility(View.VISIBLE);
                 tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_room_list_unread_badge_inactive));
             } else {

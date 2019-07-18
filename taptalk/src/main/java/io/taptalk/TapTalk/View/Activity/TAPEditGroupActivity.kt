@@ -4,6 +4,7 @@ import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -35,7 +36,10 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
             R.id.fl_remove_group_picture -> {
                 groupViewModel?.groupData?.roomImage = null
-                civ_group_picture.setImageResource(R.drawable.tap_img_default_avatar)
+                civ_group_picture.imageTintList = ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(groupViewModel?.groupData?.roomName))
+                civ_group_picture.setImageResource(R.drawable.tap_bg_circle_9b9b9b)
+                tv_group_picture_label.text = TAPUtils.getInstance().getInitials(groupViewModel?.groupData?.roomName, 1)
+                tv_group_picture_label.visibility = View.VISIBLE
                 fl_remove_group_picture.visibility = View.GONE
                 groupViewModel?.isGroupPicChanged = groupViewModel?.isGroupPicStartEmpty != true
                 showingButton()
@@ -99,10 +103,8 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
         et_group_name.setText(groupViewModel?.groupData?.roomName ?: "")
 
-        if (null != groupViewModel?.groupData?.roomImage && "" != groupViewModel?.groupData?.roomImage?.thumbnail) {
-            val imageURL = groupViewModel?.groupData?.roomImage
-            loadImage(imageURL?.thumbnail ?: "")
-        } else {
+        loadImage(groupViewModel?.groupData?.roomImage?.thumbnail ?: "")
+        if (null == groupViewModel?.groupData?.roomImage || "" == groupViewModel?.groupData?.roomImage?.thumbnail) {
             groupViewModel?.isGroupPicStartEmpty = true
         }
 
@@ -138,8 +140,16 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
     }
 
     private fun loadImage(imageURL: String) {
-        Glide.with(this).load(imageURL)
-                .apply(RequestOptions().centerCrop()).into(civ_group_picture)
+        if (imageURL.isNullOrEmpty()) {
+            civ_group_picture.imageTintList = ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(groupViewModel?.groupData?.roomName))
+            civ_group_picture.setImageResource(R.drawable.tap_bg_circle_9b9b9b)
+            tv_group_picture_label.text = TAPUtils.getInstance().getInitials(groupViewModel?.groupData?.roomName, 1)
+            tv_group_picture_label.visibility = View.VISIBLE
+        } else {
+            Glide.with(this).load(imageURL).into(civ_group_picture)
+            civ_group_picture.imageTintList = null
+            tv_group_picture_label.visibility = View.GONE
+        }
         //fl_remove_group_picture.visibility = View.VISIBLE
     }
 

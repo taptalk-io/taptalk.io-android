@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -150,9 +151,19 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         //et_full_name.addTextChangedListener(fullNameWatcher)
         //et_email_address.addTextChangedListener(emailWatcher)
 
-        glide.load(vm.currentProfilePicture)
-                .apply(RequestOptions().placeholder(R.drawable.tap_img_default_avatar))
-                .into(civ_profile_picture)
+        if (vm.currentProfilePicture.isEmpty()) {
+            civ_profile_picture.imageTintList = ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name))
+            civ_profile_picture.setImageResource(R.drawable.tap_bg_circle_9b9b9b)
+            tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
+            tv_profile_picture_label.visibility = View.VISIBLE
+        } else {
+            glide.load(vm.currentProfilePicture)
+                    .apply(RequestOptions().placeholder(R.drawable.tap_bg_circle_9b9b9b))
+                    .into(civ_profile_picture)
+            civ_profile_picture.imageTintList = null
+            tv_profile_picture_label.visibility = View.GONE
+        }
+
         if (vm.countryFlagUrl != "") {
             glide.load(vm.countryFlagUrl)
                     .apply(RequestOptions().placeholder(R.drawable.tap_ic_default_flag))
@@ -221,15 +232,23 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun reloadProfilePicture(imageUri: Uri?, showErrorMessage: Boolean, uploadPicture: Boolean) {
         if (null == imageUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
-            glide.load(R.drawable.tap_img_default_avatar).into(civ_profile_picture)
+
+            civ_profile_picture.imageTintList = ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name))
+            civ_profile_picture.setImageResource(R.drawable.tap_bg_circle_9b9b9b)
+            tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
+            tv_profile_picture_label.visibility = View.VISIBLE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.GONE
+
             if (showErrorMessage) {
                 Toast.makeText(this@TAPMyAccountActivity, getString(R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
             }
         } else {
             vm.formCheck[indexProfilePicture] = stateValid
+
             glide.load(imageUri).into(civ_profile_picture)
+            civ_profile_picture.imageTintList = null
+            tv_profile_picture_label.visibility = View.GONE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.VISIBLE
 
@@ -242,12 +261,18 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun reloadProfilePicture(imageUrl: String?, placeholder: Drawable) {
         if (null == imageUrl) {
             vm.formCheck[indexProfilePicture] = stateEmpty
-            glide.load(R.drawable.tap_img_default_avatar).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
+
+            civ_profile_picture.imageTintList = ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name))
+            glide.load(R.drawable.tap_bg_circle_9b9b9b).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
+            tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
+            tv_profile_picture_label.visibility = View.VISIBLE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.GONE
         } else {
             vm.formCheck[indexProfilePicture] = stateValid
+            civ_profile_picture.imageTintList = null
             glide.load(imageUrl).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
+            tv_profile_picture_label.visibility = View.GONE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.VISIBLE
         }
