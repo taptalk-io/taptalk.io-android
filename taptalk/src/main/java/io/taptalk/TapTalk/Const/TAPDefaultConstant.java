@@ -111,6 +111,7 @@ public class TAPDefaultConstant {
         public static final String GROUP_NAME = "kTAPExtraGroupName";
         public static final String GROUP_IMAGE = "kTAPExtraGroupImage";
         public static final String IS_TYPING = "kTAPExtraIsTyping";
+        public static final String GROUP_TYPING_MAP = "kTAPExtraGroupTypingMap";
         public static final String IS_ADMIN = "kTAPExtraIsAdmin";
         public static final String QUOTE = "kTAPExtraQuote";
         public static final String URI = "kTAPExtraUri";
@@ -337,6 +338,7 @@ public class TAPDefaultConstant {
 
     public static final int MAX_ITEMS_PER_PAGE = 50;
     public static final int GROUP_MEMBER_LIMIT = 50;
+    public static final int SHORT_ANIMATION_TIME = 100;
     public static final int DEFAULT_ANIMATION_TIME = 200;
     public static final int IMAGE_MAX_DIMENSION = 2000;
     public static final int THUMB_MAX_DIMENSION = 20;
