@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -183,8 +184,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
+    private LinearLayout llButtonDeleteChat;
     private ConstraintLayout clContainer, clUnreadButton, clEmptyChat, clQuote, clChatComposer,
-            clRoomOnlineStatus, clRoomTypingStatus, clDeletedUser;
+            clRoomOnlineStatus, clRoomTypingStatus, clChatHistory;
     private EditText etChat;
     private ImageView ivButtonBack, ivRoomIcon, ivUnreadButtonImage, ivButtonCancelReply, ivChatMenu,
             ivButtonChatMenu, ivButtonAttach, ivSend, ivButtonSend, ivToBottom, ivRoomTypingIndicator;
@@ -192,7 +194,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPRoundedCornerImageView rcivQuoteImage;
     private TextView tvRoomName, tvRoomStatus, tvRoomImageLabel, tvUnreadButtonCount,
             tvChatEmptyGuide, tvMyAvatarLabelEmpty, tvRoomAvatarLabelEmpty, tvProfileDescription,
-            tvQuoteTitle, tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus;
+            tvQuoteTitle, tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus, tvChatHistoryContent;
     private View vRoomImage, vStatusBadge, vQuoteDecoration;
     private TAPConnectionStatusFragment fConnectionStatus;
 
@@ -412,9 +414,12 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             cancelNotificationWhenEnterRoom();
             //registerBroadcastManager();
 
-            if (null != clDeletedUser) clDeletedUser.setVisibility(View.GONE);
-
-            if (null != clChatComposer) clChatComposer.setVisibility(View.VISIBLE);
+            if (null != clChatHistory) {
+                clChatHistory.setVisibility(View.GONE);
+            }
+            if (null != clChatComposer) {
+                clChatComposer.setVisibility(View.VISIBLE);
+            }
 
         } else if (vm.getMessageModels().size() == 0) {
             initView();
@@ -424,10 +429,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void bindViews() {
         sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
+        llButtonDeleteChat = (LinearLayout) findViewById(R.id.ll_button_delete_chat);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
-        clDeletedUser = (ConstraintLayout) findViewById(R.id.cl_deleted_user);
+        clChatHistory = (ConstraintLayout) findViewById(R.id.cl_chat_history);
         clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
@@ -459,6 +465,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         tvQuoteTitle = (TextView) findViewById(R.id.tv_quote_title);
         tvQuoteContent = (TextView) findViewById(R.id.tv_quote_content);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
+        tvChatHistoryContent = (TextView) findViewById(R.id.tv_chat_history_content);
         rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);
         rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
         etChat = (EditText) findViewById(R.id.et_chat);
@@ -1170,8 +1177,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 tvRoomName.setText(vm.getRoom().getRoomName());
 
-                if (null != vm.getRoom().getGroupParticipants())
-                    tvRoomStatus.setText(String.format("%d Members", vm.getRoom().getGroupParticipants().size()));
+                if (null != vm.getRoom().getGroupParticipants()) {
+                    tvRoomStatus.setText(String.format(getString(R.string.tap_group_member_count), vm.getRoom().getGroupParticipants().size()));
+                    // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
+                    //showChatAsHistory(getString(R.string.tap_not_a_participant));
+                }
             }
         })).start();
     }
@@ -1197,19 +1207,26 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                     @Override
                     public void onError(TAPErrorModel error) {
-                        if (null != clDeletedUser) clDeletedUser.setVisibility(View.VISIBLE);
-
-                        if (null != clChatComposer) clChatComposer.setVisibility(View.INVISIBLE);
+                        showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
                     }
                 });
             else if (null == vm.getOtherUserModel()) {
-                if (null != clDeletedUser) clDeletedUser.setVisibility(View.VISIBLE);
-
-                if (null != clChatComposer) clChatComposer.setVisibility(View.INVISIBLE);
+                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
             }
         }).start();
     }
 
+    private void showChatAsHistory(String message) {
+        if (null != clChatHistory) {
+            clChatHistory.setVisibility(View.VISIBLE);
+        }
+        if (null != tvChatHistoryContent) {
+            tvChatHistoryContent.setText(message);
+        }
+        if (null != clChatComposer) {
+            clChatComposer.setVisibility(View.INVISIBLE);
+        }
+    }
 
     private void callApiAfter() {
         /*call api after rules:

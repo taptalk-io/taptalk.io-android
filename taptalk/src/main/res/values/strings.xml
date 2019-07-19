@@ -110,6 +110,7 @@
     <string name="tap_demoted_admin">Admin Demoted</string>
     <string name="tap_left_group">Left Group</string>
     <string name="tap_search_for_group_members">Search for members</string>
+    <string name="tap_not_a_participant">You are no longer a participant in this group</string>
 
     <!--Guides-->
     <string name="tap_scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
@@ -281,6 +282,7 @@
     <string name="tap_clear_history">Clear history</string>
     <string name="tap_continue_s">Continue</string>
     <string name="tap_s_unread_messages">%s unread messages</string>
+    <string name="tap_delete_chat">Delete Chat</string>
     <string name="tap_deleted_message">Deleted Message</string>
     <string name="tap_delivered_at">Delivered at</string>
     <string name="tap_details">Details</string>

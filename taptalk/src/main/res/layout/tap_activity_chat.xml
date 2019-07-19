@@ -375,59 +375,6 @@
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/cl_deleted_user"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/tapDeletedChatRoomInfoBackgroundColor"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/cl_chat_composer"
-        app:layout_constraintTop_toTopOf="@id/cl_chat_composer">
-
-        <ImageView
-            android:id="@+id/iv_history_icon"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_gravity="center"
-            android:src="@drawable/tap_ic_history"
-            android:tint="@color/tapIconDeletedChatRoom"
-            app:layout_constraintBottom_toBottomOf="@id/tv_chat_is_history"
-            app:layout_constraintEnd_toStartOf="@id/tv_chat_is_history"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_chat_is_history"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <TextView
-            android:id="@+id/tv_chat_is_history"
-            style="@style/tapDeletedChatRoomInfoTitleStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="@string/tap_this_is_a_chat_history"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_history_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <TextView
-            style="@style/tapDeletedChatRoomInfoContentStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="@string/tap_this_user_is_no_longer_available"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_chat_is_history" />
-
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_chat_composer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -612,6 +559,88 @@
             app:layout_constraintStart_toEndOf="@id/et_chat"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_chat_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/tapDeletedChatRoomInfoBackgroundColor"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_history_icon"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@drawable/tap_ic_history"
+            android:tint="@color/tapIconDeletedChatRoom"
+            app:layout_constraintBottom_toBottomOf="@id/tv_chat_history_title"
+            app:layout_constraintEnd_toStartOf="@id/tv_chat_history_title"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_chat_history_title"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tv_chat_history_title"
+            style="@style/tapDeletedChatRoomInfoTitleStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/tap_this_is_a_chat_history"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_history_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tv_chat_history_content"
+            style="@style/tapDeletedChatRoomInfoContentStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/tap_this_user_is_no_longer_available"
+            app:layout_constraintBottom_toTopOf="@id/ll_button_delete_chat"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_chat_history_title" />
+
+        <LinearLayout
+            android:id="@+id/ll_button_delete_chat"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_margin="16dp"
+            android:background="@drawable/tap_bg_button_destructive_ripple"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_chat_history_content">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/tap_ic_trash_watermelon_red"
+                android:tint="@color/tapButtonIconColor" />
+
+            <TextView
+                style="@style/tapButtonLabelStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center"
+                android:text="@string/tap_delete_chat" />
+
+        </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>
 
