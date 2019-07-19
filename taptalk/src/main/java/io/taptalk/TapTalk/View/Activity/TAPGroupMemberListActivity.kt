@@ -58,6 +58,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))
                 intent.putExtra(ROOM_ID, groupViewModel?.groupData?.roomID)
                 startActivityForResult(intent, GROUP_ADD_MEMBER)
+                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
             }
 
             R.id.ll_remove_button -> {
@@ -205,6 +206,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 intent.putExtra(TAPDefaultConstant.K_USER, member)
                 intent.putExtra(IS_ADMIN, isAdmin)
                 startActivityForResult(intent, GROUP_OPEN_MEMBER_PROFILE)
+                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
             }
         }
     }
@@ -329,8 +331,12 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 intent.putExtra(ROOM, groupViewModel?.groupData)
                 setResult(Activity.RESULT_OK, intent)
                 finish()
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
             }
-            else -> finish()
+            else -> {
+                finish()
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+            }
         }
     }
 

@@ -372,6 +372,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         Intent intent = new Intent(TAPChatProfileActivity.this, TAPEditGroupActivity.class);
         intent.putExtra(ROOM, vm.getRoom());
         startActivityForResult(intent, GROUP_UPDATE_DATA);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void changeRoomColor() {
@@ -398,6 +399,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         Intent intent = new Intent(TAPChatProfileActivity.this, TAPGroupMemberListActivity.class);
         intent.putExtra(ROOM, vm.getRoom());
         startActivityForResult(intent, GROUP_UPDATE_DATA);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void clearChat() {
@@ -671,7 +673,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             new Thread(() -> {
-                Log.e(TAG, "onSelectFinished: " + entities.size());
                 if (0 == entities.size() && 0 == vm.getSharedMedias().size()) {
                     // No shared media
                     Log.e(TAG, "onSelectFinished: No shared media");

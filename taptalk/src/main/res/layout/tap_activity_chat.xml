@@ -184,9 +184,9 @@
         android:id="@+id/cl_empty_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
-        android:visibility="gone">
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="0dp"
@@ -300,6 +300,20 @@
             android:layout_gravity="bottom"
             android:overScrollMode="never"
             android:scrollbars="vertical" />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_room_unavailable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:descendantFocusability="blocksDescendants"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
+        tools:background="@color/tapTransparentCharcoal40">
+
+        <include layout="@layout/tap_cell_chat_system_message" />
 
     </FrameLayout>
 
