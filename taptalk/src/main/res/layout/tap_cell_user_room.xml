@@ -83,7 +83,7 @@
         app:layout_constraintWidth_min="24dp" />
 
     <ImageView
-        android:id="@+id/iv_room_typing_indicator"
+        android:id="@+id/iv_personal_room_typing_indicator"
         android:layout_width="12dp"
         android:layout_height="12dp"
         android:layout_marginStart="8dp"
@@ -92,6 +92,17 @@
         app:layout_constraintEnd_toStartOf="@id/tv_last_message"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
         app:layout_constraintTop_toTopOf="@id/tv_last_message" />
+
+    <ImageView
+        android:id="@+id/iv_group_room_typing_indicator"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/tv_group_sender_name"
+        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="@id/tv_group_sender_name" />
 
     <TextView
         android:id="@+id/tv_group_sender_name"
@@ -105,7 +116,7 @@
         android:maxLines="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/fl_status"
-        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintStart_toEndOf="@id/iv_group_room_typing_indicator"
         app:layout_constraintTop_toBottomOf="@id/tv_full_name"
         app:layout_constraintVertical_bias="0"
         app:layout_goneMarginStart="8dp"
@@ -123,7 +134,7 @@
         android:maxLines="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/fl_status"
-        app:layout_constraintStart_toEndOf="@id/iv_room_typing_indicator"
+        app:layout_constraintStart_toEndOf="@id/iv_personal_room_typing_indicator"
         app:layout_constraintTop_toBottomOf="@id/tv_group_sender_name"
         app:layout_constraintVertical_bias="0"
         app:layout_goneMarginStart="8dp"
