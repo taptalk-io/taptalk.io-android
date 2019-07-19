@@ -151,7 +151,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 //typingIndicatorTimeOutTimer.start();
             } else if (1 == item.getTypingUsersSize() && TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
                 // Set message to Typing
-                String typingStatus = item.getFirstTypingUserName() + " is " + itemView.getContext().getString(R.string.tap_typing);
+                String typingStatus = String.format(itemView.getContext().getString(R.string.tap_typing_single), item.getFirstTypingUserName());
                 tvLastMessage.setText(typingStatus);
                 ivRoomTypingIndicator.setVisibility(View.VISIBLE);
                 if (null == ivRoomTypingIndicator.getDrawable()) {
@@ -159,8 +159,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 }
             } else if (1 < item.getTypingUsersSize() && TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
                 // Set message to Typing
-                String typingStatus = item.getFirstTypingUserName() + " and " + item.getTypingUsersSizeMinusOne()
-                        + " more is " + itemView.getContext().getString(R.string.tap_typing);
+                String typingStatus = String.format(itemView.getContext().getString(R.string.tap_people_typing), item.getTypingUsersSize());
                 tvLastMessage.setText(typingStatus);
                 ivRoomTypingIndicator.setVisibility(View.VISIBLE);
                 if (null == ivRoomTypingIndicator.getDrawable()) {

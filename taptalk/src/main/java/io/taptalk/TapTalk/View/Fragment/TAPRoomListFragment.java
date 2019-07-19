@@ -16,6 +16,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -517,7 +518,13 @@ public class TAPRoomListFragment extends Fragment {
             return;
         }
         TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
+
+        if (isTyping)
         roomListModel.addTypingUsers(typingModel.getUser());
+        else {
+            roomListModel.removeTypingUser(typingModel.getUser().getUserID());
+        }
+
         getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel)));
     }
 

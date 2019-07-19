@@ -58,7 +58,7 @@ public class TAPRoomListModel {
         return null == typingUsers ? typingUsers = new LinkedHashMap<>() : typingUsers;
     }
 
-    private void removeTypingUser(String userID) {
+    public void removeTypingUser(String userID) {
         getTypingUsers().remove(userID);
     }
 

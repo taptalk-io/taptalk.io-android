@@ -330,6 +330,8 @@
     <string name="tap_this_is_a_chat_history">This is a chat history</string>
     <string name="tap_this_user_is_no_longer_available">This user is no longer available</string>
     <string name="tap_typing">typing</string>
+    <string name="tap_typing_single">%s is typing</string>
+    <string name="tap_people_typing">%d people are typing</string>
     <string name="tap_unread_messages">Unread Messages</string>
     <string name="tap_update">Update</string>
     <string name="tap_uploading">Uploading</string>
