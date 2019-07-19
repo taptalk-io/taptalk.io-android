@@ -288,10 +288,10 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                         item.getLastMessage().getRoom().getRoomType(),
                         item.getLastMessage().getRoom().getRoomColor(),
                         item.getLastMessage().getRoom().getUnreadCount(),
-                        false);
+                        item.getTypingUsers());
                 TAPDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
             } else if (TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
-                TAPUtils.getInstance().startChatActivity(itemView.getContext(), item.getLastMessage().getRoom());
+                TAPUtils.getInstance().startChatActivity(itemView.getContext(), item.getLastMessage().getRoom(), item.getTypingUsers());
             } else {
                 Toast.makeText(itemView.getContext(), "Invalid Room.", Toast.LENGTH_SHORT).show();
             }

@@ -28,6 +28,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -42,10 +43,14 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
@@ -107,6 +112,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
@@ -533,10 +539,23 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             ivRoomIcon.setVisibility(View.GONE);
         }
 
-        // Set typing status
-        if (getIntent().getBooleanExtra(IS_TYPING, false)) {
-            vm.setOtherUserTyping(true);
-            showTypingIndicator();
+//        // Set typing status
+//        if (getIntent().getBooleanExtra(IS_TYPING, false)) {
+//            vm.setOtherUserTyping(true);
+//            showTypingIndicator();
+//        }
+
+        if (null != getIntent().getStringExtra(GROUP_TYPING_MAP)) {
+            try {
+                String tempGroupTyping = getIntent().getStringExtra(GROUP_TYPING_MAP);
+                Gson gson = new Gson();
+                Type typingType = new TypeToken<LinkedHashMap<String, TAPUserModel>>() {}.getType();
+                vm.setGroupTyping(gson.fromJson(tempGroupTyping, typingType));
+                showTypingIndicator();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "initView: ",e );
+            }
         }
 
         // Initialize chat message RecyclerView
@@ -1060,7 +1079,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showUserOnline() {
         runOnUiThread(() -> {
-            if (!vm.isOtherUserTyping()) {
+            if (0 >= vm.getGroupTypingSize()) {
                 clRoomTypingStatus.setVisibility(View.GONE);
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
@@ -1073,7 +1092,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showUserOffline() {
         runOnUiThread(() -> {
-            if (!vm.isOtherUserTyping()) {
+            if (0 >= vm.getGroupTypingSize()) {
                 clRoomTypingStatus.setVisibility(View.GONE);
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
@@ -1099,23 +1118,35 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void showTypingIndicator() {
-        vm.setOtherUserTyping(true);
         typingIndicatorTimeoutTimer.cancel();
         typingIndicatorTimeoutTimer.start();
         runOnUiThread(() -> {
             clRoomTypingStatus.setVisibility(View.VISIBLE);
             clRoomOnlineStatus.setVisibility(View.GONE);
-            glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
-            tvRoomTypingStatus.setText(getString(R.string.tap_typing));
+
+            if (1 == vm.getGroupTypingSize() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+                glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
+                //tvRoomTypingStatus.setText(getString(R.string.tap_typing));
+                tvRoomTypingStatus.setText(String.format(getString(R.string.tap_typing_single), vm.getFirstTypingUserName()));
+            } else if (1 < vm.getGroupTypingSize() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+                glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
+                tvRoomTypingStatus.setText(String.format(getString(R.string.tap_people_typing), vm.getGroupTypingSize()));
+            } else {
+                glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
+                tvRoomTypingStatus.setText(getString(R.string.tap_typing));
+            }
         });
     }
 
     private void hideTypingIndicator() {
-        vm.setOtherUserTyping(false);
         typingIndicatorTimeoutTimer.cancel();
         runOnUiThread(() -> {
-            clRoomTypingStatus.setVisibility(View.GONE);
-            clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            if (0 < vm.getGroupTypingSize()) {
+                showTypingIndicator();
+            } else {
+                clRoomTypingStatus.setVisibility(View.GONE);
+                clRoomOnlineStatus.setVisibility(View.VISIBLE);
+            }
         });
     }
 
@@ -1447,15 +1478,18 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onReceiveStartTyping(TAPTypingModel typingModel) {
-            if (typingModel.getRoomID().equals(vm.getRoom().getRoomID()) &&
-                    TYPE_PERSONAL == vm.getRoom().getRoomType()) {
+            if (typingModel.getRoomID().equals(vm.getRoom().getRoomID())) {
+                vm.addGroupTyping(typingModel.getUser());
                 showTypingIndicator();
             }
         }
 
         @Override
         public void onReceiveStopTyping(TAPTypingModel typingModel) {
-            hideTypingIndicator();
+            if (typingModel.getRoomID().equals(vm.getRoom().getRoomID())) {
+                vm.removeGroupTyping(typingModel.getUser().getUserID());
+                hideTypingIndicator();
+            }
         }
     };
 

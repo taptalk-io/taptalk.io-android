@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -55,6 +56,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -85,6 +87,7 @@ import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.Taptalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -388,24 +391,29 @@ public class TAPUtils {
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false, null);
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, null);
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false, jumpToMessageLocalID);
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
     }
 
     // Open chat room from room list to pass typing status
-    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, boolean isTyping) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), isTyping, null);
+    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, LinkedHashMap<String, TAPUserModel> typingUser) {
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), typingUser, null);
     }
 
     // Open chat room from notification
     public void startChatActivity(Context context, TAPRoomModel roomModel) {
-        startChatActivity(context, roomModel, false, null);
+        startChatActivity(context, roomModel, null, null);
     }
 
-    private void startChatActivity(Context context, TAPRoomModel roomModel, boolean isTyping, @Nullable String jumpToMessageLocalID) {
+    // Open chat room from notification
+    public void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser) {
+        startChatActivity(context, roomModel, typingUser, null);
+    }
+
+    private void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
         if (TYPE_PERSONAL == roomModel.getRoomType() && TAPDataManager.getInstance().getActiveUser().getUserID().equals(
                 TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
             return;
@@ -416,7 +424,12 @@ public class TAPUtils {
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TAPChatActivity.class);
         intent.putExtra(ROOM, roomModel);
-        intent.putExtra(IS_TYPING, isTyping);
+
+        if (null != typingUser) {
+            Gson gson = new Gson();
+            String list = gson.toJson(typingUser);
+            intent.putExtra(GROUP_TYPING_MAP, list);
+        }
         if (null != jumpToMessageLocalID) {
             intent.putExtra(JUMP_TO_MESSAGE, jumpToMessageLocalID);
         }
