@@ -114,7 +114,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -556,12 +555,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             try {
                 String tempGroupTyping = getIntent().getStringExtra(GROUP_TYPING_MAP);
                 Gson gson = new Gson();
-                Type typingType = new TypeToken<LinkedHashMap<String, TAPUserModel>>() {}.getType();
+                Type typingType = new TypeToken<LinkedHashMap<String, TAPUserModel>>() {
+                }.getType();
                 vm.setGroupTyping(gson.fromJson(tempGroupTyping, typingType));
-                showTypingIndicator();
+                if (0 < vm.getGroupTypingSize()) showTypingIndicator();
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e(TAG, "initView: ",e );
+                Log.e(TAG, "initView: ", e);
             }
         }
 
