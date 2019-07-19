@@ -517,7 +517,7 @@ public class TAPRoomListFragment extends Fragment {
             return;
         }
         TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
-        roomListModel.setTyping(isTyping);
+        roomListModel.addTypingUsers(typingModel.getUser());
         getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel)));
     }
 

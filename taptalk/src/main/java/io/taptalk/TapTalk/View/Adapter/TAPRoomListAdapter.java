@@ -139,7 +139,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             tvFullName.setText(room.getRoomName());
             tvLastMessageTime.setText(item.getLastMessageTimestamp());
 
-            if (item.isTyping()) {
+            if (0 < item.getTypingUsersSize() && TYPE_PERSONAL == item.getLastMessage().getRoom().getRoomType()) {
                 // Set message to Typing
                 tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing));
                 ivRoomTypingIndicator.setVisibility(View.VISIBLE);
@@ -149,6 +149,23 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 //typingAnimationTimer.start();
                 //typingIndicatorTimeOutTimer.cancel();
                 //typingIndicatorTimeOutTimer.start();
+            } else if (1 == item.getTypingUsersSize() && TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
+                // Set message to Typing
+                String typingStatus = item.getFirstTypingUserName() + " is " + itemView.getContext().getString(R.string.tap_typing);
+                tvLastMessage.setText(typingStatus);
+                ivRoomTypingIndicator.setVisibility(View.VISIBLE);
+                if (null == ivRoomTypingIndicator.getDrawable()) {
+                    Glide.with(itemView.getContext()).load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
+                }
+            } else if (1 < item.getTypingUsersSize() && TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
+                // Set message to Typing
+                String typingStatus = item.getFirstTypingUserName() + " and " + item.getTypingUsersSizeMinusOne()
+                        + " more is " + itemView.getContext().getString(R.string.tap_typing);
+                tvLastMessage.setText(typingStatus);
+                ivRoomTypingIndicator.setVisibility(View.VISIBLE);
+                if (null == ivRoomTypingIndicator.getDrawable()) {
+                    Glide.with(itemView.getContext()).load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
+                }
             } else if (null != TAPChatManager.getInstance().getActiveUser() && null != item.getLastMessage().getUser() &&
                     TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) &&
                     null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
@@ -262,7 +279,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                         item.getLastMessage().getRoom().getRoomType(),
                         item.getLastMessage().getRoom().getRoomColor(),
                         item.getLastMessage().getRoom().getUnreadCount(),
-                        item.isTyping());
+                        false);
                 TAPDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
             } else if (TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
                 TAPUtils.getInstance().startChatActivity(itemView.getContext(), item.getLastMessage().getRoom());
