@@ -47,7 +47,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private ConstraintLayout clSearchResult, clButtonAction, clConnectionLost;
     private LinearLayout llEmpty;
-    private ImageView ivButtonBack, ivButtonCancel, ivExpertCover, ivAvatarIcon, ivButtonImage, ivProgressSearch, ivResultButtonLoading;
+    private ImageView ivButtonBack, ivButtonClearText, ivExpertCover, ivAvatarIcon, ivButtonImage, ivProgressSearch, ivResultButtonLoading;
     private CircleImageView civAvatar;
     private TextView tvSearchUsernameGuide, tvAvatarLabel, tvFullName, tvUsername, tvButtonText;
     private EditText etSearch;
@@ -85,7 +85,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         clConnectionLost = findViewById(R.id.cl_connection_lost);
         llEmpty = findViewById(R.id.ll_empty);
         ivButtonBack = findViewById(R.id.iv_button_back);
-        ivButtonCancel = findViewById(R.id.iv_button_cancel);
+        ivButtonClearText = findViewById(R.id.iv_button_clear_text);
         ivExpertCover = findViewById(R.id.iv_expert_cover);
         ivAvatarIcon = findViewById(R.id.iv_avatar_icon);
         ivButtonImage = findViewById(R.id.iv_button_image);
@@ -105,7 +105,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         etSearch.setOnEditorActionListener((textView, i, keyEvent) -> onSearchEditorClicked());
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        ivButtonCancel.setOnClickListener(v -> clearSearch());
+        ivButtonClearText.setOnClickListener(v -> clearSearch());
     }
 
     private void initListener() {
@@ -135,7 +135,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         clButtonAction.setVisibility(View.GONE);
         llEmpty.setVisibility(View.GONE);
         clConnectionLost.setVisibility(View.GONE);
-        ivButtonCancel.setVisibility(View.VISIBLE);
+        ivButtonClearText.setVisibility(View.VISIBLE);
         ivProgressSearch.setVisibility(View.GONE);
         ivProgressSearch.clearAnimation();
     }
@@ -310,7 +310,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             etSearch.setEnabled(true);
             etSearch.addTextChangedListener(contactSearchWatcher);
-            ivButtonCancel.setOnClickListener(v -> clearSearch());
+            ivButtonClearText.setOnClickListener(v -> clearSearch());
             showSearchResult();
         });
     }
@@ -322,7 +322,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             ivResultButtonLoading.setVisibility(View.VISIBLE);
             etSearch.setEnabled(false);
             etSearch.removeTextChangedListener(contactSearchWatcher);
-            ivButtonCancel.setOnClickListener(null);
+            ivButtonClearText.setOnClickListener(null);
             TAPUtils.getInstance().dismissKeyboard(this);
         });
     }
@@ -340,9 +340,11 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             searchTimer.cancel();
             if (s.length() > 0) {
                 searchTimer.start();
+                ivButtonClearText.setVisibility(View.VISIBLE);
             } else {
                 showEmpty();
                 vm.setPendingSearch("");
+                ivButtonClearText.setVisibility(View.GONE);
             }
         }
 
@@ -497,7 +499,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     };
 
     private void startLoading() {
-        ivButtonCancel.setVisibility(View.GONE);
+        ivButtonClearText.setVisibility(View.GONE);
         ivProgressSearch.setVisibility(View.VISIBLE);
         TAPUtils.getInstance().rotateAnimateInfinitely(TAPNewContactActivity.this, ivProgressSearch);
     }
@@ -505,6 +507,6 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     private void endLoading() {
         ivProgressSearch.setVisibility(View.GONE);
         ivProgressSearch.clearAnimation();
-        ivButtonCancel.setVisibility(View.VISIBLE);
+        ivButtonClearText.setVisibility(View.VISIBLE);
     }
 }

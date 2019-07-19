@@ -10,13 +10,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -52,7 +50,7 @@ public class TAPSearchChatFragment extends Fragment {
     private ConstraintLayout clActionBar;
     private ImageView ivButtonBack;
     private EditText etSearch;
-    private ImageView ivButtonAction;
+    private ImageView ivButtonClearText;
     private RecyclerView recyclerView;
 
     private TAPSearchChatViewModel vm;
@@ -96,7 +94,7 @@ public class TAPSearchChatFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) {
-            clearSearch();
+            etSearch.setText("");
         } else {
             TAPUtils.getInstance().showKeyboard(getActivity(), etSearch);
         }
@@ -110,7 +108,7 @@ public class TAPSearchChatFragment extends Fragment {
         clActionBar = view.findViewById(R.id.cl_action_bar);
         ivButtonBack = view.findViewById(R.id.iv_button_back);
         etSearch = view.findViewById(R.id.et_search);
-        ivButtonAction = view.findViewById(R.id.iv_button_action);
+        ivButtonClearText = view.findViewById(R.id.iv_button_clear_text);
         recyclerView = view.findViewById(R.id.recyclerView);
 
         etSearch.addTextChangedListener(searchTextWatcher);
@@ -135,18 +133,12 @@ public class TAPSearchChatFragment extends Fragment {
                 fragment.showRoomList();
             TAPUtils.getInstance().dismissKeyboard(getActivity());
         });
-        ivButtonAction.setOnClickListener(v -> clearSearch());
+        ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 
         etSearch.setOnEditorActionListener((textView, i, keyEvent) -> {
             TAPUtils.getInstance().dismissKeyboard(getActivity());
             return false;
         });
-    }
-
-    private void clearSearch() {
-        etSearch.setText("");
-        etSearch.clearFocus();
-        TAPUtils.getInstance().dismissKeyboard(getActivity());
     }
 
     private void setRecentSearchItemsFromDatabase() {
@@ -217,10 +209,12 @@ public class TAPSearchChatFragment extends Fragment {
         adapter.setSearchKeyword(vm.getSearchKeyword());
         if (vm.getSearchKeyword().isEmpty()) {
             showRecentSearches();
+            ivButtonClearText.setVisibility(View.GONE);
         } else {
             TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
             //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
             vm.setRecentSearchShown(false);
+            ivButtonClearText.setVisibility(View.VISIBLE);
         }
     }
 

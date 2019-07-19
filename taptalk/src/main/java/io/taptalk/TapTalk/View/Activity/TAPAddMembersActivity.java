@@ -2,10 +2,11 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.res.ColorStateList;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -24,7 +25,6 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -39,11 +39,13 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 
 public class TAPAddMembersActivity extends TAPBaseActivity {
 
+    private ConstraintLayout clActionBar;
     private LinearLayout llGroupMembers;
-    private ImageView ivButtonBack, ivButtonAction, ivLoadingProgressAddMembers;
+    private ImageView ivButtonBack, ivButtonSearch, ivButtonClearText, ivLoadingProgressAddMembers;
     private TextView tvTitle, tvMemberCount, tvButtonAddMembers;
     private EditText etSearch;
     private RecyclerView rvContactList, rvGroupMembers;
@@ -70,9 +72,13 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        setResult(RESULT_CANCELED);
-        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+        if (vm.isSelecting()) {
+            showToolbar();
+        } else {
+            super.onBackPressed();
+            setResult(RESULT_CANCELED);
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+        }
     }
 
     private void initViewModel(List<TAPUserModel> existingMembers) {
@@ -152,9 +158,11 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
     }
 
     private void initView() {
+        clActionBar = findViewById(R.id.cl_action_bar);
         llGroupMembers = findViewById(R.id.ll_group_members);
         ivButtonBack = findViewById(R.id.iv_button_back);
-        ivButtonAction = findViewById(R.id.iv_button_action);
+        ivButtonSearch = findViewById(R.id.iv_button_search);
+        ivButtonClearText = findViewById(R.id.iv_button_clear_text);
         ivLoadingProgressAddMembers = findViewById(R.id.iv_loading_progress_add_members);
         tvTitle = findViewById(R.id.tv_title);
         tvMemberCount = findViewById(R.id.tv_member_count);
@@ -185,30 +193,38 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
         etSearch.setOnEditorActionListener(searchEditorListener);
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        ivButtonAction.setOnClickListener(v -> toggleSearchBar());
+        ivButtonSearch.setOnClickListener(v -> showSearchBar());
+        ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
         tvButtonAddMembers.setOnClickListener(v -> startAddMemberProcess());
+
+        rvContactList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                TAPUtils.getInstance().dismissKeyboard(TAPAddMembersActivity.this);
+            }
+        });
     }
 
-    private void toggleSearchBar() {
-        if (vm.isSelecting()) {
-            // Show Toolbar
-            vm.setSelecting(false);
-            tvTitle.setVisibility(View.VISIBLE);
-            etSearch.setVisibility(View.GONE);
-            etSearch.setText("");
-            etSearch.clearFocus();
-            ivButtonAction.setImageResource(R.drawable.tap_ic_search_orange);
-            ivButtonAction.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconNavBarMagnifier)));
-            TAPUtils.getInstance().dismissKeyboard(this);
-        } else {
-            // Show Search Bar
-            vm.setSelecting(true);
-            tvTitle.setVisibility(View.GONE);
-            etSearch.setVisibility(View.VISIBLE);
-            ivButtonAction.setImageResource(R.drawable.tap_ic_close_grey);
-            ivButtonAction.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconClearTextButton)));
-            TAPUtils.getInstance().showKeyboard(this, etSearch);
-        }
+    private void showToolbar() {
+        vm.setSelecting(false);
+        TAPUtils.getInstance().dismissKeyboard(this);
+        ivButtonBack.setImageResource(R.drawable.tap_ic_close_grey);
+        tvTitle.setVisibility(View.VISIBLE);
+        etSearch.setVisibility(View.GONE);
+        etSearch.setText("");
+        ivButtonSearch.setVisibility(View.VISIBLE);
+        ((TransitionDrawable) clActionBar.getBackground()).reverseTransition(SHORT_ANIMATION_TIME);
+    }
+
+    private void showSearchBar() {
+        vm.setSelecting(true);
+        ivButtonBack.setImageResource(R.drawable.tap_ic_chevron_left_white);
+        tvTitle.setVisibility(View.GONE);
+        etSearch.setVisibility(View.VISIBLE);
+        ivButtonSearch.setVisibility(View.GONE);
+        TAPUtils.getInstance().showKeyboard(this, etSearch);
+        ((TransitionDrawable) clActionBar.getBackground()).startTransition(SHORT_ANIMATION_TIME);
     }
 
     private void startAddMemberProcess() {
@@ -265,6 +281,11 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             etSearch.removeTextChangedListener(this);
+            if (s.length() == 0) {
+                ivButtonClearText.setVisibility(View.GONE);
+            } else {
+                ivButtonClearText.setVisibility(View.VISIBLE);
+            }
             updateFilteredContacts(s.toString().toLowerCase());
             etSearch.addTextChangedListener(this);
         }

@@ -48,6 +48,8 @@
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPAddMembersActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPMapActivity"
             android:windowSoftInputMode="adjustNothing" />
@@ -57,9 +59,6 @@
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity"
             android:launchMode="singleTask" />
-        <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity"
-            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
@@ -72,10 +71,6 @@
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustNothing"/>
     </application>
 
 </manifest>
