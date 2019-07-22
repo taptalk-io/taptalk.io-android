@@ -913,9 +913,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
                 messageAdapter.getItemAt(position).updateValue(message);
                 messageAdapter.notifyItemChanged(position);
-            } else {
-                new Thread(() -> updateMessage(message)).start();
             }
+//            else {
+//                new Thread(() -> updateMessage(message)).start();
+//            }
         });
     }
 
