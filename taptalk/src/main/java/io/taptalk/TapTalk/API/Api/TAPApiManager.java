@@ -18,13 +18,16 @@ import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddRoomParticipantRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
@@ -62,6 +65,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -476,5 +480,11 @@ public class TAPApiManager {
     public void demoteGroupAdmins(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
         TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
         execute(homingPigeon.demoteGroupAdmins(request), subscriber);
+    }
+
+    public void deleteChatRoom(TAPRoomModel room, String userID, long accessTokenExpiry, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        String checksum = room.getRoomID() + ":" + room.getRoomType() + ":" + userID + ":" + accessTokenExpiry;
+        TAPDeleteRoomRequest request = new TAPDeleteRoomRequest(room.getRoomID(), TAPEncryptorManager.getInstance().md5(checksum));
+        execute(homingPigeon.deleteChatRoom(request), subscriber);
     }
 }
