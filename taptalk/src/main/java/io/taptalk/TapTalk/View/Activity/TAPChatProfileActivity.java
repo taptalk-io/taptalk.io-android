@@ -240,7 +240,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             glide.load(vm.getRoom().getRoomImage().getFullsize())
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
                     .into(ivProfile);
-        } else if(null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+        } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
             ivProfile.setImageResource(R.drawable.tap_img_default_group_avatar);
         } else {
             ivProfile.setImageResource(R.drawable.tap_img_default_avatar);
@@ -325,8 +325,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 //            menuItems.add(2, menuBlock);
 //            menuItems.add(menuClearChat);
         } else if (vm.getRoom().getRoomType() == TYPE_GROUP &&
-                null != vm.getRoom().getGroupParticipants() &&
-                1 < vm.getRoom().getGroupParticipants().size()) {
+                null != vm.getRoom().getGroupParticipants()) {
             // Group if has more than one member
             TAPMenuItem menuViewMembers = new TAPMenuItem(
                     MENU_VIEW_MEMBERS,
@@ -347,18 +346,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
             menuItems.add(menuViewMembers);
             menuItems.add(menuExitGroup);
-        } else if (vm.getRoom().getRoomType() == TYPE_GROUP &&
-                null != vm.getRoom().getGroupParticipants()) {
-            // Group that has only one member
-            TAPMenuItem menuViewMembers = new TAPMenuItem(
-                    MENU_VIEW_MEMBERS,
-                    R.drawable.tap_ic_members_grey,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle,
-                    false,
-                    false,
-                    getString(R.string.tap_view_members));
-            menuItems.add(menuViewMembers);
         }
 
         return menuItems;
@@ -391,7 +378,21 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .setPrimaryButtonTitle(this.getString(R.string.tap_ok))
                 .setPrimaryButtonListener(v -> TAPDataManager.getInstance().leaveChatRoom(vm.getRoom().getRoomID(), exitChatView))
                 .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
-                .setSecondaryButtonListener(v -> {})
+                .setSecondaryButtonListener(v -> {
+                })
+                .show();
+    }
+
+    private void deleteChatRoom() {
+        new TapTalkDialog.Builder(this)
+                .setTitle(this.getString(R.string.tap_delete_chat_room))
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setMessage(this.getString(R.string.tap_delete_group_confirmation))
+                .setPrimaryButtonTitle(this.getString(R.string.tap_ok))
+                .setPrimaryButtonListener(v -> TAPDataManager.getInstance().deleteChatRoom(vm.getRoom(), exitChatView))
+                .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
+                .setSecondaryButtonListener(v -> {
+                })
                 .show();
     }
 
@@ -534,7 +535,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 viewMembers();
                 break;
             case MENU_EXIT_GROUP:
-                clearAndExitChat();
+                if (null != vm.getRoom().getGroupParticipants() && vm.getRoom().getGroupParticipants().size() > 1) {
+                    clearAndExitChat();
+                } else if (null != vm.getRoom().getGroupParticipants()) deleteChatRoom();
                 break;
         }
     };

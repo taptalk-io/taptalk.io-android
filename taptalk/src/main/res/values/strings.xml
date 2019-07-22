@@ -88,6 +88,7 @@
     <string name="tap_group_members">Group Members</string>
     <string name="tap_remove_group_members">Remove Member</string>
     <string name="tap_clear_and_exit_chat">Clear and Exit Chat</string>
+    <string name="tap_delete_chat_room">Delete Room</string>
     <string name="tap_type_group_name">Type group name</string>
     <string name="tap_cannot_add_more_people">Cannot add more people</string>
     <string name="tap_admin">Admin</string>
@@ -100,6 +101,7 @@
     <string name="tap_remove_member_confirmation">Are you sure you want to remove this member?</string>
     <string name="tap_remove_multiple_members_confirmation">Are you sure you want to remove selected members?</string>
     <string name="tap_leave_group_confirmation">All messages and shared medias from this room will be inaccessible. Are you sure you want to leave?</string>
+    <string name="tap_delete_group_confirmation">All messages and shared medias from this room will be inaccessible. Are you sure you want to delete?</string>
     <string name="tap_adding">Adding…</string>
     <string name="tap_removing">Removing…</string>
     <string name="tap_updating">Updating…</string>
