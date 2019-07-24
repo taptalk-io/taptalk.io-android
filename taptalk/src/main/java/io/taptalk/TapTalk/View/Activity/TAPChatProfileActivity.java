@@ -257,6 +257,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         } else {
             ivButtonEdit.setVisibility(View.GONE);
         }
+
+        //Update Room Menu
+        if (null != menuButtonAdapter)
+            menuButtonAdapter.setItems(generateChatProfileMenu());
     }
 
     private List<TAPMenuItem> generateChatProfileMenu() {
