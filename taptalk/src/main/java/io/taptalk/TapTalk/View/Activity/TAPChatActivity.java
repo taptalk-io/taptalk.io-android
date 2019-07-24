@@ -1264,6 +1264,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         if (null != clChatComposer) {
             runOnUiThread(() -> {
                 TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                rvCustomKeyboard.setVisibility(View.GONE);
                 clChatComposer.setVisibility(View.INVISIBLE);
                 etChat.clearFocus();
             });
