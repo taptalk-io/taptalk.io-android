@@ -157,6 +157,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_ADD_PARTICIPANT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_REMOVE_PARTICIPANT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
@@ -1271,6 +1272,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     }
 
+    private void showDefaultChatEditText() {
+        if (null != clChatHistory) {
+            runOnUiThread(() -> clChatHistory.setVisibility(View.GONE));
+        }
+
+        if (null != clChatComposer) {
+            clChatComposer.setVisibility(View.VISIBLE);
+        }
+        hideKeyboards();
+    }
+
     private void callApiAfter() {
         /*call api after rules:
         --> kalau chat ga kosong, dan kita udah ada lastTimeStamp di preference
@@ -1395,6 +1407,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_REMOVE_PARTICIPANT.equals(message.getAction())
                     && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
                 showChatAsHistory(getString(R.string.tap_not_a_participant));
+            } else if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_ADD_PARTICIPANT.equals(message.getAction())
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
+                showDefaultChatEditText();
             }
         }
 
