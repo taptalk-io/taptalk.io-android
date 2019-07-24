@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -148,6 +150,33 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     private void loadVideo() {
+        // Get video data
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(TAPVideoPlayerActivity.this, videoUri);
+        duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        int width, height;
+        if (rotation.equals("90") || rotation.equals("270")) {
+            // Swap width and height when video is rotated
+            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+        } else {
+            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+        }
+
+        // Fix videoView layout params
+        float videoRatio = (float) width / (float) height;
+        float screenRatio = (float) TAPUtils.getInstance().getScreenWidth() / (float) TAPUtils.getInstance().getScreenHeight();
+        if (screenRatio > videoRatio) {
+            videoView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            videoView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            videoView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+            videoView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+        retriever.release();
+
         videoView.setVideoURI(videoUri);
         videoView.setOnPreparedListener(onPreparedListener);
         videoView.setOnCompletionListener(onCompletionListener);
@@ -323,7 +352,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             if (!isFirstLoadFinished) {
                 // Play video on first load
                 videoView.start();
-                duration = videoView.getDuration();
+                //duration = videoView.getDuration();
                 isVideoPlaying = true;
                 TAPVideoPlayerActivity.this.startProgressTimer();
                 mediaVolume = TAPDataManager.getInstance().getMediaVolumePreference();
