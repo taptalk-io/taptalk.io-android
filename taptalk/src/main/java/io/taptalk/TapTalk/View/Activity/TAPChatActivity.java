@@ -1976,7 +1976,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
 
             if (0 < models.size()) {
-                vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
+                //vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
+                vm.setLastTimestamp(models.get(0).getCreated());
             }
 
             if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID())) {
@@ -2385,15 +2386,29 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //Sementara Temporary buat Mastiin ga ada message nyangkut
                 setAllUnreadMessageToRead();
             }
+
+            if (0 < messageAdapter.getItems().size() && ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID())) {
+                showChatAsHistory(getString(R.string.tap_not_a_participant));
+            }
         }
 
         @Override
         public void onError(TAPErrorModel error) {
             onError(error.getMessage());
+            if (0 < messageAdapter.getItems().size() && ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID())) {
+                showChatAsHistory(getString(R.string.tap_not_a_participant));
+            }
         }
 
         @Override
         public void onError(String errorMessage) {
+            if (0 < messageAdapter.getItems().size() && ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID())) {
+                showChatAsHistory(getString(R.string.tap_not_a_participant));
+            }
+
             if (0 < vm.getMessageModels().size()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
             }
