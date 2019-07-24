@@ -63,6 +63,7 @@ import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_BLOCK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_DELETE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EXIT_AND_CLEAR_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EXIT_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
@@ -325,7 +326,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 //            menuItems.add(2, menuBlock);
 //            menuItems.add(menuClearChat);
         } else if (vm.getRoom().getRoomType() == TYPE_GROUP &&
-                null != vm.getRoom().getGroupParticipants()) {
+                null != vm.getRoom().getGroupParticipants() &&
+                1 < vm.getRoom().getGroupParticipants().size()) {
             // Group if has more than one member
             TAPMenuItem menuViewMembers = new TAPMenuItem(
                     MENU_VIEW_MEMBERS,
@@ -337,7 +339,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     getString(R.string.tap_view_members));
             TAPMenuItem menuExitGroup = new TAPMenuItem(
                     MENU_EXIT_GROUP,
-                    R.drawable.tap_ic_delete_red,
+                    R.drawable.tap_ic_logout_red_with_padding,
                     R.color.tapIconChatProfileMenuClearChat,
                     R.style.tapChatProfileMenuDestructiveLabelStyle,
                     false,
@@ -346,6 +348,29 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
             menuItems.add(menuViewMembers);
             menuItems.add(menuExitGroup);
+        } else if (vm.getRoom().getRoomType() == TYPE_GROUP &&
+                null != vm.getRoom().getAdmins() &&
+                vm.getRoom().getAdmins().contains(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+            // Group if has more than one member
+            TAPMenuItem menuViewMembers = new TAPMenuItem(
+                    MENU_VIEW_MEMBERS,
+                    R.drawable.tap_ic_members_grey,
+                    R.color.tapIconGroupProfileMenuViewMembers,
+                    R.style.tapChatProfileMenuLabelStyle,
+                    false,
+                    false,
+                    getString(R.string.tap_view_members));
+            TAPMenuItem menuDeleteGroup = new TAPMenuItem(
+                    MENU_DELETE_GROUP,
+                    R.drawable.tap_ic_delete_red,
+                    R.color.tapIconChatProfileMenuClearChat,
+                    R.style.tapChatProfileMenuDestructiveLabelStyle,
+                    false,
+                    false,
+                    getString(R.string.tap_delete_group));
+            // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
+            menuItems.add(menuViewMembers);
+            menuItems.add(menuDeleteGroup);
         }
 
         return menuItems;
@@ -535,9 +560,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 viewMembers();
                 break;
             case MENU_EXIT_GROUP:
-                if (null != vm.getRoom().getGroupParticipants() && vm.getRoom().getGroupParticipants().size() > 1) {
-                    clearAndExitChat();
-                } else if (null != vm.getRoom().getGroupParticipants()) deleteChatRoom();
+                clearAndExitChat();
+                break;
+            case MENU_DELETE_GROUP:
+                deleteChatRoom();
                 break;
         }
     };
