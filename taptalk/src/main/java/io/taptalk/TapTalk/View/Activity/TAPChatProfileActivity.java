@@ -259,8 +259,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         }
 
         //Update Room Menu
-        if (null != menuButtonAdapter)
-            menuButtonAdapter.setItems(generateChatProfileMenu());
+        if (null != menuButtonAdapter) menuButtonAdapter.setItems(generateChatProfileMenu());
     }
 
     private List<TAPMenuItem> generateChatProfileMenu() {
