@@ -134,6 +134,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
@@ -156,6 +157,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_REMOVE_PARTICIPANT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UNREAD_INDICATOR_LOCAL_ID;
@@ -687,6 +689,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
         ivToBottom.setOnClickListener(v -> scrollToBottom());
         flMessageList.setOnClickListener(v -> chatListener.onOutsideClicked());
+
+//        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
+//        if (null == vm.getRoom().getGroupParticipants()) {
+//            showChatAsHistory(getString(R.string.tap_not_a_participant));
+//        }
     }
 
     private void initHelper() {
@@ -1212,8 +1219,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 if (null != vm.getRoom().getGroupParticipants()) {
                     tvRoomStatus.setText(String.format(getString(R.string.tap_group_member_count), vm.getRoom().getGroupParticipants().size()));
-                    // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
-                    //showChatAsHistory(getString(R.string.tap_not_a_participant));
                 }
             }
         })).start();
@@ -1251,13 +1256,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showChatAsHistory(String message) {
         if (null != clChatHistory) {
-            clChatHistory.setVisibility(View.VISIBLE);
+            runOnUiThread(() -> clChatHistory.setVisibility(View.VISIBLE));
         }
         if (null != tvChatHistoryContent) {
-            tvChatHistoryContent.setText(message);
+            runOnUiThread(() -> tvChatHistoryContent.setText(message));
         }
         if (null != clChatComposer) {
-            clChatComposer.setVisibility(View.INVISIBLE);
+            runOnUiThread(() -> {
+                TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                clChatComposer.setVisibility(View.INVISIBLE);
+                etChat.clearFocus();
+            });
         }
     }
 
@@ -1382,6 +1391,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
             updateMessage(message);
+            if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_REMOVE_PARTICIPANT.equals(message.getAction())
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
+                showChatAsHistory(getString(R.string.tap_not_a_participant));
+            }
         }
 
         @Override
