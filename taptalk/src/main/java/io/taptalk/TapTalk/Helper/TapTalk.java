@@ -363,7 +363,7 @@ public class TapTalk {
             isRefreshTokenExpired = true;
 
             for (TAPListener listener : getTapTalkListeners()) {
-                listener.onRefreshTokenExpiredOrInvalid();
+                listener.onRefreshAuthTicket();
             }
         }
     }
@@ -402,7 +402,7 @@ public class TapTalk {
 
     private List<TAPCustomKeyboardItemModel> requestCustomKeyboardItemsFromClient(TAPUserModel activeUser, TAPUserModel otherUser) {
         for (TAPListener listener : tapListeners) {
-            List<TAPCustomKeyboardItemModel> customKeyboardItems = listener.onRequestCustomKeyboardItems(activeUser, otherUser);
+            List<TAPCustomKeyboardItemModel> customKeyboardItems = listener.setCustomKeyboardItems(activeUser, otherUser);
             if (null != customKeyboardItems) {
                 return customKeyboardItems;
             }
@@ -424,7 +424,7 @@ public class TapTalk {
 
     private void triggerMessageQuoteClicked(Activity activity, TAPMessageModel messageModel, HashMap<String, Object> userInfo) {
         for (TAPListener listener : tapListeners) {
-            listener.onMessageQuoteClicked(activity, messageModel, userInfo);
+            listener.onTapTalkMessageQuoteTapped(activity, messageModel, userInfo);
         }
     }
 
@@ -449,11 +449,11 @@ public class TapTalk {
             if (null != notificationMessage &&
                     null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
                     TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
-                Log.e(TAG, "setNotificationMessage: "+TAPUtils.getInstance().toJsonString(notificationMessage) );
+                Log.e(TAG, "setNotificationMessage: " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getUser().getName() + ": " + notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             } else if (null != notificationMessage) {
-                Log.e(TAG, "setNotificationMessage:2 "+TAPUtils.getInstance().toJsonString(notificationMessage) );
+                Log.e(TAG, "setNotificationMessage:2 " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             }
@@ -614,7 +614,7 @@ public class TapTalk {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onProductLeftButtonClicked(activity, productModel, recipientXcUserID, room);
+                tapListener.onTapTalkProductListBubbleLeftButtonTapped(activity, productModel, recipientXcUserID, room);
             }
         }
     }
@@ -625,7 +625,7 @@ public class TapTalk {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onProductRightButtonClicked(activity, productModel, recipientXcUserID, room);
+                tapListener.onTapTalkProductListBubbleRightButtonTapped(activity, productModel, recipientXcUserID, room);
             }
         }
     }
@@ -635,7 +635,7 @@ public class TapTalk {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onUpdateUnreadCount(unreadCount);
+                tapListener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
             }
         }
     }

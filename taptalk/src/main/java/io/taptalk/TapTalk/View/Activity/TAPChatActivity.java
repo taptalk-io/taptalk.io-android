@@ -602,7 +602,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             vm.setCustomKeyboardEnabled(true);
             customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), customKeyboardItemModel -> {
                 for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                    tapListener.onCustomKeyboardItemClicked(TAPChatActivity.this, customKeyboardItemModel, vm.getMyUserModel(), vm.getOtherUserModel());
+                    tapListener.onCustomKeyboardItemTapped(TAPChatActivity.this, customKeyboardItemModel, vm.getMyUserModel(), vm.getOtherUserModel());
                 }
                 hideUnreadButton();
             });
@@ -736,7 +736,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
                 // TODO: 21 December 2018 HANDLE GROUP CHAT
-                tapListener.onUserProfileClicked(TAPChatActivity.this, vm.getOtherUserModel());
+                tapListener.onTapTalkChatRoomProfileButtonTapped(TAPChatActivity.this, vm.getOtherUserModel());
             }
             hideUnreadButton();
         } else if (null != vm.getRoom() &&
