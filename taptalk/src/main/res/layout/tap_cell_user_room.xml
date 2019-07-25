@@ -182,12 +182,12 @@
             android:background="@drawable/tap_bg_room_list_unread_badge"
             android:gravity="center"
             android:minWidth="18dp"
-            android:paddingStart="2dp"
+            android:paddingStart="4dp"
             android:paddingTop="2dp"
-            android:paddingEnd="2dp"
+            android:paddingEnd="4dp"
             android:paddingBottom="2dp"
             android:visibility="invisible"
-            tools:text="1" />
+            tools:text="99+" />
 
     </FrameLayout>
 

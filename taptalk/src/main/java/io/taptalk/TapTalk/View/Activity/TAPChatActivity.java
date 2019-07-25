@@ -134,6 +134,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
@@ -156,6 +157,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_ADD_PARTICIPANT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_REMOVE_PARTICIPANT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UNREAD_INDICATOR_LOCAL_ID;
@@ -687,6 +690,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
         ivToBottom.setOnClickListener(v -> scrollToBottom());
         flMessageList.setOnClickListener(v -> chatListener.onOutsideClicked());
+
+//        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
+//        if (null == vm.getRoom().getGroupParticipants()) {
+//            showChatAsHistory(getString(R.string.tap_not_a_participant));
+//        }
     }
 
     private void initHelper() {
@@ -913,9 +921,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
                 messageAdapter.getItemAt(position).updateValue(message);
                 messageAdapter.notifyItemChanged(position);
-            } else {
-                new Thread(() -> updateMessage(message)).start();
             }
+//            else {
+//                new Thread(() -> updateMessage(message)).start();
+//            }
         });
     }
 
@@ -1211,8 +1220,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                 if (null != vm.getRoom().getGroupParticipants()) {
                     tvRoomStatus.setText(String.format(getString(R.string.tap_group_member_count), vm.getRoom().getGroupParticipants().size()));
-                    // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
-                    //showChatAsHistory(getString(R.string.tap_not_a_participant));
                 }
             }
         })).start();
@@ -1250,14 +1257,30 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void showChatAsHistory(String message) {
         if (null != clChatHistory) {
-            clChatHistory.setVisibility(View.VISIBLE);
+            runOnUiThread(() -> clChatHistory.setVisibility(View.VISIBLE));
         }
         if (null != tvChatHistoryContent) {
-            tvChatHistoryContent.setText(message);
+            runOnUiThread(() -> tvChatHistoryContent.setText(message));
         }
         if (null != clChatComposer) {
-            clChatComposer.setVisibility(View.INVISIBLE);
+            runOnUiThread(() -> {
+                TAPUtils.getInstance().dismissKeyboard(TAPChatActivity.this);
+                rvCustomKeyboard.setVisibility(View.GONE);
+                clChatComposer.setVisibility(View.INVISIBLE);
+                etChat.clearFocus();
+            });
         }
+    }
+
+    private void showDefaultChatEditText() {
+        if (null != clChatHistory) {
+            runOnUiThread(() -> clChatHistory.setVisibility(View.GONE));
+        }
+
+        if (null != clChatComposer) {
+            clChatComposer.setVisibility(View.VISIBLE);
+        }
+        hideKeyboards();
     }
 
     private void callApiAfter() {
@@ -1381,6 +1404,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
             updateMessage(message);
+            if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_REMOVE_PARTICIPANT.equals(message.getAction())
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
+                showChatAsHistory(getString(R.string.tap_not_a_participant));
+            } else if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_ADD_PARTICIPANT.equals(message.getAction())
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
+                showDefaultChatEditText();
+            }
         }
 
         @Override
@@ -1946,7 +1976,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
 
             if (0 < models.size()) {
-                vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
+                //vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
+                vm.setLastTimestamp(models.get(0).getCreated());
             }
 
             if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID())) {
@@ -2313,7 +2344,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //messageAfterModels ini adalah message balikan api yang belom ada di recyclerView
             if (0 < messageAfterModels.size()) {
                 TAPMessageStatusManager.getInstance().updateMessageStatusToDelivered(messageAfterModels);
-                mergeSort(messageAfterModels, ASCENDING);
             }
 
             runOnUiThread(() -> {
@@ -2324,7 +2354,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //masukin datanya ke dalem recyclerView
                 //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
                 updateMessageDecoration();
-                messageAdapter.addMessage(0, messageAfterModels, true);
+                messageAdapter.addMessage(0, messageAfterModels, false);
+                //Setelah masukin ke dalem adapter semuanya di sort biar rapi sesuai timestamp
+                mergeSort(messageAdapter.getItems(), ASCENDING);
                 showUnreadButton(vm.getUnreadIndicator());
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
@@ -2355,15 +2387,29 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //Sementara Temporary buat Mastiin ga ada message nyangkut
                 setAllUnreadMessageToRead();
             }
+
+            if (0 < messageAdapter.getItems().size() && ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID())) {
+                showChatAsHistory(getString(R.string.tap_not_a_participant));
+            }
         }
 
         @Override
         public void onError(TAPErrorModel error) {
             onError(error.getMessage());
+            if (0 < messageAdapter.getItems().size() && ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID())) {
+                showChatAsHistory(getString(R.string.tap_not_a_participant));
+            }
         }
 
         @Override
         public void onError(String errorMessage) {
+            if (0 < messageAdapter.getItems().size() && ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
+                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID())) {
+                showChatAsHistory(getString(R.string.tap_not_a_participant));
+            }
+
             if (0 < vm.getMessageModels().size()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
             }

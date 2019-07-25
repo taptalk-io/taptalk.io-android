@@ -1,7 +1,11 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.util.Log;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 import io.taptalk.TapTalk.Helper.AESCrypt;
@@ -12,6 +16,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ENCRYPTION_KEY;
 
 public class TAPEncryptorManager {
 
+    private static final String TAG = TAPEncryptorManager.class.getName();
     private static TAPEncryptorManager instance;
 
     private final String K_LOCAL_ID = "localID";
@@ -118,8 +123,29 @@ public class TAPEncryptorManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        TAPMessageModel decryptedMessage = TAPUtils.getInstance().convertObject(messageMap, new TypeReference<TAPMessageModel>() {});
+        TAPMessageModel decryptedMessage = TAPUtils.getInstance().convertObject(messageMap, new TypeReference<TAPMessageModel>() {
+        });
         decryptedMessage.updateMessageStatusText();
         return decryptedMessage;
+    }
+
+    public String md5(String s) {
+        final String MD5 = "MD5";
+        try {
+            MessageDigest digest = MessageDigest.getInstance(MD5);
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            StringBuilder hexString = new StringBuilder();
+            for (byte aMessageDigest : messageDigest) {
+                String h = Integer.toHexString(0xFF & aMessageDigest);
+                while (h.length() < 2) h = "0" + h;
+                hexString.append(h);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException nae) {
+            Log.e(TAG, "md5: ", nae);
+        }
+        return "";
     }
 }
