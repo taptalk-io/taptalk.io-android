@@ -171,9 +171,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ProductVH prodHolder = new ProductVH(parent, R.layout.tap_cell_chat_bubble_product_list);
                 prodHolder.setIsRecyclable(false);
                 return prodHolder;
-            case TYPE_BUBBLE_ORDER_CARD:
-                TAPBaseCustomBubble orderBubble = TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(TYPE_BUBBLE_ORDER_CARD);
-                return orderBubble.createCustomViewHolder(parent, this, myUserModel, orderBubble.getCustomBubbleListener());
+//            case TYPE_BUBBLE_ORDER_CARD:
+//                TAPBaseCustomBubble orderBubble = TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(TYPE_BUBBLE_ORDER_CARD);
+//                return orderBubble.createCustomViewHolder(parent, this, myUserModel, orderBubble.getCustomBubbleListener());
             case TYPE_BUBBLE_UNREAD_STATUS:
                 return new BasicVH(parent, R.layout.tap_cell_unread_status);
             case TYPE_BUBBLE_LOADING:
@@ -187,6 +187,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_BUBBLE_SYSTEM_MESSAGE:
                 return new SystemMessageVH(parent, R.layout.tap_cell_chat_system_message);
             default:
+                TAPBaseCustomBubble orderBubble = TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(viewType);
+                if (null != orderBubble) {
+                    return orderBubble.createCustomViewHolder(parent, this, myUserModel, orderBubble.getCustomBubbleListener());
+                }
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
         }
     }
@@ -245,8 +249,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     }
                 case TYPE_PRODUCT:
                     return TYPE_BUBBLE_PRODUCT_LIST;
-                case TYPE_ORDER_CARD:
-                    return TYPE_BUBBLE_ORDER_CARD;
+//                case TYPE_ORDER_CARD:
+//                    return TYPE_BUBBLE_ORDER_CARD;
                 case TYPE_SYSTEM_MESSAGE:
                     return TYPE_BUBBLE_SYSTEM_MESSAGE;
                 case TYPE_UNREAD_MESSAGE_IDENTIFIER:
@@ -254,7 +258,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 case TYPE_LOADING_MESSAGE_IDENTIFIER:
                     return TYPE_BUBBLE_LOADING;
                 default:
-                    return TYPE_LOG;
+                    return messageType;
             }
         } catch (Exception e) {
             return TYPE_LOG;
