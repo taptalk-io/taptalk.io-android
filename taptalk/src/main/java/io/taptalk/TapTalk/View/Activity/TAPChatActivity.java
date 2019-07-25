@@ -87,6 +87,7 @@ import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -225,7 +226,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private STATE state = STATE.WORKING;
 
-    private boolean leaveGroup = false;
+    private boolean deleteGroup = false;
 
     //endless scroll Listener
     TAPEndlessScrollListener endlessScrollListener;
@@ -288,6 +289,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     @Override
     public void onBackPressed() {
+        if (deleteGroup &&
+                !TAPGroupManager.Companion.getGetInstance().getRefreshRoomList())
+            TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
+
         if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
             hideKeyboards();
         } else {
@@ -372,7 +377,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                         break;
 
                     case OPEN_PROFILE:
-                        leaveGroup = true;
+                        deleteGroup = true;
                         onBackPressed();
                         break;
                 }
@@ -1270,6 +1275,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 etChat.clearFocus();
             });
         }
+
+        if (null != civRoomImage) {
+            vRoomImage.setClickable(false);
+        }
+
+        if (null != llButtonDeleteChat) {
+            llButtonDeleteChat.setOnClickListener(llDeleteGroupClickListener);
+        }
     }
 
     private void showDefaultChatEditText() {
@@ -1279,6 +1292,10 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         if (null != clChatComposer) {
             clChatComposer.setVisibility(View.VISIBLE);
+        }
+
+        if (null != civRoomImage) {
+            vRoomImage.setClickable(true);
         }
         hideKeyboards();
     }
@@ -1976,8 +1993,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             }
 
             if (0 < models.size()) {
-                //vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
-                vm.setLastTimestamp(models.get(0).getCreated());
+                vm.setLastTimestamp(models.get(models.size() - 1).getCreated());
+//                vm.setLastTimestamp(models.get(0).getCreated());
             }
 
             if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID())) {
@@ -2643,5 +2660,22 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onFinish() {
             hideTypingIndicator();
         }
+    };
+
+    private View.OnClickListener llDeleteGroupClickListener = v -> {
+        TAPOldDataManager.getInstance().startCleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+            @Override
+            public void onDeleteFinished() {
+                super.onDeleteFinished();
+                TAPDataManager.getInstance().deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+                    @Override
+                    public void onDeleteFinished() {
+                        super.onDeleteFinished();
+                        deleteGroup = true;
+                        onBackPressed();
+                    }
+                });
+            }
+        });
     };
 }
