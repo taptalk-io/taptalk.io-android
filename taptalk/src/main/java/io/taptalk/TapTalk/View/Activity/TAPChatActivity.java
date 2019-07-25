@@ -2344,7 +2344,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //messageAfterModels ini adalah message balikan api yang belom ada di recyclerView
             if (0 < messageAfterModels.size()) {
                 TAPMessageStatusManager.getInstance().updateMessageStatusToDelivered(messageAfterModels);
-                mergeSort(messageAfterModels, ASCENDING);
             }
 
             runOnUiThread(() -> {
@@ -2355,7 +2354,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 //masukin datanya ke dalem recyclerView
                 //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
                 updateMessageDecoration();
-                messageAdapter.addMessage(0, messageAfterModels, true);
+                messageAdapter.addMessage(0, messageAfterModels, false);
+                //Setelah masukin ke dalem adapter semuanya di sort biar rapi sesuai timestamp
+                mergeSort(messageAdapter.getItems(), ASCENDING);
                 showUnreadButton(vm.getUnreadIndicator());
                 //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
                 //kalau user ga lagi ada di bottom ga usah di turunin
