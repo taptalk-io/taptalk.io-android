@@ -73,6 +73,7 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
+import io.taptalk.TapTalk.Listener.TAPChatRoomListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
@@ -609,13 +610,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TapTalk.requestCustomKeyboardItems(vm.getMyUserModel(), vm.getOtherUserModel()));
+//        Log.e(TAG, "initView: " + TapTalk.requestCustomKeyboardItems(vm.getMyUserModel(), vm.getOtherUserModel()).size());
         if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0 &&
                 null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             // Enable custom keyboard
             vm.setCustomKeyboardEnabled(true);
             customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), customKeyboardItemModel -> {
-                for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                    tapListener.onCustomKeyboardItemClicked(TAPChatActivity.this, customKeyboardItemModel, vm.getMyUserModel(), vm.getOtherUserModel());
+                for (TAPChatRoomListener listener : TapTalk.getTapTalkChatRoomListeners()) {
+                    listener.onCustomKeyboardItemTapped(TAPChatActivity.this, customKeyboardItemModel, vm.getMyUserModel(), vm.getOtherUserModel());
                 }
                 hideUnreadButton();
             });
@@ -754,9 +756,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private void openRoomProfile() {
         if (null != vm.getOtherUserModel() && null != vm.getRoom() &&
                 TYPE_PERSONAL == vm.getRoom().getRoomType()) {
-            for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
+            for (TAPChatRoomListener listener : TapTalk.getTapTalkChatRoomListeners()) {
                 // TODO: 21 December 2018 HANDLE GROUP CHAT
-                tapListener.onUserProfileClicked(TAPChatActivity.this, vm.getOtherUserModel());
+                listener.onTapTalkChatRoomProfileButtonTapped(TAPChatActivity.this, vm.getOtherUserModel());
             }
             hideUnreadButton();
         } else if (null != vm.getRoom() &&

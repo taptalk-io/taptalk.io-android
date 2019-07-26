@@ -14,6 +14,7 @@ import java.util.List;
 import io.moselo.SampleApps.CustomBubbleClass.OrderCardBubbleClass;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
+import io.taptalk.TapTalk.Listener.TAPChatRoomListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -26,16 +27,25 @@ import io.taptalk.TaptalkSample.R;
 
 public class SampleApplication extends Application {
 
+    private static final String TAG = "SampleApplication";
+
     TAPListener TAPListener = new TAPListener() {
         @Override
-        public void onRefreshTokenExpiredOrInvalid() {
+        public void onRefreshAuthTicket() {
             Intent intent = new Intent(getApplicationContext(), TAPLoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             getApplicationContext().startActivity(intent);
         }
 
         @Override
-        public List<TAPCustomKeyboardItemModel> onRequestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
+        public void onTapTalkUnreadChatRoomBadgeCountUpdated(int unreadCount) {
+
+        }
+    };
+
+    TAPChatRoomListener tapChatRoomListener = new TAPChatRoomListener() {
+        @Override
+        public List<TAPCustomKeyboardItemModel> setCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
 //            // DUMMY CUSTOM KEYBOARD ITEMS
 //            TAPCustomKeyboardItemModel customKeyboard1 = new TAPCustomKeyboardItemModel("1", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_new_group_orange), "Say Hello to " + otherUser.getName());
 //            TAPCustomKeyboardItemModel customKeyboard2 = new TAPCustomKeyboardItemModel("2", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_view_grey), "View Profile");
@@ -50,9 +60,9 @@ public class SampleApplication extends Application {
 //            return customKeyboards;
 
 //            TAPCustomKeyboardItemModel seePriceList = new TAPCustomKeyboardItemModel("1", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_star_yellow), "See price list");
-//            TAPCustomKeyboardItemModel readExpertNotes = new TAPCustomKeyboardItemModel("2", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_search_grey), "Read expert's notes");
-//            TAPCustomKeyboardItemModel sendServices = new TAPCustomKeyboardItemModel("3", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_gallery_green_blue), "Send services");
-//            TAPCustomKeyboardItemModel createOrderCard = new TAPCustomKeyboardItemModel("4", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_documents_green_blue), "Create order card");
+//            TAPCustomKeyboardItemModel readExpertNotes = new TAPCustomKeyboardItemModel("2", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_star_yellow), "Read expert's notes");
+//            TAPCustomKeyboardItemModel sendServices = new TAPCustomKeyboardItemModel("3", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_star_yellow), "Send services");
+//            TAPCustomKeyboardItemModel createOrderCard = new TAPCustomKeyboardItemModel("4", getDrawable(io.taptalk.Taptalk.R.drawable.tap_ic_star_yellow), "Create order card");
 //
 //            if (null != activeUser.getUserRole() && activeUser.getUserRole().getCode().equals("1") &&
 //                    null != otherUser.getUserRole() && otherUser.getUserRole().getCode().equals("2")) {
@@ -75,13 +85,18 @@ public class SampleApplication extends Application {
 //                expertToExpert.add(createOrderCard);
 //                return expertToExpert;
 //            } else {
-//                return null;
+//                List<TAPCustomKeyboardItemModel> expertToExpert = new ArrayList<>();
+//                expertToExpert.add(seePriceList);
+//                expertToExpert.add(readExpertNotes);
+//                expertToExpert.add(sendServices);
+//                expertToExpert.add(createOrderCard);
+//                return expertToExpert;
 //            }
             return null;
         }
 
         @Override
-        public void onCustomKeyboardItemClicked(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
+        public void onCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
             if (customKeyboardItemModel.getItemID().equals("1")) {
                 String message = "Hi " + otherUser.getName() + "! How are you?";
                 TapTalk.sendTextMessageWithRecipientUser(message, otherUser, new TAPSendMessageWithIDListener() {
@@ -138,18 +153,13 @@ public class SampleApplication extends Application {
         }
 
         @Override
-        public void onProductLeftButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
-            super.onProductLeftButtonClicked(activity, productModel, recipientXcUserID, room);
+        public void onTapTalkProductListBubbleLeftButtonTapped(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
+            super.onTapTalkProductListBubbleLeftButtonTapped(activity, productModel, recipientXcUserID, room);
         }
 
         @Override
-        public void onProductRightButtonClicked(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
-            super.onProductRightButtonClicked(activity, productModel, recipientXcUserID, room);
-        }
-
-        @Override
-        public void onUpdateUnreadCount(int unreadCount) {
-            Log.e("><><><", "onUpdateUnreadCount: " + unreadCount);
+        public void onTapTalkProductListBubbleRightButtonTapped(Activity activity, TAPProductModel productModel, String recipientXcUserID, TAPRoomModel room) {
+            super.onTapTalkProductListBubbleRightButtonTapped(activity, productModel, recipientXcUserID, room);
         }
     };
 
@@ -159,17 +169,19 @@ public class SampleApplication extends Application {
         if ("dev".equals(BuildConfig.BUILD_TYPE)) {
             TapTalk.init(this, "d1e5dfe23d1e00bf54bc2316f",
                     "NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh",
+                    R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name),
                     TAPListener);
             TapTalk.setTapTalkEnvironmentDevelopment();
+            TapTalk.addChatRoomListener(tapChatRoomListener);
             Stetho.initialize(
                     Stetho.newInitializerBuilder(this)
                             .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
                             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                             .build());
-            TapTalk.saveAppInfo(R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name));
         } else if ("staging".equals(BuildConfig.BUILD_TYPE)) {
             TapTalk.init(this, "b43b48745dfa0e44k1",
                     "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4",
+                    R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name),
                     TAPListener);
             TapTalk.setTapTalkEnvironmentStaging();
             Stetho.initialize(
@@ -177,10 +189,10 @@ public class SampleApplication extends Application {
                             .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
                             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                             .build());
-            TapTalk.saveAppInfo(R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name));
         } else {
             TapTalk.init(this, "d1e5dfe23d1e00bf54bc2316f",
                     "NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh",
+                    R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name),
                     TAPListener);
             TapTalk.setTapTalkEnvironmentProduction();
         }

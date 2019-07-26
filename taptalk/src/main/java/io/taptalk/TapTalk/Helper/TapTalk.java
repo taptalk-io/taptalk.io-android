@@ -40,6 +40,7 @@ import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface;
 import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
+import io.taptalk.TapTalk.Listener.TAPChatRoomListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
@@ -112,6 +113,7 @@ public class TapTalk {
 
     private Thread.UncaughtExceptionHandler defaultUEH;
     private List<TAPListener> tapListeners = new ArrayList<>();
+    private List<TAPChatRoomListener> tapChatRoomListeners = new ArrayList<>();
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -136,16 +138,18 @@ public class TapTalk {
         TapTalkOrientationLandscape // FIXME: 6 February 2019 Activity loads portrait by default then changes to landscape after onCreate
     }
 
-    public static TapTalk init(Context context, String appID, String appSecret, String userAgent, TAPListener tapListener) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, userAgent, tapListener)) : tapTalk;
+    public static TapTalk init(Context context, String appID, String appSecret, String userAgent, int clientAppIcon, String clientAppName, TAPListener tapListener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, userAgent, clientAppIcon, clientAppName, tapListener)) : tapTalk;
     }
 
-    public static TapTalk init(Context context, String appID, String appSecret, TAPListener tapListener) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, "android", tapListener)) : tapTalk;
+    public static TapTalk init(Context context, String appID, String appSecret, int clientAppIcon, String clientAppName, TAPListener tapListener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, "android", clientAppIcon, clientAppName, tapListener)) : tapTalk;
     }
 
     public TapTalk(@NonNull final Context appContext, @NonNull String appID, @NonNull String appSecret
-            , @NonNull String userAgent, @NonNull TAPListener tapListener) {
+            , @NonNull String userAgent,
+                   int clientAppIcon, String clientAppName,
+                   @NonNull TAPListener tapListener) {
         //init Hawk for Preference
         //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
         if (BuildConfig.BUILD_TYPE.equals("dev"))
@@ -363,7 +367,7 @@ public class TapTalk {
             isRefreshTokenExpired = true;
 
             for (TAPListener listener : getTapTalkListeners()) {
-                listener.onRefreshTokenExpiredOrInvalid();
+                listener.onRefreshAuthTicket();
             }
         }
     }
@@ -401,8 +405,8 @@ public class TapTalk {
     }
 
     private List<TAPCustomKeyboardItemModel> requestCustomKeyboardItemsFromClient(TAPUserModel activeUser, TAPUserModel otherUser) {
-        for (TAPListener listener : tapListeners) {
-            List<TAPCustomKeyboardItemModel> customKeyboardItems = listener.onRequestCustomKeyboardItems(activeUser, otherUser);
+        for (TAPChatRoomListener listener : tapChatRoomListeners) {
+            List<TAPCustomKeyboardItemModel> customKeyboardItems = listener.setCustomKeyboardItems(activeUser, otherUser);
             if (null != customKeyboardItems) {
                 return customKeyboardItems;
             }
@@ -423,8 +427,8 @@ public class TapTalk {
     }
 
     private void triggerMessageQuoteClicked(Activity activity, TAPMessageModel messageModel, HashMap<String, Object> userInfo) {
-        for (TAPListener listener : tapListeners) {
-            listener.onMessageQuoteClicked(activity, messageModel, userInfo);
+        for (TAPChatRoomListener listener : tapChatRoomListeners) {
+            listener.onTapTalkMessageQuoteTapped(activity, messageModel, userInfo);
         }
     }
 
@@ -449,11 +453,11 @@ public class TapTalk {
             if (null != notificationMessage &&
                     null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
                     TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
-                Log.e(TAG, "setNotificationMessage: "+TAPUtils.getInstance().toJsonString(notificationMessage) );
+                Log.e(TAG, "setNotificationMessage: " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getUser().getName() + ": " + notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             } else if (null != notificationMessage) {
-                Log.e(TAG, "setNotificationMessage:2 "+TAPUtils.getInstance().toJsonString(notificationMessage) );
+                Log.e(TAG, "setNotificationMessage:2 " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             }
@@ -613,8 +617,8 @@ public class TapTalk {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
-            for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onProductLeftButtonClicked(activity, productModel, recipientXcUserID, room);
+            for (TAPChatRoomListener listener : TapTalk.getTapTalkChatRoomListeners()) {
+                listener.onTapTalkProductListBubbleLeftButtonTapped(activity, productModel, recipientXcUserID, room);
             }
         }
     }
@@ -624,8 +628,8 @@ public class TapTalk {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
-            for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onProductRightButtonClicked(activity, productModel, recipientXcUserID, room);
+            for (TAPChatRoomListener listener : TapTalk.getTapTalkChatRoomListeners()) {
+                listener.onTapTalkProductListBubbleRightButtonTapped(activity, productModel, recipientXcUserID, room);
             }
         }
     }
@@ -635,13 +639,17 @@ public class TapTalk {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             for (TAPListener tapListener : TapTalk.getTapTalkListeners()) {
-                tapListener.onUpdateUnreadCount(unreadCount);
+                tapListener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
             }
         }
     }
 
     public static List<TAPListener> getTapTalkListeners() {
         return tapTalk.tapListeners;
+    }
+
+    public static List<TAPChatRoomListener> getTapTalkChatRoomListeners() {
+        return tapTalk.tapChatRoomListeners;
     }
 
     // TODO: 20 February 2019 ADD LISTENER TO DETECT FAILURE?
@@ -895,6 +903,10 @@ public class TapTalk {
 
     public static void callUpdateUnreadCount() {
         TAPNotificationManager.getInstance().updateUnreadCount();
+    }
+
+    public static void addChatRoomListener(TAPChatRoomListener listener) {
+        tapTalk.tapChatRoomListeners.add(listener);
     }
 
     public static void getTaptalkUserWithClientUserID(String clientUserID, TAPGetUserInterface getUserInterface) {
