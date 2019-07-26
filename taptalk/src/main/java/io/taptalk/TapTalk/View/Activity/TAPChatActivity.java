@@ -1431,22 +1431,20 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
             if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType() &&
                     TYPE_SYSTEM_MESSAGE == message.getType() && (ROOM_ADD_PARTICIPANT.equals(message.getAction())
-                    || ROOM_REMOVE_PARTICIPANT.equals(message.getAction()))) {
+                    || ROOM_REMOVE_PARTICIPANT.equals(message.getAction())) &&
+                    !TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
                 callApiGetGroupData();
-                updateMessage(message);
-            } else if (TYPE_SYSTEM_MESSAGE == message.getType() && (ROOM_REMOVE_PARTICIPANT.equals(message.getAction())
-                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID()))
-                    || (LEAVE_ROOM.equals(message.getAction()) && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUser().getUserID()))) {
+            } else if (TYPE_SYSTEM_MESSAGE == message.getType() &&
+                    (ROOM_REMOVE_PARTICIPANT.equals(message.getAction())
+                    || LEAVE_ROOM.equals(message.getAction()))) {
                 showChatAsHistory(getString(R.string.tap_not_a_participant));
-            } else if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_ADD_PARTICIPANT.equals(message.getAction())
-                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
+            } else if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_ADD_PARTICIPANT.equals(message.getAction())) {
                 showDefaultChatEditText();
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() && DELETE_ROOM.equals(message.getAction())) {
                 TAPChatManager.getInstance().deleteMessageFromIncomingMessages(message.getLocalID());
                 showroomIsUnavailableState();
-            } else {
-                updateMessage(message);
             }
+            updateMessage(message);
         }
 
         @Override
