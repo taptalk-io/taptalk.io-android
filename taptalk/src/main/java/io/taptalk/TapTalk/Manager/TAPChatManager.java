@@ -1255,6 +1255,10 @@ public class TAPChatManager {
         TAPContactManager.getInstance().updateUserDataMap(newMessage.getUser());
     }
 
+    public void deleteMessageFromIncomingMessages(String localID) {
+        incomingMessages.remove(localID);
+    }
+
     public void saveNewMessageToList() {
         if (0 == incomingMessages.size())
             return;
