@@ -6,6 +6,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
@@ -145,4 +146,7 @@ public interface TAPTalkApiService {
 
     @POST("client/room/admins/demote")
     Observable<TAPBaseResponse<TAPCreateRoomResponse>> demoteGroupAdmins(@Body TAPAddRoomParticipantRequest request);
+
+    @POST("client/room/delete")
+    Observable<TAPBaseResponse<TAPCommonResponse>> deleteChatRoom(@Body TAPDeleteRoomRequest request);
 }

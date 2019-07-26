@@ -149,7 +149,7 @@ public class TAPDataManager {
     }
 
     private Long getLongTimestampPreference(String key) {
-        return Hawk.get(key, Long.parseLong("0"));
+        return Hawk.get(key, 0L);
     }
 
     private Boolean checkPreferenceKeyAvailable(String key) {
@@ -276,6 +276,10 @@ public class TAPDataManager {
 
     public void saveAccessTokenExpiry(Long accessTokenExpiry) {
         saveLongTimestampPreference(K_ACCESS_TOKEN_EXPIRY, accessTokenExpiry);
+    }
+
+    public long getAccessTokenExpiry() {
+        return getLongTimestampPreference(K_ACCESS_TOKEN_EXPIRY);
     }
 
     public void removeAccessToken() {
@@ -1003,6 +1007,11 @@ public class TAPDataManager {
 
     public void demoteGroupAdmins(String roomID, List<String> userIDs, TAPDefaultDataView<TAPCreateRoomResponse> view) {
         TAPApiManager.getInstance().demoteGroupAdmins(roomID, userIDs, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void deleteChatRoom(TAPRoomModel room, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance().deleteChatRoom(room, TAPChatManager.getInstance().getActiveUser().getUserID(),
+                TAPDataManager.getInstance().getAccessTokenExpiry(), new TAPDefaultSubscriber<>(view));
     }
 
     // Search User
