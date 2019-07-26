@@ -606,6 +606,16 @@ public class TAPUtils {
         }
     }
 
+    public String getMediaDurationStringDummy(int maxDuration) {
+        int hourMs = 1000 * 60 * 60;
+
+        if (maxDuration > hourMs) {
+            return "00-00-0";
+        } else {
+            return "00-00";
+        }
+    }
+
     public String getFileDisplayName(TAPMessageModel message) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {
