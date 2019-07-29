@@ -86,13 +86,6 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Log.e(TAG, "onConfigurationChanged: " + vm.isVideoPlaying());
-//        if (vm.isVideoPlaying()) {
-//            pauseVideo();
-//            vm.setVideoPlaying(true);
-//        } else {
-//            vm.setPausedPosition(vm.getMediaPlayer().getCurrentPosition());
-//        }
         updateVideoViewParams();
     }
 
@@ -100,7 +93,6 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         vm = ViewModelProviders.of(this).get(TAPVideoPlayerViewModel.class);
         String uriString = getIntent().getStringExtra(URI);
         vm.setMessage(getIntent().getParcelableExtra(MESSAGE));
-        Log.e(TAG, "open video: " + uriString);
         if (null != uriString) {
             vm.setVideoUri(Uri.parse(uriString));
         } else {
@@ -143,7 +135,6 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         // Get video data
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(TAPVideoPlayerActivity.this, vm.getVideoUri());
-        //duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
         String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
         int width, height;
         if (rotation.equals("90") || rotation.equals("270")) {
@@ -183,9 +174,9 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         vm.getDurationTimer().schedule(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(() -> seekBar.setProgress(videoView.getCurrentPosition() * seekBar.getMax() / vm.getDuration()));
+                runOnUiThread(() -> seekBar.setProgress(vm.getMediaPlayer().getCurrentPosition() * seekBar.getMax() / vm.getDuration()));
             }
-        }, 0, 100L);
+        }, 0, 10L);
         startHidePauseButtonTimer();
     }
 
@@ -229,12 +220,12 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
             }
         } else {
             // Show UI
-            showLayout(clFooter);
-            showLayout(ivButtonClose);
-            showLayout(ivButtonMute);
-            showLayout(ivButtonPlayPause);
+            showLayout(clFooter, 1f);
+            showLayout(ivButtonClose, 0.7f);
+            showLayout(ivButtonMute, 0.7f);
+            showLayout(ivButtonPlayPause, 1f);
             if (null != vm.getMessage()) {
-                showLayout(ivButtonSave);
+                showLayout(ivButtonSave, 0.7f);
             }
             if (vm.isVideoPlaying()) {
                 startHidePauseButtonTimer();
@@ -250,11 +241,11 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
                 .start();
     }
 
-    private void showLayout(View view) {
+    private void showLayout(View view, float alpha) {
         view.setAlpha(0f);
         view.setVisibility(View.VISIBLE);
         view.animate()
-                .alpha(1f)
+                .alpha(alpha)
                 .setDuration(200L)
                 .start();
     }
@@ -282,18 +273,16 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
 
     private void pauseVideo() {
         vm.setVideoPlaying(false);
-        vm.setPausedPosition(videoView.getCurrentPosition());
-        videoView.pause();
+        vm.setPausedPosition(vm.getMediaPlayer().getCurrentPosition());
+        vm.getMediaPlayer().pause();
         ivButtonPlayPause.setImageDrawable(getDrawable(R.drawable.tap_ic_button_play));
         stopProgressTimer();
-        Log.e(TAG, "pauseVideo: " + vm.getPausedPosition());
     }
 
     private void resumeVideo() {
         vm.setVideoPlaying(true);
-        videoView.seekTo(vm.getPausedPosition());
+        vm.getMediaPlayer().seekTo(vm.getPausedPosition());
         ivButtonPlayPause.setImageDrawable(getDrawable(R.drawable.tap_ic_button_pause));
-        Log.e(TAG, "resumeVideo: " + vm.getPausedPosition());
     }
 
     private void saveVideo() {
@@ -344,8 +333,6 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
     private MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
-            Log.e(TAG, "onPrepared: " + vm.isFirstLoadFinished());
-            Log.e(TAG, "onPrepared: " + vm.isVideoPlaying());
             if (!vm.isFirstLoadFinished()) {
                 // Play video on first load
                 mediaPlayer.start();
@@ -357,10 +344,6 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
                 tvDuration.setText(TAPUtils.getInstance().getMediaDurationString(vm.getDuration(), vm.getDuration()));
                 vm.setFirstLoadFinished(true);
             }
-//            else if (vm.isVideoPlaying()) {
-//                // Resume video
-//                resumeVideo();
-//            }
             tvCurrentTimeDummy.setText(TAPUtils.getInstance().getMediaDurationStringDummy(vm.getDuration()));
             tvDurationDummy.setText(TAPUtils.getInstance().getMediaDurationStringDummy(vm.getDuration()));
             mediaPlayer.seekTo(vm.getPausedPosition());
@@ -381,13 +364,12 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
             if (!vm.isSeeking() && vm.isVideoPlaying()) {
                 mediaPlayer.start();
                 TAPVideoPlayerActivity.this.startProgressTimer();
-//                vm.setPausedPosition(0);
-            } //else {
+            } else {
                 vm.setPausedPosition(mediaPlayer.getCurrentPosition());
                 if (vm.getPausedPosition() >= vm.getDuration()) {
                     vm.setPausedPosition(0);
                 }
-//            }
+            }
         }
     };
 
@@ -397,8 +379,6 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
             pauseVideo();
             vm.getMediaPlayer().seekTo(vm.getDuration());
             seekBar.setProgress(seekBar.getMax());
-            //tvCurrentTime.setText(TAPUtils.getInstance().getMediaDurationString(vm.getDuration(), vm.getDuration()));
-            //vm.setPausedPosition(0);
         }
     };
 
@@ -430,9 +410,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             vm.setSeeking(false);
-            //videoView.seekTo(vm.getDuration() * seekBar.getProgress() / seekBar.getMax());
             vm.getMediaPlayer().seekTo(vm.getDuration() * seekBar.getProgress() / seekBar.getMax());
-            Log.e(TAG, "onStopTrackingTouch: " + (vm.getDuration() * seekBar.getProgress() / seekBar.getMax()));
         }
     };
 
