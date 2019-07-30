@@ -263,7 +263,7 @@ public class TapTalk {
                                 userModels.add(contact.getUser().setUserAsContact());
                             }
                             TAPDataManager.getInstance().insertMyContactToDatabase(userModels);
-                            TAPContactManager.getInstance().updateUserDataMap(userModels);
+                            TAPContactManager.getInstance().updateUserData(userModels);
                         }
                     })).start();
 

@@ -300,7 +300,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                                 users.add(contact);
                             }
                             TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                            TAPContactManager.getInstance().updateUserDataMap(users);
+                            TAPContactManager.getInstance().updateUserData(users);
                             runOnUiThread(() -> {
                                 //stopSyncLoading();
                                 flSync.setVisibility(View.GONE);
@@ -375,11 +375,11 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                         TAPUserModel contactUserModel = contact.getUser().setUserAsContact();
                         users.add(contactUserModel);
                         TAPContactManager.getInstance().addUserMapByPhoneNumber(contactUserModel);
-                        TAPContactManager.getInstance().updateUserDataMap(contactUserModel);
+                        TAPContactManager.getInstance().updateUserData(contactUserModel);
                     }
 
                     TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                    TAPContactManager.getInstance().updateUserDataMap(users);
+                    TAPContactManager.getInstance().updateUserData(users);
                     permissionCheckAndGetContactList();
                 }).start();
             } catch (Exception e) {

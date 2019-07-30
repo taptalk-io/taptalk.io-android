@@ -75,7 +75,6 @@ import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPChatRoomListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TAPListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -1247,7 +1246,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     @Override
                     public void onSuccess(TAPGetUserResponse response) {
                         TAPUserModel userResponse = response.getUser();
-                        TAPContactManager.getInstance().updateUserDataMap(userResponse);
+                        TAPContactManager.getInstance().updateUserData(userResponse);
                         TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(userResponse);
                         setChatRoomStatus(onlineStatus);
                         TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(false);
@@ -2256,7 +2255,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                             }
 
                             @Override
-                            public void onFailure(String errorMessage) {
+                            public void onError(String errorMessage) {
 
                             }
                         });
@@ -2276,7 +2275,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     }
 
                     @Override
-                    public void onFailure(String errorMessage) {
+                    public void onError(String errorMessage) {
                         runOnUiThread(() -> Toast.makeText(TAPChatActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
                     }
                 });
@@ -2296,7 +2295,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                     }
 
                     @Override
-                    public void onFailure(String errorMessage) {
+                    public void onError(String errorMessage) {
                         runOnUiThread(() -> Toast.makeText(TAPChatActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
                     }
                 });

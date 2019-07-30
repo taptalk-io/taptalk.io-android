@@ -15,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -263,7 +262,7 @@ public class TAPNotificationManager {
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
         TAPContactManager.getInstance().saveUserDataToDatabase(newMessageModel.getUser());
         TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(newMessageModel);
-        TAPContactManager.getInstance().updateUserDataMap(newMessageModel.getUser());
+        TAPContactManager.getInstance().updateUserData(newMessageModel.getUser());
 
         if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()
                 && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {

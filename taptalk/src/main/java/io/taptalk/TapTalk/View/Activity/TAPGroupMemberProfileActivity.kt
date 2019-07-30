@@ -30,6 +30,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPContactManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPGroupManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
@@ -360,17 +361,17 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                 .show()
     }
 
-    private val addContactView = object : TAPDefaultDataView<TAPCommonResponse>() {
+    private val addContactView = object : TAPDefaultDataView<TAPAddContactResponse>() {
         override fun startLoading() {
             super.startLoading()
             showLoading(getString(R.string.tap_adding))
         }
 
-        override fun onSuccess(response: TAPCommonResponse?) {
+        override fun onSuccess(response: TAPAddContactResponse?) {
             super.onSuccess(response)
-            val newContact = groupViewModel?.groupMemberUser?.setUserAsContact()
+            val newContact = response?.user?.setUserAsContact()
             TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, newContact)
-            TAPContactManager.getInstance().updateUserDataMap(newContact)
+            TAPContactManager.getInstance().updateUserData(newContact)
             this@TAPGroupMemberProfileActivity.endLoading(getString(R.string.tap_added_contact))
         }
 

@@ -421,7 +421,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onFailure(String errorMessage) {
+        public void onError(String errorMessage) {
             runOnUiThread(() -> {
                 hideLoading();
                 Toast.makeText(TAPVideoPlayerActivity.this, errorMessage, Toast.LENGTH_SHORT).show();

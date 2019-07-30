@@ -16,7 +16,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -617,7 +616,7 @@ public class TAPRoomListFragment extends Fragment {
                             userIds.add(TAPChatManager.getInstance().getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                         } else {
                             // Save user data to contact manager
-                            TAPContactManager.getInstance().updateUserDataMap(message.getUser());
+                            TAPContactManager.getInstance().updateUserData(message.getUser());
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -676,7 +675,7 @@ public class TAPRoomListFragment extends Fragment {
             if (null == response || response.getUsers().isEmpty()) {
                 return;
             }
-            new Thread(() -> TAPContactManager.getInstance().updateUserDataMap(response.getUsers())).start();
+            new Thread(() -> TAPContactManager.getInstance().updateUserData(response.getUsers())).start();
         }
     };
 

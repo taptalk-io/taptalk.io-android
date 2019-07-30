@@ -32,6 +32,7 @@ import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -421,7 +422,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPGetUserResponse response) {
             TAPUserModel userResponse = response.getUser();
-            TAPContactManager.getInstance().updateUserDataMap(userResponse);
+            TAPContactManager.getInstance().updateUserData(userResponse);
             vm.setSearchResult(userResponse);
             showSearchResult();
         }
@@ -446,7 +447,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         }
     };
 
-    TAPDefaultDataView<TAPCommonResponse> addContactView = new TAPDefaultDataView<TAPCommonResponse>() {
+    TAPDefaultDataView<TAPAddContactResponse> addContactView = new TAPDefaultDataView<TAPAddContactResponse>() {
         @Override
         public void startLoading() {
             // Disable editing when loading
@@ -454,15 +455,15 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         }
 
         @Override
-        public void onSuccess(TAPCommonResponse response) {
+        public void onSuccess(TAPAddContactResponse response) {
             // Add contact to database
-            TAPUserModel newContact = vm.getSearchResult().setUserAsContact();
+            TAPUserModel newContact = response.getUser().setUserAsContact();
             TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, newContact);
-            TAPContactManager.getInstance().updateUserDataMap(newContact);
+            TAPContactManager.getInstance().updateUserData(newContact);
 
             // Change To Animation Page
             Intent intent = new Intent(TAPNewContactActivity.this, TAPScanResultActivity.class);
-            intent.putExtra(ADDED_CONTACT, vm.getSearchResult());
+            intent.putExtra(ADDED_CONTACT, newContact);
             startActivity(intent);
             finish();
             overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
