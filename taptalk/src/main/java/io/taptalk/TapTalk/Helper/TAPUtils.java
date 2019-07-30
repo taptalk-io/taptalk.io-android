@@ -88,7 +88,6 @@ import io.taptalk.Taptalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
@@ -606,6 +605,16 @@ public class TAPUtils {
         }
     }
 
+    public String getMediaDurationStringDummy(int maxDuration) {
+        int hourMs = 1000 * 60 * 60;
+
+        if (maxDuration > hourMs) {
+            return "00-00-0";
+        } else {
+            return "00-00";
+        }
+    }
+
     public String getFileDisplayName(TAPMessageModel message) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {
@@ -708,7 +717,7 @@ public class TAPUtils {
             public void onSelectFinished(TAPUserModel entity) {
                 if (null != entity) {
                     Log.e(TAG, "getUserFromXcUserID onDbSelectFinished: " + TAPUtils.getInstance().toJsonString(entity));
-                    TAPContactManager.getInstance().updateUserDataMap(entity);
+                    TAPContactManager.getInstance().updateUserData(entity);
                     listener.onSelectFinished(entity);
                 } else {
                     // Get user data from API
@@ -718,7 +727,7 @@ public class TAPUtils {
                             public void onSuccess(TAPGetUserResponse response) {
                                 TAPUserModel userResponse = response.getUser();
                                 Log.e(TAG, "getUserFromXcUserID onApiSuccess: " + TAPUtils.getInstance().toJsonString(userResponse));
-                                TAPContactManager.getInstance().updateUserDataMap(userResponse);
+                                TAPContactManager.getInstance().updateUserData(userResponse);
                                 listener.onSelectFinished(userResponse);
                             }
 

@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.CardView;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -27,10 +26,10 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.ViewModel.TAPScanResultViewModel;
 import io.taptalk.Taptalk.R;
@@ -139,7 +138,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void validateScanResult(TAPUserModel userModel) {
-        TAPContactManager.getInstance().updateUserDataMap(userModel);
+        TAPContactManager.getInstance().updateUserData(userModel);
         cvResult.setVisibility(View.VISIBLE);
         ivLoading.clearAnimation();
         ivLoading.setVisibility(View.GONE);
@@ -171,7 +170,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         runOnUiThread(() -> llButton.setOnClickListener(v -> TAPDataManager.getInstance().addContactApi(contactModel.getUserID(), addContactView)));
     }
 
-    TAPDefaultDataView<TAPCommonResponse> addContactView = new TAPDefaultDataView<TAPCommonResponse>() {
+    TAPDefaultDataView<TAPAddContactResponse> addContactView = new TAPDefaultDataView<TAPAddContactResponse>() {
         @Override
         public void startLoading() {
             tvButtonTitle.setVisibility(View.GONE);
@@ -181,15 +180,15 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         }
 
         @Override
-        public void onSuccess(TAPCommonResponse response) {
-            TAPUserModel newContact = contactModel.setUserAsContact();
+        public void onSuccess(TAPAddContactResponse response) {
+            TAPUserModel newContact = response.getUser().setUserAsContact();
             TAPDataManager.getInstance().insertMyContactToDatabase(newContact);
-            TAPContactManager.getInstance().updateUserDataMap(newContact);
+            TAPContactManager.getInstance().updateUserData(newContact);
             tvButtonTitle.setVisibility(View.VISIBLE);
             ivButtonIcon.setVisibility(View.VISIBLE);
             ivAddLoading.clearAnimation();
             ivAddLoading.setVisibility(View.GONE);
-            animateAddSuccess(contactModel);
+            animateAddSuccess(newContact);
             llButton.setOnClickListener(v -> {
                 TAPUtils.getInstance().startChatActivity(
                         TAPScanResultActivity.this,

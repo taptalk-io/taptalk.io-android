@@ -319,7 +319,7 @@ public class TAPFileDownloadManager {
                 listener.onSuccess("Successfully saved " + filename);
             } catch (Exception e) {
                 e.printStackTrace();
-                listener.onFailure(e.getMessage());
+                listener.onError(e.getMessage());
             }
         }).start();
     }
@@ -353,15 +353,15 @@ public class TAPFileDownloadManager {
                         scanFile(context, targetFile, TAPUtils.getInstance().getFileMimeType(targetFile));
                         listener.onSuccess("Successfully saved " + filename);
                     } else {
-                        listener.onFailure("File is Missing Please download the File again");
+                        listener.onError(context.getString(R.string.tap_error_could_not_find_file));
                     }
                 } else {
-                    listener.onFailure("File is Missing Please download the File again");
+                    listener.onError(context.getString(R.string.tap_error_could_not_find_file));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.e(TAG, "writeFileToDisk: ", e);
-                listener.onFailure(e.getMessage());
+                listener.onError(e.getMessage());
             }
         }).start();
     }

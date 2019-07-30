@@ -11,7 +11,7 @@
     <VideoView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -86,24 +86,36 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:indeterminateTint="@color/tapWhite"
-            android:max="100"
+            android:max="10000"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
             android:progressBackgroundTint="@color/tapWhite"
             android:progressTint="@color/tapTransparentWhite40"
             android:thumbTint="@color/tapWhite"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_duration"
-            app:layout_constraintStart_toEndOf="@id/tv_current_time"
+            app:layout_constraintEnd_toStartOf="@id/tv_duration_dummy"
+            app:layout_constraintStart_toEndOf="@id/tv_current_time_dummy"
             app:layout_constraintTop_toTopOf="parent"
             tools:progress="40" />
 
         <TextView
             android:id="@+id/tv_current_time"
             style="@style/tapVideoPlayerTimeLabelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tv_current_time_dummy"
+            app:layout_constraintStart_toStartOf="@id/tv_current_time_dummy"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="04:12" />
+
+        <TextView
+            android:id="@+id/tv_current_time_dummy"
+            style="@style/tapVideoPlayerTimeLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/seek_bar"
             app:layout_constraintStart_toStartOf="parent"
@@ -113,9 +125,21 @@
         <TextView
             android:id="@+id/tv_duration"
             style="@style/tapVideoPlayerTimeLabelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tv_duration_dummy"
+            app:layout_constraintStart_toStartOf="@id/tv_duration_dummy"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="10:53" />
+
+        <TextView
+            android:id="@+id/tv_duration_dummy"
+            style="@style/tapVideoPlayerTimeLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/seek_bar"

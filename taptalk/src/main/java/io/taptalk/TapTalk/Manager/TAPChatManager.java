@@ -1252,7 +1252,7 @@ public class TAPChatManager {
         }
 
         // Save user data to contact manager
-        TAPContactManager.getInstance().updateUserDataMap(newMessage.getUser());
+        TAPContactManager.getInstance().updateUserData(newMessage.getUser());
     }
 
     public void deleteMessageFromIncomingMessages(String localID) {

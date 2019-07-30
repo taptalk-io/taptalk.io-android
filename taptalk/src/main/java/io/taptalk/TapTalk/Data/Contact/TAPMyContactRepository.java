@@ -36,7 +36,7 @@ public class TAPMyContactRepository {
 
     public void checkContactAndInsert(TAPUserModel userModel) {
         new Thread(() -> {
-            userModel.setIsContact(myContactDao.checkUserInMyContacts(userModel.getUserID()));
+            userModel.checkAndSetContact(myContactDao.checkUserInMyContacts(userModel.getUserID()));
             myContactDao.insert(userModel);
         }).start();
     }
@@ -74,8 +74,12 @@ public class TAPMyContactRepository {
 
     public void getAllMyContactList(TAPDatabaseListener<TAPUserModel> listener) {
         new Thread(() -> {
-            List<TAPUserModel> myContactList = myContactDao.getAllMyContact();
-            listener.onSelectFinished(myContactList);
+            try {
+                List<TAPUserModel> myContactList = myContactDao.getAllMyContact();
+                listener.onSelectFinished(myContactList);
+            } catch (Exception e) {
+                listener.onSelectFailed(e.getMessage());
+            }
         }).start();
     }
 
