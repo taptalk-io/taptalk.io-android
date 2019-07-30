@@ -140,19 +140,23 @@ public class TAPMessageRepository {
 
     public void getRoomList(String myID, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, final TAPDatabaseListener listener) {
         new Thread(() -> {
-            if (0 < saveMessages.size()) {
-                messageDao.insert(saveMessages);
-                TAPChatManager.getInstance().clearSaveMessages();
-            }
-            List<TAPMessageEntity> entities = messageDao.getAllRoomList();
-
-            if (isCheckUnreadFirst && entities.size() > 0) {
-                Map<String, Integer> unreadMap = new LinkedHashMap<>();
-                for (TAPMessageEntity entity : entities) {
-                    unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+            try {
+                if (0 < saveMessages.size()) {
+                    messageDao.insert(saveMessages);
+                    TAPChatManager.getInstance().clearSaveMessages();
                 }
-                listener.onSelectedRoomList(entities, unreadMap);
-            } else listener.onSelectFinished(entities);
+                List<TAPMessageEntity> entities = messageDao.getAllRoomList();
+
+                if (isCheckUnreadFirst && entities.size() > 0) {
+                    Map<String, Integer> unreadMap = new LinkedHashMap<>();
+                    for (TAPMessageEntity entity : entities) {
+                        unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+                    }
+                    listener.onSelectedRoomList(entities, unreadMap);
+                } else listener.onSelectFinished(entities);
+            } catch (Exception e) {
+                listener.onSelectFailed(e.getMessage());
+            }
         }).start();
     }
 
