@@ -374,7 +374,7 @@
         <item name="android:textColor">@color/tapRightBubbleMessageBodyColor</item>
         <item name="android:textColorLink">@color/tapRightBubbleMessageBodyURLColor</item>
         <item name="android:textColorHighlight">@color/tapRightBubbleMessageBodyURLHighlightedColor</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="tapLeftBubbleMessageBodyStyle" parent="tapFontFamilyRegular">
@@ -382,43 +382,19 @@
         <item name="android:textColor">@color/tapLeftBubbleMessageBodyColor</item>
         <item name="android:textColorLink">@color/tapLeftBubbleMessageBodyURLColor</item>
         <item name="android:textColorHighlight">@color/tapLeftBubbleMessageBodyURLHighlightedColor</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
-
-    <!--<style name="tapRightBubbleMessageBodyURLStyle" parent="tapFontFamilyRegular">-->
-    <!--<item name="android:letterSpacing">0.01</item>-->
-    <!--<item name="android:textColor">@color/tapRightBubbleMessageBodyURLColor</item>-->
-    <!--<item name="android:textSize">14sp</item>-->
-    <!--</style>-->
-
-    <!--<style name="tapLeftBubbleMessageBodyURLStyle" parent="tapFontFamilyRegular">-->
-    <!--<item name="android:letterSpacing">-0.01</item>-->
-    <!--<item name="android:textColor">@color/tapLeftBubbleMessageBodyURLColor</item>-->
-    <!--<item name="android:textSize">14sp</item>-->
-    <!--</style>-->
-
-    <!--<style name="tapRightBubbleMessageBodyURLHighlightedStyle" parent="tapFontFamilyRegular">-->
-        <!--<item name="android:letterSpacing">0.01</item>-->
-        <!--<item name="android:textColor">@color/tapRightBubbleMessageBodyURLHighlightedColor</item>-->
-        <!--<item name="android:textSize">14sp</item>-->
-    <!--</style>-->
-
-    <!--<style name="tapLeftBubbleMessageBodyURLHighlightedStyle" parent="tapFontFamilyRegular">-->
-        <!--<item name="android:letterSpacing">-0.01</item>-->
-        <!--<item name="android:textColor">@color/tapLeftBubbleMessageBodyURLHighlightedColor</item>-->
-        <!--<item name="android:textSize">14sp</item>-->
-    <!--</style>-->
 
     <style name="tapRightBubbleDeletedMessageBodyStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapRightBubbleDeletedMessageBodyColor</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="tapLeftBubbleDeletedMessageBodyStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapLeftBubbleDeletedMessageBodyColor</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="tapRightBubbleQuoteTitleStyle" parent="tapFontFamilyBold">
