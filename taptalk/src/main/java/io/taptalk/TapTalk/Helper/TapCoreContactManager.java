@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Interface.TapContactListInterface;
 import io.taptalk.TapTalk.Interface.TapContactInterface;
+import io.taptalk.TapTalk.Interface.TapContactListInterface;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPContactManager;

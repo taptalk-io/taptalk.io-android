@@ -101,6 +101,7 @@ public class TAPRoomListFragment extends Fragment {
     public TAPRoomListFragment() {
     }
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -519,7 +520,7 @@ public class TAPRoomListFragment extends Fragment {
         TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
 
         if (isTyping)
-        roomListModel.addTypingUsers(typingModel.getUser());
+            roomListModel.addTypingUsers(typingModel.getUser());
         else {
             roomListModel.removeTypingUser(typingModel.getUser().getUserID());
         }
@@ -604,7 +605,8 @@ public class TAPRoomListFragment extends Fragment {
                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                     try {
                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                        tempMessage.add(TAPChatManager.getInstance().convertToEntity(message));
+                        TAPMessageEntity entity = TAPChatManager.getInstance().convertToEntity(message);
+                        tempMessage.add(entity);
 
                         // Save undelivered messages to list
                         if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
@@ -617,6 +619,9 @@ public class TAPRoomListFragment extends Fragment {
                         } else {
                             // Save user data to contact manager
                             TAPContactManager.getInstance().updateUserData(message.getUser());
+                        }
+                        if (message.getIsDeleted()) {
+                            TAPDataManager.getInstance().deletePhysicalFile(entity);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
