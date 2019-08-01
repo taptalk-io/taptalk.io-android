@@ -525,7 +525,7 @@ public class TapTalk {
         private void createNotificationChannel() {
             NotificationManager notificationManager = (NotificationManager) TapTalk.appContext.getSystemService(Context.NOTIFICATION_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && null == notificationManager.getNotificationChannel(TAP_NOTIFICATION_CHANNEL)) {
-                NotificationChannel notificationChannel = new NotificationChannel(TAP_NOTIFICATION_CHANNEL, "Homing Pigeon Notifications", NotificationManager.IMPORTANCE_HIGH);
+                NotificationChannel notificationChannel = new NotificationChannel(TAP_NOTIFICATION_CHANNEL, "Chat Notifications", NotificationManager.IMPORTANCE_HIGH);
 
                 // Configure the notification channel.
                 notificationChannel.setDescription("TapTalk Notification");

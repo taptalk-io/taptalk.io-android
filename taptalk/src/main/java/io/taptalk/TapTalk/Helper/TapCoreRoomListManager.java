@@ -40,7 +40,7 @@ public class TapCoreRoomListManager {
                                 userIds.add(TAPChatManager.getInstance().getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                             } else {
                                 // Save user data to contact manager
-                                TAPContactManager.getInstance().updateUserDataMap(message.getUser());
+                                TAPContactManager.getInstance().updateUserData(message.getUser());
                             }
                             if (null != message.getIsDeleted() && message.getIsDeleted()) {
                                 TAPDataManager.getInstance().deletePhysicalFile(entity);
@@ -58,7 +58,7 @@ public class TapCoreRoomListManager {
                                 if (null == response || response.getUsers().isEmpty()) {
                                     return;
                                 }
-                                new Thread(() -> TAPContactManager.getInstance().updateUserDataMap(response.getUsers())).start();
+                                new Thread(() -> TAPContactManager.getInstance().updateUserData(response.getUsers())).start();
                             }
                         });
                     }
