@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.API.View.TapMessageInterface;
-import io.taptalk.TapTalk.API.View.TapRoomListInterface;
+import io.taptalk.TapTalk.Interface.TapMessageInterface;
+import io.taptalk.TapTalk.Interface.TapRoomListInterface;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
+import io.taptalk.Taptalk.R;
 
 public class TapCoreRoomListManager {
 
@@ -110,7 +111,7 @@ public class TapCoreRoomListManager {
 
     public static void getUpdatedRoomList(TapRoomListInterface tapRoomListInterface) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
-            tapRoomListInterface.onError("Active user not found");
+            tapRoomListInterface.onError(TapTalk.appContext.getString(R.string.tap_error_active_user_not_found));
             return;
         }
         TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {

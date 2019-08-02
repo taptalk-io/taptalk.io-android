@@ -1,4 +1,4 @@
-package io.taptalk.TapTalk.API.View;
+package io.taptalk.TapTalk.Interface;
 
 import java.util.List;
 

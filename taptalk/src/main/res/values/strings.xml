@@ -347,5 +347,6 @@
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="tap_over_99">99+</string>
     <string name="tap_group_unavailable">Sorry, this group is unavailable.</string>
+    <string name="tap_error_active_user_not_found">Active user not found</string>
 
 </resources>
