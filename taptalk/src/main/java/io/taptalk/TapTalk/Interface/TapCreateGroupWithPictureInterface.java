@@ -5,6 +5,6 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 public interface TapCreateGroupWithPictureInterface {
     void onSuccess(TAPRoomModel roomModel, boolean isPictureUploadSuccess);
 
-    void onError(String errorMessage);
+    void onError(String errorCode, String errorMessage);
 }
 

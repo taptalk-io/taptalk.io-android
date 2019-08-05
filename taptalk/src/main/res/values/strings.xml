@@ -134,7 +134,7 @@
     <string name="tap_guide_password">Password must contain at least one lowercase, uppercase, special character, and a number.</string>
     <string name="tap_room_list_empty">It seems like you don’t have any chats to show, but don’t worry! Your chat list will grow once you</string>
 
-    <!--Error Message-->
+    <!--Success/Error Message-->
     <string name="tap_error">Error</string>
     <string name="tap_error_message_general">Something went wrong, please try again.</string>
     <string name="tap_could_not_find_any_results">Could not find any results</string>
@@ -173,6 +173,7 @@
     <string name="tap_error_unable_to_upload">Unable to upload</string>
     <string name="tap_error_upload_profile_picture">An error occurred while uploading your profile picture, would you like to try again?</string>
     <string name="tap_error_could_not_find_message">Could not find message.</string>
+    <string name="tap_error_assign_another_admin">Please assign another admin before leaving.</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
@@ -347,6 +348,5 @@
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="tap_over_99">99+</string>
     <string name="tap_group_unavailable">Sorry, this group is unavailable.</string>
-    <string name="tap_error_active_user_not_found">Active user not found</string>
 
 </resources>

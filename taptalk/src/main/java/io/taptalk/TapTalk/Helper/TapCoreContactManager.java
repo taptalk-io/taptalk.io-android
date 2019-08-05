@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Interface.TapCommonInterface;
 import io.taptalk.TapTalk.Interface.TapContactInterface;
 import io.taptalk.TapTalk.Interface.TapContactListInterface;
-import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -16,6 +16,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
 
 public class TapCoreContactManager {
 
@@ -28,7 +30,7 @@ public class TapCoreContactManager {
 
             @Override
             public void onSelectFailed(String errorMessage) {
-                tapContactListInterface.onError(errorMessage);
+                tapContactListInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
@@ -43,12 +45,12 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(TAPErrorModel error) {
-                tapContactInterface.onError(error.getMessage());
+                tapContactInterface.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                tapContactInterface.onError(errorMessage);
+                tapContactInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
@@ -63,12 +65,12 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(TAPErrorModel error) {
-                tapContactInterface.onError(error.getMessage());
+                tapContactInterface.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                tapContactInterface.onError(errorMessage);
+                tapContactInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
@@ -86,12 +88,12 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(TAPErrorModel error) {
-                tapContactInterface.onError(error.getMessage());
+                tapContactInterface.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                tapContactInterface.onError(errorMessage);
+                tapContactInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
@@ -107,32 +109,32 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(TAPErrorModel error) {
-                tapContactInterface.onError(error.getMessage());
+                tapContactInterface.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                tapContactInterface.onError(errorMessage);
+                tapContactInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
 
-    public static void removeFromTapTalkContacts(String userID, TapTalkActionInterface tapTalkActionInterface) {
+    public static void removeFromTapTalkContacts(String userID, TapCommonInterface commonInterface) {
         TAPDataManager.getInstance().removeContactApi(userID, new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
-                tapTalkActionInterface.onSuccess(response.getMessage());
+                commonInterface.onSuccess(response.getMessage());
                 TAPContactManager.getInstance().removeFromContacts(userID);
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                tapTalkActionInterface.onError(error.getMessage());
+                commonInterface.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                tapTalkActionInterface.onError(errorMessage);
+                commonInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
