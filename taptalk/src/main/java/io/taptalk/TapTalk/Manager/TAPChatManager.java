@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import io.taptalk.TapTalk.API.View.TapSendMessageInterface;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -101,6 +102,7 @@ public class TAPChatManager {
     private int pendingRetryInterval = 60 * 1000;
     private final int maxImageSize = 2000;
     private final Integer CHARACTER_LIMIT = 1000;
+    private HashMap<String, TapSendMessageInterface> sendMessagelisteners;
 
     private TapTalkSocketInterface socketListener = new TapTalkSocketInterface() {
         @Override
@@ -188,6 +190,7 @@ public class TAPChatManager {
         TAPConnectionManager.getInstance().setSocketMessageListener(socketMessageListener);
         setActiveUser(TAPDataManager.getInstance().getActiveUser());
         chatListeners = new ArrayList<>();
+        sendMessagelisteners = new HashMap<>();
         saveMessages = new ArrayList<>();
         pendingMessages = new LinkedHashMap<>();
         waitingResponses = new LinkedHashMap<>();
@@ -374,6 +377,13 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(createLocationMessageModel(address, latitude, longitude), true);
     }
 
+    public void sendLocationMessage(String address, Double latitude, Double longitude, TAPRoomModel room, TapSendMessageInterface tapSendChatInterface) {
+        TAPMessageModel messageModel = createLocationMessageModel(address, latitude, longitude, room, tapSendChatInterface);
+        sendMessagelisteners.put(messageModel.getLocalID(), tapSendChatInterface);
+        tapSendChatInterface.onStart(messageModel);
+        triggerListenerAndSendMessage(messageModel, true);
+    }
+
     public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel) {
         Integer startIndex;
 
@@ -386,6 +396,37 @@ public class TAPChatManager {
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
+                // Add entity to list
+                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+
+                // Send truncated message
+                triggerListenerAndSendMessage(messageModel, true);
+            }
+        } else {
+            TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
+            // Send message
+            triggerListenerAndSendMessage(messageModel, true);
+        }
+        // Run queue after list is updated
+        //checkAndSendPendingMessages();
+    }
+
+    public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, TapSendMessageInterface listener) {
+        Integer startIndex;
+
+        checkAndSendForwardedMessage(roomModel);
+
+        if (textMessage.length() > CHARACTER_LIMIT) {
+            // Message exceeds character limit
+            List<TAPMessageEntity> messageEntities = new ArrayList<>();
+            Integer length = textMessage.length();
+            for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
+                String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
+
+                sendMessagelisteners.put(messageModel.getLocalID(), listener);
+                listener.onStart(messageModel);
+
                 // Add entity to list
                 messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
 
@@ -514,6 +555,34 @@ public class TAPChatManager {
         }
     }
 
+    private TAPMessageModel createLocationMessageModel(String address, Double latitude, Double longitude, TAPRoomModel roomModel, TapSendMessageInterface listener) {
+        if (null == getQuotedMessage()) {
+            return TAPMessageModel.Builder(
+                    TapTalk.appContext.getString(R.string.tap_location_body),
+                    roomModel,
+                    TYPE_LOCATION,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    TYPE_PERSONAL == roomModel.getRoomType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                    new TAPDataLocationModel(address, latitude, longitude).toHashMap());
+        } else {
+            HashMap<String, Object> data = new TAPDataLocationModel(address, latitude, longitude).toHashMap();
+            if (null != getUserInfo()) {
+                data.put(USER_INFO, getUserInfo());
+            }
+            return TAPMessageModel.BuilderWithQuotedMessage(
+                    TapTalk.appContext.getString(R.string.tap_location_body),
+                    roomModel,
+                    TYPE_LOCATION,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    TYPE_PERSONAL == roomModel.getRoomType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                    data,
+                    getQuotedMessage());
+        }
+
+    }
+
     /**
      * Construct File Message Model
      */
@@ -557,11 +626,51 @@ public class TAPChatManager {
         return messageModel;
     }
 
+    // TODO: 2019-08-02 from createFileMessageModelAndAddToUploadQueue()
+    private TAPMessageModel createFileMessageModel(Context context, File file, TAPRoomModel roomModel) {
+        String fileName = file.getName();
+        Number fileSize = file.length();
+        String fileMimeType = null != TAPUtils.getInstance().getFileMimeType(file) ?
+                TAPUtils.getInstance().getFileMimeType(file) : "application/octet-stream";
+
+        // Build message model
+        TAPMessageModel messageModel;
+        Uri fileUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
+        HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap();
+        data.put(FILE_URI, fileUri.toString());
+        if (null == getQuotedMessage()) {
+            messageModel = TAPMessageModel.Builder(
+                    generateFileMessageBody(fileName),
+                    roomModel,
+                    TYPE_FILE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    TYPE_PERSONAL == roomModel.getRoomType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                    data);
+        } else {
+            if (null != getUserInfo()) {
+                data.put(USER_INFO, getUserInfo());
+            }
+            messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                    generateFileMessageBody(fileName),
+                    roomModel,
+                    TYPE_FILE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    TYPE_PERSONAL == roomModel.getRoomType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                    data,
+                    getQuotedMessage());
+        }
+        // Save file Uri
+//        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), fileUri);
+        TAPFileDownloadManager.getInstance().addFileProviderPath(fileUri, file.getAbsolutePath());
+        return messageModel;
+    }
+
     /**
      * Create file message model and call upload api
      */
-    private void createFileMessageModelAndAddToUploadQueue(Context context, String roomID,
-                                                           File file) {
+    private void createFileMessageModelAndAddToUploadQueue(Context context, String roomID, File file) {
         TAPMessageModel messageModel = createFileMessageModel(context, file);
 
         // Set Start Point for Progress
@@ -573,8 +682,28 @@ public class TAPChatManager {
         TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel);
     }
 
+    // TODO: 2019-08-02 createFileMessageModelAndAddToUploadQueue with RoomModel
+    private void createFileMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
+        TAPMessageModel messageModel = createFileMessageModel(context, file, roomModel);
+        sendMessagelisteners.put(messageModel.getLocalID(), listener);
+        listener.onStart(messageModel);
+
+        // Set Start Point for Progress
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
+
+        addUploadingMessageToHashMap(messageModel);
+        triggerSendMessageListener(messageModel);
+
+        TAPFileUploadManager.getInstance().addUploadQueue(context, roomModel.getRoomID(), messageModel);
+    }
+
     public void sendFileMessage(Context context, String roomID, File file) {
         new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, roomID, file)).start();
+    }
+
+    // TODO: 2019-08-02 sendFileMessage
+    public void sendFileMessage(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
+        new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, roomModel, file, listener)).start();
     }
 
     public void sendFileMessage(Context context, File file) {
@@ -645,6 +774,57 @@ public class TAPChatManager {
         return messageModel;
     }
 
+    // TODO: 2019-08-01 From sendImageMessageWithImageURI
+    // TODO: 2019-08-01 Modified with roomModel
+    private TAPMessageModel createImageMessageModel(Context context, Uri fileUri, String caption, TAPRoomModel roomModel) {
+        String imageUri = fileUri.toString();
+        String imagePath = TAPFileUtils.getInstance().getFilePath(context, fileUri);
+        long size = null == imagePath ? 0L : new File(imagePath).length();
+
+        // Get image width and height
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(imagePath, options);
+        int imageWidth;
+        int imageHeight;
+        int orientation = TAPFileUtils.getInstance().getImageOrientation(imagePath);
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            imageWidth = options.outHeight;
+            imageHeight = options.outWidth;
+        } else {
+            imageWidth = options.outWidth;
+            imageHeight = options.outHeight;
+        }
+
+        // Build message model
+        TAPMessageModel messageModel;
+        if (null == getQuotedMessage()) {
+            messageModel = TAPMessageModel.Builder(
+                    generateImageCaption(caption),
+                    roomModel,
+                    TYPE_IMAGE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    TYPE_PERSONAL == roomModel.getRoomType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                    new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, imageUri).toHashMap());
+        } else {
+            HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, imageUri).toHashMap();
+            if (null != getUserInfo()) {
+                data.put(USER_INFO, getUserInfo());
+            }
+            messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                    generateImageCaption(caption),
+                    roomModel,
+                    TYPE_IMAGE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    TYPE_PERSONAL == roomModel.getRoomType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                    data,
+                    getQuotedMessage());
+        }
+        return messageModel;
+    }
+
     private TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption) {
         int imageWidth = bitmap.getWidth();
         int imageHeight = bitmap.getHeight();
@@ -674,6 +854,43 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     activeUser,
                     TYPE_PERSONAL == activeRoom.getRoomType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
+                    data,
+                    getQuotedMessage());
+        }
+        return messageModel;
+    }
+
+    // TODO: 2019-08-01 From sendImageMessageWithImageBitmap
+    // TODO: 2019-08-01 Modified with roomModel
+    private TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption, TAPRoomModel roomModel) {
+        int imageWidth = bitmap.getWidth();
+        int imageHeight = bitmap.getHeight();
+        long size = bitmap.getByteCount();
+
+        // Build message model
+        TAPMessageModel messageModel;
+        Log.e(TAG, "createImageMessageModel: " + roomModel.getRoomType());
+        if (null == getQuotedMessage()) {
+            messageModel = TAPMessageModel.Builder(
+                    generateImageCaption(caption),
+                    roomModel,
+                    TYPE_IMAGE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    TYPE_PERSONAL == roomModel.getRoomType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                    new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, null).toHashMap());
+        } else {
+            HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, null).toHashMap();
+            if (null != getUserInfo()) {
+                data.put(USER_INFO, getUserInfo());
+            }
+            messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                    generateImageCaption(caption),
+                    roomModel,
+                    TYPE_IMAGE,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    TYPE_PERSONAL == roomModel.getRoomType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
                     data,
                     getQuotedMessage());
         }
@@ -737,6 +954,59 @@ public class TAPChatManager {
         return messageModel;
     }
 
+    private TAPMessageModel createVideoMessageModel(Context context, Uri fileUri, String caption, TAPRoomModel room) {
+        String videoPath = TAPFileUtils.getInstance().getFilePath(context, fileUri);
+
+        // Get video data
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(context, fileUri);
+        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        int width, height;
+        if (rotation.equals("90") || rotation.equals("270")) {
+            // Swap width and height when video is rotated
+            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+        } else {
+            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+        }
+        int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+        String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(TAPFileUploadManager.getInstance().resizeBitmap(retriever.getFrameAtTime(), THUMB_MAX_DIMENSION));
+        retriever.release();
+        long size = null == videoPath ? 0L : new File(videoPath).length();
+
+        // Build message model
+        TAPMessageModel messageModel;
+        HashMap<String, Object> data = new TAPDataImageModel(width, height, size, caption, null, videoPath).toHashMap();
+        data.put(DURATION, duration);
+        data.put(THUMBNAIL, thumbBase64);
+        if (null == getQuotedMessage()) {
+            messageModel = TAPMessageModel.Builder(
+                    generateVideoCaption(caption),
+                    room,
+                    TYPE_VIDEO,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    TYPE_PERSONAL == room.getRoomType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                    data);
+        } else {
+            if (null != getUserInfo()) {
+                data.put(USER_INFO, getUserInfo());
+            }
+            messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                    generateVideoCaption(caption),
+                    room,
+                    TYPE_VIDEO,
+                    System.currentTimeMillis(),
+                    activeUser,
+                    TYPE_PERSONAL == room.getRoomType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
+                    data,
+                    getQuotedMessage());
+        }
+//        TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), videoPath);
+        return messageModel;
+    }
+
     private String generateVideoCaption(String caption) {
         return TapTalk.appContext.getString(R.string.tap_emoji_video) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_video) : caption);
     }
@@ -744,8 +1014,7 @@ public class TAPChatManager {
     /**
      * Create image message model and call upload api
      */
-    private void createImageMessageModelAndAddToUploadQueue(Context context, String roomID,
-                                                            Uri fileUri, String caption) {
+    private void createImageMessageModelAndAddToUploadQueue(Context context, String roomID, Uri fileUri, String caption) {
         TAPMessageModel messageModel = createImageMessageModel(context, fileUri, caption);
 
         // Set Start Point for Progress
@@ -755,6 +1024,37 @@ public class TAPChatManager {
         messageModel = fixOrientationAndShowImagePreviewBubble(messageModel);
 
         TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel);
+    }
+
+    // TODO: 2019-08-01 From sendImageMessageWithImageURI
+    // TODO: 2019-08-01 From sendImageOrVideoMessage
+    private void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri fileUri, String caption, TapSendMessageInterface listener) {
+        TAPMessageModel messageModel = createImageMessageModel(context, fileUri, caption, roomModel);
+        sendMessagelisteners.put(messageModel.getLocalID(), listener);
+        listener.onStart(messageModel);
+
+        // Set Start Point for Progress
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
+
+        addUploadingMessageToHashMap(messageModel);
+        messageModel = fixOrientationAndShowImagePreviewBubble(messageModel);
+
+        TAPFileUploadManager.getInstance().addUploadQueue(context, messageModel.getRoom().getRoomID(), messageModel, listener);
+    }
+
+    // TODO: 2019-08-01 From sendImageOrVideoMessage
+    private void createVideoMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri fileUri, String caption, TapSendMessageInterface listener) {
+        TAPMessageModel messageModel = createVideoMessageModel(context, fileUri, caption, roomModel);
+        sendMessagelisteners.put(messageModel.getLocalID(), listener);
+        listener.onStart(messageModel);
+
+        // Set Start Point for Progress
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
+
+        addUploadingMessageToHashMap(messageModel);
+        triggerSendMessageListener(messageModel);
+
+        TAPFileUploadManager.getInstance().addUploadQueue(context, messageModel.getRoom().getRoomID(), messageModel, listener);
     }
 
     /**
@@ -776,6 +1076,21 @@ public class TAPChatManager {
         triggerSendMessageListener(messageModel);
 
         TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel, bitmap);
+    }
+
+    // TODO: 2019-08-01 From sendImageMessageWithImageBitmap
+    private void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Bitmap bitmap, String caption, TapSendMessageInterface listener) {
+        TAPMessageModel messageModel = createImageMessageModel(bitmap, caption, roomModel);
+        sendMessagelisteners.put(messageModel.getLocalID(), listener);
+        listener.onStart(messageModel);
+
+        // Set Start Point for Progress
+        TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
+
+        addUploadingMessageToHashMap(messageModel);
+        messageModel = fixOrientationAndShowImagePreviewBubble(messageModel);
+
+        TAPFileUploadManager.getInstance().addUploadQueue(context, messageModel.getRoom().getRoomID(), messageModel);
     }
 
     /**
@@ -835,12 +1150,36 @@ public class TAPChatManager {
         }).start();
     }
 
+    // TODO: 2019-08-02 sendImageOrVideoMessage with listener
+    public void sendImageOrVideoMessage(Context context, TAPRoomModel room, ArrayList<TAPMediaPreviewModel> medias, TapSendMessageInterface listener) {
+        new Thread(() -> {
+            checkAndSendForwardedMessage(room);
+            for (TAPMediaPreviewModel media : medias) {
+                if (media.getType() == TYPE_IMAGE) {
+                    createImageMessageModelAndAddToUploadQueue(context, room, media.getUri(), media.getCaption(), listener);
+                } else if (media.getType() == TYPE_VIDEO) {
+                    createVideoMessageModelAndAddToUploadQueue(context, room, media.getUri(), media.getCaption(), listener);
+                }
+            }
+        }).start();
+    }
+
     public void sendImageMessage(Context context, String roomID, Uri imageUri, String caption) {
         new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomID, imageUri, caption)).start();
     }
 
     public void sendImageMessage(Context context, String roomID, Bitmap bitmap, String caption) {
         new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomID, bitmap, caption)).start();
+    }
+
+    // TODO: 2019-08-01 sendImageMessageWithImageURI
+    public void sendImageMessage(Context context, TAPRoomModel roomModel, Uri imageUri, String caption, TapSendMessageInterface listener) {
+        new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomModel, imageUri, caption, listener)).start();
+    }
+
+    // TODO: 2019-08-01 sendImageMessageWithImageBitmap
+    public void sendImageMessage(Context context, TAPRoomModel roomModel, Bitmap bitmap, String caption, TapSendMessageInterface listener) {
+        new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomModel, bitmap, caption, listener)).start();
     }
 
     public void resendMessage(TAPMessageModel failedMessageModel) {
@@ -1077,10 +1416,19 @@ public class TAPChatManager {
      * Send emit to server (Message)
      */
     private void sendEmit(String eventName, TAPMessageModel messageModel) {
-        TAPEmitModel<HashMap<String, Object>> TAPEmitModel;
-        TAPEmitModel = new TAPEmitModel<>(eventName, TAPEncryptorManager.getInstance().encryptMessage(messageModel));
-        TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
-        Log.d(TAG, "sendEmit: " + TAPUtils.getInstance().toJsonString(messageModel));
+        try {
+            TAPEmitModel<HashMap<String, Object>> TAPEmitModel;
+            TAPEmitModel = new TAPEmitModel<>(eventName, TAPEncryptorManager.getInstance().encryptMessage(messageModel));
+            TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
+            Log.d(TAG, "sendEmit: " + TAPUtils.getInstance().toJsonString(messageModel));
+            if (sendMessagelisteners.containsKey(messageModel.getLocalID())) {
+                sendMessagelisteners.get(messageModel.getLocalID()).onSuccess(messageModel);
+            }
+        } catch (Exception e) {
+            if (sendMessagelisteners.containsKey(messageModel.getLocalID())) {
+                sendMessagelisteners.get(messageModel.getLocalID()).onError(e.getMessage());
+            }
+        }
     }
 
     /**
@@ -1410,7 +1758,7 @@ public class TAPChatManager {
                             "You" : message.getUser().getName())
                     .replaceFirst("target", message.getTarget().getTargetID() != null ?
                             message.getTarget().getTargetID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
-                            "you" : message.getTarget().getTargetName() == null ? "" : message.getTarget().getTargetName() : "");
+                                    "you" : message.getTarget().getTargetName() == null ? "" : message.getTarget().getTargetName() : "");
         }
 
         return systemMessageBody;
