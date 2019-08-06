@@ -51,35 +51,35 @@ public class TapCoreMessageManager {
 
 
     public static void sendTextMessage(String message, TAPRoomModel room, TAPMessageModel quote, TapSendMessageInterface listener) {
-        TAPChatManager.getInstance().setQuotedMessage(quote, TAPDefaultConstant.QuoteAction.REPLY);
+        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendTextMessageWithRoomModel(message, room, listener);
     }
 
     public static void sendLocationMessage(Double latitude, Double longitude, String address, TAPRoomModel room, TAPMessageModel quote, TapSendMessageInterface listener) {
-        TAPChatManager.getInstance().setQuotedMessage(quote, TAPDefaultConstant.QuoteAction.REPLY);
+        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude, room, listener);
     }
 
     public static void sendImageMessage(Bitmap image, String caption, TAPRoomModel room, TAPMessageModel quote, TapSendMessageInterface listener) {
-        TAPChatManager.getInstance().setQuotedMessage(quote, TAPDefaultConstant.QuoteAction.REPLY);
+        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, image, caption, listener);
     }
 
     public static void sendImageMessage(Uri uri, String caption, TAPRoomModel room, TAPMessageModel quote, TapSendMessageInterface listener) {
-        TAPChatManager.getInstance().setQuotedMessage(quote, TAPDefaultConstant.QuoteAction.REPLY);
+        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, uri, caption, listener);
     }
 
     public static void sendVideoMessage(Uri uri, String caption, TAPRoomModel room, TAPMessageModel quote, TapSendMessageInterface listener) {
-        TAPChatManager.getInstance().setQuotedMessage(quote, TAPDefaultConstant.QuoteAction.REPLY);
+        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.REPLY);
         ArrayList<TAPMediaPreviewModel> videos = new ArrayList<>();
         TAPMediaPreviewModel model = new TAPMediaPreviewModel(uri, TAPDefaultConstant.MessageType.TYPE_VIDEO, false);
         videos.add(model);
         TAPChatManager.getInstance().sendImageOrVideoMessage(TapTalk.appContext, room, videos, listener);
     }
 
-    public static void sendFileMessage(File file, String caption, TAPRoomModel room, TAPMessageModel quote, TapSendMessageInterface listener) {
-        TAPChatManager.getInstance().setQuotedMessage(quote, TAPDefaultConstant.QuoteAction.REPLY);
+    public static void sendFileMessage(File file, TAPRoomModel room, TAPMessageModel quote, TapSendMessageInterface listener) {
+        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendFileMessage(TapTalk.appContext, room, file, listener);
     }
 }
