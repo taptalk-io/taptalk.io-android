@@ -50,6 +50,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
@@ -411,32 +412,32 @@ public class TAPChatManager {
         //checkAndSendPendingMessages();
     }
 
-    public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, TapSendMessageInterface listener) {
+    public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, TapSendMessageInterface tapSendMessageInterface) {
         Integer startIndex;
 
         checkAndSendForwardedMessage(roomModel);
 
         if (textMessage.length() > CHARACTER_LIMIT) {
             // Message exceeds character limit
-            List<TAPMessageEntity> messageEntities = new ArrayList<>();
+            //List<TAPMessageEntity> messageEntities = new ArrayList<>();
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
 
-                sendMessagelisteners.put(messageModel.getLocalID(), listener);
-                listener.onStart(messageModel);
+                sendMessagelisteners.put(messageModel.getLocalID(), tapSendMessageInterface);
+                tapSendMessageInterface.onStart(messageModel);
 
                 // Add entity to list
-                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                //messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
 
                 // Send truncated message
                 triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
             TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
-            sendMessagelisteners.put(messageModel.getLocalID(), listener);
-            listener.onStart(messageModel);
+            sendMessagelisteners.put(messageModel.getLocalID(), tapSendMessageInterface);
+            tapSendMessageInterface.onStart(messageModel);
             // Send message
             triggerListenerAndSendMessage(messageModel, true);
         }
@@ -1431,7 +1432,7 @@ public class TAPChatManager {
             }
         } catch (Exception e) {
             if (sendMessagelisteners.containsKey(messageModel.getLocalID())) {
-                sendMessagelisteners.get(messageModel.getLocalID()).onError(e.getMessage());
+                sendMessagelisteners.get(messageModel.getLocalID()).onError(String.valueOf(OTHER_ERRORS), e.getMessage());
                 sendMessagelisteners.remove(messageModel.getLocalID());
             }
         }

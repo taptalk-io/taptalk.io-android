@@ -8,7 +8,7 @@ public interface TapSendMessageInterface {
 
     void onSuccess(TAPMessageModel tapMessageModel);
 
-    void onError(String errorMessage);
+    void onError(String errorCode, String errorMessage);
 
     void onProgress(TAPMessageModel tapMessageModel, int percentage, long bytes);
 }
