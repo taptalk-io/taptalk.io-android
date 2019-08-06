@@ -9,6 +9,6 @@ import io.taptalk.TapTalk.Model.TAPRoomListModel;
 public interface TapRoomListInterface {
     void onSuccess(List<TAPRoomListModel> tapRoomListModel);
 
-    void onError(String errorMessage);
+    void onError(String errorCode, String errorMessage);
 }
 

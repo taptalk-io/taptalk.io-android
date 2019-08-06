@@ -8,6 +8,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 public interface TapMessageInterface {
     void onSuccess(List<TAPMessageModel> tapMessageModel);
 
-    void onError(String errorMessage);
+    void onError(String errorCode, String errorMessage);
 }
 
