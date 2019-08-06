@@ -435,6 +435,8 @@ public class TAPChatManager {
             }
         } else {
             TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
+            sendMessagelisteners.put(messageModel.getLocalID(), listener);
+            listener.onStart(messageModel);
             // Send message
             triggerListenerAndSendMessage(messageModel, true);
         }
@@ -626,7 +628,6 @@ public class TAPChatManager {
         return messageModel;
     }
 
-    // TODO: 2019-08-02 from createFileMessageModelAndAddToUploadQueue()
     private TAPMessageModel createFileMessageModel(Context context, File file, TAPRoomModel roomModel) {
         String fileName = file.getName();
         Number fileSize = file.length();
@@ -682,7 +683,6 @@ public class TAPChatManager {
         TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel);
     }
 
-    // TODO: 2019-08-02 createFileMessageModelAndAddToUploadQueue with RoomModel
     private void createFileMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createFileMessageModel(context, file, roomModel);
         sendMessagelisteners.put(messageModel.getLocalID(), listener);
@@ -694,14 +694,13 @@ public class TAPChatManager {
         addUploadingMessageToHashMap(messageModel);
         triggerSendMessageListener(messageModel);
 
-        TAPFileUploadManager.getInstance().addUploadQueue(context, roomModel.getRoomID(), messageModel);
+        TAPFileUploadManager.getInstance().addUploadQueue(context, roomModel.getRoomID(), messageModel, listener);
     }
 
     public void sendFileMessage(Context context, String roomID, File file) {
         new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, roomID, file)).start();
     }
 
-    // TODO: 2019-08-02 sendFileMessage
     public void sendFileMessage(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
         new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, roomModel, file, listener)).start();
     }
@@ -774,8 +773,6 @@ public class TAPChatManager {
         return messageModel;
     }
 
-    // TODO: 2019-08-01 From sendImageMessageWithImageURI
-    // TODO: 2019-08-01 Modified with roomModel
     private TAPMessageModel createImageMessageModel(Context context, Uri fileUri, String caption, TAPRoomModel roomModel) {
         String imageUri = fileUri.toString();
         String imagePath = TAPFileUtils.getInstance().getFilePath(context, fileUri);
@@ -860,8 +857,6 @@ public class TAPChatManager {
         return messageModel;
     }
 
-    // TODO: 2019-08-01 From sendImageMessageWithImageBitmap
-    // TODO: 2019-08-01 Modified with roomModel
     private TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption, TAPRoomModel roomModel) {
         int imageWidth = bitmap.getWidth();
         int imageHeight = bitmap.getHeight();
@@ -1026,8 +1021,6 @@ public class TAPChatManager {
         TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel);
     }
 
-    // TODO: 2019-08-01 From sendImageMessageWithImageURI
-    // TODO: 2019-08-01 From sendImageOrVideoMessage
     private void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri fileUri, String caption, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createImageMessageModel(context, fileUri, caption, roomModel);
         sendMessagelisteners.put(messageModel.getLocalID(), listener);
@@ -1042,7 +1035,6 @@ public class TAPChatManager {
         TAPFileUploadManager.getInstance().addUploadQueue(context, messageModel.getRoom().getRoomID(), messageModel, listener);
     }
 
-    // TODO: 2019-08-01 From sendImageOrVideoMessage
     private void createVideoMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri fileUri, String caption, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createVideoMessageModel(context, fileUri, caption, roomModel);
         sendMessagelisteners.put(messageModel.getLocalID(), listener);
@@ -1065,8 +1057,7 @@ public class TAPChatManager {
      * @param bitmap
      * @param caption
      */
-    private void createImageMessageModelAndAddToUploadQueue(Context context, String roomID,
-                                                            Bitmap bitmap, String caption) {
+    private void createImageMessageModelAndAddToUploadQueue(Context context, String roomID, Bitmap bitmap, String caption) {
         TAPMessageModel messageModel = createImageMessageModel(bitmap, caption);
 
         // Set Start Point for Progress
@@ -1078,7 +1069,6 @@ public class TAPChatManager {
         TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel, bitmap);
     }
 
-    // TODO: 2019-08-01 From sendImageMessageWithImageBitmap
     private void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Bitmap bitmap, String caption, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createImageMessageModel(bitmap, caption, roomModel);
         sendMessagelisteners.put(messageModel.getLocalID(), listener);
@@ -1088,9 +1078,9 @@ public class TAPChatManager {
         TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
 
         addUploadingMessageToHashMap(messageModel);
-        messageModel = fixOrientationAndShowImagePreviewBubble(messageModel);
+        messageModel = fixOrientationAndShowImagePreviewBubble(messageModel, bitmap);
 
-        TAPFileUploadManager.getInstance().addUploadQueue(context, messageModel.getRoom().getRoomID(), messageModel);
+        TAPFileUploadManager.getInstance().addUploadQueue(context, messageModel.getRoom().getRoomID(), messageModel, bitmap, listener);
     }
 
     /**
@@ -1125,6 +1115,23 @@ public class TAPChatManager {
         return imageMessage;
     }
 
+    private TAPMessageModel fixOrientationAndShowImagePreviewBubble(TAPMessageModel imageMessage, Bitmap bitmap) {
+        if (null == imageMessage.getData()) {
+            return imageMessage;
+        }
+        Log.e(TAG, "Height: " + bitmap.getHeight());
+        Log.e(TAG, "Width: " + bitmap.getWidth());
+        TAPDataImageModel imageData = new TAPDataImageModel(imageMessage.getData());
+        imageData.setWidth(bitmap.getWidth());
+        imageData.setHeight(bitmap.getHeight());
+        imageMessage.putData(TAPUtils.getInstance().toHashMap(imageData));
+
+        // Trigger listener to show image preview in activity
+        triggerSendMessageListener(imageMessage);
+
+        return imageMessage;
+    }
+
     private void createVideoMessageModelAndAddToUploadQueue(Context context, String roomID, Uri fileUri, String caption) {
         TAPMessageModel messageModel = createVideoMessageModel(context, fileUri, caption);
 
@@ -1150,7 +1157,6 @@ public class TAPChatManager {
         }).start();
     }
 
-    // TODO: 2019-08-02 sendImageOrVideoMessage with listener
     public void sendImageOrVideoMessage(Context context, TAPRoomModel room, ArrayList<TAPMediaPreviewModel> medias, TapSendMessageInterface listener) {
         new Thread(() -> {
             checkAndSendForwardedMessage(room);
@@ -1172,12 +1178,10 @@ public class TAPChatManager {
         new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomID, bitmap, caption)).start();
     }
 
-    // TODO: 2019-08-01 sendImageMessageWithImageURI
     public void sendImageMessage(Context context, TAPRoomModel roomModel, Uri imageUri, String caption, TapSendMessageInterface listener) {
         new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomModel, imageUri, caption, listener)).start();
     }
 
-    // TODO: 2019-08-01 sendImageMessageWithImageBitmap
     public void sendImageMessage(Context context, TAPRoomModel roomModel, Bitmap bitmap, String caption, TapSendMessageInterface listener) {
         new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomModel, bitmap, caption, listener)).start();
     }
@@ -1423,10 +1427,12 @@ public class TAPChatManager {
             Log.d(TAG, "sendEmit: " + TAPUtils.getInstance().toJsonString(messageModel));
             if (sendMessagelisteners.containsKey(messageModel.getLocalID())) {
                 sendMessagelisteners.get(messageModel.getLocalID()).onSuccess(messageModel);
+                sendMessagelisteners.remove(messageModel.getLocalID());
             }
         } catch (Exception e) {
             if (sendMessagelisteners.containsKey(messageModel.getLocalID())) {
                 sendMessagelisteners.get(messageModel.getLocalID()).onError(e.getMessage());
+                sendMessagelisteners.remove(messageModel.getLocalID());
             }
         }
     }

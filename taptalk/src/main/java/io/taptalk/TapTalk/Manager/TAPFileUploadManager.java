@@ -117,7 +117,7 @@ public class TAPFileUploadManager {
         return null == uploadQueuePerRoom ? uploadQueuePerRoom = new LinkedHashMap<>() : uploadQueuePerRoom;
     }
 
-    private HashMap<String, Bitmap> getBitmapQueue() {
+    public HashMap<String, Bitmap> getBitmapQueue() {
         return null == bitmapQueue ? bitmapQueue = new LinkedHashMap<>() : bitmapQueue;
     }
 
@@ -175,7 +175,6 @@ public class TAPFileUploadManager {
     // TODO: 2019-08-05 addUploadQueueWithListener
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, TapSendMessageInterface listener) {
         addUploadQueue(messageModel);
-        // TODO: 2019-08-05 Save listener for callback
         sendMessageListeners.put(messageModel.getLocalID(), listener);
         if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
             uploadImage(context, roomID);
@@ -189,6 +188,19 @@ public class TAPFileUploadManager {
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap) {
         getBitmapQueue().put(messageModel.getLocalID(), bitmap);
         addUploadQueue(context, roomID, messageModel);
+    }
+
+    public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap, TapSendMessageInterface listener) {
+        getBitmapQueue().put(messageModel.getLocalID(), bitmap);
+        addUploadQueue(messageModel);
+        sendMessageListeners.put(messageModel.getLocalID(), listener);
+        if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
+            uploadImage(context, roomID);
+        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_VIDEO == messageModel.getType()) {
+            uploadVideo(context, roomID);
+        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_FILE == messageModel.getType()) {
+            uploadFile(context, roomID);
+        }
     }
 
     public void uploadRoomPicture(Context context, Uri imageUri, String roomID,
@@ -353,8 +365,6 @@ public class TAPFileUploadManager {
             return;
         }
         // TODO: 2019-08-05 Call image upload API Here
-        if (null != sendMessageListeners.get(messageModel.getLocalID()))
-            sendMessageListeners.get(messageModel.getLocalID()).onStart(messageModel);
         callImageUploadAPI(context, roomID, messageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
     }
 
@@ -412,8 +422,6 @@ public class TAPFileUploadManager {
             uploadNextSequence(context, roomID);
             return;
         }
-        if (null != sendMessageListeners.get(messageModel.getLocalID()))
-            sendMessageListeners.get(messageModel.getLocalID()).onStart(messageModel);
         callVideoUploadAPI(context, roomID, messageModel, videoFile, mimeType, videoData);
     }
 
@@ -472,8 +480,6 @@ public class TAPFileUploadManager {
                 uploadNextSequence(context, roomID);
                 return;
             }
-            if (null != sendMessageListeners.get(messageModel.getLocalID()))
-                sendMessageListeners.get(messageModel.getLocalID()).onStart(messageModel);
             callFileUploadAPI(context, roomID, messageModel, tempFile, fileData.getMediaType());
         }).start();
     }
@@ -511,9 +517,13 @@ public class TAPFileUploadManager {
                 super.onSuccess(response, localID);
                 saveImageToCacheAndSendMessage(context, roomID, bitmap, encodedThumbnail, messageModel.copyMessageModel(), response);
                 // TODO: 2019-08-02 Remove listener from hashmap
-                if (null != sendMessageListeners.get(messageModel.getLocalID())){
+                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
+                    long size = 0L;
+                    if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
+                        size = ((Number) messageModel.getData().get(SIZE)).longValue();
+                    }
+                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
                     sendMessageListeners.remove(messageModel.getLocalID());
-                    sendMessageListeners.get(messageModel.getLocalID()).onSuccess(messageModel);
                 }
             }
 
@@ -585,9 +595,13 @@ public class TAPFileUploadManager {
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 sendFileMessageAfterUploadSuccess(context, roomID, videoFile.getName(), mimeType, messageModel.copyMessageModel(), response);
                 // TODO: 2019-08-02 Remove listener from hashmap
-                if (null != sendMessageListeners.get(messageModel.getLocalID())){
+                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
+                    long size = 0L;
+                    if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
+                        size = ((Number) messageModel.getData().get(SIZE)).longValue();
+                    }
+                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
                     sendMessageListeners.remove(messageModel.getLocalID());
-                    sendMessageListeners.get(messageModel.getLocalID()).onSuccess(messageModel);
                 }
             }
 
@@ -653,9 +667,13 @@ public class TAPFileUploadManager {
                 super.onSuccess(response, localID);
                 sendFileMessageAfterUploadSuccess(context, roomID, file.getName(), mimeType, messageModel.copyMessageModel(), response);
                 // TODO: 2019-08-02 Remove listener from hashmap
-                if (null != sendMessageListeners.get(messageModel.getLocalID())){
+                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
+                    long size = 0L;
+                    if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
+                        size = ((Number) messageModel.getData().get(SIZE)).longValue();
+                    }
+                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
                     sendMessageListeners.remove(messageModel.getLocalID());
-                    sendMessageListeners.get(messageModel.getLocalID()).onSuccess(messageModel);
                 }
             }
 
