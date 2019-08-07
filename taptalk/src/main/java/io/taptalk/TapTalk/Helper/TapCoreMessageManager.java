@@ -10,16 +10,15 @@ import java.util.HashMap;
 import io.taptalk.TapTalk.API.View.TapSendMessageInterface;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 
 public class TapCoreMessageManager {
 
-    private HashMap<String, TapSendMessageInterface> listeners;
-
     public static void markAsRead(TAPMessageModel message) {
-
+        TAPMessageStatusManager.getInstance().addReadMessageQueue(message);
     }
 
     public static void sendTextMessage(String message, TAPRoomModel room, TapSendMessageInterface listener) {
@@ -83,12 +82,10 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance().sendFileMessage(TapTalk.appContext, room, file, listener);
     }
 
-    // TODO: 2019-08-06 Resend
     public static void resend(TAPMessageModel tapMessageModel, TapSendMessageInterface listener) {
         TAPChatManager.getInstance().resendMessage(tapMessageModel, listener);
     }
 
-    // TODO: 2019-08-06 Forward
     public static void forward(TAPMessageModel quote, TAPRoomModel room, TapSendMessageInterface listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.FORWARD);
         TAPChatManager.getInstance().checkAndSendForwardedMessage(room, listener);
