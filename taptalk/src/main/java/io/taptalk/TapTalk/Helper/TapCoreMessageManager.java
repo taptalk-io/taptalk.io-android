@@ -6,14 +6,23 @@ import android.net.Uri;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.API.View.TapSendMessageInterface;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
+import io.taptalk.TapTalk.Interface.TapMessageInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
 
 public class TapCoreMessageManager {
 
@@ -89,5 +98,61 @@ public class TapCoreMessageManager {
     public static void forward(TAPMessageModel quote, TAPRoomModel room, TapSendMessageInterface listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.FORWARD);
         TAPChatManager.getInstance().checkAndSendForwardedMessage(room, listener);
+    }
+
+    public static void getOlderMessagesBeforeTimestamp(String roomID, long maxCreatedTimestamp, TapMessageInterface listener) {
+        TAPDataManager.getInstance().getMessageListByRoomBefore(roomID, maxCreatedTimestamp,
+                new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
+                    @Override
+                    public void onSuccess(TAPGetMessageListByRoomResponse response) {
+                        List<TAPMessageModel> messageAfterModels = new ArrayList<>();
+                        for (HashMap<String, Object> messageMap : response.getMessages()) {
+                            try {
+                                messageAfterModels.add(TAPEncryptorManager.getInstance().decryptMessage(messageMap));
+                            } catch (Exception e) {
+                                listener.onError(String.valueOf(OTHER_ERRORS), e.getMessage());
+                            }
+                        }
+                        listener.onSuccess(messageAfterModels);
+                    }
+
+                    @Override
+                    public void onError(TAPErrorModel error) {
+                        listener.onError(error.getCode(), error.getMessage());
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                    }
+                });
+    }
+
+    public static void getNewerMessagesAfterTimestamp(String roomID, long minCreatedTimestamp, long lastUpdateTimestamp, TapMessageInterface listener) {
+        TAPDataManager.getInstance().getMessageListByRoomAfter(roomID, minCreatedTimestamp, lastUpdateTimestamp,
+                new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
+                    @Override
+                    public void onSuccess(TAPGetMessageListByRoomResponse response) {
+                        List<TAPMessageModel> messageAfterModels = new ArrayList<>();
+                        for (HashMap<String, Object> messageMap : response.getMessages()) {
+                            try {
+                                messageAfterModels.add(TAPEncryptorManager.getInstance().decryptMessage(messageMap));
+                            } catch (Exception e) {
+                                listener.onError(String.valueOf(OTHER_ERRORS), e.getMessage());
+                            }
+                        }
+                        listener.onSuccess(messageAfterModels);
+                    }
+
+                    @Override
+                    public void onError(TAPErrorModel error) {
+                        listener.onError(error.getCode(), error.getMessage());
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                    }
+                });
     }
 }

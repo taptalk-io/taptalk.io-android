@@ -21,56 +21,56 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERR
 
 public class TapCoreContactManager {
 
-    public static void getAllUserContacts(TapContactListInterface tapContactListInterface) {
+    public static void getAllUserContacts(TapContactListInterface listener) {
         TAPDataManager.getInstance().getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(List<TAPUserModel> entities) {
-                tapContactListInterface.onSuccess(entities);
+                listener.onSuccess(entities);
             }
 
             @Override
             public void onSelectFailed(String errorMessage) {
-                tapContactListInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
 
-    public static void getUserDataWithUserID(String userID, TapContactInterface tapContactInterface) {
+    public static void getUserDataWithUserID(String userID, TapContactInterface listener) {
         TAPDataManager.getInstance().getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
-                tapContactInterface.onSuccess(response.getUser());
+                listener.onSuccess(response.getUser());
                 TAPContactManager.getInstance().updateUserData(response.getUser());
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                tapContactInterface.onError(error.getCode(), error.getMessage());
+                listener.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                tapContactInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
 
-    public static void getUserDataWithXCUserID(String xcUserID, TapContactInterface tapContactInterface) {
+    public static void getUserDataWithXCUserID(String xcUserID, TapContactInterface listener) {
         TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
-                tapContactInterface.onSuccess(response.getUser());
+                listener.onSuccess(response.getUser());
                 TAPContactManager.getInstance().updateUserData(response.getUser());
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                tapContactInterface.onError(error.getCode(), error.getMessage());
+                listener.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                tapContactInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
@@ -79,62 +79,62 @@ public class TapCoreContactManager {
         TAPContactManager.getInstance().updateUserData(tapUserModel);
     }
 
-    public static void addToTapTalkContactsWithUserID(String userID, TapContactInterface tapContactInterface) {
+    public static void addToTapTalkContactsWithUserID(String userID, TapContactInterface listener) {
         TAPDataManager.getInstance().addContactApi(userID, new TAPDefaultDataView<TAPAddContactResponse>() {
             @Override
             public void onSuccess(TAPAddContactResponse response) {
-                tapContactInterface.onSuccess(response.getUser());
+                listener.onSuccess(response.getUser());
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                tapContactInterface.onError(error.getCode(), error.getMessage());
+                listener.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                tapContactInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
 
-    public static void addToTapTalkContactsWithPhoneNumber(String phoneNumber, TapContactInterface tapContactInterface) {
+    public static void addToTapTalkContactsWithPhoneNumber(String phoneNumber, TapContactInterface listener) {
         List<String> phoneNumberList = new ArrayList<>();
         phoneNumberList.add(phoneNumber);
         TAPDataManager.getInstance().addContactByPhone(phoneNumberList, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
             @Override
             public void onSuccess(TAPAddContactByPhoneResponse response) {
-                tapContactInterface.onSuccess(response.getUsers().get(0));
+                listener.onSuccess(response.getUsers().get(0));
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                tapContactInterface.onError(error.getCode(), error.getMessage());
+                listener.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                tapContactInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
 
-    public static void removeFromTapTalkContacts(String userID, TapCommonInterface commonInterface) {
+    public static void removeFromTapTalkContacts(String userID, TapCommonInterface listener) {
         TAPDataManager.getInstance().removeContactApi(userID, new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
-                commonInterface.onSuccess(response.getMessage());
+                listener.onSuccess(response.getMessage());
                 TAPContactManager.getInstance().removeFromContacts(userID);
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                commonInterface.onError(error.getCode(), error.getMessage());
+                listener.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                commonInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
