@@ -661,6 +661,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             super.onSuccess(response);
             if (response.getSuccess()) {
                 // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
+                // TODO: 5 August 2019 USED IN CORE CHAT ROOM MANAGER
                 TAPOldDataManager.getInstance().startCleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {
@@ -682,7 +683,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                         .setTitle(getString(R.string.tap_failed))
                         .setMessage(null != response.getMessage() ? response.getMessage()
-                                : getResources().getString(R.string.tap_error_message_general))
+                                : getResources().getString(R.string.tap_error_assign_another_admin))
                         .setPrimaryButtonTitle(getString(R.string.tap_ok))
                         .show();
             }
@@ -712,6 +713,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             super.onSuccess(response);
             if (response.getSuccess()) {
                 // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
+                // TODO: 5 August 2019 USED IN CORE CHAT ROOM MANAGER
                 TAPOldDataManager.getInstance().startCleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {

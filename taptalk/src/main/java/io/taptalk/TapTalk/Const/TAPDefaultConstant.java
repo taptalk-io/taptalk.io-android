@@ -23,6 +23,7 @@ public class TAPDefaultConstant {
         public static final String kSocketStopTyping = "chat/stopTyping";
         public static final String kSocketAuthentication = "user/authentication";
         public static final String kSocketUserOnlineStatus = "user/status";
+        public static final String kSocketUserUpdated = "user/updated";
     }
 
     public static final class DatabaseType {

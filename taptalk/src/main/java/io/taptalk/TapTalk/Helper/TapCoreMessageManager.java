@@ -30,12 +30,12 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude, room, listener);
     }
 
-    public static void sendImageMessage(Bitmap image, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
-        TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, image, caption, listener);
-    }
-
     public static void sendImageMessage(Uri uri, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
         TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, uri, caption, listener);
+    }
+
+    public static void sendImageMessage(Bitmap image, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
+        TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, image, caption, listener);
     }
 
     public static void sendVideoMessage(Uri uri, String caption, TAPRoomModel room, TapSendMessageInterface listener) {

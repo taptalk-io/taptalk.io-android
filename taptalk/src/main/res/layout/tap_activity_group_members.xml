@@ -213,10 +213,10 @@
                 android:id="@+id/ll_promote_demote_admin"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
+                android:layout_marginBottom="8dp"
                 android:background="@drawable/tap_bg_button_active_ripple"
                 android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="visible">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/iv_promote_demote_icon"
