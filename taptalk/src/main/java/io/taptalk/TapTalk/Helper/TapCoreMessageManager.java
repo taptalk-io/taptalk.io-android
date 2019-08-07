@@ -82,4 +82,15 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendFileMessage(TapTalk.appContext, room, file, listener);
     }
+
+    // TODO: 2019-08-06 Resend
+    public static void resend(TAPMessageModel tapMessageModel, TapSendMessageInterface listener) {
+        TAPChatManager.getInstance().resendMessage(tapMessageModel, listener);
+    }
+
+    // TODO: 2019-08-06 Forward
+    public static void forward(TAPMessageModel quote, TAPRoomModel room, TapSendMessageInterface listener) {
+        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.FORWARD);
+        TAPChatManager.getInstance().checkAndSendForwardedMessage(room, listener);
+    }
 }

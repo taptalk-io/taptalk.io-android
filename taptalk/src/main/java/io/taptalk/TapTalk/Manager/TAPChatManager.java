@@ -1191,6 +1191,13 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(messageToResend, true);
     }
 
+    public void resendMessage(TAPMessageModel failedMessageModel, TapSendMessageInterface listener) {
+        TAPMessageModel messageToResend = TAPMessageModel.BuilderResendMessage(failedMessageModel, System.currentTimeMillis());
+        sendMessagelisteners.put(messageToResend.getLocalID(), listener);
+        listener.onStart(messageToResend);
+        triggerListenerAndSendMessage(messageToResend, true);
+    }
+
     public void retryUpload(Context context, TAPMessageModel failedMessageModel) {
         TAPMessageModel messageToResend = TAPMessageModel.BuilderResendMessage(failedMessageModel, System.currentTimeMillis());
         // Set Start Point for Progress
@@ -1209,6 +1216,21 @@ public class TAPChatManager {
         if (null != getQuoteActions().get(roomID) && getQuoteActions().get(roomID) == FORWARD) {
             // Send forwarded message
             TAPMessageModel messageModel = buildForwardedMessage(getQuotedMessages().get(roomID), roomModel);
+            triggerListenerAndSendMessage(messageModel, true);
+            setQuotedMessage(roomID, null, 0);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean checkAndSendForwardedMessage(TAPRoomModel roomModel, TapSendMessageInterface listener) {
+        String roomID = roomModel.getRoomID();
+        if (null != getQuoteActions().get(roomID) && getQuoteActions().get(roomID) == FORWARD) {
+            // Send forwarded message
+            TAPMessageModel messageModel = buildForwardedMessage(getQuotedMessages().get(roomID), roomModel);
+            sendMessagelisteners.put(messageModel.getLocalID(), listener);
+            listener.onStart(messageModel);
             triggerListenerAndSendMessage(messageModel, true);
             setQuotedMessage(roomID, null, 0);
             return true;
