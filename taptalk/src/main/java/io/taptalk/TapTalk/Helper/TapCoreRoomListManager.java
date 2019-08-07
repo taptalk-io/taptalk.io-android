@@ -23,7 +23,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERR
 
 public class TapCoreRoomListManager {
 
-    public static void fetchNewMessage(TapMessageInterface tapMessageInterface) {
+    public static void fetchNewMessage(TapMessageInterface listener) {
         TAPDataManager.getInstance().getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
             @Override
             public void onSuccess(TAPGetRoomListResponse response) {
@@ -45,7 +45,7 @@ public class TapCoreRoomListManager {
                                 TAPDataManager.getInstance().deletePhysicalFile(entity);
                             }
                         } catch (Exception e) {
-                            tapMessageInterface.onError(String.valueOf(OTHER_ERRORS), e.getMessage());
+                            listener.onError(String.valueOf(OTHER_ERRORS), e.getMessage());
                         }
                     }
                     if (userIds.size() > 0) {
@@ -66,32 +66,32 @@ public class TapCoreRoomListManager {
                             for (HashMap<String, Object> h : response.getMessages()) {
                                 messages.add(TAPEncryptorManager.getInstance().decryptMessage(h));
                             }
-                            tapMessageInterface.onSuccess(messages);
+                            listener.onSuccess(messages);
                         }
 
                         @Override
                         public void onInsertFailed(String errorMessage) {
-                            tapMessageInterface.onSuccess(new ArrayList<>());
+                            listener.onSuccess(new ArrayList<>());
                         }
                     });
                 } else {
-                    tapMessageInterface.onSuccess(new ArrayList<>());
+                    listener.onSuccess(new ArrayList<>());
                 }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                tapMessageInterface.onError(error.getCode(), error.getMessage());
+                listener.onError(error.getCode(), error.getMessage());
             }
 
             @Override
             public void onError(String errorMessage) {
-                tapMessageInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
 
-    public static void getRoomListFromCache(TapRoomListInterface tapRoomListInterface) {
+    public static void getRoomListFromCache(TapRoomListInterface listener) {
         TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
@@ -100,19 +100,19 @@ public class TapCoreRoomListManager {
                 for (TAPMessageEntity e : entities) {
                     roomListModel.add(TAPRoomListModel.buildWithLastMessage(TAPChatManager.getInstance().convertToModel(e)));
                 }
-                tapRoomListInterface.onSuccess(roomListModel);
+                listener.onSuccess(roomListModel);
             }
 
             @Override
             public void onSelectFailed(String errorMessage) {
-                tapRoomListInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
 
-    public static void getUpdatedRoomList(TapRoomListInterface tapRoomListInterface) {
+    public static void getUpdatedRoomList(TapRoomListInterface listener) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
-            tapRoomListInterface.onError("90001", "Active user not found");
+            listener.onError("90001", "Active user not found");
             return;
         }
         TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
@@ -125,19 +125,19 @@ public class TapCoreRoomListManager {
                             getRoomListFromCache(new TapRoomListInterface() {
                                 @Override
                                 public void onSuccess(List<TAPRoomListModel> tapRoomListModel) {
-                                    tapRoomListInterface.onSuccess(tapRoomListModel);
+                                    listener.onSuccess(tapRoomListModel);
                                 }
 
                                 @Override
                                 public void onError(String errorCode, String errorMessage) {
-                                    tapRoomListInterface.onError(errorCode, errorMessage);
+                                    listener.onError(errorCode, errorMessage);
                                 }
                             });
                         }
 
                         @Override
                         public void onError(String errorCode, String errorMessage) {
-                            tapRoomListInterface.onError(errorCode, errorMessage);
+                            listener.onError(errorCode, errorMessage);
                         }
                     });
                 } else {
@@ -149,17 +149,17 @@ public class TapCoreRoomListManager {
                             for (TAPMessageEntity e : entities) {
                                 roomListModel.add(TAPRoomListModel.buildWithLastMessage(TAPChatManager.getInstance().convertToModel(e)));
                             }
-                            tapRoomListInterface.onSuccess(roomListModel);
+                            listener.onSuccess(roomListModel);
                         }
 
                         @Override
                         public void onError(TAPErrorModel error) {
-                            tapRoomListInterface.onError(error.getCode(), error.getMessage());
+                            listener.onError(error.getCode(), error.getMessage());
                         }
 
                         @Override
                         public void onError(String errorMessage) {
-                            tapRoomListInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                            listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
                         }
                     });
                 }
@@ -167,7 +167,7 @@ public class TapCoreRoomListManager {
 
             @Override
             public void onSelectFailed(String errorMessage) {
-                tapRoomListInterface.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
             }
         });
     }
