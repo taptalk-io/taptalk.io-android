@@ -57,7 +57,6 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance().sendFileMessage(TapTalk.appContext, room, file, listener);
     }
 
-
     public static void sendTextMessage(String message, TAPRoomModel room, TAPMessageModel quote, TapSendMessageInterface listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quote, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendTextMessageWithRoomModel(message, room, listener);
@@ -91,8 +90,8 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance().sendFileMessage(TapTalk.appContext, room, file, listener);
     }
 
-    public static void resend(TAPMessageModel tapMessageModel, TapSendMessageInterface listener) {
-        TAPChatManager.getInstance().resendMessage(tapMessageModel, listener);
+    public static void deleteLocalMessage(String localID) {
+        TAPDataManager.getInstance().deleteFromDatabase(localID);
     }
 
     public static void forward(TAPMessageModel quote, TAPRoomModel room, TapSendMessageInterface listener) {
