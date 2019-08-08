@@ -331,8 +331,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             super.onSuccess(response);
             vm.getGroupData().setRoomImage(response.getRoom().getRoomImage());
             btnStopLoadingState();
-            if (null != response.getRoom())
-                TAPGroupManager.Companion.getGetInstance().updateRoomDataNameAndImage(response.getRoom());
+            TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
             //openChatGroupProfile();
             openChatRoom();
         }

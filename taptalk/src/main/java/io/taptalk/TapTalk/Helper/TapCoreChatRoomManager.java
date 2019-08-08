@@ -78,7 +78,8 @@ public class TapCoreChatRoomManager {
         TAPDataManager.getInstance().createGroupChatRoom(groupName, participantUserIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
-                listener.onSuccess(response.getRoom());
+                TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
+                listener.onSuccess(room);
             }
 
             @Override
@@ -100,11 +101,13 @@ public class TapCoreChatRoomManager {
                 if (null == response.getRoom()) {
                     listener.onSuccess(response.getRoom(), false);
                 } else {
+                    TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
                     TAPFileUploadManager.getInstance().uploadRoomPicture(TapTalk.appContext,
                             groupPictureUri, response.getRoom().getRoomID(), new TAPDefaultDataView<TAPUpdateRoomResponse>() {
                                 @Override
                                 public void onSuccess(TAPUpdateRoomResponse response) {
-                                    listener.onSuccess(response.getRoom(), true);
+                                    TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
+                                    listener.onSuccess(room, true);
                                 }
 
                                 @Override
@@ -137,7 +140,29 @@ public class TapCoreChatRoomManager {
                 groupPictureUri, groupRoomID, new TAPDefaultDataView<TAPUpdateRoomResponse>() {
                     @Override
                     public void onSuccess(TAPUpdateRoomResponse response) {
-                        listener.onSuccess(response.getRoom());
+                        TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
+                        listener.onSuccess(room);
+                    }
+
+                    @Override
+                    public void onError(TAPErrorModel error) {
+                        listener.onError(error.getCode(), error.getMessage());
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                    }
+                });
+    }
+
+    public static void updateGroupChatRoom(String groupRoomID, String groupName, TapRoomInterface listener) {
+        TAPDataManager.getInstance().updateChatRoom(groupRoomID, groupName,
+                new TAPDefaultDataView<TAPUpdateRoomResponse>() {
+                    @Override
+                    public void onSuccess(TAPUpdateRoomResponse response) {
+                        TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
+                        listener.onSuccess(room);
                     }
 
                     @Override
@@ -158,10 +183,8 @@ public class TapCoreChatRoomManager {
             TAPDataManager.getInstance().getChatRoomData(groupRoomID, new TAPDefaultDataView<TAPCreateRoomResponse>() {
                 @Override
                 public void onSuccess(TAPCreateRoomResponse response) {
-                    listener.onSuccess(response.getRoom());
-                    if (null != response.getRoom()) {
-                        TAPGroupManager.Companion.getGetInstance().addGroupData(response.getRoom());
-                    }
+                    TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
+                    listener.onSuccess(room);
                 }
 
                 @Override
@@ -183,17 +206,22 @@ public class TapCoreChatRoomManager {
         TAPDataManager.getInstance().deleteChatRoom(groupChatRoomModel, new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse tapCommonResponse, String localID) {
-                TAPOldDataManager.getInstance().startCleanRoomPhysicalData(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
-                    @Override
-                    public void onDeleteFinished() {
-                        TAPDataManager.getInstance().deleteMessageByRoomId(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
-                            @Override
-                            public void onDeleteFinished() {
-                                listener.onSuccess("Chat room deleted successfully");
-                            }
-                        });
-                    }
-                });
+                if (tapCommonResponse.getSuccess()) {
+                    TAPOldDataManager.getInstance().startCleanRoomPhysicalData(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
+                        @Override
+                        public void onDeleteFinished() {
+                            TAPDataManager.getInstance().deleteMessageByRoomId(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
+                                @Override
+                                public void onDeleteFinished() {
+                                    TAPGroupManager.Companion.getGetInstance().removeGroupData(groupChatRoomModel.getRoomID());
+                                    listener.onSuccess("Chat room deleted successfully");
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    listener.onError("90001", "The group has already been deleted");
+                }
             }
 
             @Override
@@ -219,7 +247,8 @@ public class TapCoreChatRoomManager {
                             TAPDataManager.getInstance().deleteMessageByRoomId(groupRoomID, new TAPDatabaseListener() {
                                 @Override
                                 public void onDeleteFinished() {
-                                    listener.onSuccess("Left chat room successfully ");
+                                    TAPGroupManager.Companion.getGetInstance().removeGroupData(groupRoomID);
+                                    listener.onSuccess("Left chat room successfully");
                                 }
                             });
                         }
@@ -245,12 +274,7 @@ public class TapCoreChatRoomManager {
         TAPDataManager.getInstance().addRoomParticipant(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
-                TAPRoomModel room = response.getRoom();
-                if (null != room) {
-                    room.setGroupParticipants(response.getParticipants());
-                    room.setAdmins(response.getAdmins());
-                    TAPGroupManager.Companion.getGetInstance().addGroupData(room);
-                }
+                TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
                 listener.onSuccess(room);
             }
 
@@ -270,12 +294,7 @@ public class TapCoreChatRoomManager {
         TAPDataManager.getInstance().removeRoomParticipant(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
-                TAPRoomModel room = response.getRoom();
-                if (null != room) {
-                    room.setGroupParticipants(response.getParticipants());
-                    room.setAdmins(response.getAdmins());
-                    TAPGroupManager.Companion.getGetInstance().addGroupData(room);
-                }
+                TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
                 listener.onSuccess(room);
             }
 
@@ -295,12 +314,7 @@ public class TapCoreChatRoomManager {
         TAPDataManager.getInstance().promoteGroupAdmins(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
-                TAPRoomModel room = response.getRoom();
-                if (null != room) {
-                    room.setGroupParticipants(response.getParticipants());
-                    room.setAdmins(response.getAdmins());
-                    TAPGroupManager.Companion.getGetInstance().addGroupData(room);
-                }
+                TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
                 listener.onSuccess(room);
             }
 
@@ -320,12 +334,7 @@ public class TapCoreChatRoomManager {
         TAPDataManager.getInstance().demoteGroupAdmins(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
-                TAPRoomModel room = response.getRoom();
-                if (null != room) {
-                    room.setGroupParticipants(response.getParticipants());
-                    room.setAdmins(response.getAdmins());
-                    TAPGroupManager.Companion.getGetInstance().addGroupData(room);
-                }
+                TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
                 listener.onSuccess(room);
             }
 

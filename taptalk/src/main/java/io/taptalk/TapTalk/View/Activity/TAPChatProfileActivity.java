@@ -673,6 +673,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                                 TAPChatProfileActivity.this.endLoading(getString(R.string.tap_left_group));
                                 leaveRoom = true;
                                 runOnUiThread(TAPChatProfileActivity.this::onBackPressed);
+                                TAPGroupManager.Companion.getGetInstance().removeGroupData(vm.getRoom().getRoomID());
                             }
                         });
                     }
@@ -725,6 +726,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                                 TAPChatProfileActivity.this.endLoading(getString(R.string.tap_delete_group));
                                 leaveRoom = true;
                                 runOnUiThread(TAPChatProfileActivity.this::onBackPressed);
+                                TAPGroupManager.Companion.getGetInstance().removeGroupData(vm.getRoom().getRoomID());
                             }
                         });
                     }
