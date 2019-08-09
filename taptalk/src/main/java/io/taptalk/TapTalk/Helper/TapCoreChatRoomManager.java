@@ -8,6 +8,8 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Interface.TapCommonInterface;
 import io.taptalk.TapTalk.Interface.TapCreateGroupWithPictureInterface;
 import io.taptalk.TapTalk.Interface.TapGetRoomInterface;
+import io.taptalk.TapTalk.Interface.TapReceiveRoomStatusInterface;
+import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -20,13 +22,34 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TapCoreChatRoomManager {
+
+    public void addRoomStatusListener(TapReceiveRoomStatusInterface listener) {
+        TAPChatManager.getInstance().addChatListener(new TAPChatListener() {
+            @Override
+            public void onReceiveStartTyping(TAPTypingModel typingModel) {
+                listener.onReceiveStartTyping(typingModel.getRoomID(), typingModel.getUser());
+            }
+
+            @Override
+            public void onReceiveStopTyping(TAPTypingModel typingModel) {
+                listener.onReceiveStopTyping(typingModel.getRoomID(), typingModel.getUser());
+            }
+
+            @Override
+            public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {
+                listener.onReceiveOnlineStatus(onlineStatus.getUser(), onlineStatus.getOnline(), onlineStatus.getLastActive());
+            }
+        });
+    }
 
     public static void getPersonalChatRoom(TAPUserModel recipientUser, TapGetRoomInterface listener) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
@@ -40,7 +63,7 @@ public class TapCoreChatRoomManager {
                     recipientUser.getName(),
                     TYPE_PERSONAL,
                     recipientUser.getAvatarURL(),
-                    ""); // TODO: 1 August 2019 DEFINE ROOM COLOR
+                    "");
             listener.onSuccess(roomModel);
         } catch (Exception e) {
             listener.onError(String.valueOf(OTHER_ERRORS), e.getMessage());

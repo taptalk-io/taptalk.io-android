@@ -9,13 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Interface.TapGetMessageInterface;
+import io.taptalk.TapTalk.Interface.TapReceiveMessageInterface;
+import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TapReceiveMessageListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
@@ -29,26 +29,26 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERR
 
 public class TapCoreMessageManager {
 
-    public static void addMessageListener(TapReceiveMessageListener tapReceiveMessageListener) {
+    public static void addMessageListener(TapReceiveMessageInterface listener) {
         TAPChatManager.getInstance().addChatListener(new TAPChatListener() {
             @Override
             public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                tapReceiveMessageListener.onReceiveMessageInActiveRoom(message);
+                listener.onReceiveMessageInActiveRoom(message);
             }
 
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                tapReceiveMessageListener.onReceiveMessageInOtherRoom(message);
+                listener.onReceiveMessageInOtherRoom(message);
             }
 
             @Override
             public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-                tapReceiveMessageListener.onUpdateMessageInActiveRoom(message);
+                listener.onUpdateMessageInActiveRoom(message);
             }
 
             @Override
             public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
-                tapReceiveMessageListener.onUpdateMessageInOtherRoom(message);
+                listener.onUpdateMessageInOtherRoom(message);
             }
         });
     }
