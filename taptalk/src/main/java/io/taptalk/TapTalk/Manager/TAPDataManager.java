@@ -43,6 +43,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPProjectConfigResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
@@ -50,7 +51,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import okhttp3.ResponseBody;
@@ -970,7 +970,8 @@ public class TAPDataManager {
     }
 
     public void deleteMessagesAPI(String roomID, String messageID, boolean isForEveryone) {
-        deleteMessagesAPI(roomID, messageID, isForEveryone, new TAPDefaultDataView<TAPDeleteMessageResponse>() {});
+        deleteMessagesAPI(roomID, messageID, isForEveryone, new TAPDefaultDataView<TAPDeleteMessageResponse>() {
+        });
     }
 
     public void getMyContactListFromAPI(TAPDefaultDataView<TAPContactResponse> view) {
@@ -1169,5 +1170,9 @@ public class TAPDataManager {
     private TAPBaseSubscriber<TAPDefaultDataView<ResponseBody>> getNewDownloadSubscriber(String localID, TAPDefaultDataView<ResponseBody> view) {
         getDownloadSubscribers().put(localID, new TAPBaseSubscriber<>(view));
         return getDownloadSubscribers().get(localID);
+    }
+
+    public void getProjectConfig(TAPDefaultDataView<TAPProjectConfigResponse> view) {
+        TAPApiManager.getInstance().getProjectConfig(new TAPDefaultSubscriber<>(view));
     }
 }
