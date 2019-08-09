@@ -947,8 +947,8 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getMessageListByRoomAfter(roomID, minCreated, lastUpdated, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getMessageListByRoomBefore(String roomID, Long maxCreated, TAPDefaultDataView<TAPGetMessageListByRoomResponse> view) {
-        TAPApiManager.getInstance().getMessageListByRoomBefore(roomID, maxCreated, new TAPDefaultSubscriber<>(view));
+    public void getMessageListByRoomBefore(String roomID, Long maxCreated, Integer limit, TAPDefaultDataView<TAPGetMessageListByRoomResponse> view) {
+        TAPApiManager.getInstance().getMessageListByRoomBefore(roomID, maxCreated, limit, new TAPDefaultSubscriber<>(view));
     }
 
     public void updateMessageStatusAsDelivered(List<String> messageIDs, TAPDefaultDataView<TAPUpdateMessageStatusResponse> view) {

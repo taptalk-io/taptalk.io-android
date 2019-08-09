@@ -2,13 +2,15 @@ package io.taptalk.TapTalk.Model.RequestModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TAPGetMessageListbyRoomBeforeRequest {
+public class TAPGetMessageListByRoomBeforeRequest {
     @JsonProperty("roomID") private String roomID;
     @JsonProperty("maxCreated") private Long maxCreated;
+    @JsonProperty("limit") private Integer limit;
 
-    public TAPGetMessageListbyRoomBeforeRequest(String roomID, Long maxCreated) {
+    public TAPGetMessageListByRoomBeforeRequest(String roomID, Long maxCreated, Integer limit) {
         this.roomID = roomID;
         this.maxCreated = maxCreated;
+        this.limit = limit;
     }
 
     public String getRoomID() {
@@ -25,5 +27,13 @@ public class TAPGetMessageListbyRoomBeforeRequest {
 
     public void setMaxCreated(Long maxCreated) {
         this.maxCreated = maxCreated;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
     }
 }

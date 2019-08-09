@@ -121,7 +121,7 @@ public class TapCoreRoomListManager {
                 if (entities.size() > 0) {
                     fetchNewMessage(new TapMessageInterface() {
                         @Override
-                        public void onSuccess(List<TAPMessageModel> tapMessageModel) {
+                        public void onSuccess(List<TAPMessageModel> tapMessageModels) {
                             getRoomListFromCache(new TapRoomListInterface() {
                                 @Override
                                 public void onSuccess(List<TAPRoomListModel> tapRoomListModel) {

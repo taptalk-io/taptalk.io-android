@@ -122,8 +122,12 @@ public class TAPMessageRepository {
 
     public void getMessageListAsc(final String roomID, final TAPDatabaseListener listener) {
         new Thread(() -> {
-            allMessageList = messageDao.getAllMessageListAsc(roomID);
-            listener.onSelectFinished(allMessageList);
+            try {
+                allMessageList = messageDao.getAllMessageListAsc(roomID);
+                listener.onSelectFinished(allMessageList);
+            } catch (Exception e) {
+                listener.onSelectFailed(e.getMessage());
+            }
         }).start();
     }
 

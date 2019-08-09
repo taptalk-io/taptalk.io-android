@@ -31,7 +31,6 @@ import io.taptalk.TapTalk.Manager.TAPContactManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPGroupManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPMenuItem
