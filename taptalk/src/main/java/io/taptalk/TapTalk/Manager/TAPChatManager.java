@@ -1158,19 +1158,6 @@ public class TAPChatManager {
         }).start();
     }
 
-    public void sendImageOrVideoMessage(Context context, TAPRoomModel room, ArrayList<TAPMediaPreviewModel> medias, TapSendMessageInterface listener) {
-        new Thread(() -> {
-            checkAndSendForwardedMessage(room);
-            for (TAPMediaPreviewModel media : medias) {
-                if (media.getType() == TYPE_IMAGE) {
-                    createImageMessageModelAndAddToUploadQueue(context, room, media.getUri(), media.getCaption(), listener);
-                } else if (media.getType() == TYPE_VIDEO) {
-                    createVideoMessageModelAndAddToUploadQueue(context, room, media.getUri(), media.getCaption(), listener);
-                }
-            }
-        }).start();
-    }
-
     public void sendImageMessage(Context context, String roomID, Uri imageUri, String caption) {
         new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomID, imageUri, caption)).start();
     }
@@ -1185,6 +1172,10 @@ public class TAPChatManager {
 
     public void sendImageMessage(Context context, TAPRoomModel roomModel, Bitmap bitmap, String caption, TapSendMessageInterface listener) {
         new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomModel, bitmap, caption, listener)).start();
+    }
+
+    public void sendVideoMessage(Context context, TAPRoomModel roomModel, Uri videoUri, String caption, TapSendMessageInterface listener) {
+        new Thread(() -> createVideoMessageModelAndAddToUploadQueue(context, roomModel, videoUri, caption, listener)).start();
     }
 
     public void resendMessage(TAPMessageModel failedMessageModel) {

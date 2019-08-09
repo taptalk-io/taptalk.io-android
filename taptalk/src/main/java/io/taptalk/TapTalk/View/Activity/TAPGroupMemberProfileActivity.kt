@@ -186,18 +186,8 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             it.menuID == MENU_ADD_TO_CONTACTS -> TAPDataManager.getInstance().addContactApi(groupViewModel?.groupMemberUser?.userID
                     ?: "0", addContactView)
             it.menuID == MENU_PROMOTE_ADMIN -> {
-                TapTalkDialog.Builder(this)
-                        .setTitle(resources.getString(R.string.tap_promote_admin))
-                        .setDialogType(TapTalkDialog.DialogType.DEFAULT)
-                        .setMessage(getString(R.string.tap_promote_admin_confirmation))
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .setPrimaryButtonListener {
-                            TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.room?.roomID,
-                                    listOf(groupViewModel?.groupMemberUser?.userID), promoteAdminView)
-                        }
-                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                        .setSecondaryButtonListener {}
-                        .show()
+                TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.room?.roomID,
+                        listOf(groupViewModel?.groupMemberUser?.userID), promoteAdminView)
             }
             it.menuID == MENU_DEMOTE_ADMIN -> {
                 val show = TapTalkDialog.Builder(this)
