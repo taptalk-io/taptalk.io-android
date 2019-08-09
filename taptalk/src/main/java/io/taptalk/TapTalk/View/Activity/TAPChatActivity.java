@@ -1202,11 +1202,11 @@ public class TAPChatActivity extends TAPBaseChatActivity {
             //ini ngecek kalau misalnya isi message modelnya itu kosong manggil api before maxCreated = current TimeStamp
             if (0 < vm.getMessageModels().size()) {
                 TAPDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID(),
-                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
+                        vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), MAX_ITEMS_PER_PAGE,
                         beforeView);
             } else {
                 TAPDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID(),
-                        System.currentTimeMillis(),
+                        System.currentTimeMillis(), MAX_ITEMS_PER_PAGE,
                         beforeView);
             }
         }).start();

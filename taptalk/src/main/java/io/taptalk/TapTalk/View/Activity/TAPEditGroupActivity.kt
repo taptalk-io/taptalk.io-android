@@ -212,7 +212,6 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         }
 
         override fun onError(error: TAPErrorModel?) {
-            super.onError(error)
             btnStopLoadingState()
             TapTalkDialog.Builder(this@TAPEditGroupActivity)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
@@ -225,7 +224,6 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         }
 
         override fun onError(errorMessage: String?) {
-            super.onError(errorMessage)
             btnStopLoadingState()
             TapTalkDialog.Builder(this@TAPEditGroupActivity)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
@@ -239,21 +237,19 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
 
     private val uploadGroupView = object : TAPDefaultDataView<TAPUpdateRoomResponse>() {
         override fun startLoading() {
-            super.startLoading()
             btnStartLoadingState()
         }
 
         override fun onSuccess(response: TAPUpdateRoomResponse?) {
-            super.onSuccess(response)
             btnStopLoadingState()
             groupViewModel?.groupData?.roomImage = response?.room?.roomImage
-            if (null != response && null != response.room)
-                TAPGroupManager.getInstance.updateRoomDataNameAndImage(response.room!!)
+            if (null != response) {
+                TAPGroupManager.getInstance.updateGroupDataFromResponse(response)
+            }
             finishGroupUpdate()
         }
 
         override fun onError(error: TAPErrorModel?) {
-            super.onError(error)
             btnStopLoadingState()
             TapTalkDialog.Builder(this@TAPEditGroupActivity)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
@@ -266,7 +262,6 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
         }
 
         override fun onError(errorMessage: String?) {
-            super.onError(errorMessage)
             btnStopLoadingState()
             TapTalkDialog.Builder(this@TAPEditGroupActivity)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)

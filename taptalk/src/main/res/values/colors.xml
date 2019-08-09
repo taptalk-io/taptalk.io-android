@@ -103,7 +103,7 @@
     <color name="tapIconRoomListSettingUp">@color/tapColorGrayIcon</color>
     <color name="tapIconRoomListSetupSuccess">@color/tapColorSuccessIcon</color>
     <color name="tapIconRoomListSetupFailure">@color/tapColorDestructiveIcon</color>
-    <color name="tapRoomListRetrySetupButton">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconRoomListRetrySetupButton">@color/tapColorPrimaryIcon</color>
     <color name="tapIconRoomListMuted">@color/tapColorGrayIcon</color>
     <color name="tapIconStartNewChatButton">@color/tapColorWhiteIcon</color>
 

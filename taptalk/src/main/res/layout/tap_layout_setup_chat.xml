@@ -103,7 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/tap_ic_retry_orange"
-                android:tint="@color/tapRoomListRetrySetupButton" />
+                android:tint="@color/tapIconRoomListRetrySetupButton" />
 
         </LinearLayout>
 
