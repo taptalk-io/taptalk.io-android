@@ -5,8 +5,8 @@ import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Interface.TapCommonInterface;
-import io.taptalk.TapTalk.Interface.TapContactInterface;
-import io.taptalk.TapTalk.Interface.TapContactListInterface;
+import io.taptalk.TapTalk.Interface.TapGetContactInterface;
+import io.taptalk.TapTalk.Interface.TapGetMultipleContactInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -21,7 +21,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERR
 
 public class TapCoreContactManager {
 
-    public static void getAllUserContacts(TapContactListInterface listener) {
+    public static void getAllUserContacts(TapGetMultipleContactInterface listener) {
         TAPDataManager.getInstance().getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(List<TAPUserModel> entities) {
@@ -35,7 +35,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public static void getUserDataWithUserID(String userID, TapContactInterface listener) {
+    public static void getUserDataWithUserID(String userID, TapGetContactInterface listener) {
         TAPDataManager.getInstance().getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
@@ -55,7 +55,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public static void getUserDataWithXCUserID(String xcUserID, TapContactInterface listener) {
+    public static void getUserDataWithXCUserID(String xcUserID, TapGetContactInterface listener) {
         TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
@@ -79,7 +79,7 @@ public class TapCoreContactManager {
         TAPContactManager.getInstance().updateUserData(tapUserModel);
     }
 
-    public static void addToTapTalkContactsWithUserID(String userID, TapContactInterface listener) {
+    public static void addToTapTalkContactsWithUserID(String userID, TapGetContactInterface listener) {
         TAPDataManager.getInstance().addContactApi(userID, new TAPDefaultDataView<TAPAddContactResponse>() {
             @Override
             public void onSuccess(TAPAddContactResponse response) {
@@ -98,7 +98,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public static void addToTapTalkContactsWithPhoneNumber(String phoneNumber, TapContactInterface listener) {
+    public static void addToTapTalkContactsWithPhoneNumber(String phoneNumber, TapGetContactInterface listener) {
         List<String> phoneNumberList = new ArrayList<>();
         phoneNumberList.add(phoneNumber);
         TAPDataManager.getInstance().addContactByPhone(phoneNumberList, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {

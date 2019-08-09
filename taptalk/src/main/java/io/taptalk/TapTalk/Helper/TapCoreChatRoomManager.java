@@ -7,7 +7,7 @@ import java.util.List;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Interface.TapCommonInterface;
 import io.taptalk.TapTalk.Interface.TapCreateGroupWithPictureInterface;
-import io.taptalk.TapTalk.Interface.TapRoomInterface;
+import io.taptalk.TapTalk.Interface.TapGetRoomInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -28,7 +28,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 
 public class TapCoreChatRoomManager {
 
-    public static void getPersonalChatRoom(TAPUserModel recipientUser, TapRoomInterface listener) {
+    public static void getPersonalChatRoom(TAPUserModel recipientUser, TapGetRoomInterface listener) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
             listener.onError("90001", "Active user not found");
         }
@@ -47,7 +47,7 @@ public class TapCoreChatRoomManager {
         }
     }
 
-    public static void getPersonalChatRoom(String recipientUserID, TapRoomInterface listener) {
+    public static void getPersonalChatRoom(String recipientUserID, TapGetRoomInterface listener) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
             listener.onError("90001", "Active user not found");
         }
@@ -74,7 +74,7 @@ public class TapCoreChatRoomManager {
         }
     }
 
-    public static void createGroupChatRoom(String groupName, List<String> participantUserIDs, TapRoomInterface listener) {
+    public static void createGroupChatRoom(String groupName, List<String> participantUserIDs, TapGetRoomInterface listener) {
         TAPDataManager.getInstance().createGroupChatRoom(groupName, participantUserIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -135,7 +135,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void updateGroupPicture(String groupRoomID, Uri groupPictureUri, TapRoomInterface listener) {
+    public static void updateGroupPicture(String groupRoomID, Uri groupPictureUri, TapGetRoomInterface listener) {
         TAPFileUploadManager.getInstance().uploadRoomPicture(TapTalk.appContext,
                 groupPictureUri, groupRoomID, new TAPDefaultDataView<TAPUpdateRoomResponse>() {
                     @Override
@@ -156,7 +156,7 @@ public class TapCoreChatRoomManager {
                 });
     }
 
-    public static void updateGroupChatRoom(String groupRoomID, String groupName, TapRoomInterface listener) {
+    public static void updateGroupChatRoom(String groupRoomID, String groupName, TapGetRoomInterface listener) {
         TAPDataManager.getInstance().updateChatRoom(groupRoomID, groupName,
                 new TAPDefaultDataView<TAPUpdateRoomResponse>() {
                     @Override
@@ -177,7 +177,7 @@ public class TapCoreChatRoomManager {
                 });
     }
 
-    public static void getGroupChatRoom(String groupRoomID, TapRoomInterface listener) {
+    public static void getGroupChatRoom(String groupRoomID, TapGetRoomInterface listener) {
         TAPRoomModel roomModel = TAPGroupManager.Companion.getGetInstance().getGroupData(groupRoomID);
         if (null == roomModel) {
             TAPDataManager.getInstance().getChatRoomData(groupRoomID, new TAPDefaultDataView<TAPCreateRoomResponse>() {
@@ -270,7 +270,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void addGroupChatMembers(String groupRoomID, List<String> userIDs, TapRoomInterface listener) {
+    public static void addGroupChatMembers(String groupRoomID, List<String> userIDs, TapGetRoomInterface listener) {
         TAPDataManager.getInstance().addRoomParticipant(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -290,7 +290,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void removeGroupChatMembers(String groupRoomID, List<String> userIDs, TapRoomInterface listener) {
+    public static void removeGroupChatMembers(String groupRoomID, List<String> userIDs, TapGetRoomInterface listener) {
         TAPDataManager.getInstance().removeRoomParticipant(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -310,7 +310,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void promoteGroupAdmins(String groupRoomID, List<String> userIDs, TapRoomInterface listener) {
+    public static void promoteGroupAdmins(String groupRoomID, List<String> userIDs, TapGetRoomInterface listener) {
         TAPDataManager.getInstance().promoteGroupAdmins(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -330,7 +330,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void demoteGroupAdmins(String groupRoomID, List<String> userIDs, TapRoomInterface listener) {
+    public static void demoteGroupAdmins(String groupRoomID, List<String> userIDs, TapGetRoomInterface listener) {
         TAPDataManager.getInstance().demoteGroupAdmins(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {

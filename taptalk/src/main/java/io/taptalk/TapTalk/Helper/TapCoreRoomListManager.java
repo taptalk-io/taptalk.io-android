@@ -6,8 +6,8 @@ import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
-import io.taptalk.TapTalk.Interface.TapMessageInterface;
-import io.taptalk.TapTalk.Interface.TapRoomListInterface;
+import io.taptalk.TapTalk.Interface.TapGetMessageInterface;
+import io.taptalk.TapTalk.Interface.TapGetRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -23,7 +23,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERR
 
 public class TapCoreRoomListManager {
 
-    public static void fetchNewMessage(TapMessageInterface listener) {
+    public static void fetchNewMessage(TapGetMessageInterface listener) {
         TAPDataManager.getInstance().getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
             @Override
             public void onSuccess(TAPGetRoomListResponse response) {
@@ -91,7 +91,7 @@ public class TapCoreRoomListManager {
         });
     }
 
-    public static void getRoomListFromCache(TapRoomListInterface listener) {
+    public static void getRoomListFromCache(TapGetRoomListInterface listener) {
         TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
@@ -110,7 +110,7 @@ public class TapCoreRoomListManager {
         });
     }
 
-    public static void getUpdatedRoomList(TapRoomListInterface listener) {
+    public static void getUpdatedRoomList(TapGetRoomListInterface listener) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
             listener.onError("90001", "Active user not found");
             return;
@@ -119,10 +119,10 @@ public class TapCoreRoomListManager {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
                 if (entities.size() > 0) {
-                    fetchNewMessage(new TapMessageInterface() {
+                    fetchNewMessage(new TapGetMessageInterface() {
                         @Override
                         public void onSuccess(List<TAPMessageModel> tapMessageModels) {
-                            getRoomListFromCache(new TapRoomListInterface() {
+                            getRoomListFromCache(new TapGetRoomListInterface() {
                                 @Override
                                 public void onSuccess(List<TAPRoomListModel> tapRoomListModel) {
                                     listener.onSuccess(tapRoomListModel);

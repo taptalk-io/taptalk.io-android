@@ -9,11 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.API.View.TapSendMessageInterface;
+import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
-import io.taptalk.TapTalk.Interface.TapMessageInterface;
+import io.taptalk.TapTalk.Interface.TapGetMessageInterface;
+import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TapReceiveMessageListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
@@ -26,6 +28,30 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
 
 public class TapCoreMessageManager {
+
+    public static void addMessageListener(TapReceiveMessageListener tapReceiveMessageListener) {
+        TAPChatManager.getInstance().addChatListener(new TAPChatListener() {
+            @Override
+            public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
+                tapReceiveMessageListener.onReceiveMessageInActiveRoom(message);
+            }
+
+            @Override
+            public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
+                tapReceiveMessageListener.onReceiveMessageInOtherRoom(message);
+            }
+
+            @Override
+            public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
+                tapReceiveMessageListener.onUpdateMessageInActiveRoom(message);
+            }
+
+            @Override
+            public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
+                tapReceiveMessageListener.onUpdateMessageInOtherRoom(message);
+            }
+        });
+    }
 
     public static void sendTextMessage(String message, TAPRoomModel room, TapSendMessageInterface listener) {
         TAPChatManager.getInstance().sendTextMessageWithRoomModel(message, room, listener);
@@ -92,7 +118,7 @@ public class TapCoreMessageManager {
         TAPMessageStatusManager.getInstance().addReadMessageQueue(message);
     }
 
-    public static void getOlderMessagesBeforeTimestamp(String roomID, long maxCreatedTimestamp, int numberOfItems, TapMessageInterface listener) {
+    public static void getOlderMessagesBeforeTimestamp(String roomID, long maxCreatedTimestamp, int numberOfItems, TapGetMessageInterface listener) {
         TAPDataManager.getInstance().getMessageListByRoomBefore(roomID, maxCreatedTimestamp, numberOfItems,
                 new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
                     @Override
@@ -120,7 +146,7 @@ public class TapCoreMessageManager {
                 });
     }
 
-    public static void getNewerMessagesAfterTimestamp(String roomID, long minCreatedTimestamp, long lastUpdateTimestamp, TapMessageInterface listener) {
+    public static void getNewerMessagesAfterTimestamp(String roomID, long minCreatedTimestamp, long lastUpdateTimestamp, TapGetMessageInterface listener) {
         TAPDataManager.getInstance().getMessageListByRoomAfter(roomID, minCreatedTimestamp, lastUpdateTimestamp,
                 new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
                     @Override
@@ -148,7 +174,7 @@ public class TapCoreMessageManager {
                 });
     }
 
-    public static void getNewerMessages(String roomID, TapMessageInterface listener) {
+    public static void getNewerMessages(String roomID, TapGetMessageInterface listener) {
         TAPDataManager.getInstance().getMessagesFromDatabaseAsc(roomID, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
