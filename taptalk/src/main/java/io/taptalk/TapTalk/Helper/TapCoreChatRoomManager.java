@@ -40,7 +40,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 
 public class TapCoreChatRoomManager {
 
-    public void addRoomStatusListener(TapReceiveRoomStatusInterface listener) {
+    public static void addRoomStatusListener(TapReceiveRoomStatusInterface listener) {
         TAPChatManager.getInstance().addChatListener(new TAPChatListener() {
             @Override
             public void onReceiveStartTyping(TAPTypingModel typingModel) {

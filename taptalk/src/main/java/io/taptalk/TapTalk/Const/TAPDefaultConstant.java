@@ -231,7 +231,7 @@ public class TAPDefaultConstant {
         public static final String UploadLocalID = "kTAPUploadLocalID";
         public static final String UploadFailed = "kTAPUploadFailed";
         public static final String UploadFailedErrorMessage = "kTAPUploadFailedErrorMessage";
-//        public static final String UploadRetried = "kTAPUploadRetried";
+        //        public static final String UploadRetried = "kTAPUploadRetried";
         public static final String UploadCancelled = "kTAPUploadCancelled";
         public static final String UploadProgress = "kTAPUploadProgress";
     }
@@ -283,6 +283,17 @@ public class TAPDefaultConstant {
         public static final String ROOM_REMOVE_PARTICIPANT = "room/removeParticipant";
         public static final String ROOM_PROMOTE_ADMIN = "room/promoteAdmin";
         public static final String ROOM_DEMOTE_ADMIN = "room/demoteAdmin";
+    }
+
+    public static final class ProjectConfigType {
+        public static final String CORE = "core";
+        public static final String PROJECT = "project";
+        public static final String CUSTOM = "custom";
+    }
+
+    public static final class ProjectConfigKeys {
+        public static final String MAX_FILE_SIZE = "maxFileSize";
+        public static final String USERNAME_IGNORE_CASE = "usernameIgnoreCase";
     }
 
     public static final class CustomHeaderKey {
