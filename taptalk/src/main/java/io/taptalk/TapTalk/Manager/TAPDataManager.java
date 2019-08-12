@@ -87,6 +87,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.CORE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.CUSTOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.PROJECT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
@@ -149,10 +152,6 @@ public class TAPDataManager {
         Hawk.put(key, timestamp);
     }
 
-    private void saveStringMapPreference(String key, Map<String, String> map) {
-        Hawk.put(key, map);
-    }
-
     private String getStringPreference(String key) {
         return Hawk.get(key, "");
     }
@@ -163,10 +162,6 @@ public class TAPDataManager {
 
     private Long getLongTimestampPreference(String key) {
         return Hawk.get(key, 0L);
-    }
-
-    private Map<String, String> getStringMapPreference(String key) {
-        return Hawk.get(key, null);
     }
 
     private Boolean checkPreferenceKeyAvailable(String key) {
@@ -189,6 +184,7 @@ public class TAPDataManager {
         removeAuthTicket();
         removeAccessToken();
         removeRefreshToken();
+        removeConfigs();
         removeLastUpdatedMessageTimestampMap();
         removeUserLastActivityMap();
         removeRoomListSetupFinished();
@@ -201,15 +197,39 @@ public class TAPDataManager {
         removeMyCountryCode();
         removeMyCountryFlagUrl();
         removeContactSyncPermissionAsked();
-        // TODO: 9 August 2019 REMOVE PROJECT CONFIGS
     }
 
     /**
      * PROJECT CONFIGS
      */
-    public Map<String, String> getCoreProjectConfigs() {
-        // TODO: 12 August 2019
-        return null;
+    public Map<String, String> getCoreConfigs() {
+        return Hawk.get(CORE, new HashMap<>());
+    }
+
+    public void saveCoreConfigs(Map<String, String> coreProjectConfigs) {
+        Hawk.put(CORE, coreProjectConfigs);
+    }
+
+    public Map<String, String> getProjectConfigs() {
+        return Hawk.get(PROJECT, new HashMap<>());
+    }
+
+    public void saveProjectConfigs(Map<String, String> coreProjectConfigs) {
+        Hawk.put(PROJECT, coreProjectConfigs);
+    }
+
+    public Map<String, String> getCustomConfigs() {
+        return Hawk.get(CUSTOM, new HashMap<>());
+    }
+
+    public void saveCustomConfigs(Map<String, String> coreProjectConfigs) {
+        Hawk.put(CUSTOM, coreProjectConfigs);
+    }
+
+    public void removeConfigs() {
+        Hawk.delete(CORE);
+        Hawk.delete(PROJECT);
+        Hawk.delete(CUSTOM);
     }
 
     /**

@@ -50,8 +50,8 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
@@ -1463,7 +1463,7 @@ public class TAPChatManager {
             }
         } catch (Exception e) {
             if (sendMessagelisteners.containsKey(messageModel.getLocalID())) {
-                sendMessagelisteners.get(messageModel.getLocalID()).onError(String.valueOf(OTHER_ERRORS), e.getMessage());
+                sendMessagelisteners.get(messageModel.getLocalID()).onError(ERROR_CODE_OTHERS, e.getMessage());
                 sendMessagelisteners.remove(messageModel.getLocalID());
             }
         }

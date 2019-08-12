@@ -37,7 +37,6 @@ import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.API.View.TapProjectConfigsInterface;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Interface.TAPGetUserInterface;
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
@@ -89,6 +88,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_SOCKE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_DEVELOPMENT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_PRODUCTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_STAGING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_REFRESH_CONFIG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MESSAGE_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
@@ -161,9 +162,17 @@ public class TapTalk {
             , @NonNull String userAgent,
                    int clientAppIcon, String clientAppName,
                    @NonNull TAPListener tapListener) {
+        // Init Hawk for freference
+        if (BuildConfig.BUILD_TYPE.equals("dev")) {
+            // No encryption for dev build
+            Hawk.init(appContext).setEncryption(new NoEncryption()).build();
+        } else {
+            Hawk.init(appContext).build();
+        }
 
-        presetCustomConfig();
-        refreshProjectConfig(new TapCommonInterface() {
+        // Init configs
+        presetConfigs();
+        refreshProjectConfigs(new TapCommonInterface() {
             @Override
             public void onSuccess(String successMessage) {
 
@@ -174,11 +183,6 @@ public class TapTalk {
 
             }
         });
-        //init Hawk for Preference
-        //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
-        if (BuildConfig.BUILD_TYPE.equals("dev"))
-            Hawk.init(appContext).setEncryption(new NoEncryption()).build();
-        else Hawk.init(appContext).build();
 
         Places.initialize(appContext, "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA");
 
@@ -959,69 +963,50 @@ public class TapTalk {
         return TAPDataManager.getInstance().getActiveUser();
     }
 
-    public static void refreshProjectConfig(TapCommonInterface listener) {
+    public static void refreshProjectConfigs(TapCommonInterface listener) {
         TapCoreProjectConfigsManager.getProjectConfigs(new TapProjectConfigsInterface() {
             @Override
             public void onSuccess(TapConfigs config) {
                 coreConfigs = config.getCoreConfigs();
                 projectConfigs = config.getProjectConfigs();
                 customConfigs = config.getCustomConfigs();
-                Hawk.put(TAPDefaultConstant.ProjectConfigType.CORE, config.getCoreConfigs());
-                Hawk.put(TAPDefaultConstant.ProjectConfigType.PROJECT, config.getProjectConfigs());
-                Hawk.put(TAPDefaultConstant.ProjectConfigType.CUSTOM, config.getCustomConfigs());
-                listener.onSuccess("Succesfully refresh config");
+                TAPDataManager.getInstance().saveCoreConfigs(coreConfigs);
+                TAPDataManager.getInstance().saveProjectConfigs(projectConfigs);
+                TAPDataManager.getInstance().saveCustomConfigs(customConfigs);
+                listener.onSuccess(SUCCESS_MESSAGE_REFRESH_CONFIG);
             }
 
             @Override
             public void onError(String errorCode, String errorMessage) {
-                if (null == Hawk.get(TAPDefaultConstant.ProjectConfigType.CORE)) {
-                    Map<String, String> core = new HashMap<>();
-                    core.put("maxFileSize", "5242880");
-                    Hawk.put(TAPDefaultConstant.ProjectConfigType.CORE, core);
-                    coreConfigs = core;
-                }
-                if (null == Hawk.get(TAPDefaultConstant.ProjectConfigType.PROJECT)) {
-                    Map<String, String> project = new HashMap<>();
-                    project.put("usernameIgnoreCase", "1");
-                    Hawk.put(TAPDefaultConstant.ProjectConfigType.PROJECT, project);
-                    coreConfigs = project;
-                }
-                if (null == Hawk.get(TAPDefaultConstant.ProjectConfigType.CUSTOM)) {
-                    Hawk.put(TAPDefaultConstant.ProjectConfigType.CUSTOM, new HashMap<>());
-                    coreConfigs = new HashMap<>();
-                }
-                listener.onError(String.valueOf(TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS), "Fail to refresh config");
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
 
-    private void presetCustomConfig() {
-        Map<String, String> core = new HashMap<>();
-        core.put(MAX_FILE_SIZE, String.valueOf(5*1024L*1024L));
-        coreConfigs = core;
+    private static void presetConfigs() {
+        coreConfigs = TAPDataManager.getInstance().getCoreConfigs();
+        projectConfigs = TAPDataManager.getInstance().getProjectConfigs();
+        customConfigs = TAPDataManager.getInstance().getCustomConfigs();
 
-        Map<String, String> project = new HashMap<>();
-        project.put(USERNAME_IGNORE_CASE, "1");
-        coreConfigs = project;
+        // Set default values if configs are empty
+        if (coreConfigs.isEmpty()) {
+            coreConfigs.put(MAX_FILE_SIZE, String.valueOf(5 * 1024L * 1024L));
+        }
 
-        coreConfigs = new HashMap<>();
+        if (projectConfigs.isEmpty()) {
+            projectConfigs.put(USERNAME_IGNORE_CASE, "1");
+        }
     }
 
     public static Map<String, String> getCoreConfigs() {
-        Map<String, String> config = new HashMap<>();
-        config.putAll(coreConfigs);
-        return config;
+        return new HashMap<>(coreConfigs);
     }
 
     public static Map<String, String> getProjectConfigs() {
-        Map<String, String> config = new HashMap<>();
-        config.putAll(projectConfigs);
-        return config;
+        return new HashMap<>(projectConfigs);
     }
 
     public static Map<String, String> getCustomConfigs() {
-        Map<String, String> config = new HashMap<>();
-        config.putAll(customConfigs);
-        return config;
+        return new HashMap<>(customConfigs);
     }
 }

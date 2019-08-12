@@ -219,6 +219,7 @@ public class TAPDefaultConstant {
     }
 
     public static final class ClientSuccessMessages {
+        public static final String SUCCESS_MESSAGE_REFRESH_CONFIG = "Project configs refreshed successfully";
         public static final String SUCCESS_MESSAGE_DELETE_GROUP = "Chat room deleted successfully";
         public static final String SUCCESS_MESSAGE_LEAVE_GROUP = "Left chat room successfully ";
     }
@@ -286,9 +287,9 @@ public class TAPDefaultConstant {
     }
 
     public static final class ProjectConfigType {
-        public static final String CORE = "core";
-        public static final String PROJECT = "project";
-        public static final String CUSTOM = "custom";
+        public static final String CORE = "kTAPConfigCore";
+        public static final String PROJECT = "kTAPConfigProject";
+        public static final String CUSTOM = "kTAPConfigCustom";
     }
 
     public static final class ProjectConfigKeys {
