@@ -268,7 +268,7 @@ public class TapTalk {
 
     public static void saveAuthTicketAndGetAccessToken(String authTicket, TAPVerifyOTPInterface verifyOTPInterface) {
         if (null == authTicket || "".equals(authTicket)) {
-            verifyOTPInterface.verifyOTPFailed("401", "Invalid Auth Ticket");
+            verifyOTPInterface.verifyOTPFailed("40101", "Invalid Auth Ticket");
         } else {
             TAPDataManager.getInstance().saveAuthTicket(authTicket);
             TAPDataManager.getInstance().getAccessTokenFromApi(new TAPDefaultDataView<TAPGetAccessTokenResponse>() {
