@@ -27,7 +27,15 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ADMIN_REQUIRED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_GROUP_DELETED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ADMIN_REQUIRED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_GROUP_DELETED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_DELETE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_LEAVE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TapCoreChatRoomManager {
@@ -53,7 +61,7 @@ public class TapCoreChatRoomManager {
 
     public static void getPersonalChatRoom(TAPUserModel recipientUser, TapGetRoomInterface listener) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
-            listener.onError("90001", "Active user not found");
+            listener.onError(ERROR_CODE_ACTIVE_USER_NOT_FOUND, ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND);
         }
         try {
             TAPRoomModel roomModel = TAPRoomModel.Builder(
@@ -66,13 +74,13 @@ public class TapCoreChatRoomManager {
                     "");
             listener.onSuccess(roomModel);
         } catch (Exception e) {
-            listener.onError(String.valueOf(OTHER_ERRORS), e.getMessage());
+            listener.onError(ERROR_CODE_OTHERS, e.getMessage());
         }
     }
 
     public static void getPersonalChatRoom(String recipientUserID, TapGetRoomInterface listener) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
-            listener.onError("90001", "Active user not found");
+            listener.onError(ERROR_CODE_ACTIVE_USER_NOT_FOUND, ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND);
         }
         TAPUserModel recipient = TAPContactManager.getInstance().getUserData(recipientUserID);
         if (null == recipient) {
@@ -89,7 +97,7 @@ public class TapCoreChatRoomManager {
 
                 @Override
                 public void onError(String errorMessage) {
-                    listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
                 }
             });
         } else {
@@ -112,7 +120,7 @@ public class TapCoreChatRoomManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -153,7 +161,7 @@ public class TapCoreChatRoomManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -174,7 +182,7 @@ public class TapCoreChatRoomManager {
 
                     @Override
                     public void onError(String errorMessage) {
-                        listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                        listener.onError(ERROR_CODE_OTHERS, errorMessage);
                     }
                 });
     }
@@ -195,7 +203,7 @@ public class TapCoreChatRoomManager {
 
                     @Override
                     public void onError(String errorMessage) {
-                        listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                        listener.onError(ERROR_CODE_OTHERS, errorMessage);
                     }
                 });
     }
@@ -217,7 +225,7 @@ public class TapCoreChatRoomManager {
 
                 @Override
                 public void onError(String errorMessage) {
-                    listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
                 }
             });
         } else {
@@ -237,13 +245,13 @@ public class TapCoreChatRoomManager {
                                 @Override
                                 public void onDeleteFinished() {
                                     TAPGroupManager.Companion.getGetInstance().removeGroupData(groupChatRoomModel.getRoomID());
-                                    listener.onSuccess("Chat room deleted successfully");
+                                    listener.onSuccess(SUCCESS_MESSAGE_DELETE_GROUP);
                                 }
                             });
                         }
                     });
                 } else {
-                    listener.onError("90001", "The group has already been deleted");
+                    listener.onError(ERROR_CODE_GROUP_DELETED, ERROR_MESSAGE_GROUP_DELETED);
                 }
             }
 
@@ -254,7 +262,7 @@ public class TapCoreChatRoomManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -271,13 +279,13 @@ public class TapCoreChatRoomManager {
                                 @Override
                                 public void onDeleteFinished() {
                                     TAPGroupManager.Companion.getGetInstance().removeGroupData(groupRoomID);
-                                    listener.onSuccess("Left chat room successfully");
+                                    listener.onSuccess(SUCCESS_MESSAGE_LEAVE_GROUP);
                                 }
                             });
                         }
                     });
                 } else {
-                    listener.onError("90001", "Please assign another admin before leaving");
+                    listener.onError(ERROR_CODE_ADMIN_REQUIRED, ERROR_MESSAGE_ADMIN_REQUIRED);
                 }
             }
 
@@ -288,7 +296,7 @@ public class TapCoreChatRoomManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -308,7 +316,7 @@ public class TapCoreChatRoomManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -328,7 +336,7 @@ public class TapCoreChatRoomManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -348,7 +356,7 @@ public class TapCoreChatRoomManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -368,7 +376,7 @@ public class TapCoreChatRoomManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }

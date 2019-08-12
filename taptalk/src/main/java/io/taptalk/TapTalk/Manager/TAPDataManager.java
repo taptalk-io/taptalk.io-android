@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -86,6 +87,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.CORE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.CUSTOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.PROJECT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
@@ -180,6 +184,7 @@ public class TAPDataManager {
         removeAuthTicket();
         removeAccessToken();
         removeRefreshToken();
+        removeConfigs();
         removeLastUpdatedMessageTimestampMap();
         removeUserLastActivityMap();
         removeRoomListSetupFinished();
@@ -192,6 +197,39 @@ public class TAPDataManager {
         removeMyCountryCode();
         removeMyCountryFlagUrl();
         removeContactSyncPermissionAsked();
+    }
+
+    /**
+     * PROJECT CONFIGS
+     */
+    public Map<String, String> getCoreConfigs() {
+        return Hawk.get(CORE, new HashMap<>());
+    }
+
+    public void saveCoreConfigs(Map<String, String> coreProjectConfigs) {
+        Hawk.put(CORE, coreProjectConfigs);
+    }
+
+    public Map<String, String> getProjectConfigs() {
+        return Hawk.get(PROJECT, new HashMap<>());
+    }
+
+    public void saveProjectConfigs(Map<String, String> coreProjectConfigs) {
+        Hawk.put(PROJECT, coreProjectConfigs);
+    }
+
+    public Map<String, String> getCustomConfigs() {
+        return Hawk.get(CUSTOM, new HashMap<>());
+    }
+
+    public void saveCustomConfigs(Map<String, String> coreProjectConfigs) {
+        Hawk.put(CUSTOM, coreProjectConfigs);
+    }
+
+    public void removeConfigs() {
+        Hawk.delete(CORE);
+        Hawk.delete(PROJECT);
+        Hawk.delete(CUSTOM);
     }
 
     /**

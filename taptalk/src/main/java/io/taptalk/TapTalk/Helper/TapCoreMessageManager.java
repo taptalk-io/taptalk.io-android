@@ -25,7 +25,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 
 public class TapCoreMessageManager {
 
@@ -128,7 +128,7 @@ public class TapCoreMessageManager {
                             try {
                                 messageAfterModels.add(TAPEncryptorManager.getInstance().decryptMessage(messageMap));
                             } catch (Exception e) {
-                                listener.onError(String.valueOf(OTHER_ERRORS), e.getMessage());
+                                listener.onError(ERROR_CODE_OTHERS, e.getMessage());
                             }
                         }
                         listener.onSuccess(messageAfterModels);
@@ -141,7 +141,7 @@ public class TapCoreMessageManager {
 
                     @Override
                     public void onError(String errorMessage) {
-                        listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                        listener.onError(ERROR_CODE_OTHERS, errorMessage);
                     }
                 });
     }
@@ -156,7 +156,7 @@ public class TapCoreMessageManager {
                             try {
                                 messageAfterModels.add(TAPEncryptorManager.getInstance().decryptMessage(messageMap));
                             } catch (Exception e) {
-                                listener.onError(String.valueOf(OTHER_ERRORS), e.getMessage());
+                                listener.onError(ERROR_CODE_OTHERS, e.getMessage());
                             }
                         }
                         listener.onSuccess(messageAfterModels);
@@ -169,7 +169,7 @@ public class TapCoreMessageManager {
 
                     @Override
                     public void onError(String errorMessage) {
-                        listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                        listener.onError(ERROR_CODE_OTHERS, errorMessage);
                     }
                 });
     }
@@ -197,7 +197,7 @@ public class TapCoreMessageManager {
                                             TAPDataManager.getInstance().saveLastUpdatedMessageTimestamp(roomID, message.getUpdated());
                                         }
                                     } catch (Exception e) {
-                                        listener.onError(String.valueOf(OTHER_ERRORS), e.getMessage());
+                                        listener.onError(ERROR_CODE_OTHERS, e.getMessage());
                                     }
                                 }
                                 listener.onSuccess(messageAfterModels);
@@ -210,14 +210,14 @@ public class TapCoreMessageManager {
 
                             @Override
                             public void onError(String errorMessage) {
-                                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                                listener.onError(ERROR_CODE_OTHERS, errorMessage);
                             }
                         });
             }
 
             @Override
             public void onSelectFailed(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }

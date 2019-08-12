@@ -6,7 +6,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 
 public class TapCoreProjectConfigsManager {
     public static void getProjectConfigs(TapProjectConfigsInterface listener) {
@@ -23,7 +23,7 @@ public class TapCoreProjectConfigsManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
