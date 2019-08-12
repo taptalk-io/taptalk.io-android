@@ -53,6 +53,7 @@ import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapConfigs;
 import okhttp3.ResponseBody;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
@@ -1172,7 +1173,7 @@ public class TAPDataManager {
         return getDownloadSubscribers().get(localID);
     }
 
-    public void getProjectConfig(TAPDefaultDataView<TAPProjectConfigResponse> view) {
+    public void getProjectConfig(TAPDefaultDataView<TapConfigs> view) {
         TAPApiManager.getInstance().getProjectConfig(new TAPDefaultSubscriber<>(view));
     }
 }

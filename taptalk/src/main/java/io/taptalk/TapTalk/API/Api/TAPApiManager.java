@@ -67,6 +67,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TapConfigs;
 import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -489,7 +490,7 @@ public class TAPApiManager {
         execute(homingPigeon.deleteChatRoom(request), subscriber);
     }
 
-    public void getProjectConfig(Subscriber<TAPBaseResponse<TAPProjectConfigResponse>> subscriber) {
+    public void getProjectConfig(Subscriber<TAPBaseResponse<TapConfigs>> subscriber) {
         execute(homingPigeon.getProjectConfig(), subscriber);
     }
 }

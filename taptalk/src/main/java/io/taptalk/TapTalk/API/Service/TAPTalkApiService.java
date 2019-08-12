@@ -43,6 +43,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.TapConfigs;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 import rx.Observable;
@@ -153,5 +154,5 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TAPCommonResponse>> deleteChatRoom(@Body TAPDeleteRoomRequest request);
 
     @POST("client/project_configs")
-    Observable<TAPBaseResponse<TAPProjectConfigResponse>> getProjectConfig();
+    Observable<TAPBaseResponse<TapConfigs>> getProjectConfig();
 }
