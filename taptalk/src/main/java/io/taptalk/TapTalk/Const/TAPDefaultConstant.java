@@ -197,6 +197,32 @@ public class TAPDefaultConstant {
         public static final int OTHER_ERRORS = 99999;
     }
 
+    public static final class ClientErrorCodes {
+        public static final String ERROR_CODE_ACTIVE_USER_NOT_FOUND = "90001";
+        public static final String ERROR_CODE_GROUP_DELETED = "90101";
+        public static final String ERROR_CODE_ADMIN_REQUIRED = "90102";
+        public static final String ERROR_CODE_URI_NOT_FOUND = "90301";
+        public static final String ERROR_CODE_EXCEEDED_MAX_SIZE = "90302";
+        public static final String ERROR_CODE_UPLOAD_CANCELLED = "90303";
+        public static final String ERROR_CODE_IMAGE_UNAVAILABLE = "90304";
+        public static final String ERROR_CODE_OTHERS = "99999";
+    }
+
+    public static final class ClientErrorMessages {
+        public static final String ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND = "Active user not found";
+        public static final String ERROR_MESSAGE_GROUP_DELETED = "The group has already been deleted";
+        public static final String ERROR_MESSAGE_ADMIN_REQUIRED = "Please assign another admin before leaving";
+        public static final String ERROR_MESSAGE_URI_NOT_FOUND = "Uri is required in message data";
+        public static final String ERROR_MESSAGE_EXCEEDED_MAX_SIZE = "Selected file exceeded %d MB upload limit";
+        public static final String ERROR_MESSAGE_UPLOAD_CANCELLED = "Upload was cancelled";
+        public static final String ERROR_MESSAGE_IMAGE_UNAVAILABLE = "Could not process compressed image";
+    }
+
+    public static final class ClientSuccessMessages {
+        public static final String SUCCESS_MESSAGE_DELETE_GROUP = "Chat room deleted successfully";
+        public static final String SUCCESS_MESSAGE_LEAVE_GROUP = "Left chat room successfully ";
+    }
+
     public static final class UploadBroadcastEvent {
         public static final String UploadProgressLoading = "kTAPUploadProgressLading";
         public static final String UploadProgressFinish = "kTAPUploadProgressFinish";

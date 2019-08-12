@@ -51,6 +51,8 @@ import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketCloseRoom;
@@ -65,6 +67,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
@@ -686,6 +689,14 @@ public class TAPChatManager {
 
     private void createFileMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createFileMessageModel(context, file, roomModel);
+
+        // Check if file size exceeds limit
+        if (null != messageModel.getData() && null != messageModel.getData().get(SIZE) &&
+                ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance().maxUploadSize) {
+            listener.onError(ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
+            return;
+        }
+
         sendMessagelisteners.put(messageModel.getLocalID(), listener);
         listener.onStart(messageModel);
 
@@ -1038,6 +1049,13 @@ public class TAPChatManager {
 
     private void createVideoMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri fileUri, String caption, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createVideoMessageModel(context, fileUri, caption, roomModel);
+
+        // Check if file size exceeds limit
+        if (null != messageModel.getData() && null != messageModel.getData().get(SIZE) &&
+                ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance().maxUploadSize) {
+            listener.onError(ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
+            return;
+        }
         sendMessagelisteners.put(messageModel.getLocalID(), listener);
         listener.onStart(messageModel);
 

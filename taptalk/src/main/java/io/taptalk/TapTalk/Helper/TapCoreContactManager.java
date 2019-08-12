@@ -17,7 +17,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 
 public class TapCoreContactManager {
 
@@ -30,7 +30,7 @@ public class TapCoreContactManager {
 
             @Override
             public void onSelectFailed(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -50,7 +50,7 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -70,7 +70,7 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -93,7 +93,7 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -114,7 +114,7 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -134,7 +134,7 @@ public class TapCoreContactManager {
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(String.valueOf(OTHER_ERRORS), errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }

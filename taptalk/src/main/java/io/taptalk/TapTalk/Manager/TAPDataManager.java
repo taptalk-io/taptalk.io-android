@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -147,6 +148,10 @@ public class TAPDataManager {
         Hawk.put(key, timestamp);
     }
 
+    private void saveStringMapPreference(String key, Map<String, String> map) {
+        Hawk.put(key, map);
+    }
+
     private String getStringPreference(String key) {
         return Hawk.get(key, "");
     }
@@ -157,6 +162,10 @@ public class TAPDataManager {
 
     private Long getLongTimestampPreference(String key) {
         return Hawk.get(key, 0L);
+    }
+
+    private Map<String, String> getStringMapPreference(String key) {
+        return Hawk.get(key, null);
     }
 
     private Boolean checkPreferenceKeyAvailable(String key) {
@@ -191,6 +200,15 @@ public class TAPDataManager {
         removeMyCountryCode();
         removeMyCountryFlagUrl();
         removeContactSyncPermissionAsked();
+        // TODO: 9 August 2019 REMOVE PROJECT CONFIGS
+    }
+
+    /**
+     * PROJECT CONFIGS
+     */
+    public Map<String, String> getCoreProjectConfigs() {
+        // TODO: 12 August 2019
+        return null;
     }
 
     /**
