@@ -31,14 +31,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.API.View.TapProjectConfigsInterface;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Interface.TAPGetUserInterface;
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface;
+import io.taptalk.TapTalk.Interface.TapCommonInterface;
 import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
 import io.taptalk.TapTalk.Listener.TAPChatRoomListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -68,6 +72,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapConfigs;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
@@ -92,6 +97,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.MAX_FILE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USERNAME_IGNORE_CASE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANNEL;
@@ -114,6 +121,10 @@ public class TapTalk {
     private Thread.UncaughtExceptionHandler defaultUEH;
     private List<TAPListener> tapListeners = new ArrayList<>();
     private List<TAPChatRoomListener> tapChatRoomListeners = new ArrayList<>();
+
+    private static Map<String, String> coreConfigs;
+    private static Map<String, String> projectConfigs;
+    private static Map<String, String> customConfigs;
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -150,6 +161,19 @@ public class TapTalk {
             , @NonNull String userAgent,
                    int clientAppIcon, String clientAppName,
                    @NonNull TAPListener tapListener) {
+
+        presetCustomConfig();
+        refreshProjectConfig(new TapCommonInterface() {
+            @Override
+            public void onSuccess(String successMessage) {
+
+            }
+
+            @Override
+            public void onError(String errorCode, String errorMessage) {
+
+            }
+        });
         //init Hawk for Preference
         //ini ngecek fungsinya kalau dev hawknya ga di encrypt sisanya hawknya di encrypt
         if (BuildConfig.BUILD_TYPE.equals("dev"))
@@ -933,5 +957,71 @@ public class TapTalk {
             return null;
 
         return TAPDataManager.getInstance().getActiveUser();
+    }
+
+    public static void refreshProjectConfig(TapCommonInterface listener) {
+        TapCoreProjectConfigsManager.getProjectConfigs(new TapProjectConfigsInterface() {
+            @Override
+            public void onSuccess(TapConfigs config) {
+                coreConfigs = config.getCoreConfigs();
+                projectConfigs = config.getProjectConfigs();
+                customConfigs = config.getCustomConfigs();
+                Hawk.put(TAPDefaultConstant.ProjectConfigType.CORE, config.getCoreConfigs());
+                Hawk.put(TAPDefaultConstant.ProjectConfigType.PROJECT, config.getProjectConfigs());
+                Hawk.put(TAPDefaultConstant.ProjectConfigType.CUSTOM, config.getCustomConfigs());
+                listener.onSuccess("Succesfully refresh config");
+            }
+
+            @Override
+            public void onError(String errorCode, String errorMessage) {
+                if (null == Hawk.get(TAPDefaultConstant.ProjectConfigType.CORE)) {
+                    Map<String, String> core = new HashMap<>();
+                    core.put("maxFileSize", "5242880");
+                    Hawk.put(TAPDefaultConstant.ProjectConfigType.CORE, core);
+                    coreConfigs = core;
+                }
+                if (null == Hawk.get(TAPDefaultConstant.ProjectConfigType.PROJECT)) {
+                    Map<String, String> project = new HashMap<>();
+                    project.put("usernameIgnoreCase", "1");
+                    Hawk.put(TAPDefaultConstant.ProjectConfigType.PROJECT, project);
+                    coreConfigs = project;
+                }
+                if (null == Hawk.get(TAPDefaultConstant.ProjectConfigType.CUSTOM)) {
+                    Hawk.put(TAPDefaultConstant.ProjectConfigType.CUSTOM, new HashMap<>());
+                    coreConfigs = new HashMap<>();
+                }
+                listener.onError(String.valueOf(TAPDefaultConstant.ApiErrorCode.OTHER_ERRORS), "Fail to refresh config");
+            }
+        });
+    }
+
+    private void presetCustomConfig() {
+        Map<String, String> core = new HashMap<>();
+        core.put(MAX_FILE_SIZE, String.valueOf(5*1024L*1024L));
+        coreConfigs = core;
+
+        Map<String, String> project = new HashMap<>();
+        project.put(USERNAME_IGNORE_CASE, "1");
+        coreConfigs = project;
+
+        coreConfigs = new HashMap<>();
+    }
+
+    public static Map<String, String> getCoreConfigs() {
+        Map<String, String> config = new HashMap<>();
+        config.putAll(coreConfigs);
+        return config;
+    }
+
+    public static Map<String, String> getProjectConfigs() {
+        Map<String, String> config = new HashMap<>();
+        config.putAll(projectConfigs);
+        return config;
+    }
+
+    public static Map<String, String> getCustomConfigs() {
+        Map<String, String> config = new HashMap<>();
+        config.putAll(customConfigs);
+        return config;
     }
 }
