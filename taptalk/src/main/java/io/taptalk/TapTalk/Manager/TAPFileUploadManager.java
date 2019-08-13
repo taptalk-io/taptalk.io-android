@@ -71,20 +71,16 @@ public class TAPFileUploadManager {
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
     private HashMap<String, Integer> uploadProgressMapPercent;
     private HashMap<String, Long> uploadProgressMapBytes;
-
-    public long maxUploadSize = Long.valueOf(TapTalk.getCoreConfigs().get(MAX_FILE_SIZE)); // Max size for uploading file message
     private HashMap<String, TapSendMessageInterface> sendMessageListeners = new HashMap<>();
 
     public static TAPFileUploadManager getInstance() {
         return null == instance ? instance = new TAPFileUploadManager() : instance;
     }
 
-    public long getMaxUploadSize() {
-        return maxUploadSize;
-    }
-
-    public void setMaxUploadSize(long maxUploadSize) {
-        this.maxUploadSize = maxUploadSize;
+    public Long getMaxUploadSize() {
+        String maxFileSize = TapTalk.getCoreConfigs().get(MAX_FILE_SIZE);
+        Log.e(TAG, "getMaxUploadSize: " + maxFileSize);
+        return null == maxFileSize ? (5 * 1024L * 1024L) : Long.valueOf(maxFileSize);
     }
 
     private HashMap<String, Integer> getUploadProgressMapPercent() {
@@ -968,7 +964,7 @@ public class TAPFileUploadManager {
     }
 
     public boolean isSizeAllowedForUpload(long size) {
-        return maxUploadSize >= size;
+        return getMaxUploadSize() >= size;
     }
 
     public void resetFileUploadManager() {

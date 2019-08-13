@@ -692,7 +692,7 @@ public class TAPChatManager {
 
         // Check if file size exceeds limit
         if (null != messageModel.getData() && null != messageModel.getData().get(SIZE) &&
-                ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance().maxUploadSize) {
+                ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance().getMaxUploadSize()) {
             listener.onError(ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
             return;
         }
@@ -1052,7 +1052,7 @@ public class TAPChatManager {
 
         // Check if file size exceeds limit
         if (null != messageModel.getData() && null != messageModel.getData().get(SIZE) &&
-                ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance().maxUploadSize) {
+                ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance().getMaxUploadSize()) {
             listener.onError(ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
             return;
         }

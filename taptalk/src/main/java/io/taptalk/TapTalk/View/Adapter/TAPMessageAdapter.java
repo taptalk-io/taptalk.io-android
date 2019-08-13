@@ -558,7 +558,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setOnClickListener(v -> {
                 });
                 Number size = (Number) item.getData().get(SIZE);
-                if (null != size && size.longValue() > TAPFileUploadManager.getInstance().maxUploadSize) {
+                if (null != size && size.longValue() > TAPFileUploadManager.getInstance().getMaxUploadSize()) {
                     activity.runOnUiThread(() -> {
 //                        if (isMessageFromMySelf(item)) {
 //                            flBubble.setForeground(bubbleOverlayRight);

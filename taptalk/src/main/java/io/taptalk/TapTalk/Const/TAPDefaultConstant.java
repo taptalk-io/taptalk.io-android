@@ -205,6 +205,7 @@ public class TAPDefaultConstant {
         public static final String ERROR_CODE_EXCEEDED_MAX_SIZE = "90302";
         public static final String ERROR_CODE_UPLOAD_CANCELLED = "90303";
         public static final String ERROR_CODE_IMAGE_UNAVAILABLE = "90304";
+        public static final String ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE = "90305";
         public static final String ERROR_CODE_OTHERS = "99999";
     }
 
@@ -216,6 +217,7 @@ public class TAPDefaultConstant {
         public static final String ERROR_MESSAGE_EXCEEDED_MAX_SIZE = "Selected file exceeded %d MB upload limit";
         public static final String ERROR_MESSAGE_UPLOAD_CANCELLED = "Upload was cancelled";
         public static final String ERROR_MESSAGE_IMAGE_UNAVAILABLE = "Could not process compressed image";
+        public static final String ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE = "Invalid message type. Allowed types are image (1002), video (1003), file (1004)";
     }
 
     public static final class ClientSuccessMessages {
@@ -245,6 +247,9 @@ public class TAPDefaultConstant {
         public static final String DownloadFile = "kTAPDownloadFile";
         public static final String CancelDownload = "kTAPCancelDownload";
         public static final String OpenFile = "kTAPOpenFile";
+        public static final String DownloadedFile = "kTAPDownloadedFile";
+        public static final String DownloadErrorCode = "kTAPDownloadErrorCode";
+        public static final String DownloadErrorMessage = "kTAPDownloadErrorMessage";
     }
 
     public static final class LongPressBroadcastEvent {
