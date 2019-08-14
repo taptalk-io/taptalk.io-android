@@ -98,7 +98,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.MAX_FILE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.CHAT_MEDIA_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USERNAME_IGNORE_CASE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
@@ -126,6 +126,7 @@ public class TapTalk {
     private static Map<String, String> coreConfigs;
     private static Map<String, String> projectConfigs;
     private static Map<String, String> customConfigs;
+    public static TapTalkImplementationType implementationType;
 
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
@@ -144,24 +145,35 @@ public class TapTalk {
         TapTalkEnvironmentDevelopment
     }
 
+    public enum TapTalkImplementationType {
+        TapTalkImplentationTypeCore,
+        TapTalkImplentationTypeUI,
+        TapTalkImplentationTypeCombine
+    }
+
     public enum TapTalkScreenOrientation {
         TapTalkOrientationDefault,
         TapTalkOrientationPortrait,
         TapTalkOrientationLandscape // FIXME: 6 February 2019 Activity loads portrait by default then changes to landscape after onCreate
     }
 
-    public static TapTalk init(Context context, String appID, String appSecret, String userAgent, int clientAppIcon, String clientAppName, TAPListener tapListener) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, userAgent, clientAppIcon, clientAppName, tapListener)) : tapTalk;
+    public static TapTalk init(Context context, String appID, String appSecret, String userAgent, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TAPListener tapListener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, userAgent, clientAppIcon, clientAppName, type, tapListener)) : tapTalk;
     }
 
-    public static TapTalk init(Context context, String appID, String appSecret, int clientAppIcon, String clientAppName, TAPListener tapListener) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, "android", clientAppIcon, clientAppName, tapListener)) : tapTalk;
+    public static TapTalk init(Context context, String appID, String appSecret, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TAPListener tapListener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, "android", clientAppIcon, clientAppName, type, tapListener)) : tapTalk;
     }
 
     public TapTalk(@NonNull final Context appContext, @NonNull String appID, @NonNull String appSecret
             , @NonNull String userAgent,
                    int clientAppIcon, String clientAppName,
+                   TapTalkImplementationType type,
                    @NonNull TAPListener tapListener) {
+
+        TapTalk.appContext = appContext;
+        clientAppName = appContext.getResources().getString(R.string.tap_app_name);
+
         // Init Hawk for freference
         if (BuildConfig.BUILD_TYPE.equals("dev")) {
             // No encryption for dev build
@@ -169,6 +181,22 @@ public class TapTalk {
         } else {
             Hawk.init(appContext).build();
         }
+
+        implementationType = type;
+
+        Places.initialize(appContext, "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA");
+
+        TAPCacheManager.getInstance(appContext).initAllCache();
+
+        // Update when adding database table
+        TAPDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
+        TAPDataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
+        TAPDataManager.getInstance().initDatabaseManager(MY_CONTACT_DB, (Application) appContext);
+
+        // Save header requirement
+        TAPDataManager.getInstance().saveApplicationID(appID);
+        TAPDataManager.getInstance().saveApplicationSecret(appSecret);
+        TAPDataManager.getInstance().saveUserAgent(userAgent);
 
         // Init configs
         presetConfigs();
@@ -183,25 +211,6 @@ public class TapTalk {
 
             }
         });
-
-        Places.initialize(appContext, "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA");
-
-        TAPCacheManager.getInstance(appContext).initAllCache();
-
-        //ini buat bkin database bisa di akses (setiap tambah repo harus tambah ini)
-        TAPDataManager.getInstance().initDatabaseManager(MESSAGE_DB, (Application) appContext);
-        TAPDataManager.getInstance().initDatabaseManager(SEARCH_DB, (Application) appContext);
-        TAPDataManager.getInstance().initDatabaseManager(MY_CONTACT_DB, (Application) appContext);
-        //ini buat ambil context dr app utama karena library module ga bsa punya app context sndiri
-        TapTalk.appContext = appContext;
-        clientAppName = appContext.getResources().getString(R.string.tap_app_name);
-
-        //save header requirement
-        new Thread(() -> {
-            TAPDataManager.getInstance().saveApplicationID(appID);
-            TAPDataManager.getInstance().saveApplicationSecret(appSecret);
-            TAPDataManager.getInstance().saveUserAgent(userAgent);
-        }).start();
 
         if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             //TAPConnectionManager.getInstance().connect();
@@ -990,7 +999,7 @@ public class TapTalk {
 
         // Set default values if configs are empty
         if (coreConfigs.isEmpty()) {
-            coreConfigs.put(MAX_FILE_SIZE, String.valueOf(5 * 1024L * 1024L));
+            coreConfigs.put(CHAT_MEDIA_MAX_FILE_SIZE, String.valueOf(5 * 1024L * 1024L));
         }
 
         if (projectConfigs.isEmpty()) {

@@ -52,7 +52,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.MAX_FILE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.CHAT_MEDIA_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailedErrorMessage;
@@ -72,7 +72,7 @@ public class TAPFileUploadManager {
     private HashMap<String, Integer> uploadProgressMapPercent;
     private HashMap<String, Long> uploadProgressMapBytes;
 
-    public long maxUploadSize = Long.valueOf(TapTalk.getCoreConfigs().get(MAX_FILE_SIZE)); // Max size for uploading file message
+    public long maxUploadSize = Long.valueOf(TapTalk.getCoreConfigs().get(CHAT_MEDIA_MAX_FILE_SIZE)); // Max size for uploading file message
     private HashMap<String, TapSendMessageInterface> sendMessageListeners = new HashMap<>();
 
     public static TAPFileUploadManager getInstance() {
