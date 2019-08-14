@@ -31,7 +31,6 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
@@ -40,7 +39,6 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 
 public class TAPAddMembersActivity extends TAPBaseActivity {
@@ -112,7 +110,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
                 TAPUtils.getInstance().dismissKeyboard(TAPAddMembersActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContacts().contains(contact)) {
-                    if (vm.getSelectedContacts().size() + vm.getGroupSize() >= GROUP_MEMBER_LIMIT) {
+                    if (vm.getSelectedContacts().size() + vm.getGroupSize() >= TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         new TapTalkDialog.Builder(TAPAddMembersActivity.this)
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
@@ -139,7 +137,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getGroupSize() + vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
+                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getGroupSize() + vm.getSelectedContacts().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
                 return true;
             }
 
@@ -154,7 +152,7 @@ public class TAPAddMembersActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getSelectedContacts().size(), GROUP_MEMBER_LIMIT));
+                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getGroupSize() + vm.getSelectedContacts().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
             }
         };
     }

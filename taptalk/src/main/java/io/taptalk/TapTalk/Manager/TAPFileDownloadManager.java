@@ -35,9 +35,13 @@ import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadErrorCode;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadErrorMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
@@ -152,14 +156,14 @@ public class TAPFileDownloadManager {
 
             @Override
             public void onError(TAPErrorModel error) {
-                setDownloadFailed(localID);
+                setDownloadFailed(localID, error.getCode(), error.getMessage());
                 Log.e(TAG, "onError: " + error.getMessage());
             }
 
             @Override
-            public void onError(Throwable throwable) {
-                setDownloadFailed(localID);
-                Log.e(TAG, "onError: ", throwable);
+            public void onError(String errorMessage) {
+                setDownloadFailed(localID, ERROR_CODE_OTHERS, errorMessage);
+                Log.e(TAG, "onError: " + errorMessage);
             }
 
             @Override
@@ -197,7 +201,7 @@ public class TAPFileDownloadManager {
                         Bitmap bitmap = getBitmapFromResponse(response, null == mimeType ? IMAGE_JPEG : mimeType);
                         saveImageToCacheAndSendBroadcast(context, localID, fileID, bitmap);
                     } catch (Exception e) {
-                        setDownloadFailed(localID);
+                        setDownloadFailed(localID, ERROR_CODE_OTHERS, e.getMessage());
                         Log.e(TAG, "onSuccess exception: ", e);
                     }
                 }).start();
@@ -205,14 +209,14 @@ public class TAPFileDownloadManager {
 
             @Override
             public void onError(TAPErrorModel error) {
-                setDownloadFailed(localID);
+                setDownloadFailed(localID, error.getCode(), error.getMessage());
                 Log.e(TAG, "onError: " + error.getMessage());
             }
 
             @Override
-            public void onError(Throwable throwable) {
-                setDownloadFailed(localID);
-                Log.e(TAG, "onError: " + throwable.getMessage());
+            public void onError(String errorMessage) {
+                setDownloadFailed(localID, ERROR_CODE_OTHERS, errorMessage);
+                Log.e(TAG, "onError: " + errorMessage);
             }
 
             @Override
@@ -285,6 +289,7 @@ public class TAPFileDownloadManager {
             scanFile(context, file, TAPUtils.getInstance().getFileMimeType(file));
             Intent intent = new Intent(DownloadFinish);
             intent.putExtra(DownloadLocalID, localID);
+            intent.putExtra(DownloadedFile, file);
             intent.putExtra(FILE_ID, fileID);
             intent.putExtra(FILE_URI, fileProviderUri);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
@@ -293,7 +298,7 @@ public class TAPFileDownloadManager {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            setDownloadFailed(localID);
+            setDownloadFailed(localID, ERROR_CODE_OTHERS, e.getMessage());
             Log.e(TAG, "writeFileToDiskAndSendBroadcast: " + e);
         }
     }
@@ -407,11 +412,13 @@ public class TAPFileDownloadManager {
         }
     }
 
-    private void setDownloadFailed(String localID) {
+    private void setDownloadFailed(String localID, String errorCode, String errorMessage) {
         addFailedDownload(localID);
         removeDownloadProgressMap(localID);
         Intent intent = new Intent(DownloadFailed);
         intent.putExtra(DownloadLocalID, localID);
+        intent.putExtra(DownloadErrorCode, errorCode);
+        intent.putExtra(DownloadErrorMessage, errorMessage);
         LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
     }
 

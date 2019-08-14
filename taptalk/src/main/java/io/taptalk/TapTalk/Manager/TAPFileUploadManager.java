@@ -44,6 +44,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_IMAGE_UNAVAILABLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_UPLOAD_CANCELLED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_URI_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_USER_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
@@ -53,6 +56,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.CHAT_MEDIA_MAX_FILE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.ROOM_PHOTO_MAX_FILE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USER_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailedErrorMessage;
@@ -71,20 +76,25 @@ public class TAPFileUploadManager {
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
     private HashMap<String, Integer> uploadProgressMapPercent;
     private HashMap<String, Long> uploadProgressMapBytes;
-
-    public long maxUploadSize = Long.valueOf(TapTalk.getCoreConfigs().get(CHAT_MEDIA_MAX_FILE_SIZE)); // Max size for uploading file message
     private HashMap<String, TapSendMessageInterface> sendMessageListeners = new HashMap<>();
 
     public static TAPFileUploadManager getInstance() {
         return null == instance ? instance = new TAPFileUploadManager() : instance;
     }
 
-    public long getMaxUploadSize() {
-        return maxUploadSize;
+    public Long getMaxFileUploadSize() {
+        String maxFileSize = TapTalk.getCoreConfigs().get(CHAT_MEDIA_MAX_FILE_SIZE);
+        return null == maxFileSize ? Long.valueOf(DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
     }
 
-    public void setMaxUploadSize(long maxUploadSize) {
-        this.maxUploadSize = maxUploadSize;
+    public Long getMaxRoomPhotoUploadSize() {
+        String maxFileSize = TapTalk.getCoreConfigs().get(ROOM_PHOTO_MAX_FILE_SIZE);
+        return null == maxFileSize ? Long.valueOf(DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
+    }
+
+    public Long getMaxUserPhotoUploadSize() {
+        String maxFileSize = TapTalk.getCoreConfigs().get(USER_PHOTO_MAX_FILE_SIZE);
+        return null == maxFileSize ? Long.valueOf(DEFAULT_USER_PHOTO_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
     }
 
     private HashMap<String, Integer> getUploadProgressMapPercent() {
@@ -968,7 +978,7 @@ public class TAPFileUploadManager {
     }
 
     public boolean isSizeAllowedForUpload(long size) {
-        return maxUploadSize >= size;
+        return getMaxFileUploadSize() >= size;
     }
 
     public void resetFileUploadManager() {

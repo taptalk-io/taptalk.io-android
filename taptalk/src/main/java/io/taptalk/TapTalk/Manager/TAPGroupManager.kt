@@ -1,5 +1,8 @@
 package io.taptalk.TapTalk.Manager
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_GROUP_MAX_PARTICIPANTS
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.GROUP_MAX_PARTICIPANTS
+import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPSocketListener
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse
@@ -29,6 +32,11 @@ class TAPGroupManager {
               saveRoomDataMapToPreference()
           }
       })
+    }
+
+    fun getGroupMaxParticipants(): Int {
+        val maxParticipants = TapTalk.getCoreConfigs()[GROUP_MAX_PARTICIPANTS]
+        return maxParticipants?.toInt() ?: DEFAULT_GROUP_MAX_PARTICIPANTS.toInt()
     }
 
     private fun getGroupDataMap() : HashMap<String, TAPRoomModel> {

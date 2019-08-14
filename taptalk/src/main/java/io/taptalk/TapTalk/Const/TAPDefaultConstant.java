@@ -205,6 +205,7 @@ public class TAPDefaultConstant {
         public static final String ERROR_CODE_EXCEEDED_MAX_SIZE = "90302";
         public static final String ERROR_CODE_UPLOAD_CANCELLED = "90303";
         public static final String ERROR_CODE_IMAGE_UNAVAILABLE = "90304";
+        public static final String ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE = "90305";
         public static final String ERROR_CODE_OTHERS = "99999";
     }
 
@@ -216,6 +217,7 @@ public class TAPDefaultConstant {
         public static final String ERROR_MESSAGE_EXCEEDED_MAX_SIZE = "Selected file exceeded %d MB upload limit";
         public static final String ERROR_MESSAGE_UPLOAD_CANCELLED = "Upload was cancelled";
         public static final String ERROR_MESSAGE_IMAGE_UNAVAILABLE = "Could not process compressed image";
+        public static final String ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE = "Invalid message type. Allowed types are image (1002), video (1003), file (1004)";
     }
 
     public static final class ClientSuccessMessages {
@@ -245,6 +247,9 @@ public class TAPDefaultConstant {
         public static final String DownloadFile = "kTAPDownloadFile";
         public static final String CancelDownload = "kTAPCancelDownload";
         public static final String OpenFile = "kTAPOpenFile";
+        public static final String DownloadedFile = "kTAPDownloadedFile";
+        public static final String DownloadErrorCode = "kTAPDownloadErrorCode";
+        public static final String DownloadErrorMessage = "kTAPDownloadErrorMessage";
     }
 
     public static final class LongPressBroadcastEvent {
@@ -381,8 +386,13 @@ public class TAPDefaultConstant {
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
+    public static final String DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE = "26214400";
+    public static final String DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE = "10485760";
+    public static final String DEFAULT_USER_PHOTO_MAX_FILE_SIZE = "10485760";
+    public static final String DEFAULT_GROUP_MAX_PARTICIPANTS = "100";
+    public static final String DEFAULT_CHANNEL_MAX_PARTICIPANTS = "5000";
+
     public static final int MAX_ITEMS_PER_PAGE = 50;
-    public static final int GROUP_MEMBER_LIMIT = 50;
     public static final int SHORT_ANIMATION_TIME = 100;
     public static final int DEFAULT_ANIMATION_TIME = 200;
     public static final int IMAGE_MAX_DIMENSION = 2000;

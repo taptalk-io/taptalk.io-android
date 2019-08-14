@@ -51,7 +51,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSID
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
 
@@ -159,7 +158,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
                 0, 0));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
-        tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), adapter.getItemCount(), GROUP_MEMBER_LIMIT));
+        tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), adapter.getItemCount(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
         flCreateGroupBtn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
         loadGroupName();
         loadGroupImage();

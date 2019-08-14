@@ -372,7 +372,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                                 new TapTalkDialog.Builder(TAPChatActivity.this)
                                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                         .setTitle("Sorry")
-                                        .setMessage("Maximum file size is " + TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().maxUploadSize) + ".")
+                                        .setMessage("Maximum file size is " + TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize()) + ".")
                                         .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                         .show();
                             }

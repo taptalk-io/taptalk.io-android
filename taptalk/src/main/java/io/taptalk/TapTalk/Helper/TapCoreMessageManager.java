@@ -1,5 +1,9 @@
 package io.taptalk.TapTalk.Helper;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
@@ -11,6 +15,7 @@ import java.util.List;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Interface.TapFileDownloadInterface;
 import io.taptalk.TapTalk.Interface.TapGetMessageInterface;
 import io.taptalk.TapTalk.Interface.TapReceiveMessageInterface;
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
@@ -19,13 +24,24 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
+import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadErrorCode;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadErrorMessage;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 
 public class TapCoreMessageManager {
 
@@ -112,6 +128,50 @@ public class TapCoreMessageManager {
 
     public static void deleteLocalMessage(String localID) {
         TAPDataManager.getInstance().deleteFromDatabase(localID);
+    }
+
+    public static void cancelMessageFileUpload(TAPMessageModel message) {
+        TAPFileUploadManager.getInstance().cancelUpload(TapTalk.appContext, message, message.getRoom().getRoomID());
+        TAPDataManager.getInstance().deleteFromDatabase(message.getLocalID());
+    }
+
+    public static void downloadMessageFile(TAPMessageModel message, TapFileDownloadInterface listener) {
+        if (!TAPUtils.getInstance().hasPermissions(TapTalk.appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            listener.onError(ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE);
+        } else {
+            TAPFileDownloadManager.getInstance().downloadFile(TapTalk.appContext, message);
+
+            BroadcastReceiver downloadProgressReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String action = intent.getAction();
+                    String localID = intent.getStringExtra(DownloadLocalID);
+                    Integer downloadProgressPercent = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
+                    Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(localID);
+                    if (null == action) {
+                        return;
+                    }
+                    switch (action) {
+                        case DownloadProgressLoading:
+                            if (null != downloadProgressPercent && null != downloadProgressBytes) {
+                                listener.onProgress(message, downloadProgressPercent, downloadProgressBytes);
+                            }
+                            break;
+                        case DownloadFinish:
+                            listener.onSuccess(intent.getParcelableExtra(DownloadedFile));
+                            TAPBroadcastManager.unregister(TapTalk.appContext, this);
+                            break;
+                        case DownloadFailed:
+                            listener.onError(intent.getStringExtra(DownloadErrorCode), intent.getStringExtra(DownloadErrorMessage));
+                            TAPBroadcastManager.unregister(TapTalk.appContext, this);
+                            break;
+                    }
+                }
+            };
+
+            TAPBroadcastManager.register(TapTalk.appContext, downloadProgressReceiver,
+                    DownloadProgressLoading, DownloadFinish, DownloadFailed);
+        }
     }
 
     public static void markMessageAsRead(TAPMessageModel message) {
