@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,7 +23,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CONTACT_LIST;
 public class TAPSearchContactActivity extends TAPBaseActivity {
 
     private LinearLayout llAddNewContact;
-    private ImageView ivButtonBack, ivButtonCancel;
+    private ImageView ivButtonBack, ivButtonClearText;
     private EditText etSearch;
     private RecyclerView rvSearchResults;
 
@@ -47,17 +48,16 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
+        vm.setContactList(getIntent().getParcelableArrayListExtra(CONTACT_LIST));
+        vm.getFilteredContacts().addAll(vm.getContactList());
     }
 
     private void initView() {
         getWindow().setBackgroundDrawable(null);
 
-        //ini buat set data yang di pass dari new chat activity
-        setData();
-        
         llAddNewContact = findViewById(R.id.ll_add_new_contact);
         ivButtonBack = findViewById(R.id.iv_button_back);
-        ivButtonCancel = findViewById(R.id.iv_button_cancel);
+        ivButtonClearText = findViewById(R.id.iv_button_clear_text);
         etSearch = findViewById(R.id.et_search);
         rvSearchResults = findViewById(R.id.rv_search_results);
 
@@ -68,16 +68,15 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        ivButtonCancel.setOnClickListener(v -> clearSearch());
+        ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
         llAddNewContact.setOnClickListener(v -> openNewContactActivity());
 
         TAPUtils.getInstance().animateClickButton(llAddNewContact, 0.97f);
-    }
 
-    private void clearSearch() {
-        TAPUtils.getInstance().dismissKeyboard(this);
-        etSearch.setText("");
-        etSearch.clearFocus();
+        etSearch.setOnEditorActionListener((textView, i, keyEvent) -> {
+            TAPUtils.getInstance().dismissKeyboard(TAPSearchContactActivity.this);
+            return false;
+        });
     }
 
     private void openNewContactActivity() {
@@ -97,13 +96,15 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
             vm.getFilteredContacts().clear();
             String searchKeyword = etSearch.getText().toString().toLowerCase().trim();
             if (searchKeyword.isEmpty()) {
-                vm.getFilteredContacts().clear();
+                vm.getFilteredContacts().addAll(vm.getContactList());
+                ivButtonClearText.setVisibility(View.GONE);
             } else {
                 for (TAPUserModel user : vm.getContactList()) {
                     if (user.getName().toLowerCase().contains(searchKeyword)) {
                         vm.getFilteredContacts().add(user);
                     }
                 }
+                ivButtonClearText.setVisibility(View.VISIBLE);
             }
             adapter.notifyDataSetChanged();
         }
@@ -113,8 +114,4 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
 
         }
     };
-
-    private void setData() {
-        vm.setContactList(getIntent().getParcelableArrayListExtra(CONTACT_LIST));
-    }
 }

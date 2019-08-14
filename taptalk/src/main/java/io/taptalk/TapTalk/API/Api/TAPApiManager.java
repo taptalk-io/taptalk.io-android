@@ -19,12 +19,17 @@ import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPAddRoomParticipantRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
@@ -35,14 +40,18 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPDeleteMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
@@ -50,11 +59,15 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPProjectConfigResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TapConfigs;
 import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -257,12 +270,16 @@ public class TAPApiManager {
     }
 
     public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
-        TAPGetMessageListbyRoomAfterRequest request = new TAPGetMessageListbyRoomAfterRequest(roomID, minCreated, lastUpdated);
+        TAPGetMessageListByRoomAfterRequest request = new TAPGetMessageListByRoomAfterRequest(roomID, minCreated, lastUpdated);
         execute(homingPigeon.getMessageListByRoomAfter(request), subscriber);
     }
 
-    public void getMessageListByRoomBefore(String roomID, Long maxCreated, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
-        TAPGetMessageListbyRoomBeforeRequest request = new TAPGetMessageListbyRoomBeforeRequest(roomID, maxCreated);
+    public void deleteMessages(String roomID, List<String> messageIds, boolean isForEveryone) {
+        TAPDeleteMessageRequest request = new TAPDeleteMessageRequest(roomID, messageIds, isForEveryone);
+    }
+
+    public void getMessageListByRoomBefore(String roomID, Long maxCreated, Integer limit, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
+        TAPGetMessageListByRoomBeforeRequest request = new TAPGetMessageListByRoomBeforeRequest(roomID, maxCreated, limit);
         execute(homingPigeon.getMessageListByRoomBefore(request), subscriber);
     }
 
@@ -276,11 +293,16 @@ public class TAPApiManager {
         execute(homingPigeon.updateMessageStatusAsRead(request), subscriber);
     }
 
+    public void deleteMessagesAPI(String roomID, List<String> messageIDs, boolean isForEveryone, Subscriber<TAPBaseResponse<TAPDeleteMessageResponse>> subscriber) {
+        TAPDeleteMessageRequest request = new TAPDeleteMessageRequest(roomID, messageIDs, isForEveryone);
+        execute(homingPigeon.deleteMessages(request), subscriber);
+    }
+
     public void getMyContactListFromAPI(Subscriber<TAPBaseResponse<TAPContactResponse>> subscriber) {
         execute(homingPigeon.getMyContactListFromAPI(), subscriber);
     }
 
-    public void addContact(String userID, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+    public void addContact(String userID, Subscriber<TAPBaseResponse<TAPAddContactResponse>> subscriber) {
         TAPUserIdRequest request = new TAPUserIdRequest(userID);
         execute(homingPigeon.addContact(request), subscriber);
     }
@@ -316,11 +338,12 @@ public class TAPApiManager {
         //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
+        String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("roomID", roomID)
-                .addFormDataPart("file", imageFile.getName(), reqFile)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
                 .addFormDataPart("caption", caption)
                 .addFormDataPart("fileType", "image")
                 .build();
@@ -332,11 +355,12 @@ public class TAPApiManager {
                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(videoFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(videoFile, mimeType, uploadCallback);
+        String extension = videoFile.getAbsolutePath().substring(videoFile.getAbsolutePath().lastIndexOf("."));
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("roomID", roomID)
-                .addFormDataPart("file", videoFile.getName(), reqFile)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
                 .addFormDataPart("caption", caption)
                 .addFormDataPart("fileType", "video")
                 .build();
@@ -348,11 +372,12 @@ public class TAPApiManager {
                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(file.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType, uploadCallback);
+        String extension = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf("."));
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("roomID", roomID)
-                .addFormDataPart("file", file.getName(), reqFile)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
                 .addFormDataPart("fileType", "file")
                 .build();
         execute(tapMultipart.uploadFile(requestBody), subscriber);
@@ -363,17 +388,31 @@ public class TAPApiManager {
                                      Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
+        String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file", imageFile.getName(), reqFile)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
                 .addFormDataPart("fileType", "image")
                 .build();
         execute(tapMultipart.uploadProfilePicture(requestBody), subscriber);
     }
 
-    public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, Subscriber<ResponseBody> subscriber) {
+    public void uploadGroupPicture(File imageFile, String mimeType, String roomID,
+                                   Subscriber<TAPBaseResponse<TAPUpdateRoomResponse>> subscriber) {
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
+        String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
+        ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
+                .addFormDataPart("roomID", roomID)
+                .build();
+        execute(tapMultipart.uploadRoomPicture(requestBody), subscriber);
+    }
+
+    public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, Subscriber<ResponseBody> subscriber) {
         TAPTalkDownloadApiService tapDownload;
         if (null != fileSize) {
             tapDownload = TAPApiConnection.getInstance().getTapDownload(calculateTimeOutTimeWithFileSize(fileSize.longValue()));
@@ -391,6 +430,10 @@ public class TAPApiManager {
         execute(homingPigeon.register(request), subscriber);
     }
 
+    public void logout(Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        execute(homingPigeon.logout(), subscriber);
+    }
+
     public void checkUsernameExists(String username, Subscriber<TAPBaseResponse<TAPCheckUsernameResponse>> subscriber) {
         TAPGetUserByUsernameRequest request = new TAPGetUserByUsernameRequest(username, false);
         execute(homingPigeon.checkUsernameExists(request), subscriber);
@@ -399,5 +442,55 @@ public class TAPApiManager {
     public void addContactByPhone(List<String> phones, Subscriber<TAPBaseResponse<TAPAddContactByPhoneResponse>> subscriber) {
         TAPAddContactByPhoneRequest request = new TAPAddContactByPhoneRequest(phones);
         execute(homingPigeon.addContactByPhone(request), subscriber);
+    }
+
+    public void createChatRoom(String roomName, int roomType, List<String> participantIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPCreateRoomRequest request = new TAPCreateRoomRequest(roomName, roomType, participantIDs);
+        execute(homingPigeon.createChatRoom(request), subscriber);
+    }
+
+    public void getChatRoomData(String roomID, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPCommonRequest request = TAPCommonRequest.builderWithRoomID(roomID);
+        execute(homingPigeon.getChatRoomData(request), subscriber);
+    }
+
+    public void updateChatRoom(String roomID, String roomName, Subscriber<TAPBaseResponse<TAPUpdateRoomResponse>> subscriber) {
+        TAPUpdateRoomRequest request = new TAPUpdateRoomRequest(roomID, roomName);
+        execute(homingPigeon.updateChatRoom(request), subscriber);
+    }
+
+    public void addRoomParticipant(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
+        execute(homingPigeon.addRoomParticipant(request), subscriber);
+    }
+
+    public void removeRoomParticipant(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
+        execute(homingPigeon.removeRoomParticipant(request), subscriber);
+    }
+
+    public void leaveChatRoom(String roomID, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPCommonRequest request = TAPCommonRequest.builderWithRoomID(roomID);
+        execute(homingPigeon.leaveChatRoom(request), subscriber);
+    }
+
+    public void promoteGroupAdmins(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
+        execute(homingPigeon.promoteGroupAdmins(request), subscriber);
+    }
+
+    public void demoteGroupAdmins(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
+        execute(homingPigeon.demoteGroupAdmins(request), subscriber);
+    }
+
+    public void deleteChatRoom(TAPRoomModel room, String userID, long accessTokenExpiry, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        String checksum = room.getRoomID() + ":" + room.getRoomType() + ":" + userID + ":" + accessTokenExpiry;
+        TAPDeleteRoomRequest request = new TAPDeleteRoomRequest(room.getRoomID(), TAPEncryptorManager.getInstance().md5(checksum));
+        execute(homingPigeon.deleteChatRoom(request), subscriber);
+    }
+
+    public void getProjectConfig(Subscriber<TAPBaseResponse<TapConfigs>> subscriber) {
+        execute(homingPigeon.getProjectConfig(), subscriber);
     }
 }

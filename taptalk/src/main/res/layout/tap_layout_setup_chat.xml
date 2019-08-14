@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fl_setup_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_transparent_charcoal_40"
+    android:background="@color/tapTransparentCharcoal40"
     android:elevation="4dp">
 
     <android.support.constraint.ConstraintLayout
@@ -22,30 +23,30 @@
             android:layout_width="110dp"
             android:layout_height="110dp"
             android:layout_marginTop="32dp"
-            android:src="@drawable/tap_ic_loading_progress_circle_orange"
-            android:tint="@color/colorPrimaryDark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/tap_ic_loading_progress_circle_white" />
 
         <ImageView
             android:id="@+id/iv_setup_chat"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/tap_ic_setting_up_grey"
             app:layout_constraintBottom_toBottomOf="@+id/iv_setup_chat_loading"
             app:layout_constraintEnd_toEndOf="@+id/iv_setup_chat_loading"
             app:layout_constraintStart_toStartOf="@+id/iv_setup_chat_loading"
-            app:layout_constraintTop_toTopOf="@+id/iv_setup_chat_loading" />
+            app:layout_constraintTop_toTopOf="@+id/iv_setup_chat_loading"
+            tools:src="@drawable/tap_ic_setting_up_grey" />
 
         <TextView
             android:id="@+id/tv_setup_chat"
-            style="@style/TapToolbarTitle"
+            style="@style/tapPopupDialogTitleStyle"
             android:layout_width="0dp"
             android:layout_height="24dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:gravity="center"
             android:text="@string/tap_chat_room_setting_up"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,14 +54,14 @@
 
         <TextView
             android:id="@+id/tv_setup_chat_description"
-            style="@style/TapFormGuide"
+            style="@style/tapPopupDialogBodyStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="26dp"
             android:ellipsize="end"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:maxLines="1"
             android:text="@string/tap_chat_room_setting_up_description"
             app:layout_constrainedWidth="true"
@@ -86,9 +87,10 @@
             app:layout_constraintTop_toBottomOf="@id/tv_setup_chat">
 
             <TextView
-                style="@style/TapTextButtonPrimaryDark"
+                style="@style/tapClickableLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:maxLines="1"
                 android:text="@string/tap_chat_room_setup_failed_description"
                 app:layout_constrainedWidth="true"
@@ -101,7 +103,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/tap_ic_retry_orange"
-                android:tint="@color/colorPrimaryDark" />
+                android:tint="@color/tapIconRoomListRetrySetupButton" />
 
         </LinearLayout>
 

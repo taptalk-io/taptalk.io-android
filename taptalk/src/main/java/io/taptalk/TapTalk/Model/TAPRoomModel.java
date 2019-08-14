@@ -17,9 +17,12 @@ public class TAPRoomModel implements Parcelable {
     @JsonProperty("color") private String roomColor;
     @JsonProperty("type") private int roomType;
     @JsonProperty("unreadCount") private int unreadCount;
+    @JsonProperty("deleted") private long deletedTimestamp;
+    @JsonProperty("isDeleted") private boolean isRoomDeleted;
     @Nullable @JsonProperty("imageURL") private TAPImageURL roomImage;
-    @Nullable @JsonProperty("groupParticipants") private List<TAPUserModel> groupParticipants;
-    @Nullable @JsonProperty("numOfParticipants") private Integer numOfParticipants;
+    @Nullable @JsonIgnore private List<TAPUserModel> groupParticipants;
+    @Nullable @JsonIgnore private Integer numOfParticipants;
+    @Nullable @JsonIgnore @JsonProperty("admins") private List<String> admins;
     @JsonIgnore private boolean isMuted;
 
     public TAPRoomModel(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor) {
@@ -90,6 +93,22 @@ public class TAPRoomModel implements Parcelable {
         this.unreadCount = unreadCount;
     }
 
+    public long getDeletedTimestamp() {
+        return deletedTimestamp;
+    }
+
+    public void setDeletedTimestamp(long deletedTimestamp) {
+        this.deletedTimestamp = deletedTimestamp;
+    }
+
+    public boolean isRoomDeleted() {
+        return isRoomDeleted;
+    }
+
+    public void setRoomDeleted(boolean roomDeleted) {
+        isRoomDeleted = roomDeleted;
+    }
+
     @Nullable
     public TAPImageURL getRoomImage() {
         return roomImage;
@@ -117,6 +136,15 @@ public class TAPRoomModel implements Parcelable {
         this.numOfParticipants = numOfParticipants;
     }
 
+    @Nullable
+    public List<String> getAdmins() {
+        return admins;
+    }
+
+    public void setAdmins(@Nullable List<String> admins) {
+        this.admins = admins;
+    }
+
     public boolean isMuted() {
         return isMuted;
     }
@@ -136,11 +164,14 @@ public class TAPRoomModel implements Parcelable {
         dest.writeString(this.roomID);
         dest.writeString(this.roomName);
         dest.writeString(this.roomColor);
-        dest.writeParcelable(this.roomImage, flags);
         dest.writeInt(this.roomType);
         dest.writeInt(this.unreadCount);
+        dest.writeLong(this.deletedTimestamp);
+        dest.writeByte(this.isRoomDeleted ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(this.roomImage, flags);
         dest.writeTypedList(this.groupParticipants);
         dest.writeValue(this.numOfParticipants);
+        dest.writeStringList(this.admins);
         dest.writeByte(this.isMuted ? (byte) 1 : (byte) 0);
     }
 
@@ -148,15 +179,18 @@ public class TAPRoomModel implements Parcelable {
         this.roomID = in.readString();
         this.roomName = in.readString();
         this.roomColor = in.readString();
-        this.roomImage = in.readParcelable(TAPImageURL.class.getClassLoader());
         this.roomType = in.readInt();
         this.unreadCount = in.readInt();
+        this.deletedTimestamp = in.readLong();
+        this.isRoomDeleted = in.readByte() != 0;
+        this.roomImage = in.readParcelable(TAPImageURL.class.getClassLoader());
         this.groupParticipants = in.createTypedArrayList(TAPUserModel.CREATOR);
         this.numOfParticipants = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.admins = in.createStringArrayList();
         this.isMuted = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<TAPRoomModel> CREATOR = new Parcelable.Creator<TAPRoomModel>() {
+    public static final Creator<TAPRoomModel> CREATOR = new Creator<TAPRoomModel>() {
         @Override
         public TAPRoomModel createFromParcel(Parcel source) {
             return new TAPRoomModel(source);

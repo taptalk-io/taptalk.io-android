@@ -5,13 +5,13 @@
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_black"
+    android:background="@color/tapBlack"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity">
 
     <VideoView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,10 +23,11 @@
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/tap_bg_b3474747_rounded_16dp_ripple"
-        android:padding="14dp"
-        android:src="@drawable/tap_ic_close_grey_small"
-        android:tint="@color/tap_transparent_white_60"
+        android:alpha="0.7"
+        android:background="@drawable/tap_bg_474747_rounded_16dp_ripple"
+        android:padding="9dp"
+        android:src="@drawable/tap_ic_close_grey"
+        android:tint="@color/tapWhite"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,10 +37,11 @@
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/tap_bg_b3474747_rounded_16dp_ripple"
-        android:padding="12dp"
-        android:src="@drawable/tap_ic_save_white"
-        android:tint="@color/tap_transparent_white_60"
+        android:alpha="0.7"
+        android:background="@drawable/tap_bg_474747_rounded_16dp_ripple"
+        android:padding="8dp"
+        android:src="@drawable/tap_ic_save_orange"
+        android:tint="@color/tapWhite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -49,9 +51,11 @@
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/tap_bg_b3474747_rounded_16dp_ripple"
+        android:alpha="0.7"
+        android:background="@drawable/tap_bg_474747_rounded_16dp_ripple"
         android:padding="14dp"
         android:src="@drawable/tap_ic_volume_on"
+        android:tint="@color/tapWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -81,26 +85,37 @@
             android:id="@+id/seek_bar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:indeterminateTint="@color/tap_white"
-            android:max="100"
+            android:indeterminateTint="@color/tapWhite"
+            android:max="10000"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:progressBackgroundTint="@color/tap_white"
-            android:progressTint="@color/tap_transparent_white_40"
-            android:thumbTint="@color/tap_white"
+            android:progressBackgroundTint="@color/tapWhite"
+            android:progressTint="@color/tapTransparentWhite40"
+            android:thumbTint="@color/tapWhite"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/tv_duration"
-            app:layout_constraintStart_toEndOf="@id/tv_current_time"
+            app:layout_constraintEnd_toStartOf="@id/tv_duration_dummy"
+            app:layout_constraintStart_toEndOf="@id/tv_current_time_dummy"
             app:layout_constraintTop_toTopOf="parent"
             tools:progress="40" />
 
         <TextView
             android:id="@+id/tv_current_time"
-            style="@style/TapMessageStatus"
+            style="@style/tapVideoPlayerTimeLabelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tv_current_time_dummy"
+            app:layout_constraintStart_toStartOf="@id/tv_current_time_dummy"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="04:12" />
+
+        <TextView
+            android:id="@+id/tv_current_time_dummy"
+            style="@style/tapVideoPlayerTimeLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:textColor="@color/tap_transparent_white_60"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/seek_bar"
             app:layout_constraintStart_toStartOf="parent"
@@ -109,11 +124,22 @@
 
         <TextView
             android:id="@+id/tv_duration"
-            style="@style/TapMessageStatus"
+            style="@style/tapVideoPlayerTimeLabelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tv_duration_dummy"
+            app:layout_constraintStart_toStartOf="@id/tv_duration_dummy"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="10:53" />
+
+        <TextView
+            android:id="@+id/tv_duration_dummy"
+            style="@style/tapVideoPlayerTimeLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
-            android:textColor="@color/tap_transparent_white_60"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/seek_bar"
@@ -122,43 +148,6 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <FrameLayout
-        android:id="@+id/fl_loading"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/tap_transparent_charcoal_40"
-        android:visibility="gone">
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:layout_gravity="center"
-            android:background="@drawable/tap_bg_white_rounded_6dp">
-
-            <ImageView
-                android:id="@+id/iv_saving"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_marginBottom="4dp"
-                android:src="@drawable/tap_ic_checklist_pumpkin"
-                android:tint="@color/colorPrimaryDark"
-                app:layout_constraintBottom_toTopOf="@+id/tv_loading_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_loading_text"
-                style="@style/TapLoadingText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:text="@string/tap_saving"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-        </android.support.constraint.ConstraintLayout>
-
-    </FrameLayout>
+    <include layout="@layout/tap_layout_popup_loading_screen" />
 
 </android.support.constraint.ConstraintLayout>

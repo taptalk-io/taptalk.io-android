@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tap_white_f3"
-    tools:context=".View.Activity.TAPBlockedListActivity">
+    android:background="@color/tapDefaultBackgroundColor"
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_white"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground">
 
@@ -21,8 +21,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_back_white"
-            android:tint="@color/tap_greenBlue"
+            android:src="@drawable/tap_ic_chevron_left_white"
+            android:tint="@color/tapIconNavBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,10 +30,13 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/TapToolbarTitle"
+            style="@style/tapNavBarTitleLabelStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="?attr/actionBarSize"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             android:text="@string/tap_blocked_list"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -143,7 +143,7 @@ public class SwipeBackLayout extends ConstraintLayout {
         mDragHelper = ViewDragHelper.create(this, new ViewDragCallback());
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SwipeBackLayout, defStyle,
-                R.style.SwipeBackLayout);
+                R.style.tapSwipeBackLayout);
 
         int edgeSize = a.getDimensionPixelSize(R.styleable.SwipeBackLayout_edge_size, -1);
         if (edgeSize > 0)

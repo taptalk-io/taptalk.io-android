@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tap_white_f8"
+    android:background="@color/tapDefaultBackgroundColor"
     android:descendantFocusability="blocksDescendants"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity">
 
@@ -13,7 +13,7 @@
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/tap_white"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
         android:elevation="2dp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -22,9 +22,9 @@
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="20dp"
-            android:src="@drawable/tap_ic_close_pumpkin_orange"
-            android:tint="@color/colorPrimaryDark"
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_close_grey"
+            android:tint="@color/tapIconNavBarCloseButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,9 +32,12 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/TapToolbarTitle"
+            style="@style/tapNavBarTitleLabelStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
             android:text="@string/tap_new_chat"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_search"
@@ -47,8 +50,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_search_pumpkin_orange"
-            android:tint="@color/colorPrimaryDark"
+            android:src="@drawable/tap_ic_search_orange"
+            android:tint="@color/tapIconNavBarMagnifier"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_title"
@@ -86,7 +89,7 @@
                 android:id="@+id/cl_button_new_contact"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/tap_white"
+                android:background="@color/tapWhite"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical">
 
@@ -94,31 +97,32 @@
                     android:id="@+id/iv_new_contact"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_new_contact_pumpkin_orange"
-                    android:tint="@color/colorPrimaryDark"
+                    android:layout_marginStart="14dp"
+                    android:src="@drawable/tap_ic_new_contact_orange"
+                    android:tint="@color/tapIconMenuNewContact"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_new_contact"
-                    style="@style/TapMenuLabel"
+                    style="@style/tapNewChatMenuLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="10dp"
                     android:text="@string/tap_new_contact"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/iv_new_contact"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.529" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginEnd="16dp"
-                    android:src="@drawable/tap_ic_arrow_right_pumpkin"
-                    android:tint="@color/tap_grey_9b"
+                    android:src="@drawable/tap_ic_chevron_right_grey"
+                    android:tint="@color/tapIconChevronRightGray"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -128,33 +132,33 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/tap_grey_ea" />
+                android:background="@color/tapGreyEa" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_button_scan_qr"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/tap_white"
+                android:background="@color/tapWhite"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical">
 
                 <ImageView
                     android:id="@+id/iv_scan_qr"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_scan_pumpkin_orange"
-                    android:tint="@color/colorPrimaryDark"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="14dp"
+                    android:src="@drawable/tap_ic_scan_qr_orange"
+                    android:tint="@color/tapIconMenuScanQRCode"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_scan_qr"
-                    style="@style/TapMenuLabel"
+                    style="@style/tapNewChatMenuLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="10dp"
                     android:text="@string/tap_scan_qr_code"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/iv_scan_qr"
@@ -165,39 +169,44 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginEnd="16dp"
-                    android:src="@drawable/tap_ic_arrow_right_pumpkin"
-                    android:tint="@color/tap_grey_9b"
+                    android:src="@drawable/tap_ic_chevron_right_grey"
+                    android:tint="@color/tapIconChevronRightGray"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </android.support.constraint.ConstraintLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/tapGreyEa" />
+
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_button_new_group"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@color/tap_white"
+                android:background="@color/tapWhite"
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="start|center_vertical">
 
                 <ImageView
                     android:id="@+id/iv_new_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/tap_ic_new_group_pumpkin_orange"
-                    android:tint="@color/colorPrimaryDark"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="14dp"
+                    android:src="@drawable/tap_ic_new_group_orange"
+                    android:tint="@color/tapIconMenuCreateNewGroup"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_new_group"
-                    style="@style/TapMenuLabel"
+                    style="@style/tapNewChatMenuLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="10dp"
                     android:text="@string/tap_new_group"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/iv_new_group"
@@ -208,8 +217,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginEnd="16dp"
-                    android:src="@drawable/tap_ic_arrow_right_pumpkin"
-                    android:tint="@color/tap_grey_9b"
+                    android:src="@drawable/tap_ic_chevron_right_grey"
+                    android:tint="@color/tapIconChevronRightGray"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -219,7 +228,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/tap_grey_ea" />
+                android:background="@color/tapGreyEa" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_contact_list"
@@ -241,16 +250,18 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/TapTextButtonDescription"
+                    style="@style/tapInfoLabelBodyStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:text="@string/tap_cant_find_contact" />
 
                 <TextView
-                    style="@style/TapTextButtonPrimaryDark"
+                    style="@style/tapClickableLabelStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:gravity="center"
                     android:text="@string/tap_view_blocked_contacts" />
 
             </LinearLayout>
@@ -263,7 +274,7 @@
         android:id="@+id/fl_sync"
         android:layout_width="match_parent"
         android:layout_height="62dp"
-        android:background="@color/tap_white"
+        android:background="@color/tapWhite"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/nsv_new_chat">
@@ -271,14 +282,14 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/tap_grey_dc" />
+            android:background="@color/tapGreyDc" />
 
         <LinearLayout
             android:id="@+id/ll_btn_sync"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:background="@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_rounded_6dp_ripple"
+            android:background="@drawable/tap_bg_button_active_ripple"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -286,18 +297,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/tap_ic_sync_white" />
+                android:src="@drawable/tap_ic_sync_white"
+                android:tint="@color/tapButtonIconColor" />
 
             <TextView
+                style="@style/tapButtonLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                android:fontFamily="@font/tap_font_pt_root_bold"
-                android:text="@string/tap_sync_contacts_now"
-                android:textColor="@color/tap_white"
-                android:textSize="14sp" />
+                android:gravity="center"
+                android:text="@string/tap_sync_contacts_now" />
 
         </LinearLayout>
 

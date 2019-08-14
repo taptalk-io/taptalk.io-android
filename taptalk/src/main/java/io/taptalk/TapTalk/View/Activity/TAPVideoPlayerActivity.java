@@ -1,7 +1,10 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,8 +12,10 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -25,39 +30,34 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
-import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.ViewModel.TAPVideoPlayerViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO;
 
-public class TAPVideoPlayerActivity extends TAPBaseActivity {
+public class TAPVideoPlayerActivity extends AppCompatActivity {
 
     private final String TAG = TAPVideoPlayerActivity.class.getSimpleName();
 
     private FrameLayout flLoading;
     private ConstraintLayout clContainer, clFooter;
     private VideoView videoView;
-    private TextView tvCurrentTime, tvDuration, tvLoadingText;
+    private TextView tvCurrentTime, tvCurrentTimeDummy, tvDuration, tvDurationDummy, tvLoadingText;
     private ImageView ivButtonClose, ivButtonSave, ivButtonMute, ivButtonPlayPause, ivSaving;
     private SeekBar seekBar;
 
-    private TAPMessageModel message;
-    private Uri videoUri;
-    private MediaPlayer mediaPlayer;
-    private Timer durationTimer, hidePauseButtonTimer;
-    private int duration, pausedPosition;
-    private float mediaVolume = 1f;
-    private boolean isVideoPlaying, isSeeking, isFirstLoadFinished;
+    private TAPVideoPlayerViewModel vm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_video_player);
 
-        receiveIntent();
+        initViewModel();
         initView();
+        updateVideoViewParams();
         loadVideo();
     }
 
@@ -71,7 +71,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     protected void onPause() {
         super.onPause();
         pauseVideo();
-        TAPDataManager.getInstance().saveMediaVolumePreference(mediaVolume);
+        TAPDataManager.getInstance().saveMediaVolumePreference(vm.getMediaVolume());
     }
 
     @Override
@@ -83,19 +83,38 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         }
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateVideoViewParams();
+    }
+
+    private void initViewModel() {
+        vm = ViewModelProviders.of(this).get(TAPVideoPlayerViewModel.class);
+        String uriString = getIntent().getStringExtra(URI);
+        vm.setMessage(getIntent().getParcelableExtra(MESSAGE));
+        if (null != uriString) {
+            vm.setVideoUri(Uri.parse(uriString));
+        } else {
+            onBackPressed();
+        }
+    }
+
     private void initView() {
         flLoading = findViewById(R.id.fl_loading);
         clContainer = findViewById(R.id.cl_container);
         clFooter = findViewById(R.id.cl_footer);
         videoView = findViewById(R.id.video_view);
         tvCurrentTime = findViewById(R.id.tv_current_time);
+        tvCurrentTimeDummy = findViewById(R.id.tv_current_time_dummy);
         tvDuration = findViewById(R.id.tv_duration);
+        tvDurationDummy = findViewById(R.id.tv_duration_dummy);
         tvLoadingText = findViewById(R.id.tv_loading_text);
         ivButtonClose = findViewById(R.id.iv_button_close);
         ivButtonSave = findViewById(R.id.iv_button_save);
         ivButtonMute = findViewById(R.id.iv_button_mute);
         ivButtonPlayPause = findViewById(R.id.iv_button_play_pause);
-        ivSaving = findViewById(R.id.iv_saving);
+        ivSaving = findViewById(R.id.iv_loading_image);
         seekBar = findViewById(R.id.seek_bar);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
@@ -103,83 +122,77 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         ivButtonPlayPause.setOnClickListener(v -> onPlayOrPauseButtonTapped());
         clContainer.setOnClickListener(v -> onVideoTapped());
 
-        if (null == message) {
+        if (null == vm.getMessage()) {
             ivButtonSave.setVisibility(View.GONE);
         } else {
             ivButtonSave.setOnClickListener(saveButtonListener);
         }
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                tvCurrentTime.setText(TAPUtils.getInstance().getMediaDurationString(videoView.getCurrentPosition(), duration));
-                if (isSeeking) {
-                    videoView.seekTo(duration * seekBar.getProgress() / 100);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                isSeeking = true;
-                if (isVideoPlaying) {
-                    videoView.pause();
-                    stopProgressTimer();
-                }
-                videoView.seekTo(duration * seekBar.getProgress() / 100);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                isSeeking = false;
-                videoView.seekTo(duration * seekBar.getProgress() / 100);
-            }
-        });
+        seekBar.setOnSeekBarChangeListener(seekBarListener);
     }
 
-    private void receiveIntent() {
-        String uriString = getIntent().getStringExtra(URI);
-        message = getIntent().getParcelableExtra(MESSAGE);
-        Log.e(TAG, "open video: " + uriString);
-        if (null != uriString) {
-            videoUri = Uri.parse(uriString);
+    private void updateVideoViewParams() {
+        // Get video data
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(TAPVideoPlayerActivity.this, vm.getVideoUri());
+        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        int width, height;
+        if (rotation.equals("90") || rotation.equals("270")) {
+            // Swap width and height when video is rotated
+            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
         } else {
-            onBackPressed();
+            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
         }
+
+        // Fix videoView layout params
+        float videoRatio = (float) width / (float) height;
+        float screenRatio = (float) TAPUtils.getInstance().getScreenWidth() / (float) TAPUtils.getInstance().getScreenHeight();
+        if (screenRatio > videoRatio) {
+            videoView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            videoView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            videoView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+            videoView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+
+        retriever.release();
     }
 
     private void loadVideo() {
-        videoView.setVideoURI(videoUri);
+        videoView.setVideoURI(vm.getVideoUri());
         videoView.setOnPreparedListener(onPreparedListener);
         videoView.setOnCompletionListener(onCompletionListener);
     }
 
     private void startProgressTimer() {
-        if (null != durationTimer) {
+        if (null != vm.getDurationTimer()) {
             return;
         }
-        durationTimer = new Timer();
-        durationTimer.schedule(new TimerTask() {
+        vm.setDurationTimer(new Timer());
+        vm.getDurationTimer().schedule(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(() -> seekBar.setProgress(videoView.getCurrentPosition() * 100 / duration));
+                runOnUiThread(() -> seekBar.setProgress(vm.getMediaPlayer().getCurrentPosition() * seekBar.getMax() / vm.getDuration()));
             }
-        }, 0, 1000L);
+        }, 0, 10L);
         startHidePauseButtonTimer();
     }
 
     private void stopProgressTimer() {
-        if (null == durationTimer) {
+        if (null == vm.getDurationTimer()) {
             return;
         }
-        durationTimer.cancel();
-        durationTimer = null;
+        vm.getDurationTimer().cancel();
+        vm.setDurationTimer(null);
         stopHidePauseButtonTimer();
     }
 
     private void startHidePauseButtonTimer() {
         stopHidePauseButtonTimer();
-        hidePauseButtonTimer = new Timer();
-        hidePauseButtonTimer.schedule(new TimerTask() {
+        vm.setHidePauseButtonTimer(new Timer());
+        vm.getHidePauseButtonTimer().schedule(new TimerTask() {
             @Override
             public void run() {
                 runOnUiThread(() -> hideLayout(ivButtonPlayPause));
@@ -188,11 +201,11 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     private void stopHidePauseButtonTimer() {
-        if (null == hidePauseButtonTimer) {
+        if (null == vm.getHidePauseButtonTimer()) {
             return;
         }
-        hidePauseButtonTimer.cancel();
-        hidePauseButtonTimer = null;
+        vm.getHidePauseButtonTimer().cancel();
+        vm.setHidePauseButtonTimer(null);
     }
 
     private void onVideoTapped() {
@@ -202,19 +215,19 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             hideLayout(ivButtonClose);
             hideLayout(ivButtonMute);
             hideLayout(ivButtonPlayPause);
-            if (null != message) {
+            if (null != vm.getMessage()) {
                 hideLayout(ivButtonSave);
             }
         } else {
             // Show UI
-            showLayout(clFooter);
-            showLayout(ivButtonClose);
-            showLayout(ivButtonMute);
-            showLayout(ivButtonPlayPause);
-            if (null != message) {
-                showLayout(ivButtonSave);
+            showLayout(clFooter, 1f);
+            showLayout(ivButtonClose, 0.7f);
+            showLayout(ivButtonMute, 0.7f);
+            showLayout(ivButtonPlayPause, 1f);
+            if (null != vm.getMessage()) {
+                showLayout(ivButtonSave, 0.7f);
             }
-            if (isVideoPlaying) {
+            if (vm.isVideoPlaying()) {
                 startHidePauseButtonTimer();
             }
         }
@@ -228,30 +241,30 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
                 .start();
     }
 
-    private void showLayout(View view) {
+    private void showLayout(View view, float alpha) {
         view.setAlpha(0f);
         view.setVisibility(View.VISIBLE);
         view.animate()
-                .alpha(1f)
+                .alpha(alpha)
                 .setDuration(200L)
                 .start();
     }
 
     private void onMuteButtonTapped() {
-        if (mediaVolume > 0f) {
+        if (vm.getMediaVolume() > 0f) {
             // Mute video
-            mediaVolume = 0f;
+            vm.setMediaVolume(0f);
             ivButtonMute.setImageDrawable(getDrawable(R.drawable.tap_ic_volume_off));
         } else {
             // Turn sound on
-            mediaVolume = 1f;
+            vm.setMediaVolume(1f);
             ivButtonMute.setImageDrawable(getDrawable(R.drawable.tap_ic_volume_on));
         }
-        mediaPlayer.setVolume(mediaVolume, mediaVolume);
+        vm.getMediaPlayer().setVolume(vm.getMediaVolume(), vm.getMediaVolume());
     }
 
     private void onPlayOrPauseButtonTapped() {
-        if (isVideoPlaying) {
+        if (vm.isVideoPlaying()) {
             pauseVideo();
         } else {
             resumeVideo();
@@ -259,21 +272,21 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     private void pauseVideo() {
-        isVideoPlaying = false;
-        pausedPosition = videoView.getCurrentPosition();
-        videoView.pause();
+        vm.setVideoPlaying(false);
+        vm.setPausedPosition(vm.getMediaPlayer().getCurrentPosition());
+        vm.getMediaPlayer().pause();
         ivButtonPlayPause.setImageDrawable(getDrawable(R.drawable.tap_ic_button_play));
         stopProgressTimer();
     }
 
     private void resumeVideo() {
-        isVideoPlaying = true;
-        videoView.seekTo(pausedPosition);
+        vm.setVideoPlaying(true);
+        vm.getMediaPlayer().seekTo(vm.getPausedPosition());
         ivButtonPlayPause.setImageDrawable(getDrawable(R.drawable.tap_ic_button_pause));
     }
 
     private void saveVideo() {
-        if (null == message) {
+        if (null == vm.getMessage()) {
             return;
         }
         if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -281,13 +294,13 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
         } else {
             showLoading();
-            TAPFileDownloadManager.getInstance().writeFileToDisk(this, message, saveVideoListener);
+            TAPFileDownloadManager.getInstance().writeFileToDisk(this, vm.getMessage(), saveVideoListener);
         }
     }
 
     private void showLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_orange));
+            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }
@@ -320,42 +333,84 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     private MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
-            if (!isFirstLoadFinished) {
+            if (!vm.isFirstLoadFinished()) {
                 // Play video on first load
-                videoView.start();
-                duration = videoView.getDuration();
-                isVideoPlaying = true;
+                mediaPlayer.start();
+                vm.setDuration(mediaPlayer.getDuration());
+                vm.setVideoPlaying(true);
                 TAPVideoPlayerActivity.this.startProgressTimer();
-                mediaVolume = TAPDataManager.getInstance().getMediaVolumePreference();
-                ivButtonMute.setImageDrawable(mediaVolume > 0f ? TAPVideoPlayerActivity.this.getDrawable(R.drawable.tap_ic_volume_on) : TAPVideoPlayerActivity.this.getDrawable(R.drawable.tap_ic_volume_off));
-                tvDuration.setText(TAPUtils.getInstance().getMediaDurationString(duration, duration));
-                isFirstLoadFinished = true;
+                vm.setMediaVolume(TAPDataManager.getInstance().getMediaVolumePreference());
+                ivButtonMute.setImageDrawable(vm.getMediaVolume() > 0f ? TAPVideoPlayerActivity.this.getDrawable(R.drawable.tap_ic_volume_on) : TAPVideoPlayerActivity.this.getDrawable(R.drawable.tap_ic_volume_off));
+                tvDuration.setText(TAPUtils.getInstance().getMediaDurationString(vm.getDuration(), vm.getDuration()));
+                vm.setFirstLoadFinished(true);
             }
-            videoView.seekTo(pausedPosition);
-            mediaPlayer.setVolume(mediaVolume, mediaVolume);
-            mediaPlayer.setOnSeekCompleteListener(mediaPlayer1 -> {
-                tvCurrentTime.setText(TAPUtils.getInstance().getMediaDurationString(videoView.getCurrentPosition(), duration));
-                if (!isSeeking && isVideoPlaying) {
-                    videoView.start();
-                    TAPVideoPlayerActivity.this.startProgressTimer();
-                    pausedPosition = 0;
-                } else {
-                    pausedPosition = videoView.getCurrentPosition();
-                    if (pausedPosition >= duration) {
-                        pausedPosition = 0;
-                    }
+            tvCurrentTimeDummy.setText(TAPUtils.getInstance().getMediaDurationStringDummy(vm.getDuration()));
+            tvDurationDummy.setText(TAPUtils.getInstance().getMediaDurationStringDummy(vm.getDuration()));
+            mediaPlayer.seekTo(vm.getPausedPosition());
+            mediaPlayer.setVolume(vm.getMediaVolume(), vm.getMediaVolume());
+            mediaPlayer.setOnSeekCompleteListener(onSeekListener);
+            vm.setMediaPlayer(mediaPlayer);
+        }
+    };
+
+    private MediaPlayer.OnSeekCompleteListener onSeekListener = new MediaPlayer.OnSeekCompleteListener() {
+        @Override
+        public void onSeekComplete(MediaPlayer mediaPlayer) {
+            try {
+                tvCurrentTime.setText(TAPUtils.getInstance().getMediaDurationString(mediaPlayer.getCurrentPosition(), vm.getDuration()));
+            } catch (Exception e) {
+                Log.e(TAG, "onProgressChanged: " + e.getMessage());
+            }
+            if (!vm.isSeeking() && vm.isVideoPlaying()) {
+                mediaPlayer.start();
+                TAPVideoPlayerActivity.this.startProgressTimer();
+            } else {
+                vm.setPausedPosition(mediaPlayer.getCurrentPosition());
+                if (vm.getPausedPosition() >= vm.getDuration()) {
+                    vm.setPausedPosition(0);
                 }
-            });
-            TAPVideoPlayerActivity.this.mediaPlayer = mediaPlayer;
+            }
         }
     };
 
     private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
-            TAPVideoPlayerActivity.this.pauseVideo();
-            tvCurrentTime.setText(TAPUtils.getInstance().getMediaDurationString(duration, duration));
-            pausedPosition = 0;
+            pauseVideo();
+            vm.getMediaPlayer().seekTo(vm.getDuration());
+            seekBar.setProgress(seekBar.getMax());
+        }
+    };
+
+    private SeekBar.OnSeekBarChangeListener seekBarListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            try {
+                tvCurrentTime.setText(TAPUtils.getInstance().getMediaDurationString(vm.getMediaPlayer().getCurrentPosition(), vm.getDuration()));
+            } catch (Exception e) {
+                Log.e(TAG, "onProgressChanged: " + e.getMessage());
+            }
+            if (vm.isSeeking()) {
+                //videoView.seekTo(vm.getDuration() * seekBar.getProgress() / seekBar.getMax());
+                vm.getMediaPlayer().seekTo(vm.getDuration() * seekBar.getProgress() / seekBar.getMax());
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            vm.setSeeking(true);
+            if (vm.isVideoPlaying()) {
+                vm.getMediaPlayer().pause();
+                stopProgressTimer();
+            }
+            //videoView.seekTo(vm.getDuration() * seekBar.getProgress() / seekBar.getMax());
+            vm.getMediaPlayer().seekTo(vm.getDuration() * seekBar.getProgress() / seekBar.getMax());
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            vm.setSeeking(false);
+            vm.getMediaPlayer().seekTo(vm.getDuration() * seekBar.getProgress() / seekBar.getMax());
         }
     };
 
@@ -366,7 +421,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         }
 
         @Override
-        public void onFailure(String errorMessage) {
+        public void onError(String errorMessage) {
             runOnUiThread(() -> {
                 hideLoading();
                 Toast.makeText(TAPVideoPlayerActivity.this, errorMessage, Toast.LENGTH_SHORT).show();

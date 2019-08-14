@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:background="@color/tap_white"
+    android:background="@color/tapWhite"
     android:elevation="2dp"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="horizontal">
@@ -14,15 +15,14 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
-        android:scaleType="center"
-        android:src="@drawable/tap_ic_notifications_pumpkin_orange"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/tap_ic_search_grey_small" />
 
     <TextView
         android:id="@+id/tv_menu_label"
-        style="@style/TapMenuLabel"
+        style="@style/tapChatProfileMenuLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -31,7 +31,7 @@
         app:layout_constraintStart_toEndOf="@id/iv_menu_icon"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Switch
+    <android.support.v7.widget.SwitchCompat
         android:id="@+id/sw_menu_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,12 +39,25 @@
         android:checked="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/iv_right_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/tap_ic_chevron_right_grey"
+        android:tint="@color/tapIconChevronRightGray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/tap_grey_ea"
+        android:background="@color/tapGreyDc"
         android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 

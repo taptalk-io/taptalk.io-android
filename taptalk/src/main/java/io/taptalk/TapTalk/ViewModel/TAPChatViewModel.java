@@ -34,6 +34,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private static final String TAG = TAPChatViewModel.class.getSimpleName();
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, ongoingOrders;
+    private LinkedHashMap<String, TAPUserModel> groupTyping;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
@@ -347,12 +348,41 @@ public class TAPChatViewModel extends AndroidViewModel {
         isActiveUserTyping = activeUserTyping;
     }
 
-    public boolean isOtherUserTyping() {
-        return isOtherUserTyping;
+    public LinkedHashMap<String, TAPUserModel> getGroupTyping() {
+        return null == groupTyping? groupTyping = new LinkedHashMap<>() : groupTyping;
     }
 
-    public void setOtherUserTyping(boolean otherUserTyping) {
-        isOtherUserTyping = otherUserTyping;
+    public void setGroupTyping(LinkedHashMap<String, TAPUserModel> groupTyping) {
+        this.groupTyping = groupTyping;
+    }
+
+    public void removeGroupTyping(String userID) {
+        getGroupTyping().remove(userID);
+    }
+
+    public boolean removeAndCheckIfNeedToDismissTyping(String userID) {
+        if (null == userID || getGroupTyping().containsKey(userID)) return false;
+
+        removeGroupTyping(userID);
+
+        return 0 == getGroupTyping().size();
+    }
+
+    public void addGroupTyping(TAPUserModel typingUsers) {
+        if (null != typingUsers) {
+            getGroupTyping().put(typingUsers.getUserID(), typingUsers);
+        }
+    }
+
+    public int getGroupTypingSize() {
+        return getGroupTyping().size();
+    }
+
+    public String getFirstTypingUserName() {
+        if (0 >= getGroupTypingSize()) return "";
+
+        TAPUserModel firstTypingUser = getGroupTyping().entrySet().iterator().next().getValue();
+        return firstTypingUser.getName().split(" ")[0];
     }
 
     public boolean isCustomKeyboardEnabled() {

@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/tap_bg_white_rounded_10dp"
     android:foreground="?attr/selectableItemBackgroundBorderless"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/tv_location"
+        style="@style/tapLocationPickerSearchResultStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="10dp"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:letterSpacing="0.01"
-        android:lines="1"
         android:ellipsize="end"
-        android:textColor="@color/tap_black_44"
-        android:textSize="13sp"
-        tools:text="Jalan Kyai Maja No. 25C, Gunung, Kebayoran Lama"/>
+        android:maxLines="1"
+        tools:text="Jalan Kyai Maja No. 25C, Gunung, Kebayoran Lama" />
+
 </LinearLayout>

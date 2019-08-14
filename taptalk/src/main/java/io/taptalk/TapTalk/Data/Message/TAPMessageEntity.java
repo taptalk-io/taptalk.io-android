@@ -1,11 +1,14 @@
 package io.taptalk.TapTalk.Data.Message;
 
 import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import io.taptalk.TapTalk.Model.TAPMessageTargetModel;
 
 @Entity(tableName = "Message_Table", indices = @Index(value = "roomID"))
 public class TAPMessageEntity {
@@ -48,6 +51,8 @@ public class TAPMessageEntity {
     @Nullable @ColumnInfo(name = "userCreated") private Long userCreated;
     @Nullable @ColumnInfo(name = "userUpdated") private Long userUpdated;
     @Nullable @ColumnInfo(name = "userDeleted") private Long userDeleted;
+    @Nullable @ColumnInfo(name = "action") private String action;
+    @Nullable @Embedded private TAPMessageTargetModel target;
 
     public TAPMessageEntity(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
                             String recipientID, Integer type, Long created,
@@ -61,7 +66,8 @@ public class TAPMessageEntity {
                             @Nullable String username, String userImage, @Nullable String userEmail,
                             @Nullable String userPhone, @Nullable String userRole, @Nullable Long lastLogin,
                             @Nullable Long lastActivity, @Nullable Boolean requireChangePassword,
-                            @Nullable Long userCreated, @Nullable Long userUpdated, @Nullable Long userDeleted) {
+                            @Nullable Long userCreated, @Nullable Long userUpdated, @Nullable Long userDeleted,
+                            @Nullable String action, @Nullable TAPMessageTargetModel target) {
         this.messageID = messageID;
         this.localID = localID;
         this.filterID = filterID;
@@ -100,6 +106,8 @@ public class TAPMessageEntity {
         this.userCreated = userCreated;
         this.userUpdated = userUpdated;
         this.userDeleted = userDeleted;
+        this.action = action;
+        this.target = target;
     }
 
     @Nullable
@@ -433,5 +441,23 @@ public class TAPMessageEntity {
 
     public void setUserDeleted(@Nullable Long userDeleted) {
         this.userDeleted = userDeleted;
+    }
+
+    @Nullable
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(@Nullable String action) {
+        this.action = action;
+    }
+
+    @Nullable
+    public TAPMessageTargetModel getTarget() {
+        return target;
+    }
+
+    public void setTarget(@Nullable TAPMessageTargetModel target) {
+        this.target = target;
     }
 }

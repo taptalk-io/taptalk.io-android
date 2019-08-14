@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:animateLayoutChanges="true"
-        android:background="@color/tap_white"
+        android:background="@color/tapWhite"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toTopOf="parent">
@@ -20,33 +20,39 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_back_orange"
-            android:tint="@color/colorPrimaryDark"
+            android:src="@drawable/tap_ic_chevron_left_white"
+            android:tint="@color/tapIconNavBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/TapSearchBar"
+            style="@style/tapNavBarSearchTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_search_chat_placeholder"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:textCursorDrawable="@drawable/tap_login_color_cursor"
+            android:textCursorDrawable="@drawable/tap_cursor_color"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_button_action"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_clear_text"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/iv_button_action"
+            android:id="@+id/iv_button_clear_text"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_close_grey"
+            android:tint="@color/tapIconClearTextButton"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -57,7 +63,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/tap_white_f3"
+        android:background="@color/tapDefaultBackgroundColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
 

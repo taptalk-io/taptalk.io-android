@@ -42,6 +42,12 @@ public class TAPOldDataManager {
         }).start();
     }
 
+    public void startCleanRoomPhysicalData(String roomId, TAPDatabaseListener listener) {
+        new Thread(() -> {
+            cleanRoomPhysicalData(roomId, listener);
+        }).start();
+    }
+
     private void autoCleanProcessFromRoomQueryResult(List<TAPMessageEntity> entities, long currentTimestamp) {
         final long[] smallestTimestamp = {TAPTimeFormatter.getInstance().oneMonthAgoTimeStamp(currentTimestamp)};
         for (TAPMessageEntity roomEntity : entities) {
@@ -63,24 +69,25 @@ public class TAPOldDataManager {
                                     @Override
                                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                                         for (TAPMessageEntity message : entities) {
-                                            if (TYPE_IMAGE == message.getType()) {
-                                                try {
-                                                    //apus file image fisiknya
-                                                    HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
-                                                    TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                    Log.e(TAG, "onSelectFinished: ", e);
-                                                }
-                                            } else if (TYPE_VIDEO == message.getType()
-                                                    || TYPE_FILE == message.getType()) {
-                                                //apus file fisiknya
-                                                HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
-                                                if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID))) {
-                                                    TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
-                                                    TAPFileDownloadManager.getInstance().removeFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID));
-                                                }
-                                            }
+//                                            if (TYPE_IMAGE == message.getType()) {
+//                                                try {
+//                                                    //apus file image fisiknya
+//                                                    HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+//                                                    TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
+//                                                } catch (Exception e) {
+//                                                    e.printStackTrace();
+//                                                    Log.e(TAG, "onSelectFinished: ", e);
+//                                                }
+//                                            } else if (TYPE_VIDEO == message.getType()
+//                                                    || TYPE_FILE == message.getType()) {
+//                                                //apus file fisiknya
+//                                                HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+//                                                if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID))) {
+//                                                    TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
+//                                                    TAPFileDownloadManager.getInstance().removeFileMessageUri(roomEntity.getRoomID(), (String) messageData.get(FILE_ID));
+//                                                }
+//                                            }
+                                            TAPDataManager.getInstance().deletePhysicalFile(message);
                                         }
 
                                         TAPDataManager.getInstance().deleteRoomMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener() {
@@ -97,5 +104,33 @@ public class TAPOldDataManager {
                 }
             });
         }
+    }
+
+    private void cleanRoomPhysicalData(String roomId, TAPDatabaseListener listener) {
+        TAPDataManager.getInstance().getRoomMediaMessage(roomId, new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                for (TAPMessageEntity message : entities) {
+                    if (TYPE_IMAGE == message.getType()) {
+                        try {
+                            //apus file image fisiknya
+                            HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+                            TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "onSelectFinished: ", e);
+                        }
+                    } else if (TYPE_VIDEO == message.getType() || TYPE_FILE == message.getType()) {
+                        //apus file fisiknya
+                        HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+                        if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(roomId, (String) messageData.get(FILE_ID))) {
+                            TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(roomId, (String) messageData.get(FILE_ID)), null, null);
+                            TAPFileDownloadManager.getInstance().removeFileMessageUri(roomId, (String) messageData.get(FILE_ID));
+                        }
+                    }
+                }
+                listener.onDeleteFinished();
+            }
+        });
     }
 }

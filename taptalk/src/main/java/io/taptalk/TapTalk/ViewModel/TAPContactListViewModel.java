@@ -19,11 +19,14 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private List<TAPUserModel> contactList;
     private List<TAPUserModel> filteredContacts;
     private List<TAPUserModel> selectedContacts;
+    private List<String> selectedContactsIds;
     private List<List<TAPUserModel>> separatedContacts;
     private TAPImageURL groupImage;
     private String groupName;
+    private String roomID;
     private boolean isSelecting;
     private boolean isFirstContactSyncDone;
+    private int groupSize = 0;
 
     public TAPContactListViewModel(@NonNull Application application) {
         super(application);
@@ -58,6 +61,18 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.selectedContacts = selectedContacts;
     }
 
+    public void setContactListLive(LiveData<List<TAPUserModel>> contactListLive) {
+        this.contactListLive = contactListLive;
+    }
+
+    public List<String> getSelectedContactsIds() {
+        return null == selectedContactsIds? selectedContactsIds = new ArrayList<>() : selectedContactsIds;
+    }
+
+    public void setSelectedContactsIds(List<String> selectedContactsIds) {
+        this.selectedContactsIds = selectedContactsIds;
+    }
+
     public List<List<TAPUserModel>> getSeparatedContacts() {
         return separatedContacts == null ? separatedContacts = new ArrayList<>() : separatedContacts;
     }
@@ -82,6 +97,14 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.groupName = groupName;
     }
 
+    public String getRoomID() {
+        return roomID;
+    }
+
+    public void setRoomID(String roomID) {
+        this.roomID = roomID;
+    }
+
     public boolean isSelecting() {
         return isSelecting;
     }
@@ -96,5 +119,23 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setFirstContactSyncDone(boolean firstContactSyncDone) {
         isFirstContactSyncDone = firstContactSyncDone;
+    }
+
+    public int getGroupSize() {
+        return groupSize;
+    }
+
+    public void setGroupSize(int groupSize) {
+        this.groupSize = groupSize;
+    }
+
+    public void addSelectedContact(TAPUserModel contactModel) {
+        getSelectedContacts().add(contactModel);
+        getSelectedContactsIds().add(contactModel.getUserID());
+    }
+
+    public void removeSelectedContact(TAPUserModel contactModel) {
+        getSelectedContacts().remove(contactModel);
+        getSelectedContactsIds().remove(contactModel.getUserID());
     }
 }

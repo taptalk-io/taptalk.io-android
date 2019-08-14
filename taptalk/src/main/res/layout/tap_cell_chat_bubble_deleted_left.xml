@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <io.taptalk.TapTalk.Helper.CircleImageView
+        android:id="@+id/civ_avatar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/fl_bubble"
+        tools:src="@drawable/tap_bg_circle_9b9b9b" />
+
+    <TextView
+        android:id="@+id/tv_avatar_label"
+        style="@style/tapDefaultRoomAvatarSmallFontStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textAllCaps="true"
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+        app:layout_constraintEnd_toEndOf="@id/civ_avatar"
+        app:layout_constraintStart_toStartOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="@id/civ_avatar"
+        tools:text="A" />
+
+    <FrameLayout
+        android:id="@+id/fl_bubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="64dp"
+        android:elevation="1dp"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/tv_message_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginBottom="8dp"
+        app:layout_goneMarginStart="16dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/tap_bg_chat_bubble_left_default"
+            android:paddingStart="6dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp">
+
+            <TextView
+                android:id="@+id/tv_user_name"
+                style="@style/tapLeftBubbleSenderNameStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toTopOf="@id/iv_deleted_icon"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="User Name" />
+
+            <ImageView
+                android:id="@+id/iv_deleted_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/tap_ic_block_grey"
+                android:tint="@color/tapIconDeletedLeftMessageBubble"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_body"
+                app:layout_constraintEnd_toStartOf="@id/tv_message_body"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_message_body" />
+
+            <TextView
+                android:id="@+id/tv_message_body"
+                style="@style/tapLeftBubbleDeletedMessageBodyStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/tap_this_deleted_message"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/iv_deleted_icon"
+                app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
+
+            <android.support.constraint.Barrier
+                android:id="@+id/barrier_end"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="tv_user_name, tv_message_body" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_message_status"
+        style="@style/tapBubbleMessageStatusStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/fl_bubble"
+        app:layout_constraintTop_toBottomOf="@id/fl_bubble"
+        tools:text="Delivered at 17:05 17/05/2018" />
+
+    <ImageView
+        android:id="@+id/iv_reply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/tap_ic_reply_circle_white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintStart_toEndOf="@id/fl_bubble" />
+
+    <android.support.constraint.Barrier
+        android:id="@+id/barrier_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="fl_bubble" />
+
+</android.support.constraint.ConstraintLayout>

@@ -11,11 +11,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Outline;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.ActivityCompat;
@@ -36,6 +38,7 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -53,13 +56,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
 import io.taptalk.TapTalk.API.Api.TAPApiConnection;
-import io.taptalk.TapTalk.API.View.TapDefaultDataView;
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -76,14 +80,14 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
-import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
+import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.Taptalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
@@ -102,6 +106,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TAPUtils {
 
@@ -250,35 +255,37 @@ public class TAPUtils {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
-    /**
-     * generate random color
-     */
     public int getRandomColor(String s) {
-        int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.pastel_colors);
-        int hash = 7;
-        for (int i = 0, len = s.length(); i < len; i++) {
-            hash = s.codePointAt(i) + (hash << 5) - hash;
-        }
-        int index = Math.abs(hash % randomColors.length);
+        int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.tapDefaultRoomAvatarBackgroundColors);
+        int index = (((int) s.charAt(0)) + s.length()) % randomColors.length;
         return randomColors[index];
     }
 
-    /**
-     * dismiss Keyboard
-     */
+    public String getInitials(String s, int maxLength) {
+        String initials = s.replaceAll("([^\\s])[^\\s]+", "$1").replaceAll("\\s", "");
+        if (initials.length() > maxLength) {
+            return initials.substring(0, maxLength);
+        }
+        return initials;
+    }
+
     public void dismissKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
         if (view == null) {
             view = new View(activity);
         }
+
         Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
         view.clearFocus();
     }
 
-    /**
-     * Show Keyboard
-     */
+    public void dismissKeyboard(Activity activity, View view) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
+        view.clearFocus();
+    }
+
     public void showKeyboard(Activity activity, View view) {
         view.requestFocus();
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -383,34 +390,45 @@ public class TAPUtils {
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false, null);
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, null);
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false, jumpToMessageLocalID);
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
     }
 
     // Open chat room from room list to pass typing status
-    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, boolean isTyping) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), isTyping, null);
+    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, LinkedHashMap<String, TAPUserModel> typingUser) {
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), typingUser, null);
     }
 
     // Open chat room from notification
     public void startChatActivity(Context context, TAPRoomModel roomModel) {
-        startChatActivity(context, roomModel, false, null);
+        startChatActivity(context, roomModel, null, null);
     }
 
-    private void startChatActivity(Context context, TAPRoomModel roomModel, boolean isTyping, @Nullable String jumpToMessageLocalID) {
-        if (TAPDataManager.getInstance().getActiveUser().getUserID().equals(
+    // Open chat room from notification
+    public void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser) {
+        startChatActivity(context, roomModel, typingUser, null);
+    }
+
+    public void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
+        if (TYPE_PERSONAL == roomModel.getRoomType() && TAPDataManager.getInstance().getActiveUser().getUserID().equals(
                 TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
             return;
         }
+
         Activity activity = (Activity) context;
         activity.runOnUiThread(() -> dismissKeyboard(activity));
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TAPChatActivity.class);
         intent.putExtra(ROOM, roomModel);
-        intent.putExtra(IS_TYPING, isTyping);
+
+        if (null != typingUser) {
+            Gson gson = new Gson();
+            String list = gson.toJson(typingUser);
+            intent.putExtra(GROUP_TYPING_MAP, list);
+        }
         if (null != jumpToMessageLocalID) {
             intent.putExtra(JUMP_TO_MESSAGE, jumpToMessageLocalID);
         }
@@ -570,7 +588,7 @@ public class TAPUtils {
             minute = String.format("0%s", minute);
         }
 
-        String second = current == 0? "00" : String.valueOf((current % minuteMs) / secondMs);
+        String second = current == 0 ? "00" : String.valueOf((current % minuteMs) / secondMs);
         if (second.length() < 2) {
             second = String.format("0%s", second);
         }
@@ -584,6 +602,16 @@ public class TAPUtils {
             return String.format("%s:%s:%s", hour, minute, second);
         } else {
             return String.format("%s:%s", minute, second);
+        }
+    }
+
+    public String getMediaDurationStringDummy(int maxDuration) {
+        int hourMs = 1000 * 60 * 60;
+
+        if (maxDuration > hourMs) {
+            return "00-00-0";
+        } else {
+            return "00-00";
         }
     }
 
@@ -689,17 +717,17 @@ public class TAPUtils {
             public void onSelectFinished(TAPUserModel entity) {
                 if (null != entity) {
                     Log.e(TAG, "getUserFromXcUserID onDbSelectFinished: " + TAPUtils.getInstance().toJsonString(entity));
-                    TAPContactManager.getInstance().updateUserDataMap(entity);
+                    TAPContactManager.getInstance().updateUserData(entity);
                     listener.onSelectFinished(entity);
                 } else {
                     // Get user data from API
                     if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
-                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TapDefaultDataView<TAPGetUserResponse>() {
+                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
                             @Override
                             public void onSuccess(TAPGetUserResponse response) {
                                 TAPUserModel userResponse = response.getUser();
                                 Log.e(TAG, "getUserFromXcUserID onApiSuccess: " + TAPUtils.getInstance().toJsonString(userResponse));
-                                TAPContactManager.getInstance().updateUserDataMap(userResponse);
+                                TAPContactManager.getInstance().updateUserData(userResponse);
                                 listener.onSelectFinished(userResponse);
                             }
 
@@ -723,6 +751,14 @@ public class TAPUtils {
                 }
             }
         });
+    }
+
+    public int adjustAlpha(@ColorInt int color, float factor) {
+        int alpha = Math.round(Color.alpha(color) * factor);
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        return Color.argb(alpha, red, green, blue);
     }
 
     /**
@@ -877,7 +913,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
      */
     public void openCustomTabLayout(Activity activity, String url) {
         CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-        intentBuilder.setToolbarColor(activity.getResources().getColor(R.color.tap_purply_two));
+        intentBuilder.setToolbarColor(activity.getResources().getColor(R.color.tapPurplyTwo));
         intentBuilder.setShowTitle(true);
         intentBuilder.setStartAnimations(activity, R.anim.tap_slide_left, R.anim.tap_stay);
         intentBuilder.setExitAnimations(activity, R.anim.tap_stay,
@@ -1004,6 +1040,10 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         view.startAnimation(rotation);
     }
 
+    public void stopViewAnimation(View view) {
+        view.clearAnimation();
+    }
+
 
     public void animateClickButton(View view, Float resize) {
         view.setOnTouchListener((v, event) -> {
@@ -1023,7 +1063,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
         // try to get country code from TelephonyManager service
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if(tm != null) {
+        if (tm != null) {
             // query first getSimCountryIso()
             countryCode = tm.getSimCountryIso();
             if (countryCode != null && countryCode.length() == 2)
@@ -1049,7 +1089,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         }
 
         if (countryCode != null && countryCode.length() == 2)
-            return  countryCode.toLowerCase();
+            return countryCode.toLowerCase();
 
         // general fallback to "us"
         return "id";
@@ -1071,24 +1111,42 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
             // mapping just countries that actually use CDMA networks
             switch (mcc) {
-                case 330: return "PR";
-                case 310: return "US";
-                case 311: return "US";
-                case 312: return "US";
-                case 316: return "US";
-                case 283: return "AM";
-                case 460: return "CN";
-                case 455: return "MO";
-                case 414: return "MM";
-                case 619: return "SL";
-                case 450: return "KR";
-                case 634: return "SD";
-                case 434: return "UZ";
-                case 232: return "AT";
-                case 204: return "NL";
-                case 262: return "DE";
-                case 247: return "LV";
-                case 255: return "UA";
+                case 330:
+                    return "PR";
+                case 310:
+                    return "US";
+                case 311:
+                    return "US";
+                case 312:
+                    return "US";
+                case 316:
+                    return "US";
+                case 283:
+                    return "AM";
+                case 460:
+                    return "CN";
+                case 455:
+                    return "MO";
+                case 414:
+                    return "MM";
+                case 619:
+                    return "SL";
+                case 450:
+                    return "KR";
+                case 634:
+                    return "SD";
+                case 434:
+                    return "UZ";
+                case 232:
+                    return "AT";
+                case 204:
+                    return "NL";
+                case 262:
+                    return "DE";
+                case 247:
+                    return "LV";
+                case 255:
+                    return "UA";
             }
         } catch (ClassNotFoundException ignored) {
         } catch (NoSuchMethodException ignored) {
@@ -1102,5 +1160,13 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
 
     public boolean listEqualsIgnoreOrder(List<TAPUserModel> list1, List<TAPUserModel> list2) {
         return new HashSet<>(list1).equals(new HashSet<>(list2));
+    }
+
+    public static String getFirstWordOfString(String text) {
+        if (text.contains(" ")) {
+            return text.substring(0, text.indexOf(' '));
+        } else {
+            return text;
+        }
     }
 }

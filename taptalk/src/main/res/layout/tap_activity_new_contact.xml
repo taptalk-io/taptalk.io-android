@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/tapDefaultBackgroundColor"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -11,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:animateLayoutChanges="true"
-        android:background="@color/tap_white"
+        android:background="@color/tapWhite"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,8 +23,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_back_orange"
-            android:tint="@color/colorPrimaryDark"
+            android:src="@drawable/tap_ic_chevron_left_white"
+            android:tint="@color/tapIconNavBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/et_search"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,15 +32,19 @@
 
         <EditText
             android:id="@+id/et_search"
-            style="@style/TapSearchBar"
+            style="@style/tapNavBarSearchTextStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_search_by_username"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:textCursorDrawable="@drawable/tap_login_color_cursor"
+            android:textCursorDrawable="@drawable/tap_cursor_color"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_button_cancel"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_clear_text"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_goneMarginEnd="?attr/actionBarSize" />
@@ -49,20 +54,22 @@
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:padding="18dp"
-            android:src="@drawable/tap_ic_loading_progress_circle_orange"
-            android:tint="@color/colorPrimaryDark"
+            android:src="@drawable/tap_ic_loading_progress_circle_white"
+            android:tint="@color/tapIconLoadingProgressPrimary"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/iv_button_cancel"
+            android:id="@+id/iv_button_clear_text"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_close_grey"
+            android:tint="@color/tapIconClearTextButton"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/et_search"
@@ -72,18 +79,14 @@
 
     <TextView
         android:id="@+id/tv_search_username_guide"
+        style="@style/tapInfoLabelBodyStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:fontFamily="@font/tap_font_pt_root_regular"
-        android:gravity="center_horizontal"
-        android:letterSpacing="-0.01"
-        android:lineSpacingExtra="4sp"
+        android:gravity="center"
         android:text="@string/tap_search_username_welcome_message"
-        android:textColor="@color/tap_black_44"
-        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
@@ -107,32 +110,44 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:background="@color/tap_white">
+            android:background="@color/tapWhite">
 
             <ImageView
                 android:id="@+id/iv_expert_cover"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="@color/tap_mediumPurple"
                 android:scaleType="centerCrop"
                 android:visibility="gone"
                 app:layout_constraintDimensionRatio="W, 7:25"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:background="@color/tapColorPrimary" />
 
             <io.taptalk.TapTalk.Helper.CircleImageView
                 android:id="@+id/civ_avatar"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:scaleType="centerCrop"
                 android:visibility="gone"
-                app:civ_border_color="@color/tap_white"
+                app:civ_border_color="@color/tapWhite"
                 app:layout_constraintBottom_toBottomOf="@id/iv_expert_cover"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/iv_expert_cover"
                 app:layout_goneMarginTop="16dp" />
+
+            <TextView
+                android:id="@+id/tv_avatar_label"
+                style="@style/tapDefaultRoomAvatarLargeFontStyle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+                app:layout_constraintEnd_toEndOf="@id/civ_avatar"
+                app:layout_constraintStart_toStartOf="@id/civ_avatar"
+                app:layout_constraintTop_toTopOf="@id/civ_avatar" />
 
             <ImageView
                 android:id="@+id/iv_avatar_icon"
@@ -147,12 +162,14 @@
 
             <TextView
                 android:id="@+id/tv_full_name"
-                style="@style/TapPageTitle"
+                style="@style/tapSearchNewContactResultNameStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"
                 android:maxLines="2"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -162,30 +179,26 @@
 
             <TextView
                 android:id="@+id/tv_username"
+                style="@style/tapSearchNewContactResultUsernameStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:ellipsize="end"
-                android:fontFamily="@font/tap_font_pt_root_regular"
                 android:gravity="center_horizontal"
-                android:letterSpacing="-0.01"
-                android:lineSpacingExtra="3sp"
                 android:maxLines="1"
-                android:textColor="@color/tap_grey_9b"
-                android:textSize="14sp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_full_name"
-                tools:text="Makeup Artist" />
+                tools:text="arsyanafisa" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_button_action"
-                style="@style/TapButton"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
                 android:layout_margin="16dp"
+                android:background="@drawable/tap_bg_button_active_ripple"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -193,32 +206,40 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_username"
                 app:layout_goneMarginTop="19dp">
 
-                <TextView
-                    android:id="@+id/tv_button_text"
-                    style="@style/TapButtonText"
+                <ImageView
+                    android:id="@+id/iv_button_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:src="@drawable/tap_ic_send_message_grey"
+                    android:tint="@color/tapButtonIconColor"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/tv_button_text"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_goneMarginStart="0dp" />
+
+                <TextView
+                    android:id="@+id/tv_button_text"
+                    style="@style/tapButtonLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:gravity="center"
                     android:text="@string/tap_chat_now"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/iv_button_image"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:id="@+id/iv_button_image"
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="4dp"
-                    android:src="@drawable/tap_ic_comment_white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/tv_button_text"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ProgressBar
-                    android:id="@+id/pb_button"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:indeterminateTint="@color/tap_white"
+                    android:id="@+id/iv_loading_progress"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/tap_ic_loading_progress_circle_white"
+                    android:tint="@color/tapIconLoadingProgressWhite"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -244,28 +265,20 @@
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
 
         <TextView
+            style="@style/tapInfoLabelTitleStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:fontFamily="@font/tap_font_pt_root_bold"
-            android:gravity="center_horizontal"
-            android:letterSpacing="-0.02"
-            android:lineSpacingExtra="6sp"
-            android:text="@string/tap_oops"
-            android:textColor="@color/tap_black_19"
-            android:textSize="24sp" />
+            android:gravity="center"
+            android:text="@string/tap_oops" />
 
         <TextView
+            style="@style/tapInfoLabelBodyStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:fontFamily="@font/tap_font_pt_root_regular"
-            android:gravity="center_horizontal"
-            android:letterSpacing="-0.02"
-            android:lineHeight="20sp"
-            android:text="@string/tap_could_not_find_any_results"
-            android:textColor="@color/tap_black_19"
-            android:textSize="14sp" />
+            android:gravity="center"
+            android:text="@string/tap_could_not_find_any_results" />
 
     </LinearLayout>
 
@@ -273,8 +286,7 @@
         android:id="@+id/cl_connection_lost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/tap_parchment"
-        android:orientation="vertical"
+        android:background="@color/tapSearchConnectionLostInfoBackgroundColor"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -289,19 +301,22 @@
             android:layout_marginBottom="10dp"
             android:padding="4dp"
             android:src="@drawable/tap_ic_connection_lost"
+            android:tint="@color/tapIconSearchConnectionLost"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_connection_lost"
-            style="@style/TapRoomName"
+            style="@style/tapSearchConnectionLostTitleStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
+            android:ellipsize="end"
             android:gravity="start"
+            android:maxLines="1"
             android:text="@string/tap_internet_connection_lost"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_connection_lost"
@@ -309,19 +324,20 @@
 
         <TextView
             android:id="@+id/tv_connection_lost_description"
+            style="@style/tapSearchConnectionLostDescriptionStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="10dp"
-            android:fontFamily="@font/tap_font_pt_root_regular"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:text="@string/tap_please_check_your_connection"
-            android:textColor="@color/tap_black_44"
-            android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_connection_lost"
             app:layout_constraintTop_toBottomOf="@id/tv_connection_lost" />
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

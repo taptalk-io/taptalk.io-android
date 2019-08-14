@@ -1,7 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,10 +21,10 @@ public class TAPContactManager {
     private TAPContactManager() {
         //loadAllUserDataFromDatabase();
         TAPConnectionManager.getInstance().addSocketListener(new TAPSocketListener() {
-            @Override
-            public void onSocketConnected() {
-                loadAllUserDataFromDatabase();
-            }
+//            @Override
+//            public void onSocketConnected() {
+//                //loadAllUserDataFromDatabase();
+//            }
 
             @Override
             public void onSocketDisconnected() {
@@ -43,21 +41,27 @@ public class TAPContactManager {
         return getUserDataMap().get(userID);
     }
 
-    public void updateUserDataMap(TAPUserModel user) {
+    public void updateUserData(TAPUserModel user) {
         if (!user.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) && null == getUserDataMap().get(user.getUserID())) {
             // Add new user to map
-            user.setIsContact(0);
+            user.checkAndSetContact(0);
             getUserDataMap().put(user.getUserID(), user);
         } else if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID()) && null != getUserDataMap().get(user.getUserID())) {
             // Update user data in map
             getUserDataMap().get(user.getUserID()).updateValue(user);
         }
+        saveUserDataToDatabase(user);
     }
 
-    public void updateUserDataMap(List<TAPUserModel> users) {
+    public void updateUserData(List<TAPUserModel> users) {
         for (TAPUserModel user : users) {
-            updateUserDataMap(user);
+            updateUserData(user);
         }
+    }
+
+    public void removeFromContacts(String userID) {
+        getUserData(userID).setIsContact(0);
+        TAPDataManager.getInstance().insertMyContactToDatabase(getUserData(userID));
     }
 
     public void saveUserDataToDatabase(TAPUserModel userModel) {
@@ -136,11 +140,9 @@ public class TAPContactManager {
         if ('0' == tempPhone.charAt(0)) {
             tempPhone = tempPhone.replaceFirst("0", getMyCountryCode());
         } else if (!prefix.equals(getMyCountryCode())) {
-            Log.e(TAG, "isUserPhoneNumberAlreadyExist: " + prefix);
             tempPhone = getMyCountryCode() + tempPhone;
         }
 
-        Log.e(TAG, "convertPhoneNumber: " + tempPhone);
         return tempPhone;
     }
 

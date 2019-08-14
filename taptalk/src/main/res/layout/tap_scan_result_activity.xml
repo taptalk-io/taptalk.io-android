@@ -6,18 +6,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@drawable/tap_bg_primarylight_primarydark_270"
+    android:background="@drawable/tap_bg_scan_result_page_background"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity">
 
-    <ProgressBar
-        android:id="@+id/pb_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/iv_loading"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/tap_ic_loading_progress_circle_white"
+        android:tint="@color/tapIconLoadingProgressWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
     <android.support.v7.widget.CardView
         android:id="@+id/cv_result"
@@ -28,28 +29,37 @@
         android:alpha="1"
         android:animateLayoutChanges="true"
         android:clipToPadding="true"
-        android:visibility="gone"
         app:cardCornerRadius="32dp"
         app:cardUseCompatPadding="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+        android:visibility="gone"
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true">
 
-            <ImageView
-                android:id="@+id/iv_button_close"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <FrameLayout
+                android:id="@+id/fl_button_close"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:padding="24dp"
-                android:src="@drawable/tap_close_icon_white_black_rounded"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/tap_bg_circle_close_scan_result"
+                    android:padding="5dp"
+                    android:src="@drawable/tap_ic_close_grey"
+                    android:tint="@color/tapIconCloseScanResult" />
+
+            </FrameLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/cl_avatar"
@@ -66,24 +76,50 @@
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     android:scaleType="centerCrop"
-                    app:civ_border_color="@color/tap_white"
+                    app:civ_border_color="@color/tapWhite"
                     app:civ_border_width="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:background="@color/tap_brightBlue" />
+                    tools:src="@drawable/tap_bg_circle_butterscotch" />
+
+                <TextView
+                    android:id="@+id/tv_my_avatar_label"
+                    style="@style/tapDefaultRoomAvatarLargeFontStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    app:layout_constraintBottom_toBottomOf="@id/civ_my_avatar"
+                    app:layout_constraintEnd_toEndOf="@id/civ_my_avatar"
+                    app:layout_constraintStart_toStartOf="@id/civ_my_avatar"
+                    app:layout_constraintTop_toTopOf="@id/civ_my_avatar"
+                    tools:text="A" />
 
                 <io.taptalk.TapTalk.Helper.CircleImageView
                     android:id="@+id/civ_contact_avatar"
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     android:scaleType="centerCrop"
-                    app:civ_border_color="@color/tap_white"
+                    app:civ_border_color="@color/tapWhite"
                     app:civ_border_width="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:background="@color/tap_red" />
+                    tools:src="@drawable/tap_bg_circle_active" />
+
+                <TextView
+                    android:id="@+id/tv_contact_avatar_label"
+                    style="@style/tapDefaultRoomAvatarLargeFontStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    app:layout_constraintBottom_toBottomOf="@id/civ_contact_avatar"
+                    app:layout_constraintEnd_toEndOf="@id/civ_contact_avatar"
+                    app:layout_constraintStart_toStartOf="@id/civ_contact_avatar"
+                    app:layout_constraintTop_toTopOf="@id/civ_contact_avatar"
+                    tools:text="A" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -108,27 +144,25 @@
                     android:visibility="visible">
 
                     <TextView
-                        android:id="@+id/tv_contact_username"
+                        android:id="@+id/tv_contact_full_name"
+                        style="@style/tapSearchNewContactResultNameStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="13dp"
                         android:ellipsize="end"
-                        android:fontFamily="@font/tap_font_pt_root_bold"
                         android:gravity="center_horizontal"
-                        android:maxLines="2"
-                        android:textColor="@color/tap_black_19"
-                        android:textSize="20sp"
+                        android:maxLines="1"
                         tools:text="NAMANYABERNAMA" />
 
                     <TextView
-                        android:id="@+id/tv_contact_fullname"
+                        android:id="@+id/tv_contact_username"
+                        style="@style/tapSearchNewContactResultUsernameStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:fontFamily="@font/tap_font_pt_root_regular"
+                        android:ellipsize="end"
                         android:gravity="center_horizontal"
-                        android:textColor="@color/tap_grey_9b"
-                        android:textSize="13sp"
+                        android:maxLines="1"
                         tools:text="Vivamus adipiscing fermentum quam " />
 
                 </LinearLayout>
@@ -148,34 +182,30 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="40dp"
                         android:src="@drawable/tap_ic_add_contact"
-                        android:tint="@color/colorPrimaryDark" />
+                        android:tint="@color/tapIconMenuNewContact" />
 
                     <TextView
                         android:id="@+id/tv_add_success"
+                        style="@style/tapInfoLabelBodyStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="41dp"
-                        android:fontFamily="@font/tap_font_pt_root_regular"
-                        android:gravity="center_horizontal"
-                        android:text="@string/you_have_added_to_your_contacts"
-                        android:textColor="@color/tap_black_19"
-                        android:textSize="13sp" />
+                        android:gravity="center"
+                        android:text="@string/you_have_added_to_your_contacts" />
 
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/tv_already_contact"
+                    style="@style/tapInfoLabelBodyStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="64dp"
                     android:layout_marginBottom="40dp"
                     android:alpha="0"
-                    android:fontFamily="@font/tap_font_pt_root_regular"
-                    android:gravity="center_horizontal"
+                    android:gravity="center"
                     android:text="@string/tap_is_already_in_your_contacts"
-                    android:textAlignment="center"
-                    android:textColor="@color/tap_black_19"
                     android:visibility="gone" />
 
             </FrameLayout>
@@ -186,7 +216,7 @@
                 android:layout_height="54dp"
                 android:alpha="1"
                 android:animateLayoutChanges="true"
-                android:background="@drawable/tap_bg_primary_primarydark_stroke_primarydark_1dp_ripple"
+                android:background="@drawable/tap_bg_scan_result_button_ripple"
                 android:gravity="center"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -194,41 +224,41 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/fl_name_card_data">
 
-                <ProgressBar
-                    android:id="@+id/pb_add_loading"
+                <ImageView
+                    android:id="@+id/iv_add_loading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:indeterminateTint="@color/tap_white"
+                    android:src="@drawable/tap_ic_loading_progress_circle_white"
+                    android:tint="@color/tapIconLoadingProgressWhite"
                     android:visibility="gone" />
 
                 <ImageView
                     android:id="@+id/iv_button_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/tap_ic_add_white" />
+                    android:src="@drawable/tap_ic_add_white"
+                    android:tint="@color/tapButtonIconColor" />
 
                 <TextView
                     android:id="@+id/tv_button_title"
+                    style="@style/tapButtonLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
-                    android:fontFamily="@font/tap_font_pt_root_bold"
-                    android:text="@string/tap_add_to_contacts"
-                    android:textColor="@color/tap_white"
-                    android:textSize="15sp" />
+                    android:gravity="center"
+                    android:text="@string/tap_add_to_contacts" />
 
             </LinearLayout>
 
             <TextView
                 android:id="@+id/tv_this_is_you"
+                style="@style/tapClickableLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:gravity="center"
-                android:letterSpacing="0.01"
                 android:text="@string/tap_this_is_you"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="13sp"
+                android:textColor="@color/tapButtonActiveBackgroundGradientDarkColor"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

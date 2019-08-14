@@ -17,6 +17,7 @@ import io.taptalk.TapTalk.Data.TapTalkDatabase;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -121,8 +122,12 @@ public class TAPMessageRepository {
 
     public void getMessageListAsc(final String roomID, final TAPDatabaseListener listener) {
         new Thread(() -> {
-            allMessageList = messageDao.getAllMessageListAsc(roomID);
-            listener.onSelectFinished(allMessageList);
+            try {
+                allMessageList = messageDao.getAllMessageListAsc(roomID);
+                listener.onSelectFinished(allMessageList);
+            } catch (Exception e) {
+                listener.onSelectFailed(e.getMessage());
+            }
         }).start();
     }
 
@@ -139,19 +144,23 @@ public class TAPMessageRepository {
 
     public void getRoomList(String myID, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, final TAPDatabaseListener listener) {
         new Thread(() -> {
-            if (0 < saveMessages.size()) {
-                messageDao.insert(saveMessages);
-                TAPChatManager.getInstance().clearSaveMessages();
-            }
-            List<TAPMessageEntity> entities = messageDao.getAllRoomList();
-
-            if (isCheckUnreadFirst && entities.size() > 0) {
-                Map<String, Integer> unreadMap = new LinkedHashMap<>();
-                for (TAPMessageEntity entity : entities) {
-                    unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+            try {
+                if (0 < saveMessages.size()) {
+                    messageDao.insert(saveMessages);
+                    TAPChatManager.getInstance().clearSaveMessages();
                 }
-                listener.onSelectedRoomList(entities, unreadMap);
-            } else listener.onSelectFinished(entities);
+                List<TAPMessageEntity> entities = messageDao.getAllRoomList();
+
+                if (isCheckUnreadFirst && entities.size() > 0) {
+                    Map<String, Integer> unreadMap = new LinkedHashMap<>();
+                    for (TAPMessageEntity entity : entities) {
+                        unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+                    }
+                    listener.onSelectedRoomList(entities, unreadMap);
+                } else listener.onSelectFinished(entities);
+            } catch (Exception e) {
+                listener.onSelectFailed(e.getMessage());
+            }
         }).start();
     }
 
@@ -192,6 +201,13 @@ public class TAPMessageRepository {
     public void getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp, final TAPDatabaseListener<TAPMessageEntity> listener) {
         new Thread(() -> {
             List<TAPMessageEntity> messages = messageDao.getRoomMediaMessageBeforeTimestamp(roomID, minimumTimestamp);
+            listener.onSelectFinished(messages);
+        }).start();
+    }
+
+    public void getRoomMediaMessage(String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> messages = messageDao.getRoomMediaMessage(roomID);
             listener.onSelectFinished(messages);
         }).start();
     }
@@ -272,5 +288,12 @@ public class TAPMessageRepository {
 
     public void updateFailedStatusToSending(final String localID) {
         new Thread(() -> messageDao.updateFailedStatusToSending(localID)).start();
+    }
+
+    public void deleteMessageByRoomId(final String roomId, TAPDatabaseListener listener) {
+        new Thread(() -> {
+            messageDao.deleteMessageByRoomId(roomId);
+            listener.onDeleteFinished();
+        }).start();
     }
 }

@@ -8,30 +8,36 @@
 
     <TextView
         android:id="@+id/tv_label_forwarded"
-        style="@style/TapQuoteBody"
+        style="@style/tapLeftBubbleQuoteContentStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Forwarded"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/tap_forwarded"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_label_from"
-        style="@style/TapQuoteBody"
+        style="@style/tapLeftBubbleQuoteContentStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="From: "
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/tap_from"
         app:layout_constraintBottom_toBottomOf="@id/tv_forwarded_from"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_forwarded_from" />
 
     <TextView
         android:id="@+id/tv_forwarded_from"
-        style="@style/TapQuoteTitle"
+        style="@style/tapLeftBubbleQuoteTitleStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/tv_label_from"
         app:layout_constraintTop_toBottomOf="@id/tv_label_forwarded"

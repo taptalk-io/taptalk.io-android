@@ -36,6 +36,7 @@ import io.taptalk.TapTalk.View.Adapter.TAPSearchChatAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPSearchChatViewModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.EMPTY_STATE;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.MESSAGE_ITEM;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.RECENT_TITLE;
@@ -49,7 +50,7 @@ public class TAPSearchChatFragment extends Fragment {
     private ConstraintLayout clActionBar;
     private ImageView ivButtonBack;
     private EditText etSearch;
-    private ImageView ivButtonAction;
+    private ImageView ivButtonClearText;
     private RecyclerView recyclerView;
 
     private TAPSearchChatViewModel vm;
@@ -93,7 +94,7 @@ public class TAPSearchChatFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) {
-            clearSearch();
+            etSearch.setText("");
         } else {
             TAPUtils.getInstance().showKeyboard(getActivity(), etSearch);
         }
@@ -107,7 +108,7 @@ public class TAPSearchChatFragment extends Fragment {
         clActionBar = view.findViewById(R.id.cl_action_bar);
         ivButtonBack = view.findViewById(R.id.iv_button_back);
         etSearch = view.findViewById(R.id.et_search);
-        ivButtonAction = view.findViewById(R.id.iv_button_action);
+        ivButtonClearText = view.findViewById(R.id.iv_button_clear_text);
         recyclerView = view.findViewById(R.id.recyclerView);
 
         etSearch.addTextChangedListener(searchTextWatcher);
@@ -132,13 +133,12 @@ public class TAPSearchChatFragment extends Fragment {
                 fragment.showRoomList();
             TAPUtils.getInstance().dismissKeyboard(getActivity());
         });
-        ivButtonAction.setOnClickListener(v -> clearSearch());
-    }
+        ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 
-    private void clearSearch() {
-        etSearch.setText("");
-        etSearch.clearFocus();
-        TAPUtils.getInstance().dismissKeyboard(getActivity());
+        etSearch.setOnEditorActionListener((textView, i, keyEvent) -> {
+            TAPUtils.getInstance().dismissKeyboard(getActivity());
+            return false;
+        });
     }
 
     private void setRecentSearchItemsFromDatabase() {
@@ -209,10 +209,12 @@ public class TAPSearchChatFragment extends Fragment {
         adapter.setSearchKeyword(vm.getSearchKeyword());
         if (vm.getSearchKeyword().isEmpty()) {
             showRecentSearches();
+            ivButtonClearText.setVisibility(View.GONE);
         } else {
             TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
             //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
             vm.setRecentSearchShown(false);
+            ivButtonClearText.setVisibility(View.VISIBLE);
         }
     }
 
@@ -283,7 +285,7 @@ public class TAPSearchChatFragment extends Fragment {
                     TAPRoomModel room = new TAPRoomModel(
                             TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
                             contact.getName(),
-                            /* 1 ON 1 ROOM TYPE */ 1,
+                            TYPE_PERSONAL,
                             contact.getAvatarURL(),
                             /* SET DEFAULT ROOM COLOR*/""
                     );

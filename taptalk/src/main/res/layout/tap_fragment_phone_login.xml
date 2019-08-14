@@ -12,6 +12,7 @@
         android:layout_height="24dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="80dp"
+        android:layout_marginEnd="16dp"
         android:scaleType="fitStart"
         android:src="@drawable/taptalk_logo_with_name_color"
         app:layout_constraintBottom_toTopOf="@id/tv_welcome"
@@ -20,31 +21,23 @@
 
     <TextView
         android:id="@+id/tv_welcome"
+        style="@style/tapTitleLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="64dp"
-        android:fontFamily="@font/tap_font_pt_root_bold"
-        android:letterSpacing="-0.01"
-        android:lineSpacingExtra="6sp"
         android:text="@string/tap_welcome"
-        android:textColor="@color/tap_black_19"
-        android:textSize="40sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_taptalk_logo" />
 
     <TextView
         android:id="@+id/tv_welcome_message"
+        style="@style/tapFormLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:fontFamily="@font/tap_font_pt_root_medium"
-        android:letterSpacing="-0.03"
-        android:lineSpacingExtra="6sp"
         android:text="@string/tap_enter_your_mobile_number_to_continue"
-        android:textColor="@color/tap_black_19"
-        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_welcome" />
 
@@ -63,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp"
+            android:background="@drawable/tap_bg_text_field_inactive"
             android:orientation="horizontal"
             android:padding="15dp">
 
@@ -84,15 +77,10 @@
 
             <TextView
                 android:id="@+id/tv_country_code"
+                style="@style/tapFormTextFieldStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_marginStart="10dp"
-                android:letterSpacing="-0.01"
-                android:lineSpacingExtra="4sp"
-                android:textColor="@color/tap_black_19"
-                android:textSize="16sp"
-                android:visibility="visible"
                 tools:text="+62" />
 
             <ImageView
@@ -101,8 +89,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="10dp"
-                android:src="@drawable/tap_ic_loading_progress_circle_orange"
-                android:tint="@color/colorPrimaryDark"
+                android:src="@drawable/tap_ic_loading_progress_circle_white"
+                android:tint="@color/tapIconLoadingProgressPrimary"
                 android:visibility="gone" />
 
         </LinearLayout>
@@ -113,19 +101,21 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="16dp"
-            android:background="@drawable/tap_bg_white_rounded_8dp_stroke_dcdcdc_1dp">
+            android:background="@drawable/tap_bg_text_field_inactive">
 
             <EditText
                 android:id="@+id/et_phone_number"
+                style="@style/tapFormTextFieldStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/tap_transparent_white"
-                android:hint="82212345678"
+                android:background="@color/tapTransparentWhite"
+                android:hint="@string/tap_hint_phone_number"
                 android:imeOptions="actionSend"
                 android:inputType="numberSigned"
+                android:maxLines="1"
                 android:padding="13dp"
-                android:textColorHint="@color/tap_grey_9b"
-                android:textCursorDrawable="@drawable/tap_login_color_cursor" />
+                android:textCursorDrawable="@drawable/tap_cursor_color"
+                tools:ignore="TextFields" />
 
         </FrameLayout>
 
@@ -138,21 +128,16 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/tap_bg_gradient_cecece_9b9b9b_rounded_8dp_stroke_cecece_1dp"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/tap_bg_button_inactive_ripple"
         app:layout_constraintTop_toBottomOf="@id/ll_input_phone_number">
 
         <TextView
             android:id="@+id/tv_btn_continue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fontFamily="@font/tap_font_pt_root_bold"
-            android:gravity="center_horizontal"
-            android:lineSpacingExtra="14sp"
-            android:text="@string/tap_continue_s"
-            android:textColor="@color/tap_white"
-            android:textSize="16sp" />
+            style="@style/tapButtonLabelStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/tap_continue_s" />
 
         <ImageView
             android:id="@+id/iv_loading_progress_request_otp"
@@ -160,6 +145,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/tap_ic_loading_progress_circle_white"
+            android:tint="@color/tapIconLoadingProgressWhite"
             android:visibility="gone" />
 
     </FrameLayout>

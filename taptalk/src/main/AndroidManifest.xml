@@ -27,10 +27,6 @@
             android:name="io.taptalk.TapTalk.Helper.CustomTabLayout.TAPKeepAliveService"
             android:exported="true" />
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA" />
-
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPLoginActivity" />
         <activity android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRoomListActivity" />
@@ -40,12 +36,15 @@
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberProfileActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPForwardPickerActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPAddMembersActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPMapActivity"
             android:windowSoftInputMode="adjustNothing" />
@@ -56,9 +55,6 @@
             android:name="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity"
-            android:windowSoftInputMode="adjustNothing" />
-        <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
@@ -67,6 +63,12 @@
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
             android:launchMode="singleTask" />
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity"
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="sensor" />
     </application>
 
 </manifest>
