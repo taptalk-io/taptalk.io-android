@@ -96,7 +96,7 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
                 flRemove.setVisibility(View.GONE);
             } else {
                 // Not selected - Media size exceeds limit
-                flImagePreview.setBackgroundResource(R.drawable.tap_bg_selected_media_preview_thumbnail);
+                flImagePreview.setBackground(null);
                 ivWarning.setImageResource(R.drawable.tap_ic_warning_red_circle_background);
                 ivLoading.clearAnimation();
                 ivRemove.setVisibility(View.GONE);

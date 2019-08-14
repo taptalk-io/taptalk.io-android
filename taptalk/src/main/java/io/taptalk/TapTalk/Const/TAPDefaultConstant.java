@@ -386,8 +386,13 @@ public class TAPDefaultConstant {
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
+    public static final String DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE = "26214400";
+    public static final String DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE = "10485760";
+    public static final String DEFAULT_USER_PHOTO_MAX_FILE_SIZE = "10485760";
+    public static final String DEFAULT_GROUP_MAX_PARTICIPANTS = "100";
+    public static final String DEFAULT_CHANNEL_MAX_PARTICIPANTS = "5000";
+
     public static final int MAX_ITEMS_PER_PAGE = 50;
-    public static final int GROUP_MEMBER_LIMIT = 50;
     public static final int SHORT_ANIMATION_TIME = 100;
     public static final int DEFAULT_ANIMATION_TIME = 200;
     public static final int IMAGE_MAX_DIMENSION = 2000;

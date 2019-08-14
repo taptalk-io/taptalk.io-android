@@ -294,7 +294,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                     .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                     .setTitle(getString(R.string.tap_warning_files_may_not_be_sent))
                     .setMessage(String.format(getString(R.string.tap_warning_video_size_exceeds_limit_wont_be_sent),
-                            TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxUploadSize())))
+                            TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())))
                     .setPrimaryButtonTitle(getString(R.string.tap_continue_s))
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                     .setPrimaryButtonListener(true, view -> sendMedias())

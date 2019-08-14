@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -86,7 +85,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                     vSeparator.setVisibility(View.GONE);
                     clErrorMessage.setVisibility(View.VISIBLE);
                     tvErrorTitle.setText(String.format(context.getString(R.string.tap_error_exceed_upload_limit),
-                            TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxUploadSize())));
+                            TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())));
                 } else {
                     etCaption.setVisibility(View.VISIBLE);
                     tvTypingIndicator.setVisibility(View.VISIBLE);
