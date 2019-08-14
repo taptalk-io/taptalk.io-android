@@ -298,7 +298,12 @@ public class TAPDefaultConstant {
     }
 
     public static final class ProjectConfigKeys {
-        public static final String MAX_FILE_SIZE = "maxFileSize";
+        public static final String CHANNEL_MAX_PARTICIPANTS = "channelMaxParticipants";
+        public static final String CHAT_MEDIA_MAX_FILE_SIZE = "chatMediaMaxFileSize";
+        public static final String GROUP_MAX_PARTICIPANTS = "groupMaxParticipants";
+        public static final String ROOM_PHOTO_MAX_FILE_SIZE = "roomPhotoMaxFileSize";
+        public static final String USER_PHOTO_MAX_FILE_SIZE = "userPhotoMaxFileSize";
+
         public static final String USERNAME_IGNORE_CASE = "usernameIgnoreCase";
     }
 

@@ -14,4 +14,5 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public interface TapTalkInterface {
     void onRefreshAuthTicket();
     void onTapTalkUnreadChatRoomBadgeCountUpdated(int unreadCount);
+    void onNotificationReceived(TAPMessageModel messageModel);
 }
