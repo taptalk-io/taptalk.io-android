@@ -264,7 +264,6 @@ public class TAPMessageRepository {
 
             if (null != tempUnreadEntity) {
                 Long minCreatedOfUnreadMessage = tempUnreadEntity.getCreated();
-                Log.e(TAG, "getMinCreatedOfUnreadMessage: " + minCreatedOfUnreadMessage);
                 listener.onSelectFinished(minCreatedOfUnreadMessage);
             } else listener.onSelectFinished(0L);
         }).start();
