@@ -120,7 +120,7 @@ public class TapTalk {
     private static final String TAG = TapTalk.class.getSimpleName();
     public static TapTalk tapTalk;
     public static Context appContext;
-    public static boolean isForeground;
+    public static boolean isForeground, isAutoConnectDisabled;
     private static TapTalkScreenOrientation screenOrientation = TapTalkScreenOrientation.TapTalkOrientationDefault;
     //    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
@@ -437,6 +437,22 @@ public class TapTalk {
         return clientAppName;
     }
 
+    public static void connect() {
+        TAPConnectionManager.getInstance().connect();
+    }
+
+    public static void disconnect() {
+        TAPConnectionManager.getInstance().close();
+    }
+
+    public static void enableAutoConnect() {
+        isAutoConnectDisabled = false;
+    }
+
+    public static void disableAutoConnect() {
+        isAutoConnectDisabled = true;
+    }
+
     public static List<TAPCustomKeyboardItemModel> requestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
@@ -499,11 +515,11 @@ public class TapTalk {
             if (null != notificationMessage &&
                     null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
                     TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
-                Log.e(TAG, "setNotificationMessage: " + TAPUtils.getInstance().toJsonString(notificationMessage));
+                //Log.e(TAG, "setNotificationMessage: " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getUser().getName() + ": " + notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             } else if (null != notificationMessage) {
-                Log.e(TAG, "setNotificationMessage:2 " + TAPUtils.getInstance().toJsonString(notificationMessage));
+                //Log.e(TAG, "setNotificationMessage:2 " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             }

@@ -23,6 +23,7 @@ import java.util.TimerTask;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
@@ -146,12 +147,11 @@ public class TAPConnectionManager {
     private void initNetworkListener() {
         TapTalkNetworkInterface networkListener = () -> {
             if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
-                Log.e(TAG, "initNetworkListener: ");
                 TAPDataManager.getInstance().validateAccessToken(validateAccessView);
-                if (CONNECTING == connectionStatus ||
-                        DISCONNECTED == connectionStatus) {
+                if (!TapTalk.isAutoConnectDisabled &&
+                        (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus)) {
                     reconnect();
-                } else if (NOT_CONNECTED == connectionStatus) {
+                } else if (!TapTalk.isAutoConnectDisabled && NOT_CONNECTED == connectionStatus) {
                     connect();
                 }
             }
