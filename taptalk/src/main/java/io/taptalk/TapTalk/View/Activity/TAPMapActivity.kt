@@ -235,7 +235,12 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         longitude = intent.getDoubleExtra(TAPDefaultConstant.Location.LONGITUDE, 0.0)
         currentAddress = intent.getStringExtra(TAPDefaultConstant.Location.LOCATION_NAME) ?: ""
 
-        placesClient = Places.createClient(this)
+        try {
+            placesClient = Places.createClient(this)
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+            finish()
+        }
         geoCoder = Geocoder(this, Locale.getDefault())
 
         val mapFragment: SupportMapFragment = supportFragmentManager.findFragmentById(R.id.maps) as SupportMapFragment

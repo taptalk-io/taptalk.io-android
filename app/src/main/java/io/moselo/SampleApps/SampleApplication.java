@@ -204,6 +204,7 @@ public class SampleApplication extends Application {
                     TapTalk.TapTalkImplementationType.TapTalkImplentationTypeUI,
                     TAPListener);
         }
+        TapTalk.initializeGooglePlacesApiKey("AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"); // TODO: 19 August 2019 REPLACE KEY WITH DUMMY FOR LIBRARY BUILD
         TapTalk.setTapTalkScreenOrientation(TapTalk.TapTalkScreenOrientation.TapTalkOrientationPortrait); // FIXME: 23 May 2019 SCREEN ORIENTATION FORCED TO PORTRAIT
         TapTalk.addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
     }

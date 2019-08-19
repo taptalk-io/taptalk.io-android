@@ -88,7 +88,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_SOCKE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_DEVELOPMENT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_PRODUCTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_STAGING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INVALID_AUTH_TICKET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACCESS_TOKEN_UNAVAILABLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INVALID_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_AUTHENTICATE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_REFRESH_CONFIG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_CHANNEL_MAX_PARTICIPANTS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE;
@@ -115,12 +120,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANN
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentDevelopment;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentProduction;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentStaging;
+import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
 public class TapTalk {
     private static final String TAG = TapTalk.class.getSimpleName();
     public static TapTalk tapTalk;
     public static Context appContext;
-    public static boolean isForeground;
+    public static boolean isForeground, isAutoConnectDisabled;
     private static TapTalkScreenOrientation screenOrientation = TapTalkScreenOrientation.TapTalkOrientationDefault;
     //    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
@@ -192,8 +198,6 @@ public class TapTalk {
         }
 
         implementationType = type;
-
-        Places.initialize(appContext, "AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA");
 
         TAPCacheManager.getInstance(appContext).initAllCache();
 
@@ -284,17 +288,15 @@ public class TapTalk {
         });
     }
 
-    public static void saveAuthTicketAndGetAccessToken(String authTicket, TAPVerifyOTPInterface verifyOTPInterface) {
+    public static void authenticate(String authTicket, boolean connectOnSuccess, TapCommonInterface listener) {
         if (null == authTicket || "".equals(authTicket)) {
-            verifyOTPInterface.verifyOTPFailed("40101", "Invalid Auth Ticket");
+            listener.onError(ERROR_CODE_INVALID_AUTH_TICKET, ERROR_MESSAGE_INVALID_AUTH_TICKET);
         } else {
             TAPDataManager.getInstance().saveAuthTicket(authTicket);
             TAPDataManager.getInstance().getAccessTokenFromApi(new TAPDefaultDataView<TAPGetAccessTokenResponse>() {
                 @Override
                 public void onSuccess(TAPGetAccessTokenResponse response) {
-                    super.onSuccess(response);
                     TAPDataManager.getInstance().removeAuthTicket();
-
                     TAPDataManager.getInstance().saveAccessToken(response.getAccessToken());
                     TAPDataManager.getInstance().saveRefreshToken(response.getRefreshToken());
                     TAPDataManager.getInstance().saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
@@ -315,8 +317,10 @@ public class TapTalk {
 
                     TAPDataManager.getInstance().saveActiveUser(response.getUser());
                     TAPApiManager.getInstance().setLogout(false);
-                    if (isForeground) TAPConnectionManager.getInstance().connect();
-                    verifyOTPInterface.verifyOTPSuccessToLogin();
+                    if (connectOnSuccess) {
+                        TAPConnectionManager.getInstance().connect();
+                    }
+                    listener.onSuccess(SUCCESS_MESSAGE_AUTHENTICATE);
 
                     if (isRefreshTokenExpired) {
                         isRefreshTokenExpired = false;
@@ -327,14 +331,12 @@ public class TapTalk {
 
                 @Override
                 public void onError(TAPErrorModel error) {
-                    super.onError(error);
-                    verifyOTPInterface.verifyOTPFailed(error.getCode(), error.getMessage());
+                    listener.onError(error.getCode(), error.getMessage());
                 }
 
                 @Override
                 public void onError(String errorMessage) {
-                    super.onError(errorMessage);
-                    verifyOTPInterface.verifyOTPFailed("500", errorMessage);
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
                 }
             });
         }
@@ -365,10 +367,21 @@ public class TapTalk {
         TAPDataManager.getInstance().verifyingOTPLogin(otpID, otpKey, otpCode, new TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
             @Override
             public void onSuccess(TAPLoginOTPVerifyResponse response) {
-                if (response.isRegistered())
-                    saveAuthTicketAndGetAccessToken(response.getTicket(), verifyOTPInterface);
-                else
+                if (response.isRegistered()) {
+                    authenticate(response.getTicket(), true, new TapCommonInterface() {
+                        @Override
+                        public void onSuccess(String successMessage) {
+                            verifyOTPInterface.verifyOTPSuccessToLogin();
+                        }
+
+                        @Override
+                        public void onError(String errorCode, String errorMessage) {
+                            verifyOTPInterface.verifyOTPFailed(errorCode, errorMessage);
+                        }
+                    });
+                } else {
                     verifyOTPInterface.verifyOTPSuccessToRegister();
+                }
             }
 
             @Override
@@ -437,6 +450,30 @@ public class TapTalk {
         return clientAppName;
     }
 
+    public static void initializeGooglePlacesApiKey(String apiKey) {
+        Places.initialize(appContext, apiKey);
+    }
+
+    public static void connect(TapCommonInterface listener) {
+        if (checkAccessTokenAvailability()) {
+            TAPConnectionManager.getInstance().connect(listener);
+        } else {
+            listener.onError(ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE, ERROR_MESSAGE_ACCESS_TOKEN_UNAVAILABLE);
+        }
+    }
+
+    public static void disconnect() {
+        TAPConnectionManager.getInstance().close(NOT_CONNECTED);
+    }
+
+    public static void enableAutoConnect() {
+        isAutoConnectDisabled = false;
+    }
+
+    public static void disableAutoConnect() {
+        isAutoConnectDisabled = true;
+    }
+
     public static List<TAPCustomKeyboardItemModel> requestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
@@ -499,11 +536,11 @@ public class TapTalk {
             if (null != notificationMessage &&
                     null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
                     TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
-                Log.e(TAG, "setNotificationMessage: " + TAPUtils.getInstance().toJsonString(notificationMessage));
+                //Log.e(TAG, "setNotificationMessage: " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getUser().getName() + ": " + notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             } else if (null != notificationMessage) {
-                Log.e(TAG, "setNotificationMessage:2 " + TAPUtils.getInstance().toJsonString(notificationMessage));
+                //Log.e(TAG, "setNotificationMessage:2 " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             }

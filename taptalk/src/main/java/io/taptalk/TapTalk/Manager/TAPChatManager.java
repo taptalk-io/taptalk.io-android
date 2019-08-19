@@ -80,6 +80,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
+import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
 
 public class TAPChatManager {
 
@@ -89,6 +90,7 @@ public class TAPChatManager {
     private Map<String, Integer> quotedActions;
     private Map<String, String> messageDrafts;
     private HashMap<String, HashMap<String, Object>> userInfo;
+    private HashMap<String, TapSendMessageInterface> sendMessageListeners;
     private List<TAPChatListener> chatListeners;
     private List<TAPMessageEntity> saveMessages; //message to be saved
     private List<String> replyMessageLocalIDs;
@@ -106,7 +108,6 @@ public class TAPChatManager {
     private int pendingRetryInterval = 60 * 1000;
     private final int maxImageSize = 2000;
     private final Integer CHARACTER_LIMIT = 1000;
-    private HashMap<String, TapSendMessageInterface> sendMessagelisteners;
 
     private TapTalkSocketInterface socketListener = new TapTalkSocketInterface() {
         @Override
@@ -118,8 +119,9 @@ public class TAPChatManager {
 
         @Override
         public void onSocketDisconnected() {
-            if (TapTalk.isForeground && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)
-                    && TAPConnectionManager.ConnectionStatus.DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
+            if (TapTalk.isForeground &&
+                    TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext) &&
+                    DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
                 TAPConnectionManager.getInstance().reconnect();
         }
 
@@ -194,7 +196,7 @@ public class TAPChatManager {
         TAPConnectionManager.getInstance().setSocketMessageListener(socketMessageListener);
         setActiveUser(TAPDataManager.getInstance().getActiveUser());
         chatListeners = new ArrayList<>();
-        sendMessagelisteners = new HashMap<>();
+        sendMessageListeners = new HashMap<>();
         saveMessages = new ArrayList<>();
         pendingMessages = new LinkedHashMap<>();
         waitingResponses = new LinkedHashMap<>();
@@ -383,7 +385,7 @@ public class TAPChatManager {
 
     public void sendLocationMessage(String address, Double latitude, Double longitude, TAPRoomModel room, TapSendMessageInterface tapSendChatInterface) {
         TAPMessageModel messageModel = createLocationMessageModel(address, latitude, longitude, room, tapSendChatInterface);
-        sendMessagelisteners.put(messageModel.getLocalID(), tapSendChatInterface);
+        sendMessageListeners.put(messageModel.getLocalID(), tapSendChatInterface);
         tapSendChatInterface.onStart(messageModel);
         triggerListenerAndSendMessage(messageModel, true);
     }
@@ -428,7 +430,7 @@ public class TAPChatManager {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
 
-                sendMessagelisteners.put(messageModel.getLocalID(), tapSendMessageInterface);
+                sendMessageListeners.put(messageModel.getLocalID(), tapSendMessageInterface);
                 tapSendMessageInterface.onStart(messageModel);
 
                 // Add entity to list
@@ -439,7 +441,7 @@ public class TAPChatManager {
             }
         } else {
             TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
-            sendMessagelisteners.put(messageModel.getLocalID(), tapSendMessageInterface);
+            sendMessageListeners.put(messageModel.getLocalID(), tapSendMessageInterface);
             tapSendMessageInterface.onStart(messageModel);
             // Send message
             triggerListenerAndSendMessage(messageModel, true);
@@ -697,7 +699,7 @@ public class TAPChatManager {
             return;
         }
 
-        sendMessagelisteners.put(messageModel.getLocalID(), listener);
+        sendMessageListeners.put(messageModel.getLocalID(), listener);
         listener.onStart(messageModel);
 
         // Set Start Point for Progress
@@ -1035,7 +1037,7 @@ public class TAPChatManager {
 
     private void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri fileUri, String caption, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createImageMessageModel(context, fileUri, caption, roomModel);
-        sendMessagelisteners.put(messageModel.getLocalID(), listener);
+        sendMessageListeners.put(messageModel.getLocalID(), listener);
         listener.onStart(messageModel);
 
         // Set Start Point for Progress
@@ -1056,7 +1058,7 @@ public class TAPChatManager {
             listener.onError(ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
             return;
         }
-        sendMessagelisteners.put(messageModel.getLocalID(), listener);
+        sendMessageListeners.put(messageModel.getLocalID(), listener);
         listener.onStart(messageModel);
 
         // Set Start Point for Progress
@@ -1090,7 +1092,7 @@ public class TAPChatManager {
 
     private void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Bitmap bitmap, String caption, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createImageMessageModel(bitmap, caption, roomModel);
-        sendMessagelisteners.put(messageModel.getLocalID(), listener);
+        sendMessageListeners.put(messageModel.getLocalID(), listener);
         listener.onStart(messageModel);
 
         // Set Start Point for Progress
@@ -1203,7 +1205,7 @@ public class TAPChatManager {
 
     public void resendMessage(TAPMessageModel failedMessageModel, TapSendMessageInterface listener) {
         TAPMessageModel messageToResend = TAPMessageModel.BuilderResendMessage(failedMessageModel, System.currentTimeMillis());
-        sendMessagelisteners.put(messageToResend.getLocalID(), listener);
+        sendMessageListeners.put(messageToResend.getLocalID(), listener);
         listener.onStart(messageToResend);
         triggerListenerAndSendMessage(messageToResend, true);
     }
@@ -1239,7 +1241,7 @@ public class TAPChatManager {
         if (null != getQuoteActions().get(roomID) && getQuoteActions().get(roomID) == FORWARD) {
             // Send forwarded message
             TAPMessageModel messageModel = buildForwardedMessage(getQuotedMessages().get(roomID), roomModel);
-            sendMessagelisteners.put(messageModel.getLocalID(), listener);
+            sendMessageListeners.put(messageModel.getLocalID(), listener);
             listener.onStart(messageModel);
             triggerListenerAndSendMessage(messageModel, true);
             setQuotedMessage(roomID, null, 0);
@@ -1457,14 +1459,14 @@ public class TAPChatManager {
             TAPEmitModel = new TAPEmitModel<>(eventName, TAPEncryptorManager.getInstance().encryptMessage(messageModel));
             TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
             Log.d(TAG, "sendEmit: " + TAPUtils.getInstance().toJsonString(messageModel));
-            if (sendMessagelisteners.containsKey(messageModel.getLocalID())) {
-                sendMessagelisteners.get(messageModel.getLocalID()).onSuccess(messageModel);
-                sendMessagelisteners.remove(messageModel.getLocalID());
+            if (sendMessageListeners.containsKey(messageModel.getLocalID())) {
+                sendMessageListeners.get(messageModel.getLocalID()).onSuccess(messageModel);
+                sendMessageListeners.remove(messageModel.getLocalID());
             }
         } catch (Exception e) {
-            if (sendMessagelisteners.containsKey(messageModel.getLocalID())) {
-                sendMessagelisteners.get(messageModel.getLocalID()).onError(ERROR_CODE_OTHERS, e.getMessage());
-                sendMessagelisteners.remove(messageModel.getLocalID());
+            if (sendMessageListeners.containsKey(messageModel.getLocalID())) {
+                sendMessageListeners.get(messageModel.getLocalID()).onError(ERROR_CODE_OTHERS, e.getMessage());
+                sendMessageListeners.remove(messageModel.getLocalID());
             }
         }
     }
@@ -1542,17 +1544,21 @@ public class TAPChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
-        TAPConnectionManager.getInstance().close();
+        if (!TapTalk.isAutoConnectDisabled) {
+            TAPConnectionManager.getInstance().close();
+        }
         saveUnsentMessage();
-        if (null != scheduler && !scheduler.isShutdown())
+        if (null != scheduler && !scheduler.isShutdown()) {
             scheduler.shutdown();
+        }
         isFinishChatFlow = true;
     }
 
     public void disconnectAfterRefreshTokenExpired() {
         TAPConnectionManager.getInstance().close();
-        if (null != scheduler && !scheduler.isShutdown())
+        if (null != scheduler && !scheduler.isShutdown()) {
             scheduler.shutdown();
+        }
         isFinishChatFlow = true;
     }
 
