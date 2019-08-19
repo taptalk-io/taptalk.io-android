@@ -119,7 +119,7 @@ public class TAPChatManager {
 
         @Override
         public void onSocketDisconnected() {
-            if (TapTalk.isForeground && !TapTalk.isAutoConnectDisabled &&
+            if (TapTalk.isForeground &&
                     TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext) &&
                     DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
                 TAPConnectionManager.getInstance().reconnect();
@@ -132,9 +132,7 @@ public class TAPChatManager {
 
         @Override
         public void onSocketError() {
-            if (!TapTalk.isAutoConnectDisabled) {
-                TAPConnectionManager.getInstance().reconnect();
-            }
+            TAPConnectionManager.getInstance().reconnect();
         }
     };
 

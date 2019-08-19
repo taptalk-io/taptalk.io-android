@@ -199,6 +199,10 @@ public class TAPDefaultConstant {
 
     public static final class ClientErrorCodes {
         public static final String ERROR_CODE_ACTIVE_USER_NOT_FOUND = "90001";
+        public static final String ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE = "90002";
+        public static final String ERROR_CODE_ALREADY_CONNECTED = "90003";
+        public static final String ERROR_CODE_NO_INTERNET = "90004";
+        public static final String ERROR_CODE_INVALID_AUTH_TICKET = "90005";
         public static final String ERROR_CODE_GROUP_DELETED = "90101";
         public static final String ERROR_CODE_ADMIN_REQUIRED = "90102";
         public static final String ERROR_CODE_URI_NOT_FOUND = "90301";
@@ -211,6 +215,10 @@ public class TAPDefaultConstant {
 
     public static final class ClientErrorMessages {
         public static final String ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND = "Active user not found";
+        public static final String ERROR_MESSAGE_ACCESS_TOKEN_UNAVAILABLE = "Access token is not available, call authenticate() before connecting";
+        public static final String ERROR_MESSAGE_ALREADY_CONNECTED = "Already connected";
+        public static final String ERROR_MESSAGE_NO_INTERNET = "No internet connection";
+        public static final String ERROR_MESSAGE_INVALID_AUTH_TICKET = "Invalid auth ticket";
         public static final String ERROR_MESSAGE_GROUP_DELETED = "The group has already been deleted";
         public static final String ERROR_MESSAGE_ADMIN_REQUIRED = "Please assign another admin before leaving";
         public static final String ERROR_MESSAGE_URI_NOT_FOUND = "Uri is required in message data";
@@ -221,9 +229,11 @@ public class TAPDefaultConstant {
     }
 
     public static final class ClientSuccessMessages {
+        public static final String SUCCESS_MESSAGE_CONNECT = "Successfully connected";
         public static final String SUCCESS_MESSAGE_REFRESH_CONFIG = "Project configs refreshed successfully";
         public static final String SUCCESS_MESSAGE_DELETE_GROUP = "Chat room deleted successfully";
-        public static final String SUCCESS_MESSAGE_LEAVE_GROUP = "Left chat room successfully ";
+        public static final String SUCCESS_MESSAGE_LEAVE_GROUP = "Left chat room successfully";
+        public static final String SUCCESS_MESSAGE_AUTHENTICATE = "Authenticated successfully";
     }
 
     public static final class UploadBroadcastEvent {

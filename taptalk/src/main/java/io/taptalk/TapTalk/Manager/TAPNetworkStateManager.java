@@ -78,7 +78,7 @@ public class TAPNetworkStateManager extends ConnectivityManager.NetworkCallback 
     @Override
     public void onAvailable(Network network) {
         super.onAvailable(network);
-        Log.e(TAG, "onAvailable: " );
+        //Log.e(TAG, "onAvailable: " );
         List<TapTalkNetworkInterface> listenersCopy = new ArrayList<>(listeners);
         if (!listenersCopy.isEmpty()) {
             for (TapTalkNetworkInterface listener : listenersCopy) {
@@ -90,7 +90,7 @@ public class TAPNetworkStateManager extends ConnectivityManager.NetworkCallback 
     @Override
     public void onLost(Network network) {
         super.onLost(network);
-        Log.e(TAG, "onLost: " );
+        //Log.e(TAG, "onLost: " );
         TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
         TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
         TAPConnectionManager.getInstance().close();
