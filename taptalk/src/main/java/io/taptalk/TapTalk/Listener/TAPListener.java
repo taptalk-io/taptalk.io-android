@@ -13,6 +13,6 @@ public abstract class TAPListener implements TapTalkInterface {
     }
 
     @Override
-    public void onNotificationReceived(TAPMessageModel messageModel) {
+    public void onNotificationReceived(TAPMessageModel message) {
     }
 }

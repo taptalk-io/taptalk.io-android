@@ -120,6 +120,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TAP_NOTIFICATION_CHANN
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentDevelopment;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentProduction;
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentStaging;
+import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
 public class TapTalk {
@@ -172,12 +173,12 @@ public class TapTalk {
         TapTalkOrientationLandscape // FIXME: 6 February 2019 Activity loads portrait by default then changes to landscape after onCreate
     }
 
-    public static TapTalk init(Context context, String appID, String appSecret, String userAgent, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TAPListener tapListener) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, userAgent, clientAppIcon, clientAppName, type, tapListener)) : tapTalk;
+    public static TapTalk init(Context context, String appKeyID, String appKeySecret, String userAgent, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TAPListener listener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appKeyID, appKeySecret, userAgent, clientAppIcon, clientAppName, type, listener)) : tapTalk;
     }
 
-    public static TapTalk init(Context context, String appID, String appSecret, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TAPListener tapListener) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, appID, appSecret, "android", clientAppIcon, clientAppName, type, tapListener)) : tapTalk;
+    public static TapTalk init(Context context, String appKeyID, String appKeySecret, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TAPListener listener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appKeyID, appKeySecret, "android", clientAppIcon, clientAppName, type, listener)) : tapTalk;
     }
 
     public TapTalk(@NonNull final Context appContext, @NonNull String appID, @NonNull String appSecret
@@ -288,7 +289,7 @@ public class TapTalk {
         });
     }
 
-    public static void authenticate(String authTicket, boolean connectOnSuccess, TapCommonInterface listener) {
+    public static void authenticate(String authTicket, boolean connectWhenSuccess, TapCommonInterface listener) {
         if (null == authTicket || "".equals(authTicket)) {
             listener.onError(ERROR_CODE_INVALID_AUTH_TICKET, ERROR_MESSAGE_INVALID_AUTH_TICKET);
         } else {
@@ -317,7 +318,7 @@ public class TapTalk {
 
                     TAPDataManager.getInstance().saveActiveUser(response.getUser());
                     TAPApiManager.getInstance().setLogout(false);
-                    if (connectOnSuccess) {
+                    if (connectWhenSuccess) {
                         TAPConnectionManager.getInstance().connect();
                     }
                     listener.onSuccess(SUCCESS_MESSAGE_AUTHENTICATE);
@@ -455,7 +456,7 @@ public class TapTalk {
     }
 
     public static void connect(TapCommonInterface listener) {
-        if (checkAccessTokenAvailability()) {
+        if (isAuthenticated()) {
             TAPConnectionManager.getInstance().connect(listener);
         } else {
             listener.onError(ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE, ERROR_MESSAGE_ACCESS_TOKEN_UNAVAILABLE);
@@ -472,6 +473,14 @@ public class TapTalk {
 
     public static void disableAutoConnect() {
         isAutoConnectDisabled = true;
+    }
+
+    public static boolean isAuthenticated() {
+        return TAPDataManager.getInstance().checkAccessTokenAvailable();
+    }
+
+    public static boolean isConnected() {
+        return TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED;
     }
 
     public static List<TAPCustomKeyboardItemModel> requestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
@@ -850,13 +859,6 @@ public class TapTalk {
                 });
             }
         }).start();
-    }
-
-    /**
-     * for AccessToken Availability checking
-     */
-    public static boolean checkAccessTokenAvailability() {
-        return TAPDataManager.getInstance().checkAccessTokenAvailable();
     }
 
     /**

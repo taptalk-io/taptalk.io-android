@@ -126,9 +126,11 @@ public class TAPConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                Log.e(TAG, "onClose2: " + code);
-                Log.e(TAG, "onClose: " + reason);
-                connectionStatus = DISCONNECTED;
+                //Log.e(TAG, "onClose2: " + code);
+                //Log.e(TAG, "onClose: " + reason);
+                if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
+                    connectionStatus = DISCONNECTED;
+                }
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
                 List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
                 if (null != socketListeners && !socketListenersCopy.isEmpty() && code != CLOSE_FOR_RECONNECT_CODE) {
@@ -140,8 +142,10 @@ public class TAPConnectionManager {
 
             @Override
             public void onError(Exception ex) {
-                Log.e(TAG, "onError: ", ex);
-                connectionStatus = DISCONNECTED;
+                //Log.e(TAG, "onError: ", ex);
+                if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
+                    connectionStatus = DISCONNECTED;
+                }
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
                 List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
                 if (null != socketListeners && !socketListenersCopy.isEmpty()) {
@@ -209,9 +213,9 @@ public class TAPConnectionManager {
     }
 
     public void connect(TapCommonInterface listener) {
-        if (DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) {
+        if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
             listener.onError(ERROR_CODE_ALREADY_CONNECTED, ERROR_MESSAGE_ALREADY_CONNECTED);
-        } else if (TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
+        } else if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
             listener.onError(ERROR_CODE_NO_INTERNET, ERROR_MESSAGE_NO_INTERNET);
         } else {
             try {
@@ -276,7 +280,7 @@ public class TAPConnectionManager {
                         connect();
                     } catch (IllegalStateException e) {
                         e.printStackTrace();
-                        Log.e(TAG, "run: ", e);
+                        //Log.e(TAG, "run: ", e);
                     }
                 }
             }
