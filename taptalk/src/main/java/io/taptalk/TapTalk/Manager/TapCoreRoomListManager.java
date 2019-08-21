@@ -1,4 +1,4 @@
-package io.taptalk.TapTalk.Helper;
+package io.taptalk.TapTalk.Manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,10 +9,6 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Interface.TapGetMessageInterface;
 import io.taptalk.TapTalk.Interface.TapGetRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPContactManager;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
-import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -25,7 +21,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 
 public class TapCoreRoomListManager {
 
-    private static void fetchNewMessage(TapGetMessageInterface listener) {
+    private static TapCoreRoomListManager instance;
+
+    public static TapCoreRoomListManager getInstance() {
+        return null == instance ? instance = new TapCoreRoomListManager() : instance;
+    }
+
+    private void fetchNewMessage(TapGetMessageInterface listener) {
         TAPDataManager.getInstance().getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
             @Override
             public void onSuccess(TAPGetRoomListResponse response) {
@@ -93,7 +95,7 @@ public class TapCoreRoomListManager {
         });
     }
 
-    public static void getRoomListFromCache(TapGetRoomListInterface listener) {
+    public void getRoomListFromCache(TapGetRoomListInterface listener) {
         TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
@@ -112,7 +114,7 @@ public class TapCoreRoomListManager {
         });
     }
 
-    public static void getUpdatedRoomList(TapGetRoomListInterface listener) {
+    public void getUpdatedRoomList(TapGetRoomListInterface listener) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
             listener.onError(ERROR_CODE_ACTIVE_USER_NOT_FOUND, ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND);
             return;

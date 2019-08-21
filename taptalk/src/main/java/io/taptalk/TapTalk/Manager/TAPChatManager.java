@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,14 +26,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
+import io.taptalk.TapTalk.Listener.TapCustomKeyboardListener;
+import io.taptalk.TapTalk.Listener.TapUIListener;
+import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
 import io.taptalk.TapTalk.Model.TAPDataLocationModel;
@@ -1806,5 +1810,27 @@ public class TAPChatManager {
         }
 
         return systemMessageBody;
+    }
+
+    /**
+     * =============================================================================================
+     *  TAP UI
+     *  ============================================================================================
+     */
+
+    public void triggerChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
+        TapUI.getInstance().triggerChatRoomProfileButtonTapped(activity, user);
+    }
+
+    public void triggerMessageQuoteTapped(Activity activity, TAPMessageModel messageModel) {
+        TapUI.getInstance().triggerMessageQuoteTapped(activity, messageModel);
+    }
+
+    public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
+        return TapCustomKeyboardManager.getInstance().getCustomKeyboardItems(activeUser, otherUser);
+    }
+
+    public void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
+        TapCustomKeyboardManager.getInstance().triggerCustomKeyboardItemTapped(activity, customKeyboardItemModel, activeUser, otherUser);
     }
 }

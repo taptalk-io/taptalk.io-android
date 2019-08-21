@@ -1,15 +1,13 @@
-package io.taptalk.TapTalk.Helper;
+package io.taptalk.TapTalk.Manager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Interface.TapCommonInterface;
-import io.taptalk.TapTalk.Interface.TapGetContactInterface;
-import io.taptalk.TapTalk.Interface.TapGetMultipleContactInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Manager.TAPContactManager;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapGetContactListener;
+import io.taptalk.TapTalk.Listener.TapGetMultipleContactListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
@@ -21,7 +19,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 
 public class TapCoreContactManager {
 
-    public static void getAllUserContacts(TapGetMultipleContactInterface listener) {
+    private static TapCoreContactManager instance;
+
+    public static TapCoreContactManager getInstance() {
+        return null == instance ? instance = new TapCoreContactManager() : instance;
+    }
+
+    public void getAllUserContacts(TapGetMultipleContactListener listener) {
         TAPDataManager.getInstance().getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(List<TAPUserModel> entities) {
@@ -35,7 +39,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public static void getUserDataWithUserID(String userID, TapGetContactInterface listener) {
+    public void getUserDataWithUserID(String userID, TapGetContactListener listener) {
         TAPDataManager.getInstance().getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
@@ -55,7 +59,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public static void getUserDataWithXCUserID(String xcUserID, TapGetContactInterface listener) {
+    public void getUserDataWithXCUserID(String xcUserID, TapGetContactListener listener) {
         TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
@@ -75,11 +79,11 @@ public class TapCoreContactManager {
         });
     }
 
-    public static void saveUserData(TAPUserModel tapUserModel) {
-        TAPContactManager.getInstance().updateUserData(tapUserModel);
+    public void saveUserData(TAPUserModel user) {
+        TAPContactManager.getInstance().updateUserData(user);
     }
 
-    public static void addToTapTalkContactsWithUserID(String userID, TapGetContactInterface listener) {
+    public void addToTapTalkContactsWithUserID(String userID, TapGetContactListener listener) {
         TAPDataManager.getInstance().addContactApi(userID, new TAPDefaultDataView<TAPAddContactResponse>() {
             @Override
             public void onSuccess(TAPAddContactResponse response) {
@@ -98,7 +102,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public static void addToTapTalkContactsWithPhoneNumber(String phoneNumber, TapGetContactInterface listener) {
+    public void addToTapTalkContactsWithPhoneNumber(String phoneNumber, TapGetContactListener listener) {
         List<String> phoneNumberList = new ArrayList<>();
         phoneNumberList.add(phoneNumber);
         TAPDataManager.getInstance().addContactByPhone(phoneNumberList, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
@@ -119,7 +123,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public static void removeFromTapTalkContacts(String userID, TapCommonInterface listener) {
+    public void removeFromTapTalkContacts(String userID, TapCommonListener listener) {
         TAPDataManager.getInstance().removeContactApi(userID, new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {

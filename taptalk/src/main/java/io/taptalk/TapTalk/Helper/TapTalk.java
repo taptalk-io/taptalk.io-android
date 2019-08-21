@@ -35,17 +35,15 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.API.View.TapProjectConfigsInterface;
 import io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver;
-import io.taptalk.TapTalk.Interface.TAPGetUserInterface;
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface;
 import io.taptalk.TapTalk.Interface.TapCommonInterface;
 import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
-import io.taptalk.TapTalk.Listener.TAPChatRoomListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPListener;
+import io.taptalk.TapTalk.Listener.TapProjectConfigsListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -58,6 +56,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
@@ -65,7 +64,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.TAPContactModel;
-import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
@@ -89,11 +87,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_DEVEL
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_PRODUCTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_STAGING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INVALID_AUTH_TICKET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACCESS_TOKEN_UNAVAILABLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INVALID_AUTH_TICKET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_AUTHENTICATE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_REFRESH_ACTIVE_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_REFRESH_CONFIG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_CHANNEL_MAX_PARTICIPANTS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE;
@@ -105,7 +106,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MY_CONTAC
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.CHANNEL_MAX_PARTICIPANTS;
@@ -137,7 +137,6 @@ public class TapTalk {
 
     private Thread.UncaughtExceptionHandler defaultUEH;
     private List<TAPListener> tapListeners = new ArrayList<>();
-    private List<TAPChatRoomListener> tapChatRoomListeners = new ArrayList<>();
 
     private static Map<String, String> coreConfigs;
     private static Map<String, String> projectConfigs;
@@ -483,45 +482,8 @@ public class TapTalk {
         return TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED;
     }
 
-    public static List<TAPCustomKeyboardItemModel> requestCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
-        if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
-        } else {
-            try {
-                return tapTalk.requestCustomKeyboardItemsFromClient(activeUser, otherUser);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    private List<TAPCustomKeyboardItemModel> requestCustomKeyboardItemsFromClient(TAPUserModel activeUser, TAPUserModel otherUser) {
-        for (TAPChatRoomListener listener : tapChatRoomListeners) {
-            List<TAPCustomKeyboardItemModel> customKeyboardItems = listener.setCustomKeyboardItems(activeUser, otherUser);
-            if (null != customKeyboardItems) {
-                return customKeyboardItems;
-            }
-        }
-        return null;
-    }
-
-    public static void triggerMessageQuoteClicked(Activity activity, TAPMessageModel messageModel) {
-        if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
-        } else {
-            try {
-                tapTalk.triggerMessageQuoteClicked(activity, messageModel, (HashMap<String, Object>) messageModel.getData().get(USER_INFO));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void triggerMessageQuoteClicked(Activity activity, TAPMessageModel messageModel, HashMap<String, Object> userInfo) {
-        for (TAPChatRoomListener listener : tapChatRoomListeners) {
-            listener.onTapTalkMessageQuoteTapped(activity, messageModel, userInfo);
-        }
+    public static boolean isIsAutoConnectEnabled() {
+        return !isAutoConnectDisabled;
     }
 
     //Builder buat setting isi dari Notification chat
@@ -704,28 +666,6 @@ public class TapTalk {
         }
     }
 
-    public static void triggerListenerProductLeftButtonClicked(Activity activity, TAPProductModel productModel
-            , String recipientXcUserID, TAPRoomModel room) {
-        if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
-        } else {
-            for (TAPChatRoomListener listener : TapTalk.getTapTalkChatRoomListeners()) {
-                listener.onTapTalkProductListBubbleLeftButtonTapped(activity, productModel, recipientXcUserID, room);
-            }
-        }
-    }
-
-    public static void triggerListenerProductRightButtonClicked(Activity activity, TAPProductModel productModel
-            , String recipientXcUserID, TAPRoomModel room) {
-        if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
-        } else {
-            for (TAPChatRoomListener listener : TapTalk.getTapTalkChatRoomListeners()) {
-                listener.onTapTalkProductListBubbleRightButtonTapped(activity, productModel, recipientXcUserID, room);
-            }
-        }
-    }
-
     public static void triggerUpdateUnreadCountListener(int unreadCount) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
@@ -738,10 +678,6 @@ public class TapTalk {
 
     public static List<TAPListener> getTapTalkListeners() {
         return tapTalk.tapListeners;
-    }
-
-    public static List<TAPChatRoomListener> getTapTalkChatRoomListeners() {
-        return tapTalk.tapChatRoomListeners;
     }
 
     // TODO: 20 February 2019 ADD LISTENER TO DETECT FAILURE?
@@ -973,44 +909,34 @@ public class TapTalk {
         }
     }
 
-    public static void refreshActiveUser() {
+    public static void refreshActiveUser(TapCommonInterface listener) {
         new Thread(() -> {
             if (null != TAPChatManager.getInstance().getActiveUser()) {
                 TAPDataManager.getInstance().getUserByIdFromApi(TAPChatManager.getInstance().getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
                     @Override
                     public void onSuccess(TAPGetUserResponse response) {
                         TAPDataManager.getInstance().saveActiveUser(response.getUser());
+                        listener.onSuccess(SUCCESS_MESSAGE_REFRESH_ACTIVE_USER);
+                    }
+
+                    @Override
+                    public void onError(TAPErrorModel error) {
+                        listener.onError(error.getCode(), error.getMessage());
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        listener.onError(ERROR_CODE_OTHERS, errorMessage);
                     }
                 });
+            } else {
+                listener.onError(ERROR_CODE_ACTIVE_USER_NOT_FOUND, ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND);
             }
         }).start();
     }
 
     public static void callUpdateUnreadCount() {
         TAPNotificationManager.getInstance().updateUnreadCount();
-    }
-
-    public static void addChatRoomListener(TAPChatRoomListener listener) {
-        tapTalk.tapChatRoomListeners.add(listener);
-    }
-
-    public static void getTaptalkUserWithClientUserID(String clientUserID, TAPGetUserInterface getUserInterface) {
-        TAPDataManager.getInstance().getUserByXcUserIdFromApi(clientUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
-            @Override
-            public void onSuccess(TAPGetUserResponse response) {
-                getUserInterface.getUserSuccess(response.getUser());
-            }
-
-            @Override
-            public void onError(TAPErrorModel error) {
-                getUserInterface.getUserFailed(error.getMessage());
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                getUserInterface.getUserFailed(throwable);
-            }
-        });
     }
 
     public static TAPUserModel getTaptalkActiveUser() {
@@ -1021,7 +947,7 @@ public class TapTalk {
     }
 
     public static void refreshProjectConfigs(TapCommonInterface listener) {
-        TapCoreProjectConfigsManager.getProjectConfigs(new TapProjectConfigsInterface() {
+        TapCoreProjectConfigsManager.getInstance().getProjectConfigs(new TapProjectConfigsListener() {
             @Override
             public void onSuccess(TapConfigs config) {
                 coreConfigs = config.getCoreConfigs();

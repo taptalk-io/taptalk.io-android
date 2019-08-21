@@ -229,11 +229,12 @@ public class TAPDefaultConstant {
     }
 
     public static final class ClientSuccessMessages {
-        public static final String SUCCESS_MESSAGE_CONNECT = "Successfully connected";
+        public static final String SUCCESS_MESSAGE_CONNECT = "Connected successfully";
         public static final String SUCCESS_MESSAGE_REFRESH_CONFIG = "Project configs refreshed successfully";
         public static final String SUCCESS_MESSAGE_DELETE_GROUP = "Chat room deleted successfully";
         public static final String SUCCESS_MESSAGE_LEAVE_GROUP = "Left chat room successfully";
         public static final String SUCCESS_MESSAGE_AUTHENTICATE = "Authenticated successfully";
+        public static final String SUCCESS_MESSAGE_REFRESH_ACTIVE_USER = "Active user refreshed successfully";
     }
 
     public static final class UploadBroadcastEvent {

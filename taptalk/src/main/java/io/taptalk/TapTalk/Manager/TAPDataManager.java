@@ -567,7 +567,7 @@ public class TAPDataManager {
                 TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
                 TAPFileDownloadManager.getInstance().removeFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID));
             }
-        }
+        } // FIXME: 21 August 2019 ONLY DELETE FILES IN TAPTALK FOLDER
     }
 
     /**
