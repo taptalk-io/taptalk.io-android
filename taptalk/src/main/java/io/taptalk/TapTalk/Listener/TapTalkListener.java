@@ -3,9 +3,9 @@ package io.taptalk.TapTalk.Listener;
 import io.taptalk.TapTalk.Interface.TapTalkInterface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
-public abstract class TAPListener implements TapTalkInterface {
+public abstract class TapTalkListener implements TapTalkInterface {
     @Override
-    public void onRefreshAuthTicket() {
+    public void onTapTalkRefreshTokenExpired() {
     }
 
     @Override

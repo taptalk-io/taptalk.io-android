@@ -49,7 +49,6 @@ public class TAPDefaultConstant {
 
         public static final int TYPE_PRODUCT = 2001;
         public static final int TYPE_CATEGORY = 2002;
-        public static final int TYPE_ORDER_CARD = 3001;
         public static final int TYPE_CONFIRM_MY_PAYMENT = 2004;
 
         public static final int TYPE_HIDDEN = 0x9196;
@@ -72,7 +71,6 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_LOCATION_RIGHT = 10051;
         public static final int TYPE_BUBBLE_LOCATION_LEFT = 10052;
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
-        public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_BUBBLE_SYSTEM_MESSAGE = 9001;
         public static final int TYPE_BUBBLE_UNREAD_STATUS = 9002;
         public static final int TYPE_BUBBLE_LOADING = 9003;
@@ -177,6 +175,12 @@ public class TAPDefaultConstant {
     }
 
     public static final class Notification {
+        public static final String TAP_NOTIFICATION_CHANNEL = "taptalk_channel_id";
+        public static final String NOTIFICATION_CHANNEL_DEFAULT_NAME = "Chat Notifications";
+        public static final String NOTIFICATION_CHANNEL_DEFAULT_DESCRIPTION = "TapTalk Notifications";
+        public static final String NOTIFICATION_GROUP_DEFAULT = "TapTalkDefaultNotificationGroup";
+        public static final String NEW_MESSAGE = "New Message";
+        public static final String REPLY = "Reply";
         public static final String K_FIREBASE_TOKEN = "kTAPFirebaseToken";
         public static final String K_TEXT_REPLY = "kTAPTextReply";
         public static final String K_NOTIFICATION_MESSAGE_MAP = "kTAPNotificationMessageMap";
@@ -235,6 +239,7 @@ public class TAPDefaultConstant {
         public static final String SUCCESS_MESSAGE_LEAVE_GROUP = "Left chat room successfully";
         public static final String SUCCESS_MESSAGE_AUTHENTICATE = "Authenticated successfully";
         public static final String SUCCESS_MESSAGE_REFRESH_ACTIVE_USER = "Active user refreshed successfully";
+        public static final String SUCCESS_MESSAGE_OPEN_ROOM = "Opened chat room successfully";
     }
 
     public static final class UploadBroadcastEvent {
@@ -417,8 +422,6 @@ public class TAPDefaultConstant {
     public static final String ADDED_CONTACT = "kTAPAddedContact";
 
     public static final int CLOSE_FOR_RECONNECT_CODE = 666;
-
-    public static final String TAP_NOTIFICATION_CHANNEL = "taptalk_channel_id";
 
     public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";

@@ -44,7 +44,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPProjectConfigResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
@@ -126,7 +125,7 @@ public class TAPDataManager {
         setNeedToQueryUpdateRoomList(false);
         TAPFileDownloadManager.getInstance().resetTAPFileDownloadManager();
         TAPFileUploadManager.getInstance().resetFileUploadManager();
-        TAPNotificationManager.getInstance().clearAllNotifMessageMap();
+        TAPNotificationManager.getInstance().clearAllNotificationMessageMap();
         TAPMessageStatusManager.getInstance().resetMessageStatusManager();
     }
 
@@ -957,7 +956,7 @@ public class TAPDataManager {
         TAPApiManager.getInstance().requestOTPLogin("phone", countryID, phone, new TAPDefaultSubscriber<>(view));
     }
 
-    public void verifyingOTPLogin(long otpID, String otpKey, String otpCode, TAPDefaultDataView<TAPLoginOTPVerifyResponse> view) {
+    public void verifyOTPLogin(long otpID, String otpKey, String otpCode, TAPDefaultDataView<TAPLoginOTPVerifyResponse> view) {
         TAPApiManager.getInstance().verifyingOTPLogin(otpID, otpKey, otpCode, new TAPDefaultSubscriber<>(view));
     }
 

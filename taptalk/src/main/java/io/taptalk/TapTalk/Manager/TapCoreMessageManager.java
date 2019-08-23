@@ -6,10 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
@@ -18,6 +21,7 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
 import io.taptalk.TapTalk.Interface.TapFileDownloadInterface;
 import io.taptalk.TapTalk.Interface.TapGetMessageInterface;
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
@@ -27,7 +31,9 @@ import io.taptalk.TapTalk.Listener.TapReceiveMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
@@ -39,6 +45,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 
 public class TapCoreMessageManager {
 
@@ -311,5 +318,43 @@ public class TapCoreMessageManager {
                 listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
+    }
+
+    /**
+     * =============================================================================================
+     * TEMP
+     * =============================================================================================
+     */
+    private static void sendProductMessage(List<TAPProductModel> productModels, TAPUserModel recipientUserModel) {
+        int productSize = productModels.size();
+        List<TAPProductModel> tempProductModel = new ArrayList<>();
+        for (int index = 1; index <= productSize; index++) {
+            tempProductModel.add(productModels.get(index - 1));
+            if (index == productSize || index % 20 == 0) {
+                HashMap<String, Object> productHashMap = new LinkedHashMap<>();
+                productHashMap.put(ITEMS, new ArrayList<>(tempProductModel));
+                TAPChatManager.getInstance().sendProductMessageToServer(productHashMap, recipientUserModel);
+                tempProductModel.clear();
+            }
+        }
+    }
+
+    private void getUserFromRecipientUserAndSendProductRequestMessage(String message, @NonNull TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {
+        new Thread(() -> {
+            try {
+                final TAPUserModel myUserModel = TAPChatManager.getInstance().getActiveUser();
+                createAndSendProductRequestMessage(message, myUserModel, recipientUser, listener);
+            } catch (Exception e) {
+                e.printStackTrace();
+                listener.sendFailed(new TAPErrorModel("", e.getMessage(), ""));
+            }
+        }).start();
+    }
+
+    private void createAndSendProductRequestMessage(String message, TAPUserModel myUserModel, TAPUserModel otherUserModel, TAPSendMessageWithIDListener listener) {
+        TAPRoomModel roomModel = TAPRoomModel.Builder(TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), otherUserModel.getUserID()),
+                otherUserModel.getName(), 1, otherUserModel.getAvatarURL(), "#FFFFFF");
+        TAPChatManager.getInstance().sendTextMessageWithRoomModel(message, roomModel);
+        listener.sendSuccess();
     }
 }

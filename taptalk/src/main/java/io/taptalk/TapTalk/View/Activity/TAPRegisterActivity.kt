@@ -35,9 +35,9 @@ import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
-import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
 import io.taptalk.TapTalk.Interface.TapCommonInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
+import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse
@@ -736,7 +736,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
         override fun onSuccess(response: TAPRegisterResponse?) {
             TapTalk.authenticate(response?.ticket ?: "", true,
-                    object : TapCommonInterface {
+                    object : TapCommonListener() {
                         override fun onSuccess(successMessage: String?) {
                             TAPDataManager.getInstance().saveMyCountryCode(vm.countryCallingCode)
                             TAPDataManager.getInstance().saveMyCountryFlagUrl(vm.countryFlagUrl)

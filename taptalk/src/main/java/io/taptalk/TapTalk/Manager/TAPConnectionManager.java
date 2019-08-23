@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.Manager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Base64;
-import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

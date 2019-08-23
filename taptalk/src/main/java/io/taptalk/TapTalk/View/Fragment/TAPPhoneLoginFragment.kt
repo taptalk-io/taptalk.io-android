@@ -23,6 +23,7 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPCountryListActivity
@@ -163,7 +164,21 @@ class TAPPhoneLoginFragment : Fragment() {
                 && currentOTPTimestampLength <= maxTime * 1000) {
             requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true)
         } else {
-            TapTalk.loginWithRequestOTP(defaultCountryID, checkAndEditPhoneNumber(), requestOTPInterface)
+            TAPDataManager.getInstance().requestOTPLogin(loginViewModel.countryID, loginViewModel.phoneNumber, object : TAPDefaultDataView<TAPLoginOTPResponse>() {
+                override fun onSuccess(response: TAPLoginOTPResponse) {
+                    super.onSuccess(response)
+                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess)
+                }
+
+                override fun onError(error: TAPErrorModel) {
+                    super.onError(error)
+                    requestOTPInterface.onRequestFailed(error.message, error.code)
+                }
+
+                override fun onError(errorMessage: String) {
+                    requestOTPInterface.onRequestFailed(errorMessage, "400")
+                }
+            })
             loginActivity.vm.lastLoginTimestamp = 0L
         }
     }

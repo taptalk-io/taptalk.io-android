@@ -5,25 +5,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
 import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.TapTalk.Interface.TapTalkOpenChatRoomInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapUIListener;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
+import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.View.Fragment.TAPMainRoomListFragment;
+import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
@@ -91,6 +100,66 @@ public class TapUI {
                 roomColor);
     }
 
+    public void openChatRoomWithUserID(
+            Context context,
+            String userID,
+            @Nullable String prefilledText,
+            @Nullable String customQuoteTitle,
+            @Nullable String customQuoteContent,
+            @Nullable String customQuoteImageURL,
+            @Nullable HashMap<String, Object> userInfo,
+            TapCommonListener listener) {
+        String roomID = TAPChatManager.getInstance().arrangeRoomId(
+                TAPChatManager.getInstance().getActiveUser().getUserID(),
+                userID);
+        if (null != customQuoteTitle) {
+            TAPChatManager.getInstance().setQuotedMessage(roomID, customQuoteTitle, customQuoteContent, customQuoteImageURL);
+            if (null != userInfo) {
+                TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
+            }
+        }
+        if (null != prefilledText) {
+            TAPChatManager.getInstance().saveMessageToDraft(roomID, prefilledText);
+        }
+        TAPUserModel user = TAPContactManager.getInstance().getUserData(userID);
+
+        if (null == user) {
+            TAPDataManager.getInstance().getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
+                @Override
+                public void onSuccess(TAPGetUserResponse response) {
+
+                    openChatRoom(
+                            context,
+                            roomID,
+                            response.getUser().getName(),
+                            response.getUser().getAvatarURL(),
+                            TYPE_PERSONAL,
+                            "");
+                    listener.onSuccess(SUCCESS_MESSAGE_OPEN_ROOM);
+                }
+
+                @Override
+                public void onError(TAPErrorModel error) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            });
+        } else {
+            openChatRoom(
+                    context,
+                    roomID,
+                    user.getName(),
+                    user.getAvatarURL(),
+                    TYPE_PERSONAL,
+                    "");
+            listener.onSuccess(SUCCESS_MESSAGE_OPEN_ROOM);
+        }
+    }
+
     public void openChatRoomWithXCUserID(
             Context context,
             String xcUserID,
@@ -99,7 +168,7 @@ public class TapUI {
             @Nullable String customQuoteContent,
             @Nullable String customQuoteImageURL,
             @Nullable HashMap<String, Object> userInfo,
-            TapTalkOpenChatRoomInterface listener) {
+            TapCommonListener listener) {
         TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel user) {
@@ -122,12 +191,12 @@ public class TapUI {
                         user.getAvatarURL(),
                         TYPE_PERSONAL,
                         "");
-                listener.onOpenRoomSuccess();
+                listener.onSuccess(SUCCESS_MESSAGE_OPEN_ROOM);
             }
 
             @Override
             public void onSelectFailed(String errorMessage) {
-                listener.onOpenRoomFailed(errorMessage);
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
     }
@@ -157,6 +226,37 @@ public class TapUI {
             }
         }
         openChatRoomWithRoomModel(context, roomModel);
+    }
+
+    public static void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
+        WeakReference<Context> contextWeakReference = new WeakReference<>(context);
+        TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {
+            @Override
+            public void onSelectFinished(TAPRoomModel roomModel) {
+                if (null == contextWeakReference.get()) {
+                    return;
+                }
+                Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
+                intent.putExtra(ROOM, roomModel);
+                contextWeakReference.get().startActivity(intent);
+                if (contextWeakReference.get() instanceof Activity) {
+                    ((Activity) contextWeakReference.get()).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+                }
+            }
+        });
+    }
+
+    public static void openTapTalkUserProfile(Context context, String xcUserID) {
+        TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+            @Override
+            public void onSelectFinished(TAPUserModel userModel) {
+                openTapTalkUserProfile(context, userModel);
+            }
+
+            @Override
+            public void onSelectFailed(String errorMessage) {
+            }
+        });
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {

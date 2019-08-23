@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Listener.TapTalkListener;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
@@ -59,7 +60,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPProjectConfigResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
@@ -240,8 +240,13 @@ public class TAPApiManager {
                         updateSession(response);
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
                     } else if (UNAUTHORIZED == response.getStatus()) {
-                        TapTalk.refreshTokenExpired();
-                    } else Observable.error(new TAPAuthException(response.getError().getMessage()));
+                        TapTalk.clearAllTapTalkData();
+                        for (TapTalkListener listener : TapTalk.getTapTalkListeners()) {
+                            listener.onTapTalkRefreshTokenExpired();
+                        }
+                    } else {
+                        Observable.error(new TAPAuthException(response.getError().getMessage()));
+                    }
                 }).doOnError(throwable -> {
 
                 });

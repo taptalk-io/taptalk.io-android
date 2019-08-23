@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.taptalk.TapTalk.API.Api.TAPApiManager
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.REGISTER
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -19,7 +20,12 @@ import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
+import io.taptalk.TapTalk.Interface.TapCommonInterface
+import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
+import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity
 import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity
@@ -96,7 +102,21 @@ class TAPLoginVerificationFragment : Fragment() {
         //setAndStartTimer(waitTime)
         tv_request_otp_again.setOnClickListener {
             showRequestingOTPLoading()
-            TapTalk.loginWithRequestOTP(countryID, phoneNumber, requestOTPInterface)
+            TAPDataManager.getInstance().requestOTPLogin(countryID, phoneNumber, object : TAPDefaultDataView<TAPLoginOTPResponse>() {
+                override fun onSuccess(response: TAPLoginOTPResponse) {
+                    super.onSuccess(response)
+                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess)
+                }
+
+                override fun onError(error: TAPErrorModel) {
+                    super.onError(error)
+                    requestOTPInterface.onRequestFailed(error.message, error.code)
+                }
+
+                override fun onError(errorMessage: String) {
+                    requestOTPInterface.onRequestFailed(errorMessage, "400")
+                }
+            })
         }
     }
 
@@ -183,7 +203,31 @@ class TAPLoginVerificationFragment : Fragment() {
     private fun verifyOTP() {
         showVerifyingOTPLoading()
         cancelTimer()
-        TapTalk.verifyOTP(otpID, otpKey, et_otp_code.text.toString(), verifyOTPInterface)
+        TAPDataManager.getInstance().verifyOTPLogin(otpID, otpKey, et_otp_code.text.toString(), object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
+            override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
+                if (response.isRegistered) {
+                    TapTalk.authenticate(response.ticket, true, object : TapCommonListener() {
+                        override fun onSuccess(successMessage: String) {
+                            verifyOTPInterface.verifyOTPSuccessToLogin()
+                        }
+
+                        override fun onError(errorCode: String, errorMessage: String) {
+                            verifyOTPInterface.verifyOTPFailed(errorCode, errorMessage)
+                        }
+                    })
+                } else {
+                    verifyOTPInterface.verifyOTPSuccessToRegister()
+                }
+            }
+
+            override fun onError(error: TAPErrorModel) {
+                verifyOTPInterface.verifyOTPFailed(error.message, error.code)
+            }
+
+            override fun onError(errorMessage: String) {
+                verifyOTPInterface.verifyOTPFailed(errorMessage, "400")
+            }
+        })
     }
 
     private val verifyOTPInterface = object : TAPVerifyOTPInterface {

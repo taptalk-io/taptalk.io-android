@@ -745,7 +745,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
     private void cancelNotificationWhenEnterRoom() {
         TAPNotificationManager.getInstance().cancelNotificationWhenEnterRoom(this, vm.getRoom().getRoomID());
-        TAPNotificationManager.getInstance().clearNotifMessagesMap(vm.getRoom().getRoomID());
+        TAPNotificationManager.getInstance().clearNotificationMessagesMap(vm.getRoom().getRoomID());
     }
 
     private void openRoomProfile() {

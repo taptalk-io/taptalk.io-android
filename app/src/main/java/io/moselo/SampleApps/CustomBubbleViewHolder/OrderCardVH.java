@@ -27,8 +27,6 @@ import io.taptalk.TapTalk.View.Adapter.TAPBaseChatViewHolder;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TaptalkSample.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_ORDER_CARD;
-
 public class OrderCardVH extends TAPBaseChatViewHolder {
     private ConstraintLayout clContainer, clCard, clButtonDetail, clProductPreview, clButtonMoreItems, clDateTime;
     private ConstraintLayout clRecipient, clNotes, clCourier, clAdditionalCost, clDiscount, clTotalPrice;
@@ -338,7 +336,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
             TAPMessageModel orderCard = TAPMessageModel.Builder(
                     TAPUtils.getInstance().toJsonString(order),
                     item.getRoom(),
-                    TYPE_ORDER_CARD,
+                    3001,
                     System.currentTimeMillis(),
                     item.getUser(),
                     item.getRecipientID(),
