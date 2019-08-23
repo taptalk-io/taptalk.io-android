@@ -3,7 +3,7 @@ package io.taptalk.TapTalk.Listener;
 import io.taptalk.TapTalk.Interface.TapTalkInterface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
-public abstract class TapTalkListener implements TapTalkInterface {
+public abstract class TapListener implements TapTalkInterface {
     @Override
     public void onTapTalkRefreshTokenExpired() {
     }

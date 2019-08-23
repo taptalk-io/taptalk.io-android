@@ -25,7 +25,7 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TapTalkListener;
+import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
@@ -275,7 +275,7 @@ public class TAPNotificationManager {
                         .show();
             }
         } else {
-            for (TapTalkListener listener : getTapTalkListeners()) {
+            for (TapListener listener : getTapTalkListeners()) {
                 listener.onNotificationReceived(newMessageModel);
             }
         }
@@ -297,7 +297,7 @@ public class TAPNotificationManager {
                         .show();
             }
         } else {
-            for (TapTalkListener listener : getTapTalkListeners()) {
+            for (TapListener listener : getTapTalkListeners()) {
                 listener.onNotificationReceived(newMessageModel);
             }
         }
@@ -334,7 +334,7 @@ public class TAPNotificationManager {
         new Thread(() -> TAPDataManager.getInstance().getUnreadCount(new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onCountedUnreadCount(int unreadCount) {
-                for (TapTalkListener listener : TapTalk.getTapTalkListeners()) {
+                for (TapListener listener : TapTalk.getTapTalkListeners()) {
                     listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
                 }
             }

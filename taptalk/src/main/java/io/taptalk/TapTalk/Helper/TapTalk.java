@@ -20,7 +20,7 @@ import java.util.Map;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
-import io.taptalk.TapTalk.Listener.TapTalkListener;
+import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Listener.TapProjectConfigsListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -100,7 +100,7 @@ public class TapTalk {
     private Intent intent;
 
     private Thread.UncaughtExceptionHandler defaultUEH;
-    private List<TapTalkListener> tapTalkListeners = new ArrayList<>();
+    private List<TapListener> tapListeners = new ArrayList<>();
 
     private static Map<String, String> coreConfigs;
     private static Map<String, String> projectConfigs;
@@ -140,7 +140,7 @@ public class TapTalk {
             , @NonNull String userAgent,
                    int clientAppIcon, String clientAppName,
                    TapTalkImplementationType type,
-                   @NonNull TapTalkListener tapTalkListener) {
+                   @NonNull TapListener tapListener) {
 
         TapTalk.appContext = appContext;
         clientAppName = appContext.getResources().getString(R.string.tap_app_name);
@@ -193,7 +193,7 @@ public class TapTalk {
                             .build()
             );
 
-        tapTalkListeners.add(tapTalkListener);
+        tapListeners.add(tapListener);
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
@@ -232,11 +232,11 @@ public class TapTalk {
         });
     }
 
-    public static TapTalk init(Context context, String appKeyID, String appKeySecret, String userAgent, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TapTalkListener listener) {
+    public static TapTalk init(Context context, String appKeyID, String appKeySecret, String userAgent, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TapListener listener) {
         return tapTalk == null ? (tapTalk = new TapTalk(context, appKeyID, appKeySecret, userAgent, clientAppIcon, clientAppName, type, listener)) : tapTalk;
     }
 
-    public static TapTalk init(Context context, String appKeyID, String appKeySecret, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TapTalkListener listener) {
+    public static TapTalk init(Context context, String appKeyID, String appKeySecret, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TapListener listener) {
         return tapTalk == null ? (tapTalk = new TapTalk(context, appKeyID, appKeySecret, "android", clientAppIcon, clientAppName, type, listener)) : tapTalk;
     }
 
@@ -358,18 +358,18 @@ public class TapTalk {
         return clientAppName;
     }
 
-    public static void addTapTalkListener(TapTalkListener listener) {
+    public static void addTapTalkListener(TapListener listener) {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
-            tapTalk.tapTalkListeners.add(listener);
+            tapTalk.tapListeners.add(listener);
         }
     }
 
 
 
-    public static List<TapTalkListener> getTapTalkListeners() {
-        return tapTalk.tapTalkListeners;
+    public static List<TapListener> getTapTalkListeners() {
+        return tapTalk.tapListeners;
     }
 
     public static void setTapTalkEnvironmentProduction() {

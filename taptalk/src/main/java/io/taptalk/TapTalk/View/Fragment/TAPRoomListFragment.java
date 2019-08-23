@@ -46,7 +46,7 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TapTalkListener;
+import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -341,7 +341,7 @@ public class TAPRoomListFragment extends Fragment {
             runFullRefreshSequence();
         } else {
             TapTalk.clearAllTapTalkData();
-            for (TapTalkListener listener : TapTalk.getTapTalkListeners()) {
+            for (TapListener listener : TapTalk.getTapTalkListeners()) {
                 listener.onTapTalkRefreshTokenExpired();
             }
         }
