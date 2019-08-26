@@ -48,7 +48,7 @@ public class TAPConnectionManager {
     private String TAG = TAPConnectionManager.class.getSimpleName();
     private static TAPConnectionManager instance;
     private WebSocketClient webSocketClient;
-    @NonNull private String webSocketEndpoint = TAPDefaultConstant.BaseUrl.BASE_WSS_PRODUCTION;
+    @NonNull private String webSocketEndpoint = "wss://engine.taptalk.io/connect";
     //private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;

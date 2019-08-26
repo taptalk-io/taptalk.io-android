@@ -42,11 +42,11 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         if ("dev".equals(BuildConfig.BUILD_TYPE)) {
-            TapTalk.setTapTalkEnvironmentDevelopment();
+            // Dev
             TapTalk.init(this, "d1e5dfe23d1e00bf54bc2316f",
                     "NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh",
                     //R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name),
-                    R.drawable.ic_taptalk_logo, "TapTalk Dev Sample App",
+                    R.drawable.ic_taptalk_logo, "TapTalk Dev Sample App", "engine-dev.taptalk.io",
                     TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI,
                     tapListener);
             Stetho.initialize(
@@ -55,10 +55,10 @@ public class SampleApplication extends Application {
                             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                             .build());
         } else if ("staging".equals(BuildConfig.BUILD_TYPE)) {
-            TapTalk.setTapTalkEnvironmentStaging();
+            // Staging
             TapTalk.init(this, "b43b48745dfa0e44k1",
                     "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4",
-                    R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name),
+                    R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name), "engine-stg.taptalk.io",
                     TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI,
                     tapListener);
             Stetho.initialize(
@@ -67,10 +67,10 @@ public class SampleApplication extends Application {
                             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                             .build());
         } else {
-            TapTalk.setTapTalkEnvironmentProduction();
+            // Production
             TapTalk.init(this, "d1e5dfe23d1e00bf54bc2316f",
                     "NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh",
-                    R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name),
+                    R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name), "engine.taptalk.io",
                     TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI,
                     tapListener);
         }

@@ -20,8 +20,8 @@ import java.util.Map;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
-import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
+import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -47,15 +47,6 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_API_DEVELOPMENT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_API_PRODUCTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_API_STAGING;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_SOCKET_DEVELOPMENT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_SOCKET_PRODUCTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_URL_SOCKET_STAGING;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_DEVELOPMENT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_PRODUCTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BaseUrl.BASE_WSS_STAGING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INVALID_AUTH_TICKET;
@@ -81,9 +72,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.ROOM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USERNAME_IGNORE_CASE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USER_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
-import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentDevelopment;
-import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentProduction;
-import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkEnvironment.TapTalkEnvironmentStaging;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
@@ -136,17 +124,27 @@ public class TapTalk {
         }
     };
 
-    public TapTalk(@NonNull final Context appContext, @NonNull String appID, @NonNull String appSecret
-            , @NonNull String userAgent,
-                   int clientAppIcon, String clientAppName,
-                   TapTalkImplementationType type,
-                   @NonNull TapListener tapListener) {
+    public TapTalk(
+            @NonNull final Context appContext,
+            @NonNull String appID,
+            @NonNull String appSecret,
+            @NonNull String userAgent,
+            int clientAppIcon,
+            String clientAppName,
+            String appBaseURL,
+            TapTalkImplementationType type,
+            @NonNull TapListener tapListener) {
 
         TapTalk.appContext = appContext;
         TapTalk.clientAppIcon = clientAppIcon;
         TapTalk.clientAppName = clientAppName;
 
         //clientAppName = appContext.getResources().getString(R.string.tap_app_name);
+
+        // Init Base URL
+        TAPApiManager.setBaseUrlApi(String.format(appContext.getString(R.string.tap_base_url_api), appBaseURL));
+        TAPApiManager.setBaseUrlSocket(String.format(appContext.getString(R.string.tap_base_url_socket), appBaseURL));
+        TAPConnectionManager.getInstance().setWebSocketEndpoint(String.format(appContext.getString(R.string.tap_base_wss), appBaseURL));
 
         // Init Hawk for preference
         if (BuildConfig.BUILD_TYPE.equals("dev")) {
@@ -241,12 +239,12 @@ public class TapTalk {
      * =============================================================================================
      */
 
-    public static TapTalk init(Context context, String appKeyID, String appKeySecret, String userAgent, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TapListener listener) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, appKeyID, appKeySecret, userAgent, clientAppIcon, clientAppName, type, listener)) : tapTalk;
+    public static TapTalk init(Context context, String appKeyID, String appKeySecret, String userAgent, int clientAppIcon, String clientAppName, String appBaseURL, TapTalkImplementationType type, TapListener listener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appKeyID, appKeySecret, userAgent, clientAppIcon, clientAppName, appBaseURL, type, listener)) : tapTalk;
     }
 
-    public static TapTalk init(Context context, String appKeyID, String appKeySecret, int clientAppIcon, String clientAppName, TapTalkImplementationType type, TapListener listener) {
-        return tapTalk == null ? (tapTalk = new TapTalk(context, appKeyID, appKeySecret, "android", clientAppIcon, clientAppName, type, listener)) : tapTalk;
+    public static TapTalk init(Context context, String appKeyID, String appKeySecret, int clientAppIcon, String clientAppName, String appBaseURL, TapTalkImplementationType type, TapListener listener) {
+        return tapTalk == null ? (tapTalk = new TapTalk(context, appKeyID, appKeySecret, "android", clientAppIcon, clientAppName, appBaseURL, type, listener)) : tapTalk;
     }
 
     public static void initializeGooglePlacesApiKey(String apiKey) {
@@ -530,34 +528,6 @@ public class TapTalk {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         } else {
             tapTalk.tapListeners.add(listener);
-        }
-    }
-
-    public static void setTapTalkEnvironmentProduction() {
-        setTapTalkEnvironment(TapTalkEnvironmentProduction);
-    }
-
-    public static void setTapTalkEnvironmentStaging() {
-        setTapTalkEnvironment(TapTalkEnvironmentStaging);
-    }
-
-    public static void setTapTalkEnvironmentDevelopment() {
-        setTapTalkEnvironment(TapTalkEnvironmentDevelopment);
-    }
-
-    private static void setTapTalkEnvironment(@NonNull TapTalkEnvironment environment) {
-        if (TapTalkEnvironmentProduction == environment) {
-            TAPApiManager.setBaseUrlApi(BASE_URL_API_PRODUCTION);
-            TAPApiManager.setBaseUrlSocket(BASE_URL_SOCKET_PRODUCTION);
-            TAPConnectionManager.getInstance().setWebSocketEndpoint(BASE_WSS_PRODUCTION);
-        } else if (TapTalkEnvironmentStaging == environment) {
-            TAPApiManager.setBaseUrlApi(BASE_URL_API_STAGING);
-            TAPApiManager.setBaseUrlSocket(BASE_URL_SOCKET_STAGING);
-            TAPConnectionManager.getInstance().setWebSocketEndpoint(BASE_WSS_STAGING);
-        } else if (TapTalkEnvironmentDevelopment == environment) {
-            TAPApiManager.setBaseUrlApi(BASE_URL_API_DEVELOPMENT);
-            TAPApiManager.setBaseUrlSocket(BASE_URL_SOCKET_DEVELOPMENT);
-            TAPConnectionManager.getInstance().setWebSocketEndpoint(BASE_WSS_DEVELOPMENT);
         }
     }
 

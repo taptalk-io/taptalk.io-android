@@ -336,20 +336,6 @@ public class TAPDefaultConstant {
         public static final String POSTAL_CODE = "kTAPPostalCode";
     }
 
-    public static final class BaseUrl {
-        public static final String BASE_URL_API_PRODUCTION = "https://engine.taptalk.io/api/v1/";
-        public static final String BASE_URL_SOCKET_PRODUCTION = "https://engine.taptalk.io/";
-        public static final String BASE_WSS_PRODUCTION = "wss://engine.taptalk.io/connect";
-
-        public static final String BASE_URL_API_STAGING = "https://engine-stg.taptalk.io/api/v1/";
-        public static final String BASE_URL_SOCKET_STAGING = "https://engine-stg.taptalk.io/";
-        public static final String BASE_WSS_STAGING = "wss://engine-stg.taptalk.io/connect";
-
-        public static final String BASE_URL_API_DEVELOPMENT = "https://engine-dev.taptalk.io/api/v1/";
-        public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://engine-dev.taptalk.io/";
-        public static final String BASE_WSS_DEVELOPMENT = "wss://engine-dev.taptalk.io/connect";
-    }
-
     public static final Intent[] AUTO_START_INTENTS = {
             new Intent().setComponent(new ComponentName("com.samsung.android.lool",
                     "com.samsung.android.sm.ui.battery.BatteryActivity")),
