@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ import io.taptalk.TapTalk.Interface.TapGetMessageInterface;
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TapReceiveMessageListener;
+import io.taptalk.TapTalk.Listener.TapCoreReceiveMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -51,45 +50,45 @@ public class TapCoreMessageManager {
 
     private static TapCoreMessageManager instance;
 
-    private List<TapReceiveMessageListener> receiveMessageListeners;
+    private List<TapCoreReceiveMessageListener> receiveMessageListeners;
     private TAPChatListener chatListener;
 
     public static TapCoreMessageManager getInstance() {
         return null == instance ? instance = new TapCoreMessageManager() : instance;
     }
 
-    private List<TapReceiveMessageListener> getReceiveMessageListeners() {
+    private List<TapCoreReceiveMessageListener> getReceiveMessageListeners() {
         return null == receiveMessageListeners ? receiveMessageListeners = new ArrayList<>() : receiveMessageListeners;
     }
 
-    public void addMessageListener(TapReceiveMessageListener listener) {
+    public void addMessageListener(TapCoreReceiveMessageListener listener) {
         if (getReceiveMessageListeners().isEmpty()) {
             if (null == chatListener) {
                 chatListener = new TAPChatListener() {
                     @Override
                     public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                        for (TapReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
                             listener.onReceiveMessageInActiveRoom(message);
                         }
                     }
 
                     @Override
                     public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                        for (TapReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
                             listener.onReceiveMessageInOtherRoom(message);
                         }
                     }
 
                     @Override
                     public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-                        for (TapReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
                             listener.onUpdateMessageInActiveRoom(message);
                         }
                     }
 
                     @Override
                     public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
-                        for (TapReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
                             listener.onUpdateMessageInOtherRoom(message);
                         }
                     }
@@ -100,7 +99,7 @@ public class TapCoreMessageManager {
         getReceiveMessageListeners().add(listener);
     }
 
-    public void removeMessageListener(TapReceiveMessageListener listener) {
+    public void removeMessageListener(TapCoreReceiveMessageListener listener) {
         getReceiveMessageListeners().remove(listener);
         if (getReceiveMessageListeners().isEmpty()) {
             TAPChatManager.getInstance().removeChatListener(chatListener);

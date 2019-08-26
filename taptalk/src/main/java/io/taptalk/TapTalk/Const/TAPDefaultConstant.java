@@ -54,8 +54,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_HIDDEN = 0x9196;
 
         public static final int TYPE_SYSTEM_MESSAGE = 9001;
-        public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9003;
-        public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9004;
+        public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9002;
+        public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9003;
     }
 
     public static final class BubbleType {

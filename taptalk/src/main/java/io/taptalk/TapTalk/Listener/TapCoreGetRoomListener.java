@@ -3,7 +3,7 @@ package io.taptalk.TapTalk.Listener;
 import io.taptalk.TapTalk.Interface.TapGetRoomInterface;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 
-public abstract class TapGetRoomListener implements TapGetRoomInterface {
+public abstract class TapCoreGetRoomListener implements TapGetRoomInterface {
 
     @Override
     public void onSuccess(TAPRoomModel room) {

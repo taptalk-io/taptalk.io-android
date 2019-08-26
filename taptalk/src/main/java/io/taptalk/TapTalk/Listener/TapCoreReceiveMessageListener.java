@@ -3,7 +3,7 @@ package io.taptalk.TapTalk.Listener;
 import io.taptalk.TapTalk.Interface.TapReceiveMessageInterface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
-public abstract class TapReceiveMessageListener implements TapReceiveMessageInterface {
+public abstract class TapCoreReceiveMessageListener implements TapReceiveMessageInterface {
 
     @Override
     public void onReceiveMessageInActiveRoom(TAPMessageModel message) {

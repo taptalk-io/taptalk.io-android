@@ -3,7 +3,7 @@ package io.taptalk.TapTalk.Listener;
 import io.taptalk.TapTalk.Interface.TapReceiveRoomStatusInterface;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
-public abstract class TapReceiveRoomStatusListener implements TapReceiveRoomStatusInterface {
+public abstract class TapCoreReceiveRoomStatusListener implements TapReceiveRoomStatusInterface {
 
     @Override
     public void onReceiveStartTyping(String roomID, TAPUserModel user) {

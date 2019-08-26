@@ -33,7 +33,7 @@ public class SampleApplication extends Application {
         }
 
         @Override
-        public void onNotificationReceived(TAPMessageModel messageModel) {
+        public void onNotificationReceived(TAPMessageModel message) {
 
         }
     };
@@ -45,7 +45,8 @@ public class SampleApplication extends Application {
             TapTalk.setTapTalkEnvironmentDevelopment();
             TapTalk.init(this, "d1e5dfe23d1e00bf54bc2316f",
                     "NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh",
-                    R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name),
+                    //R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name),
+                    R.drawable.ic_taptalk_logo, "TapTalk Dev Sample App",
                     TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI,
                     tapListener);
             Stetho.initialize(

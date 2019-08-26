@@ -6,8 +6,8 @@ import java.util.List;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
-import io.taptalk.TapTalk.Listener.TapGetContactListener;
-import io.taptalk.TapTalk.Listener.TapGetMultipleContactListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetContactListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetMultipleContactListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
@@ -25,7 +25,7 @@ public class TapCoreContactManager {
         return null == instance ? instance = new TapCoreContactManager() : instance;
     }
 
-    public void getAllUserContacts(TapGetMultipleContactListener listener) {
+    public void getAllUserContacts(TapCoreGetMultipleContactListener listener) {
         TAPDataManager.getInstance().getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(List<TAPUserModel> entities) {
@@ -39,7 +39,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public void getUserDataWithUserID(String userID, TapGetContactListener listener) {
+    public void getUserDataWithUserID(String userID, TapCoreGetContactListener listener) {
         TAPDataManager.getInstance().getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
@@ -59,7 +59,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public void getUserDataWithXCUserID(String xcUserID, TapGetContactListener listener) {
+    public void getUserDataWithXCUserID(String xcUserID, TapCoreGetContactListener listener) {
         TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
@@ -83,7 +83,7 @@ public class TapCoreContactManager {
         TAPContactManager.getInstance().updateUserData(user);
     }
 
-    public void addToTapTalkContactsWithUserID(String userID, TapGetContactListener listener) {
+    public void addToTapTalkContactsWithUserID(String userID, TapCoreGetContactListener listener) {
         TAPDataManager.getInstance().addContactApi(userID, new TAPDefaultDataView<TAPAddContactResponse>() {
             @Override
             public void onSuccess(TAPAddContactResponse response) {
@@ -102,7 +102,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public void addToTapTalkContactsWithPhoneNumber(String phoneNumber, TapGetContactListener listener) {
+    public void addToTapTalkContactsWithPhoneNumber(String phoneNumber, TapCoreGetContactListener listener) {
         List<String> phoneNumberList = new ArrayList<>();
         phoneNumberList.add(phoneNumber);
         TAPDataManager.getInstance().addContactByPhone(phoneNumberList, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
