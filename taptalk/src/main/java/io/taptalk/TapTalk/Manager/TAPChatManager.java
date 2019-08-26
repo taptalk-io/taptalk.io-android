@@ -1824,11 +1824,11 @@ public class TAPChatManager {
         TapUI.getInstance().triggerMessageQuoteTapped(activity, messageModel);
     }
 
-    public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
-        return TapCustomKeyboardManager.getInstance().getCustomKeyboardItems(activeUser, otherUser);
+    public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
+        return TapCustomKeyboardManager.getInstance().getCustomKeyboardItems(room, activeUser, recipientUser);
     }
 
-    public void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
-        TapCustomKeyboardManager.getInstance().triggerCustomKeyboardItemTapped(activity, customKeyboardItemModel, activeUser, otherUser);
+    public void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPRoomModel room, TAPUserModel activeUser, TAPUserModel otherUser) {
+        TapCustomKeyboardManager.getInstance().triggerCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, otherUser);
     }
 }

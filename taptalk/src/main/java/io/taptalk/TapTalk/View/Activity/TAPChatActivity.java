@@ -607,13 +607,13 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
 
         // Initialize custom keyboard
-        vm.setCustomKeyboardItems(TAPChatManager.getInstance().getCustomKeyboardItems(vm.getMyUserModel(), vm.getOtherUserModel()));
+        vm.setCustomKeyboardItems(TAPChatManager.getInstance().getCustomKeyboardItems(vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel()));
         if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0 &&
                 null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             // Enable custom keyboard
             vm.setCustomKeyboardEnabled(true);
             customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), customKeyboardItemModel -> {
-                TAPChatManager.getInstance().triggerCustomKeyboardItemTapped(TAPChatActivity.this, customKeyboardItemModel, vm.getMyUserModel(), vm.getOtherUserModel());
+                TAPChatManager.getInstance().triggerCustomKeyboardItemTapped(TAPChatActivity.this, customKeyboardItemModel, vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel());
                 hideUnreadButton();
             });
             rvCustomKeyboard.setAdapter(customKeyboardAdapter);

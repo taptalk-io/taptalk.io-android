@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Listener.TapCustomKeyboardListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TapCustomKeyboardManager {
@@ -31,9 +32,9 @@ public class TapCustomKeyboardManager {
         getCustomKeyboardListeners().remove(listener);
     }
 
-    List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPUserModel activeUser, TAPUserModel otherUser) {
+    List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
         for (TapCustomKeyboardListener listener : getCustomKeyboardListeners()) {
-            List<TAPCustomKeyboardItemModel> items = listener.setCustomKeyboardItems(activeUser, otherUser);
+            List<TAPCustomKeyboardItemModel> items = listener.setCustomKeyboardItems(room, activeUser, recipientUser);
             if (null != items && !items.isEmpty()) {
                 return items;
             }
@@ -41,9 +42,9 @@ public class TapCustomKeyboardManager {
         return null;
     }
 
-    void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPUserModel activeUser, TAPUserModel otherUser) {
+    void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
         for (TapCustomKeyboardListener listener : getCustomKeyboardListeners()) {
-            listener.onCustomKeyboardItemTapped(activity, customKeyboardItemModel, activeUser, otherUser);
+            listener.onCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, recipientUser);
         }
     }
 }
