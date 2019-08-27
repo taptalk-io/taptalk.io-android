@@ -122,8 +122,5 @@
 
 -ignorewarnings -keep class * { public private *; }
 
--keep class io.taptalk.TapTalk.Helper.TapTalk { *; }
--keepclassmembers class io.taptalk.TapTalk.Helper.TapTalk { *; }
--keepnames class io.taptalk.TapTalk.Helper.TapTalk { *; }
--keepclassmembernames class io.taptalk.TapTalk.Helper.TapTalk { *; }
-
+-keep class io.taptalk.TapTalk.Helper.TapTalk**
+-keepclassmembers io.taptalk.TapTalk.Helper.TapTalk** {*;}
