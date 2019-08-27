@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.Helper;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -76,7 +75,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
-@Keep
 public class TapTalk {
     private static final String TAG = TapTalk.class.getSimpleName();
     public static TapTalk tapTalk;
