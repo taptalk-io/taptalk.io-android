@@ -248,7 +248,14 @@ public class TapTalk {
     }
 
     public static void initializeGooglePlacesApiKey(String apiKey) {
+        checkTapTalkInitialized();
         Places.initialize(appContext, apiKey);
+    }
+
+    private static void checkTapTalkInitialized() {
+        if (null == tapTalk) {
+            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
+        }
     }
 
     /**
@@ -258,6 +265,7 @@ public class TapTalk {
      */
 
     public static void authenticate(String authTicket, boolean connectOnSuccess, TapCommonListener listener) {
+        checkTapTalkInitialized();
         if (null == authTicket || "".equals(authTicket)) {
             listener.onError(ERROR_CODE_INVALID_AUTH_TICKET, ERROR_MESSAGE_INVALID_AUTH_TICKET);
         } else {
@@ -329,10 +337,12 @@ public class TapTalk {
     }
 
     public static boolean isAuthenticated() {
+        checkTapTalkInitialized();
         return TAPDataManager.getInstance().checkAccessTokenAvailable();
     }
 
     public static void logoutAndClearAllTapTalkData(TapCommonListener listener) {
+        checkTapTalkInitialized();
         TAPDataManager.getInstance().logout(new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
@@ -353,6 +363,7 @@ public class TapTalk {
     }
 
     public static void clearAllTapTalkData() {
+        checkTapTalkInitialized();
         TAPDataManager.getInstance().deleteAllPreference();
         TAPDataManager.getInstance().deleteAllFromDatabase();
         TAPDataManager.getInstance().deleteAllManagerData();
@@ -369,6 +380,7 @@ public class TapTalk {
      */
 
     public static void connect(TapCommonListener listener) {
+        checkTapTalkInitialized();
         if (isAuthenticated()) {
             TAPConnectionManager.getInstance().connect(listener);
         } else {
@@ -377,22 +389,27 @@ public class TapTalk {
     }
 
     public static void disconnect() {
+        checkTapTalkInitialized();
         TAPConnectionManager.getInstance().close(NOT_CONNECTED);
     }
 
     public static void enableAutoConnect() {
+        checkTapTalkInitialized();
         isAutoConnectDisabled = false;
     }
 
     public static void disableAutoConnect() {
+        checkTapTalkInitialized();
         isAutoConnectDisabled = true;
     }
 
     public static boolean isConnected() {
+        checkTapTalkInitialized();
         return TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED;
     }
 
     public static boolean isAutoConnectEnabled() {
+        checkTapTalkInitialized();
         return !isAutoConnectDisabled;
     }
 
@@ -403,31 +420,38 @@ public class TapTalk {
      */
 
     public static int getClientAppIcon() {
+        checkTapTalkInitialized();
         return clientAppIcon;
     }
 
     public static String getClientAppName() {
+        checkTapTalkInitialized();
         return clientAppName;
     }
 
     public static TapTalkImplementationType getTapTalkImplementationType() {
+        checkTapTalkInitialized();
         return implementationType;
     }
 
     public static void updateApplicationBadgeCount() {
+        checkTapTalkInitialized();
         TAPNotificationManager.getInstance().updateUnreadCount();
     }
 
     // TODO: 22 August 2019 CORE MODEL
     public static Map<String, String> getCoreConfigs() {
+        checkTapTalkInitialized();
         return new HashMap<>(coreConfigs);
     }
 
     public static Map<String, String> getProjectConfigs() {
+        checkTapTalkInitialized();
         return new HashMap<>(projectConfigs);
     }
 
     public static Map<String, String> getCustomConfigs() {
+        checkTapTalkInitialized();
         return new HashMap<>(customConfigs);
     }
 
@@ -481,13 +505,12 @@ public class TapTalk {
      */
 
     public static TAPUserModel getTaptalkActiveUser() {
-        if (null == TAPDataManager.getInstance().getActiveUser()) {
-            return null;
-        }
+        checkTapTalkInitialized();
         return TAPDataManager.getInstance().getActiveUser();
     }
 
     public static void refreshActiveUser(TapCommonListener listener) {
+        checkTapTalkInitialized();
         new Thread(() -> {
             if (null != TAPChatManager.getInstance().getActiveUser()) {
                 TAPDataManager.getInstance().getUserByIdFromApi(TAPChatManager.getInstance().getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
@@ -520,27 +543,28 @@ public class TapTalk {
      */
 
     public static List<TapListener> getTapTalkListeners() {
+        checkTapTalkInitialized();
         return tapTalk.tapListeners;
     }
 
     private static void addTapTalkListener(TapListener listener) {
-        if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
-        } else {
-            tapTalk.tapListeners.add(listener);
-        }
+        checkTapTalkInitialized();
+        tapTalk.tapListeners.add(listener);
     }
 
     private static void setTapTalkScreenOrientation(TapTalkScreenOrientation orientation) {
+        checkTapTalkInitialized();
         TapTalk.screenOrientation = orientation;
     }
 
     private static TapTalkScreenOrientation getTapTalkScreenOrientation() {
+        checkTapTalkInitialized();
         return TapTalk.screenOrientation;
     }
 
     // Enable/disable in-app notification after chat fragment goes inactive or to background
     private static void setInAppNotificationEnabled(boolean enabled) {
+        checkTapTalkInitialized();
         TAPNotificationManager.getInstance().setRoomListAppear(!enabled);
     }
 
@@ -549,6 +573,7 @@ public class TapTalk {
 //    }
 
     private void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
+        checkTapTalkInitialized();
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
 }
