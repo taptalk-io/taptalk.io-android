@@ -140,4 +140,8 @@
 
 -dontnote rx.internal.util.PlatformDependent
 
+
 -keep class io.taptalk.TapTalk.Helper.TapTalk { *; }
+-keepclassmembers class io.taptalk.TapTalk.Helper.TapTalk { *; }
+-keepnames class io.taptalk.TapTalk.Helper.TapTalk { *; }
+-keepclassmembernames class io.taptalk.TapTalk.Helper.TapTalk { *; }
