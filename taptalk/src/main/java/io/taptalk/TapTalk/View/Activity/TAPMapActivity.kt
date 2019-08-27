@@ -239,7 +239,6 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
             placesClient = Places.createClient(this)
         } catch (e: IllegalStateException) {
             e.printStackTrace()
-            finish()
         }
         geoCoder = Geocoder(this, Locale.getDefault())
 
@@ -379,31 +378,35 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                 .setSessionToken(token)
                                 .setQuery(et_keyword.text.toString())
                                 .build()
-                        placesClient.findAutocompletePredictions(request).addOnSuccessListener { p0 ->
-                            if (!TAPUtils.getInstance().isListEmpty(locationList))
-                                locationList.clear()
+                        try {
+                            placesClient.findAutocompletePredictions(request).addOnSuccessListener { p0 ->
+                                if (!TAPUtils.getInstance().isListEmpty(locationList))
+                                    locationList.clear()
 
-                            p0?.autocompletePredictions?.forEach { prediction ->
-                                var item = TAPLocationItem()
-                                item.prediction = prediction
-                                item.myReturnType = TAPLocationItem.MyReturnType.MIDDLE
-                                locationList.add(item)
-                            }
-
-                            if (!TAPUtils.getInstance().isListEmpty(locationList) && 1 == locationList.size) {
-                                locationList[0].myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
-                                adapter?.items = locationList
-                                recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
-                            } else if (!TAPUtils.getInstance().isListEmpty(locationList)) {
-                                locationList[0].myReturnType = TAPLocationItem.MyReturnType.FIRST
-                                locationList[locationList.size - 1].myReturnType = TAPLocationItem.MyReturnType.LAST
-
-                                if (5 < locationList.size) {
-                                    locationList.subList(0, 5)
+                                p0?.autocompletePredictions?.forEach { prediction ->
+                                    var item = TAPLocationItem()
+                                    item.prediction = prediction
+                                    item.myReturnType = TAPLocationItem.MyReturnType.MIDDLE
+                                    locationList.add(item)
                                 }
-                                adapter?.items = locationList
-                                recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
+
+                                if (!TAPUtils.getInstance().isListEmpty(locationList) && 1 == locationList.size) {
+                                    locationList[0].myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
+                                    adapter?.items = locationList
+                                    recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
+                                } else if (!TAPUtils.getInstance().isListEmpty(locationList)) {
+                                    locationList[0].myReturnType = TAPLocationItem.MyReturnType.FIRST
+                                    locationList[locationList.size - 1].myReturnType = TAPLocationItem.MyReturnType.LAST
+
+                                    if (5 < locationList.size) {
+                                        locationList.subList(0, 5)
+                                    }
+                                    adapter?.items = locationList
+                                    recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
+                                }
                             }
+                        } catch (e: UninitializedPropertyAccessException) {
+                            e.printStackTrace()
                         }
                     }
                 }

@@ -1,22 +1,18 @@
-package io.taptalk.TapTalk.Helper;
+package io.taptalk.TapTalk.Manager;
 
 import android.net.Uri;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Interface.TapCommonInterface;
-import io.taptalk.TapTalk.Interface.TapCreateGroupWithPictureInterface;
-import io.taptalk.TapTalk.Interface.TapGetRoomInterface;
-import io.taptalk.TapTalk.Interface.TapReceiveRoomStatusInterface;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPContactManager;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
-import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
-import io.taptalk.TapTalk.Manager.TAPGroupManager;
-import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreCreateGroupWithPictureListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
+import io.taptalk.TapTalk.Listener.TapCoreReceiveRoomStatusListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -40,26 +36,58 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 
 public class TapCoreChatRoomManager {
 
-    public static void addRoomStatusListener(TapReceiveRoomStatusInterface listener) {
-        TAPChatManager.getInstance().addChatListener(new TAPChatListener() {
-            @Override
-            public void onReceiveStartTyping(TAPTypingModel typingModel) {
-                listener.onReceiveStartTyping(typingModel.getRoomID(), typingModel.getUser());
-            }
+    private static TapCoreChatRoomManager instance;
 
-            @Override
-            public void onReceiveStopTyping(TAPTypingModel typingModel) {
-                listener.onReceiveStopTyping(typingModel.getRoomID(), typingModel.getUser());
-            }
+    private List<TapCoreReceiveRoomStatusListener> receiveRoomStatusListeners;
+    private TAPChatListener chatListener;
 
-            @Override
-            public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {
-                listener.onReceiveOnlineStatus(onlineStatus.getUser(), onlineStatus.getOnline(), onlineStatus.getLastActive());
-            }
-        });
+    public static TapCoreChatRoomManager getInstance() {
+        return null == instance ? instance = new TapCoreChatRoomManager() : instance;
     }
 
-    public static void getPersonalChatRoom(TAPUserModel recipientUser, TapGetRoomInterface listener) {
+    private List<TapCoreReceiveRoomStatusListener> getReceiveRoomStatusListeners() {
+        return null == receiveRoomStatusListeners ? receiveRoomStatusListeners = new ArrayList<>() : receiveRoomStatusListeners;
+    }
+
+    public void addRoomStatusListener(TapCoreReceiveRoomStatusListener listener) {
+        if (getReceiveRoomStatusListeners().isEmpty()) {
+            if (null == chatListener) {
+                chatListener = new TAPChatListener() {
+                    @Override
+                    public void onReceiveStartTyping(TAPTypingModel typingModel) {
+                        for (TapCoreReceiveRoomStatusListener listener : getReceiveRoomStatusListeners()) {
+                            listener.onReceiveStartTyping(typingModel.getRoomID(), typingModel.getUser());
+                        }
+                    }
+
+                    @Override
+                    public void onReceiveStopTyping(TAPTypingModel typingModel) {
+                        for (TapCoreReceiveRoomStatusListener listener : getReceiveRoomStatusListeners()) {
+                            listener.onReceiveStopTyping(typingModel.getRoomID(), typingModel.getUser());
+                        }
+                    }
+
+                    @Override
+                    public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {
+                        for (TapCoreReceiveRoomStatusListener listener : getReceiveRoomStatusListeners()) {
+                            listener.onReceiveOnlineStatus(onlineStatus.getUser(), onlineStatus.getOnline(), onlineStatus.getLastActive());
+                        }
+                    }
+                };
+            }
+            TAPChatManager.getInstance().addChatListener(chatListener);
+        }
+        getReceiveRoomStatusListeners().add(listener);
+    }
+
+    public void removeRoomStatusListener(TapCoreReceiveRoomStatusListener listener) {
+        getReceiveRoomStatusListeners().remove(listener);
+        if (getReceiveRoomStatusListeners().isEmpty()) {
+            TAPChatManager.getInstance().removeChatListener(chatListener);
+        }
+    }
+
+    public void getPersonalChatRoom(TAPUserModel recipientUser, TapCoreGetRoomListener listener) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
             listener.onError(ERROR_CODE_ACTIVE_USER_NOT_FOUND, ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND);
         }
@@ -78,7 +106,7 @@ public class TapCoreChatRoomManager {
         }
     }
 
-    public static void getPersonalChatRoom(String recipientUserID, TapGetRoomInterface listener) {
+    public void getPersonalChatRoom(String recipientUserID, TapCoreGetRoomListener listener) {
         if (null == TAPChatManager.getInstance().getActiveUser()) {
             listener.onError(ERROR_CODE_ACTIVE_USER_NOT_FOUND, ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND);
         }
@@ -105,7 +133,7 @@ public class TapCoreChatRoomManager {
         }
     }
 
-    public static void createGroupChatRoom(String groupName, List<String> participantUserIDs, TapGetRoomInterface listener) {
+    public void createGroupChatRoom(String groupName, List<String> participantUserIDs, TapCoreGetRoomListener listener) {
         TAPDataManager.getInstance().createGroupChatRoom(groupName, participantUserIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -125,7 +153,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void createGroupChatRoomWithPicture(String groupName, List<String> participantUserIDs, Uri groupPictureUri, TapCreateGroupWithPictureInterface listener) {
+    public void createGroupChatRoomWithPicture(String groupName, List<String> participantUserIDs, Uri groupPictureUri, TapCoreCreateGroupWithPictureListener listener) {
         TAPDataManager.getInstance().createGroupChatRoom(groupName, participantUserIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -166,7 +194,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void updateGroupPicture(String groupRoomID, Uri groupPictureUri, TapGetRoomInterface listener) {
+    public void updateGroupPicture(String groupRoomID, Uri groupPictureUri, TapCoreGetRoomListener listener) {
         TAPFileUploadManager.getInstance().uploadRoomPicture(TapTalk.appContext,
                 groupPictureUri, groupRoomID, new TAPDefaultDataView<TAPUpdateRoomResponse>() {
                     @Override
@@ -187,7 +215,7 @@ public class TapCoreChatRoomManager {
                 });
     }
 
-    public static void updateGroupChatRoom(String groupRoomID, String groupName, TapGetRoomInterface listener) {
+    public void updateGroupChatRoom(String groupRoomID, String groupName, TapCoreGetRoomListener listener) {
         TAPDataManager.getInstance().updateChatRoom(groupRoomID, groupName,
                 new TAPDefaultDataView<TAPUpdateRoomResponse>() {
                     @Override
@@ -208,7 +236,7 @@ public class TapCoreChatRoomManager {
                 });
     }
 
-    public static void getGroupChatRoom(String groupRoomID, TapGetRoomInterface listener) {
+    public void getGroupChatRoom(String groupRoomID, TapCoreGetRoomListener listener) {
         TAPRoomModel roomModel = TAPGroupManager.Companion.getGetInstance().getGroupData(groupRoomID);
         if (null == roomModel) {
             TAPDataManager.getInstance().getChatRoomData(groupRoomID, new TAPDefaultDataView<TAPCreateRoomResponse>() {
@@ -233,7 +261,7 @@ public class TapCoreChatRoomManager {
         }
     }
 
-    public static void deleteGroupChatRoom(TAPRoomModel groupChatRoomModel, TapCommonInterface listener) {
+    public void deleteGroupChatRoom(TAPRoomModel groupChatRoomModel, TapCommonListener listener) {
         TAPDataManager.getInstance().deleteChatRoom(groupChatRoomModel, new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse tapCommonResponse, String localID) {
@@ -267,7 +295,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void leaveGroupChatRoom(String groupRoomID, TapCommonInterface listener) {
+    public void leaveGroupChatRoom(String groupRoomID, TapCommonListener listener) {
         TAPDataManager.getInstance().leaveChatRoom(groupRoomID, new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
@@ -301,7 +329,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void addGroupChatMembers(String groupRoomID, List<String> userIDs, TapGetRoomInterface listener) {
+    public void addGroupChatMembers(String groupRoomID, List<String> userIDs, TapCoreGetRoomListener listener) {
         TAPDataManager.getInstance().addRoomParticipant(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -321,7 +349,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void removeGroupChatMembers(String groupRoomID, List<String> userIDs, TapGetRoomInterface listener) {
+    public void removeGroupChatMembers(String groupRoomID, List<String> userIDs, TapCoreGetRoomListener listener) {
         TAPDataManager.getInstance().removeRoomParticipant(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -341,7 +369,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void promoteGroupAdmins(String groupRoomID, List<String> userIDs, TapGetRoomInterface listener) {
+    public void promoteGroupAdmins(String groupRoomID, List<String> userIDs, TapCoreGetRoomListener listener) {
         TAPDataManager.getInstance().promoteGroupAdmins(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -361,7 +389,7 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void demoteGroupAdmins(String groupRoomID, List<String> userIDs, TapGetRoomInterface listener) {
+    public void demoteGroupAdmins(String groupRoomID, List<String> userIDs, TapCoreGetRoomListener listener) {
         TAPDataManager.getInstance().demoteGroupAdmins(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -381,11 +409,11 @@ public class TapCoreChatRoomManager {
         });
     }
 
-    public static void sendStartTypingEmit(String roomID) {
+    public void sendStartTypingEmit(String roomID) {
         TAPChatManager.getInstance().sendStartTypingEmit(roomID);
     }
 
-    public static void sendStopTypingEmit(String roomID) {
+    public void sendStopTypingEmit(String roomID) {
         TAPChatManager.getInstance().sendStopTypingEmit(roomID);
     }
 }
