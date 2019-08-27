@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Manager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
@@ -36,6 +37,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
+@Keep
 public class TapUI {
 
     private static TapUI instance;

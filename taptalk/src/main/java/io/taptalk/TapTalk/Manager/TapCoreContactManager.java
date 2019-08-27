@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.support.annotation.Keep;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +19,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 
+@Keep
 public class TapCoreContactManager {
 
     private static TapCoreContactManager instance;

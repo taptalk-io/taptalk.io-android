@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 
 import java.io.File;
@@ -46,6 +47,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 
+@Keep
 public class TapCoreMessageManager {
 
     private static TapCoreMessageManager instance;
@@ -118,6 +120,7 @@ public class TapCoreMessageManager {
     public void sendLocationMessage(Double latitude, Double longitude, String address, TAPRoomModel room, TapSendMessageInterface listener) {
         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude, room, listener);
     }
+
     public void sendLocationMessage(Double latitude, Double longitude, String address, TAPRoomModel room, TAPMessageModel quotedMessage, TapSendMessageInterface listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quotedMessage, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude, room, listener);
@@ -131,6 +134,7 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quotedMessage, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, imageUri, caption, listener);
     }
+
     public void sendImageMessage(Bitmap image, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
         TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, image, caption, listener);
     }
