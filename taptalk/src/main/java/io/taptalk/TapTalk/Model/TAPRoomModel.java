@@ -17,6 +17,8 @@ public class TAPRoomModel implements Parcelable {
     @JsonProperty("color") private String roomColor;
     @JsonProperty("type") private int roomType;
     @JsonProperty("unreadCount") private int unreadCount;
+    @JsonProperty("deleted") private long deletedTimestamp;
+    @JsonProperty("isDeleted") private boolean isRoomDeleted;
     @Nullable @JsonProperty("imageURL") private TAPImageURL roomImage;
     @Nullable @JsonIgnore private List<TAPUserModel> groupParticipants;
     @Nullable @JsonIgnore private Integer numOfParticipants;
@@ -91,6 +93,22 @@ public class TAPRoomModel implements Parcelable {
         this.unreadCount = unreadCount;
     }
 
+    public long getDeletedTimestamp() {
+        return deletedTimestamp;
+    }
+
+    public void setDeletedTimestamp(long deletedTimestamp) {
+        this.deletedTimestamp = deletedTimestamp;
+    }
+
+    public boolean isRoomDeleted() {
+        return isRoomDeleted;
+    }
+
+    public void setRoomDeleted(boolean roomDeleted) {
+        isRoomDeleted = roomDeleted;
+    }
+
     @Nullable
     public TAPImageURL getRoomImage() {
         return roomImage;
@@ -135,6 +153,7 @@ public class TAPRoomModel implements Parcelable {
         isMuted = muted;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -147,6 +166,8 @@ public class TAPRoomModel implements Parcelable {
         dest.writeString(this.roomColor);
         dest.writeInt(this.roomType);
         dest.writeInt(this.unreadCount);
+        dest.writeLong(this.deletedTimestamp);
+        dest.writeByte(this.isRoomDeleted ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.roomImage, flags);
         dest.writeTypedList(this.groupParticipants);
         dest.writeValue(this.numOfParticipants);
@@ -160,6 +181,8 @@ public class TAPRoomModel implements Parcelable {
         this.roomColor = in.readString();
         this.roomType = in.readInt();
         this.unreadCount = in.readInt();
+        this.deletedTimestamp = in.readLong();
+        this.isRoomDeleted = in.readByte() != 0;
         this.roomImage = in.readParcelable(TAPImageURL.class.getClassLoader());
         this.groupParticipants = in.createTypedArrayList(TAPUserModel.CREATOR);
         this.numOfParticipants = (Integer) in.readValue(Integer.class.getClassLoader());

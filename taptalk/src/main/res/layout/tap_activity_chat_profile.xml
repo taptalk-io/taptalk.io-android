@@ -100,13 +100,13 @@
         android:id="@+id/iv_button_edit"
         android:layout_width="?attr/actionBarSize"
         android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="end"
         android:elevation="4dp"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:padding="16dp"
-        android:layout_gravity="end"
         android:src="@drawable/tap_ic_edit_orange"
         android:tint="@color/tapIconTransparentBackgroundBackButton"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 
     <android.support.v4.widget.NestedScrollView
@@ -184,7 +184,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="@string/tap_cant_find_contact" />
+                        android:text="@string/tap_unable_to_load_shared_media" />
 
                     <TextView
                         style="@style/tapClickableLabelStyle"
@@ -192,7 +192,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:gravity="center"
-                        android:text="@string/tap_view_blocked_contacts" />
+                        android:text="@string/tap_try_again" />
 
                 </LinearLayout>
 
@@ -202,6 +202,6 @@
 
     </android.support.v4.widget.NestedScrollView>
 
-    <include layout="@layout/tap_layout_popup_loading_screen"/>
+    <include layout="@layout/tap_layout_popup_loading_screen" />
 
 </android.support.design.widget.CoordinatorLayout>

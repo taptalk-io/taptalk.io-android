@@ -3,11 +3,11 @@ package io.taptalk.TapTalk.View.Activity
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.content.res.ColorStateList
+import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -16,11 +16,11 @@ import android.widget.TextView
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.GROUP_MEMBER_LIMIT
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_OPEN_MEMBER_PROFILE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME
+import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TAPUtils
-import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGroupMemberListListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
@@ -33,12 +33,6 @@ import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
 import io.taptalk.TapTalk.ViewModel.TAPGroupMemberViewModel
 import io.taptalk.Taptalk.R
-import kotlinx.android.synthetic.main.tap_activity_create_new_group.et_search
-import kotlinx.android.synthetic.main.tap_activity_create_new_group.iv_button_action
-import kotlinx.android.synthetic.main.tap_activity_create_new_group.iv_button_back
-import kotlinx.android.synthetic.main.tap_activity_create_new_group.rv_contact_list
-import kotlinx.android.synthetic.main.tap_activity_create_new_group.tv_member_count
-import kotlinx.android.synthetic.main.tap_activity_create_new_group.tv_title
 import kotlinx.android.synthetic.main.tap_activity_group_members.*
 import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
@@ -46,8 +40,12 @@ import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.iv_button_action -> {
-                toggleSearchBar()
+            R.id.iv_button_search -> {
+                showSearchBar()
+            }
+
+            R.id.iv_button_clear_text -> {
+                et_search.setText("")
             }
 
             R.id.iv_button_back -> {
@@ -67,28 +65,28 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     TapTalkDialog.Builder(this)
                             .setTitle("${resources.getString(R.string.tap_remove_group_members)}s")
                             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                            .setMessage("Are you sure you want to remove selected members?")
-                            .setPrimaryButtonTitle("OK")
+                            .setMessage(getString(R.string.tap_remove_multiple_members_confirmation))
+                            .setPrimaryButtonTitle(getString(R.string.tap_ok))
                             .setPrimaryButtonListener {
                                 TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID
                                         ?: "",
                                         groupViewModel?.selectedMembers?.keys?.toList(), removeRoomMembersView)
                             }
-                            .setSecondaryButtonTitle("Cancel")
+                            .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                             .setSecondaryButtonListener {}
                             .show()
                 } else {
                     TapTalkDialog.Builder(this)
                             .setTitle(resources.getString(R.string.tap_remove_group_members))
                             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                            .setMessage("Are you sure you want to remove this member?")
-                            .setPrimaryButtonTitle("OK")
+                            .setMessage(getString(R.string.tap_remove_member_confirmation))
+                            .setPrimaryButtonTitle(getString(R.string.tap_ok))
                             .setPrimaryButtonListener {
                                 TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID
                                         ?: "",
                                         groupViewModel?.selectedMembers?.keys?.toList(), removeRoomMembersView)
                             }
-                            .setSecondaryButtonTitle("Cancel")
+                            .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                             .setSecondaryButtonListener {}
                             .show()
                 }
@@ -97,33 +95,23 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             R.id.ll_promote_demote_admin -> {
                 when (groupViewModel?.adminButtonStatus) {
                     TAPGroupMemberViewModel.AdminButtonShowed.PROMOTE -> {
-                        TapTalkDialog.Builder(this)
-                                .setTitle(resources.getString(R.string.tap_promote_admin))
-                                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                                .setMessage("Are you sure you want to promote this member to admin?")
-                                .setPrimaryButtonTitle("OK")
-                                .setPrimaryButtonListener {
-                                    TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.groupData?.roomID
-                                            ?: "",
-                                            groupViewModel?.getSelectedUserIDs(), appointAdminView)
-                                }
-                                .setSecondaryButtonTitle("Cancel")
-                                .setSecondaryButtonListener {}
-                                .show()
+                        TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.groupData?.roomID
+                                ?: "",
+                                groupViewModel?.getSelectedUserIDs(), appointAdminView)
                     }
 
                     TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE -> {
                         TapTalkDialog.Builder(this)
                                 .setTitle(resources.getString(R.string.tap_demote_admin))
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                                .setMessage("Are you sure you want to demote this admin?")
-                                .setPrimaryButtonTitle("OK")
+                                .setMessage(getString(R.string.tap_demote_admin_confirmation))
+                                .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                 .setPrimaryButtonListener {
                                     TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.groupData?.roomID
                                             ?: "",
-                                            groupViewModel?.getSelectedUserIDs(), appointAdminView)
+                                            groupViewModel?.getSelectedUserIDs(), demoteAdminView)
                                 }
-                                .setSecondaryButtonTitle("Cancel")
+                                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                                 .setSecondaryButtonListener {}
                                 .show()
                     }
@@ -140,18 +128,16 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         override fun onContactLongPress(contact: TAPUserModel?) {
             if (groupViewModel?.isActiveUserIsAdmin == true &&
                     groupViewModel?.groupData?.admins?.contains(contact?.userID) == true
-                    && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < GROUP_MEMBER_LIMIT) {
+                    && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 groupViewModel?.addSelectedMember(contact)
-                fl_add_members.visibility = View.VISIBLE
                 ll_promote_demote_admin.visibility = View.VISIBLE
                 iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_demote_admins)
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_demote_admin)
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE
                 startSelectionMode()
             } else if (groupViewModel?.isActiveUserIsAdmin == true &&
-                    groupViewModel?.groupData?.groupParticipants?.size ?: 0 < GROUP_MEMBER_LIMIT) {
+                    groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 groupViewModel?.addSelectedMember(contact)
-                fl_add_members.visibility = View.VISIBLE
                 ll_promote_demote_admin.visibility = View.VISIBLE
                 iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_appoint_admin)
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_promote_admin)
@@ -162,9 +148,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
         override fun onContactSelected(contact: TAPUserModel?): Boolean {
             if (groupViewModel?.isActiveUserIsAdmin == true &&
-                    groupViewModel?.groupData?.groupParticipants?.size ?: 0 < GROUP_MEMBER_LIMIT) {
+                    groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 groupViewModel?.addSelectedMember(contact)
-                fl_add_members.visibility = View.GONE
                 ll_promote_demote_admin.visibility = View.GONE
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.NOT_SHOWED
             }
@@ -173,26 +158,24 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
         override fun onContactDeselected(contact: TAPUserModel?) {
             if (groupViewModel?.isActiveUserIsAdmin == true &&
-                    groupViewModel?.groupData?.groupParticipants?.size ?: 0 < GROUP_MEMBER_LIMIT) {
+                    groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 groupViewModel?.removeSelectedMember(contact?.userID ?: "")
             }
 
             if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.isSelectedMembersEmpty() == true &&
-                    groupViewModel?.groupData?.groupParticipants?.size ?: 0 < GROUP_MEMBER_LIMIT) {
+                    groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 cancelSelectionMode(false)
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.NOT_SHOWED
             } else if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.selectedMembers?.size == 1 &&
                     groupViewModel?.groupData?.admins?.contains(
                             groupViewModel?.selectedMembers?.entries?.iterator()?.next()?.value?.userID) == true
-                    && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < GROUP_MEMBER_LIMIT) {
-                fl_add_members.visibility = View.VISIBLE
+                    && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 ll_promote_demote_admin.visibility = View.VISIBLE
                 iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_demote_admins)
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_demote_admin)
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE
             } else if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.selectedMembers?.size == 1
-                    && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < GROUP_MEMBER_LIMIT) {
-                fl_add_members.visibility = View.VISIBLE
+                    && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 ll_promote_demote_admin.visibility = View.VISIBLE
                 iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_appoint_admin)
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_promote_admin)
@@ -244,19 +227,20 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         rv_contact_list.layoutManager = LinearLayoutManager(this)
         rv_contact_list.setHasFixedSize(true)
 
-        if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < GROUP_MEMBER_LIMIT) {
+        if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
             fl_add_members.visibility = View.VISIBLE
         } else {
             fl_add_members.visibility = View.GONE
         }
 
-        //set total member count
-        //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+        // Set total member count
         tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
         tv_member_count.visibility = View.VISIBLE
 
+        OverScrollDecoratorHelper.setUpOverScroll(sv_members)
+
         iv_button_back.setOnClickListener(this)
-        iv_button_action.setOnClickListener(this)
+        iv_button_search.setOnClickListener(this)
         ll_add_button.setOnClickListener(this)
         ll_remove_button.setOnClickListener(this)
         ll_promote_demote_admin.setOnClickListener(this)
@@ -265,6 +249,13 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         et_search.addTextChangedListener(searchTextWatcher)
         et_search.setOnEditorActionListener(searchEditorActionListener)
         et_search.hint = resources.getString(R.string.tap_search_for_group_members)
+
+        rv_contact_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                TAPUtils.getInstance().dismissKeyboard(this@TAPGroupMemberListActivity)
+            }
+        })
     }
 
     private fun initViewModel(): Boolean {
@@ -274,30 +265,23 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         return null != groupViewModel?.groupData?.groupParticipants
     }
 
-    private fun toggleSearchBar() {
-        when (groupViewModel?.isSearchActive) {
-            true -> {
-                //Show Toolbar
-                groupViewModel?.isSearchActive = false
-                tv_title.visibility = View.VISIBLE
-                et_search.visibility = View.GONE
-                et_search.setText("")
-                iv_button_action.setImageResource(R.drawable.tap_ic_search_orange)
-                iv_button_action.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconNavBarMagnifier))
-                TAPUtils.getInstance().dismissKeyboard(this@TAPGroupMemberListActivity, et_search)
-            }
+    private fun showToolbar() {
+        groupViewModel?.isSearchActive = false
+        TAPUtils.getInstance().dismissKeyboard(this)
+        tv_title.visibility = View.VISIBLE
+        et_search.visibility = View.GONE
+        et_search.setText("")
+        iv_button_search.visibility = View.VISIBLE
+        (cl_action_bar.background as TransitionDrawable).reverseTransition(SHORT_ANIMATION_TIME)
+    }
 
-            else -> {
-                //Show Search
-                groupViewModel?.isSearchActive = true
-                tv_title.visibility = View.GONE
-                et_search.visibility = View.VISIBLE
-                et_search.requestFocus()
-                iv_button_action.setImageResource(R.drawable.tap_ic_close_grey)
-                iv_button_action.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconClearTextButton))
-                TAPUtils.getInstance().showKeyboard(this, et_search)
-            }
-        }
+    private fun showSearchBar() {
+        groupViewModel?.isSearchActive = true
+        tv_title.visibility = View.GONE
+        et_search.visibility = View.VISIBLE
+        iv_button_search.visibility = View.GONE
+        TAPUtils.getInstance().showKeyboard(this, et_search)
+        (cl_action_bar.background as TransitionDrawable).startTransition(SHORT_ANIMATION_TIME)
     }
 
     private fun updateSearchedMember(keyword: String) {
@@ -319,6 +303,9 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     override fun onBackPressed() {
         when {
+            groupViewModel?.isSearchActive == true -> {
+                showToolbar()
+            }
             groupViewModel?.isSelectionMode == true -> {
                 if (et_search.text.isNotEmpty()) et_search.setText("")
                 cancelSelectionMode(true)
@@ -344,6 +331,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             et_search.removeTextChangedListener(this)
+            if (null != s && s.isEmpty()) {
+                iv_button_clear_text.visibility = View.GONE
+            } else {
+                iv_button_clear_text.visibility = View.VISIBLE
+            }
             updateSearchedMember(s?.toString() ?: "")
             et_search.addTextChangedListener(this)
         }
@@ -360,7 +352,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     private fun cancelSelectionMode(isNeedClearAll: Boolean) {
         groupViewModel?.isSelectionMode = false
         groupViewModel?.selectedMembers?.clear()
-        if (View.GONE == fl_add_members.visibility) fl_add_members.visibility = View.VISIBLE
+        //if (View.GONE == fl_add_members.visibility) fl_add_members.visibility = View.VISIBLE
         ll_button_admin_action.visibility = View.GONE
 
         if (View.GONE == ll_add_button.visibility) ll_add_button.visibility = View.VISIBLE
@@ -394,12 +386,14 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             groupViewModel?.groupData?.groupParticipants = response?.participants
             groupViewModel?.groupData?.admins = response?.admins
 
-            if (null != groupViewModel?.groupData) TAPGroupManager.getInstance.addGroupData(groupViewModel?.groupData!!)
+            if (null != response) {
+                TAPGroupManager.getInstance.updateGroupDataFromResponse(response)
+            }
+
             //adapter?.items = groupViewModel?.groupData?.groupParticipants
             adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
 
             // Set total member count
-            //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
             tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
             tv_member_count.visibility = View.VISIBLE
             groupViewModel?.isUpdateMember = true
@@ -431,13 +425,55 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             groupViewModel?.groupData?.groupParticipants = response?.participants
             groupViewModel?.groupData?.admins = response?.admins
 
-            if (null != groupViewModel?.groupData) TAPGroupManager.getInstance.addGroupData(groupViewModel?.groupData!!)
+            if (null != response) {
+                TAPGroupManager.getInstance.updateGroupDataFromResponse(response)
+            }
+
             //adapter?.items = groupViewModel?.groupData?.groupParticipants
             adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
             adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
 
             // Set total member count
-            //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+            tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
+            tv_member_count.visibility = View.VISIBLE
+            groupViewModel?.isUpdateMember = true
+
+            Handler().postDelayed({
+                cancelSelectionMode(true)
+                this@TAPGroupMemberListActivity.endLoading(getString(R.string.tap_promoted_admin))
+            }, 400L)
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            this@TAPGroupMemberListActivity.hideLoading()
+            showErrorDialog(getString(R.string.tap_error), error!!.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            this@TAPGroupMemberListActivity.hideLoading()
+            showErrorDialog(getString(R.string.tap_error), getString(R.string.tap_error_message_general))
+        }
+    }
+
+    private val demoteAdminView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
+        override fun startLoading() {
+            showLoading(getString(R.string.tap_updating))
+        }
+
+        override fun onSuccess(response: TAPCreateRoomResponse?) {
+            groupViewModel?.groupData = response?.room
+            groupViewModel?.groupData?.groupParticipants = response?.participants
+            groupViewModel?.groupData?.admins = response?.admins
+
+            if (null != response) {
+                TAPGroupManager.getInstance.updateGroupDataFromResponse(response)
+            }
+
+            //adapter?.items = groupViewModel?.groupData?.groupParticipants
+            adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
+            adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
+
+            // Set total member count
             tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
             tv_member_count.visibility = View.VISIBLE
             groupViewModel?.isUpdateMember = true
@@ -469,12 +505,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     adapter?.items = groupViewModel?.groupData?.groupParticipants
                     adapter?.notifyDataSetChanged()
 
-                    if (groupViewModel?.groupData?.groupParticipants?.size ?: 0 >= GROUP_MEMBER_LIMIT) {
+                    if (groupViewModel?.groupData?.groupParticipants?.size ?: 0 >= TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                         fl_add_members.visibility = View.GONE
                     }
 
-                    //set total member count
-                    //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
+                    // Set total member count
                     tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
                     tv_member_count.visibility = View.VISIBLE
                     groupViewModel?.isUpdateMember = true
@@ -489,7 +524,6 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                         adapter?.items = groupViewModel?.groupData?.groupParticipants ?: listOf()
 
                         // Set total member count
-                        //tv_member_count.text = "${groupViewModel?.groupData?.groupParticipants?.size} Members"
                         tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
                         tv_member_count.visibility = View.VISIBLE
                         groupViewModel?.isUpdateMember = true
@@ -512,7 +546,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             if (null == iv_loading_image.animation)
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_image)
             tv_loading_text.text = message
-            iv_button_action.setOnClickListener(null)
+            iv_button_search.setOnClickListener(null)
+            iv_button_clear_text.setOnClickListener(null)
             fl_loading.visibility = View.VISIBLE
         }
     }
@@ -524,7 +559,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             tv_loading_text.text = message
             Handler().postDelayed({
                 hideLoading()
-                iv_button_action.setOnClickListener(this)
+                iv_button_search.setOnClickListener(this)
+                iv_button_clear_text.setOnClickListener(this)
             }, 1000L)
         }
     }

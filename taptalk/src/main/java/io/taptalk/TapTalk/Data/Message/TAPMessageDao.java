@@ -46,7 +46,7 @@ public interface TAPMessageDao {
     @Query("select * from Message_Table where RoomID like :roomID order by created desc limit " + numOfItem)
     List<TAPMessageEntity> getAllMessageListDesc(String roomID);
 
-    @Query("select * from Message_Table where RoomID like :roomID order by created desc limit " + numOfItem)
+    @Query("select * from Message_Table where RoomID like :roomID order by created asc limit " + numOfItem)
     List<TAPMessageEntity> getAllMessageListAsc(String roomID);
 
     @Query("select * from Message_Table where " +

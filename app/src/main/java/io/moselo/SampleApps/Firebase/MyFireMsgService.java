@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
@@ -38,6 +39,8 @@ public class MyFireMsgService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String s) {
         super.onNewToken(s);
-        TapTalk.saveFirebaseToken(s);
+        if (!TAPDataManager.getInstance().checkFirebaseToken(s)) {
+            TAPDataManager.getInstance().saveFirebaseToken(s);
+        }
     }
 }

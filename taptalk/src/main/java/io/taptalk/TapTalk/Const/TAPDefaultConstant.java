@@ -23,6 +23,7 @@ public class TAPDefaultConstant {
         public static final String kSocketStopTyping = "chat/stopTyping";
         public static final String kSocketAuthentication = "user/authentication";
         public static final String kSocketUserOnlineStatus = "user/status";
+        public static final String kSocketUserUpdated = "user/updated";
     }
 
     public static final class DatabaseType {
@@ -48,14 +49,13 @@ public class TAPDefaultConstant {
 
         public static final int TYPE_PRODUCT = 2001;
         public static final int TYPE_CATEGORY = 2002;
-        public static final int TYPE_ORDER_CARD = 3001;
         public static final int TYPE_CONFIRM_MY_PAYMENT = 2004;
 
         public static final int TYPE_HIDDEN = 0x9196;
 
         public static final int TYPE_SYSTEM_MESSAGE = 9001;
-        public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9003;
-        public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9004;
+        public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9002;
+        public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9003;
     }
 
     public static final class BubbleType {
@@ -71,7 +71,6 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_LOCATION_RIGHT = 10051;
         public static final int TYPE_BUBBLE_LOCATION_LEFT = 10052;
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
-        public static final int TYPE_BUBBLE_ORDER_CARD = 3001;
         public static final int TYPE_BUBBLE_SYSTEM_MESSAGE = 9001;
         public static final int TYPE_BUBBLE_UNREAD_STATUS = 9002;
         public static final int TYPE_BUBBLE_LOADING = 9003;
@@ -111,6 +110,7 @@ public class TAPDefaultConstant {
         public static final String GROUP_NAME = "kTAPExtraGroupName";
         public static final String GROUP_IMAGE = "kTAPExtraGroupImage";
         public static final String IS_TYPING = "kTAPExtraIsTyping";
+        public static final String GROUP_TYPING_MAP = "kTAPExtraGroupTypingMap";
         public static final String IS_ADMIN = "kTAPExtraIsAdmin";
         public static final String QUOTE = "kTAPExtraQuote";
         public static final String URI = "kTAPExtraUri";
@@ -175,6 +175,12 @@ public class TAPDefaultConstant {
     }
 
     public static final class Notification {
+        public static final String TAP_NOTIFICATION_CHANNEL = "taptalk_channel_id";
+        public static final String NOTIFICATION_CHANNEL_DEFAULT_NAME = "Chat Notifications";
+        public static final String NOTIFICATION_CHANNEL_DEFAULT_DESCRIPTION = "TapTalk Notifications";
+        public static final String NOTIFICATION_GROUP_DEFAULT = "TapTalkDefaultNotificationGroup";
+        public static final String NEW_MESSAGE = "New Message";
+        public static final String REPLY = "Reply";
         public static final String K_FIREBASE_TOKEN = "kTAPFirebaseToken";
         public static final String K_TEXT_REPLY = "kTAPTextReply";
         public static final String K_NOTIFICATION_MESSAGE_MAP = "kTAPNotificationMessageMap";
@@ -195,6 +201,47 @@ public class TAPDefaultConstant {
         public static final int OTHER_ERRORS = 99999;
     }
 
+    public static final class ClientErrorCodes {
+        public static final String ERROR_CODE_ACTIVE_USER_NOT_FOUND = "90001";
+        public static final String ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE = "90002";
+        public static final String ERROR_CODE_ALREADY_CONNECTED = "90003";
+        public static final String ERROR_CODE_NO_INTERNET = "90004";
+        public static final String ERROR_CODE_INVALID_AUTH_TICKET = "90005";
+        public static final String ERROR_CODE_GROUP_DELETED = "90101";
+        public static final String ERROR_CODE_ADMIN_REQUIRED = "90102";
+        public static final String ERROR_CODE_URI_NOT_FOUND = "90301";
+        public static final String ERROR_CODE_EXCEEDED_MAX_SIZE = "90302";
+        public static final String ERROR_CODE_UPLOAD_CANCELLED = "90303";
+        public static final String ERROR_CODE_IMAGE_UNAVAILABLE = "90304";
+        public static final String ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE = "90305";
+        public static final String ERROR_CODE_OTHERS = "99999";
+    }
+
+    public static final class ClientErrorMessages {
+        public static final String ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND = "Active user not found";
+        public static final String ERROR_MESSAGE_ACCESS_TOKEN_UNAVAILABLE = "Access token is not available, call authenticate() before connecting";
+        public static final String ERROR_MESSAGE_ALREADY_CONNECTED = "Already connected";
+        public static final String ERROR_MESSAGE_NO_INTERNET = "No internet connection";
+        public static final String ERROR_MESSAGE_INVALID_AUTH_TICKET = "Invalid auth ticket";
+        public static final String ERROR_MESSAGE_GROUP_DELETED = "The group has already been deleted";
+        public static final String ERROR_MESSAGE_ADMIN_REQUIRED = "Please assign another admin before leaving";
+        public static final String ERROR_MESSAGE_URI_NOT_FOUND = "Uri is required in message data";
+        public static final String ERROR_MESSAGE_EXCEEDED_MAX_SIZE = "Selected file exceeded %d MB upload limit";
+        public static final String ERROR_MESSAGE_UPLOAD_CANCELLED = "Upload was cancelled";
+        public static final String ERROR_MESSAGE_IMAGE_UNAVAILABLE = "Could not process compressed image";
+        public static final String ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE = "Invalid message type. Allowed types are image (1002), video (1003), file (1004)";
+    }
+
+    public static final class ClientSuccessMessages {
+        public static final String SUCCESS_MESSAGE_CONNECT = "Connected successfully";
+        public static final String SUCCESS_MESSAGE_REFRESH_CONFIG = "Project configs refreshed successfully";
+        public static final String SUCCESS_MESSAGE_DELETE_GROUP = "Chat room deleted successfully";
+        public static final String SUCCESS_MESSAGE_LEAVE_GROUP = "Left chat room successfully";
+        public static final String SUCCESS_MESSAGE_AUTHENTICATE = "Authenticated successfully";
+        public static final String SUCCESS_MESSAGE_REFRESH_ACTIVE_USER = "Active user refreshed successfully";
+        public static final String SUCCESS_MESSAGE_OPEN_ROOM = "Opened chat room successfully";
+    }
+
     public static final class UploadBroadcastEvent {
         public static final String UploadProgressLoading = "kTAPUploadProgressLading";
         public static final String UploadProgressFinish = "kTAPUploadProgressFinish";
@@ -203,7 +250,7 @@ public class TAPDefaultConstant {
         public static final String UploadLocalID = "kTAPUploadLocalID";
         public static final String UploadFailed = "kTAPUploadFailed";
         public static final String UploadFailedErrorMessage = "kTAPUploadFailedErrorMessage";
-//        public static final String UploadRetried = "kTAPUploadRetried";
+        //        public static final String UploadRetried = "kTAPUploadRetried";
         public static final String UploadCancelled = "kTAPUploadCancelled";
         public static final String UploadProgress = "kTAPUploadProgress";
     }
@@ -216,6 +263,9 @@ public class TAPDefaultConstant {
         public static final String DownloadFile = "kTAPDownloadFile";
         public static final String CancelDownload = "kTAPCancelDownload";
         public static final String OpenFile = "kTAPOpenFile";
+        public static final String DownloadedFile = "kTAPDownloadedFile";
+        public static final String DownloadErrorCode = "kTAPDownloadErrorCode";
+        public static final String DownloadErrorMessage = "kTAPDownloadErrorMessage";
     }
 
     public static final class LongPressBroadcastEvent {
@@ -257,6 +307,22 @@ public class TAPDefaultConstant {
         public static final String ROOM_DEMOTE_ADMIN = "room/demoteAdmin";
     }
 
+    public static final class ProjectConfigType {
+        public static final String CORE = "kTAPConfigCore";
+        public static final String PROJECT = "kTAPConfigProject";
+        public static final String CUSTOM = "kTAPConfigCustom";
+    }
+
+    public static final class ProjectConfigKeys {
+        public static final String CHANNEL_MAX_PARTICIPANTS = "channelMaxParticipants";
+        public static final String CHAT_MEDIA_MAX_FILE_SIZE = "chatMediaMaxFileSize";
+        public static final String GROUP_MAX_PARTICIPANTS = "groupMaxParticipants";
+        public static final String ROOM_PHOTO_MAX_FILE_SIZE = "roomPhotoMaxFileSize";
+        public static final String USER_PHOTO_MAX_FILE_SIZE = "userPhotoMaxFileSize";
+
+        public static final String USERNAME_IGNORE_CASE = "usernameIgnoreCase";
+    }
+
     public static final class CustomHeaderKey {
         public static final String USER_AGENT = "kTAPUserAgent";
         public static final String APP_ID = "kTAPApplicationID";
@@ -268,20 +334,6 @@ public class TAPDefaultConstant {
         public static final String LATITUDE = "kTAPlatitude";
         public static final String LOCATION_NAME = "kTAPlocationName";
         public static final String POSTAL_CODE = "kTAPPostalCode";
-    }
-
-    public static final class BaseUrl {
-        public static final String BASE_URL_API_PRODUCTION = "https://engine.taptalk.io/api/v1/";
-        public static final String BASE_URL_SOCKET_PRODUCTION = "https://engine.taptalk.io/";
-        public static final String BASE_WSS_PRODUCTION = "wss://engine.taptalk.io/connect";
-
-        public static final String BASE_URL_API_STAGING = "https://engine-stg.taptalk.io/api/v1/";
-        public static final String BASE_URL_SOCKET_STAGING = "https://engine-stg.taptalk.io/";
-        public static final String BASE_WSS_STAGING = "wss://engine-stg.taptalk.io/connect";
-
-        public static final String BASE_URL_API_DEVELOPMENT = "https://engine-dev.taptalk.io/api/v1/";
-        public static final String BASE_URL_SOCKET_DEVELOPMENT = "https://engine-dev.taptalk.io/";
-        public static final String BASE_WSS_DEVELOPMENT = "wss://engine-dev.taptalk.io/connect";
     }
 
     public static final Intent[] AUTO_START_INTENTS = {
@@ -313,6 +365,7 @@ public class TAPDefaultConstant {
         public static final int MENU_PROMOTE_ADMIN = 9;
         public static final int MENU_DEMOTE_ADMIN = 10;
         public static final int MENU_REMOVE_MEMBER = 11;
+        public static final int MENU_DELETE_GROUP = 12;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -335,8 +388,14 @@ public class TAPDefaultConstant {
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
     public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
+    public static final String DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE = "26214400";
+    public static final String DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE = "10485760";
+    public static final String DEFAULT_USER_PHOTO_MAX_FILE_SIZE = "10485760";
+    public static final String DEFAULT_GROUP_MAX_PARTICIPANTS = "100";
+    public static final String DEFAULT_CHANNEL_MAX_PARTICIPANTS = "5000";
+
     public static final int MAX_ITEMS_PER_PAGE = 50;
-    public static final int GROUP_MEMBER_LIMIT = 50;
+    public static final int SHORT_ANIMATION_TIME = 100;
     public static final int DEFAULT_ANIMATION_TIME = 200;
     public static final int IMAGE_MAX_DIMENSION = 2000;
     public static final int THUMB_MAX_DIMENSION = 20;
@@ -349,8 +408,6 @@ public class TAPDefaultConstant {
     public static final String ADDED_CONTACT = "kTAPAddedContact";
 
     public static final int CLOSE_FOR_RECONNECT_CODE = 666;
-
-    public static final String TAP_NOTIFICATION_CHANNEL = "taptalk_channel_id";
 
     public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";

@@ -6,8 +6,9 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteRoomRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
@@ -21,6 +22,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
@@ -36,10 +38,12 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPProjectConfigResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.TapConfigs;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 import rx.Observable;
@@ -69,7 +73,7 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TAPGetRoomListResponse>> getPendingAndUpdatedMessage();
 
     @POST("chat/message/list_by_room/before")
-    Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getMessageListByRoomBefore(@Body TAPGetMessageListbyRoomBeforeRequest request);
+    Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getMessageListByRoomBefore(@Body TAPGetMessageListByRoomBeforeRequest request);
 
     @POST("chat/message/feedback/delivered")
     Observable<TAPBaseResponse<TAPUpdateMessageStatusResponse>> updateMessageStatusAsDelivered(@Body TAPUpdateMessageStatusRequest request);
@@ -78,7 +82,7 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TAPUpdateMessageStatusResponse>> updateMessageStatusAsRead(@Body TAPUpdateMessageStatusRequest request);
 
     @POST("chat/message/list_by_room/after")
-    Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getMessageListByRoomAfter(@Body TAPGetMessageListbyRoomAfterRequest request);
+    Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getMessageListByRoomAfter(@Body TAPGetMessageListByRoomAfterRequest request);
 
     @POST("chat/message/delete")
     Observable<TAPBaseResponse<TAPDeleteMessageResponse>> deleteMessages(@Body TAPDeleteMessageRequest request);
@@ -87,7 +91,7 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TAPContactResponse>> getMyContactListFromAPI();
 
     @POST("client/contact/add")
-    Observable<TAPBaseResponse<TAPCommonResponse>> addContact(@Body TAPUserIdRequest request);
+    Observable<TAPBaseResponse<TAPAddContactResponse>> addContact(@Body TAPUserIdRequest request);
 
     @POST("client/contact/remove")
     Observable<TAPBaseResponse<TAPCommonResponse>> removeContact(@Body TAPUserIdRequest request);
@@ -145,4 +149,10 @@ public interface TAPTalkApiService {
 
     @POST("client/room/admins/demote")
     Observable<TAPBaseResponse<TAPCreateRoomResponse>> demoteGroupAdmins(@Body TAPAddRoomParticipantRequest request);
+
+    @POST("client/room/delete")
+    Observable<TAPBaseResponse<TAPCommonResponse>> deleteChatRoom(@Body TAPDeleteRoomRequest request);
+
+    @POST("client/project_configs")
+    Observable<TAPBaseResponse<TapConfigs>> getProjectConfig();
 }

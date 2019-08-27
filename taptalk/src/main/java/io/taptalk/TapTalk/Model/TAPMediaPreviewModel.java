@@ -3,18 +3,6 @@ package io.taptalk.TapTalk.Model;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
-import io.taptalk.TapTalk.Helper.TAPFileUtils;
-import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 public class TAPMediaPreviewModel implements Parcelable {
     private Uri uri;

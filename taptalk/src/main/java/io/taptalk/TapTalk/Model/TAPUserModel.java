@@ -103,7 +103,7 @@ public class TAPUserModel implements Parcelable {
     public TAPUserModel setUserAsContact() {
         this.setRequestAccepted(true);
         this.setRequestPending(false);
-        this.setIsContact(1);
+        this.checkAndSetContact(1);
         return this;
     }
 
@@ -269,6 +269,10 @@ public class TAPUserModel implements Parcelable {
     }
 
     public void setIsContact(@Nullable Integer isContact) {
+        this.isContact = isContact;
+    }
+
+    public void checkAndSetContact(@Nullable Integer isContact) {
         if (null == this.isContact || 0 == this.isContact)
             this.isContact = isContact;
     }

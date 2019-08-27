@@ -61,8 +61,10 @@
                 android:id="@+id/iv_group_pic_background"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:elevation="2dp"
                 android:src="@drawable/tap_bg_half_circle_bottom_white"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="0dp" />
 
             <io.taptalk.TapTalk.Helper.CircleImageView
                 android:id="@+id/civ_group_picture"
@@ -71,10 +73,24 @@
                 android:layout_marginTop="24dp"
                 android:elevation="2dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/tap_img_default_avatar"
+                android:src="@drawable/tap_bg_circle_9b9b9b"
                 app:layout_constraintEnd_toEndOf="@id/iv_group_pic_background"
                 app:layout_constraintStart_toStartOf="@id/iv_group_pic_background"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_group_picture_label"
+                style="@style/tapDefaultRoomAvatarExtraLargeFontStyle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="2dp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                app:layout_constraintBottom_toBottomOf="@id/civ_group_picture"
+                app:layout_constraintEnd_toEndOf="@id/civ_group_picture"
+                app:layout_constraintStart_toStartOf="@id/civ_group_picture"
+                app:layout_constraintTop_toTopOf="@id/civ_group_picture"
+                tools:text="A" />
 
             <FrameLayout
                 android:id="@+id/fl_remove_group_picture"
@@ -125,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/tap_ic_edit_orange"
-                    android:tint="@color/tapIconEditPicture" />
+                    android:tint="@color/tapIconChangePicture" />
 
             </LinearLayout>
 

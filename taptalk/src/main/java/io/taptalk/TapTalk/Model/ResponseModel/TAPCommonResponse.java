@@ -3,8 +3,8 @@ package io.taptalk.TapTalk.Model.ResponseModel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TAPCommonResponse {
-    @JsonProperty("success") Boolean success;
-    @JsonProperty("message") String message;
+    @JsonProperty("success") private Boolean success;
+    @JsonProperty("message") private String message;
 
     public Boolean getSuccess() {
         return success;

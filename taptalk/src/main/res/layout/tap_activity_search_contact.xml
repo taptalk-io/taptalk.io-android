@@ -43,18 +43,19 @@
             android:paddingEnd="16dp"
             android:textCursorDrawable="@drawable/tap_cursor_color"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_button_cancel"
+            app:layout_constraintEnd_toStartOf="@id/iv_button_clear_text"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/iv_button_cancel"
+            android:id="@+id/iv_button_clear_text"
             android:layout_width="?attr/actionBarSize"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_close_grey"
             android:tint="@color/tapIconClearTextButton"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/et_search"

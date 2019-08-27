@@ -18,16 +18,19 @@ import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddRoomParticipantRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAuthTicketRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCommonRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPCreateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomAfterRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListbyRoomBeforeRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
@@ -41,6 +44,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse;
@@ -62,6 +66,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TapConfigs;
 import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -234,8 +240,13 @@ public class TAPApiManager {
                         updateSession(response);
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
                     } else if (UNAUTHORIZED == response.getStatus()) {
-                        TapTalk.refreshTokenExpired();
-                    } else Observable.error(new TAPAuthException(response.getError().getMessage()));
+                        TapTalk.clearAllTapTalkData();
+                        for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                            listener.onTapTalkRefreshTokenExpired();
+                        }
+                    } else {
+                        Observable.error(new TAPAuthException(response.getError().getMessage()));
+                    }
                 }).doOnError(throwable -> {
 
                 });
@@ -264,7 +275,7 @@ public class TAPApiManager {
     }
 
     public void getMessageListByRoomAfter(String roomID, Long minCreated, Long lastUpdated, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
-        TAPGetMessageListbyRoomAfterRequest request = new TAPGetMessageListbyRoomAfterRequest(roomID, minCreated, lastUpdated);
+        TAPGetMessageListByRoomAfterRequest request = new TAPGetMessageListByRoomAfterRequest(roomID, minCreated, lastUpdated);
         execute(homingPigeon.getMessageListByRoomAfter(request), subscriber);
     }
 
@@ -272,8 +283,8 @@ public class TAPApiManager {
         TAPDeleteMessageRequest request = new TAPDeleteMessageRequest(roomID, messageIds, isForEveryone);
     }
 
-    public void getMessageListByRoomBefore(String roomID, Long maxCreated, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
-        TAPGetMessageListbyRoomBeforeRequest request = new TAPGetMessageListbyRoomBeforeRequest(roomID, maxCreated);
+    public void getMessageListByRoomBefore(String roomID, Long maxCreated, Integer limit, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
+        TAPGetMessageListByRoomBeforeRequest request = new TAPGetMessageListByRoomBeforeRequest(roomID, maxCreated, limit);
         execute(homingPigeon.getMessageListByRoomBefore(request), subscriber);
     }
 
@@ -296,7 +307,7 @@ public class TAPApiManager {
         execute(homingPigeon.getMyContactListFromAPI(), subscriber);
     }
 
-    public void addContact(String userID, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+    public void addContact(String userID, Subscriber<TAPBaseResponse<TAPAddContactResponse>> subscriber) {
         TAPUserIdRequest request = new TAPUserIdRequest(userID);
         execute(homingPigeon.addContact(request), subscriber);
     }
@@ -476,5 +487,15 @@ public class TAPApiManager {
     public void demoteGroupAdmins(String roomID, List<String> userIDs, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
         TAPAddRoomParticipantRequest request = new TAPAddRoomParticipantRequest(roomID, userIDs);
         execute(homingPigeon.demoteGroupAdmins(request), subscriber);
+    }
+
+    public void deleteChatRoom(TAPRoomModel room, String userID, long accessTokenExpiry, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        String checksum = room.getRoomID() + ":" + room.getRoomType() + ":" + userID + ":" + accessTokenExpiry;
+        TAPDeleteRoomRequest request = new TAPDeleteRoomRequest(room.getRoomID(), TAPEncryptorManager.getInstance().md5(checksum));
+        execute(homingPigeon.deleteChatRoom(request), subscriber);
+    }
+
+    public void getProjectConfig(Subscriber<TAPBaseResponse<TapConfigs>> subscriber) {
+        execute(homingPigeon.getProjectConfig(), subscriber);
     }
 }

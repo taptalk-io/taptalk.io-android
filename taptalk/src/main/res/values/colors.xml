@@ -35,6 +35,7 @@
     <color name="tapButtonActiveBackgroundGradientLightColor">@color/tapColorPrimaryLight</color>
     <color name="tapButtonActiveBackgroundGradientDarkColor">@color/tapColorPrimary</color>
     <color name="tapButtonActiveBorderColor">@color/tapColorPrimary</color>
+    <color name="tapButtonDestructiveBackgroundColor">@color/tapColorError</color>
     <color name="tapButtonIconColor">@color/tapColorTextLight</color>
     <color name="tapButtonIconDestructiveColor">@color/tapColorError</color>
 
@@ -75,9 +76,7 @@
     <color name="tapIconCircleSelectionActive">@color/tapColorPrimaryIcon</color>
     <color name="tapIconCircleSelectionInactive">@color/tapColorGrayIcon</color>
     <color name="tapIconLoadingPopupSuccess">@color/tapColorPrimaryIcon</color>
-    <color name="tapIconChatNow">@color/tapColorWhiteIcon</color>
-    <color name="tapIconMediaListVideo">@color/tapColorWhiteIcon</color>
-    <color name="tapIconAddMember">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconAddMember">@color/tapColorPrimaryIcon</color> <!--Unused-->
     <color name="tapIconSearchConnectionLost">@color/tapColorTextDark</color>
     <color name="tapIconMessageSending">@color/tapColorGrayIcon</color>
     <color name="tapIconMessageFailed">@color/tapColorGrayIcon</color>
@@ -92,7 +91,7 @@
     <color name="tapIconViewPasswordInactive">@color/tapColorGrayIcon</color>
     <color name="tapIconSelectPictureCamera">@color/tapColorPrimaryIcon</color>
     <color name="tapIconSelectPictureGallery">@color/tapColorPrimaryIcon</color>
-    <color name="tapIconEditPicture">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconChangePicture">@color/tapColorPrimaryIcon</color>
 
     <color name="tapIconNavBarBackButton">@color/tapColorPrimaryIcon</color>
     <color name="tapIconTransparentBackgroundBackButton">@color/tapColorWhiteIcon</color>
@@ -104,7 +103,7 @@
     <color name="tapIconRoomListSettingUp">@color/tapColorGrayIcon</color>
     <color name="tapIconRoomListSetupSuccess">@color/tapColorSuccessIcon</color>
     <color name="tapIconRoomListSetupFailure">@color/tapColorDestructiveIcon</color>
-    <color name="tapRoomListRetrySetupButton">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconRoomListRetrySetupButton">@color/tapColorPrimaryIcon</color>
     <color name="tapIconRoomListMuted">@color/tapColorGrayIcon</color>
     <color name="tapIconStartNewChatButton">@color/tapColorWhiteIcon</color>
 
@@ -130,6 +129,7 @@
     <color name="tapIconMediaPreviewThumbnailWarning">@color/tapColorWhiteIcon</color>
     <color name="tapIconMediaPreviewThumbnailWarningBackground">@color/tapColorDestructiveIcon</color>
     <color name="tapIconSaveImage">@color/tapColorWhiteIcon</color>
+    <color name="tapIconMediaListVideo">@color/tapColorWhiteIcon</color>
 
     <color name="tapIconLongPressActionCopy">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressActionReply">@color/tapColorPrimaryIcon</color>
@@ -202,6 +202,10 @@
     <color name="tapPopupLoadingLabelColor">@color/tapColorPrimary</color>
     <color name="tapSearchConnectionLostTitleColor">@color/tapColorTextDark</color>
     <color name="tapSearchConnectionLostDescriptionColor">@color/tapColorTextDark</color>
+    <color name="tapDefaultRoomAvatarSmallFontColor">@color/tapColorTextLight</color>
+    <color name="tapDefaultRoomAvatarMediumFontColor">@color/tapColorTextLight</color>
+    <color name="tapDefaultRoomAvatarLargeFontColor">@color/tapColorTextLight</color>
+    <color name="tapDefaultRoomAvatarExtraLargeFontColor">@color/tapColorTextLight</color>
 
     <color name="tapSearchBarTextColor">@color/tapColorTextDark</color>
     <color name="tapSearchBarTextPlaceholderColor">@color/tapColorTextMedium</color>
@@ -215,7 +219,6 @@
 
     <color name="tapActionSheetDefaultLabelColor">@color/tapColorTextDark</color>
     <color name="tapActionSheetDestructiveLabelColor">@color/tapColorError</color>
-    <color name="tapActionSheetCancelButtonLabelColor">@color/tapColorPrimary</color>
 
     <color name="tapSectionHeaderLabelColor">@color/tapColorPrimary</color>
 
@@ -314,6 +317,27 @@
 
     <color name="tapVideoPlayerTimeLabelColor">@color/tapTransparentWhite60</color>
 
+    <!--Default Avatar Background Colors-->
+    <color name="tapDefaultAvatarBackgroundColor1">#f99181</color>
+    <color name="tapDefaultAvatarBackgroundColor2">#a914db</color>
+    <color name="tapDefaultAvatarBackgroundColor3">#f26046</color>
+    <color name="tapDefaultAvatarBackgroundColor4">#fb76ab</color>
+    <color name="tapDefaultAvatarBackgroundColor5">#c4c9d1</color>
+    <color name="tapDefaultAvatarBackgroundColor6">#4239be</color>
+    <color name="tapDefaultAvatarBackgroundColor7">#9c89f1</color>
+    <color name="tapDefaultAvatarBackgroundColor8">#f4c22c</color>
+
+    <array name="tapDefaultRoomAvatarBackgroundColors">
+        <item>@color/tapDefaultAvatarBackgroundColor1</item>
+        <item>@color/tapDefaultAvatarBackgroundColor2</item>
+        <item>@color/tapDefaultAvatarBackgroundColor3</item>
+        <item>@color/tapDefaultAvatarBackgroundColor4</item>
+        <item>@color/tapDefaultAvatarBackgroundColor5</item>
+        <item>@color/tapDefaultAvatarBackgroundColor6</item>
+        <item>@color/tapDefaultAvatarBackgroundColor7</item>
+        <item>@color/tapDefaultAvatarBackgroundColor8</item>
+    </array>
+
     <!--Color Palette-->
     <color name="tapDarkPurple">#51276c</color>
     <color name="tapPurplyTwo">#673ab7</color>
@@ -399,29 +423,5 @@
     <color name="tapTransparentCharcoal50">#8004040f</color>
     <color name="tapTransparentCharcoal40">#6604040f</color>
     <color name="tapTransparentBlack4770">#b3474747</color>
-
-    <color name="pastelOrange">#fdc3a7</color>
-    <color name="pastelLightGreen">#d0e69d</color>
-    <color name="pastelGreen">#99d39e</color>
-    <color name="pastelGreenBlue">#a9ddc7</color>
-    <color name="pastelLightBlue">#c6d3e9</color>
-    <color name="pastelPurple">#d5c0e2</color>
-    <color name="pastelRed">#f599b5</color>
-    <color name="pastelPink">#ffb3b8</color>
-    <color name="pastelYellow">#fdd38d</color>
-    <color name="pastelBlue">#b4e6f1</color>
-
-    <array name="pastel_colors">
-        <item>@color/pastelOrange</item>
-        <item>@color/pastelLightGreen</item>
-        <item>@color/pastelGreen</item>
-        <item>@color/pastelGreenBlue</item>
-        <item>@color/pastelLightBlue</item>
-        <item>@color/pastelPurple</item>
-        <item>@color/pastelRed</item>
-        <item>@color/pastelPink</item>
-        <item>@color/pastelYellow</item>
-        <item>@color/pastelBlue</item>
-    </array>
 
 </resources>

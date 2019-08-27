@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -12,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -36,14 +38,16 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.EMPTY_STATE;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.ROOM_ITEM;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
 
 public class TAPForwardPickerActivity extends TAPBaseActivity {
 
-    private ConstraintLayout clActionBar, clSearchBar;
-    private ImageView ivButtonClose, ivButtonSearch, ivButtonBack, ivButtonCancel;
+    private ConstraintLayout clActionBar;
+    private ImageView ivButtonClose, ivButtonSearch, ivButtonClearText;
+    private TextView tvTitle;
     private EditText etSearch;
     private RecyclerView rvForwardList;
 
@@ -62,8 +66,12 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+        if (etSearch.getVisibility() == View.VISIBLE) {
+            showToolbar();
+        } else {
+            super.onBackPressed();
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+        }
     }
 
     private void initViewModel() {
@@ -73,11 +81,10 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
     private void initView() {
         clActionBar = findViewById(R.id.cl_action_bar);
-        clSearchBar = findViewById(R.id.cl_search_bar);
         ivButtonClose = findViewById(R.id.iv_button_close);
         ivButtonSearch = findViewById(R.id.iv_button_search);
-        ivButtonBack = findViewById(R.id.iv_button_back);
-        ivButtonCancel = findViewById(R.id.iv_button_cancel);
+        ivButtonClearText = findViewById(R.id.iv_button_clear_text);
+        tvTitle = findViewById(R.id.tv_title);
         etSearch = findViewById(R.id.et_search);
         rvForwardList = findViewById(R.id.rv_forward_list);
 
@@ -85,8 +92,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
         ivButtonSearch.setOnClickListener(v -> showSearchBar());
-        ivButtonBack.setOnClickListener(v -> showActionBar());
-        ivButtonCancel.setOnClickListener(v -> clearSearch());
+        ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 
         adapter = new TAPSearchChatAdapter(vm.getSearchResults(), roomListInterface);
         rvForwardList.setAdapter(adapter);
@@ -103,22 +109,23 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         });
     }
 
-    private void showActionBar() {
-        clActionBar.setVisibility(View.VISIBLE);
-        clSearchBar.setVisibility(View.GONE);
-        clearSearch();
-//        etSearch.clearFocus();
+    private void showToolbar() {
         TAPUtils.getInstance().dismissKeyboard(this);
+        ivButtonClose.setImageResource(R.drawable.tap_ic_close_grey);
+        tvTitle.setVisibility(View.VISIBLE);
+        etSearch.setVisibility(View.GONE);
+        etSearch.setText("");
+        ivButtonSearch.setVisibility(View.VISIBLE);
+        ((TransitionDrawable) clActionBar.getBackground()).reverseTransition(SHORT_ANIMATION_TIME);
     }
 
     private void showSearchBar() {
-        clActionBar.setVisibility(View.GONE);
-        clSearchBar.setVisibility(View.VISIBLE);
+        ivButtonClose.setImageResource(R.drawable.tap_ic_chevron_left_white);
+        tvTitle.setVisibility(View.GONE);
+        etSearch.setVisibility(View.VISIBLE);
+        ivButtonSearch.setVisibility(View.GONE);
         TAPUtils.getInstance().showKeyboard(this, etSearch);
-    }
-
-    private void clearSearch() {
-        etSearch.setText("");
+        ((TransitionDrawable) clActionBar.getBackground()).startTransition(SHORT_ANIMATION_TIME);
     }
 
     private void startSearch() {
@@ -133,10 +140,12 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         adapter.setSearchKeyword(vm.getSearchKeyword());
         if (vm.getSearchKeyword().isEmpty()) {
             showRecentChats();
+            ivButtonClearText.setVisibility(View.GONE);
         } else {
             TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
             //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
             vm.setRecentSearchShown(false);
+            ivButtonClearText.setVisibility(View.VISIBLE);
         }
     }
 

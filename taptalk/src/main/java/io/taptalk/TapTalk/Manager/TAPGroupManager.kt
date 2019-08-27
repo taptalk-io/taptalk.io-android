@@ -1,7 +1,11 @@
 package io.taptalk.TapTalk.Manager
 
-import io.taptalk.TapTalk.Interface.TapTalkSocketInterface
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_GROUP_MAX_PARTICIPANTS
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.GROUP_MAX_PARTICIPANTS
+import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPSocketListener
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse
 import io.taptalk.TapTalk.Model.TAPRoomModel
 
 class TAPGroupManager {
@@ -30,6 +34,11 @@ class TAPGroupManager {
       })
     }
 
+    fun getGroupMaxParticipants(): Int {
+        val maxParticipants = TapTalk.getCoreConfigs()[GROUP_MAX_PARTICIPANTS]
+        return maxParticipants?.toInt() ?: DEFAULT_GROUP_MAX_PARTICIPANTS.toInt()
+    }
+
     private fun getGroupDataMap() : HashMap<String, TAPRoomModel> {
         if (null == groupDataMap) groupDataMap = linkedMapOf()
         return groupDataMap!!
@@ -44,6 +53,10 @@ class TAPGroupManager {
         else {
             getGroupDataMap()[roomID]
         }
+    }
+
+    fun removeGroupData(roomID: String) {
+        getGroupDataMap().remove(roomID)
     }
 
     fun checkIsRoomDataAvailable(roomID: String) : Boolean {
@@ -68,5 +81,34 @@ class TAPGroupManager {
     fun saveRoomDataMapToPreference() {
         TAPDataManager.getInstance().saveRoomDataMap(groupDataMap)
         groupDataMap?.clear()
+    }
+
+    fun updateGroupDataFromResponse(response: TAPCreateRoomResponse): TAPRoomModel? {
+        val room = response.room
+        if (null != room) {
+            if (null != response.participants && response.participants!!.isNotEmpty()) {
+                room.groupParticipants = response.participants
+            } else {
+                room.groupParticipants = TAPGroupManager.getInstance.getGroupData(response.room!!.roomID)?.groupParticipants
+            }
+            if (null != response.admins && response.admins!!.isNotEmpty()) {
+                room.admins = response.admins
+            } else {
+                room.admins = TAPGroupManager.getInstance.getGroupData(response.room!!.roomID)?.admins
+            }
+            addGroupData(room)
+        }
+        return room
+    }
+
+    fun updateGroupDataFromResponse(response: TAPUpdateRoomResponse): TAPRoomModel? {
+        val room = response.room
+        if (null != room) {
+            val existingRoom = TAPGroupManager.getInstance.getGroupData(response.room!!.roomID)
+            room.groupParticipants = existingRoom?.groupParticipants
+            room.admins = existingRoom?.admins
+            updateRoomDataNameAndImage(room)
+        }
+        return room
     }
 }

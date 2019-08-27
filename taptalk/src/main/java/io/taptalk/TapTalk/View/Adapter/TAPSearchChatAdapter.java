@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +33,9 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.Taptalk.R;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAPBaseViewHolder<TAPSearchChatModel>> {
 
@@ -138,13 +140,13 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             tvUserName.setText(message.getRoomName());
 
             // Get highlighted color code
-            TypedArray typedArray = itemView.getContext().obtainStyledAttributes(R.style.tapRoomListMessageHighlightedStyle, R.styleable.TextAppearance);
-            String colorCode = Integer.toHexString(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
-            typedArray.recycle();
+            TypedArray typedArrayMessage = itemView.getContext().obtainStyledAttributes(R.style.tapRoomListMessageHighlightedStyle, R.styleable.TextAppearance);
+            String colorCode = Integer.toHexString(typedArrayMessage.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
+            typedArrayMessage.recycle();
 
             TypedArray typedArraySender = itemView.getContext().obtainStyledAttributes(R.style.tapGroupRoomListSenderNameStyle, R.styleable.TextAppearance);
             String colorSender = Integer.toHexString(typedArraySender.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2);
-            typedArray.recycle();
+            typedArraySender.recycle();
 
             // Set message body with highlighted text
             String highlightedText;
@@ -187,7 +189,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
             // Message failed to send
             else if (null != message.getFailedSend() && message.getFailedSend()) {
-                ivMessageStatus.setImageResource(R.drawable.tap_ic_failed_grey);
+                ivMessageStatus.setImageResource(R.drawable.tap_ic_warning_red_circle_background);
                 ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageFailed)));
             }
             // Message sent
@@ -223,7 +225,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
         private ConstraintLayout clContainer;
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon;
-        private TextView tvRoomName, tvBadgeUnread;
+        private TextView tvAvatarLabel, tvRoomName, tvBadgeUnread;
 
         RoomItemVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -231,6 +233,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             clContainer = itemView.findViewById(R.id.cl_container);
             civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
+            tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
             tvRoomName = itemView.findViewById(R.id.tv_room_name);
             tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
         }
@@ -254,8 +257,14 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             // Load avatar
             if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
                 Glide.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
+                civAvatar.setImageTintList(null);
+                tvAvatarLabel.setVisibility(View.GONE);
             } else {
-                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+//                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
+                civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(room.getRoomName())));
+                civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
+                tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
             // Get highlighted color code
@@ -269,9 +278,13 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                     String.format(itemView.getContext().getString(R.string.tap_highlighted_string), colorCode, "$1"));
             tvRoomName.setText(Html.fromHtml(highlightedText));
 
-            // Change avatar icon
-            // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
-            ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
+            // Set avatar icon
+            if (room.getRoomType() == TYPE_GROUP) {
+                ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_group_icon));
+                ivAvatarIcon.setVisibility(View.VISIBLE);
+            } else {
+                ivAvatarIcon.setVisibility(View.GONE);
+            }
 
             // TODO: 18 October 2018 UPDATE ONLINE STATUS
 
@@ -304,7 +317,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                             room.getRoomType(),
                             room.getRoomColor(),
                             room.getUnreadCount(),
-                            false);
+                            null);
 
                     TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
                     TAPDataManager.getInstance().insertToDatabase(recentItem);

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tapDefaultBackgroundColor"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity">
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
@@ -71,10 +71,24 @@
                 android:layout_marginTop="24dp"
                 android:elevation="2dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/tap_img_default_avatar"
+                android:src="@drawable/tap_bg_circle_9b9b9b"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_profile_picture_label"
+                style="@style/tapDefaultRoomAvatarExtraLargeFontStyle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="2dp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
+                app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
+                app:layout_constraintStart_toStartOf="@id/civ_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/civ_profile_picture"
+                tools:text="A" />
 
             <io.taptalk.TapTalk.Helper.CircleImageView
                 android:id="@+id/civ_profile_picture_overlay"
@@ -154,7 +168,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/tap_ic_edit_orange"
-                    android:tint="@color/tapIconEditPicture" />
+                    android:tint="@color/tapIconChangePicture" />
 
             </LinearLayout>
 

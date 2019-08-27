@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -55,6 +56,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -85,7 +87,7 @@ import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.Taptalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_TYPING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
@@ -253,22 +255,20 @@ public class TAPUtils {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
-    /**
-     * generate random color
-     */
     public int getRandomColor(String s) {
-        int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.pastel_colors);
-        int hash = 7;
-        for (int i = 0, len = s.length(); i < len; i++) {
-            hash = s.codePointAt(i) + (hash << 5) - hash;
-        }
-        int index = Math.abs(hash % randomColors.length);
+        int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.tapDefaultRoomAvatarBackgroundColors);
+        int index = (((int) s.charAt(0)) + s.length()) % randomColors.length;
         return randomColors[index];
     }
 
-    /**
-     * dismiss Keyboard
-     */
+    public String getInitials(String s, int maxLength) {
+        String initials = s.replaceAll("([^\\s])[^\\s]+", "$1").replaceAll("\\s", "");
+        if (initials.length() > maxLength) {
+            return initials.substring(0, maxLength);
+        }
+        return initials;
+    }
+
     public void dismissKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
@@ -286,9 +286,6 @@ public class TAPUtils {
         view.clearFocus();
     }
 
-    /**
-     * Show Keyboard
-     */
     public void showKeyboard(Activity activity, View view) {
         view.requestFocus();
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -393,24 +390,29 @@ public class TAPUtils {
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false, null);
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, null);
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), false, jumpToMessageLocalID);
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
     }
 
     // Open chat room from room list to pass typing status
-    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, boolean isTyping) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), isTyping, null);
+    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, LinkedHashMap<String, TAPUserModel> typingUser) {
+        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), typingUser, null);
     }
 
     // Open chat room from notification
     public void startChatActivity(Context context, TAPRoomModel roomModel) {
-        startChatActivity(context, roomModel, false, null);
+        startChatActivity(context, roomModel, null, null);
     }
 
-    private void startChatActivity(Context context, TAPRoomModel roomModel, boolean isTyping, @Nullable String jumpToMessageLocalID) {
+    // Open chat room from notification
+    public void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser) {
+        startChatActivity(context, roomModel, typingUser, null);
+    }
+
+    public void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
         if (TYPE_PERSONAL == roomModel.getRoomType() && TAPDataManager.getInstance().getActiveUser().getUserID().equals(
                 TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
             return;
@@ -421,7 +423,12 @@ public class TAPUtils {
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TAPChatActivity.class);
         intent.putExtra(ROOM, roomModel);
-        intent.putExtra(IS_TYPING, isTyping);
+
+        if (null != typingUser) {
+            Gson gson = new Gson();
+            String list = gson.toJson(typingUser);
+            intent.putExtra(GROUP_TYPING_MAP, list);
+        }
         if (null != jumpToMessageLocalID) {
             intent.putExtra(JUMP_TO_MESSAGE, jumpToMessageLocalID);
         }
@@ -598,6 +605,16 @@ public class TAPUtils {
         }
     }
 
+    public String getMediaDurationStringDummy(int maxDuration) {
+        int hourMs = 1000 * 60 * 60;
+
+        if (maxDuration > hourMs) {
+            return "00-00-0";
+        } else {
+            return "00-00";
+        }
+    }
+
     public String getFileDisplayName(TAPMessageModel message) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {
@@ -700,7 +717,7 @@ public class TAPUtils {
             public void onSelectFinished(TAPUserModel entity) {
                 if (null != entity) {
                     Log.e(TAG, "getUserFromXcUserID onDbSelectFinished: " + TAPUtils.getInstance().toJsonString(entity));
-                    TAPContactManager.getInstance().updateUserDataMap(entity);
+                    TAPContactManager.getInstance().updateUserData(entity);
                     listener.onSelectFinished(entity);
                 } else {
                     // Get user data from API
@@ -710,7 +727,7 @@ public class TAPUtils {
                             public void onSuccess(TAPGetUserResponse response) {
                                 TAPUserModel userResponse = response.getUser();
                                 Log.e(TAG, "getUserFromXcUserID onApiSuccess: " + TAPUtils.getInstance().toJsonString(userResponse));
-                                TAPContactManager.getInstance().updateUserDataMap(userResponse);
+                                TAPContactManager.getInstance().updateUserData(userResponse);
                                 listener.onSelectFinished(userResponse);
                             }
 

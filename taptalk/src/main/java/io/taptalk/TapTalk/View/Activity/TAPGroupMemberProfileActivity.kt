@@ -30,7 +30,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPContactManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPGroupManager
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPMenuItem
@@ -185,18 +185,8 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             it.menuID == MENU_ADD_TO_CONTACTS -> TAPDataManager.getInstance().addContactApi(groupViewModel?.groupMemberUser?.userID
                     ?: "0", addContactView)
             it.menuID == MENU_PROMOTE_ADMIN -> {
-                TapTalkDialog.Builder(this)
-                        .setTitle(resources.getString(R.string.tap_promote_admin))
-                        .setDialogType(TapTalkDialog.DialogType.DEFAULT)
-                        .setMessage(getString(R.string.tap_promote_admin_confirmation))
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .setPrimaryButtonListener {
-                            TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.room?.roomID,
-                                    listOf(groupViewModel?.groupMemberUser?.userID), promoteAdminView)
-                        }
-                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                        .setSecondaryButtonListener {}
-                        .show()
+                TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.room?.roomID,
+                        listOf(groupViewModel?.groupMemberUser?.userID), promoteAdminView)
             }
             it.menuID == MENU_DEMOTE_ADMIN -> {
                 val show = TapTalkDialog.Builder(this)
@@ -360,17 +350,17 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                 .show()
     }
 
-    private val addContactView = object : TAPDefaultDataView<TAPCommonResponse>() {
+    private val addContactView = object : TAPDefaultDataView<TAPAddContactResponse>() {
         override fun startLoading() {
             super.startLoading()
             showLoading(getString(R.string.tap_adding))
         }
 
-        override fun onSuccess(response: TAPCommonResponse?) {
+        override fun onSuccess(response: TAPAddContactResponse?) {
             super.onSuccess(response)
-            val newContact = groupViewModel?.groupMemberUser?.setUserAsContact()
+            val newContact = response?.user?.setUserAsContact()
             TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, newContact)
-            TAPContactManager.getInstance().updateUserDataMap(newContact)
+            TAPContactManager.getInstance().updateUserData(newContact)
             this@TAPGroupMemberProfileActivity.endLoading(getString(R.string.tap_added_contact))
         }
 

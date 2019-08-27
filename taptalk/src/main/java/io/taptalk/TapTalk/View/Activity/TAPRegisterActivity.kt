@@ -35,8 +35,8 @@ import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
-import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
+import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse
@@ -734,36 +734,33 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onSuccess(response: TAPRegisterResponse?) {
-            TapTalk.saveAuthTicketAndGetAccessToken(response?.ticket
-                    ?: "", object : TAPVerifyOTPInterface {
-                override fun verifyOTPSuccessToLogin() {
-                    TAPDataManager.getInstance().saveMyCountryCode(vm.countryCallingCode)
-                    TAPDataManager.getInstance().saveMyCountryFlagUrl(vm.countryFlagUrl)
-                    if (null != vm.profilePictureUri) {
-                        uploadProfilePicture()
-                    } else {
-                        finishRegisterAndOpenRoomList()
-                    }
-                }
-
-                override fun verifyOTPSuccessToRegister() {
-
-                }
-
-                override fun verifyOTPFailed(errorCode: String?, errorMessage: String?) {
-                    TapTalkDialog.Builder(this@TAPRegisterActivity)
-                            .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                            .setTitle(getString(R.string.tap_error))
-                            .setMessage(errorMessage)
-                            .setPrimaryButtonTitle(getString(R.string.tap_retry))
-                            .setPrimaryButtonListener(true) {
-                                TapTalk.saveAuthTicketAndGetAccessToken(response?.ticket
-                                        ?: "", this)
+            TapTalk.authenticate(response?.ticket ?: "", true,
+                    object : TapCommonListener() {
+                        override fun onSuccess(successMessage: String?) {
+                            TAPDataManager.getInstance().saveMyCountryCode(vm.countryCallingCode)
+                            TAPDataManager.getInstance().saveMyCountryFlagUrl(vm.countryFlagUrl)
+                            if (null != vm.profilePictureUri) {
+                                uploadProfilePicture()
+                            } else {
+                                finishRegisterAndOpenRoomList()
                             }
-                            .setCancelable(false)
-                            .show()
-                }
-            })
+                        }
+
+                        override fun onError(errorCode: String?, errorMessage: String?) {
+                            TapTalkDialog.Builder(this@TAPRegisterActivity)
+                                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                                    .setTitle(getString(R.string.tap_error))
+                                    .setMessage(errorMessage)
+                                    .setPrimaryButtonTitle(getString(R.string.tap_retry))
+                                    .setPrimaryButtonListener(true) {
+                                        TapTalk.authenticate(response?.ticket
+                                                ?: "", true, this)
+                                    }
+                                    .setCancelable(false)
+                                    .show()
+                        }
+                    }
+            )
             vm.isUpdatingProfile = false
         }
 

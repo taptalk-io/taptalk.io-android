@@ -300,7 +300,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                                 users.add(contact);
                             }
                             TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                            TAPContactManager.getInstance().updateUserDataMap(users);
+                            TAPContactManager.getInstance().updateUserData(users);
                             runOnUiThread(() -> {
                                 //stopSyncLoading();
                                 flSync.setVisibility(View.GONE);
@@ -339,6 +339,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 tvConnectionStatus.setText(String.format(getString(R.string.tap_synced_d_contacts), contactSynced));
             }
             ivConnectionStatus.setImageResource(R.drawable.tap_ic_checklist_pumpkin);
+            ivConnectionStatus.setPadding(0, 0, 0, 0);
             ivConnectionStatus.clearAnimation();
             flSyncStatus.setVisibility(View.VISIBLE);
 
@@ -347,10 +348,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void showSyncLoadingStatus() {
+        int padding = TAPUtils.getInstance().dpToPx(2);
         runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
             tvConnectionStatus.setText(getString(R.string.tap_syncing_contacts));
             ivConnectionStatus.setImageResource(R.drawable.tap_ic_loading_progress_circle_white);
+            ivConnectionStatus.setPadding(padding, padding, padding, padding);
             TAPUtils.getInstance().rotateAnimateInfinitely(this, ivConnectionStatus);
             llConnectionStatus.setVisibility(View.VISIBLE);
             flSyncStatus.setVisibility(View.VISIBLE);
@@ -372,11 +375,11 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                         TAPUserModel contactUserModel = contact.getUser().setUserAsContact();
                         users.add(contactUserModel);
                         TAPContactManager.getInstance().addUserMapByPhoneNumber(contactUserModel);
-                        TAPContactManager.getInstance().updateUserDataMap(contactUserModel);
+                        TAPContactManager.getInstance().updateUserData(contactUserModel);
                     }
 
                     TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                    TAPContactManager.getInstance().updateUserDataMap(users);
+                    TAPContactManager.getInstance().updateUserData(users);
                     permissionCheckAndGetContactList();
                 }).start();
             } catch (Exception e) {

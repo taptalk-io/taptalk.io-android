@@ -26,7 +26,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0"
-        tools:background="@drawable/tap_bg_circle_9b9b9b" />
+        tools:src="@drawable/tap_bg_circle_9b9b9b" />
+
+    <TextView
+        android:id="@+id/tv_avatar_label"
+        style="@style/tapDefaultRoomAvatarMediumFontStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:textAllCaps="true"
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+        app:layout_constraintEnd_toEndOf="@id/civ_avatar"
+        app:layout_constraintStart_toStartOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="@id/civ_avatar"
+        tools:text="A" />
 
     <ImageView
         android:id="@+id/iv_avatar_icon"
@@ -70,7 +83,7 @@
         app:layout_constraintWidth_min="24dp" />
 
     <ImageView
-        android:id="@+id/iv_room_typing_indicator"
+        android:id="@+id/iv_personal_room_typing_indicator"
         android:layout_width="12dp"
         android:layout_height="12dp"
         android:layout_marginStart="8dp"
@@ -79,6 +92,17 @@
         app:layout_constraintEnd_toStartOf="@id/tv_last_message"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
         app:layout_constraintTop_toTopOf="@id/tv_last_message" />
+
+    <ImageView
+        android:id="@+id/iv_group_room_typing_indicator"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/tv_group_sender_name"
+        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="@id/tv_group_sender_name" />
 
     <TextView
         android:id="@+id/tv_group_sender_name"
@@ -92,7 +116,7 @@
         android:maxLines="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/fl_status"
-        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintStart_toEndOf="@id/iv_group_room_typing_indicator"
         app:layout_constraintTop_toBottomOf="@id/tv_full_name"
         app:layout_constraintVertical_bias="0"
         app:layout_goneMarginStart="8dp"
@@ -110,7 +134,7 @@
         android:maxLines="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/fl_status"
-        app:layout_constraintStart_toEndOf="@id/iv_room_typing_indicator"
+        app:layout_constraintStart_toEndOf="@id/iv_personal_room_typing_indicator"
         app:layout_constraintTop_toBottomOf="@id/tv_group_sender_name"
         app:layout_constraintVertical_bias="0"
         app:layout_goneMarginStart="8dp"
@@ -158,12 +182,12 @@
             android:background="@drawable/tap_bg_room_list_unread_badge"
             android:gravity="center"
             android:minWidth="18dp"
-            android:paddingStart="2dp"
+            android:paddingStart="4dp"
             android:paddingTop="2dp"
-            android:paddingEnd="2dp"
+            android:paddingEnd="4dp"
             android:paddingBottom="2dp"
             android:visibility="invisible"
-            tools:text="1" />
+            tools:text="99+" />
 
     </FrameLayout>
 
