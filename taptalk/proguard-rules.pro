@@ -120,7 +120,7 @@
 
 
 # Proguard for Taptalk apps Class
--keep class io.** { *; }
+-keepnames class io.** { *; }
 
 # Retrofit
 -keepattributes Signature, InnerClasses, EnclosingMethod
