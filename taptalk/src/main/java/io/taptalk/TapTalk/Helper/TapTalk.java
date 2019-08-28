@@ -97,18 +97,21 @@ public class TapTalk {
     private static Map<String, String> customConfigs;
     public static TapTalkImplementationType implementationType;
 
+    @Keep
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
         TapTalkEnvironmentStaging,
         TapTalkEnvironmentDevelopment
     }
 
+    @Keep
     public enum TapTalkImplementationType {
         TapTalkImplementationTypeCore,
         TapTalkImplementationTypeUI,
         TapTalkImplementationTypeCombine
     }
 
+    @Keep
     public enum TapTalkScreenOrientation {
         TapTalkOrientationDefault,
         TapTalkOrientationPortrait,

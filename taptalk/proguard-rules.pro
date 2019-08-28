@@ -140,3 +140,8 @@
 
 -dontnote rx.internal.util.PlatformDependent
 
+
+-keep public class * {
+    public <methods>;
+    public <fields>;
+}
