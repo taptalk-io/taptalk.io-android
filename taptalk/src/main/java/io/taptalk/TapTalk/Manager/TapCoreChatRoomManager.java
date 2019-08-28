@@ -35,7 +35,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_LEAVE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
-@Keep
 public class TapCoreChatRoomManager {
 
     private static TapCoreChatRoomManager instance;
