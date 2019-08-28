@@ -7,14 +7,6 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# Add any project specific keep options here:
-
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
 
 # RETROFIT
 #-dontwarn okio.**
@@ -81,66 +73,31 @@
 ## for DexGuard only
 ##-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 #
-#-keepattributes *Annotation*
-#-keepattributes EnclosingMethod
-#-keepattributes InnerClasses
-#
-#-keep class com.google.firebase.quickstart.database.viewholder. {
-#    *;
-#}
-#
-#-keepclassmembers class com.google.firebase.quickstart.database.models. {
-#    *;
-#}
-#
-#-keep public class com.google.android.gms.* { public *; }
-#-dontwarn com.google.android.gms.
-#
-#-keep class rx. { *; }
-#-keepnames class rx. { *; }
-#
-#-keepattributes SourceFile,LineNumberTable
-#-keep public class * extends java.lang.Exception
-#-printmapping mapping.txt
-#-keep class com.crashlytics. { *; }
-#-dontwarn com.crashlytics.
-#
-#-keep class com.orhanobut.hawk. { *; }
-#-keepnames class com.orhanobut.hawk. { *; }
-#
-#-keep class com.orhanobut.hawk. { *; }
-#-keepnames class com.orhanobut.hawk. { *; }
-#
-#
-##-keep class io. { *; }
-##-keepnames class io. { *; }
-#
-#-keep class okio. { *; }
-#-keepnames class okio. { *; }
-#
-#-dontwarn okio.**
-#
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+-keep class com.google.firebase.quickstart.database.viewholder. {
+    *;
+}
+
+-keepclassmembers class com.google.firebase.quickstart.database.models. {
+    *;
+}
+-keep public class com.google.android.gms.* { public *; }
+-dontwarn com.google.android.gms.
+-keep public class * extends java.lang.Exception
+-keep class com.crashlytics. { *; }
+-dontwarn com.crashlytics.
+
+-keep class okio. { *; }
+-keepnames class okio. { *; }
+-dontwarn okio.**
+
 #-ignorewarnings -keep class * { public private *; }
-#
-##RxJava
-#-dontwarn sun.misc.**
-#
-#-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
-#   long producerIndex;
-#   long consumerIndex;
-#}
-#
-#-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
-#    rx.internal.util.atomic.LinkedQueueNode producerNode;
-#}
-#
-#-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
-#    rx.internal.util.atomic.LinkedQueueNode consumerNode;
-#}
-#
-#-dontnote rx.internal.util.PlatformDependent
-#
-#
+
+
+
+
 
 # Add *one* of the following rules to your Proguard configuration file.
 # Alternatively, you can annotate classes and class members with @android.support.annotation.Keep
@@ -161,4 +118,51 @@
 #
 #-keepclassmembers enum * { *; }
 
+
+# Proguard for Taptalk apps Class
 -keep class io.** { *; }
+
+# Retrofit
+-keepattributes Signature, InnerClasses, EnclosingMethod
+-keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn javax.annotation.**
+-dontwarn kotlin.Unit
+-dontwarn retrofit2.KotlinExtensions
+-dontwarn retrofit2.KotlinExtensions$*
+-if interface * { @retrofit2.http.* <methods>; }
+-keep,allowobfuscation interface <1>
+
+# okhttp3
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+-dontwarn org.codehaus.mojo.animal_sniffer.*
+-dontwarn okhttp3.internal.platform.ConscryptPlatform
+
+
+# rxjava
+-keep class rx.schedulers.Schedulers {
+    public static <methods>;
+}
+-keep class rx.schedulers.ImmediateScheduler {
+    public <methods>;
+}
+-keep class rx.schedulers.TestScheduler {
+    public <methods>;
+}
+-keep class rx.schedulers.Schedulers {
+    public static ** test();
+}
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+    long producerIndex;
+    long consumerIndex;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    long producerNode;
+    long consumerNode;
+}
+
+-keep class com.orhanobut.hawk. { *; }
+-keepnames class com.orhanobut.hawk. { *; }
