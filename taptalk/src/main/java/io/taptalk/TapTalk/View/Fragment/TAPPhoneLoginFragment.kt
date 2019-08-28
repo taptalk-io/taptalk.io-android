@@ -18,7 +18,6 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK
 import io.taptalk.TapTalk.Helper.TAPUtils
-import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Manager.TAPDataManager
@@ -164,7 +163,7 @@ class TAPPhoneLoginFragment : Fragment() {
                 && currentOTPTimestampLength <= maxTime * 1000) {
             requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true)
         } else {
-            TAPDataManager.getInstance().requestOTPLogin(loginViewModel.countryID, loginViewModel.phoneNumber, object : TAPDefaultDataView<TAPLoginOTPResponse>() {
+            TAPDataManager.getInstance().requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
                     super.onSuccess(response)
                     requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess)
