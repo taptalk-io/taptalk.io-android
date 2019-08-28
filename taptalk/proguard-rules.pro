@@ -144,19 +144,21 @@
 
 # Add *one* of the following rules to your Proguard configuration file.
 # Alternatively, you can annotate classes and class members with @android.support.annotation.Keep
+#
+#-keep class io.taptalk.TapTalk.Helper.TapTalk { *; }
+#-keep class io.taptalk.TapTalk.Helper.TapTalk.** { *; }
+#-keep class io.taptalk.TapTalk.Listener.TapListener { *; }
+#
+#-keep class io.taptalk.TapTalk.Manager.TapCoreMessageManager { *; }
+#-keep class io.taptalk.TapTalk.Manager.TapCoreContactManager { *; }
+#-keep class io.taptalk.TapTalk.Manager.TapCoreChatRoomManager { *; }
+#-keep class io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager { *; }
+#-keep class io.taptalk.TapTalk.Manager.TapCoreRoomListManager { *; }
+#
+#-keepclassmembers class ** {
+#    public void on*(***);
+#}
+#
+#-keepclassmembers enum * { *; }
 
--keep class io.taptalk.TapTalk.Helper.TapTalk { *; }
--keep class io.taptalk.TapTalk.Helper.TapTalk.** { *; }
--keep class io.taptalk.TapTalk.Listener.TapListener { *; }
-
--keep class io.taptalk.TapTalk.Manager.TapCoreMessageManager { *; }
--keep class io.taptalk.TapTalk.Manager.TapCoreContactManager { *; }
--keep class io.taptalk.TapTalk.Manager.TapCoreChatRoomManager { *; }
--keep class io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager { *; }
--keep class io.taptalk.TapTalk.Manager.TapCoreRoomListManager { *; }
-
--keepclassmembers class ** {
-    public void on*(***);
-}
-
--keepclassmembers enum * { *; }
+-keep class io.** { *; }
