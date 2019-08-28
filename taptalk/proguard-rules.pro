@@ -112,8 +112,8 @@
 -keepnames class com.orhanobut.hawk. { *; }
 
 
--keep class io. { *; }
--keepnames class io. { *; }
+#-keep class io. { *; }
+#-keepnames class io. { *; }
 
 -keep class okio. { *; }
 -keepnames class okio. { *; }
@@ -139,8 +139,4 @@
 }
 
 -dontnote rx.internal.util.PlatformDependent
-
--keep class io.taptalk.TapTalk.Helper.TapTalk**
--keepclassmembers io.taptalk.TapTalk.Helper.TapTalk** {*;}
-
 

@@ -112,8 +112,8 @@
 -keepnames class com.orhanobut.hawk. { *; }
 
 
--keep class io. { *; }
--keepnames class io. { *; }
+#-keep class io. { *; }
+#-keepnames class io. { *; }
 
 -keep class okio. { *; }
 -keepnames class okio. { *; }
@@ -121,6 +121,3 @@
 -dontwarn okio.**
 
 -ignorewarnings -keep class * { public private *; }
-
--keep class io.taptalk.TapTalk.Helper.TapTalk**
--keepclassmembers io.taptalk.TapTalk.Helper.TapTalk** {*;}
