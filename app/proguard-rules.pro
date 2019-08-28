@@ -121,3 +121,8 @@
 -dontwarn okio.**
 
 -ignorewarnings -keep class * { public private *; }
+
+-keep public class * {
+    public <methods>;
+    public <fields>;
+}
