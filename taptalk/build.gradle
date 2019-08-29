@@ -112,6 +112,7 @@ dependencies {
 
     //Firebase
     implementation 'com.google.firebase:firebase-core:16.0.9'
+    implementation 'com.google.firebase:firebase-messaging:18.0.0'
 
     //Chrome Custom Tab
     implementation 'com.android.support:customtabs:28.0.0'

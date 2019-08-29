@@ -1,5 +1,6 @@
-package io.moselo.SampleApps.Firebase;
+package io.taptalk.TapTalk.Firebase;
 
+import android.support.annotation.Keep;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,8 +15,8 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
-import io.taptalk.TaptalkSample.R;
 
+@Keep
 public class MyFireMsgService extends FirebaseMessagingService {
     private static final String TAG = MyFireMsgService.class.getSimpleName();
 
@@ -27,11 +28,11 @@ public class MyFireMsgService extends FirebaseMessagingService {
         }, remoteMessage.getData().get("body"));
         try {
             //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
-            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(this, R.mipmap.ic_launcher,
+            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(this, TapTalk.getClientAppIcon(),
                     TAPRoomListActivity.class,
                     TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
         } catch (Exception e) {
-            Log.e(TAG, "onMessageReceived: ",e );
+            Log.e(TAG, "onMessageReceived: ", e);
             e.printStackTrace();
         }
     }

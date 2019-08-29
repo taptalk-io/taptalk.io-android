@@ -33,7 +33,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service android:name="io.moselo.SampleApps.Firebase.MyFireMsgService">
+        <service android:name="io.taptalk.TapTalk.Firebase.MyFireMsgService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

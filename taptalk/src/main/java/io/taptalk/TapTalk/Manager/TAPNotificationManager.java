@@ -291,7 +291,7 @@ public class TAPNotificationManager {
                     && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
                 new NotificationBuilder(context)
                         .setNotificationMessage(newMessageModel)
-                        .setSmallIcon(notificationIcon)
+                        .setSmallIcon(TapTalk.getClientAppIcon())
                         .setNeedReply(false)
                         .setOnClickAction(destinationClass)
                         .show();
