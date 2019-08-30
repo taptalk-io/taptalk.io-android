@@ -265,7 +265,7 @@ public class TapTalk {
      * =============================================================================================
      */
 
-    public static void authenticate(String authTicket, boolean connectOnSuccess, TapCommonListener listener) {
+    public static void authenticateWithAuthTicket(String authTicket, boolean connectOnSuccess, TapCommonListener listener) {
         checkTapTalkInitialized();
         if (null == authTicket || "".equals(authTicket)) {
             listener.onError(ERROR_CODE_INVALID_AUTH_TICKET, ERROR_MESSAGE_INVALID_AUTH_TICKET);
