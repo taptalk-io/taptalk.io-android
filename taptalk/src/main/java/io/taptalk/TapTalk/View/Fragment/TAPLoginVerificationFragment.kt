@@ -205,7 +205,7 @@ class TAPLoginVerificationFragment : Fragment() {
         TAPDataManager.getInstance().verifyOTPLogin(otpID, otpKey, et_otp_code.text.toString(), object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
             override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
                 if (response.isRegistered) {
-                    TapTalk.authenticate(response.ticket, true, object : TapCommonListener() {
+                    TapTalk.authenticateWithAuthTicket(response.ticket, true, object : TapCommonListener() {
                         override fun onSuccess(successMessage: String) {
                             verifyOTPInterface.verifyOTPSuccessToLogin()
                         }

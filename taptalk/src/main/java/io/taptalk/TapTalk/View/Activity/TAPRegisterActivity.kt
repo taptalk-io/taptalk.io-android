@@ -734,7 +734,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onSuccess(response: TAPRegisterResponse?) {
-            TapTalk.authenticate(response?.ticket ?: "", true,
+            TapTalk.authenticateWithAuthTicket(response?.ticket ?: "", true,
                     object : TapCommonListener() {
                         override fun onSuccess(successMessage: String?) {
                             TAPDataManager.getInstance().saveMyCountryCode(vm.countryCallingCode)
@@ -753,7 +753,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                                     .setMessage(errorMessage)
                                     .setPrimaryButtonTitle(getString(R.string.tap_retry))
                                     .setPrimaryButtonListener(true) {
-                                        TapTalk.authenticate(response?.ticket
+                                        TapTalk.authenticateWithAuthTicket(response?.ticket
                                                 ?: "", true, this)
                                     }
                                     .setCancelable(false)
