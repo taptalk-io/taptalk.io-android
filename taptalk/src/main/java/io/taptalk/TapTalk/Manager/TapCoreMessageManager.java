@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,7 +27,10 @@ import io.taptalk.TapTalk.Interface.TapGetMessageInterface;
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TapCoreFileDownloadListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreReceiveMessageListener;
+import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -106,61 +110,77 @@ public class TapCoreMessageManager {
         }
     }
 
-    public void sendTextMessage(String message, TAPRoomModel room, TapSendMessageInterface listener) {
+    public TAPMessageModel constructTapTalkMessageModel(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel sender, String recipientID, @Nullable HashMap<String, Object> messageData) {
+        return TAPMessageModel.Builder(body, room, type, created, sender, recipientID, messageData);
+    }
+
+    public TAPMessageModel constructTapTalkMessageModelWithQuote(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel sender, String recipientID, @Nullable HashMap<String, Object> messageData, TAPMessageModel quotedMessage) {
+        return TAPMessageModel.BuilderWithQuotedMessage(body, room, type, created, sender, recipientID, messageData, quotedMessage);
+    }
+
+    public TAPMessageModel constructForwardedTapTalkMessageModel(TAPMessageModel messageToForward, TAPRoomModel room, Long created, TAPUserModel sender, String recipientID) {
+        return TAPMessageModel.BuilderForwardedMessage(messageToForward, room, created, sender, recipientID);
+    }
+
+    public void sendMessage(TAPMessageModel message, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance().sendMessage(message, listener);
+    }
+
+    public void sendTextMessage(String message, TAPRoomModel room, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().sendTextMessageWithRoomModel(message, room, listener);
     }
 
-    public void sendTextMessage(String message, TAPRoomModel room, TAPMessageModel quotedMessage, TapSendMessageInterface listener) {
+    public void sendTextMessage(String message, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quotedMessage, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendTextMessageWithRoomModel(message, room, listener);
     }
 
-    public void sendLocationMessage(Double latitude, Double longitude, String address, TAPRoomModel room, TapSendMessageInterface listener) {
+    public void sendLocationMessage(Double latitude, Double longitude, String address, TAPRoomModel room, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude, room, listener);
     }
 
-    public void sendLocationMessage(Double latitude, Double longitude, String address, TAPRoomModel room, TAPMessageModel quotedMessage, TapSendMessageInterface listener) {
+    public void sendLocationMessage(Double latitude, Double longitude, String address, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quotedMessage, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude, room, listener);
     }
 
-    public void sendImageMessage(Uri imageUri, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
+    public void sendImageMessage(Uri imageUri, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, imageUri, caption, listener);
     }
 
-    public void sendImageMessage(Uri imageUri, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapSendMessageInterface listener) {
+    public void sendImageMessage(Uri imageUri, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quotedMessage, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, imageUri, caption, listener);
     }
 
-    public void sendImageMessage(Bitmap image, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
+    public void sendImageMessage(Bitmap image, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, image, caption, listener);
     }
 
-    public void sendImageMessage(Bitmap image, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapSendMessageInterface listener) {
+    public void sendImageMessage(Bitmap image, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quotedMessage, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, image, caption, listener);
     }
 
-    public void sendVideoMessage(Uri uri, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
+    public void sendVideoMessage(Uri uri, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().sendVideoMessage(TapTalk.appContext, room, uri, caption, listener);
     }
 
-    public void sendVideoMessage(Uri uri, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapSendMessageInterface listener) {
+    public void sendVideoMessage(Uri uri, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quotedMessage, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendVideoMessage(TapTalk.appContext, room, uri, caption, listener);
     }
 
-    public void sendFileMessage(File file, TAPRoomModel room, TapSendMessageInterface listener) {
+    public void sendFileMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().sendFileMessage(TapTalk.appContext, room, file, listener);
     }
 
-    public void sendFileMessage(File file, TAPRoomModel room, TAPMessageModel quotedMessage, TapSendMessageInterface listener) {
+    public void sendFileMessage(File file, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quotedMessage, TAPDefaultConstant.QuoteAction.REPLY);
         TAPChatManager.getInstance().sendFileMessage(TapTalk.appContext, room, file, listener);
     }
 
-    public void sendForwardedMessage(TAPMessageModel messageToForward, TapSendMessageInterface listener) {
+    public void sendForwardedMessage(TAPMessageModel messageToForward, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().setQuotedMessage(messageToForward.getRoom().getRoomID(), messageToForward, TAPDefaultConstant.QuoteAction.FORWARD);
         TAPChatManager.getInstance().checkAndSendForwardedMessage(messageToForward.getRoom(), listener);
     }
@@ -174,7 +194,7 @@ public class TapCoreMessageManager {
         TAPDataManager.getInstance().deleteFromDatabase(message.getLocalID());
     }
 
-    public void downloadMessageFile(TAPMessageModel message, TapFileDownloadInterface listener) {
+    public void downloadMessageFile(TAPMessageModel message, TapCoreFileDownloadListener listener) {
         if (!TAPUtils.getInstance().hasPermissions(TapTalk.appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             listener.onError(ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE);
         } else {
@@ -217,7 +237,7 @@ public class TapCoreMessageManager {
         TAPMessageStatusManager.getInstance().addReadMessageQueue(message);
     }
 
-    public void getOlderMessagesBeforeTimestamp(String roomID, long maxCreatedTimestamp, int numberOfItems, TapGetMessageInterface listener) {
+    public void getOlderMessagesBeforeTimestamp(String roomID, long maxCreatedTimestamp, int numberOfItems, TapCoreGetMessageListener listener) {
         TAPDataManager.getInstance().getMessageListByRoomBefore(roomID, maxCreatedTimestamp, numberOfItems,
                 new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
                     @Override
@@ -245,7 +265,7 @@ public class TapCoreMessageManager {
                 });
     }
 
-    public void getNewerMessagesAfterTimestamp(String roomID, long minCreatedTimestamp, long lastUpdateTimestamp, TapGetMessageInterface listener) {
+    public void getNewerMessagesAfterTimestamp(String roomID, long minCreatedTimestamp, long lastUpdateTimestamp, TapCoreGetMessageListener listener) {
         TAPDataManager.getInstance().getMessageListByRoomAfter(roomID, minCreatedTimestamp, lastUpdateTimestamp,
                 new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
                     @Override
@@ -273,7 +293,7 @@ public class TapCoreMessageManager {
                 });
     }
 
-    public void getNewerMessages(String roomID, TapGetMessageInterface listener) {
+    public void getNewerMessages(String roomID, TapCoreGetMessageListener listener) {
         TAPDataManager.getInstance().getMessagesFromDatabaseAsc(roomID, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {

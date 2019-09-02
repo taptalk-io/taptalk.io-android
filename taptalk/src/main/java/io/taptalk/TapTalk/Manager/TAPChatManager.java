@@ -361,6 +361,12 @@ public class TAPChatManager {
         );
     }
 
+    public void sendMessage(TAPMessageModel message, TapSendMessageInterface tapSendMessageInterface) {
+        sendMessageListeners.put(message.getLocalID(), tapSendMessageInterface);
+        tapSendMessageInterface.onStart(message);
+        triggerListenerAndSendMessage(message, true);
+    }
+
     public void sendTextMessage(String textMessage) {
         sendTextMessageWithRoomModel(textMessage, activeRoom);
     }
