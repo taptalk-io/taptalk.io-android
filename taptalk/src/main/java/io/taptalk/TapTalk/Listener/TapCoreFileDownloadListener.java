@@ -18,7 +18,7 @@ public abstract class TapCoreFileDownloadListener implements TapFileDownloadInte
     }
 
     @Override
-    public void onProgress(TAPMessageModel tapMessageModel, int percentage, long bytes) {
+    public void onProgress(TAPMessageModel message, int percentage, long bytes) {
 
     }
 }

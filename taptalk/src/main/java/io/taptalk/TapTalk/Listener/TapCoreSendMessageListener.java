@@ -6,12 +6,12 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 public abstract class TapCoreSendMessageListener implements TapSendMessageInterface {
 
     @Override
-    public void onStart(TAPMessageModel tapMessageModel) {
+    public void onStart(TAPMessageModel message) {
 
     }
 
     @Override
-    public void onSuccess(TAPMessageModel tapMessageModel) {
+    public void onSuccess(TAPMessageModel message) {
 
     }
 
@@ -21,7 +21,7 @@ public abstract class TapCoreSendMessageListener implements TapSendMessageInterf
     }
 
     @Override
-    public void onProgress(TAPMessageModel tapMessageModel, int percentage, long bytes) {
+    public void onProgress(TAPMessageModel message, int percentage, long bytes) {
 
     }
 }

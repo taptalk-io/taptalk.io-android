@@ -49,6 +49,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TapCoreMessageManager {
 
@@ -110,29 +111,13 @@ public class TapCoreMessageManager {
         }
     }
 
-    public TAPMessageModel constructTapTalkMessageModel(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel sender, String recipientID, @Nullable HashMap<String, Object> messageData) {
-        return TAPMessageModel.Builder(body, room, type, created, sender, recipientID, messageData);
+    public void sendTextMessage(String messageBody, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance().sendTextMessageWithRoomModel(messageBody, room, listener);
     }
 
-    public TAPMessageModel constructTapTalkMessageModelWithQuote(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel sender, String recipientID, @Nullable HashMap<String, Object> messageData, TAPMessageModel quotedMessage) {
-        return TAPMessageModel.BuilderWithQuotedMessage(body, room, type, created, sender, recipientID, messageData, quotedMessage);
-    }
-
-    public TAPMessageModel constructForwardedTapTalkMessageModel(TAPMessageModel messageToForward, TAPRoomModel room, Long created, TAPUserModel sender, String recipientID) {
-        return TAPMessageModel.BuilderForwardedMessage(messageToForward, room, created, sender, recipientID);
-    }
-
-    public void sendMessage(TAPMessageModel message, TapCoreSendMessageListener listener) {
-        TAPChatManager.getInstance().sendMessage(message, listener);
-    }
-
-    public void sendTextMessage(String message, TAPRoomModel room, TapCoreSendMessageListener listener) {
-        TAPChatManager.getInstance().sendTextMessageWithRoomModel(message, room, listener);
-    }
-
-    public void sendTextMessage(String message, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+    public void sendTextMessage(String messageBody, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quotedMessage, TAPDefaultConstant.QuoteAction.REPLY);
-        TAPChatManager.getInstance().sendTextMessageWithRoomModel(message, room, listener);
+        TAPChatManager.getInstance().sendTextMessageWithRoomModel(messageBody, room, listener);
     }
 
     public void sendLocationMessage(Double latitude, Double longitude, String address, TAPRoomModel room, TapCoreSendMessageListener listener) {
@@ -162,13 +147,13 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance().sendImageMessage(TapTalk.appContext, room, image, caption, listener);
     }
 
-    public void sendVideoMessage(Uri uri, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
-        TAPChatManager.getInstance().sendVideoMessage(TapTalk.appContext, room, uri, caption, listener);
+    public void sendVideoMessage(Uri videoUri, String caption, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance().sendVideoMessage(TapTalk.appContext, room, videoUri, caption, listener);
     }
 
-    public void sendVideoMessage(Uri uri, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+    public void sendVideoMessage(Uri videoUri, String caption, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), quotedMessage, TAPDefaultConstant.QuoteAction.REPLY);
-        TAPChatManager.getInstance().sendVideoMessage(TapTalk.appContext, room, uri, caption, listener);
+        TAPChatManager.getInstance().sendVideoMessage(TapTalk.appContext, room, videoUri, caption, listener);
     }
 
     public void sendFileMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
@@ -180,9 +165,21 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance().sendFileMessage(TapTalk.appContext, room, file, listener);
     }
 
-    public void sendForwardedMessage(TAPMessageModel messageToForward, TapCoreSendMessageListener listener) {
-        TAPChatManager.getInstance().setQuotedMessage(messageToForward.getRoom().getRoomID(), messageToForward, TAPDefaultConstant.QuoteAction.FORWARD);
-        TAPChatManager.getInstance().checkAndSendForwardedMessage(messageToForward.getRoom(), listener);
+    public void sendForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), messageToForward, TAPDefaultConstant.QuoteAction.FORWARD);
+        TAPChatManager.getInstance().checkAndSendForwardedMessage(room, listener);
+    }
+
+    public TAPMessageModel constructTapTalkMessageModel(String messageBody, TAPRoomModel room, Integer type, @Nullable HashMap<String, Object> messageData) {
+        return TAPMessageModel.Builder(messageBody, room, type, System.currentTimeMillis(), TAPChatManager.getInstance().getActiveUser(), TYPE_PERSONAL == room.getRoomType() ? TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()) : "0", messageData);
+    }
+
+    public TAPMessageModel constructTapTalkMessageModelWithQuote(String messageBody, TAPRoomModel room, Integer type, @Nullable HashMap<String, Object> messageData, TAPMessageModel quotedMessage) {
+        return TAPMessageModel.BuilderWithQuotedMessage(messageBody, room, type, System.currentTimeMillis(), TAPChatManager.getInstance().getActiveUser(), TYPE_PERSONAL == room.getRoomType() ? TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()) : "0", messageData, quotedMessage);
+    }
+
+    public void sendCustomMessage(TAPMessageModel customMessage, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance().sendMessage(customMessage, listener);
     }
 
     public void deleteLocalMessage(String localID) {
