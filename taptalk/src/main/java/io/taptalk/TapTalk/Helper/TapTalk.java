@@ -79,7 +79,7 @@ public class TapTalk {
     private static final String TAG = TapTalk.class.getSimpleName();
     public static TapTalk tapTalk;
     public static Context appContext;
-    public static boolean isForeground, isAutoConnectDisabled;
+    public static boolean isForeground, isAutoConnectDisabled, isAutoContactSyncDisabled;
     private static TapTalkScreenOrientation screenOrientation = TapTalkScreenOrientation.TapTalkOrientationDefault;
     //    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
@@ -499,6 +499,21 @@ public class TapTalk {
         if (projectConfigs.isEmpty()) {
             projectConfigs.put(USERNAME_IGNORE_CASE, "1");
         }
+    }
+
+    public static void enableAutoContactSync() {
+        checkTapTalkInitialized();
+        isAutoContactSyncDisabled = false;
+    }
+
+    public static void disableAutoContactSync() {
+        checkTapTalkInitialized();
+        isAutoContactSyncDisabled = true;
+    }
+
+    public static boolean isAutoContactSyncEnabled() {
+        checkTapTalkInitialized();
+        return !isAutoContactSyncDisabled;
     }
 
     /**
