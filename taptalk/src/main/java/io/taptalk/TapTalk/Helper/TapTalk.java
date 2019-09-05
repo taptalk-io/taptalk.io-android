@@ -79,12 +79,12 @@ public class TapTalk {
     private static final String TAG = TapTalk.class.getSimpleName();
     public static TapTalk tapTalk;
     public static Context appContext;
-    public static boolean isForeground, isAutoConnectDisabled, isAutoContactSyncDisabled;
+    public static boolean isForeground;
     private static TapTalkScreenOrientation screenOrientation = TapTalkScreenOrientation.TapTalkOrientationDefault;
     //    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
     private static int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
-    private static boolean isRefreshTokenExpired;
+    private static boolean isRefreshTokenExpired, isAutoConnectDisabled, isAutoContactSyncDisabled;
     private Intent intent;
 
     private Thread.UncaughtExceptionHandler defaultUEH;
