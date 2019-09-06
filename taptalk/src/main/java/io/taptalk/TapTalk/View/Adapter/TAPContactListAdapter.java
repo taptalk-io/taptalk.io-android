@@ -78,7 +78,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
         private CircleImageView civAvatar;
         private ImageView ivAvatarIcon, ivSelection;
-        private TextView tvAvatarLabel, tvFullName;
+        private TextView tvAvatarLabel, tvFullName, tvUsername;
         private View vSeparator;
 
         ContactListHolder(ViewGroup parent, int itemLayoutId) {
@@ -89,6 +89,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
             ivSelection = itemView.findViewById(R.id.iv_selection);
             tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
             tvFullName = itemView.findViewById(R.id.tv_full_name);
+            tvUsername = itemView.findViewById(R.id.tv_username);
             vSeparator = itemView.findViewById(R.id.v_separator);
         }
 
@@ -124,15 +125,20 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
 
             // Show/hide selection
             if (viewType == SELECT && selectedContacts.contains(item)) {
-                ivSelection.setVisibility(View.VISIBLE);
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_active);
                 ivSelection.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive)));
-            } else if (viewType == SELECT && !selectedContacts.contains(item)) {
+                tvUsername.setText(String.format("@%s", item.getUsername()));
                 ivSelection.setVisibility(View.VISIBLE);
+                tvUsername.setVisibility(View.VISIBLE);
+            } else if (viewType == SELECT && !selectedContacts.contains(item)) {
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive);
                 ivSelection.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive)));
+                tvUsername.setText(String.format("@%s", item.getUsername()));
+                ivSelection.setVisibility(View.VISIBLE);
+                tvUsername.setVisibility(View.VISIBLE);
             } else {
                 ivSelection.setVisibility(View.GONE);
+                tvUsername.setVisibility(View.GONE);
             }
 
             itemView.setOnClickListener(v -> onContactClicked(item, position));
