@@ -161,7 +161,7 @@ public class TAPConnectionManager {
                 TAPDataManager.getInstance().validateAccessToken(validateAccessView);
                 if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
                     reconnect();
-                } else if (!TapTalk.isAutoConnectDisabled && NOT_CONNECTED == connectionStatus) {
+                } else if (TapTalk.isAutoConnectEnabled() && NOT_CONNECTED == connectionStatus) {
                     connect();
                 }
             }
