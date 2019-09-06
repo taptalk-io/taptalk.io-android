@@ -25,7 +25,6 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -41,7 +40,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSIDs;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.GROUP_MAX_PARTICIPANTS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 
@@ -263,6 +261,8 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         vm.getFilteredContacts().clear();
         if (searchKeyword.trim().isEmpty()) {
             vm.getFilteredContacts().addAll(vm.getContactList());
+            vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
+            contactListAdapter.clearSectionTitles();
         } else {
             List<TAPUserModel> filteredContacts = new ArrayList<>();
             for (TAPUserModel user : vm.getContactList()) {
@@ -271,9 +271,19 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                 }
             }
             vm.getFilteredContacts().addAll(filteredContacts);
+            vm.getSeparatedContacts().add(vm.getFilteredContacts());
+            contactListAdapter.setSectionTitles(generateSearchSectionTitles());
+            // TODO: 6 September 2019 search username by API
         }
-        vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
+        //vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
         contactListAdapter.setItems(vm.getSeparatedContacts());
+    }
+
+    private List<String> generateSearchSectionTitles() {
+        List<String> sectionTitles = new ArrayList<>();
+        sectionTitles.add(getString(R.string.tap_contacts));
+        sectionTitles.add(getString(R.string.tap_global_search));
+        return sectionTitles;
     }
 
     private TextWatcher searchTextWatcher = new TextWatcher() {

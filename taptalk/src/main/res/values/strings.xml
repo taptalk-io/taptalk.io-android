@@ -40,7 +40,9 @@
     <string name="tap_search_forward_placeholder">Search for chats or contacts</string>
 
     <!--Contacts-->
+    <string name="tap_contacts">Contacts</string>
     <string name="tap_search_for_contacts">Search for contacts</string>
+    <string name="tap_global_search">Global Search</string>
     <string name="tap_cant_find_contact">Can’t find the contact you were looking for?</string>
     <string name="tap_cant_find_person">Can’t find who you are looking for?</string>
     <string name="tap_view_blocked_contacts">View Blocked Contacts</string>
