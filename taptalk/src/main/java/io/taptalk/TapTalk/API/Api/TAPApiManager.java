@@ -167,7 +167,7 @@ public class TAPApiManager {
         TAPBaseResponse br = (TAPBaseResponse) t;
 
         int code = br.getStatus();
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG && code != RESPONSE_SUCCESS)
             Log.e(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
 
         if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)

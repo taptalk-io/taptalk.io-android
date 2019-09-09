@@ -1428,7 +1428,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 callApiGetGroupData();
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() &&
                     (ROOM_REMOVE_PARTICIPANT.equals(message.getAction())
-                    || LEAVE_ROOM.equals(message.getAction()))) {
+                            || LEAVE_ROOM.equals(message.getAction()))) {
                 showChatAsHistory(getString(R.string.tap_not_a_participant));
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_ADD_PARTICIPANT.equals(message.getAction())) {
                 showDefaultChatEditText();
@@ -2174,13 +2174,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPAttachmentListener attachmentListener = new TAPAttachmentListener() {
         @Override
         public void onCameraSelected() {
-            fConnectionStatus.hideUntilNextConnect(true);
+            if (TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED)
+                fConnectionStatus.hideUntilNextConnect(true);
             vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
         }
 
         @Override
         public void onGallerySelected() {
-            fConnectionStatus.hideUntilNextConnect(true);
+            if (TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED)
+                fConnectionStatus.hideUntilNextConnect(true);
             TAPUtils.getInstance().pickMediaFromGallery(TAPChatActivity.this, SEND_MEDIA_FROM_GALLERY, true);
         }
 
