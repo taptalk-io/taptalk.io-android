@@ -90,6 +90,39 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_empty_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+
+        <TextView
+            android:id="@+id/tv_info_empty_contact"
+            style="@style/tapInfoLabelBodyStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:text="@string/tap_contact_list_empty" />
+
+        <TextView
+            android:id="@+id/tv_button_empty_contact"
+            style="@style/tapClickableLabelStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/tap_add_new_contact" />
+
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_contact_list"
         android:layout_width="match_parent"

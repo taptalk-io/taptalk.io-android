@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.taptalk.TapTalk.DiffCallback.TAPContactListDiffCallback;
@@ -123,8 +124,8 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
         }
     }
 
-    public void setSectionTitles(List<String> sectionTitles) {
-        this.sectionTitles = sectionTitles;
+    public void setSectionTitles(String... sectionTitles) {
+        this.sectionTitles = new ArrayList<>(Arrays.asList(sectionTitles));
     }
 
     public void clearSectionTitles() {

@@ -46,9 +46,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 public class TAPCreateNewGroupActivity extends TAPBaseActivity {
 
     private ConstraintLayout clActionBar;
-    private LinearLayout llGroupMembers;
+    private LinearLayout llGroupMembers, llEmptyContact;
     private ImageView ivButtonBack, ivButtonSearch, ivButtonClearText;
-    private TextView tvTitle, tvMemberCount;
+    private TextView tvTitle, tvMemberCount, tvInfoEmptyContact, tvButtonEmptyContact;
     private EditText etSearch;
     private Button btnContinue;
     private RecyclerView rvContactList, rvGroupMembers;
@@ -66,6 +66,12 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         initViewModel();
         initListener();
         initView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateFilteredContacts(etSearch.getText().toString().toLowerCase());
     }
 
     @Override
@@ -174,11 +180,14 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
     private void initView() {
         clActionBar = findViewById(R.id.cl_action_bar);
         llGroupMembers = findViewById(R.id.ll_group_members);
+        llEmptyContact = findViewById(R.id.ll_empty_contact);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonSearch = findViewById(R.id.iv_button_search);
         ivButtonClearText = findViewById(R.id.iv_button_clear_text);
         tvTitle = findViewById(R.id.tv_title);
         tvMemberCount = findViewById(R.id.tv_member_count);
+        tvInfoEmptyContact = findViewById(R.id.tv_info_empty_contact);
+        tvButtonEmptyContact = findViewById(R.id.tv_button_empty_contact);
         etSearch = findViewById(R.id.et_search);
         btnContinue = findViewById(R.id.btn_continue);
         rvContactList = findViewById(R.id.rv_contact_list);
@@ -263,6 +272,16 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
             vm.getFilteredContacts().addAll(vm.getContactList());
             vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
             contactListAdapter.clearSectionTitles();
+            if (vm.getSeparatedContacts().isEmpty()) {
+                tvInfoEmptyContact.setText(getString(R.string.tap_contact_list_empty));
+                tvButtonEmptyContact.setText(getString(R.string.tap_add_new_contact));
+                llEmptyContact.setOnClickListener(v -> openNewContactActivity());
+                llEmptyContact.setVisibility(View.VISIBLE);
+                rvContactList.setVisibility(View.GONE);
+            } else {
+                llEmptyContact.setVisibility(View.GONE);
+                rvContactList.setVisibility(View.VISIBLE);
+            }
         } else {
             List<TAPUserModel> filteredContacts = new ArrayList<>();
             for (TAPUserModel user : vm.getContactList()) {
@@ -271,19 +290,31 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
                 }
             }
             vm.getFilteredContacts().addAll(filteredContacts);
-            vm.getSeparatedContacts().add(vm.getFilteredContacts());
-            contactListAdapter.setSectionTitles(generateSearchSectionTitles());
+            if (vm.getFilteredContacts().isEmpty()) {
+                contactListAdapter.setSectionTitles(getString(R.string.tap_global_search));
+            } else {
+                vm.getSeparatedContacts().add(vm.getFilteredContacts());
+                contactListAdapter.setSectionTitles(getString(R.string.tap_contacts), getString(R.string.tap_global_search));
+            }
             // TODO: 6 September 2019 search username by API
+            if (vm.getSeparatedContacts().isEmpty()) {
+                tvInfoEmptyContact.setText(String.format(getString(R.string.tap_no_result_found_for), searchKeyword));
+                tvButtonEmptyContact.setText(getString(R.string.tap_try_different_search));
+                llEmptyContact.setOnClickListener(v -> etSearch.setText(""));
+                llEmptyContact.setVisibility(View.VISIBLE);
+                rvContactList.setVisibility(View.GONE);
+            } else {
+                llEmptyContact.setVisibility(View.GONE);
+                rvContactList.setVisibility(View.VISIBLE);
+            }
         }
-        //vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getFilteredContacts()));
         contactListAdapter.setItems(vm.getSeparatedContacts());
     }
 
-    private List<String> generateSearchSectionTitles() {
-        List<String> sectionTitles = new ArrayList<>();
-        sectionTitles.add(getString(R.string.tap_contacts));
-        sectionTitles.add(getString(R.string.tap_global_search));
-        return sectionTitles;
+    private void openNewContactActivity() {
+        Intent intent = new Intent(this, TAPNewContactActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private TextWatcher searchTextWatcher = new TextWatcher() {
