@@ -101,7 +101,7 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
         void onBind(int position) {
             item = getItemAt(position);
 
-            if (sectionTitles.isEmpty() || null == sectionTitles.get(position) || sectionTitles.get(position).isEmpty()) {
+            if (sectionTitles.isEmpty() || sectionTitles.size() <= position) {
                 // Set initial as section title
                 char initial = item.get(0).getName().charAt(0);
                 if (!Character.isAlphabetic(initial)) {

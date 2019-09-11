@@ -24,6 +24,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private TAPImageURL groupImage;
     private String groupName;
     private String roomID;
+    private String pendingSearch;
     private boolean isSelecting;
     private boolean isFirstContactSyncDone;
     private int groupSize = 0;
@@ -80,7 +81,6 @@ public class TAPContactListViewModel extends AndroidViewModel {
     public void setSeparatedContacts(List<List<TAPUserModel>> separatedContacts) {
         this.separatedContacts = separatedContacts;
     }
-
     public TAPImageURL getGroupImage() {
         return groupImage;
     }
@@ -103,6 +103,14 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setRoomID(String roomID) {
         this.roomID = roomID;
+    }
+
+    public String getPendingSearch() {
+        return pendingSearch;
+    }
+
+    public void setPendingSearch(String pendingSearch) {
+        this.pendingSearch = pendingSearch;
     }
 
     public boolean isSelecting() {
