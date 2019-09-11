@@ -300,7 +300,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         } else {
             List<TAPUserModel> filteredContacts = new ArrayList<>();
             for (TAPUserModel user : vm.getContactList()) {
-                if (user.getName().toLowerCase().contains(searchKeyword)) {
+                if (user.getName().toLowerCase().contains(searchKeyword) || (null != user.getUsername() && user.getUsername().contains(searchKeyword))) {
                     filteredContacts.add(user);
                 }
             }
