@@ -53,11 +53,12 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             }
 
             R.id.ll_add_button -> {
-                val intent = Intent(this, TAPAddMembersActivity::class.java)
-                intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))
+                val intent = Intent(this, TAPCreateNewGroupActivity::class.java)
+                intent.putExtra(GROUP_ACTION, GROUP_ADD_MEMBER)
                 intent.putExtra(ROOM_ID, groupViewModel?.groupData?.roomID)
+                intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))
                 startActivityForResult(intent, GROUP_ADD_MEMBER)
-                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
+                overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
             }
 
             R.id.ll_remove_button -> {

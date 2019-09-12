@@ -19,6 +19,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private List<TAPUserModel> contactList;
     private List<TAPUserModel> filteredContacts;
     private List<TAPUserModel> selectedContacts;
+    private List<TAPUserModel> existingMembers;
     private List<String> selectedContactsIds;
     private List<List<TAPUserModel>> separatedContacts;
     private TAPImageURL groupImage;
@@ -27,7 +28,8 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private String pendingSearch;
     private boolean isSelecting;
     private boolean isFirstContactSyncDone;
-    private int groupSize = 0;
+    private int initialGroupSize = 0;
+    private int groupAction;
 
     public TAPContactListViewModel(@NonNull Application application) {
         super(application);
@@ -67,11 +69,19 @@ public class TAPContactListViewModel extends AndroidViewModel {
     }
 
     public List<String> getSelectedContactsIds() {
-        return null == selectedContactsIds? selectedContactsIds = new ArrayList<>() : selectedContactsIds;
+        return selectedContactsIds == null ? selectedContactsIds = new ArrayList<>() : selectedContactsIds;
     }
 
     public void setSelectedContactsIds(List<String> selectedContactsIds) {
         this.selectedContactsIds = selectedContactsIds;
+    }
+
+    public List<TAPUserModel> getExistingMembers() {
+        return existingMembers == null ? existingMembers = new ArrayList<>() : existingMembers;
+    }
+
+    public void setExistingMembers(List<TAPUserModel> existingMembers) {
+        this.existingMembers = existingMembers;
     }
 
     public List<List<TAPUserModel>> getSeparatedContacts() {
@@ -81,6 +91,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
     public void setSeparatedContacts(List<List<TAPUserModel>> separatedContacts) {
         this.separatedContacts = separatedContacts;
     }
+
     public TAPImageURL getGroupImage() {
         return groupImage;
     }
@@ -129,12 +140,20 @@ public class TAPContactListViewModel extends AndroidViewModel {
         isFirstContactSyncDone = firstContactSyncDone;
     }
 
-    public int getGroupSize() {
-        return groupSize;
+    public int getInitialGroupSize() {
+        return initialGroupSize;
     }
 
-    public void setGroupSize(int groupSize) {
-        this.groupSize = groupSize;
+    public void setInitialGroupSize(int initialGroupSize) {
+        this.initialGroupSize = initialGroupSize;
+    }
+
+    public int getGroupAction() {
+        return groupAction;
+    }
+
+    public void setGroupAction(int groupAction) {
+        this.groupAction = groupAction;
     }
 
     public void addSelectedContact(TAPUserModel contactModel) {

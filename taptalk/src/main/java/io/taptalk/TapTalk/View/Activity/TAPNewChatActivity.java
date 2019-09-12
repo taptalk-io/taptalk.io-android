@@ -42,8 +42,10 @@ import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CONTACT_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 
 public class TAPNewChatActivity extends TAPBaseActivity {
 
@@ -222,6 +224,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void createNewGroup() {
         Intent intent = new Intent(this, TAPCreateNewGroupActivity.class);
+        intent.putExtra(GROUP_ACTION, CREATE_GROUP);
         startActivity(intent);
         overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
