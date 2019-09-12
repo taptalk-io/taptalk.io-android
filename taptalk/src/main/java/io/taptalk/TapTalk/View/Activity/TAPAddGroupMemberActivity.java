@@ -58,7 +58,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GRO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 
-public class TAPCreateNewGroupActivity extends TAPBaseActivity {
+public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
     private ConstraintLayout clActionBar;
     private FrameLayout flButtonContinue;
@@ -169,13 +169,13 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         listener = new TapTalkContactListInterface() {
             @Override
             public boolean onContactSelected(TAPUserModel contact) {
-                TAPUtils.getInstance().dismissKeyboard(TAPCreateNewGroupActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContacts().contains(contact)) {
                     if (vm.getSelectedContacts().size() + vm.getInitialGroupSize() >= TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         // Member count exceeds limit
-                        new TapTalkDialog.Builder(TAPCreateNewGroupActivity.this)
+                        new TapTalkDialog.Builder(TAPAddGroupMemberActivity.this)
                                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                 .setTitle(getString(R.string.tap_cannot_add_more_people))
                                 .setMessage(getString(R.string.tap_group_limit_reached))
@@ -209,7 +209,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
 
             @Override
             public void onContactDeselected(TAPUserModel contact) {
-                TAPUtils.getInstance().dismissKeyboard(TAPCreateNewGroupActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
                 selectedMembersAdapter.removeItem(contact);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 contactListAdapter.notifyDataSetChanged();
@@ -272,13 +272,13 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         if (vm.getGroupAction() == CREATE_GROUP) {
             tvTitle.setText(getString(R.string.tap_new_group));
             ivButtonBack.setImageResource(R.drawable.tap_ic_chevron_left_white);
-            ivButtonBack.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TAPCreateNewGroupActivity.this, R.color.tapIconNavBarBackButton)));
+            ivButtonBack.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavBarBackButton)));
             tvButtonText.setText(getString(R.string.tap_continue_s));
             flButtonContinue.setOnClickListener(v -> openGroupSubjectActivity());
         } else if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
             tvTitle.setText(getString(R.string.tap_add_members));
             ivButtonBack.setImageResource(R.drawable.tap_ic_close_grey);
-            ivButtonBack.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TAPCreateNewGroupActivity.this, R.color.tapIconNavBarCloseButton)));
+            ivButtonBack.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavBarCloseButton)));
             tvButtonText.setText(getString(R.string.tap_add_members));
             flButtonContinue.setOnClickListener(v -> startAddMemberProcess());
         }
@@ -287,7 +287,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                TAPUtils.getInstance().dismissKeyboard(TAPCreateNewGroupActivity.this);
+                TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
             }
         });
     }
@@ -393,7 +393,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
 
     private void showGlobalSearchLoading() {
         ivGlobalSearchLoading.setVisibility(View.VISIBLE);
-        TAPUtils.getInstance().rotateAnimateInfinitely(TAPCreateNewGroupActivity.this, ivGlobalSearchLoading);
+        TAPUtils.getInstance().rotateAnimateInfinitely(TAPAddGroupMemberActivity.this, ivGlobalSearchLoading);
     }
 
     private void hideGlobalSearchLoading() {
@@ -448,7 +448,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
             updateFilteredContacts(etSearch.getText().toString().toLowerCase());
             TAPDataManager.getInstance().cancelUserSearchApiCall();
             TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
-            TAPUtils.getInstance().dismissKeyboard(TAPCreateNewGroupActivity.this);
+            TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
             return true;
         }
     };
@@ -507,7 +507,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
-            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPCreateNewGroupActivity.this)) {
+            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPAddGroupMemberActivity.this)) {
                 // No internet connection
                 vm.setPendingSearch(etSearch.getText().toString());
             }
@@ -537,7 +537,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         @Override
         public void onError(TAPErrorModel error) {
             hideButtonLoading();
-            new TapTalkDialog.Builder(TAPCreateNewGroupActivity.this)
+            new TapTalkDialog.Builder(TAPAddGroupMemberActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
@@ -548,7 +548,7 @@ public class TAPCreateNewGroupActivity extends TAPBaseActivity {
         @Override
         public void onError(String errorMessage) {
             hideButtonLoading();
-            new TapTalkDialog.Builder(TAPCreateNewGroupActivity.this)
+            new TapTalkDialog.Builder(TAPAddGroupMemberActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_error_message_general))

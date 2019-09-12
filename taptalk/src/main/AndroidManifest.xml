@@ -57,9 +57,7 @@
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity"
             android:screenOrientation="portrait" />
-<!--        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPAddMembersActivity"-->
-<!--            android:screenOrientation="portrait" />-->
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity"
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity"
             android:screenOrientation="portrait" />

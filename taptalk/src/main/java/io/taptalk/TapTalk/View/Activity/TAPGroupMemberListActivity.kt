@@ -53,7 +53,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             }
 
             R.id.ll_add_button -> {
-                val intent = Intent(this, TAPCreateNewGroupActivity::class.java)
+                val intent = Intent(this, TAPAddGroupMemberActivity::class.java)
                 intent.putExtra(GROUP_ACTION, GROUP_ADD_MEMBER)
                 intent.putExtra(ROOM_ID, groupViewModel?.groupData?.roomID)
                 intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))

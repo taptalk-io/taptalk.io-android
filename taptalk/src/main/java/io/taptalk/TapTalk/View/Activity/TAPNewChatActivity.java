@@ -223,7 +223,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void createNewGroup() {
-        Intent intent = new Intent(this, TAPCreateNewGroupActivity.class);
+        Intent intent = new Intent(this, TAPAddGroupMemberActivity.class);
         intent.putExtra(GROUP_ACTION, CREATE_GROUP);
         startActivity(intent);
         overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);

@@ -24,7 +24,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
-import io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity;
+import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.View.Fragment.TAPMainRoomListFragment;
@@ -70,7 +70,7 @@ public class TapUI {
     }
 
     public void openGroupChatCreator(Context context) {
-        Intent intent = new Intent(context, TAPCreateNewGroupActivity.class);
+        Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
         intent.putExtra(GROUP_ACTION, CREATE_GROUP);
         context.startActivity(intent);
     }
