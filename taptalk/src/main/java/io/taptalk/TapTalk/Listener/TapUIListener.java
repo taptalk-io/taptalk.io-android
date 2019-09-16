@@ -12,7 +12,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public abstract class TapUIListener implements TapUIInterface {
     @Override
     public void onTapTalkChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
-        TapUI.openTapTalkUserProfile(activity, user);
+        TapUI.getInstance().openTapTalkUserProfile(activity, user);
     }
 
     @Override

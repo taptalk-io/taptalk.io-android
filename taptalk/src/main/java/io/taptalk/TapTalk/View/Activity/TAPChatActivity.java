@@ -784,9 +784,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void loadInitialsToProfilePicture(ImageView imageView, TextView tvAvatarLabel) {
-        imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
+        if (tvAvatarLabel == tvMyAvatarLabelEmpty) {
+            imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(TAPChatManager.getInstance().getActiveUser().getName())));
+            tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(TAPChatManager.getInstance().getActiveUser().getName(), 2));
+        } else {
+            imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
+            tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName(), vm.getRoom().getRoomType() == TYPE_PERSONAL ? 2 : 1));
+        }
         imageView.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-        tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName(), vm.getRoom().getRoomType() == TYPE_PERSONAL ? 2 : 1));
         tvAvatarLabel.setVisibility(View.VISIBLE);
     }
 
@@ -2542,7 +2547,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (!(0 < messageAdapter.getItems().size() && (ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
                         && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
                         || (0 < messageAdapter.getItems().size() && DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction()))
-                        || (LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
+                        || (0 < messageAdapter.getItems().size() && LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
                         TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())))) {
                     flMessageList.setVisibility(View.VISIBLE);
                 }
