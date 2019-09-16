@@ -784,9 +784,14 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void loadInitialsToProfilePicture(ImageView imageView, TextView tvAvatarLabel) {
-        imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
+        if (tvAvatarLabel == tvMyAvatarLabelEmpty) {
+            imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(TAPChatManager.getInstance().getActiveUser().getName())));
+            tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(TAPChatManager.getInstance().getActiveUser().getName(), 2));
+        } else {
+            imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
+            tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName(), vm.getRoom().getRoomType() == TYPE_PERSONAL ? 2 : 1));
+        }
         imageView.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-        tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName(), vm.getRoom().getRoomType() == TYPE_PERSONAL ? 2 : 1));
         tvAvatarLabel.setVisibility(View.VISIBLE);
     }
 
@@ -1428,7 +1433,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 callApiGetGroupData();
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() &&
                     (ROOM_REMOVE_PARTICIPANT.equals(message.getAction())
-                    || LEAVE_ROOM.equals(message.getAction()))) {
+                            || LEAVE_ROOM.equals(message.getAction()))) {
                 showChatAsHistory(getString(R.string.tap_not_a_participant));
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_ADD_PARTICIPANT.equals(message.getAction())) {
                 showDefaultChatEditText();
@@ -2174,13 +2179,15 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     private TAPAttachmentListener attachmentListener = new TAPAttachmentListener() {
         @Override
         public void onCameraSelected() {
-            fConnectionStatus.hideUntilNextConnect(true);
+            if (TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED)
+                fConnectionStatus.hideUntilNextConnect(true);
             vm.setCameraImageUri(TAPUtils.getInstance().takePicture(TAPChatActivity.this, SEND_IMAGE_FROM_CAMERA));
         }
 
         @Override
         public void onGallerySelected() {
-            fConnectionStatus.hideUntilNextConnect(true);
+            if (TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED)
+                fConnectionStatus.hideUntilNextConnect(true);
             TAPUtils.getInstance().pickMediaFromGallery(TAPChatActivity.this, SEND_MEDIA_FROM_GALLERY, true);
         }
 
@@ -2540,7 +2547,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (!(0 < messageAdapter.getItems().size() && (ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
                         && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
                         || (0 < messageAdapter.getItems().size() && DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction()))
-                        || (LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
+                        || (0 < messageAdapter.getItems().size() && LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
                         TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())))) {
                     flMessageList.setVisibility(View.VISIBLE);
                 }
