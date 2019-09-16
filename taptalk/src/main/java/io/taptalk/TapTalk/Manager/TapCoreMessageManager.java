@@ -29,6 +29,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCoreFileDownloadListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreReceiveMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
@@ -230,11 +231,15 @@ public class TapCoreMessageManager {
         }
     }
 
+    public void cancelMessageFileDownload(TAPMessageModel message) {
+        TAPFileDownloadManager.getInstance().cancelFileDownload(message.getLocalID());
+    }
+
     public void markMessageAsRead(TAPMessageModel message) {
         TAPMessageStatusManager.getInstance().addReadMessageQueue(message);
     }
 
-    public void getOlderMessagesBeforeTimestamp(String roomID, long maxCreatedTimestamp, int numberOfItems, TapCoreGetMessageListener listener) {
+    public void getOlderMessagesBeforeTimestamp(String roomID, long maxCreatedTimestamp, int numberOfItems, TapCoreGetOlderMessageListener listener) {
         TAPDataManager.getInstance().getMessageListByRoomBefore(roomID, maxCreatedTimestamp, numberOfItems,
                 new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
                     @Override
@@ -247,7 +252,7 @@ public class TapCoreMessageManager {
                                 listener.onError(ERROR_CODE_OTHERS, e.getMessage());
                             }
                         }
-                        listener.onSuccess(messageAfterModels);
+                        listener.onSuccess(messageAfterModels, response.getHasMore());
                     }
 
                     @Override
