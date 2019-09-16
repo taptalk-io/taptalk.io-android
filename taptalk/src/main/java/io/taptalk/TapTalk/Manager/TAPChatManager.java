@@ -1552,7 +1552,7 @@ public class TAPChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
-        if (!TapTalk.isAutoConnectDisabled) {
+        if (TapTalk.isAutoConnectEnabled()) {
             TAPConnectionManager.getInstance().close();
         }
         saveUnsentMessage();
