@@ -264,8 +264,12 @@ public class TapUI {
     }
 
     void triggerChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
-        for (TapUIListener listener : getTapUIListeners()) {
-            listener.onTapTalkChatRoomProfileButtonTapped(activity, user);
+        if (getTapUIListeners().isEmpty()) {
+            openTapTalkUserProfile(activity, user);
+        } else {
+            for (TapUIListener listener : getTapUIListeners()) {
+                listener.onTapTalkChatRoomProfileButtonTapped(activity, user);
+            }
         }
     }
 
