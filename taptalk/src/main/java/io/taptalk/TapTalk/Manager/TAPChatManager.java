@@ -361,6 +361,12 @@ public class TAPChatManager {
         );
     }
 
+    public void sendMessage(TAPMessageModel message, TapSendMessageInterface tapSendMessageInterface) {
+        sendMessageListeners.put(message.getLocalID(), tapSendMessageInterface);
+        tapSendMessageInterface.onStart(message);
+        triggerListenerAndSendMessage(message, true);
+    }
+
     public void sendTextMessage(String textMessage) {
         sendTextMessageWithRoomModel(textMessage, activeRoom);
     }
@@ -1546,7 +1552,7 @@ public class TAPChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
-        if (!TapTalk.isAutoConnectDisabled) {
+        if (TapTalk.isAutoConnectEnabled()) {
             TAPConnectionManager.getInstance().close();
         }
         saveUnsentMessage();
@@ -1616,9 +1622,14 @@ public class TAPChatManager {
         }
         // Receive message outside active room (in room List)
         else if (!chatListenersCopy.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
+            if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
+                    null != newMessage.getHidden() && !newMessage.getHidden() && null != newMessage.getIsDeleted()
+                    && !newMessage.getIsDeleted()) {
+                // Show notification for new messages from other users
+                TAPNotificationManager.getInstance().createAndShowInAppNotification(TapTalk.appContext, newMessage);
+            }
             for (TAPChatListener chatListener : chatListenersCopy) {
                 TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-
                 if (kSocketNewMessage.equals(eventName))
                     chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
                 else if (kSocketUpdateMessage.equals(eventName))

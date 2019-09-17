@@ -79,12 +79,12 @@ public class TapTalk {
     private static final String TAG = TapTalk.class.getSimpleName();
     public static TapTalk tapTalk;
     public static Context appContext;
-    public static boolean isForeground, isAutoConnectDisabled;
+    public static boolean isForeground;
     private static TapTalkScreenOrientation screenOrientation = TapTalkScreenOrientation.TapTalkOrientationDefault;
     //    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
     private static int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
-    private static boolean isRefreshTokenExpired;
+    private static boolean isRefreshTokenExpired, isAutoConnectDisabled, isAutoContactSyncDisabled;
     private Intent intent;
 
     private Thread.UncaughtExceptionHandler defaultUEH;
@@ -499,6 +499,21 @@ public class TapTalk {
         if (projectConfigs.isEmpty()) {
             projectConfigs.put(USERNAME_IGNORE_CASE, "1");
         }
+    }
+
+    public static void enableAutoContactSync() {
+        checkTapTalkInitialized();
+        isAutoContactSyncDisabled = false;
+    }
+
+    public static void disableAutoContactSync() {
+        checkTapTalkInitialized();
+        isAutoContactSyncDisabled = true;
+    }
+
+    public static boolean isAutoContactSyncEnabled() {
+        checkTapTalkInitialized();
+        return !isAutoContactSyncDisabled;
     }
 
     /**

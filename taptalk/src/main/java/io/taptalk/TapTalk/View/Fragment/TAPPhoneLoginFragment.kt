@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -135,10 +136,23 @@ class TAPPhoneLoginFragment : Fragment() {
         }
     }
 
+    private fun enableContinueButton() {
+        fl_continue_btn.setOnClickListener { attemptLogin() }
+        fl_continue_btn.isClickable = true
+    }
+
+    private fun disableContinueButton() {
+        fl_continue_btn.setOnClickListener(null)
+        fl_continue_btn.isClickable = false
+    }
+
     private fun attemptLogin() {
-        TAPUtils.getInstance().dismissKeyboard(activity)
-        showProgress()
-        checkNumberAndCallAPI()
+        disableContinueButton()
+        if (isVisible) {
+            TAPUtils.getInstance().dismissKeyboard(activity)
+            showProgress()
+            checkNumberAndCallAPI()
+        }
     }
 
     private fun checkAndEditPhoneNumber(): String {
@@ -183,33 +197,40 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     private fun showProgress() {
-        tv_btn_continue.visibility = View.GONE
-        iv_loading_progress_request_otp.visibility = View.VISIBLE
-        TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_loading_progress_request_otp)
+        if (isVisible) {
+            tv_btn_continue.visibility = View.GONE
+            iv_loading_progress_request_otp.visibility = View.VISIBLE
+            TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_loading_progress_request_otp)
+        }
     }
 
     private fun stopAndHideProgress() {
-        tv_btn_continue.visibility = View.VISIBLE
-        iv_loading_progress_request_otp.visibility = View.GONE
-        iv_loading_progress_request_otp.clearAnimation()
+        if (isVisible) {
+            tv_btn_continue.visibility = View.VISIBLE
+            iv_loading_progress_request_otp.visibility = View.GONE
+            iv_loading_progress_request_otp.clearAnimation()
+        }
     }
 
     private val requestOTPInterface = object : TAPRequestOTPInterface {
         override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean) {
-            stopAndHideProgress()
-            if (activity is TAPLoginActivity) {
-                try {
-                    val phoneNumber = "+$phone"
-                    val loginActivity = activity as TAPLoginActivity
-                    loginActivity.setLastLoginData(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode)
-                    loginActivity.showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode, countryFlagUrl)
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            if (isVisible) {
+                stopAndHideProgress()
+                if (activity is TAPLoginActivity) {
+                    try {
+                        val phoneNumber = "+$phone"
+                        val loginActivity = activity as TAPLoginActivity
+                        loginActivity.setLastLoginData(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode)
+                        loginActivity.showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode, countryFlagUrl)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }
 
         override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
+            enableContinueButton()
             showDialog(getString(R.string.tap_error), errorMessage ?: generalErrorMessage)
         }
     }
@@ -217,6 +238,7 @@ class TAPPhoneLoginFragment : Fragment() {
     private fun callCountryListFromAPI() {
         TAPDataManager.getInstance().getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
             override fun startLoading() {
+                et_phone_number.isEnabled = false
                 tv_country_code.visibility = View.GONE
                 iv_loading_progress_country.visibility = View.VISIBLE
                 TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_loading_progress_country)
@@ -224,6 +246,7 @@ class TAPPhoneLoginFragment : Fragment() {
 
             @SuppressLint("SetTextI18n")
             override fun onSuccess(response: TAPCountryListResponse?) {
+                et_phone_number.isEnabled = true
                 countryListitems.clear()
                 TAPDataManager.getInstance().saveLastCallCountryTimestamp(System.currentTimeMillis())
                 setCountry(0, "", "")
@@ -262,7 +285,6 @@ class TAPPhoneLoginFragment : Fragment() {
                         tv_country_code.visibility = View.VISIBLE
                     }
                 }.start()
-
             }
 
             override fun onError(error: TAPErrorModel?) {
@@ -286,14 +308,15 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     private fun showDialog(title: String, message: String) {
-        TapTalkDialog.Builder(context)
-                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                .setTitle(title)
-                .setMessage(message)
-                .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                .setPrimaryButtonListener {
-                    stopAndHideProgress()
-                }.show()
+        if (isVisible)
+            TapTalkDialog.Builder(context)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(title)
+                    .setMessage(message)
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                    .setPrimaryButtonListener {
+                        stopAndHideProgress()
+                    }.show()
     }
 
     @SuppressLint("SetTextI18n")

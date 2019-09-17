@@ -228,7 +228,7 @@ public class TapUI {
         openChatRoomWithRoomModel(context, roomModel);
     }
 
-    public static void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
+    public void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
         WeakReference<Context> contextWeakReference = new WeakReference<>(context);
         TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {
             @Override
@@ -246,7 +246,7 @@ public class TapUI {
         });
     }
 
-    public static void openTapTalkUserProfile(Context context, String xcUserID) {
+    public void openTapTalkUserProfile(Context context, String xcUserID) {
         TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel userModel) {
@@ -264,8 +264,12 @@ public class TapUI {
     }
 
     void triggerChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
-        for (TapUIListener listener : getTapUIListeners()) {
-            listener.onTapTalkChatRoomProfileButtonTapped(activity, user);
+        if (getTapUIListeners().isEmpty()) {
+            openTapTalkUserProfile(activity, user);
+        } else {
+            for (TapUIListener listener : getTapUIListeners()) {
+                listener.onTapTalkChatRoomProfileButtonTapped(activity, user);
+            }
         }
     }
 
