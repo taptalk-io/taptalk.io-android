@@ -120,7 +120,39 @@
 
 
 # Proguard for Taptalk apps Class
--keep class io.** { *; }
+#-keep class io.** { *; }
+
+#-keep class io.taptalk.TapTalk.View.** { *; }
+#-keepnames class io.taptalk.TapTalk.View.** { *; }
+#-keep class io.taptalk.TapTalk.Helper.** { *; }
+#-keepnames class io.taptalk.TapTalk.Helper.** { *; }
+#-keep class io.taptalk.TapTalk.Manager.** { *; }
+#-keepnames class io.taptalk.TapTalk.Manager.** { *; }
+#-keep class io.taptalk.TapTalk.Model.** { *; }
+#-keepnames class io.taptalk.TapTalk.Model.** { *; }
+#-keep class io.taptalk.TapTalk.Data.** { *; }
+#-keepnames class io.taptalk.TapTalk.Data.** { *; }
+#-keep class io.taptalk.TapTalk.ViewModel.** { *; }
+#-keepnames class io.taptalk.TapTalk.ViewModel.** { *; }
+#-keep class io.taptalk.TapTalk.API.** { *; }
+#-keepnames class io.taptalk.TapTalk.API.** { *; }
+#-keep class io.taptalk.TapTalk.Interface.** { *; }
+#-keepnames class io.taptalk.TapTalk.Interface.** { *; }
+#-keep class io.taptalk.TapTalk.Listener.** { *; }
+#-keepnames class io.taptalk.TapTalk.Listener.** { *; }
+#-keep class io.taptalk.TapTalk.Const.** { *; }
+#-keepnames class io.taptalk.TapTalk.Const.** { *; }
+#-keep class io.taptalk.TapTalk.DiffCallback.** { *; }
+#-keepnames class io.taptalk.TapTalk.DiffCallback.** { *; }
+#-keep class io.taptalk.TapTalk.Exception.** { *; }
+#-keepnames class io.taptalk.TapTalk.Exception.** { *; }
+#-keep class io.taptalk.TapTalk.Firebase.** { *; }
+#-keepnames class io.taptalk.TapTalk.Firebase.** { *; }
+#-keep class io.taptalk.TapTalk.BroadcastReceiver.** { *; }
+#-keepnames class io.taptalk.TapTalk.BroadcastReceiver.** { *; }
+
+
+
 
 # Retrofit
 -keepattributes Signature, InnerClasses, EnclosingMethod
