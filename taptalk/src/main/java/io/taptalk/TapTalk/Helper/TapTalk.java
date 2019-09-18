@@ -80,6 +80,7 @@ public class TapTalk {
     public static TapTalk tapTalk;
     public static Context appContext;
     public static boolean isForeground;
+    public static boolean isLoggingEnabled;
     private static TapTalkScreenOrientation screenOrientation = TapTalkScreenOrientation.TapTalkOrientationDefault;
     //    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
@@ -251,6 +252,10 @@ public class TapTalk {
     public static void initializeGooglePlacesApiKey(String apiKey) {
         checkTapTalkInitialized();
         Places.initialize(appContext, apiKey);
+    }
+
+    public static void setLoggingEnabled(boolean enabled) {
+        isLoggingEnabled = enabled;
     }
 
     private static void checkTapTalkInitialized() {
