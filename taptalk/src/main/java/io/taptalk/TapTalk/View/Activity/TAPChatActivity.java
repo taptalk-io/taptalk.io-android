@@ -2705,7 +2705,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    private View.OnClickListener llDeleteGroupClickListener = v -> TAPOldDataManager.getInstance().startCleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+    private View.OnClickListener llDeleteGroupClickListener = v -> TAPOldDataManager.getInstance().cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
         @Override
         public void onDeleteFinished() {
             super.onDeleteFinished();
@@ -2724,7 +2724,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         protected Void doInBackground(String... roomIDs) {
-            TAPOldDataManager.getInstance().startCleanRoomPhysicalData(roomIDs[0], new TAPDatabaseListener() {
+            TAPOldDataManager.getInstance().cleanRoomPhysicalData(roomIDs[0], new TAPDatabaseListener() {
                 @Override
                 public void onDeleteFinished() {
                     super.onDeleteFinished();

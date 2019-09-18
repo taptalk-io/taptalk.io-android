@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.orhanobut.hawk.Hawk;
@@ -24,6 +25,7 @@ import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -54,6 +56,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
+import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.ResponseBody;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
@@ -68,7 +71,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_WRITE_STORAGE_PERMISSION_REQUESTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_RECIPIENT_ID;
@@ -188,7 +190,8 @@ public class TAPDataManager {
         removeUserLastActivityMap();
         removeRoomListSetupFinished();
         removeRecipientID();
-        removeWriteStoragePermissionRequested();
+        removeFileProviderPathMap();
+        removeFileMessageUriMap();
         removeLastDeleteTimestamp();
         removeNotificationMap();
         removeLastCallCountryTimestamp();
@@ -488,22 +491,6 @@ public class TAPDataManager {
     }
 
     /**
-     * WRITE STORAGE PERMISSION REQUEST ON OPEN CHAT ROOM
-     */
-
-    public Boolean isWriteStoragePermissionRequested() {
-        return checkPreferenceKeyAvailable(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
-    }
-
-    public void setWriteStoragePermissionRequested(boolean isRequested) {
-        saveBooleanPreference(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED, isRequested);
-    }
-
-    public void removeWriteStoragePermissionRequested() {
-        removePreference(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
-    }
-
-    /**
      * FILE PROVIDER PATH
      */
     public HashMap<String, String> getFileProviderPathMap() {
@@ -512,6 +499,10 @@ public class TAPDataManager {
 
     public void saveFileProviderPathMap(HashMap<String, String> fileProviderPathMap) {
         Hawk.put(K_FILE_PATH_MAP, fileProviderPathMap);
+    }
+
+    public void removeFileProviderPathMap() {
+        removePreference(K_FILE_PATH_MAP);
     }
 
     /**
@@ -523,6 +514,10 @@ public class TAPDataManager {
 
     public void saveFileMessageUriMap(HashMap<String, HashMap<String, String>> fileUriMap) {
         Hawk.put(K_FILE_URI_MAP, fileUriMap);
+    }
+
+    public void removeFileMessageUriMap() {
+        removePreference(K_FILE_URI_MAP);
     }
 
     /**
@@ -554,19 +549,29 @@ public class TAPDataManager {
     public void deletePhysicalFile(TAPMessageEntity message) {
         if (TYPE_IMAGE == message.getType()) {
             try {
+                // Delete image from cache
                 HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
                 TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (TYPE_VIDEO == message.getType()
-                || TYPE_FILE == message.getType()) {
+        } else if (TYPE_VIDEO == message.getType() || TYPE_FILE == message.getType()) {
             HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
-            if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID))) {
-                TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
-                TAPFileDownloadManager.getInstance().removeFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID));
+            if (null == messageData) {
+                return;
             }
-        } // FIXME: 21 August 2019 ONLY DELETE FILES IN TAPTALK FOLDER
+            Uri fileMessageUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID));
+            if (null != fileMessageUri && "content".equals(fileMessageUri.getScheme()) && null != fileMessageUri.getPath() && fileMessageUri.getPath().contains(TapTalk.getClientAppName())) {
+                try {
+                    // Delete file from TapTalk folder
+                    TapTalk.appContext.getContentResolver().delete(fileMessageUri, null, null);
+                    TAPFileDownloadManager.getInstance().removeFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID));
+                } catch (IllegalArgumentException e) {
+                    if (BuildConfig.DEBUG) {
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -609,10 +614,12 @@ public class TAPDataManager {
         return getLongTimestampPreference(K_LAST_DELETE_TIMESTAMP);
     }
 
-    public Boolean checkLastDeleteTimestamp() {
-        if (!checkPreferenceKeyAvailable(K_LAST_DELETE_TIMESTAMP) || null == getLastDeleteTimestamp())
+    public Boolean isLastDeleteTimestampExists() {
+        if (!checkPreferenceKeyAvailable(K_LAST_DELETE_TIMESTAMP) || null == getLastDeleteTimestamp()) {
             return false;
-        else return 0 != getLastDeleteTimestamp();
+        } else {
+            return 0L != getLastDeleteTimestamp();
+        }
     }
 
     private void removeLastDeleteTimestamp() {

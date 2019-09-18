@@ -391,11 +391,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void changeRoomColor() {
-        Log.e(TAG, "changeRoomColor: ");
+        //Log.e(TAG, "changeRoomColor: ");
     }
 
     private void blockUser() {
-        Log.e(TAG, "blockUser: ");
+        //Log.e(TAG, "blockUser: ");
     }
 
     private void clearAndExitChat() {
@@ -432,7 +432,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void clearChat() {
-        Log.e(TAG, "exitGroup: ");
+        //Log.e(TAG, "exitGroup: ");
     }
 
     private void startVideoDownload(TAPMessageModel message) {
@@ -662,7 +662,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             if (response.getSuccess()) {
                 // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
                 // TODO: 5 August 2019 USED IN CORE CHAT ROOM MANAGER
-                TAPOldDataManager.getInstance().startCleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+                TAPOldDataManager.getInstance().cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {
                         super.onDeleteFinished();
@@ -715,7 +715,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             if (response.getSuccess()) {
                 // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
                 // TODO: 5 August 2019 USED IN CORE CHAT ROOM MANAGER
-                TAPOldDataManager.getInstance().startCleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+                TAPOldDataManager.getInstance().cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {
                         super.onDeleteFinished();
@@ -762,7 +762,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             new Thread(() -> {
                 if (0 == entities.size() && 0 == vm.getSharedMedias().size()) {
                     // No shared media
-                    Log.e(TAG, "onSelectFinished: No shared media");
                     vm.setFinishedLoadingSharedMedia(true);
                     runOnUiThread(() -> ivSharedMediaLoading.setVisibility(View.GONE));
                 } else {
@@ -770,7 +769,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     int previousSize = vm.getSharedMedias().size();
                     if (0 == previousSize) {
                         // First load
-                        Log.e(TAG, "onSelectFinished: First load");
                         runOnUiThread(() -> {
                             tvSharedMediaLabel.setText(getString(R.string.tap_shared_media));
                             sharedMediaAdapter = new TAPMediaListAdapter(vm.getSharedMedias(), mediaInterface, glide);
@@ -814,7 +812,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     if (MAX_ITEMS_PER_PAGE > entities.size()) {
                         // No more medias in database
                         // TODO: 10 May 2019 CALL API BEFORE?
-                        Log.e(TAG, "onSelectFinished: No more medias in database");
                         vm.setFinishedLoadingSharedMedia(true);
                         runOnUiThread(() -> nsvProfile.getViewTreeObserver().removeOnScrollChangedListener(sharedMediaPagingScrollListener));
                     }
