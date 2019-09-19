@@ -242,7 +242,7 @@ public class TapTalk {
     }
 
     private String generateWSSBaseURL(String baseURL) {
-        return (baseURL + "/connect/").replace("https", "wss");
+        return (baseURL + "/connect").replace("https", "wss");
     }
 
     private String generateApiBaseURL(String baseURL) {
