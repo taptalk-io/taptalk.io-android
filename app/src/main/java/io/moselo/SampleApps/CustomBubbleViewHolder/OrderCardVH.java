@@ -2,6 +2,7 @@ package io.moselo.SampleApps.CustomBubbleViewHolder;
 
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -87,264 +88,268 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
 
     @Override
     protected void onBind(TAPMessageModel item, int position) {
-        TAPOrderModel order = TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {
-        }, item.getBody());
+        try {
+            TAPOrderModel order = TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {
+            }, item.getBody());
 
-        markMessageAsRead(item, myUserModel);
+            markMessageAsRead(item, myUserModel);
 
-        // Set initial data
-        tvOrderID.setText(order.getOrderID());
-        tvDate.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "E dd MMM yyyy"));
-        tvTime.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "HH:mm"));
+            // Set initial data
+            tvOrderID.setText(order.getOrderID());
+            tvDate.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "E dd MMM yyyy"));
+            tvTime.setText(TAPTimeFormatter.getInstance().formatTime(order.getOrderTime(), "HH:mm"));
 //            clContainer.setVisibility(View.VISIBLE);
 //            clContainer.setLayoutParams(clContainer.getLayoutParams());
-        showProductPreview(order);
+            showProductPreview(order);
 
-        if (isMessageFromMySelf(item)) {
-            // Show bubble on right side
-            vCardMarginLeft.setVisibility(View.VISIBLE);
-            vCardMarginRight.setVisibility(View.GONE);
-            clButtonDetail.setBackground(itemView.getContext().getDrawable(io.taptalk.Taptalk.R.drawable.tap_bg_purply_rounded_10dp_2dp_0dp_0dp_ripple));
-        } else {
-            // Show bubble on left side
-            vCardMarginLeft.setVisibility(View.GONE);
-            vCardMarginRight.setVisibility(View.VISIBLE);
-            clButtonDetail.setBackground(itemView.getContext().getDrawable(io.taptalk.Taptalk.R.drawable.tap_bg_purply_rounded_2dp_10dp_0dp_0dp_ripple));
-        }
-
-        // Update layout according to order status
-        Context c = itemView.getContext();
-        switch (order.getOrderStatus()) {
-            case 1:
-                // Customer can confirm order
-                // Seller waits for user confirmation
-                showRecipient(order);
-                showNotes(order);
-                showCourier(order);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                if (isCustomer(order)) {
-                    showOrderPrice(order, false);
-                    showActionButton("Review and Confirm");
-                    tvOrderStatus.setVisibility(View.GONE);
-                } else {
-                    showOrderPrice(order, true);
-                    showOrderStatus("Waiting User Confirmation", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
-                    tvButtonOrderAction.setVisibility(View.GONE);
-                }
-                break;
-            case 2:
-                // Order is canceled
-                showOrderStatus("Order Canceled", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
-                hideOrderPrice();
-                clRecipient.setVisibility(View.GONE);
-                clNotes.setVisibility(View.GONE);
-                clCourier.setVisibility(View.GONE);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                tvButtonOrderAction.setVisibility(View.GONE);
-                break;
-            case 3:
-                // Customer waits for seller confirmation
-                // Seller can confirm order
-                showRecipient(order);
-                showNotes(order);
-                showCourier(order);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                if (isCustomer(order)) {
-                    showOrderPrice(order, true);
-                    showOrderStatus("Waiting Confirmation", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
-                    tvButtonOrderAction.setVisibility(View.GONE);
-                } else {
-                    showOrderPrice(order, false);
-                    showActionButton("Review and Confirm");
-                    tvOrderStatus.setVisibility(View.GONE);
-                }
-                break;
-            case 4:
-                // Order is canceled
-                showOrderStatus("Order Declined", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
-                hideOrderPrice();
-                clRecipient.setVisibility(View.GONE);
-                clNotes.setVisibility(View.GONE);
-                clCourier.setVisibility(View.GONE);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                tvButtonOrderAction.setVisibility(View.GONE);
-                break;
-            case 5:
-            case 6:
-                // User can proceed to payment
-                // Seller waits for user to complete payment
-                showRecipient(order);
-                showNotes(order);
-                showCourier(order);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                if (isCustomer(order)) {
-                    showOrderPrice(order, false);
-                    showActionButton("Pay Now");
-                    tvOrderStatus.setVisibility(View.GONE);
-                } else {
-                    showOrderPrice(order, true);
-                    showOrderStatus("Waiting Payment", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
-                    tvButtonOrderAction.setVisibility(View.GONE);
-                }
-                break;
-            case 7:
-                // Order is canceled
-                showOrderStatus("User Disagreed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
-                hideOrderPrice();
-                clRecipient.setVisibility(View.GONE);
-                clNotes.setVisibility(View.GONE);
-                clCourier.setVisibility(View.GONE);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                tvButtonOrderAction.setVisibility(View.GONE);
-                break;
-            case 8:
-                // User is required to complete payment before proceeding
-                // Seller waits for user to complete payment
-                showRecipient(order);
-                showNotes(order);
-                showCourier(order);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                if (isCustomer(order)) {
-                    showOrderPrice(order, false);
-                    showActionButton("Pay Now");
-                    tvOrderStatus.setVisibility(View.GONE);
-                } else {
-                    showOrderPrice(order, true);
-                    showOrderStatus("Payment Incomplete", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
-                    tvButtonOrderAction.setVisibility(View.GONE);
-                }
-                break;
-            case 9:
-                // User waits for seller to complete the service
-                // Seller can mark order as finished
-                hideOrderPrice();
-                clRecipient.setVisibility(View.GONE);
-                clNotes.setVisibility(View.GONE);
-                clCourier.setVisibility(View.GONE);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                if (isCustomer(order)) {
-                    showOrderStatus("Payment Confirmed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
-                    tvButtonOrderAction.setVisibility(View.GONE);
-                } else {
-                    showOrderStatus("Active Order", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
-                    showActionButton("Mark as Finished");
-                }
-                break;
-            case 10:
-                // Order is canceled
-                showOrderStatus("Order Overpaid", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
-                hideOrderPrice();
-                clRecipient.setVisibility(View.GONE);
-                clNotes.setVisibility(View.GONE);
-                clCourier.setVisibility(View.GONE);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                tvButtonOrderAction.setVisibility(View.GONE);
-                break;
-            case 11:
-                // User can write a review on the product
-                // Seller has completed the order
-                hideOrderPrice();
-                clRecipient.setVisibility(View.GONE);
-                clNotes.setVisibility(View.GONE);
-                clCourier.setVisibility(View.GONE);
-                if (isCustomer(order)) {
-                    showActionButton("Write Review");
-                    llOrderStatusGuide.setVisibility(View.VISIBLE);
-                    tvOrderStatus.setVisibility(View.GONE);
-                } else {
-                    showOrderStatus("Order Completed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
-                    llOrderStatusGuide.setVisibility(View.GONE);
-                }
-                break;
-            case 12:
-                // Order is completed for both sides
-                showOrderStatus("Order Completed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
-                hideOrderPrice();
-                clRecipient.setVisibility(View.GONE);
-                clNotes.setVisibility(View.GONE);
-                clCourier.setVisibility(View.GONE);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                break;
-            default:
-                // Undefined status
-                showOrderStatus("", 0);
-                hideOrderPrice();
-                clRecipient.setVisibility(View.GONE);
-                clNotes.setVisibility(View.GONE);
-                clCourier.setVisibility(View.GONE);
-                llOrderStatusGuide.setVisibility(View.GONE);
-                tvButtonOrderAction.setVisibility(View.GONE);
-                break;
-        }
-
-        // Set listeners
-        //clContainer.setOnClickListener(v -> listener.onOutsideClicked());
-        //clCard.setOnClickListener(v -> viewOrderDetail());
-        clCard.setOnClickListener(v -> listener.onOrderDetail());
-        clButtonDetail.setOnClickListener(v -> viewOrderDetail());
-        tvReportOrder.setOnClickListener(v -> reportOrder());
-        llButtonOrderStatus.setOnClickListener(v -> viewOrderStatus());
-
-        // TODO: 15 November 2018 TESTING ORDER STATUS
-        clButtonDetail.setOnClickListener(v -> {
-            if (order.getOrderStatus() < 12) {
-                order.setOrderStatus(order.getOrderStatus() + 1);
+            if (isMessageFromMySelf(item)) {
+                // Show bubble on right side
+                vCardMarginLeft.setVisibility(View.VISIBLE);
+                vCardMarginRight.setVisibility(View.GONE);
+                clButtonDetail.setBackground(itemView.getContext().getDrawable(io.taptalk.Taptalk.R.drawable.tap_bg_purply_rounded_10dp_2dp_0dp_0dp_ripple));
             } else {
-                order.setOrderStatus(0);
+                // Show bubble on left side
+                vCardMarginLeft.setVisibility(View.GONE);
+                vCardMarginRight.setVisibility(View.VISIBLE);
+                clButtonDetail.setBackground(itemView.getContext().getDrawable(io.taptalk.Taptalk.R.drawable.tap_bg_purply_rounded_2dp_10dp_0dp_0dp_ripple));
             }
+
+            // Update layout according to order status
+            Context c = itemView.getContext();
             switch (order.getOrderStatus()) {
                 case 1:
-                    Toast.makeText(c, order.getOrderStatus() + " - NOT_CONFIRMED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                    // Customer can confirm order
+                    // Seller waits for user confirmation
+                    showRecipient(order);
+                    showNotes(order);
+                    showCourier(order);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showOrderPrice(order, false);
+                        showActionButton("Review and Confirm");
+                        tvOrderStatus.setVisibility(View.GONE);
+                    } else {
+                        showOrderPrice(order, true);
+                        showOrderStatus("Waiting User Confirmation", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    }
                     break;
                 case 2:
-                    Toast.makeText(c, order.getOrderStatus() + " - CANCELLED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                    // Order is canceled
+                    showOrderStatus("Order Canceled", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
                     break;
                 case 3:
-                    Toast.makeText(c, order.getOrderStatus() + " - CONFIRMED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                    // Customer waits for seller confirmation
+                    // Seller can confirm order
+                    showRecipient(order);
+                    showNotes(order);
+                    showCourier(order);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showOrderPrice(order, true);
+                        showOrderStatus("Waiting Confirmation", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    } else {
+                        showOrderPrice(order, false);
+                        showActionButton("Review and Confirm");
+                        tvOrderStatus.setVisibility(View.GONE);
+                    }
                     break;
                 case 4:
-                    Toast.makeText(c, order.getOrderStatus() + " - DECLINED_BY_SELLER", Toast.LENGTH_LONG).show();
+                    // Order is canceled
+                    showOrderStatus("Order Declined", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
                     break;
                 case 5:
-                    Toast.makeText(c, order.getOrderStatus() + " - ACCEPTED_BY_SELLER", Toast.LENGTH_LONG).show();
-                    break;
                 case 6:
-                    Toast.makeText(c, order.getOrderStatus() + " - DISAGREED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                    // User can proceed to payment
+                    // Seller waits for user to complete payment
+                    showRecipient(order);
+                    showNotes(order);
+                    showCourier(order);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showOrderPrice(order, false);
+                        showActionButton("Pay Now");
+                        tvOrderStatus.setVisibility(View.GONE);
+                    } else {
+                        showOrderPrice(order, true);
+                        showOrderStatus("Waiting Payment", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    }
                     break;
                 case 7:
-                    Toast.makeText(c, order.getOrderStatus() + " - WAITING_PAYMENT", Toast.LENGTH_LONG).show();
+                    // Order is canceled
+                    showOrderStatus("User Disagreed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
                     break;
                 case 8:
-                    Toast.makeText(c, order.getOrderStatus() + " - PAYMENT_INCOMPLETE", Toast.LENGTH_LONG).show();
+                    // User is required to complete payment before proceeding
+                    // Seller waits for user to complete payment
+                    showRecipient(order);
+                    showNotes(order);
+                    showCourier(order);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showOrderPrice(order, false);
+                        showActionButton("Pay Now");
+                        tvOrderStatus.setVisibility(View.GONE);
+                    } else {
+                        showOrderPrice(order, true);
+                        showOrderStatus("Payment Incomplete", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapOrangeish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    }
                     break;
                 case 9:
-                    Toast.makeText(c, order.getOrderStatus() + " - ACTIVE", Toast.LENGTH_LONG).show();
+                    // User waits for seller to complete the service
+                    // Seller can mark order as finished
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showOrderStatus("Payment Confirmed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
+                        tvButtonOrderAction.setVisibility(View.GONE);
+                    } else {
+                        showOrderStatus("Active Order", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
+                        showActionButton("Mark as Finished");
+                    }
                     break;
                 case 10:
-                    Toast.makeText(c, order.getOrderStatus() + " - OVERPAID", Toast.LENGTH_LONG).show();
+                    // Order is canceled
+                    showOrderStatus("Order Overpaid", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTomato));
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
                     break;
                 case 11:
-                    Toast.makeText(c, order.getOrderStatus() + " - WAITING_REVIEW", Toast.LENGTH_LONG).show();
+                    // User can write a review on the product
+                    // Seller has completed the order
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    if (isCustomer(order)) {
+                        showActionButton("Write Review");
+                        llOrderStatusGuide.setVisibility(View.VISIBLE);
+                        tvOrderStatus.setVisibility(View.GONE);
+                    } else {
+                        showOrderStatus("Order Completed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
+                        llOrderStatusGuide.setVisibility(View.GONE);
+                    }
                     break;
                 case 12:
-                    Toast.makeText(c, order.getOrderStatus() + " - REVIEW_COMPLETED", Toast.LENGTH_LONG).show();
+                    // Order is completed for both sides
+                    showOrderStatus("Order Completed", c.getResources().getColor(io.taptalk.Taptalk.R.color.tapTealish));
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
                     break;
                 default:
-                    Toast.makeText(c, order.getOrderStatus() + " - UNDEFINED", Toast.LENGTH_LONG).show();
+                    // Undefined status
+                    showOrderStatus("", 0);
+                    hideOrderPrice();
+                    clRecipient.setVisibility(View.GONE);
+                    clNotes.setVisibility(View.GONE);
+                    clCourier.setVisibility(View.GONE);
+                    llOrderStatusGuide.setVisibility(View.GONE);
+                    tvButtonOrderAction.setVisibility(View.GONE);
                     break;
             }
-            TAPMessageModel orderCard = TAPMessageModel.Builder(
-                    TAPUtils.getInstance().toJsonString(order),
-                    item.getRoom(),
-                    3001,
-                    System.currentTimeMillis(),
-                    item.getUser(),
-                    item.getRecipientID(),
-                    null);
-            adapter.setItemAt(position, orderCard);
-            adapter.notifyItemChanged(position);
-            //listener.onBubbleExpanded();
-        });
+
+            // Set listeners
+            //clContainer.setOnClickListener(v -> listener.onOutsideClicked());
+            //clCard.setOnClickListener(v -> viewOrderDetail());
+            clCard.setOnClickListener(v -> listener.onOrderDetail());
+            clButtonDetail.setOnClickListener(v -> viewOrderDetail());
+            tvReportOrder.setOnClickListener(v -> reportOrder());
+            llButtonOrderStatus.setOnClickListener(v -> viewOrderStatus());
+
+            // TODO: 15 November 2018 TESTING ORDER STATUS
+            clButtonDetail.setOnClickListener(v -> {
+                if (order.getOrderStatus() < 12) {
+                    order.setOrderStatus(order.getOrderStatus() + 1);
+                } else {
+                    order.setOrderStatus(0);
+                }
+                switch (order.getOrderStatus()) {
+                    case 1:
+                        Toast.makeText(c, order.getOrderStatus() + " - NOT_CONFIRMED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                        break;
+                    case 2:
+                        Toast.makeText(c, order.getOrderStatus() + " - CANCELLED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                        break;
+                    case 3:
+                        Toast.makeText(c, order.getOrderStatus() + " - CONFIRMED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                        break;
+                    case 4:
+                        Toast.makeText(c, order.getOrderStatus() + " - DECLINED_BY_SELLER", Toast.LENGTH_LONG).show();
+                        break;
+                    case 5:
+                        Toast.makeText(c, order.getOrderStatus() + " - ACCEPTED_BY_SELLER", Toast.LENGTH_LONG).show();
+                        break;
+                    case 6:
+                        Toast.makeText(c, order.getOrderStatus() + " - DISAGREED_BY_CUSTOMER", Toast.LENGTH_LONG).show();
+                        break;
+                    case 7:
+                        Toast.makeText(c, order.getOrderStatus() + " - WAITING_PAYMENT", Toast.LENGTH_LONG).show();
+                        break;
+                    case 8:
+                        Toast.makeText(c, order.getOrderStatus() + " - PAYMENT_INCOMPLETE", Toast.LENGTH_LONG).show();
+                        break;
+                    case 9:
+                        Toast.makeText(c, order.getOrderStatus() + " - ACTIVE", Toast.LENGTH_LONG).show();
+                        break;
+                    case 10:
+                        Toast.makeText(c, order.getOrderStatus() + " - OVERPAID", Toast.LENGTH_LONG).show();
+                        break;
+                    case 11:
+                        Toast.makeText(c, order.getOrderStatus() + " - WAITING_REVIEW", Toast.LENGTH_LONG).show();
+                        break;
+                    case 12:
+                        Toast.makeText(c, order.getOrderStatus() + " - REVIEW_COMPLETED", Toast.LENGTH_LONG).show();
+                        break;
+                    default:
+                        Toast.makeText(c, order.getOrderStatus() + " - UNDEFINED", Toast.LENGTH_LONG).show();
+                        break;
+                }
+                TAPMessageModel orderCard = TAPMessageModel.Builder(
+                        TAPUtils.getInstance().toJsonString(order),
+                        item.getRoom(),
+                        3001,
+                        System.currentTimeMillis(),
+                        item.getUser(),
+                        item.getRecipientID(),
+                        null);
+                adapter.setItemAt(position, orderCard);
+                adapter.notifyItemChanged(position);
+                //listener.onBubbleExpanded();
+            });
+        } catch (Exception e) {
+            Log.e("]]]]", "onBind: ");
+        }
     }
 
     private boolean isCustomer(TAPOrderModel order) {

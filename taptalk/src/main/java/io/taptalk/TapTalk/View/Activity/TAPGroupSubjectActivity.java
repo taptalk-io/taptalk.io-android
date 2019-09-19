@@ -47,7 +47,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERSIDs;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBER_IDS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
@@ -126,7 +126,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         vm = ViewModelProviders.of(this).get(TAPGroupViewModel.class);
         vm.setMyID(getIntent().getStringExtra(MY_ID));
         vm.getGroupData().setGroupParticipants(getIntent().getParcelableArrayListExtra(GROUP_MEMBERS));
-        vm.setParticipantsIDs(getIntent().getStringArrayListExtra(GROUP_MEMBERSIDs));
+        vm.setParticipantsIDs(getIntent().getStringArrayListExtra(GROUP_MEMBER_IDS));
         vm.getGroupData().setRoomName(getIntent().getStringExtra(GROUP_NAME));
         vm.getGroupData().setRoomImage(getIntent().getParcelableExtra(GROUP_IMAGE));
     }

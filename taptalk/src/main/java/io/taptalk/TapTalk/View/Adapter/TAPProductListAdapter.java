@@ -28,8 +28,7 @@ import io.taptalk.Taptalk.R;
 public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBaseViewHolder<TAPProductModel>> {
 
     private TAPMessageModel messageModel;
-    private String recipientXcUserID;
-    private TAPUserModel myUserModel;
+    private TAPUserModel myUserModel, recipientUser;
     private TAPChatListener chatListener;
     private final int TYPE_CUSTOMER = 1;
     private final int TYPE_SELLER = 2;
@@ -38,11 +37,11 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
         setItems(productModels);
 
         if (null == TAPChatManager.getInstance().getActiveRoom()) {
-            this.recipientXcUserID = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance()
-                    .getOtherUserIdFromRoom(TAPChatManager.getInstance().getOpenRoom())).getXcUserID();
+            this.recipientUser = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance()
+                    .getOtherUserIdFromRoom(TAPChatManager.getInstance().getOpenRoom()));
         } else {
-            this.recipientXcUserID = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance()
-                    .getOtherUserIdFromRoom(TAPChatManager.getInstance().getActiveRoom().getRoomID())).getXcUserID();
+            this.recipientUser = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance()
+                    .getOtherUserIdFromRoom(TAPChatManager.getInstance().getActiveRoom().getRoomID()));
         }
 
         this.messageModel = messageModel;
@@ -134,11 +133,11 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
         }
 
         private void buttonLeftClicked(TAPProductModel item) {
-            //TapTalk.triggerListenerProductLeftButtonClicked(((Activity) itemView.getContext()), item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom());
+            TAPChatManager.getInstance().triggerProductListBubbleLeftOrSingleButtonTapped(((Activity) itemView.getContext()), item, TAPChatManager.getInstance().getActiveRoom(), recipientUser, getItemViewType() == TYPE_SELLER);
         }
 
         private void buttonRightClicked(TAPProductModel item) {
-            //TapTalk.triggerListenerProductRightButtonClicked(((Activity) itemView.getContext()), item, recipientXcUserID, TAPChatManager.getInstance().getActiveRoom());
+            TAPChatManager.getInstance().triggerProductListBubbleRightButtonTapped(((Activity) itemView.getContext()), item, TAPChatManager.getInstance().getActiveRoom(), recipientUser, getItemViewType() == TYPE_SELLER);
         }
     }
 }

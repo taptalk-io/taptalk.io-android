@@ -79,6 +79,11 @@ class TAPLoginVerificationFragment : Fragment() {
         initViewListener()
     }
 
+    override fun onStop() {
+        super.onStop()
+        cancelTimer()
+    }
+
     private fun initViewListener() {
         tv_phone_number.text = arguments?.getString(kPhoneNumberWithCode, "") ?: ""
         phoneNumber = arguments?.getString(kPhoneNumber, "0") ?: "0"
