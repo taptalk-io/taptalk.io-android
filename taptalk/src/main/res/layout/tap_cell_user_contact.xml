@@ -57,12 +57,28 @@
         android:ellipsize="end"
         android:gravity="start"
         android:maxLines="1"
-        app:layout_constraintBottom_toTopOf="@id/tv_member_role"
+        app:layout_constraintBottom_toTopOf="@id/tv_username"
         app:layout_constraintEnd_toStartOf="@id/iv_selection"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
-        app:layout_constraintTop_toTopOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="Username" />
+        tools:text="Full Name" />
+
+    <TextView
+        android:id="@+id/tv_username"
+        style="@style/tapContactListUsernameStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/iv_selection"
+        app:layout_constraintStart_toEndOf="@id/civ_avatar"
+        app:layout_constraintTop_toBottomOf="@id/tv_full_name"
+        app:layout_constraintBottom_toTopOf="@id/tv_member_role"
+        tools:text="\@username" />
 
     <TextView
         android:id="@+id/tv_member_role"
@@ -71,12 +87,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:text="@string/tap_admin"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/civ_avatar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/iv_selection"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
-        app:layout_constraintTop_toBottomOf="@id/tv_full_name" />
+        app:layout_constraintTop_toBottomOf="@id/tv_username" />
 
     <ImageView
         android:id="@+id/iv_selection"

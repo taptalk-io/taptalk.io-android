@@ -40,11 +40,16 @@
     <string name="tap_search_forward_placeholder">Search for chats or contacts</string>
 
     <!--Contacts-->
+    <string name="tap_contacts">Contacts</string>
     <string name="tap_search_for_contacts">Search for contacts</string>
+    <string name="tap_global_search">Global Search</string>
     <string name="tap_cant_find_contact">Can’t find the contact you were looking for?</string>
     <string name="tap_cant_find_person">Can’t find who you are looking for?</string>
     <string name="tap_view_blocked_contacts">View Blocked Contacts</string>
     <string name="tap_search_by_username">Search by username</string>
+    <string name="tap_no_result_found_for">No results found for \"%s\"</string>
+    <string name="tap_try_different_search">Try a different search</string>
+    <string name="tap_contact_list_empty">Your contact list seems empty…</string>
     <string name="tap_add_new_contact">Add New Contact</string>
     <string name="tap_this_is_you">This is you</string>
     <string name="you_have_added_to_your_contacts"><![CDATA[You have added <b>%s</b> to your contacts]]></string>

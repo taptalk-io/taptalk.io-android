@@ -23,8 +23,13 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
     private List<TAPSearchChatModel> recentSearches;
     private Map<String, TAPRoomModel> roomPointer;
     private TAPMessageModel selectedMessage;
-    private String searchKeyword;
-    private boolean isRecentSearchShown;
+    private String searchKeyword, pendingSearch;
+    private int searchState = 0;
+
+    public final int STATE_RECENT_SEARCHES = 0;
+    public final int STATE_IDLE = 1;
+    public final int STATE_SEARCHING = 2;
+    public final int STATE_PENDING = 3;
 
     public TAPSearchChatViewModel(@NonNull Application application) {
         super(application);
@@ -82,6 +87,14 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
         this.searchKeyword = searchKeyword;
     }
 
+    public String getPendingSearch() {
+        return pendingSearch;
+    }
+
+    public void setPendingSearch(String pendingSearch) {
+        this.pendingSearch = pendingSearch;
+    }
+
     public LiveData<List<TAPRecentSearchEntity>> getRecentSearchList() {
         return null == recentSearchList ? recentSearchList = TAPDataManager.getInstance().getRecentSearchLive() : recentSearchList;
     }
@@ -102,11 +115,11 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
         this.recentSearches = recentSearches;
     }
 
-    public boolean isRecentSearchShown() {
-        return isRecentSearchShown;
+    public int getSearchState() {
+        return searchState;
     }
 
-    public void setRecentSearchShown(boolean recentSearchShown) {
-        isRecentSearchShown = recentSearchShown;
+    public void setSearchState(int searchState) {
+        this.searchState = searchState;
     }
 }

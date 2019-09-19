@@ -197,12 +197,12 @@ public class TAPFileDownloadManager {
                 new Thread(() -> {
                     try {
                         String mimeType = (String) message.getData().get(MEDIA_TYPE);
-                        Log.e(TAG, "mimeType: " + mimeType);
+                        //Log.e(TAG, "mimeType: " + mimeType);
                         Bitmap bitmap = getBitmapFromResponse(response, null == mimeType ? IMAGE_JPEG : mimeType);
                         saveImageToCacheAndSendBroadcast(context, localID, fileID, bitmap);
                     } catch (Exception e) {
                         setDownloadFailed(localID, ERROR_CODE_OTHERS, e.getMessage());
-                        Log.e(TAG, "onSuccess exception: ", e);
+                        //Log.e(TAG, "onSuccess exception: ", e);
                     }
                 }).start();
             }
@@ -237,7 +237,7 @@ public class TAPFileDownloadManager {
         bitmap = BitmapFactory.decodeStream(responseBody.byteStream());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
-        Log.e(TAG, "getBitmapFromResponse: " + (mimeType.equals(IMAGE_PNG) ? "Bitmap.CompressFormat.PNG" : "Bitmap.CompressFormat.JPEG"));
+        //Log.e(TAG, "getBitmapFromResponse: " + (mimeType.equals(IMAGE_PNG) ? "Bitmap.CompressFormat.PNG" : "Bitmap.CompressFormat.JPEG"));
         out.flush();
         out.close();
         return bitmap;
@@ -255,8 +255,8 @@ public class TAPFileDownloadManager {
         } else {
             filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
         }
-        File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.appContext.getString(R.string.tap_app_name) + (message.getType() == TYPE_VIDEO ? "/" + TapTalk.appContext.getString(R.string.tap_app_name) + "Videos" :
-                "/" + TapTalk.appContext.getString(R.string.tap_app_name) + " Files"));
+        File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.getClientAppName() + (message.getType() == TYPE_VIDEO ? "/" + TapTalk.getClientAppName() + " Videos" :
+                "/" + TapTalk.getClientAppName() + " Files"));
         dir.mkdirs();
 
         File noMediaFile = new File(dir, ".nomedia");
@@ -307,7 +307,7 @@ public class TAPFileDownloadManager {
         new Thread(() -> {
             String imageFormat = mimeType.equals(IMAGE_PNG) ? ".png" : ".jpeg";
             String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
-            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.appContext.getString(R.string.tap_app_name));
+            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName());
             dir.mkdirs();
 
             File file = new File(dir, filename);
@@ -343,7 +343,7 @@ public class TAPFileDownloadManager {
                     filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
                 }
 
-                File dir = new File(TYPE_VIDEO == message.getType() ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + appContext.getString(R.string.tap_app_name)
+                File dir = new File(TYPE_VIDEO == message.getType() ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName()
                         : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "");
                 dir.mkdirs();
 

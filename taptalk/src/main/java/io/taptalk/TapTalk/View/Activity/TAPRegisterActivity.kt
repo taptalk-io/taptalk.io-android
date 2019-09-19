@@ -75,6 +75,15 @@ class TAPRegisterActivity : TAPBaseActivity() {
         registerBroadcastReceiver()
     }
 
+    override fun onStop() {
+        super.onStop()
+        checkFullNameTimer.cancel()
+        checkUsernameTimer.cancel()
+        checkEmailAddressTimer.cancel()
+        checkPasswordTimer.cancel()
+        checkRetypedPasswordTimer.cancel()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         TAPBroadcastManager.unregister(this@TAPRegisterActivity, uploadBroadcastReceiver)
