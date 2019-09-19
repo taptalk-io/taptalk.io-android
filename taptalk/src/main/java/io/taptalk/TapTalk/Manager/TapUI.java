@@ -20,6 +20,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
@@ -279,6 +280,18 @@ public class TapUI {
                 userInfo = (HashMap<String, Object>) messageModel.getData().get(USER_INFO);
             }
             listener.onTapTalkMessageQuoteTapped(activity, messageModel, userInfo);
+        }
+    }
+
+    void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
+        for (TapUIListener listener : getTapUIListeners()) {
+            listener.onTapTalkProductListBubbleLeftOrSingleButtonTapped(activity, product, room, recipient, isSingleOption);
+        }
+    }
+
+    void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
+        for (TapUIListener listener : getTapUIListeners()) {
+            listener.onTapTalkProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
         }
     }
 }

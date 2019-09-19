@@ -44,6 +44,7 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPReplyToModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -1841,5 +1842,13 @@ public class TAPChatManager {
 
     public void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPRoomModel room, TAPUserModel activeUser, TAPUserModel otherUser) {
         TapCustomKeyboardManager.getInstance().triggerCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, otherUser);
+    }
+
+    public void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
+        TapUI.getInstance().triggerProductListBubbleLeftOrSingleButtonTapped(activity, product, room, recipient, isSingleOption);
+    }
+
+    public void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
+        TapUI.getInstance().triggerProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
     }
 }
