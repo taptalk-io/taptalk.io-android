@@ -239,9 +239,9 @@
     <string name="tap_transition_view_image">tap_view_image</string>
 
     <!--Base Url-->
-    <string name="tap_base_url_api">https://%s/api/v1/</string>
-    <string name="tap_base_url_socket">https://%s/</string>
-    <string name="tap_base_wss">wss://%s/connect</string>
+<!--    <string name="tap_base_url_api">https://%s/api/v1/</string>-->
+<!--    <string name="tap_base_url_socket">https://%s/</string>-->
+<!--    <string name="tap_base_wss">wss://%s/connect</string>-->
 
     <!--Location-->
     <string name="tap_pin_coordinates">Pin Coordinates</string>
