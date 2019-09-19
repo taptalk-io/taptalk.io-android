@@ -614,8 +614,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TAPChatManager.getInstance().getCustomKeyboardItems(vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel()));
-        if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0 &&
-                null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
+        if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
             // Enable custom keyboard
             vm.setCustomKeyboardEnabled(true);
             customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), customKeyboardItemModel -> {
