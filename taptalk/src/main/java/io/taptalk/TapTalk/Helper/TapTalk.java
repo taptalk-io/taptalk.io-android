@@ -143,13 +143,15 @@ public class TapTalk {
         //clientAppName = appContext.getResources().getString(R.string.tap_app_name);
 
         // Init Base URL
-        TAPApiManager.setBaseUrlApi(String.format(appContext.getString(R.string.tap_base_url_api), appBaseURL));
-        TAPApiManager.setBaseUrlSocket(String.format(appContext.getString(R.string.tap_base_url_socket), appBaseURL));
-        TAPConnectionManager.getInstance().setWebSocketEndpoint(String.format(appContext.getString(R.string.tap_base_wss), appBaseURL));
+//        TAPApiManager.setBaseUrlApi(String.format(appContext.getString(R.string.tap_base_url_api), appBaseURL));
+//        TAPApiManager.setBaseUrlSocket(String.format(appContext.getString(R.string.tap_base_url_socket), appBaseURL));
+//        TAPConnectionManager.getInstance().setWebSocketEndpoint(String.format(appContext.getString(R.string.tap_base_wss), appBaseURL));
+        TAPApiManager.setBaseUrlApi(generateApiBaseURL(appBaseURL));
+        TAPApiManager.setBaseUrlSocket(generateSocketBaseURL(appBaseURL));
+        TAPConnectionManager.getInstance().setWebSocketEndpoint(generateWSSBaseURL(appBaseURL));
 
         // Init Hawk for preference
         if (BuildConfig.BUILD_TYPE.equals("dev")) {
-            // No encryption for dev build
             Hawk.init(appContext).setEncryption(new NoEncryption()).build();
         } else {
             Hawk.init(appContext).build();
@@ -188,7 +190,7 @@ public class TapTalk {
         TAPContactManager.getInstance().setContactSyncPermissionAsked(TAPDataManager.getInstance().isContactSyncPermissionAsked());
 
         // Init Stetho for debug build
-        if (BuildConfig.DEBUG)
+        if (TapTalk.isLoggingEnabled)
             Stetho.initialize(
                     Stetho.newInitializerBuilder(appContext)
                             .enableDumpapp(Stetho.defaultDumperPluginsProvider(appContext))
@@ -233,6 +235,18 @@ public class TapTalk {
                 TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
             }
         });
+    }
+
+    private String generateSocketBaseURL(String baseURL) {
+        return baseURL + "/connect/";
+    }
+
+    private String generateWSSBaseURL(String baseURL) {
+        return (baseURL + "/connect/").replace("https", "wss");
+    }
+
+    private String generateApiBaseURL(String baseURL) {
+        return baseURL + "/v1/";
     }
 
     /**
