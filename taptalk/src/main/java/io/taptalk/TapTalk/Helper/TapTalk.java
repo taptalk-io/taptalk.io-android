@@ -261,18 +261,6 @@ public class TapTalk {
         });
     }
 
-    private String generateSocketBaseURL(String baseURL) {
-        return baseURL + "/connect/";
-    }
-
-    private String generateWSSBaseURL(String baseURL) {
-        return (baseURL + "/connect").replace("https", "wss");
-    }
-
-    private String generateApiBaseURL(String baseURL) {
-        return baseURL + "/v1/";
-    }
-
     /**
      * =============================================================================================
      * INITIALIZATION
@@ -290,10 +278,6 @@ public class TapTalk {
     public static void initializeGooglePlacesApiKey(String apiKey) {
         checkTapTalkInitialized();
         Places.initialize(appContext, apiKey);
-    }
-
-    public static void setLoggingEnabled(boolean enabled) {
-        isLoggingEnabled = enabled;
     }
 
     private static void checkTapTalkInitialized() {
