@@ -290,11 +290,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        if (deleteGroup &&
-                !TAPGroupManager.Companion.getGetInstance().getRefreshRoomList())
-            TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
+    protected void onStop() {
+        super.onStop();
+        sendTypingEmitDelayTimer.cancel();
+        typingIndicatorTimeoutTimer.cancel();
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (deleteGroup && !TAPGroupManager.Companion.getGetInstance().getRefreshRoomList()) {
+            TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
+        }
         if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
             hideKeyboards();
         } else {
