@@ -5,10 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.facebook.stetho.Stetho;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.android.libraries.places.api.Places;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.RemoteMessage;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
@@ -27,6 +30,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
@@ -43,6 +47,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
+import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
@@ -80,6 +85,7 @@ public class TapTalk {
     public static TapTalk tapTalk;
     public static Context appContext;
     public static boolean isForeground;
+    public static boolean isLoggingEnabled = false;
     private static TapTalkScreenOrientation screenOrientation = TapTalkScreenOrientation.TapTalkOrientationDefault;
     //    public static boolean isOpenDefaultProfileEnabled = true;
     private static String clientAppName = "";
@@ -94,6 +100,25 @@ public class TapTalk {
     private static Map<String, String> projectConfigs;
     private static Map<String, String> customConfigs;
     public static TapTalkImplementationType implementationType;
+
+    public static boolean isTapTalkNotification(RemoteMessage remoteMessage) {
+        return remoteMessage.getData().get("identifier").equals("io.taptalk.TapTalk");
+    }
+
+    public static void handleTapTalkPushNotification(RemoteMessage remoteMessage) {
+        TAPNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
+        HashMap<String, Object> notificationMap = TAPUtils.getInstance().fromJSON(new TypeReference<HashMap<String, Object>>() {
+        }, remoteMessage.getData().get("body"));
+        try {
+            //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
+            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(),
+                    TAPRoomListActivity.class,
+                    TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
+        } catch (Exception e) {
+            Log.e(TAG, "onMessageReceived: ", e);
+            e.printStackTrace();
+        }
+    }
 
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
@@ -142,9 +167,12 @@ public class TapTalk {
         //clientAppName = appContext.getResources().getString(R.string.tap_app_name);
 
         // Init Base URL
-        TAPApiManager.setBaseUrlApi(String.format(appContext.getString(R.string.tap_base_url_api), appBaseURL));
-        TAPApiManager.setBaseUrlSocket(String.format(appContext.getString(R.string.tap_base_url_socket), appBaseURL));
-        TAPConnectionManager.getInstance().setWebSocketEndpoint(String.format(appContext.getString(R.string.tap_base_wss), appBaseURL));
+//        TAPApiManager.setBaseUrlApi(String.format(appContext.getString(R.string.tap_base_url_api), appBaseURL));
+//        TAPApiManager.setBaseUrlSocket(String.format(appContext.getString(R.string.tap_base_url_socket), appBaseURL));
+//        TAPConnectionManager.getInstance().setWebSocketEndpoint(String.format(appContext.getString(R.string.tap_base_wss), appBaseURL));
+        TAPApiManager.setBaseUrlApi(generateApiBaseURL(appBaseURL));
+        TAPApiManager.setBaseUrlSocket(generateSocketBaseURL(appBaseURL));
+        TAPConnectionManager.getInstance().setWebSocketEndpoint(generateWSSBaseURL(appBaseURL));
 
         // Init Hawk for preference
         if (BuildConfig.BUILD_TYPE.equals("dev")) {
@@ -187,7 +215,7 @@ public class TapTalk {
         TAPContactManager.getInstance().setContactSyncPermissionAsked(TAPDataManager.getInstance().isContactSyncPermissionAsked());
 
         // Init Stetho for debug build
-        if (BuildConfig.DEBUG)
+        if (TapTalk.isLoggingEnabled)
             Stetho.initialize(
                     Stetho.newInitializerBuilder(appContext)
                             .enableDumpapp(Stetho.defaultDumperPluginsProvider(appContext))
@@ -257,6 +285,22 @@ public class TapTalk {
         if (null == tapTalk) {
             throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
         }
+    }
+
+    public static void setLoggingEnabled(boolean enabled) {
+        isLoggingEnabled = enabled;
+    }
+
+    private String generateSocketBaseURL(String baseURL) {
+        return baseURL + "/connect/";
+    }
+
+    private String generateWSSBaseURL(String baseURL) {
+        return (baseURL + "/connect").replace("https", "wss");
+    }
+
+    private String generateApiBaseURL(String baseURL) {
+        return baseURL + "/v1/";
     }
 
     /**

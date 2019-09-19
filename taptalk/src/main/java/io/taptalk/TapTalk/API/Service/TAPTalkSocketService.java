@@ -7,6 +7,6 @@ import rx.Observable;
 
 public interface TAPTalkSocketService {
 
-    @GET("connect?check=1")
+    @GET("?check=1")
     Observable<TAPBaseResponse<TAPErrorModel>> validateAccessToken();
 }
