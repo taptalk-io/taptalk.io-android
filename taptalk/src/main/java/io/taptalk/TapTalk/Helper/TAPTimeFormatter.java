@@ -157,12 +157,8 @@ public class TAPTimeFormatter {
         return timeSdf.format(timestamp);
     }
 
-    public boolean checkOverOneWeekOrNot(long timestamp) {
-        return timestamp >= times.get(2);
-    }
-
-    public boolean checkOverOneMonthOrNot(long timestamp) {
-        return timestamp >= times.get(1);
+    public boolean isOverOneWeek(long timestamp) {
+        return (System.currentTimeMillis() - timestamp) >= (times.get(2));
     }
 
     public long oneMonthAgoTimeStamp(long currentTimestamp) {

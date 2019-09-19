@@ -17,8 +17,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity(tableName = "MyContact", indices = @Index("isContact"))
 public class TAPUserModel implements Parcelable {
 
-    //userID itu userID dari Bisnis Server kalau xcUserID itu userID dari Chat Server
-    // (mereka berdua bisa sama bisa juga beda)
     @PrimaryKey @NonNull @JsonProperty("userID") @JsonAlias("id")
     private String userID;
     @JsonProperty("xcUserID") private String xcUserID;

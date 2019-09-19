@@ -224,6 +224,7 @@
 
     <color name="tapContactListNameColor">@color/tapColorTextDark</color>
     <color name="tapContactListNameHighlightedColor">@color/tapColorPrimary</color>
+    <color name="tapContactListUsernameColor">@color/tapColorPrimary</color>
 
     <color name="tapRoomListNameColor">@color/tapColorTextDark</color>
     <color name="tapRoomListNameHighlightedColor">@color/tapColorPrimary</color>

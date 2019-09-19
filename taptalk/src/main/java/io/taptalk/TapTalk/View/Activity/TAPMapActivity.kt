@@ -219,6 +219,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     private var addresses = mutableListOf<Address>()
     private var locationList = mutableListOf<TAPLocationItem>()
     private var adapter: TAPSearchLocationAdapter? = null
+    private var timer: CountDownTimer? = null
 
     private var PERMISSIONS = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
 
@@ -276,6 +277,11 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         if (TAPUtils.getInstance().hasPermissions(this, PERMISSIONS[0])) {
             getLocation()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        timer?.cancel()
     }
 
     override fun onDestroy() {
@@ -364,8 +370,6 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     }
 
     private val textWatcher = object : TextWatcher {
-        var timer: CountDownTimer? = null
-
         override fun afterTextChanged(s: Editable?) {
             timer = object : CountDownTimer(300, 1000) {
                 override fun onFinish() {

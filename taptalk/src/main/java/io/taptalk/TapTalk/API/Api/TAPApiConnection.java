@@ -99,7 +99,6 @@ public class TAPApiConnection {
 
     private OkHttpClient buildHttpTapClient(int headerAuth) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//        loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
@@ -114,7 +113,6 @@ public class TAPApiConnection {
 
     private OkHttpClient buildHttpTapUploadClient(int headerAuth, long timeOutDuration) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//        loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
@@ -129,7 +127,6 @@ public class TAPApiConnection {
 
     private OkHttpClient buildHttpTapDownloadClient(int headerAuth, long timeOutDuration) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-//        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
         loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
