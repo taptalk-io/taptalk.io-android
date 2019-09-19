@@ -69,6 +69,12 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        searchTimer.cancel();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);

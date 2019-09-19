@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.net.Uri;
-import android.support.annotation.Keep;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -267,7 +266,7 @@ public class TapCoreChatRoomManager {
             @Override
             public void onSuccess(TAPCommonResponse tapCommonResponse, String localID) {
                 if (tapCommonResponse.getSuccess()) {
-                    TAPOldDataManager.getInstance().startCleanRoomPhysicalData(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
+                    TAPOldDataManager.getInstance().cleanRoomPhysicalData(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
                         @Override
                         public void onDeleteFinished() {
                             TAPDataManager.getInstance().deleteMessageByRoomId(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
@@ -301,7 +300,7 @@ public class TapCoreChatRoomManager {
             @Override
             public void onSuccess(TAPCommonResponse response) {
                 if (response.getSuccess()) {
-                    TAPOldDataManager.getInstance().startCleanRoomPhysicalData(groupRoomID, new TAPDatabaseListener() {
+                    TAPOldDataManager.getInstance().cleanRoomPhysicalData(groupRoomID, new TAPDatabaseListener() {
                         @Override
                         public void onDeleteFinished() {
                             TAPDataManager.getInstance().deleteMessageByRoomId(groupRoomID, new TAPDatabaseListener() {

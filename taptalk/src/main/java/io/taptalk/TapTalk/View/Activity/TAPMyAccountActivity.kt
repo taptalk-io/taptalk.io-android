@@ -93,6 +93,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         registerBroadcastReceiver()
     }
 
+    override fun onStop() {
+        super.onStop()
+        checkFullNameTimer.cancel()
+        checkEmailAddressTimer.cancel()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         TAPBroadcastManager.unregister(this@TAPMyAccountActivity, uploadBroadcastReceiver)
