@@ -238,7 +238,7 @@ public class TapTalk {
     }
 
     private String generateSocketBaseURL(String baseURL) {
-        return baseURL + "/connect/";
+        return baseURL + "/connect";
     }
 
     private String generateWSSBaseURL(String baseURL) {
