@@ -290,11 +290,17 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        if (deleteGroup &&
-                !TAPGroupManager.Companion.getGetInstance().getRefreshRoomList())
-            TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
+    protected void onStop() {
+        super.onStop();
+        sendTypingEmitDelayTimer.cancel();
+        typingIndicatorTimeoutTimer.cancel();
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (deleteGroup && !TAPGroupManager.Companion.getGetInstance().getRefreshRoomList()) {
+            TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
+        }
         if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
             hideKeyboards();
         } else {
@@ -608,8 +614,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TAPChatManager.getInstance().getCustomKeyboardItems(vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel()));
-        if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0 &&
-                null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
+        if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
             // Enable custom keyboard
             vm.setCustomKeyboardEnabled(true);
             customKeyboardAdapter = new TAPCustomKeyboardAdapter(vm.getCustomKeyboardItems(), customKeyboardItemModel -> {
@@ -2705,7 +2710,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    private View.OnClickListener llDeleteGroupClickListener = v -> TAPOldDataManager.getInstance().startCleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+    private View.OnClickListener llDeleteGroupClickListener = v -> TAPOldDataManager.getInstance().cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
         @Override
         public void onDeleteFinished() {
             super.onDeleteFinished();
@@ -2724,7 +2729,7 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
         @Override
         protected Void doInBackground(String... roomIDs) {
-            TAPOldDataManager.getInstance().startCleanRoomPhysicalData(roomIDs[0], new TAPDatabaseListener() {
+            TAPOldDataManager.getInstance().cleanRoomPhysicalData(roomIDs[0], new TAPDatabaseListener() {
                 @Override
                 public void onDeleteFinished() {
                     super.onDeleteFinished();

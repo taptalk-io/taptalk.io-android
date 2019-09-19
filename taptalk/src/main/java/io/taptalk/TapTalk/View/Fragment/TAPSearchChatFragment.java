@@ -87,7 +87,7 @@ public class TAPSearchChatFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        startSearch();
+        startSearch(etSearch.getText().toString());
     }
 
     @Override
@@ -170,7 +170,7 @@ public class TAPSearchChatFragment extends Fragment {
             //kalau ada perubahan sama databasenya ga lgsg diubah karena nnti bakal ngilangin hasil search yang muncul
             //kalau lagi muncul hasil search updatenya tunggu fungsi showRecentSearch dipanggil
             //kalau lagi muncul halaman recent search baru set items
-            if (vm.isRecentSearchShown() && null != getActivity())
+            if (vm.getSearchState() == vm.STATE_RECENT_SEARCHES && null != getActivity())
                 getActivity().runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
         });
 
@@ -183,7 +183,7 @@ public class TAPSearchChatFragment extends Fragment {
         if (null != getActivity()) {
             getActivity().runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
             //flag untuk nandain kalau skrg lagi munculin halaman recent Search
-            vm.setRecentSearchShown(true);
+            vm.setSearchState(vm.STATE_RECENT_SEARCHES);
         }
     }
 
@@ -192,52 +192,42 @@ public class TAPSearchChatFragment extends Fragment {
         TAPSearchChatModel emptyItem = new TAPSearchChatModel(EMPTY_STATE);
         vm.clearSearchResults();
         vm.addSearchResult(emptyItem);
+        vm.setSearchState(vm.STATE_IDLE);
         if (null != getActivity()) {
             getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
         }
     }
 
-    private void startSearch() {
-        if (etSearch.getText().toString().equals(" ")) {
-            // Clear keyword when EditText only contains a space
-            etSearch.setText("");
-            return;
-        }
-
+    private void startSearch(String keyword) {
         vm.clearSearchResults();
-        vm.setSearchKeyword(etSearch.getText().toString().toLowerCase().trim());
+        vm.setSearchKeyword(keyword.toLowerCase().trim());
         adapter.setSearchKeyword(vm.getSearchKeyword());
         if (vm.getSearchKeyword().isEmpty()) {
+            // Show recent searches if keyword is empty
             showRecentSearches();
             ivButtonClearText.setVisibility(View.GONE);
-        } else {
+        } else if (vm.getSearchState() == vm.STATE_RECENT_SEARCHES || vm.getSearchState() == vm.STATE_IDLE) {
+            // Search with keyword
+            vm.setSearchState(vm.STATE_SEARCHING);
             TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
-            //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
-            vm.setRecentSearchShown(false);
             ivButtonClearText.setVisibility(View.VISIBLE);
+        } else {
+            // Set search as pending
+            vm.setPendingSearch(vm.getSearchKeyword());
+            vm.setSearchState(vm.STATE_PENDING);
         }
     }
-
-    private TextWatcher searchTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            startSearch();
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
 
     private TAPDatabaseListener<TAPMessageEntity> roomSearchListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
+            if (vm.getSearchState() == vm.STATE_PENDING && !vm.getPendingSearch().isEmpty()) {
+                vm.setSearchState(vm.STATE_IDLE);
+                startSearch(vm.getPendingSearch());
+                return;
+            } else if (vm.getSearchState() != vm.STATE_SEARCHING) {
+                return;
+            }
             if (entities.size() > 0 && null != getActivity()) {
                 TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
@@ -259,11 +249,13 @@ public class TAPSearchChatFragment extends Fragment {
                     result.setRoom(room);
                     vm.addSearchResult(result);
                 }
-                getActivity().runOnUiThread(() -> {
-                    adapter.setItems(vm.getSearchResults(), false);
-                    TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
-                });
-            } else {
+                if (null != contactSearchListener) {
+                    getActivity().runOnUiThread(() -> {
+                        adapter.setItems(vm.getSearchResults(), false);
+                        TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
+                    });
+                }
+            } else if (null != contactSearchListener) {
                 TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
             }
         }
@@ -272,6 +264,13 @@ public class TAPSearchChatFragment extends Fragment {
     private TAPDatabaseListener<TAPUserModel> contactSearchListener = new TAPDatabaseListener<TAPUserModel>() {
         @Override
         public void onSelectFinished(List<TAPUserModel> entities) {
+            if (vm.getSearchState() == vm.STATE_PENDING && !vm.getPendingSearch().isEmpty()) {
+                vm.setSearchState(vm.STATE_IDLE);
+                startSearch(vm.getPendingSearch());
+                return;
+            } else if (vm.getSearchState() != vm.STATE_SEARCHING) {
+                return;
+            }
             if (entities.size() > 0) {
                 if (vm.getSearchResults().size() == 0) {
                     TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
@@ -296,12 +295,13 @@ public class TAPSearchChatFragment extends Fragment {
                     }
                 }
                 vm.getSearchResults().get(vm.getSearchResults().size() - 1).setLastInSection(true);
-                if (null != getActivity())
+                if (null != getActivity() && null != messageSearchListener) {
                     getActivity().runOnUiThread(() -> {
                         adapter.setItems(vm.getSearchResults(), false);
                         TAPDataManager.getInstance().searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
                     });
-            } else {
+                }
+            } else if (null != messageSearchListener) {
                 TAPDataManager.getInstance().searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
             }
         }
@@ -310,6 +310,15 @@ public class TAPSearchChatFragment extends Fragment {
     private TAPDatabaseListener<TAPMessageEntity> messageSearchListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
+            if (vm.getSearchState() == vm.STATE_PENDING && !vm.getPendingSearch().isEmpty()) {
+                vm.setSearchState(vm.STATE_IDLE);
+                startSearch(vm.getPendingSearch());
+                return;
+            } else if (vm.getSearchState() != vm.STATE_SEARCHING) {
+                return;
+            }
+            vm.setPendingSearch("");
+            vm.setSearchState(vm.STATE_IDLE);
             if (entities.size() > 0 && null != getActivity()) {
                 TAPSearchChatModel sectionTitleMessages = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleMessages.setSectionTitle(getString(R.string.tap_messages));
@@ -324,6 +333,29 @@ public class TAPSearchChatFragment extends Fragment {
             } else if (vm.getSearchResults().size() == 0) {
                 setEmptyState();
             }
+        }
+    };
+
+    private TextWatcher searchTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            etSearch.removeTextChangedListener(this);
+            if (etSearch.getText().toString().equals(" ")) {
+                // Clear keyword when EditText only contains a space
+                etSearch.setText("");
+            }
+            startSearch(etSearch.getText().toString());
+            etSearch.addTextChangedListener(this);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
         }
     };
 }

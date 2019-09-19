@@ -20,11 +20,12 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
-import io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity;
+import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
 import io.taptalk.TapTalk.View.Fragment.TAPMainRoomListFragment;
@@ -32,8 +33,10 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TapUI {
@@ -68,7 +71,8 @@ public class TapUI {
     }
 
     public void openGroupChatCreator(Context context) {
-        Intent intent = new Intent(context, TAPCreateNewGroupActivity.class);
+        Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
+        intent.putExtra(GROUP_ACTION, CREATE_GROUP);
         context.startActivity(intent);
     }
 
@@ -276,6 +280,18 @@ public class TapUI {
                 userInfo = (HashMap<String, Object>) messageModel.getData().get(USER_INFO);
             }
             listener.onTapTalkMessageQuoteTapped(activity, messageModel, userInfo);
+        }
+    }
+
+    void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
+        for (TapUIListener listener : getTapUIListeners()) {
+            listener.onTapTalkProductListBubbleLeftOrSingleButtonTapped(activity, product, room, recipient, isSingleOption);
+        }
+    }
+
+    void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
+        for (TapUIListener listener : getTapUIListeners()) {
+            listener.onTapTalkProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
         }
     }
 }

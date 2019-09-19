@@ -184,9 +184,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             case TYPE_BUBBLE_SYSTEM_MESSAGE:
                 return new SystemMessageVH(parent, R.layout.tap_cell_chat_system_message);
             default:
-                TAPBaseCustomBubble orderBubble = TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(viewType);
-                if (null != orderBubble) {
-                    return orderBubble.createCustomViewHolder(parent, this, myUserModel, orderBubble.getCustomBubbleListener());
+                TAPBaseCustomBubble customBubble = TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(viewType);
+                if (null != customBubble) {
+                    return customBubble.createCustomViewHolder(parent, this, myUserModel, customBubble.getCustomBubbleListener());
                 }
                 return new EmptyVH(parent, R.layout.tap_cell_empty);
         }

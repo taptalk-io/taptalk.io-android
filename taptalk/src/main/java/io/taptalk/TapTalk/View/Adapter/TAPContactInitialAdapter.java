@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.taptalk.TapTalk.DiffCallback.TAPContactListDiffCallback;
@@ -20,12 +22,14 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
 
     private List<List<TAPUserModel>> contactList;
     private List<TAPUserModel> selectedContacts;
+    private List<String> sectionTitles;
     private TapTalkContactListInterface listener;
     private int viewType;
 
     public TAPContactInitialAdapter(int viewType, List<List<TAPUserModel>> contactList) {
         this.viewType = viewType;
         this.contactList = contactList;
+        sectionTitles = new ArrayList<>();
     }
 
     // Constructor for selectable contacts
@@ -34,6 +38,7 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
         this.contactList = contactList;
         this.selectedContacts = selectedContacts;
         this.listener = listener;
+        sectionTitles = new ArrayList<>();
     }
 
     public void updateAdapterData(List<List<TAPUserModel>> contactList) {
@@ -96,9 +101,17 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
         void onBind(int position) {
             item = getItemAt(position);
 
-            char initial = item.get(0).getName().charAt(0);
-            if (!Character.isAlphabetic(initial)) initial = '#';
-            tvInitial.setText(String.valueOf(initial));
+            if (sectionTitles.isEmpty() || sectionTitles.size() <= position) {
+                // Set initial as section title
+                char initial = item.get(0).getName().charAt(0);
+                if (!Character.isAlphabetic(initial)) {
+                    initial = '#';
+                }
+                tvInitial.setText(String.valueOf(initial));
+            } else {
+                // Set custom section title
+                tvInitial.setText(sectionTitles.get(position));
+            }
 
             if (viewType == TAPContactListAdapter.SELECT && null != selectedContacts) {
                 adapter = new TAPContactListAdapter(getItemAt(position), selectedContacts, listener);
@@ -109,5 +122,13 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
             rvContactInitial.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.VERTICAL, false));
             rvContactInitial.setHasFixedSize(false);
         }
+    }
+
+    public void setSectionTitles(String... sectionTitles) {
+        this.sectionTitles = new ArrayList<>(Arrays.asList(sectionTitles));
+    }
+
+    public void clearSectionTitles() {
+        sectionTitles.clear();
     }
 }
