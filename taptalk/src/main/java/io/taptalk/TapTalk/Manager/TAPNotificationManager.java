@@ -341,7 +341,7 @@ public class TAPNotificationManager {
         })).start();
     }
 
-    public class NotificationBuilder {
+    public static class NotificationBuilder {
         public Context context;
         public String chatSender = "", chatMessage = "";
         public TAPMessageModel notificationMessage;
