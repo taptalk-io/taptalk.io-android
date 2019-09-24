@@ -660,8 +660,8 @@
     </style>
 
 
-    <style name="tapProductDetailsLabelStyle" parent="tapFontFamilyMedium">
-        <item name="android:textColor">@color/tapColorPrimaryDark</item>
+    <style name="tapProductDetailsLabelStyle" parent="tapFontFamilyBold">
+        <item name="android:textColor">@color/tapColorAccent</item>
         <item name="android:textSize">12sp</item>
     </style>
 

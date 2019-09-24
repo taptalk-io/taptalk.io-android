@@ -28,6 +28,15 @@ public class SampleApplication extends Application {
 
         @Override
         public void onNotificationReceived(TAPMessageModel message) {
+            TapTalk.showTaptalkNotification(message);
+        }
+    };
+
+    TapUIListener tapUIListener = new TapUIListener() {
+        @Override
+        public void onTapTalkChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
+            super.onTapTalkChatRoomProfileButtonTapped(activity, user);
+        }
 
         }
     };

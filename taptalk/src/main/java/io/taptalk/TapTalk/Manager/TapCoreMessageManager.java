@@ -49,6 +49,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_PRODUCT_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
@@ -235,6 +236,47 @@ public class TapCoreMessageManager {
         TAPFileDownloadManager.getInstance().cancelFileDownload(message.getLocalID());
     }
 
+    public HashMap<String, String> constructTapTalkProductModel(
+            String productID,
+            String productName,
+            String productCurrency,
+            String productPrice,
+            String productRating,
+            String productWeight,
+            String productDescription,
+            String productImageURL,
+            String leftOrSingleButtonOptionText,
+            String rightButtonOptionText,
+            String leftOrSingleButtonOptionColor,
+            String rightButtonOptionColor) {
+        HashMap<String, String> product = new HashMap<>();
+        product.put("id", null == productID ? "" : productID);
+        product.put("name", null == productName ? "" : productName);
+        product.put("currency", null == productCurrency ? "" : productCurrency);
+        product.put("price", null == productPrice ? "" : productPrice);
+        product.put("rating", null == productRating ? "" : productRating);
+        product.put("weight", null == productWeight ? "" : productWeight);
+        product.put("description", null == productDescription ? "" : productDescription);
+        product.put("imageURL", null == productImageURL ? "" : productImageURL);
+        product.put("buttonOption1Text", null == leftOrSingleButtonOptionText ? "" : leftOrSingleButtonOptionText);
+        product.put("buttonOption2Text", null == rightButtonOptionText ? "" : rightButtonOptionText);
+        product.put("buttonOption1Color", null == leftOrSingleButtonOptionColor ? "" : leftOrSingleButtonOptionColor);
+        product.put("buttonOption2Color", null == rightButtonOptionColor ? "" : rightButtonOptionColor);
+        return product;
+    }
+
+    public void sendProductMessage(List<HashMap<String, String>> products, TAPRoomModel room) {
+        if (null == products || products.size() == 0) {
+            return;
+        }
+        if (products.size() > MAX_PRODUCT_SIZE) {
+            products = products.subList(0, MAX_PRODUCT_SIZE);
+        }
+        HashMap<String, Object> productHashMap = new LinkedHashMap<>();
+        productHashMap.put(ITEMS, new ArrayList<>(products));
+        TAPChatManager.getInstance().sendProductMessageToServer(productHashMap, room);
+    }
+
     public void markMessageAsRead(TAPMessageModel message) {
         TAPMessageStatusManager.getInstance().addReadMessageQueue(message);
     }
@@ -348,19 +390,6 @@ public class TapCoreMessageManager {
      * TEMP
      * =============================================================================================
      */
-    private static void sendProductMessage(List<TAPProductModel> productModels, TAPUserModel recipientUserModel) {
-        int productSize = productModels.size();
-        List<TAPProductModel> tempProductModel = new ArrayList<>();
-        for (int index = 1; index <= productSize; index++) {
-            tempProductModel.add(productModels.get(index - 1));
-            if (index == productSize || index % 20 == 0) {
-                HashMap<String, Object> productHashMap = new LinkedHashMap<>();
-                productHashMap.put(ITEMS, new ArrayList<>(tempProductModel));
-                TAPChatManager.getInstance().sendProductMessageToServer(productHashMap, recipientUserModel);
-                tempProductModel.clear();
-            }
-        }
-    }
 
     private void getUserFromRecipientUserAndSendProductRequestMessage(String message, @NonNull TAPUserModel recipientUser, TAPSendMessageWithIDListener listener) {
         new Thread(() -> {
