@@ -382,10 +382,8 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(messageModel, false);
     }
 
-    public void sendProductMessageToServer(HashMap<String, Object> productList, TAPUserModel recipientUserModel) {
-        TAPRoomModel roomModel = TAPRoomModel.Builder(TAPChatManager.getInstance().arrangeRoomId(getActiveUser().getUserID(), recipientUserModel.getUserID()),
-                recipientUserModel.getName(), 1, recipientUserModel.getAvatarURL(), "#FFFFFF");
-        triggerListenerAndSendMessage(createProductMessageModel(productList, recipientUserModel, roomModel), true);
+    public void sendProductMessageToServer(HashMap<String, Object> productList, TAPRoomModel roomModel) {
+        triggerListenerAndSendMessage(createProductMessageModel(productList, roomModel), true);
     }
 
     public void sendLocationMessage(String address, Double latitude, Double longitude) {
@@ -529,7 +527,6 @@ public class TAPChatManager {
      * Construct Product Message Model
      */
     private TAPMessageModel createProductMessageModel(HashMap<String, Object> product,
-                                                      TAPUserModel recipientUserModel,
                                                       TAPRoomModel roomModel) {
         return TAPMessageModel.Builder(
                 "Product List",
@@ -537,7 +534,9 @@ public class TAPChatManager {
                 TYPE_PRODUCT,
                 System.currentTimeMillis(),
                 activeUser,
-                TYPE_PERSONAL == activeRoom.getRoomType() ? recipientUserModel.getUserID() : "0",
+                TYPE_PERSONAL == activeRoom.getRoomType() ?
+                        TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()) :
+                        "0",
                 product
         );
     }
