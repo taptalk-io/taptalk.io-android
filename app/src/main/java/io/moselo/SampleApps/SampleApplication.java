@@ -9,12 +9,15 @@ import com.facebook.stetho.Stetho;
 
 import java.util.HashMap;
 
+import javax.annotation.Nullable;
+
 import io.moselo.SampleApps.CustomBubbleClass.OrderCardBubbleClass;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Listener.TapUIListener;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TaptalkSample.BuildConfig;
@@ -45,8 +48,8 @@ public class SampleApplication extends Application {
 
     TapUIListener tapUIListener = new TapUIListener() {
         @Override
-        public void onTapTalkChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
-            super.onTapTalkChatRoomProfileButtonTapped(activity, user);
+        public void onTapTalkChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
+            super.onTapTalkChatRoomProfileButtonTapped(activity, room, user);
         }
 
         @Override

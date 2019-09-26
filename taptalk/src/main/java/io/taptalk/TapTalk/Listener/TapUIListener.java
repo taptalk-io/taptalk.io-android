@@ -4,6 +4,8 @@ import android.app.Activity;
 
 import java.util.HashMap;
 
+import javax.annotation.Nullable;
+
 import io.taptalk.TapTalk.Interface.TapUIInterface;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -11,10 +13,17 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+
 public abstract class TapUIListener implements TapUIInterface {
     @Override
-    public void onTapTalkChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
-        TapUI.getInstance().openTapTalkUserProfile(activity, user);
+        public void onTapTalkChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
+        if (room.getRoomType() == TYPE_PERSONAL) {
+            TapUI.getInstance().openTapTalkUserProfile(activity, room);
+        } else if (room.getRoomType() == TYPE_GROUP) {
+            TapUI.getInstance().openTapTalkGroupChatProfile(activity, room);
+        }
     }
 
     @Override

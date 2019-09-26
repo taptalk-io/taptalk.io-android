@@ -1843,8 +1843,8 @@ public class TAPChatManager {
      *  ============================================================================================
      */
 
-    public void triggerChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
-        TapUI.getInstance().triggerChatRoomProfileButtonTapped(activity, user);
+    public void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
+        TapUI.getInstance().triggerChatRoomProfileButtonTapped(activity, room, user);
     }
 
     public void triggerMessageQuoteTapped(Activity activity, TAPMessageModel messageModel) {

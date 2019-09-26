@@ -37,6 +37,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TapUI {
@@ -232,20 +233,24 @@ public class TapUI {
         openChatRoomWithRoomModel(context, roomModel);
     }
 
-    public void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
+    public void openTapTalkUserProfile(Context context, TAPRoomModel room) {
+        if (null == context) {
+            return;
+        }
         WeakReference<Context> contextWeakReference = new WeakReference<>(context);
-        TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {
+        Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
+        intent.putExtra(ROOM, room);
+        contextWeakReference.get().startActivity(intent);
+        if (contextWeakReference.get() instanceof Activity) {
+            ((Activity) contextWeakReference.get()).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        }
+    }
+
+    public void openTapTalkUserProfile(Context context, TAPUserModel user) {
+        TAPDataManager.getInstance().getRoomModel(user, new TAPDatabaseListener<TAPRoomModel>() {
             @Override
             public void onSelectFinished(TAPRoomModel roomModel) {
-                if (null == contextWeakReference.get()) {
-                    return;
-                }
-                Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
-                intent.putExtra(ROOM, roomModel);
-                contextWeakReference.get().startActivity(intent);
-                if (contextWeakReference.get() instanceof Activity) {
-                    ((Activity) contextWeakReference.get()).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-                }
+                openTapTalkUserProfile(context, roomModel);
             }
         });
     }
@@ -263,13 +268,20 @@ public class TapUI {
         });
     }
 
+    public void openTapTalkGroupChatProfile(Activity activity, TAPRoomModel room) {
+        Intent intent = new Intent(activity, TAPChatProfileActivity.class);
+        intent.putExtra(ROOM, room);
+        activity.startActivityForResult(intent, OPEN_PROFILE);
+        activity.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+    }
+
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
         TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
     }
 
-    void triggerChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
+    void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
         for (TapUIListener listener : getTapUIListeners()) {
-            listener.onTapTalkChatRoomProfileButtonTapped(activity, user);
+            listener.onTapTalkChatRoomProfileButtonTapped(activity, room, user);
         }
     }
 
