@@ -106,6 +106,7 @@ import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
@@ -579,7 +580,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
                 if (0 < vm.getGroupTypingSize()) showTypingIndicator();
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e(TAG, "initView: ", e);
             }
         }
 
@@ -1249,7 +1249,9 @@ public class TAPChatActivity extends TAPBaseChatActivity {
 
                     @Override
                     public void onError(TAPErrorModel error) {
-                        showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+                        if (null != error.getCode() && error.getCode().equals(String.valueOf(USER_NOT_FOUND))) {
+                            showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+                        }
                     }
                 });
             else if (null == vm.getOtherUserModel()) {
@@ -2426,7 +2428,6 @@ public class TAPChatActivity extends TAPBaseChatActivity {
         @Override
         public void onError(TAPErrorModel error) {
             onError(error.getMessage());
-            Log.e(TAG, "onError: " + messageAdapter.getItems().size() + " " + messageAdapter.getItems().get(0).getAction());
             if (0 < messageAdapter.getItems().size() && ((ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
                     && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
                     || (LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&

@@ -191,6 +191,13 @@ public class TAPDefaultConstant {
     public static final class ApiErrorCode {
         public static final int HTTP_HEADER_VALIDATION_FAILED = 40001;
         public static final int API_PARAMETER_VALIDATION_FAILED = 40002;
+        public static final int HTTP_HEADER_AUTHORIZATION_NOT_PROVIDED = 40101;
+        public static final int HTTP_HEADER_AUTHORIZATION_INVALID = 40102;
+        public static final int INVALID_TOKEN = 40103;
+        public static final int TOKEN_EXPIRED = 40104;
+        public static final int TOKEN_DOES_NOT_BELONG_TO_CLIENT = 40105;
+        public static final int USER_NOT_FOUND_FOR_THE_SPECIFIED_TOKEN = 40106;
+        public static final int USER_NOT_FOUND = 40401;
         public static final int SERVER_KEY_NOT_PROVIDED = 49101;
         public static final int INVALID_SERVER_KEY = 49102;
         public static final int SERVER_KEY_NOT_FOUND = 49103;
