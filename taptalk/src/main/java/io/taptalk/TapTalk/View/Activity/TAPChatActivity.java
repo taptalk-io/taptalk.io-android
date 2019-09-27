@@ -754,23 +754,8 @@ public class TAPChatActivity extends TAPBaseChatActivity {
     }
 
     private void openRoomProfile() {
-//        if (null != vm.getOtherUserModel() && null != vm.getRoom() &&
-//                TYPE_PERSONAL == vm.getRoom().getRoomType()) {
-//            TAPChatManager.getInstance().triggerChatRoomProfileButtonTapped(TAPChatActivity.this, vm.getRoom(), vm.getOtherUserModel());
-//            hideUnreadButton();
-//        } else if (null != vm.getRoom() &&
-//                TYPE_GROUP == vm.getRoom().getRoomType()) {
-//            openChatGroupProfile(vm.getRoom());
-//        }
         TAPChatManager.getInstance().triggerChatRoomProfileButtonTapped(TAPChatActivity.this, vm.getRoom(), vm.getOtherUserModel());
         hideUnreadButton();
-    }
-
-    public void openChatGroupProfile(TAPRoomModel roomModel) {
-        Intent intent = new Intent(this, TAPChatProfileActivity.class);
-        intent.putExtra(ROOM, roomModel);
-        startActivityForResult(intent, OPEN_PROFILE);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void loadProfilePicture(String image, ImageView imageView, TextView tvAvatarLabel) {

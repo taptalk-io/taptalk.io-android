@@ -48,8 +48,13 @@ public class SampleApplication extends Application {
 
     TapUIListener tapUIListener = new TapUIListener() {
         @Override
-        public void onTapTalkChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
-            super.onTapTalkChatRoomProfileButtonTapped(activity, room, user);
+        public void onTapTalkUserProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
+            super.onTapTalkUserProfileButtonTapped(activity, room, user);
+        }
+
+        @Override
+        public void onTapTalkGroupChatProfileButtonTapped(Activity activity, TAPRoomModel room) {
+            super.onTapTalkGroupChatProfileButtonTapped(activity, room);
         }
 
         @Override

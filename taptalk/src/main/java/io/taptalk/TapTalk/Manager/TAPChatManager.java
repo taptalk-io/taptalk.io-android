@@ -35,6 +35,7 @@ import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
+import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -386,18 +387,21 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(messageModel, false);
     }
 
-    public void sendProductMessageToServer(HashMap<String, Object> productList, TAPRoomModel roomModel) {
-        triggerListenerAndSendMessage(createProductMessageModel(productList, roomModel), true);
+    public void sendProductMessageToServer(HashMap<String, Object> productList, TAPRoomModel roomModel, TapSendMessageInterface sendMessageInterface) {
+        TAPMessageModel productMessage = createProductMessageModel(productList, roomModel);
+        sendMessageListeners.put(productMessage.getLocalID(), sendMessageInterface);
+        sendMessageInterface.onStart(productMessage);
+        triggerListenerAndSendMessage(productMessage, true);
     }
 
     public void sendLocationMessage(String address, Double latitude, Double longitude) {
         triggerListenerAndSendMessage(createLocationMessageModel(address, latitude, longitude), true);
     }
 
-    public void sendLocationMessage(String address, Double latitude, Double longitude, TAPRoomModel room, TapSendMessageInterface tapSendChatInterface) {
-        TAPMessageModel messageModel = createLocationMessageModel(address, latitude, longitude, room, tapSendChatInterface);
-        sendMessageListeners.put(messageModel.getLocalID(), tapSendChatInterface);
-        tapSendChatInterface.onStart(messageModel);
+    public void sendLocationMessage(String address, Double latitude, Double longitude, TAPRoomModel room, TapSendMessageInterface tapsendMessageInterface) {
+        TAPMessageModel messageModel = createLocationMessageModel(address, latitude, longitude, room, tapsendMessageInterface);
+        sendMessageListeners.put(messageModel.getLocalID(), tapsendMessageInterface);
+        tapsendMessageInterface.onStart(messageModel);
         triggerListenerAndSendMessage(messageModel, true);
     }
 
@@ -414,7 +418,7 @@ public class TAPChatManager {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 // Add entity to list
-                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                messageEntities.add(convertToEntity(messageModel));
 
                 // Send truncated message
                 triggerListenerAndSendMessage(messageModel, true);
@@ -445,7 +449,7 @@ public class TAPChatManager {
                 tapSendMessageInterface.onStart(messageModel);
 
                 // Add entity to list
-                //messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                //messageEntities.add(convertToEntity(messageModel));
 
                 // Send truncated message
                 triggerListenerAndSendMessage(messageModel, true);
@@ -474,7 +478,7 @@ public class TAPChatManager {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, TAPDataManager.getInstance().getActiveUser());
                 // Add entity to list
-                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                messageEntities.add(convertToEntity(messageModel));
 
                 // save LocalID to list of Reply Local IDs
                 // gunanya adalah untuk ngecek kapan semua reply message itu udah kekirim atau belom
@@ -539,7 +543,7 @@ public class TAPChatManager {
                 System.currentTimeMillis(),
                 activeUser,
                 TYPE_PERSONAL == activeRoom.getRoomType() ?
-                        TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()) :
+                        getOtherUserIdFromRoom(roomModel.getRoomID()) :
                         "0",
                 product
         );
@@ -1821,16 +1825,16 @@ public class TAPChatManager {
                     .replace("{", "")
                     .replace("}", "")
                     .replaceFirst("sender",
-                            message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                            message.getUser().getUserID().equals(getActiveUser().getUserID()) ?
                                     "You" : message.getUser().getName());
         } else {
             systemMessageBody = message.getBody()
                     .replace("{", "")
                     .replace("}", "")
-                    .replaceFirst("sender", message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                    .replaceFirst("sender", message.getUser().getUserID().equals(getActiveUser().getUserID()) ?
                             "You" : message.getUser().getName())
                     .replaceFirst("target", message.getTarget().getTargetID() != null ?
-                            message.getTarget().getTargetID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                            message.getTarget().getTargetID().equals(getActiveUser().getUserID()) ?
                                     "you" : message.getTarget().getTargetName() == null ? "" : message.getTarget().getTargetName() : "");
         }
 

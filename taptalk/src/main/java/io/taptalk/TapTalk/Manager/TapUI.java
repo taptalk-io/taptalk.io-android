@@ -38,6 +38,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TapUI {
@@ -233,33 +234,35 @@ public class TapUI {
         openChatRoomWithRoomModel(context, roomModel);
     }
 
-    public void openTapTalkUserProfile(Context context, TAPRoomModel room) {
-        if (null == context) {
+    public void openTapTalkChatProfile(Activity activity, TAPRoomModel room) {
+        if (null == activity) {
             return;
         }
-        WeakReference<Context> contextWeakReference = new WeakReference<>(context);
+        WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
         Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
         intent.putExtra(ROOM, room);
-        contextWeakReference.get().startActivity(intent);
-        if (contextWeakReference.get() instanceof Activity) {
-            ((Activity) contextWeakReference.get()).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        if (room.getRoomType() == TYPE_PERSONAL) {
+            contextWeakReference.get().startActivity(intent);
+        } else if (room.getRoomType() == TYPE_GROUP) {
+            contextWeakReference.get().startActivityForResult(intent, OPEN_PROFILE);
         }
+        contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
-    public void openTapTalkUserProfile(Context context, TAPUserModel user) {
+    public void openTapTalkChatProfile(Activity activity, TAPUserModel user) {
         TAPDataManager.getInstance().getRoomModel(user, new TAPDatabaseListener<TAPRoomModel>() {
             @Override
             public void onSelectFinished(TAPRoomModel roomModel) {
-                openTapTalkUserProfile(context, roomModel);
+                openTapTalkChatProfile(activity, roomModel);
             }
         });
     }
 
-    public void openTapTalkUserProfile(Context context, String xcUserID) {
+    public void openTapTalkChatProfile(Activity activity, String xcUserID) {
         TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel userModel) {
-                openTapTalkUserProfile(context, userModel);
+                openTapTalkChatProfile(activity, userModel);
             }
 
             @Override
@@ -268,20 +271,24 @@ public class TapUI {
         });
     }
 
-    public void openTapTalkGroupChatProfile(Activity activity, TAPRoomModel room) {
-        Intent intent = new Intent(activity, TAPChatProfileActivity.class);
-        intent.putExtra(ROOM, room);
-        activity.startActivityForResult(intent, OPEN_PROFILE);
-        activity.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-    }
-
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
         TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
     }
 
     void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
-        for (TapUIListener listener : getTapUIListeners()) {
-            listener.onTapTalkChatRoomProfileButtonTapped(activity, room, user);
+        if (getTapUIListeners().isEmpty()) {
+            openTapTalkChatProfile(activity, room);
+        } else {
+            for (TapUIListener listener : getTapUIListeners()) {
+                switch (room.getRoomType()) {
+                    case TYPE_PERSONAL:
+                        listener.onTapTalkUserProfileButtonTapped(activity, room, user);
+                        break;
+                    case TYPE_GROUP:
+                        listener.onTapTalkGroupChatProfileButtonTapped(activity, room);
+                        break;
+                }
+            }
         }
     }
 

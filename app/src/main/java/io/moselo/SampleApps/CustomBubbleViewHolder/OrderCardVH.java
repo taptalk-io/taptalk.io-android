@@ -348,7 +348,7 @@ public class OrderCardVH extends TAPBaseChatViewHolder {
                 //listener.onBubbleExpanded();
             });
         } catch (Exception e) {
-            Log.e("]]]]", "onBind: ");
+
         }
     }
 
