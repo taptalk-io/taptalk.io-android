@@ -1,24 +1,17 @@
 package io.moselo.SampleApps;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 
-import java.util.HashMap;
-
-import javax.annotation.Nullable;
-
+import io.moselo.SampleApps.Activity.TAPLoginActivity;
 import io.moselo.SampleApps.CustomBubbleClass.OrderCardBubbleClass;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
-import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
 import io.taptalk.TaptalkSample.BuildConfig;
 import io.taptalk.TaptalkSample.R;
 

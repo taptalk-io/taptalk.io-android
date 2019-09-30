@@ -27,8 +27,6 @@
             android:name="io.taptalk.TapTalk.Helper.CustomTabLayout.TAPKeepAliveService"
             android:exported="true" />
 
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPLoginActivity"
-            android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity"
@@ -50,8 +48,6 @@
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPForwardPickerActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity"
             android:screenOrientation="portrait" />
