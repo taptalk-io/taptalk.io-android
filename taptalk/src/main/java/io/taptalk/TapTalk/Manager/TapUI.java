@@ -31,8 +31,8 @@ import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
-import io.taptalk.TapTalk.View.Fragment.TAPMainRoomListFragment;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
+import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
@@ -97,12 +97,12 @@ public class TapUI {
         getCustomKeyboardListeners().remove(listener);
     }
 
-    public TAPMainRoomListFragment getRoomListFragment() {
-        return TAPMainRoomListFragment.newInstance();
+    public TapUIMainRoomListFragment getRoomListFragment() {
+        return TapUIMainRoomListFragment.newInstance();
     }
 
     public void openRoomList(Context context) {
-        Intent intent = new Intent(context, TAPRoomListActivity.class);
+        Intent intent = new Intent(context, TapUIRoomListActivity.class);
         context.startActivity(intent);
     }
 

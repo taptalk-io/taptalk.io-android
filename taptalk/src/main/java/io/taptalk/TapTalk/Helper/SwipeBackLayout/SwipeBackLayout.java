@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.Taptalk.R;
 
 public class SwipeBackLayout extends ConstraintLayout {
@@ -128,7 +128,7 @@ public class SwipeBackLayout extends ConstraintLayout {
     /**
      * Add Interface to closeKeyboard when swipe back
      */
-    private TAPChatActivity.SwipeBackInterface swipeInterface;
+    private TapUIChatActivity.SwipeBackInterface swipeInterface;
 
     public SwipeBackLayout(Context context) {
         this(context, null);
@@ -346,7 +346,7 @@ public class SwipeBackLayout extends ConstraintLayout {
     /**
      * SetSwipe Interface
      */
-    public void setSwipeInterface(TAPChatActivity.SwipeBackInterface swipeInterface) {
+    public void setSwipeInterface(TapUIChatActivity.SwipeBackInterface swipeInterface) {
         this.swipeInterface = swipeInterface;
     }
 

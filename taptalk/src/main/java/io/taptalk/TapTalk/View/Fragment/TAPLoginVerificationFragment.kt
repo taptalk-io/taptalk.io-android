@@ -27,7 +27,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity
 import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
@@ -240,7 +240,7 @@ class TAPLoginVerificationFragment : Fragment() {
             activity?.runOnUiThread {
                 TAPDataManager.getInstance().saveMyCountryCode(countryCallingCode)
                 TAPDataManager.getInstance().saveMyCountryFlagUrl(countryFlagUrl)
-                val intent = Intent(context, TAPRoomListActivity::class.java)
+                val intent = Intent(context, TapUIRoomListActivity::class.java)
                 startActivity(intent)
                 activity?.finish()
             }

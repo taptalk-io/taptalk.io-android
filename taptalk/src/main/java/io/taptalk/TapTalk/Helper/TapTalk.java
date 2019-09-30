@@ -47,8 +47,8 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
-import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
@@ -113,7 +113,7 @@ public class TapTalk {
         try {
             //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
             TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(),
-                    TAPRoomListActivity.class,
+                    TapUIRoomListActivity.class,
                     TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
         } catch (Exception e) {
             Log.e(TAG, "onMessageReceived: ", e);
@@ -635,7 +635,7 @@ public class TapTalk {
                 .setNotificationMessage(tapMessageModel)
                 .setSmallIcon(TapTalk.getClientAppIcon())
                 .setNeedReply(false)
-                .setOnClickAction(TAPChatActivity.class)
+                .setOnClickAction(TapUIChatActivity.class)
                 .show();
     }
 }

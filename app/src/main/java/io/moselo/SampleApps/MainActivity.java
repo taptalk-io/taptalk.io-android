@@ -7,7 +7,7 @@ import android.view.View;
 
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.View.Activity.TAPLoginActivity;
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TaptalkSample.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         Intent intent;
         if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
-            intent = new Intent(MainActivity.this, TAPRoomListActivity.class);
+            intent = new Intent(MainActivity.this, TapUIRoomListActivity.class);
         } else {
             intent = new Intent(MainActivity.this, TAPLoginActivity.class);
         }

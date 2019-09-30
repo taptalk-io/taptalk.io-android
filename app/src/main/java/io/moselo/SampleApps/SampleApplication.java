@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import io.moselo.SampleApps.CustomBubbleClass.OrderCardBubbleClass;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
-import io.taptalk.TapTalk.Listener.TapUIListener;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -43,23 +42,6 @@ public class SampleApplication extends Application {
         @Override
         public void onNotificationReceived(TAPMessageModel message) {
             TapTalk.showTaptalkNotification(message);
-        }
-    };
-
-    TapUIListener tapUIListener = new TapUIListener() {
-        @Override
-        public void onTapTalkUserProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
-            super.onTapTalkUserProfileButtonTapped(activity, room, user);
-        }
-
-        @Override
-        public void onTapTalkGroupChatProfileButtonTapped(Activity activity, TAPRoomModel room) {
-            super.onTapTalkGroupChatProfileButtonTapped(activity, room);
-        }
-
-        @Override
-        public void onTapTalkMessageQuoteTapped(Activity activity, TAPMessageModel message, HashMap<String, Object> userInfo) {
-            super.onTapTalkMessageQuoteTapped(activity, message, userInfo);
         }
     };
 
@@ -101,7 +83,6 @@ public class SampleApplication extends Application {
         }
         TapTalk.initializeGooglePlacesApiKey("AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"); // TODO: 19 August 2019 REPLACE KEY WITH DUMMY FOR LIBRARY BUILD
         //TapTalk.setTapTalkScreenOrientation(TapTalk.TapTalkScreenOrientation.TapTalkOrientationPortrait); // FIXME: 23 May 2019 SCREEN ORIENTATION FORCED TO PORTRAIT
-        TapUI.getInstance().addUIListener(tapUIListener);
         TapUI.getInstance().addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
     }
 }

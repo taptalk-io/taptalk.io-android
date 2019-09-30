@@ -71,10 +71,10 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
 
-public class TAPRoomListFragment extends Fragment {
+public class TapUIRoomListFragment extends Fragment {
 
-    private String TAG = TAPRoomListFragment.class.getSimpleName();
-    private TAPMainRoomListFragment fragment;
+    private String TAG = TapUIRoomListFragment.class.getSimpleName();
+    private TapUIMainRoomListFragment fragment;
 
     private ConstraintLayout clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
@@ -99,14 +99,14 @@ public class TAPRoomListFragment extends Fragment {
         }
     };
 
-    public TAPRoomListFragment() {
+    public TapUIRoomListFragment() {
     }
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        fragment = (TAPMainRoomListFragment) this.getParentFragment();
+        fragment = (TapUIMainRoomListFragment) this.getParentFragment();
         return inflater.inflate(R.layout.tap_fragment_room_list, container, false);
     }
 
@@ -224,9 +224,9 @@ public class TAPRoomListFragment extends Fragment {
 
         tapTalkRoomListInterface = roomModel -> {
             if (vm.getSelectedCount() > 0) {
-                TAPRoomListFragment.this.showSelectionActionBar();
+                TapUIRoomListFragment.this.showSelectionActionBar();
             } else {
-                TAPRoomListFragment.this.hideSelectionActionBar();
+                TapUIRoomListFragment.this.hideSelectionActionBar();
             }
         };
     }

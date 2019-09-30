@@ -10,23 +10,23 @@ import android.view.ViewGroup;
 
 import io.taptalk.Taptalk.R;
 
-public class TAPMainRoomListFragment extends Fragment {
-    private static final String TAG = TAPMainRoomListFragment.class.getSimpleName();
+public class TapUIMainRoomListFragment extends Fragment {
+    private static final String TAG = TapUIMainRoomListFragment.class.getSimpleName();
 
     private enum RoomListState {
         STATE_SEARCH_CHAT, STATE_ROOM_LIST
     }
 
-    private TAPRoomListFragment fRoomList;
-    private TAPSearchChatFragment fSearchFragment;
+    private TapUIRoomListFragment fRoomList;
+    private TapUISearchChatFragment fSearchFragment;
     private RoomListState state = RoomListState.STATE_ROOM_LIST;
 
-    public TAPMainRoomListFragment() {
+    public TapUIMainRoomListFragment() {
         // Required empty public constructor
     }
 
-    public static TAPMainRoomListFragment newInstance() {
-        return new TAPMainRoomListFragment();
+    public static TapUIMainRoomListFragment newInstance() {
+        return new TapUIMainRoomListFragment();
     }
 
     @Override
@@ -48,8 +48,8 @@ public class TAPMainRoomListFragment extends Fragment {
     }
 
     private void initView() {
-        fRoomList = (TAPRoomListFragment) getChildFragmentManager().findFragmentById(R.id.fragment_room_list);
-        fSearchFragment = (TAPSearchChatFragment) getChildFragmentManager().findFragmentById(R.id.fragment_search_chat);
+        fRoomList = (TapUIRoomListFragment) getChildFragmentManager().findFragmentById(R.id.fragment_room_list);
+        fSearchFragment = (TapUISearchChatFragment) getChildFragmentManager().findFragmentById(R.id.fragment_search_chat);
         showRoomList();
     }
 
