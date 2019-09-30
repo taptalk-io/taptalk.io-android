@@ -5,12 +5,12 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-import io.taptalk.TapTalk.Interface.TapCustomKeyboardInterface;
+import io.taptalk.TapTalk.Interface.TapUICustomKeyboardInterface;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
-public abstract class TapCustomKeyboardListener implements TapCustomKeyboardInterface {
+public abstract class TapUICustomKeyboardListener implements TapUICustomKeyboardInterface {
 
     @Override
     public List<TAPCustomKeyboardItemModel> setCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, @Nullable TAPUserModel recipientUser) {

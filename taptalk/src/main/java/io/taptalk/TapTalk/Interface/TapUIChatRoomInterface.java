@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
-public interface TapUIInterface {
+public interface TapUIChatRoomInterface {
     void onTapTalkUserProfileButtonTapped(Activity activity, TAPRoomModel room, TAPUserModel user);
 
     void onTapTalkGroupChatProfileButtonTapped(Activity activity, TAPRoomModel room);

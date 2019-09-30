@@ -316,11 +316,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void openMyAccountActivity() {
-        Intent intent = new Intent(getContext(), TAPMyAccountActivity.class);
-        startActivityForResult(intent, EDIT_PROFILE);
-        if (null != getActivity()) {
-            getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
-        }
+        TAPChatManager.getInstance().triggerTapTalkAccountButtonTapped(getActivity());
     }
 
     private void openNewChatActivity() {

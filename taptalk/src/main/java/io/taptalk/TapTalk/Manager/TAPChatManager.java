@@ -35,7 +35,6 @@ import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
-import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -1847,6 +1846,11 @@ public class TAPChatManager {
      *  ============================================================================================
      */
 
+    public void triggerTapTalkAccountButtonTapped(Activity activity) {
+        TapUI.getInstance().triggerTapTalkAccountButtonTapped(activity);
+    }
+
+
     public void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
         TapUI.getInstance().triggerChatRoomProfileButtonTapped(activity, room, user);
     }
@@ -1856,11 +1860,11 @@ public class TAPChatManager {
     }
 
     public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
-        return TapCustomKeyboardManager.getInstance().getCustomKeyboardItems(room, activeUser, recipientUser);
+        return TapUI.getInstance().getCustomKeyboardItems(room, activeUser, recipientUser);
     }
 
     public void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPRoomModel room, TAPUserModel activeUser, TAPUserModel otherUser) {
-        TapCustomKeyboardManager.getInstance().triggerCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, otherUser);
+        TapUI.getInstance().triggerCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, otherUser);
     }
 
     public void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
