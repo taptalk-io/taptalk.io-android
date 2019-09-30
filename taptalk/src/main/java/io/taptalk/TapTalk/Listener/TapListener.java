@@ -15,4 +15,8 @@ public abstract class TapListener implements TapTalkInterface {
     @Override
     public void onNotificationReceived(TAPMessageModel message) {
     }
+
+    @Override
+    public void onUserLogout() {
+    }
 }

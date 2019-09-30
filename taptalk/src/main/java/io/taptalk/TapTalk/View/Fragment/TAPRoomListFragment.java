@@ -262,7 +262,7 @@ public class TAPRoomListFragment extends Fragment {
 
         flSetupContainer.setVisibility(View.GONE);
 
-        if (TapUI.getInstance().isMyAccountButtonInRoomListVisible()) {
+        if (TapUI.getInstance().isMyAccountButtonVisible()) {
             civMyAvatarImage.setVisibility(View.VISIBLE);
         } else {
             civMyAvatarImage.setVisibility(View.GONE);

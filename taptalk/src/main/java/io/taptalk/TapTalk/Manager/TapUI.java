@@ -55,6 +55,7 @@ public class TapUI {
     private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
 
     private boolean isMyAccountButtonHidden;
+    private boolean isLogoutButtonVisible;
 
     public static TapUI getInstance() {
         return null == instance ? instance = new TapUI() : instance;
@@ -271,8 +272,16 @@ public class TapUI {
         isMyAccountButtonHidden = !isVisible;
     }
 
-    public boolean isMyAccountButtonInRoomListVisible() {
+    public boolean isMyAccountButtonVisible() {
         return !isMyAccountButtonHidden;
+    }
+
+    public void setLogoutButtonVisible(boolean isVisible) {
+        isLogoutButtonVisible = isVisible;
+    }
+
+    public boolean isLogoutButtonVisible() {
+        return isLogoutButtonVisible;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {

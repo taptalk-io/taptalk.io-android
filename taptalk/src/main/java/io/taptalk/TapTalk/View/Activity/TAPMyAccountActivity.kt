@@ -33,11 +33,13 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAG
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.*
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
+import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPUserModel
@@ -156,6 +158,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         //et_full_name.addTextChangedListener(fullNameWatcher)
         //et_email_address.addTextChangedListener(emailWatcher)
+
+        if (TapUI.getInstance().isLogoutButtonVisible) {
+            cl_logout.visibility = View.VISIBLE
+        } else {
+            cl_logout.visibility = View.GONE
+        }
 
         if (vm.currentProfilePicture.isEmpty()) {
             civ_profile_picture.imageTintList = ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name))
@@ -406,9 +414,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         hideLoading()
 
-        val intent = Intent(this, TAPLoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        for (listener in TapTalk.getTapTalkListeners()) {
+            listener.onUserLogout()
+        }
     }
 
     private fun uploadProfilePicture() {
