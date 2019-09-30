@@ -55,6 +55,7 @@ import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -62,7 +63,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
@@ -261,6 +261,12 @@ public class TAPRoomListFragment extends Fragment {
         reloadProfilePicture();
 
         flSetupContainer.setVisibility(View.GONE);
+
+        if (TapUI.getInstance().isMyAccountButtonInRoomListVisible()) {
+            civMyAvatarImage.setVisibility(View.VISIBLE);
+        } else {
+            civMyAvatarImage.setVisibility(View.GONE);
+        }
 
         if (vm.isSelecting()) {
             showSelectionActionBar();

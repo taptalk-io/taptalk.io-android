@@ -54,6 +54,8 @@ public class TapUI {
     private List<TapUIChatRoomListener> tapUIChatRoomListeners;
     private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
 
+    private boolean isMyAccountButtonHidden;
+
     public static TapUI getInstance() {
         return null == instance ? instance = new TapUI() : instance;
     }
@@ -263,6 +265,14 @@ public class TapUI {
             }
         }
         openChatRoomWithRoomModel(context, roomModel);
+    }
+
+    public void setMyAccountButtonInRoomListVisible(boolean isVisible) {
+        isMyAccountButtonHidden = !isVisible;
+    }
+
+    public boolean isMyAccountButtonInRoomListVisible() {
+        return !isMyAccountButtonHidden;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {

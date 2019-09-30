@@ -441,19 +441,14 @@ public class TapTalk {
         TAPConnectionManager.getInstance().close(NOT_CONNECTED);
     }
 
-    public static void enableAutoConnect() {
-        checkTapTalkInitialized();
-        isAutoConnectDisabled = false;
-    }
-
-    public static void disableAutoConnect() {
-        checkTapTalkInitialized();
-        isAutoConnectDisabled = true;
-    }
-
     public static boolean isConnected() {
         checkTapTalkInitialized();
         return TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED;
+    }
+
+    public static void setAutoConnectEnabled(boolean enabled) {
+        checkTapTalkInitialized();
+        isAutoConnectDisabled = !enabled;
     }
 
     public static boolean isAutoConnectEnabled() {
@@ -546,14 +541,9 @@ public class TapTalk {
         }
     }
 
-    public static void enableAutoContactSync() {
+    public static void setAutoContactSyncEnabled(boolean enabled) {
         checkTapTalkInitialized();
-        isAutoContactSyncDisabled = false;
-    }
-
-    public static void disableAutoContactSync() {
-        checkTapTalkInitialized();
-        isAutoContactSyncDisabled = true;
+        isAutoContactSyncDisabled = !enabled;
     }
 
     public static boolean isAutoContactSyncEnabled() {
