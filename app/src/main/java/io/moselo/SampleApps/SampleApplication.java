@@ -36,6 +36,13 @@ public class SampleApplication extends Application {
         public void onNotificationReceived(TAPMessageModel message) {
             TapTalk.showTaptalkNotification(message);
         }
+
+        @Override
+        public void onUserLogout() {
+            Intent intent = new Intent(getApplicationContext(), TAPLoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            getApplicationContext().startActivity(intent);
+        }
     };
 
     @Override
@@ -77,5 +84,6 @@ public class SampleApplication extends Application {
         TapTalk.initializeGooglePlacesApiKey("AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"); // TODO: 19 August 2019 REPLACE KEY WITH DUMMY FOR LIBRARY BUILD
         //TapTalk.setTapTalkScreenOrientation(TapTalk.TapTalkScreenOrientation.TapTalkOrientationPortrait); // FIXME: 23 May 2019 SCREEN ORIENTATION FORCED TO PORTRAIT
         TapUI.getInstance().addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
+        TapUI.getInstance().setLogoutButtonVisible(true);
     }
 }
