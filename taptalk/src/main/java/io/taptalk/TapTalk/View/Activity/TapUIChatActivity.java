@@ -790,9 +790,15 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         runOnUiThread(() -> {
             if (vm.isOnBottom() || vm.getUnreadCount() == 0) {
                 tvBadgeUnread.setVisibility(View.INVISIBLE);
+                if (View.INVISIBLE != ivToBottom.getVisibility()) {
+                    ivToBottom.setVisibility(View.INVISIBLE);
+                }
             } else if (vm.getUnreadCount() > 0) {
                 tvBadgeUnread.setText(String.valueOf(vm.getUnreadCount()));
                 tvBadgeUnread.setVisibility(View.VISIBLE);
+                if (View.VISIBLE != ivToBottom.getVisibility()) {
+                    ivToBottom.setVisibility(View.VISIBLE);
+                }
             } else if (View.VISIBLE == ivToBottom.getVisibility()) {
                 ivToBottom.setVisibility(View.INVISIBLE);
             }
