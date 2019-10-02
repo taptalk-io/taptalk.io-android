@@ -4,10 +4,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Listener.TapListener;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 public class TapUIMainRoomListFragment extends Fragment {
@@ -35,8 +41,7 @@ public class TapUIMainRoomListFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_main_room_list, container, false);
     }
@@ -47,10 +52,42 @@ public class TapUIMainRoomListFragment extends Fragment {
         initView();
     }
 
+    private boolean checkUserAuthenticated() {
+        if (TapTalk.isAuthenticated() && null == TAPChatManager.getInstance().getActiveUser()) {
+            TapTalk.clearAllTapTalkData();
+            for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                listener.onTapTalkRefreshTokenExpired();
+            }
+            return false;
+        } else if (null == TAPChatManager.getInstance().getActiveUser()) {
+            if (BuildConfig.DEBUG && null != getActivity()) {
+                new TapTalkDialog.Builder(getActivity())
+                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                        .setTitle(getString(R.string.tap_error))
+                        .setMessage(getString(R.string.tap_error_active_user_is_null))
+                        .setCancelable(false)
+                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                        .show();
+            }
+            Log.e(TAG, getString(R.string.tap_error_active_user_is_null));
+            return false;
+        }
+        return true;
+    }
+
     private void initView() {
         fRoomList = (TapUIRoomListFragment) getChildFragmentManager().findFragmentById(R.id.fragment_room_list);
         fSearchFragment = (TapUISearchChatFragment) getChildFragmentManager().findFragmentById(R.id.fragment_search_chat);
-        showRoomList();
+
+        if (checkUserAuthenticated()) {
+            showRoomList();
+        } else {
+            getChildFragmentManager()
+                    .beginTransaction()
+                    .hide(fRoomList)
+                    .hide(fSearchFragment)
+                    .commit();
+        }
     }
 
     public void showRoomList() {
