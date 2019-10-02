@@ -11,7 +11,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.ViewTreeObserver
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY
@@ -154,7 +153,7 @@ class TAPEditGroupActivity : TAPBaseActivity(), View.OnClickListener {
     }
 
     private fun showingButton() {
-        if (groupViewModel?.isGroupPicChanged == false && groupViewModel?.isGroupNameChanged == false) {
+        if ((groupViewModel?.isGroupPicChanged == false && groupViewModel?.isGroupNameChanged == false) || et_group_name.text.toString().trim().length == 0) {
             fl_update_group_btn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple)
         } else {
             fl_update_group_btn.setBackgroundResource(R.drawable.tap_bg_button_active_ripple)

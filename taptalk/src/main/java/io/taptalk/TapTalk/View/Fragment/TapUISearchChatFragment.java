@@ -43,9 +43,9 @@ import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.RECENT_TITLE;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.ROOM_ITEM;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
 
-public class TAPSearchChatFragment extends Fragment {
+public class TapUISearchChatFragment extends Fragment {
 
-    private static final String TAG = TAPSearchChatFragment.class.getSimpleName();
+    private static final String TAG = TapUISearchChatFragment.class.getSimpleName();
 
     private ConstraintLayout clActionBar;
     private ImageView ivButtonBack;
@@ -56,11 +56,11 @@ public class TAPSearchChatFragment extends Fragment {
     private TAPSearchChatViewModel vm;
     private TAPSearchChatAdapter adapter;
 
-    public TAPSearchChatFragment() {
+    public TapUISearchChatFragment() {
     }
 
-    public static TAPSearchChatFragment newInstance() {
-        TAPSearchChatFragment fragment = new TAPSearchChatFragment();
+    public static TapUISearchChatFragment newInstance() {
+        TapUISearchChatFragment fragment = new TapUISearchChatFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -128,7 +128,7 @@ public class TAPSearchChatFragment extends Fragment {
         });
 
         ivButtonBack.setOnClickListener(v -> {
-            TAPMainRoomListFragment fragment = (TAPMainRoomListFragment) this.getParentFragment();
+            TapUIMainRoomListFragment fragment = (TapUIMainRoomListFragment) this.getParentFragment();
             if (null != fragment)
                 fragment.showRoomList();
             TAPUtils.getInstance().dismissKeyboard(getActivity());

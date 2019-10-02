@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tapWhite"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity">
+    tools:context="io.moselo.SampleApps.Activity.TAPRegisterActivity">
 
     <FrameLayout
         android:id="@+id/fl_action_bar"

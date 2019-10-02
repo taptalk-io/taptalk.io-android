@@ -99,13 +99,14 @@ public class TAPDownloadHeaderRequestInterceptor implements Interceptor {
                 .build();
 
         // TODO: 30/01/19 TEMPORARY
-        if (!TAPDataManager.getInstance().checkAuthTicketAvailable() &&
-                !TAPDataManager.getInstance().checkAccessTokenAvailable() &&
-                !TAPDataManager.getInstance().checkRefreshTokenAvailable())
-            request = request.newBuilder()
-                    .addHeader("Server-Key",
-                            "MTlkYzhjMjc0YmNjOGM0NjQ2MmI2ODM4NTpNR1kyT0Raa01ETmlZVFJqTlRFdU1TNHgvWkRka05tTTBNelkvWm1JNE5UUTRaV1E0WmpJNS9Oems0TVdaa1pUZGhaVGsw")
-                    .build();
+//        if (!TAPDataManager.getInstance().checkAuthTicketAvailable() &&
+//                !TAPDataManager.getInstance().checkAccessTokenAvailable() &&
+//                !TAPDataManager.getInstance().checkRefreshTokenAvailable())
+//            request = request.newBuilder()
+//                    .addHeader("Server-Key",
+//                            "MTlkYzhjMjc0YmNjOGM0NjQ2MmI2ODM4NTpNR1kyT0Raa01ETmlZVFJqTlRFdU1TNHgvWkRka05tTTBNelkvWm1JNE5UUTRaV1E0WmpJNS9Oems0TVdaa1pUZGhaVGsw")
+//                    .build();
+
         Response response = chain.proceed(request);
 
         return response.newBuilder()

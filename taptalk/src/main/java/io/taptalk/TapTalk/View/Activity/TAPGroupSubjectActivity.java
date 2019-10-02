@@ -194,7 +194,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     }
 
     private void validateAndCreateGroup() {
-        String groupName = etGroupName.getText().toString();
+        String groupName = etGroupName.getText().toString().trim();
         if (!groupName.trim().isEmpty() && null != vm.getGroupData().getGroupParticipants() && vm.getGroupData().getGroupParticipants().size() > 0) {
             TAPDataManager.getInstance().createGroupChatRoom(groupName, vm.getParticipantsIDs(), createGroupRoomView);
         } else {
@@ -210,7 +210,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (s.length() > 0) {
+            if (s.length() > 0 && s.toString().trim().length() > 0) {
                 flCreateGroupBtn.setBackgroundResource(R.drawable.tap_bg_button_active_ripple);
                 vm.getGroupData().setRoomName(s.toString());
             } else {
