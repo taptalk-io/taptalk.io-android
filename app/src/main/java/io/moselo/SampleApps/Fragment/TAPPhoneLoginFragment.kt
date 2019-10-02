@@ -1,4 +1,4 @@
-package io.taptalk.TapTalk.View.Fragment
+package io.moselo.SampleApps.Fragment
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
@@ -7,12 +7,12 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID
@@ -27,8 +27,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPCountryListActivity
-import io.taptalk.TapTalk.View.Activity.TAPLoginActivity
-import io.taptalk.Taptalk.R
+import io.taptalk.TaptalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
 
 class TAPPhoneLoginFragment : Fragment() {

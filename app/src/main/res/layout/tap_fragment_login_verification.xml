@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tapWhite"
-    tools:context="io.taptalk.TapTalk.View.Fragment.TAPLoginVerificationFragment">
+    tools:context="io.moselo.SampleApps.Fragment.TAPLoginVerificationFragment">
 
     <ImageView
         android:id="@+id/iv_back_button"

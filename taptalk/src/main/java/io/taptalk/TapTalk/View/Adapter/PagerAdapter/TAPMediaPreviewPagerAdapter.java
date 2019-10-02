@@ -22,13 +22,13 @@ import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_CAPTION_LENGTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
 
     private ArrayList<TAPMediaPreviewModel> images;
     private Context context;
-    private int maxCharacter = 100;
 
     public TAPMediaPreviewPagerAdapter(Context context, ArrayList<TAPMediaPreviewModel> images) {
         this.context = context;
@@ -108,7 +108,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
             etCaption.setText(caption);
             etCaption.setSelection(caption.length());
             tvTypingIndicator.setVisibility(View.VISIBLE);
-            tvTypingIndicator.setText(String.format(context.getString(R.string.tap_letter_count), caption.length(), maxCharacter));
+            tvTypingIndicator.setText(String.format(context.getString(R.string.tap_letter_count), caption.length(), MAX_CAPTION_LENGTH));
         }
 
         etCaption.addTextChangedListener(new TextWatcher() {
@@ -119,7 +119,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tvTypingIndicator.setText(String.format(context.getString(R.string.tap_letter_count), s.length(), maxCharacter));
+                tvTypingIndicator.setText(String.format(context.getString(R.string.tap_letter_count), s.length(), MAX_CAPTION_LENGTH));
             }
 
             @Override

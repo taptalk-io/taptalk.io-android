@@ -27,11 +27,9 @@
             android:name="io.taptalk.TapTalk.Helper.CustomTabLayout.TAPKeepAliveService"
             android:exported="true" />
 
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPLoginActivity"
-            android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRoomListActivity"
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity"
             android:screenOrientation="portrait" />
@@ -51,8 +49,6 @@
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPForwardPickerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity"
-            android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity"
@@ -66,7 +62,7 @@
             android:windowSoftInputMode="adjustNothing"
             android:screenOrientation="portrait" />
         <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPChatActivity"
+            android:name="io.taptalk.TapTalk.View.Activity.TapUIChatActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:screenOrientation="portrait" />
         <activity

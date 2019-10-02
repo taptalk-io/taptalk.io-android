@@ -191,6 +191,13 @@ public class TAPDefaultConstant {
     public static final class ApiErrorCode {
         public static final int HTTP_HEADER_VALIDATION_FAILED = 40001;
         public static final int API_PARAMETER_VALIDATION_FAILED = 40002;
+        public static final int HTTP_HEADER_AUTHORIZATION_NOT_PROVIDED = 40101;
+        public static final int HTTP_HEADER_AUTHORIZATION_INVALID = 40102;
+        public static final int INVALID_TOKEN = 40103;
+        public static final int TOKEN_EXPIRED = 40104;
+        public static final int TOKEN_DOES_NOT_BELONG_TO_CLIENT = 40105;
+        public static final int USER_NOT_FOUND_FOR_THE_SPECIFIED_TOKEN = 40106;
+        public static final int USER_NOT_FOUND = 40401;
         public static final int SERVER_KEY_NOT_PROVIDED = 49101;
         public static final int INVALID_SERVER_KEY = 49102;
         public static final int SERVER_KEY_NOT_FOUND = 49103;
@@ -215,6 +222,8 @@ public class TAPDefaultConstant {
         public static final String ERROR_CODE_UPLOAD_CANCELLED = "90303";
         public static final String ERROR_CODE_IMAGE_UNAVAILABLE = "90304";
         public static final String ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE = "90305";
+        public static final String ERROR_CODE_CAPTION_EXCEEDS_LIMIT = "90306";
+        public static final String ERROR_CODE_PRODUCT_EMPTY = "90307";
         public static final String ERROR_CODE_OTHERS = "99999";
     }
 
@@ -231,6 +240,8 @@ public class TAPDefaultConstant {
         public static final String ERROR_MESSAGE_UPLOAD_CANCELLED = "Upload was cancelled";
         public static final String ERROR_MESSAGE_IMAGE_UNAVAILABLE = "Could not process compressed image";
         public static final String ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE = "Invalid message type. Allowed types are image (1002), video (1003), file (1004)";
+        public static final String ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT = "Media caption exceeds the %d character limit";
+        public static final String ERROR_MESSAGE_PRODUCT_EMPTY = "Provided product list is empty";
     }
 
     public static final class ClientSuccessMessages {
@@ -395,6 +406,8 @@ public class TAPDefaultConstant {
     public static final String DEFAULT_CHANNEL_MAX_PARTICIPANTS = "5000";
 
     public static final int MAX_ITEMS_PER_PAGE = 50;
+    public static final int MAX_PRODUCT_SIZE = 20;
+    public static final int MAX_CAPTION_LENGTH = 100;
     public static final int SHORT_ANIMATION_TIME = 100;
     public static final int DEFAULT_ANIMATION_TIME = 200;
     public static final int IMAGE_MAX_DIMENSION = 2000;

@@ -7,16 +7,16 @@ import com.orhanobut.hawk.Hawk;
 import io.taptalk.TapTalk.Helper.TAPAutoStartPermission;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
-import io.taptalk.TapTalk.View.Fragment.TAPMainRoomListFragment;
+import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 
-public class TAPRoomListActivity extends TAPBaseActivity {
+public class TapUIRoomListActivity extends TAPBaseActivity {
 
-    private static final String TAG = TAPRoomListActivity.class.getSimpleName();
+    private static final String TAG = TapUIRoomListActivity.class.getSimpleName();
     public static final String AUTO_START_PERMISSION = "kAutoStartPermission";
-    private TAPMainRoomListFragment fRoomList;
+    private TapUIMainRoomListFragment fRoomList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +26,7 @@ public class TAPRoomListActivity extends TAPBaseActivity {
     }
 
     private void initView() {
-        fRoomList = (TAPMainRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
+        fRoomList = (TapUIMainRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
         showRoomList();
         redirectToChatActivityFromNotification();
         requestForAutoStartPermission();

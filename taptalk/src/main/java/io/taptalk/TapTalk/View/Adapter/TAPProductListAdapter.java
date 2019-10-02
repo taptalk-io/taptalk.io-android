@@ -89,26 +89,33 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
         @Override
         protected void onBind(TAPProductModel item, int position) {
             tvButtonOne.setText(item.getButtonOption1Text());
-            tvButtonOne.setTextColor(Color.parseColor("#" + item.getButtonOption1Color()));
+            if (!item.getButtonOption1Color().isEmpty()) {
+                tvButtonOne.setTextColor(Color.parseColor("#" + item.getButtonOption1Color()));
+            }
             if (getItemViewType() == TYPE_SELLER) {
                 // My products
                 vButtonSeparator.setVisibility(View.GONE);
                 tvButtonTwo.setVisibility(View.GONE);
+                tvButtonOne.setBackgroundResource(R.drawable.tap_bg_product_list_single_button_ripple);
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(11), TAPUtils.getInstance().dpToPx(2), 0, 0);
                 flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_8dp_1dp_8dp_8dp_stroke_eaeaea_1dp));
             } else {
                 // Other seller's products
                 tvButtonTwo.setText(item.getButtonOption2Text());
-                tvButtonTwo.setTextColor(Color.parseColor("#" + item.getButtonOption2Color()));
+                if (!item.getButtonOption2Color().isEmpty()) {
+                    tvButtonTwo.setTextColor(Color.parseColor("#" + item.getButtonOption2Color()));
+                }
                 vButtonSeparator.setVisibility(View.VISIBLE);
                 tvButtonTwo.setVisibility(View.VISIBLE);
+                tvButtonOne.setBackgroundResource(R.drawable.tap_bg_product_list_left_button_ripple);
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(2), TAPUtils.getInstance().dpToPx(11), 0, 0);
                 flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp));
             }
 
             Glide.with(itemView.getContext()).load(item.getImageURL()).into(rcivProductImage);
             tvProductName.setText(item.getName());
-            tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(Long.parseLong(item.getPrice())));
+//            tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(Long.parseLong(item.getPrice())));
+            tvPrice.setText(String.format("%s %s", item.getCurrency(), item.getPrice()));
             if ("".equals(item.getDescription()))
                 tvProductDescription.setText(itemView.getResources().getString(R.string.tap_no_description));
             else {
@@ -119,12 +126,12 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 String ratingString = item.getRating();
                 ivRatingIcon.setVisibility(View.VISIBLE);
                 tvRating.setText(ratingString);
-                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tapColorPrimaryDark));
+                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tapColorAccent));
             } else {
                 // Product has no rating
                 ivRatingIcon.setVisibility(View.GONE);
                 tvRating.setText(itemView.getContext().getString(R.string.tap_no_review_yet));
-                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tapGrey9b));
+                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tapColorTextMedium));
             }
 
             flContainer.setOnClickListener(v -> chatListener.onOutsideClicked());

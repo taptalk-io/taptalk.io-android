@@ -1,4 +1,4 @@
-package io.taptalk.TapTalk.View.Activity;
+package io.moselo.SampleApps.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.FrameLayout;
 
+import io.moselo.SampleApps.Fragment.TAPLoginVerificationFragment;
+import io.moselo.SampleApps.Fragment.TAPPhoneLoginFragment;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
-import io.taptalk.TapTalk.View.Fragment.TAPLoginVerificationFragment;
-import io.taptalk.TapTalk.View.Fragment.TAPPhoneLoginFragment;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TaptalkSample.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.REGISTER;
 
@@ -41,7 +43,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
             switch (requestCode) {
                 case REGISTER:
                     TAPApiManager.getInstance().setLogout(false);
-                    Intent intent = new Intent(TAPLoginActivity.this, TAPRoomListActivity.class);
+                    Intent intent = new Intent(TAPLoginActivity.this, TapUIRoomListActivity.class);
                     startActivity(intent);
                     finish();
                     break;

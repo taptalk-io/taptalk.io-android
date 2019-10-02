@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="false"
-    tools:context="io.taptalk.TapTalk.View.Fragment.TAPPhoneLoginFragment">
+    tools:context="io.moselo.SampleApps.Fragment.TAPPhoneLoginFragment">
 
     <ImageView
         android:id="@+id/iv_taptalk_logo"
