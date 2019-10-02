@@ -475,7 +475,7 @@ public class TAPChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                TAPMessageModel messageModel = createTextMessage(substr, roomModel, TAPDataManager.getInstance().getActiveUser());
+                TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 // Add entity to list
                 messageEntities.add(convertToEntity(messageModel));
 
@@ -488,7 +488,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
-            TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, TAPDataManager.getInstance().getActiveUser());
+            TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
 
             // save LocalID to list of Reply Local IDs
             // gunanya adalah untuk ngecek kapan semua reply message itu udah kekirim atau belom

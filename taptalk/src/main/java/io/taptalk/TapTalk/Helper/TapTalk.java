@@ -559,7 +559,7 @@ public class TapTalk {
 
     public static TAPUserModel getTaptalkActiveUser() {
         checkTapTalkInitialized();
-        return TAPDataManager.getInstance().getActiveUser();
+        return TAPChatManager.getInstance().getActiveUser();
     }
 
     public static void refreshActiveUser(TapCommonListener listener) {
