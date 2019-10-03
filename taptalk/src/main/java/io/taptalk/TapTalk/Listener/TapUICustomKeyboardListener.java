@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Listener;
 
 import android.app.Activity;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
+@Keep
 public abstract class TapUICustomKeyboardListener implements TapUICustomKeyboardInterface {
 
     @Override
