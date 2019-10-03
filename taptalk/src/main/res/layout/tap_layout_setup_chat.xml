@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tapTransparentCharcoal40"
-    android:elevation="4dp">
+    android:elevation="10dp">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_setup_chat"

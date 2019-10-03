@@ -16,6 +16,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Helper.WrapContentLinearLayoutManager;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
@@ -66,6 +68,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
+import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
@@ -341,11 +344,24 @@ public class TapUIRoomListFragment extends Fragment {
         } else if (null != TAPChatManager.getInstance().getActiveUser()) {
             //kalau kita dari background atau pertama kali buka apps, kita baru jalanin full cycle
             runFullRefreshSequence();
-        } else {
+        } else if (TapTalk.isAuthenticated()) {
             TapTalk.clearAllTapTalkData();
             for (TapListener listener : TapTalk.getTapTalkListeners()) {
                 listener.onTapTalkRefreshTokenExpired();
             }
+        } else if (null == TAPChatManager.getInstance().getActiveUser()) {
+            flSetupContainer.setVisibility(View.VISIBLE);
+            showChatRoomSetupFailed();
+            if (BuildConfig.DEBUG && null != getActivity()) {
+                new TapTalkDialog.Builder(getActivity())
+                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                        .setTitle(getString(R.string.tap_error))
+                        .setMessage(getString(R.string.tap_error_active_user_is_null))
+                        .setCancelable(false)
+                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                        .show();
+            }
+            Log.e(TAG, getString(R.string.tap_error_active_user_is_null));
         }
     }
 
@@ -584,6 +600,9 @@ public class TapUIRoomListFragment extends Fragment {
 
         llRetrySetup.setOnClickListener(view -> {
             TAPUtils.getInstance().animateClickButton(llRetrySetup, 0.95f);
+            if (null == TAPChatManager.getInstance().getActiveUser()) {
+                return;
+            }
             TAPDataManager.getInstance().getMessageRoomListAndUnread(
                     TAPChatManager.getInstance().getActiveUser().getUserID(), roomListView);
         });
