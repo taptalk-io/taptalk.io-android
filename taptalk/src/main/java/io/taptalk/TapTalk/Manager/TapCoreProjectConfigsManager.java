@@ -9,6 +9,7 @@ import io.taptalk.TapTalk.Model.TapConfigs;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 
+@Keep
 public class TapCoreProjectConfigsManager {
 
     private static TapCoreProjectConfigsManager instance;

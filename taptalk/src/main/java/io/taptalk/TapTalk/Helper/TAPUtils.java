@@ -79,7 +79,7 @@ import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
@@ -413,7 +413,7 @@ public class TAPUtils {
     }
 
     public void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
-        if (TYPE_PERSONAL == roomModel.getRoomType() && TAPDataManager.getInstance().getActiveUser().getUserID().equals(
+        if (TYPE_PERSONAL == roomModel.getRoomType() && TAPChatManager.getInstance().getActiveUser().getUserID().equals(
                 TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
             return;
         }
@@ -421,7 +421,7 @@ public class TAPUtils {
         Activity activity = (Activity) context;
         activity.runOnUiThread(() -> dismissKeyboard(activity));
         TAPChatManager.getInstance().saveUnsentMessage();
-        Intent intent = new Intent(context, TAPChatActivity.class);
+        Intent intent = new Intent(context, TapUIChatActivity.class);
         intent.putExtra(ROOM, roomModel);
 
         if (null != typingUser) {

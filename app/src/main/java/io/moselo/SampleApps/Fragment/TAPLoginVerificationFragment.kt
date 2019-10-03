@@ -1,4 +1,4 @@
-package io.taptalk.TapTalk.View.Fragment
+package io.moselo.SampleApps.Fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
@@ -25,10 +26,10 @@ import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
-import io.taptalk.TapTalk.View.Activity.TAPLoginActivity
-import io.taptalk.TapTalk.View.Activity.TAPRegisterActivity
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity
-import io.taptalk.Taptalk.R
+import io.moselo.SampleApps.Activity.TAPRegisterActivity
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
+import io.taptalk.TaptalkSample.R
+
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
 class TAPLoginVerificationFragment : Fragment() {
@@ -240,7 +241,7 @@ class TAPLoginVerificationFragment : Fragment() {
             activity?.runOnUiThread {
                 TAPDataManager.getInstance().saveMyCountryCode(countryCallingCode)
                 TAPDataManager.getInstance().saveMyCountryFlagUrl(countryFlagUrl)
-                val intent = Intent(context, TAPRoomListActivity::class.java)
+                val intent = Intent(context, TapUIRoomListActivity::class.java)
                 startActivity(intent)
                 activity?.finish()
             }

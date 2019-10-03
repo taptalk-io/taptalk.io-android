@@ -268,9 +268,7 @@ public class TAPDataManager {
      * ACTIVE USER
      */
     public boolean checkActiveUser() {
-        if (null == getActiveUser())
-            return false;
-        else return true;
+        return null != getActiveUser();
     }
 
     public TAPUserModel getActiveUser() {
@@ -1081,7 +1079,7 @@ public class TAPDataManager {
     }
 
     public void deleteChatRoom(TAPRoomModel room, TAPDefaultDataView<TAPCommonResponse> view) {
-        TAPApiManager.getInstance().deleteChatRoom(room, TAPChatManager.getInstance().getActiveUser().getUserID(),
+        TAPApiManager.getInstance().deleteChatRoom(room, getActiveUser().getUserID(),
                 TAPDataManager.getInstance().getAccessTokenExpiry(), new TAPDefaultSubscriber<>(view));
     }
 

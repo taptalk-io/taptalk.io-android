@@ -47,8 +47,8 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
-import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
@@ -113,7 +113,7 @@ public class TapTalk {
         try {
             //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
             TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(),
-                    TAPRoomListActivity.class,
+                    TapUIRoomListActivity.class,
                     TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
         } catch (Exception e) {
             Log.e(TAG, "onMessageReceived: ", e);
@@ -440,19 +440,14 @@ public class TapTalk {
         TAPConnectionManager.getInstance().close(NOT_CONNECTED);
     }
 
-    public static void enableAutoConnect() {
-        checkTapTalkInitialized();
-        isAutoConnectDisabled = false;
-    }
-
-    public static void disableAutoConnect() {
-        checkTapTalkInitialized();
-        isAutoConnectDisabled = true;
-    }
-
     public static boolean isConnected() {
         checkTapTalkInitialized();
         return TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED;
+    }
+
+    public static void setAutoConnectEnabled(boolean enabled) {
+        checkTapTalkInitialized();
+        isAutoConnectDisabled = !enabled;
     }
 
     public static boolean isAutoConnectEnabled() {
@@ -545,14 +540,9 @@ public class TapTalk {
         }
     }
 
-    public static void enableAutoContactSync() {
+    public static void setAutoContactSyncEnabled(boolean enabled) {
         checkTapTalkInitialized();
-        isAutoContactSyncDisabled = false;
-    }
-
-    public static void disableAutoContactSync() {
-        checkTapTalkInitialized();
-        isAutoContactSyncDisabled = true;
+        isAutoContactSyncDisabled = !enabled;
     }
 
     public static boolean isAutoContactSyncEnabled() {
@@ -568,7 +558,7 @@ public class TapTalk {
 
     public static TAPUserModel getTaptalkActiveUser() {
         checkTapTalkInitialized();
-        return TAPDataManager.getInstance().getActiveUser();
+        return TAPChatManager.getInstance().getActiveUser();
     }
 
     public static void refreshActiveUser(TapCommonListener listener) {
@@ -644,7 +634,7 @@ public class TapTalk {
                 .setNotificationMessage(tapMessageModel)
                 .setSmallIcon(TapTalk.getClientAppIcon())
                 .setNeedReply(false)
-                .setOnClickAction(TAPChatActivity.class)
+                .setOnClickAction(TapUIChatActivity.class)
                 .show();
     }
 }

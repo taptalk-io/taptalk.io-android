@@ -39,7 +39,8 @@
             </intent-filter>
         </service>
 
-        <activity android:name="io.moselo.SampleApps.MainActivity">
+        <activity android:name="io.moselo.SampleApps.Activity.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -47,6 +48,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="io.moselo.SampleApps.Activity.TAPLoginActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name="io.moselo.SampleApps.Activity.TAPRegisterActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

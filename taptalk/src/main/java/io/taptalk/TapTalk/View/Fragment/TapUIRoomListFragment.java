@@ -55,6 +55,7 @@ import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -62,7 +63,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
@@ -71,10 +71,10 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
 
-public class TAPRoomListFragment extends Fragment {
+public class TapUIRoomListFragment extends Fragment {
 
-    private String TAG = TAPRoomListFragment.class.getSimpleName();
-    private TAPMainRoomListFragment fragment;
+    private String TAG = TapUIRoomListFragment.class.getSimpleName();
+    private TapUIMainRoomListFragment fragment;
 
     private ConstraintLayout clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
@@ -99,14 +99,14 @@ public class TAPRoomListFragment extends Fragment {
         }
     };
 
-    public TAPRoomListFragment() {
+    public TapUIRoomListFragment() {
     }
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        fragment = (TAPMainRoomListFragment) this.getParentFragment();
+        fragment = (TapUIMainRoomListFragment) this.getParentFragment();
         return inflater.inflate(R.layout.tap_fragment_room_list, container, false);
     }
 
@@ -224,9 +224,9 @@ public class TAPRoomListFragment extends Fragment {
 
         tapTalkRoomListInterface = roomModel -> {
             if (vm.getSelectedCount() > 0) {
-                TAPRoomListFragment.this.showSelectionActionBar();
+                TapUIRoomListFragment.this.showSelectionActionBar();
             } else {
-                TAPRoomListFragment.this.hideSelectionActionBar();
+                TapUIRoomListFragment.this.hideSelectionActionBar();
             }
         };
     }
@@ -261,6 +261,12 @@ public class TAPRoomListFragment extends Fragment {
         reloadProfilePicture();
 
         flSetupContainer.setVisibility(View.GONE);
+
+        if (TapUI.getInstance().isMyAccountButtonVisible()) {
+            civMyAvatarImage.setVisibility(View.VISIBLE);
+        } else {
+            civMyAvatarImage.setVisibility(View.GONE);
+        }
 
         if (vm.isSelecting()) {
             showSelectionActionBar();
@@ -316,11 +322,7 @@ public class TAPRoomListFragment extends Fragment {
     }
 
     private void openMyAccountActivity() {
-        Intent intent = new Intent(getContext(), TAPMyAccountActivity.class);
-        startActivityForResult(intent, EDIT_PROFILE);
-        if (null != getActivity()) {
-            getActivity().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
-        }
+        TAPChatManager.getInstance().triggerTapTalkAccountButtonTapped(getActivity());
     }
 
     private void openNewChatActivity() {

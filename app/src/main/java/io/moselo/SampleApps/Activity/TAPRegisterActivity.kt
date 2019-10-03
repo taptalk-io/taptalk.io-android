@@ -1,4 +1,4 @@
-package io.taptalk.TapTalk.View.Activity
+package io.moselo.SampleApps.Activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -42,9 +42,10 @@ import io.taptalk.TapTalk.Manager.TAPFileUploadManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
-import io.taptalk.Taptalk.R
+import io.taptalk.TaptalkSample.R
 import kotlinx.android.synthetic.main.tap_activity_register.*
 
 class TAPRegisterActivity : TAPBaseActivity() {

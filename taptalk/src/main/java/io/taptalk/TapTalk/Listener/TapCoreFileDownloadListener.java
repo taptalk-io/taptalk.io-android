@@ -1,10 +1,13 @@
 package io.taptalk.TapTalk.Listener;
 
+import android.support.annotation.Keep;
+
 import java.io.File;
 
 import io.taptalk.TapTalk.Interface.TapFileDownloadInterface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
+@Keep
 public abstract class TapCoreFileDownloadListener implements TapFileDownloadInterface {
 
     @Override

@@ -1,10 +1,13 @@
 package io.taptalk.TapTalk.Listener;
 
+import android.support.annotation.Keep;
+
 import io.taptalk.TapTalk.Interface.TapTalkChatInterface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 
+@Keep
 public abstract class TAPChatListener implements TapTalkChatInterface {
     @Override public void onReceiveMessageInActiveRoom(TAPMessageModel message) {}
     @Override public void onUpdateMessageInActiveRoom(TAPMessageModel message) {}
