@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@color/tapDefaultBackgroundColor"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPChatActivity">
+    tools:context="io.taptalk.TapTalk.View.Activity.TapUIChatActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"

@@ -6,10 +6,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingStart="0dp"
-    android:paddingTop="1dp"
     android:paddingEnd="8dp"
-    android:paddingBottom="1dp"
-    tools:background="@drawable/tap_bg_bubble_quote_right">
+    tools:background="@drawable/tap_bg_bubble_quote_right_4dp">
 
     <View
         android:id="@+id/v_quote_decoration"

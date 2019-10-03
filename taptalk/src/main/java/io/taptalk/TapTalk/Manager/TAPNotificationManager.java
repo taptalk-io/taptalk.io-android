@@ -28,7 +28,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
-import io.taptalk.TapTalk.View.Activity.TAPChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
@@ -271,7 +271,7 @@ public class TAPNotificationManager {
                         .setNotificationMessage(newMessageModel)
                         .setSmallIcon(TapTalk.getClientAppIcon())
                         .setNeedReply(false)
-                        .setOnClickAction(TAPChatActivity.class)
+                        .setOnClickAction(TapUIChatActivity.class)
                         .show();
             }
         } else {

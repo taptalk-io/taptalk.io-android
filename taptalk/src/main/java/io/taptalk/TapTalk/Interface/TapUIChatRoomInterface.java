@@ -9,8 +9,10 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
-public interface TapUIInterface {
-    void onTapTalkChatRoomProfileButtonTapped(Activity activity, TAPUserModel userModel);
+public interface TapUIChatRoomInterface {
+    void onTapTalkUserProfileButtonTapped(Activity activity, TAPRoomModel room, TAPUserModel user);
+
+    void onTapTalkGroupChatProfileButtonTapped(Activity activity, TAPRoomModel room);
 
     void onTapTalkMessageQuoteTapped(Activity activity, TAPMessageModel messageModel, HashMap<String, Object> userInfo);
 

@@ -1,8 +1,11 @@
 package io.taptalk.TapTalk.Listener;
 
+import android.support.annotation.Keep;
+
 import io.taptalk.TapTalk.API.View.TapProjectConfigsInterface;
 import io.taptalk.TapTalk.Model.TapConfigs;
 
+@Keep
 public abstract class TapCoreProjectConfigsListener implements TapProjectConfigsInterface {
 
     @Override

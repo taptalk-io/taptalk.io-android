@@ -287,7 +287,7 @@ public class TAPChatViewModel extends AndroidViewModel {
             loadingIndicator = new TAPMessageModel();
             loadingIndicator.setType(TYPE_LOADING_MESSAGE_IDENTIFIER);
             loadingIndicator.setLocalID(LOADING_INDICATOR_LOCAL_ID);
-            loadingIndicator.setUser(TAPDataManager.getInstance().getActiveUser());
+            loadingIndicator.setUser(TAPChatManager.getInstance().getActiveUser());
         }
         if (updateCreated) {
             // Update created time for loading indicator to array's last message created time
