@@ -23,7 +23,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
-public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>> {
+public class TapContactListAdapterNew extends TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>> {
 
     private TapTalkContactListInterface listener;
     private List<TAPUserModel> selectedContacts;
@@ -36,13 +36,13 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
     public static final int SELECT = 2;
     public static final int SELECTED_MEMBER = 3;
 
-    public TAPContactListAdapter(int viewType, List<TAPUserModel> contactList) {
+    public TapContactListAdapterNew(int viewType, List<TAPUserModel> contactList) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
     }
 
-    public TAPContactListAdapter(int viewType, List<TAPUserModel> contactList, @Nullable TapTalkContactListInterface listener) {
+    public TapContactListAdapterNew(int viewType, List<TAPUserModel> contactList, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = viewType;
         this.listener = listener;
@@ -50,7 +50,7 @@ public class TAPContactListAdapter extends TAPBaseAdapter<TAPUserModel, TAPBaseV
     }
 
     // Constructor for selectable contacts
-    public TAPContactListAdapter(List<TAPUserModel> contactList, List<TAPUserModel> selectedContacts, @Nullable TapTalkContactListInterface listener) {
+    public TapContactListAdapterNew(List<TAPUserModel> contactList, List<TAPUserModel> selectedContacts, @Nullable TapTalkContactListInterface listener) {
         setItems(contactList, false);
         this.viewType = SELECT;
         this.selectedContacts = selectedContacts;

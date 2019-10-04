@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
+import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapterOld;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
 
@@ -27,7 +27,7 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
     private EditText etSearch;
     private RecyclerView rvSearchResults;
 
-    private TAPContactListAdapter adapter;
+    private TAPContactListAdapterOld adapter;
 
     private TAPContactListViewModel vm;
 
@@ -63,7 +63,7 @@ public class TAPSearchContactActivity extends TAPBaseActivity {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        adapter = new TAPContactListAdapter(TAPContactListAdapter.CHAT, vm.getFilteredContacts());
+        adapter = new TAPContactListAdapterOld(TAPContactListAdapterOld.CHAT, vm.getFilteredContacts());
         rvSearchResults.setAdapter(adapter);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 

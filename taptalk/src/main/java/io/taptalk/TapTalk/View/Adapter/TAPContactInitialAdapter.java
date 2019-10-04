@@ -89,7 +89,7 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
         private RecyclerView rvContactInitial;
         private TextView tvInitial;
         private List<TAPUserModel> item;
-        private TAPContactListAdapter adapter;
+        private TAPContactListAdapterOld adapter;
 
         ContactListHolder(View itemView) {
             super(itemView);
@@ -113,10 +113,10 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
                 tvInitial.setText(sectionTitles.get(position));
             }
 
-            if (viewType == TAPContactListAdapter.SELECT && null != selectedContacts) {
-                adapter = new TAPContactListAdapter(getItemAt(position), selectedContacts, listener);
+            if (viewType == TAPContactListAdapterOld.SELECT && null != selectedContacts) {
+                adapter = new TAPContactListAdapterOld(getItemAt(position), selectedContacts, listener);
             } else {
-                adapter = new TAPContactListAdapter(viewType, getItemAt(position), listener);
+                adapter = new TAPContactListAdapterOld(viewType, getItemAt(position), listener);
             }
             rvContactInitial.setAdapter(adapter);
             rvContactInitial.setLayoutManager(new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.VERTICAL, false));

@@ -41,7 +41,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
-import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
+import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapterOld;
 import io.taptalk.TapTalk.ViewModel.TAPGroupViewModel;
 import io.taptalk.Taptalk.R;
 
@@ -66,7 +66,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     private ConstraintLayout clActionBar;
     private ScrollView svGroupSubject;
 
-    private TAPContactListAdapter adapter;
+    private TAPContactListAdapterOld adapter;
     private TAPGroupViewModel vm;
 
     @Override
@@ -150,7 +150,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         etGroupName.setOnFocusChangeListener(focusListener);
         svGroupSubject.getViewTreeObserver().addOnScrollChangedListener(toolbarScrollListener);
 
-        adapter = new TAPContactListAdapter(TAPContactListAdapter.SELECTED_MEMBER, vm.getGroupData().getGroupParticipants());
+        adapter = new TAPContactListAdapterOld(TAPContactListAdapterOld.SELECTED_MEMBER, vm.getGroupData().getGroupParticipants());
         rvGroupMembers.setAdapter(adapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,

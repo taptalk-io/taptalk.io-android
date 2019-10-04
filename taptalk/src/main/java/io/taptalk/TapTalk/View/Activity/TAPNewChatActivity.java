@@ -37,7 +37,7 @@ import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
-import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
+import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapterOld;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
 
@@ -160,7 +160,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         OverScrollDecoratorHelper.setUpOverScroll(nsvNewChat);
 
-        adapter = new TAPContactInitialAdapter(TAPContactListAdapter.CHAT, vm.getSeparatedContacts());
+        adapter = new TAPContactInitialAdapter(TAPContactListAdapterOld.CHAT, vm.getSeparatedContacts());
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);

@@ -43,7 +43,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
-import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
+import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapterOld;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
 
@@ -69,7 +69,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     private RecyclerView rvContactList, rvGroupMembers;
 
     private TAPContactInitialAdapter contactListAdapter;
-    private TAPContactListAdapter selectedMembersAdapter;
+    private TAPContactListAdapterOld selectedMembersAdapter;
     private TapTalkContactListInterface listener;
     private TAPContactListViewModel vm;
 
@@ -255,14 +255,14 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         getWindow().setBackgroundDrawable(null);
 
         // All contacts adapter
-        contactListAdapter = new TAPContactInitialAdapter(TAPContactListAdapter.SELECT, vm.getSeparatedContacts(), vm.getSelectedContacts(), listener);
+        contactListAdapter = new TAPContactInitialAdapter(TAPContactListAdapterOld.SELECT, vm.getSeparatedContacts(), vm.getSelectedContacts(), listener);
         rvContactList.setAdapter(contactListAdapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         // Selected members adapter
-        selectedMembersAdapter = new TAPContactListAdapter(TAPContactListAdapter.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
+        selectedMembersAdapter = new TAPContactListAdapterOld(TAPContactListAdapterOld.SELECTED_MEMBER, vm.getSelectedContacts(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);

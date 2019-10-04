@@ -8,7 +8,7 @@ import android.widget.ImageView;
 
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapter;
+import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapterOld;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
 
@@ -17,7 +17,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
     private ImageView ivButtonBack;
     private RecyclerView rvBlockedList;
 
-    private TAPContactListAdapter adapter;
+    private TAPContactListAdapterOld adapter;
 
     private TAPContactListViewModel vm;
 
@@ -57,7 +57,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
         ivButtonBack = findViewById(R.id.iv_button_back);
         rvBlockedList = findViewById(R.id.rv_blocked_list);
 
-        adapter = new TAPContactListAdapter(TAPContactListAdapter.NONE, vm.getFilteredContacts());
+        adapter = new TAPContactListAdapterOld(TAPContactListAdapterOld.NONE, vm.getFilteredContacts());
         rvBlockedList.setAdapter(adapter);
         rvBlockedList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvBlockedList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
