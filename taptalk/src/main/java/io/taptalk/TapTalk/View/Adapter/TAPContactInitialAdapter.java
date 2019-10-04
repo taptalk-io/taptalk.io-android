@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
+@Deprecated
 public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactInitialAdapter.ContactListHolder> {
 
     private List<List<TAPUserModel>> contactList;

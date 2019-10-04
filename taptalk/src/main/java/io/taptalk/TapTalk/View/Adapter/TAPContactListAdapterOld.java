@@ -23,6 +23,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
+@Deprecated
 public class TAPContactListAdapterOld extends TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>> {
 
     private TapTalkContactListInterface listener;
