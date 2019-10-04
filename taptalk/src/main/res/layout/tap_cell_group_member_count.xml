@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="21dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="28dp"
+    android:background="@color/tapTransparentWhite">
+
+    <TextView
+        android:id="@+id/tv_member_count"
+        style="@style/tapGroupMemberCountStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:gravity="center"
+        tools:text="12 Members" />
+
+</FrameLayout>
