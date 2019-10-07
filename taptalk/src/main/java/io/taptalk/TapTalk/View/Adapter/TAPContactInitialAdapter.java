@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.taptalk.TapTalk.DiffCallback.TAPContactListDiffCallback;
-import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
+import io.taptalk.TapTalk.Listener.TapContactListListener;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
@@ -24,7 +24,7 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
     private List<List<TAPUserModel>> contactList;
     private List<TAPUserModel> selectedContacts;
     private List<String> sectionTitles;
-    private TapTalkContactListInterface listener;
+    private TapContactListListener listener;
     private int viewType;
 
     public TAPContactInitialAdapter(int viewType, List<List<TAPUserModel>> contactList) {
@@ -34,7 +34,7 @@ public class TAPContactInitialAdapter extends RecyclerView.Adapter<TAPContactIni
     }
 
     // Constructor for selectable contacts
-    public TAPContactInitialAdapter(int viewType, List<List<TAPUserModel>> contactList, List<TAPUserModel> selectedContacts, TapTalkContactListInterface listener) {
+    public TAPContactInitialAdapter(int viewType, List<List<TAPUserModel>> contactList, List<TAPUserModel> selectedContacts, TapContactListListener listener) {
         this.viewType = viewType;
         this.contactList = contactList;
         this.selectedContacts = selectedContacts;

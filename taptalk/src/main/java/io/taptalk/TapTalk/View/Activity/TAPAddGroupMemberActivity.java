@@ -30,8 +30,8 @@ import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
-import io.taptalk.TapTalk.Interface.TapTalkContactListInterface;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
+import io.taptalk.TapTalk.Listener.TapContactListListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -70,7 +70,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
     private TAPContactInitialAdapter contactListAdapter;
     private TAPContactListAdapterOld selectedMembersAdapter;
-    private TapTalkContactListInterface listener;
+    private TapContactListListener listener;
     private TAPContactListViewModel vm;
 
     @Override
@@ -172,7 +172,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     }
 
     private void initListener() {
-        listener = new TapTalkContactListInterface() {
+        listener = new TapContactListListener() {
             @Override
             public boolean onContactSelected(TAPUserModel contact) {
                 TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);

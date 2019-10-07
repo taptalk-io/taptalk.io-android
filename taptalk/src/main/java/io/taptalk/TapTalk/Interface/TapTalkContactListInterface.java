@@ -7,4 +7,8 @@ public interface TapTalkContactListInterface {
     boolean onContactSelected(TAPUserModel contact);
 
     void onContactDeselected(TAPUserModel contact);
+
+    void onMenuButtonTapped(int actionId);
+
+    void onInfoLabelButtonTapped(int actionId);
 }
