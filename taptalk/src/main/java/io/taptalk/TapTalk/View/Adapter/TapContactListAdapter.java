@@ -135,7 +135,7 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
             tvFullName.setText(user.getName());
 
             // Remove separator on last item
-            if (position == getItemCount() - 1) {
+            if (position == getItemCount() - 1 || getItemAt(position + 1).getType() != item.getType()) {
                 vSeparator.setVisibility(View.GONE);
             } else {
                 vSeparator.setVisibility(View.VISIBLE);
@@ -342,9 +342,5 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                 }
             });
         }
-    }
-
-    public void setAnimating(boolean animating) {
-        isAnimating = animating;
     }
 }

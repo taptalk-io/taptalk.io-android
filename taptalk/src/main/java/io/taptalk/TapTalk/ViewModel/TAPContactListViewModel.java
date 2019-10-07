@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
@@ -22,6 +23,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private List<TAPUserModel> existingMembers;
     private List<String> selectedContactsIds;
     private List<List<TAPUserModel>> separatedContacts;
+    private List<TapContactListModel> separatedContactList;
     private TAPImageURL groupImage;
     private String groupName;
     private String roomID;
@@ -90,6 +92,14 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setSeparatedContacts(List<List<TAPUserModel>> separatedContacts) {
         this.separatedContacts = separatedContacts;
+    }
+
+    public List<TapContactListModel> getSeparatedContactList() {
+        return separatedContactList;
+    }
+
+    public void setSeparatedContactList(List<TapContactListModel> separatedContactList) {
+        this.separatedContactList = separatedContactList;
     }
 
     public TAPImageURL getGroupImage() {

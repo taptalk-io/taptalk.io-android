@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -29,6 +30,7 @@ import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Listener.TapContactListListener;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
@@ -38,6 +40,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapterOld;
+import io.taptalk.TapTalk.View.Adapter.TapContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
 
@@ -46,6 +49,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_DEFAULT_CONTACT_LIST;
 
 public class TAPNewChatActivity extends TAPBaseActivity {
 
@@ -58,7 +62,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private FrameLayout flSyncStatus, flSync;
     private ConstraintLayout clButtonNewContact, clButtonScanQR, clButtonNewGroup;
 
-    private TAPContactInitialAdapter adapter;
+    private TapContactListAdapter adapter;
     private TAPContactListViewModel vm;
 
     @Override
@@ -126,10 +130,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             if (null != userModels) {
                 vm.getContactList().clear();
                 vm.getContactList().addAll(userModels);
-                vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
+                vm.setSeparatedContactList(TAPUtils.getInstance().generateContactListForRecycler(vm.getContactList(), TYPE_DEFAULT_CONTACT_LIST));
                 runOnUiThread(() -> {
                     if (null != adapter) {
-                        adapter.setItems(vm.getSeparatedContacts(), true);
+                        new Handler().post(waitAnimationsToFinishRunnable);
                     }
                         //adapter.updateAdapterData(vm.getSeparatedContacts());
                 });
@@ -160,7 +164,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         OverScrollDecoratorHelper.setUpOverScroll(nsvNewChat);
 
-        adapter = new TAPContactInitialAdapter(TAPContactListAdapterOld.CHAT, vm.getSeparatedContacts());
+        adapter = new TapContactListAdapter(vm.getSeparatedContactList(), contactListListener);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
@@ -400,6 +404,32 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 }).start();
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+    };
+
+    private TapContactListListener contactListListener = new TapContactListListener() {
+        @Override
+        public void onMenuButtonTapped(int actionId) {
+            super.onMenuButtonTapped(actionId);
+        }
+
+        @Override
+        public void onInfoLabelButtonTapped(int actionId) {
+            super.onInfoLabelButtonTapped(actionId);
+        }
+    };
+
+    private Runnable waitAnimationsToFinishRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (rvContactList.isAnimating() && null != rvContactList.getItemAnimator()) {
+                // RecyclerView is still animating
+                rvContactList.getItemAnimator().isRunning(() -> new Handler().post(waitAnimationsToFinishRunnable));
+            } else {
+                // RecyclerView has finished animating
+                adapter.setItems(vm.getSeparatedContactList(), false);
+                Log.e(TAG, "run: setItems");
             }
         }
     };

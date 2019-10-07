@@ -73,6 +73,7 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
@@ -326,6 +327,40 @@ public class TAPUtils {
             }
         }
         if (!nonAlphabeticContacts.isEmpty()) separatedContacts.add(nonAlphabeticContacts);
+        return separatedContacts;
+    }
+
+
+    public List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type) {
+        List<TapContactListModel> separatedContacts = new ArrayList<>();
+        List<TapContactListModel> nonAlphabeticContacts = new ArrayList<>();
+        List<TapContactListModel> filteredContacts = new ArrayList<>();
+        for (TAPUserModel contact : contacts) {
+            if (null != contact.getName() && !contact.getName().isEmpty()) {
+                TapContactListModel filteredContact = new TapContactListModel(contact, type);
+                filteredContacts.add(filteredContact);
+            }
+        }
+        int previousInitialIndexStart = 0;
+        int size = filteredContacts.size();
+        for (int i = 1; i <= size; i++) {
+            if (i == size ||
+                    filteredContacts.get(i).getUser().getName().toLowerCase().charAt(0) !=
+                            filteredContacts.get(i - 1).getUser().getName().toLowerCase().charAt(0)) {
+                List<TapContactListModel> contactSubList = filteredContacts.subList(previousInitialIndexStart, i);
+                if (Character.isAlphabetic(contactSubList.get(0).getUser().getName().toLowerCase().charAt(0))) {
+                    separatedContacts.add(new TapContactListModel(filteredContacts.get(i - 1).getUser().getName().substring(0, 1)));
+                    separatedContacts.addAll(contactSubList);
+                } else {
+                    nonAlphabeticContacts.addAll(contactSubList);
+                }
+                previousInitialIndexStart = i;
+            }
+        }
+        if (!nonAlphabeticContacts.isEmpty()) {
+            separatedContacts.add(new TapContactListModel("#"));
+            separatedContacts.addAll(nonAlphabeticContacts);
+        }
         return separatedContacts;
     }
 
