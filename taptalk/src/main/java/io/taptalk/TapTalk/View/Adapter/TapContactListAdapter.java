@@ -26,7 +26,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_CREATE_NEW_GROUP;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_NEW_CONTACT;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_ADD_NEW_CONTACT;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_SCAN_QR_CODE;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_DEFAULT_CONTACT_LIST;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_INFO_LABEL;
@@ -297,7 +297,7 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
         @Override
         protected void onBind(TapContactListModel item, int position) {
             switch (item.getActionId()) {
-                case MENU_ID_NEW_CONTACT:
+                case MENU_ID_ADD_NEW_CONTACT:
                     ivMenuIcon.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconMenuNewContact));
                     break;
                 case MENU_ID_SCAN_QR_CODE:
@@ -338,6 +338,7 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
 
             tvInfoActionButton.setOnClickListener(v -> {
                 if (null != listener) {
+                    TAPUtils.getInstance().animateClickButton(tvInfoActionButton, 0.95f);
                     listener.onInfoLabelButtonTapped(item.getActionId());
                 }
             });

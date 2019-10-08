@@ -22,8 +22,11 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private List<TAPUserModel> selectedContacts;
     private List<TAPUserModel> existingMembers;
     private List<String> selectedContactsIds;
-    private List<List<TAPUserModel>> separatedContacts;
+    @Deprecated private List<List<TAPUserModel>> separatedContacts;
     private List<TapContactListModel> separatedContactList;
+    private List<TapContactListModel> newChatMenuList;
+    private List<TapContactListModel> adapterItems;
+    private TapContactListModel infoLabelItem;
     private TAPImageURL groupImage;
     private String groupName;
     private String roomID;
@@ -95,11 +98,42 @@ public class TAPContactListViewModel extends AndroidViewModel {
     }
 
     public List<TapContactListModel> getSeparatedContactList() {
-        return separatedContactList;
+        return null == separatedContactList ? separatedContactList = new ArrayList<>() : separatedContactList;
     }
 
     public void setSeparatedContactList(List<TapContactListModel> separatedContactList) {
         this.separatedContactList = separatedContactList;
+    }
+
+    public List<TapContactListModel> getNewChatMenuList() {
+        return null == newChatMenuList ? newChatMenuList = new ArrayList<>() : newChatMenuList;
+    }
+
+    public void setNewChatMenuList(List<TapContactListModel> newChatMenuList) {
+        this.newChatMenuList = newChatMenuList;
+    }
+
+    public List<TapContactListModel> getAdapterItems() {
+        return null == adapterItems ? adapterItems = new ArrayList<>() : adapterItems;
+    }
+
+    public void refreshAdapterItems() {
+        if (!getAdapterItems().isEmpty()) {
+            getAdapterItems().clear();
+        }
+        getAdapterItems().addAll(getNewChatMenuList());
+        getAdapterItems().addAll(getSeparatedContactList());
+        if (null != getInfoLabelItem()) {
+            getAdapterItems().add(getInfoLabelItem());
+        }
+    }
+
+    public TapContactListModel getInfoLabelItem() {
+        return infoLabelItem;
+    }
+
+    public void setInfoLabelItem(TapContactListModel infoLabelItem) {
+        this.infoLabelItem = infoLabelItem;
     }
 
     public TAPImageURL getGroupImage() {

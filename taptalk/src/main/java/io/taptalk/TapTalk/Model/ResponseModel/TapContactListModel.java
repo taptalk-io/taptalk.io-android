@@ -13,9 +13,11 @@ public class TapContactListModel {
     public static final int TYPE_MENU_BUTTON = 5;
     public static final int TYPE_INFO_LABEL = 6;
 
-    public static final int MENU_ID_NEW_CONTACT = 1;
+    public static final int MENU_ID_ADD_NEW_CONTACT = 1;
     public static final int MENU_ID_SCAN_QR_CODE = 2;
     public static final int MENU_ID_CREATE_NEW_GROUP = 3;
+
+    public static final int INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS = 101;
 
     private String title;
     private int type;
@@ -46,7 +48,7 @@ public class TapContactListModel {
     }
 
     // Constructor for menu item
-    public TapContactListModel(String menuTitle, int actionId, int drawableResource) {
+    public TapContactListModel(int actionId, String menuTitle, int drawableResource) {
         this.title = menuTitle;
         this.buttonText = this.title;
         this.type = TYPE_MENU_BUTTON;
@@ -55,7 +57,7 @@ public class TapContactListModel {
     }
 
     // Constructor for info label
-    public TapContactListModel(String infoLabelTitle, int actionId, @Nullable String infoLabelButtonText) {
+    public TapContactListModel(int actionId, String infoLabelTitle, @Nullable String infoLabelButtonText) {
         this.title = infoLabelTitle;
         this.buttonText = infoLabelButtonText;
         this.type = TYPE_INFO_LABEL;

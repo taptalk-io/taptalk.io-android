@@ -11,8 +11,8 @@
 
     <ImageView
         android:id="@+id/iv_menu_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_marginStart="14dp"
         tools:src="@drawable/tap_ic_new_contact_orange"
         tools:tint="@color/tapIconMenuNewContact"
@@ -23,16 +23,19 @@
     <TextView
         android:id="@+id/tv_menu_label"
         style="@style/tapNewChatMenuLabelStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:layout_marginStart="10dp"
-        android:text="@string/tap_new_contact"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        tools:text="@string/tap_new_contact"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/iv_chevron"
         app:layout_constraintStart_toEndOf="@id/iv_menu_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.529" />
 
     <ImageView
+        android:id="@+id/iv_chevron"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
@@ -42,5 +45,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/tapGreyDc"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

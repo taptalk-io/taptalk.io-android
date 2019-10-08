@@ -35,11 +35,10 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
-import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapterOld;
 import io.taptalk.TapTalk.View.Adapter.TapContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
@@ -49,18 +48,20 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_ADD_NEW_CONTACT;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_CREATE_NEW_GROUP;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_SCAN_QR_CODE;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_DEFAULT_CONTACT_LIST;
 
 public class TAPNewChatActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPNewChatActivity.class.getSimpleName();
-    private LinearLayout llBlockedContacts, llButtonSync, llConnectionStatus;
+    private LinearLayout llButtonSync, llConnectionStatus;
     private ImageView ivButtonClose, ivButtonSearch, ivConnectionStatus;
     private TextView tvTitle, tvConnectionStatus;
     private RecyclerView rvContactList;
-    private NestedScrollView nsvNewChat;
     private FrameLayout flSyncStatus, flSync;
-    private ConstraintLayout clButtonNewContact, clButtonScanQR, clButtonNewGroup;
 
     private TapContactListAdapter adapter;
     private TAPContactListViewModel vm;
@@ -125,27 +126,50 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
+        setupMenuButtons();
         // Set up listener for Live Data
         vm.getContactListLive().observe(this, userModels -> {
             if (null != userModels) {
                 vm.getContactList().clear();
                 vm.getContactList().addAll(userModels);
                 vm.setSeparatedContactList(TAPUtils.getInstance().generateContactListForRecycler(vm.getContactList(), TYPE_DEFAULT_CONTACT_LIST));
+                vm.refreshAdapterItems();
                 runOnUiThread(() -> {
                     if (null != adapter) {
-                        new Handler().post(waitAnimationsToFinishRunnable);
+                        adapter.setItems(vm.getAdapterItems(), false);
+                        Log.e(TAG, "setItems: " + adapter.getItemCount());
                     }
-                        //adapter.updateAdapterData(vm.getSeparatedContacts());
                 });
             }
         });
     }
 
+    private void setupMenuButtons() {
+        TapContactListModel menuAddNewContact = new TapContactListModel(
+                MENU_ID_ADD_NEW_CONTACT,
+                getString(R.string.tap_new_contact),
+                R.drawable.tap_ic_new_contact_orange);
+        vm.getNewChatMenuList().add(menuAddNewContact);
+        TapContactListModel menuScanQRCode = new TapContactListModel(
+                MENU_ID_SCAN_QR_CODE,
+                getString(R.string.tap_scan_qr_code),
+                R.drawable.tap_ic_scan_qr_orange);
+        vm.getNewChatMenuList().add(menuScanQRCode);
+        TapContactListModel menuCreateNewGroup = new TapContactListModel(
+                MENU_ID_CREATE_NEW_GROUP,
+                getString(R.string.tap_new_group),
+                R.drawable.tap_ic_new_group_orange);
+        vm.getNewChatMenuList().add(menuCreateNewGroup);
+
+        // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
+        vm.setInfoLabelItem(new TapContactListModel(
+                INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS,
+                getString(R.string.tap_cant_find_contact),
+                getString(R.string.tap_view_blocked_contacts)
+        ));
+    }
+
     private void initView() {
-        clButtonNewContact = findViewById(R.id.cl_button_new_contact);
-        clButtonScanQR = findViewById(R.id.cl_button_scan_qr);
-        clButtonNewGroup = findViewById(R.id.cl_button_new_group);
-        llBlockedContacts = findViewById(R.id.ll_blocked_contacts);
         llButtonSync = findViewById(R.id.ll_btn_sync);
         llConnectionStatus = findViewById(R.id.ll_connection_status);
         ivButtonClose = findViewById(R.id.iv_button_close);
@@ -154,7 +178,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         tvTitle = findViewById(R.id.tv_title);
         tvConnectionStatus = findViewById(R.id.tv_connection_status);
         rvContactList = findViewById(R.id.rv_contact_list);
-        nsvNewChat = findViewById(R.id.nsv_new_chat);
         flSyncStatus = findViewById(R.id.fl_sync_status);
         flSync = findViewById(R.id.fl_sync);
 
@@ -162,23 +185,15 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         getWindow().setBackgroundDrawable(null);
 
-        OverScrollDecoratorHelper.setUpOverScroll(nsvNewChat);
-
         adapter = new TapContactListAdapter(vm.getSeparatedContactList(), contactListListener);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
 
-
-        // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
-        llBlockedContacts.setVisibility(View.GONE);
+        OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         ivButtonClose.setOnClickListener(v -> onBackPressed());
         ivButtonSearch.setOnClickListener(v -> searchContact());
-        clButtonNewContact.setOnClickListener(v -> addNewContact());
-        clButtonScanQR.setOnClickListener(v -> openQRScanner());
-        clButtonNewGroup.setOnClickListener(v -> createNewGroup());
-        llBlockedContacts.setOnClickListener(v -> viewBlockedContacts());
         llButtonSync.setOnClickListener(v -> permissionCheckAndGetContactListWhenSyncButtonClicked());
     }
 
@@ -411,25 +426,23 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private TapContactListListener contactListListener = new TapContactListListener() {
         @Override
         public void onMenuButtonTapped(int actionId) {
-            super.onMenuButtonTapped(actionId);
+            switch (actionId) {
+                case MENU_ID_ADD_NEW_CONTACT:
+                    addNewContact();
+                    break;
+                case MENU_ID_SCAN_QR_CODE:
+                    openQRScanner();
+                    break;
+                case MENU_ID_CREATE_NEW_GROUP:
+                    createNewGroup();
+                    break;
+            }
         }
 
         @Override
         public void onInfoLabelButtonTapped(int actionId) {
-            super.onInfoLabelButtonTapped(actionId);
-        }
-    };
-
-    private Runnable waitAnimationsToFinishRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (rvContactList.isAnimating() && null != rvContactList.getItemAnimator()) {
-                // RecyclerView is still animating
-                rvContactList.getItemAnimator().isRunning(() -> new Handler().post(waitAnimationsToFinishRunnable));
-            } else {
-                // RecyclerView has finished animating
-                adapter.setItems(vm.getSeparatedContactList(), false);
-                Log.e(TAG, "run: setItems");
+            if (actionId == INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS) {
+                viewBlockedContacts();
             }
         }
     };
