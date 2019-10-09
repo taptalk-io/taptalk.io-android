@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.DiffCallback.TAPGroupMemberDiffCallback
 import io.taptalk.TapTalk.Helper.CircleImageView
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder
@@ -38,7 +37,19 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TAPBaseViewHolder<TAPUserModel> {
-        return MemberViewHolder(this, parent, R.layout.tap_cell_user_contact)
+        return when (viewType) {
+            1 ->
+                CountViewHolder(parent, R.layout.tap_cell_group_member_count)
+            else ->
+                MemberViewHolder(this, parent, R.layout.tap_cell_user_contact)
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        if (position >= (itemCount - 1) && getItemAt(position).userID.isEmpty()) {
+            return 1
+        }
+        return 0
     }
 
     fun updateCellMode(cellMode: Int) {
@@ -60,7 +71,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
         private val vSeparator: View = itemView.findViewById(R.id.v_separator)
         private val ivSelection: ImageView = itemView.findViewById(R.id.iv_selection)
         private val groupAdapter = adapter
-        private var isAdmin : Boolean = false;
+        private var isAdmin : Boolean = false
 
         override fun onBind(item: TAPUserModel?, position: Int) {
             if (groupAdapter.adminList.isNotEmpty() && groupAdapter.adminList.contains(item?.userID
@@ -90,8 +101,13 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
             tvFullName.text = item?.name ?: ""
 
             // Hide separator on last item
-            if (position == groupAdapter.itemCount - 1) vSeparator.visibility = View.GONE
-            else vSeparator.visibility = View.VISIBLE
+            if ((groupAdapter.getItemViewType(groupAdapter.itemCount - 1) == 1 &&
+                            position == groupAdapter.itemCount - 2) ||
+                    position == groupAdapter.itemCount - 1) {
+                vSeparator.visibility = View.GONE
+            } else {
+                vSeparator.visibility = View.VISIBLE
+            }
 
             // Show or hide selection
             if (groupAdapter.cellMode == SELECT_MODE &&
@@ -136,9 +152,15 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                 }
                 return@setOnLongClickListener false
             }
-
         }
-
     }
 
+    class CountViewHolder(parent: ViewGroup, itemLayoutId: Int) : TAPBaseViewHolder<TAPUserModel>(parent, itemLayoutId) {
+
+        private val tvMemberCount: TextView = itemView.findViewById(R.id.tv_member_count)
+
+        override fun onBind(item: TAPUserModel?, position: Int) {
+            tvMemberCount.text = String.format(itemView.context.getString(R.string.tap_group_member_count), position)
+        }
+    }
 }

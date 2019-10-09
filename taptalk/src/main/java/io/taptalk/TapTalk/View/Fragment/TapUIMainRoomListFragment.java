@@ -52,42 +52,11 @@ public class TapUIMainRoomListFragment extends Fragment {
         initView();
     }
 
-    private boolean checkUserAuthenticated() {
-        if (TapTalk.isAuthenticated() && null == TAPChatManager.getInstance().getActiveUser()) {
-            TapTalk.clearAllTapTalkData();
-            for (TapListener listener : TapTalk.getTapTalkListeners()) {
-                listener.onTapTalkRefreshTokenExpired();
-            }
-            return false;
-        } else if (null == TAPChatManager.getInstance().getActiveUser()) {
-            if (BuildConfig.DEBUG && null != getActivity()) {
-                new TapTalkDialog.Builder(getActivity())
-                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                        .setTitle(getString(R.string.tap_error))
-                        .setMessage(getString(R.string.tap_error_active_user_is_null))
-                        .setCancelable(false)
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .show();
-            }
-            Log.e(TAG, getString(R.string.tap_error_active_user_is_null));
-            return false;
-        }
-        return true;
-    }
-
     private void initView() {
         fRoomList = (TapUIRoomListFragment) getChildFragmentManager().findFragmentById(R.id.fragment_room_list);
         fSearchFragment = (TapUISearchChatFragment) getChildFragmentManager().findFragmentById(R.id.fragment_search_chat);
 
-        if (checkUserAuthenticated()) {
-            showRoomList();
-        } else {
-            getChildFragmentManager()
-                    .beginTransaction()
-                    .hide(fRoomList)
-                    .hide(fSearchFragment)
-                    .commit();
-        }
+        showRoomList();
     }
 
     public void showRoomList() {
