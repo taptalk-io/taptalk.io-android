@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tapDefaultBackgroundColor"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity">
+    android:background="@color/tapDefaultBackgroundColor">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
@@ -95,43 +94,12 @@
         app:layout_constraintBottom_toTopOf="@id/fl_add_members"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
 
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/sv_members"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_contact_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <android.support.constraint.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_contact_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:overScrollMode="never"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tv_member_count"
-                    style="@style/tapGroupMemberCountStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="21dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="28dp"
-                    android:gravity="center"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rv_contact_list"
-                    tools:text="12 Members" />
-
-            </android.support.constraint.ConstraintLayout>
-
-        </android.support.v4.widget.NestedScrollView>
+            android:overScrollMode="never"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/ll_member_loading"
