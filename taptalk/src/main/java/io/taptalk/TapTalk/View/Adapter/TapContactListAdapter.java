@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.Adapter;
 
 import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -25,8 +24,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_CREATE_NEW_GROUP;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_ADD_NEW_CONTACT;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_CREATE_NEW_GROUP;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.MENU_ID_SCAN_QR_CODE;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_DEFAULT_CONTACT_LIST;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_INFO_LABEL;
@@ -52,15 +51,6 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
         this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
     }
 
-    // Constructor for selectable contacts
-//    public TapContactListAdapter(List<TAPUserModel> contactList, List<TAPUserModel> selectedContacts, @Nullable TapContactListListener listener) {
-//        setItems(contactList, false);
-//        this.viewType = SELECT;
-//        this.selectedContacts = selectedContacts;
-//        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
-//        this.listener = listener;
-//    }
-
     @Override
     public int getItemViewType(int position) {
         return getItemAt(position).getType();
@@ -70,8 +60,6 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
     @Override
     public TAPBaseViewHolder<TapContactListModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
-            case TYPE_SELECTED_GROUP_MEMBER:
-                return new SelectedGroupMemberViewHolder(parent, R.layout.tap_cell_group_member);
             case TYPE_SECTION_TITLE:
                 return new SectionTitleViewHolder(parent, R.layout.tap_cell_section_title);
             case TYPE_MENU_BUTTON:
@@ -186,80 +174,6 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                         notifyItemChanged(position);
                     }
                     break;
-            }
-        }
-    }
-
-    class SelectedGroupMemberViewHolder extends TAPBaseViewHolder<TapContactListModel> {
-
-        private CircleImageView civAvatar;
-        private ImageView ivAvatarIcon;
-        private TextView tvAvatarLabel, tvFullName;
-
-        SelectedGroupMemberViewHolder(ViewGroup parent, int itemLayoutId) {
-            super(parent, itemLayoutId);
-
-            civAvatar = itemView.findViewById(R.id.civ_avatar);
-            ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
-            tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
-            tvFullName = itemView.findViewById(R.id.tv_full_name);
-        }
-
-        @Override
-        protected void onBind(TapContactListModel item, int position) {
-            TAPUserModel user = item.getUser();
-            if (null == user) {
-                return;
-            }
-            if (null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
-                Glide.with(itemView.getContext())
-                        .load(user.getAvatarURL().getThumbnail())
-                        .apply(new RequestOptions().centerCrop())
-                        .into(civAvatar);
-                civAvatar.setImageTintList(null);
-                tvAvatarLabel.setVisibility(View.GONE);
-            } else {
-                civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
-                civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
-                tvAvatarLabel.setVisibility(View.VISIBLE);
-            }
-
-            // Set name
-            String fullName = user.getName();
-            if (user.getUserID().equals(myID)) {
-                tvFullName.setText(R.string.tap_you);
-            } else if (fullName.contains(" ")) {
-                tvFullName.setText(fullName.substring(0, fullName.indexOf(' ')));
-            } else {
-                tvFullName.setText(fullName);
-            }
-
-            // Update avatar icon
-            if ((null == listener || user.getUserID().equals(myID)) /*&& item.getUserRole().equals("1")*/) {
-                ivAvatarIcon.setVisibility(View.GONE);
-//            } else if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("2")*/) {
-//                ivAvatarIcon.setVisibility(View.VISIBLE);
-//                ivAvatarIcon.setImageResource(R.drawable.tap_ic_verified);
-//                ivAvatarIcon.setBackground(null);
-            } else {
-                ivAvatarIcon.setImageResource(R.drawable.tap_ic_remove_red_circle_background);
-                ivAvatarIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconRemoveItemBackground)));
-                ivAvatarIcon.setBackgroundResource(R.drawable.tap_bg_circle_remove_item);
-                ivAvatarIcon.setVisibility(View.VISIBLE);
-            }
-
-            itemView.setOnClickListener(v -> deselectContact(item));
-        }
-
-        private void deselectContact(TapContactListModel item) {
-            TAPUserModel user = item.getUser();
-            if (null == user) {
-                return;
-            }
-            if (null != listener && !user.getUserID().equals(myID) && !isAnimating) {
-                isAnimating = true;
-                listener.onContactDeselected(item);
             }
         }
     }
