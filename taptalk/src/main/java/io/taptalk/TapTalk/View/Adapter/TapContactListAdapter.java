@@ -168,15 +168,8 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
             }
             switch (item.getType()) {
                 case TYPE_DEFAULT_CONTACT_LIST:
-                    if (!myID.equals(user.getUserID())) {
-                        // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
-                        TAPUtils.getInstance().startChatActivity(
-                                itemView.getContext(),
-                                TAPChatManager.getInstance().arrangeRoomId(myID, user.getUserID()),
-                                user.getName(),
-                                user.getAvatarURL(),
-                                1,
-                                /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(user.getName()) + "");
+                    if (null != listener) {
+                        listener.onContactTapped(item);
                     }
                     break;
                 case TYPE_SELECTABLE_CONTACT_LIST:

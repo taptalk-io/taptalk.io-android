@@ -8,6 +8,11 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 @Keep
 public abstract class TapContactListListener implements TapTalkContactListInterface {
     @Override
+    public void onContactTapped(TapContactListModel contact) {
+
+    }
+
+    @Override
     public boolean onContactSelected(TapContactListModel contact) {
         return contact.isSelected();
     }

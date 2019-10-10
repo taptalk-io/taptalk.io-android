@@ -29,6 +29,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TapContactListListener;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
@@ -160,11 +161,11 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         vm.getNewChatMenuList().add(menuCreateNewGroup);
 
         // TODO: 21 December 2018 TEMPORARILY DISABLED FEATURE
-        vm.setInfoLabelItem(new TapContactListModel(
-                INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS,
-                getString(R.string.tap_cant_find_contact),
-                getString(R.string.tap_view_blocked_contacts)
-        ));
+        //vm.setInfoLabelItem(new TapContactListModel(
+        //        INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS,
+        //        getString(R.string.tap_cant_find_contact),
+        //        getString(R.string.tap_view_blocked_contacts)
+        //));
     }
 
     public void refreshAdapterItems() {
@@ -433,6 +434,24 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     };
 
     private TapContactListListener contactListListener = new TapContactListListener() {
+        @Override
+        public void onContactTapped(TapContactListModel contact) {
+            TAPUserModel user = contact.getUser();
+            if (null == user) {
+                return;
+            }
+            if (!TAPChatManager.getInstance().getActiveUser().getUserID().equals(user.getUserID())) {
+                // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
+                TAPUtils.getInstance().startChatActivity(
+                        TAPNewChatActivity.this,
+                        TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), user.getUserID()),
+                        user.getName(),
+                        user.getAvatarURL(),
+                        1,
+                        /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(user.getName()) + "");
+            }
+        }
+
         @Override
         public void onMenuButtonTapped(int actionId) {
             switch (actionId) {
