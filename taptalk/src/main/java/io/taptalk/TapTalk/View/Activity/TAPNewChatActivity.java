@@ -10,9 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -133,7 +131,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 vm.getContactList().clear();
                 vm.getContactList().addAll(userModels);
                 vm.setSeparatedContactList(TAPUtils.getInstance().generateContactListForRecycler(vm.getContactList(), TYPE_DEFAULT_CONTACT_LIST));
-                vm.refreshAdapterItems();
+                refreshAdapterItems();
                 runOnUiThread(() -> {
                     if (null != adapter) {
                         adapter.setItems(vm.getAdapterItems(), false);
@@ -167,6 +165,17 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 getString(R.string.tap_cant_find_contact),
                 getString(R.string.tap_view_blocked_contacts)
         ));
+    }
+
+    public void refreshAdapterItems() {
+        if (!vm.getAdapterItems().isEmpty()) {
+            vm.getAdapterItems().clear();
+        }
+        vm.getAdapterItems().addAll(vm.getNewChatMenuList());
+        vm.getAdapterItems().addAll(vm.getSeparatedContactList());
+        if (null != vm.getInfoLabelItem()) {
+            vm.getAdapterItems().add(vm.getInfoLabelItem());
+        }
     }
 
     private void initView() {

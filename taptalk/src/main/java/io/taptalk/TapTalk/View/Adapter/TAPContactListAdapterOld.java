@@ -165,10 +165,11 @@ public class TAPContactListAdapterOld extends TAPBaseAdapter<TAPUserModel, TAPBa
                 case SELECT:
                     if (item.getUserID().equals(myID)) {
                         return;
-                    } else if (null != listener && listener.onContactSelected(item)) {
-                        isAnimating = true;
-                        notifyItemChanged(position);
                     }
+//                    else if (null != listener && listener.onContactSelected(item)) {
+//                        isAnimating = true;
+//                        notifyItemChanged(position);
+//                    }
                     break;
             }
         }
@@ -236,7 +237,7 @@ public class TAPContactListAdapterOld extends TAPBaseAdapter<TAPUserModel, TAPBa
         private void deselectContact(TAPUserModel item) {
             if (null != listener && !item.getUserID().equals(myID) && !isAnimating) {
                 isAnimating = true;
-                listener.onContactDeselected(item);
+//                listener.onContactDeselected(item);
             }
         }
     }

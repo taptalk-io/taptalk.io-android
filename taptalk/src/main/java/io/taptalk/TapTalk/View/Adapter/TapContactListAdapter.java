@@ -38,7 +38,6 @@ import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SE
 public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, TAPBaseViewHolder<TapContactListModel>> {
 
     private TapContactListListener listener;
-    private List<TAPUserModel> selectedContacts;
     private String myID;
     private boolean isAnimating = true;
 
@@ -47,7 +46,7 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
         this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
     }
 
-    public TapContactListAdapter(List<TapContactListModel> contactList, @Nullable TapContactListListener listener) {
+    public TapContactListAdapter(List<TapContactListModel> contactList, TapContactListListener listener) {
         setItems(contactList, false);
         this.listener = listener;
         this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
@@ -142,13 +141,13 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
             }
 
             // Show/hide selection
-            if (item.getType() == TYPE_SELECTABLE_CONTACT_LIST && selectedContacts.contains(user)) {
+            if (item.getType() == TYPE_SELECTABLE_CONTACT_LIST && item.isSelected()) {
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_active);
                 ivSelection.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive)));
                 tvUsername.setText(String.format("@%s", user.getUsername()));
                 ivSelection.setVisibility(View.VISIBLE);
                 tvUsername.setVisibility(View.VISIBLE);
-            } else if (item.getType() == TYPE_SELECTABLE_CONTACT_LIST && !selectedContacts.contains(user)) {
+            } else if (item.getType() == TYPE_SELECTABLE_CONTACT_LIST) {
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive);
                 ivSelection.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive)));
                 tvUsername.setText(String.format("@%s", user.getUsername()));
@@ -181,9 +180,15 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                     }
                     break;
                 case TYPE_SELECTABLE_CONTACT_LIST:
+                    item.setSelected(!item.isSelected());
                     if (user.getUserID().equals(myID)) {
                         return;
-                    } else if (null != listener && listener.onContactSelected(user)) {
+                    } else if (null != listener) {
+                        if (item.isSelected()) {
+                            listener.onContactSelected(item);
+                        } else {
+                            listener.onContactDeselected(item);
+                        }
                         isAnimating = true;
                         notifyItemChanged(position);
                     }
@@ -261,7 +266,7 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
             }
             if (null != listener && !user.getUserID().equals(myID) && !isAnimating) {
                 isAnimating = true;
-                listener.onContactDeselected(user);
+                listener.onContactDeselected(item);
             }
         }
     }

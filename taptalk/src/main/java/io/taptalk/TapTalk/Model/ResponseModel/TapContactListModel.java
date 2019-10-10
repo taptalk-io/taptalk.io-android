@@ -1,10 +1,12 @@
 package io.taptalk.TapTalk.Model.ResponseModel;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
-public class TapContactListModel {
+public class TapContactListModel implements Parcelable {
 
     public static final int TYPE_DEFAULT_CONTACT_LIST = 1;
     public static final int TYPE_SELECTABLE_CONTACT_LIST = 2;
@@ -27,18 +29,12 @@ public class TapContactListModel {
     @Nullable private TAPUserModel user;
     @Nullable private String buttonText;
 
-    // Constructor for default contact list
-    public TapContactListModel(TAPUserModel user) {
-        this.title = user.getName();
-        this.type = TYPE_DEFAULT_CONTACT_LIST;
-        this.user = user;
-    }
-
-    // Constructor for selectable contact list or selected group member
+    // Constructor for default contact list, selectable contact list, or selected group member
     public TapContactListModel(TAPUserModel user, int type) {
         this.title = user.getName();
         this.type = type;
         this.user = user;
+        this.isSelected = user.isSelected();
     }
 
     // Constructor for section title
@@ -102,6 +98,9 @@ public class TapContactListModel {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+        if (null != user) {
+            user.setSelected(selected);
+        }
     }
 
     @Nullable
@@ -121,4 +120,42 @@ public class TapContactListModel {
     public void setButtonText(@Nullable String buttonText) {
         this.buttonText = buttonText;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.title);
+        dest.writeInt(this.type);
+        dest.writeInt(this.actionId);
+        dest.writeInt(this.drawableResource);
+        dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(this.user, flags);
+        dest.writeString(this.buttonText);
+    }
+
+    protected TapContactListModel(Parcel in) {
+        this.title = in.readString();
+        this.type = in.readInt();
+        this.actionId = in.readInt();
+        this.drawableResource = in.readInt();
+        this.isSelected = in.readByte() != 0;
+        this.user = in.readParcelable(TAPUserModel.class.getClassLoader());
+        this.buttonText = in.readString();
+    }
+
+    public static final Parcelable.Creator<TapContactListModel> CREATOR = new Parcelable.Creator<TapContactListModel>() {
+        @Override
+        public TapContactListModel createFromParcel(Parcel source) {
+            return new TapContactListModel(source);
+        }
+
+        @Override
+        public TapContactListModel[] newArray(int size) {
+            return new TapContactListModel[size];
+        }
+    };
 }

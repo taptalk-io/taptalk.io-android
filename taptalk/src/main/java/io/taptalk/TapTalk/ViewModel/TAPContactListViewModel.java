@@ -13,17 +13,19 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
+
 public class TAPContactListViewModel extends AndroidViewModel {
 
     // Contact List needs to be sorted ascending by name
     private LiveData<List<TAPUserModel>> contactListLive;
     private List<TAPUserModel> contactList;
     private List<TAPUserModel> filteredContacts;
-    private List<TAPUserModel> selectedContacts;
     private List<TAPUserModel> existingMembers;
     private List<String> selectedContactsIds;
     @Deprecated private List<List<TAPUserModel>> separatedContacts;
     private List<TapContactListModel> separatedContactList;
+    private List<TapContactListModel> selectedContacts;
     private List<TapContactListModel> newChatMenuList;
     private List<TapContactListModel> adapterItems;
     private TapContactListModel infoLabelItem;
@@ -61,11 +63,11 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.filteredContacts = filteredContacts;
     }
 
-    public List<TAPUserModel> getSelectedContacts() {
+    public List<TapContactListModel> getSelectedContacts() {
         return selectedContacts == null ? selectedContacts = new ArrayList<>() : selectedContacts;
     }
 
-    public void setSelectedContacts(List<TAPUserModel> selectedContacts) {
+    public void setSelectedContacts(List<TapContactListModel> selectedContacts) {
         this.selectedContacts = selectedContacts;
     }
 
@@ -89,10 +91,12 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.existingMembers = existingMembers;
     }
 
+    @Deprecated
     public List<List<TAPUserModel>> getSeparatedContacts() {
         return separatedContacts == null ? separatedContacts = new ArrayList<>() : separatedContacts;
     }
 
+    @Deprecated
     public void setSeparatedContacts(List<List<TAPUserModel>> separatedContacts) {
         this.separatedContacts = separatedContacts;
     }
@@ -117,15 +121,8 @@ public class TAPContactListViewModel extends AndroidViewModel {
         return null == adapterItems ? adapterItems = new ArrayList<>() : adapterItems;
     }
 
-    public void refreshAdapterItems() {
-        if (!getAdapterItems().isEmpty()) {
-            getAdapterItems().clear();
-        }
-        getAdapterItems().addAll(getNewChatMenuList());
-        getAdapterItems().addAll(getSeparatedContactList());
-        if (null != getInfoLabelItem()) {
-            getAdapterItems().add(getInfoLabelItem());
-        }
+    public void setAdapterItems(List<TapContactListModel> adapterItems) {
+        this.adapterItems = adapterItems;
     }
 
     public TapContactListModel getInfoLabelItem() {
@@ -201,12 +198,21 @@ public class TAPContactListViewModel extends AndroidViewModel {
     }
 
     public void addSelectedContact(TAPUserModel contactModel) {
-        getSelectedContacts().add(contactModel);
+        getSelectedContacts().add(new TapContactListModel(contactModel, TYPE_SELECTED_GROUP_MEMBER));
         getSelectedContactsIds().add(contactModel.getUserID());
     }
 
-    public void removeSelectedContact(TAPUserModel contactModel) {
+    public void addSelectedContact(TapContactListModel contactModel) {
+        getSelectedContacts().add(contactModel);
+        if (null != contactModel.getUser()) {
+            getSelectedContactsIds().add(contactModel.getUser().getUserID());
+        }
+    }
+
+    public void removeSelectedContact(TapContactListModel contactModel) {
         getSelectedContacts().remove(contactModel);
-        getSelectedContactsIds().remove(contactModel.getUserID());
+        if (null != contactModel.getUser()) {
+            getSelectedContactsIds().remove(contactModel.getUser().getUserID());
+        }
     }
 }
