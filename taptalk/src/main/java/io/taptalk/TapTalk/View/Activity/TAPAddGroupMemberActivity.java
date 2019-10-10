@@ -43,8 +43,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Adapter.TAPContactInitialAdapter;
-import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapterOld;
 import io.taptalk.TapTalk.View.Adapter.TapContactListAdapter;
 import io.taptalk.TapTalk.View.Adapter.TapSelectedGroupMemberAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
@@ -61,7 +59,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GRO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTABLE_CONTACT_LIST;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
 
 public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
@@ -184,8 +181,8 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             public boolean onContactSelected(TapContactListModel contact) {
                 TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
-                if (!vm.getSelectedContacts().contains(contact)) {
-                    if (vm.getSelectedContacts().size() + vm.getInitialGroupSize() >= TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()) {
+                if (!vm.getSelectedContactList().contains(contact)) {
+                    if (vm.getSelectedContactList().size() + vm.getInitialGroupSize() >= TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         // Member count exceeds limit
                         new TapTalkDialog.Builder(TAPAddGroupMemberActivity.this)
@@ -201,38 +198,40 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                     }
                     // Add selected member
                     vm.addSelectedContact(contact);
-                    selectedMembersAdapter.notifyItemInserted(vm.getSelectedContacts().size());
-                    rvGroupMembers.scrollToPosition(vm.getSelectedContacts().size() - 1);
+                    selectedMembersAdapter.notifyItemInserted(vm.getSelectedContactList().size());
+                    rvGroupMembers.scrollToPosition(vm.getSelectedContactList().size() - 1);
                     updateSelectedMemberDecoration();
                 } else {
                     // Remove selected member
-                    int index = vm.getSelectedContacts().indexOf(contact);
+                    int index = vm.getSelectedContactList().indexOf(contact);
                     vm.removeSelectedContact(contact);
                     selectedMembersAdapter.notifyItemRemoved(index);
                 }
-                if ((vm.getGroupAction() == CREATE_GROUP && vm.getSelectedContacts().size() > 1) ||
-                        (vm.getGroupAction() == GROUP_ADD_MEMBER && vm.getSelectedContacts().size() > 0)) {
+                if ((vm.getGroupAction() == CREATE_GROUP && vm.getSelectedContactList().size() > 1) ||
+                        (vm.getGroupAction() == GROUP_ADD_MEMBER && vm.getSelectedContactList().size() > 0)) {
                     llGroupMembers.setVisibility(View.VISIBLE);
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContacts().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
+                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContactList().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
                 return true;
             }
 
             @Override
             public void onContactDeselected(TapContactListModel contact) {
                 TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
-                selectedMembersAdapter.removeItem(contact);
+                int index = vm.getSelectedContactList().indexOf(contact);
+                vm.removeSelectedContact(contact);
+                selectedMembersAdapter.notifyItemRemoved(index);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 contactListAdapter.notifyDataSetChanged();
-                if ((vm.getGroupAction() == CREATE_GROUP && vm.getSelectedContacts().size() > 1) ||
-                        (vm.getGroupAction() == GROUP_ADD_MEMBER && vm.getSelectedContacts().size() > 0)) {
+                if ((vm.getGroupAction() == CREATE_GROUP && vm.getSelectedContactList().size() > 1) ||
+                        (vm.getGroupAction() == GROUP_ADD_MEMBER && vm.getSelectedContactList().size() > 0)) {
                     llGroupMembers.setVisibility(View.VISIBLE);
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContacts().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
+                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContactList().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
             }
         };
 
@@ -269,7 +268,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         // Selected members adapter
-        selectedMembersAdapter = new TapSelectedGroupMemberAdapter(vm.getSelectedContacts(), listener);
+        selectedMembersAdapter = new TapSelectedGroupMemberAdapter(vm.getSelectedContactList(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);

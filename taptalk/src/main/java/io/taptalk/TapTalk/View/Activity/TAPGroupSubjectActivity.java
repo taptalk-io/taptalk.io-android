@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
@@ -28,6 +29,9 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -39,9 +43,11 @@ import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
-import io.taptalk.TapTalk.View.Adapter.TAPContactListAdapterOld;
+import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Adapter.TapSelectedGroupMemberAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPGroupViewModel;
 import io.taptalk.Taptalk.R;
 
@@ -53,6 +59,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
 
 public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
@@ -66,7 +73,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     private ConstraintLayout clActionBar;
     private ScrollView svGroupSubject;
 
-    private TAPContactListAdapterOld adapter;
+    private TapSelectedGroupMemberAdapter adapter;
     private TAPGroupViewModel vm;
 
     @Override
@@ -125,10 +132,17 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPGroupViewModel.class);
         vm.setMyID(getIntent().getStringExtra(MY_ID));
-        vm.getGroupData().setGroupParticipants(getIntent().getParcelableArrayListExtra(GROUP_MEMBERS));
         vm.setParticipantsIDs(getIntent().getStringArrayListExtra(GROUP_MEMBER_IDS));
         vm.getGroupData().setRoomName(getIntent().getStringExtra(GROUP_NAME));
         vm.getGroupData().setRoomImage(getIntent().getParcelableExtra(GROUP_IMAGE));
+
+        List<TAPUserModel> groupParticipants = getIntent().getParcelableArrayListExtra(GROUP_MEMBERS);
+        vm.getGroupData().setGroupParticipants(groupParticipants);
+        List<TapContactListModel> contactListModels = new ArrayList<>();
+        for (TAPUserModel user : groupParticipants) {
+            contactListModels.add(new TapContactListModel(user, TYPE_SELECTED_GROUP_MEMBER));
+        }
+        vm.setAdapterItems(contactListModels);
     }
 
     private void initView() {
@@ -150,7 +164,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         etGroupName.setOnFocusChangeListener(focusListener);
         svGroupSubject.getViewTreeObserver().addOnScrollChangedListener(toolbarScrollListener);
 
-        adapter = new TAPContactListAdapterOld(TAPContactListAdapterOld.SELECTED_MEMBER, vm.getGroupData().getGroupParticipants());
+        adapter = new TapSelectedGroupMemberAdapter(vm.getAdapterItems());
         rvGroupMembers.setAdapter(adapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,

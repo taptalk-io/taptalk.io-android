@@ -34,7 +34,6 @@ public class TapContactListModel implements Parcelable {
         this.title = user.getName();
         this.type = type;
         this.user = user;
-        this.isSelected = user.isSelected();
     }
 
     // Constructor for section title
@@ -98,9 +97,6 @@ public class TapContactListModel implements Parcelable {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
-        if (null != user) {
-            user.setSelected(selected);
-        }
     }
 
     @Nullable

@@ -21,11 +21,12 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private LiveData<List<TAPUserModel>> contactListLive;
     private List<TAPUserModel> contactList;
     private List<TAPUserModel> filteredContacts;
+    private List<TAPUserModel> selectedContacts;
     private List<TAPUserModel> existingMembers;
     private List<String> selectedContactsIds;
     @Deprecated private List<List<TAPUserModel>> separatedContacts;
     private List<TapContactListModel> separatedContactList;
-    private List<TapContactListModel> selectedContacts;
+    private List<TapContactListModel> selectedContactList;
     private List<TapContactListModel> newChatMenuList;
     private List<TapContactListModel> adapterItems;
     private TapContactListModel infoLabelItem;
@@ -63,11 +64,11 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.filteredContacts = filteredContacts;
     }
 
-    public List<TapContactListModel> getSelectedContacts() {
-        return selectedContacts == null ? selectedContacts = new ArrayList<>() : selectedContacts;
+    public List<TAPUserModel> getSelectedContacts() {
+        return null == selectedContacts ? selectedContacts = new ArrayList<>() : selectedContacts;
     }
 
-    public void setSelectedContacts(List<TapContactListModel> selectedContacts) {
+    public void setSelectedContacts(List<TAPUserModel> selectedContacts) {
         this.selectedContacts = selectedContacts;
     }
 
@@ -107,6 +108,14 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setSeparatedContactList(List<TapContactListModel> separatedContactList) {
         this.separatedContactList = separatedContactList;
+    }
+
+    public List<TapContactListModel> getSelectedContactList() {
+        return selectedContactList == null ? selectedContactList = new ArrayList<>() : selectedContactList;
+    }
+
+    public void setSelectedContactList(List<TapContactListModel> selectedContactList) {
+        this.selectedContactList = selectedContactList;
     }
 
     public List<TapContactListModel> getNewChatMenuList() {
@@ -197,21 +206,24 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.groupAction = groupAction;
     }
 
-    public void addSelectedContact(TAPUserModel contactModel) {
-        getSelectedContacts().add(new TapContactListModel(contactModel, TYPE_SELECTED_GROUP_MEMBER));
-        getSelectedContactsIds().add(contactModel.getUserID());
+    public void addSelectedContact(TAPUserModel user) {
+        getSelectedContactList().add(new TapContactListModel(user, TYPE_SELECTED_GROUP_MEMBER));
+        getSelectedContacts().add(user);
+        getSelectedContactsIds().add(user.getUserID());
     }
 
     public void addSelectedContact(TapContactListModel contactModel) {
-        getSelectedContacts().add(contactModel);
+        getSelectedContactList().add(contactModel);
         if (null != contactModel.getUser()) {
+            getSelectedContacts().add(contactModel.getUser());
             getSelectedContactsIds().add(contactModel.getUser().getUserID());
         }
     }
 
     public void removeSelectedContact(TapContactListModel contactModel) {
-        getSelectedContacts().remove(contactModel);
+        getSelectedContactList().remove(contactModel);
         if (null != contactModel.getUser()) {
+            getSelectedContacts().remove(contactModel.getUser());
             getSelectedContactsIds().remove(contactModel.getUser().getUserID());
         }
     }
