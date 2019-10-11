@@ -20,6 +20,7 @@ public class TapContactListModel implements Parcelable {
     public static final int MENU_ID_CREATE_NEW_GROUP = 3;
 
     public static final int INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS = 101;
+    public static final int INFO_LABEL_ID_ADD_NEW_CONTACT = 102;
 
     private String title;
     private int type;
