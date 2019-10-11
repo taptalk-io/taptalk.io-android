@@ -1,10 +1,13 @@
 package io.taptalk.TapTalk.Listener;
 
+import android.support.annotation.Keep;
+
 import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.Interface.TapTalkDatabaseInterface;
 
+@Keep
 public abstract class TAPDatabaseListener<T> implements TapTalkDatabaseInterface<T> {
     @Override public void onSelectFinished(List<T> entities) {}
     @Override public void onSelectFinished(T entity) {}

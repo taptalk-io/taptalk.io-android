@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+
+import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
 
 public class TAPContactListViewModel extends AndroidViewModel {
 
@@ -21,7 +24,11 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private List<TAPUserModel> selectedContacts;
     private List<TAPUserModel> existingMembers;
     private List<String> selectedContactsIds;
-    private List<List<TAPUserModel>> separatedContacts;
+    private List<TapContactListModel> separatedContactList;
+    private List<TapContactListModel> selectedContactList;
+    private List<TapContactListModel> menuButtonList;
+    private List<TapContactListModel> adapterItems;
+    private TapContactListModel infoLabelItem;
     private TAPImageURL groupImage;
     private String groupName;
     private String roomID;
@@ -57,7 +64,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
     }
 
     public List<TAPUserModel> getSelectedContacts() {
-        return selectedContacts == null ? selectedContacts = new ArrayList<>() : selectedContacts;
+        return null == selectedContacts ? selectedContacts = new ArrayList<>() : selectedContacts;
     }
 
     public void setSelectedContacts(List<TAPUserModel> selectedContacts) {
@@ -84,12 +91,44 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.existingMembers = existingMembers;
     }
 
-    public List<List<TAPUserModel>> getSeparatedContacts() {
-        return separatedContacts == null ? separatedContacts = new ArrayList<>() : separatedContacts;
+    public List<TapContactListModel> getSeparatedContactList() {
+        return null == separatedContactList ? separatedContactList = new ArrayList<>() : separatedContactList;
     }
 
-    public void setSeparatedContacts(List<List<TAPUserModel>> separatedContacts) {
-        this.separatedContacts = separatedContacts;
+    public void setSeparatedContactList(List<TapContactListModel> separatedContactList) {
+        this.separatedContactList = separatedContactList;
+    }
+
+    public List<TapContactListModel> getSelectedContactList() {
+        return selectedContactList == null ? selectedContactList = new ArrayList<>() : selectedContactList;
+    }
+
+    public void setSelectedContactList(List<TapContactListModel> selectedContactList) {
+        this.selectedContactList = selectedContactList;
+    }
+
+    public List<TapContactListModel> getMenuButtonList() {
+        return null == menuButtonList ? menuButtonList = new ArrayList<>() : menuButtonList;
+    }
+
+    public void setMenuButtonList(List<TapContactListModel> menuButtonList) {
+        this.menuButtonList = menuButtonList;
+    }
+
+    public List<TapContactListModel> getAdapterItems() {
+        return null == adapterItems ? adapterItems = new ArrayList<>() : adapterItems;
+    }
+
+    public void setAdapterItems(List<TapContactListModel> adapterItems) {
+        this.adapterItems = adapterItems;
+    }
+
+    public TapContactListModel getInfoLabelItem() {
+        return infoLabelItem;
+    }
+
+    public void setInfoLabelItem(TapContactListModel infoLabelItem) {
+        this.infoLabelItem = infoLabelItem;
     }
 
     public TAPImageURL getGroupImage() {
@@ -156,13 +195,25 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.groupAction = groupAction;
     }
 
-    public void addSelectedContact(TAPUserModel contactModel) {
-        getSelectedContacts().add(contactModel);
-        getSelectedContactsIds().add(contactModel.getUserID());
+    public void addSelectedContact(TAPUserModel user) {
+        getSelectedContactList().add(new TapContactListModel(user, TYPE_SELECTED_GROUP_MEMBER));
+        getSelectedContacts().add(user);
+        getSelectedContactsIds().add(user.getUserID());
     }
 
-    public void removeSelectedContact(TAPUserModel contactModel) {
-        getSelectedContacts().remove(contactModel);
-        getSelectedContactsIds().remove(contactModel.getUserID());
+    public void addSelectedContact(TapContactListModel contactModel) {
+        getSelectedContactList().add(contactModel);
+        if (null != contactModel.getUser()) {
+            getSelectedContacts().add(contactModel.getUser());
+            getSelectedContactsIds().add(contactModel.getUser().getUserID());
+        }
+    }
+
+    public void removeSelectedContact(TapContactListModel contactModel) {
+        getSelectedContactList().remove(contactModel);
+        if (null != contactModel.getUser()) {
+            getSelectedContacts().remove(contactModel.getUser());
+            getSelectedContactsIds().remove(contactModel.getUser().getUserID());
+        }
     }
 }

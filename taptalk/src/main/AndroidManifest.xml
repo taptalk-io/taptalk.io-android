@@ -35,8 +35,6 @@
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPSearchContactActivity"
-            android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity"

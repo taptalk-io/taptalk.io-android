@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Listener;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.Keep;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PROFI
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
+@Keep
 public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
     @Override
     public void onTapTalkUserProfileButtonTapped(Activity activity, TAPRoomModel room, TAPUserModel user) {
