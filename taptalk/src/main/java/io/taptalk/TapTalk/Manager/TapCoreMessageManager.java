@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -22,9 +23,6 @@ import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
-import io.taptalk.TapTalk.Interface.TapFileDownloadInterface;
-import io.taptalk.TapTalk.Interface.TapGetMessageInterface;
-import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCoreFileDownloadListener;
@@ -35,7 +33,6 @@ import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
@@ -55,6 +52,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_PRODUCT_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
+@Keep
 public class TapCoreMessageManager {
 
     private static TapCoreMessageManager instance;
@@ -277,7 +275,7 @@ public class TapCoreMessageManager {
         }
         HashMap<String, Object> productHashMap = new LinkedHashMap<>();
         productHashMap.put(ITEMS, new ArrayList<>(products));
-        TAPChatManager.getInstance().sendProductMessageToServer(productHashMap, room , listener);
+        TAPChatManager.getInstance().sendProductMessageToServer(productHashMap, room, listener);
     }
 
     public void markMessageAsRead(TAPMessageModel message) {

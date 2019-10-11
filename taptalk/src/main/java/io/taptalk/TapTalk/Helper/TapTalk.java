@@ -635,7 +635,7 @@ public class TapTalk {
                 .setNotificationMessage(tapMessageModel)
                 .setSmallIcon(TapTalk.getClientAppIcon())
                 .setNeedReply(false)
-                .setOnClickAction(TapUIChatActivity.class)
+                .setOnClickAction(TapUIRoomListActivity.class)
                 .show();
     }
 }

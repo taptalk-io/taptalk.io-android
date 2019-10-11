@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 
+@Keep
 public class TapCoreContactManager {
 
     private static TapCoreContactManager instance;

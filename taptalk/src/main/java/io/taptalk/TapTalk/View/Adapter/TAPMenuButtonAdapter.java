@@ -23,7 +23,6 @@ import io.taptalk.TapTalk.Model.TAPMenuItem;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_SEND_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_VIEW_MEMBERS;
 
@@ -39,7 +38,7 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
     @NonNull
     @Override
     public TAPBaseViewHolder<TAPMenuItem> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MenuButtonVH(parent, R.layout.tap_cell_menu_button);
+        return new MenuButtonVH(parent, R.layout.tap_cell_profile_menu_button);
     }
 
     private class MenuButtonVH extends TAPBaseViewHolder<TAPMenuItem> {
