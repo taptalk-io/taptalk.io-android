@@ -171,6 +171,14 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             TAPUtils.getInstance().dismissKeyboard(TAPNewChatActivity.this);
             return false;
         });
+
+        rvContactList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                TAPUtils.getInstance().dismissKeyboard(TAPNewChatActivity.this);
+            }
+        });
     }
 
     private void setupMenuButtons() {
@@ -178,17 +186,17 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 MENU_ID_ADD_NEW_CONTACT,
                 getString(R.string.tap_new_contact),
                 R.drawable.tap_ic_new_contact_orange);
-        vm.getNewChatMenuList().add(menuAddNewContact);
+        vm.getMenuButtonList().add(menuAddNewContact);
         TapContactListModel menuScanQRCode = new TapContactListModel(
                 MENU_ID_SCAN_QR_CODE,
                 getString(R.string.tap_scan_qr_code),
                 R.drawable.tap_ic_scan_qr_orange);
-        vm.getNewChatMenuList().add(menuScanQRCode);
+        vm.getMenuButtonList().add(menuScanQRCode);
         TapContactListModel menuCreateNewGroup = new TapContactListModel(
                 MENU_ID_CREATE_NEW_GROUP,
                 getString(R.string.tap_new_group),
                 R.drawable.tap_ic_new_group_orange);
-        vm.getNewChatMenuList().add(menuCreateNewGroup);
+        vm.getMenuButtonList().add(menuCreateNewGroup);
     }
 
     private void showToolbar() {
@@ -230,7 +238,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         if (!vm.getAdapterItems().isEmpty()) {
             vm.getAdapterItems().clear();
         }
-        vm.getAdapterItems().addAll(vm.getNewChatMenuList());
+        vm.getAdapterItems().addAll(vm.getMenuButtonList());
         vm.getAdapterItems().addAll(vm.getSeparatedContactList());
 
         // TODO: 11 October 2019 TEMPORARILY DISABLED FEATURE

@@ -24,10 +24,9 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private List<TAPUserModel> selectedContacts;
     private List<TAPUserModel> existingMembers;
     private List<String> selectedContactsIds;
-    @Deprecated private List<List<TAPUserModel>> separatedContacts;
     private List<TapContactListModel> separatedContactList;
     private List<TapContactListModel> selectedContactList;
-    private List<TapContactListModel> newChatMenuList;
+    private List<TapContactListModel> menuButtonList;
     private List<TapContactListModel> adapterItems;
     private TapContactListModel infoLabelItem;
     private TAPImageURL groupImage;
@@ -92,16 +91,6 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.existingMembers = existingMembers;
     }
 
-    @Deprecated
-    public List<List<TAPUserModel>> getSeparatedContacts() {
-        return separatedContacts == null ? separatedContacts = new ArrayList<>() : separatedContacts;
-    }
-
-    @Deprecated
-    public void setSeparatedContacts(List<List<TAPUserModel>> separatedContacts) {
-        this.separatedContacts = separatedContacts;
-    }
-
     public List<TapContactListModel> getSeparatedContactList() {
         return null == separatedContactList ? separatedContactList = new ArrayList<>() : separatedContactList;
     }
@@ -118,12 +107,12 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.selectedContactList = selectedContactList;
     }
 
-    public List<TapContactListModel> getNewChatMenuList() {
-        return null == newChatMenuList ? newChatMenuList = new ArrayList<>() : newChatMenuList;
+    public List<TapContactListModel> getMenuButtonList() {
+        return null == menuButtonList ? menuButtonList = new ArrayList<>() : menuButtonList;
     }
 
-    public void setNewChatMenuList(List<TapContactListModel> newChatMenuList) {
-        this.newChatMenuList = newChatMenuList;
+    public void setMenuButtonList(List<TapContactListModel> menuButtonList) {
+        this.menuButtonList = menuButtonList;
     }
 
     public List<TapContactListModel> getAdapterItems() {
