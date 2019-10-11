@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Manager;
 import android.util.Log;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
@@ -22,7 +23,9 @@ public class TAPOldDataManager {
     public void startAutoCleanProcess() {
         new Thread(() -> {
             long currentTimestamp = System.currentTimeMillis();
-            boolean isOverOneWeek = TAPTimeFormatter.getInstance().isOverOneWeek(TAPDataManager.getInstance().getLastDeleteTimestamp());
+//            boolean isOverOneWeek = TAPTimeFormatter.getInstance().isOverOneWeek(TAPDataManager.getInstance().getLastDeleteTimestamp());
+            boolean isOverOneWeek = (System.currentTimeMillis() - TAPDataManager.getInstance().getLastDeleteTimestamp()) >=
+                    TimeUnit.MINUTES.toMillis(1);
             if (BuildConfig.DEBUG) {
                 Log.e(TAG, "startAutoCleanProcess: " + (TAPDataManager.getInstance().isLastDeleteTimestampExists() && isOverOneWeek) + "\n" + TAPTimeFormatter.getInstance().formatTime(TAPDataManager.getInstance().getLastDeleteTimestamp(), "yyyy/MM/dd - HH:mm:ss"));
             }
@@ -53,7 +56,8 @@ public class TAPOldDataManager {
     }
 
     private void autoCleanProcessFromRoomQueryResult(List<TAPMessageEntity> entities, long currentTimestamp) {
-        final long[] smallestTimestamp = {TAPTimeFormatter.getInstance().oneMonthAgoTimeStamp(currentTimestamp)};
+//        final long[] smallestTimestamp = {TAPTimeFormatter.getInstance().oneMonthAgoTimeStamp(currentTimestamp)};
+        final long[] smallestTimestamp = {System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1)};
         for (TAPMessageEntity roomEntity : entities) {
             // Check messages in existing rooms
             TAPDataManager.getInstance().getMinCreatedOfUnreadMessage(roomEntity.getRoomID(), new TAPDatabaseListener<Long>() {

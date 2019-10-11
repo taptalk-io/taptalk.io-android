@@ -8,11 +8,13 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 
 public class TAPGroupViewModel extends AndroidViewModel {
 
     private TAPRoomModel groupData;
+    private List<TapContactListModel> adapterItems;
     private List<String> participantsIDs;
     private String myID;
     private Uri roomImageUri;
@@ -29,12 +31,12 @@ public class TAPGroupViewModel extends AndroidViewModel {
         this.groupData = groupData;
     }
 
-    public String getMyID() {
-        return myID;
+    public List<TapContactListModel> getAdapterItems() {
+        return null == adapterItems ? adapterItems = new ArrayList<>() : adapterItems;
     }
 
-    public void setMyID(String myID) {
-        this.myID = myID;
+    public void setAdapterItems(List<TapContactListModel> adapterItems) {
+        this.adapterItems = adapterItems;
     }
 
     public List<String> getParticipantsIDs() {
@@ -44,6 +46,15 @@ public class TAPGroupViewModel extends AndroidViewModel {
     public void setParticipantsIDs(List<String> participantsIDs) {
         this.participantsIDs = participantsIDs;
     }
+
+    public String getMyID() {
+        return myID;
+    }
+
+    public void setMyID(String myID) {
+        this.myID = myID;
+    }
+
 
     public Uri getRoomImageUri() {
         return roomImageUri;
