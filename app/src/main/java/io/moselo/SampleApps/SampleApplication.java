@@ -48,41 +48,17 @@ public class SampleApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if ("dev".equals(BuildConfig.BUILD_TYPE)) {
-            // Dev
-            TapTalk.init(this, "d1e5dfe23d1e00bf54bc2316f",
-                    "NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh",
-                    //R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name),
-                    R.drawable.ic_taptalk_logo, "TapTalk Dev Sample App", "https://engine-dev.taptalk.io/api",
-                    TapTalk.TapTalkImplementationType.TapTalkImplementationTypeCombine,
-                    tapListener);
-            Stetho.initialize(
-                    Stetho.newInitializerBuilder(this)
-                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-                            .build());
-        } else if ("staging".equals(BuildConfig.BUILD_TYPE)) {
-            // Staging
-            TapTalk.init(this, "b43b48745dfa0e44k1",
-                    "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4",
-                    R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name), "https://engine-stg.taptalk.io/api",
-                    TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI,
-                    tapListener);
-            Stetho.initialize(
-                    Stetho.newInitializerBuilder(this)
-                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-                            .build());
-        } else {
-            // Production
-            TapTalk.init(this, "d1e5dfe23d1e00bf54bc2316f",
-                    "NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh",
-                    R.mipmap.ic_launcher, getResources().getString(R.string.tap_app_name), "https://engine.taptalk.io/api",
-                    TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI,
-                    tapListener);
-        }
-        TapTalk.initializeGooglePlacesApiKey("AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"); // TODO: 19 August 2019 REPLACE KEY WITH DUMMY FOR LIBRARY BUILD
-        //TapTalk.setTapTalkScreenOrientation(TapTalk.TapTalkScreenOrientation.TapTalkOrientationPortrait); // FIXME: 23 May 2019 SCREEN ORIENTATION FORCED TO PORTRAIT
+        TapTalk.init(this, BuildConfig.TAPTALK_SDK_APP_KEY_ID,
+                BuildConfig.TAPTALK_SDK_APP_KEY_SECRET,
+                R.drawable.ic_taptalk_logo, "TapTalk Dev Sample App", BuildConfig.TAPTALK_SDK_BASE_URL,
+                TapTalk.TapTalkImplementationType.TapTalkImplementationTypeCombine,
+                tapListener);
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
+                        .build());
+        TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
         TapUI.getInstance().addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
         TapUI.getInstance().setLogoutButtonVisible(true);
     }
