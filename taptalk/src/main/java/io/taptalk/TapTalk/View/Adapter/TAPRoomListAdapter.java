@@ -91,14 +91,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
             // Set room image
             if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
+                // Load room image
                 Glide.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
                 civAvatar.setImageTintList(null);
                 tvAvatarLabel.setVisibility(View.GONE);
-//            } else if (null != item.getLastMessage() && null != room && TYPE_GROUP == room.getRoomType()) {
-//                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_group_avatar_blank));
-//            } else {
-//                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
             } else {
+                // Show initial
                 civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(room.getRoomName())));
                 civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
                 tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
@@ -128,6 +126,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 tvGroupSenderName.setVisibility(View.GONE);
                 ivAvatarIcon.setVisibility(View.GONE);
             }
+
+            // Show/hide separator
             if (position == getItemCount() - 1) {
                 vSeparator.setVisibility(View.GONE);
                 vSeparatorFull.setVisibility(View.VISIBLE);
@@ -174,14 +174,17 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             } else if (null != TAPChatManager.getInstance().getActiveUser() && null != item.getLastMessage().getUser() &&
                     TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) &&
                     null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
+                // Show last message deleted
                 tvLastMessage.setText(itemView.getResources().getString(R.string.tap_you_deleted_this_message));
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
             } else if (null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
+                // Show last message deleted
                 tvLastMessage.setText(itemView.getResources().getString(R.string.tap_this_deleted_message));
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
             } else if (TYPE_SYSTEM_MESSAGE == item.getLastMessage().getType()) {
+                // Show system message
                 tvLastMessage.setText(TAPChatManager.getInstance().formattingSystemMessage(item.getLastMessage()));
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
@@ -271,29 +274,11 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Return if logged out (active user is null)
                 return;
             }
-            TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
-
-            String myUserID = myUser.getUserID();
-
-            if (TYPE_PERSONAL == item.getLastMessage().getRoom().getRoomType() && !(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
-                String roomID = item.getLastMessage().getRecipientID().equals(myUserID) ?
-                        TAPChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getUser().getUserID()) :
-                        TAPChatManager.getInstance().arrangeRoomId(myUserID, item.getLastMessage().getRecipientID());
-
-                TAPUtils.getInstance().startChatActivity(
-                        itemView.getContext(),
-                        roomID,
-                        item.getLastMessage().getRoom().getRoomName(),
-                        item.getLastMessage().getRoom().getRoomImage(),
-                        item.getLastMessage().getRoom().getRoomType(),
-                        item.getLastMessage().getRoom().getRoomColor(),
-                        item.getLastMessage().getRoom().getUnreadCount(),
-                        item.getTypingUsers());
-                TAPDataManager.getInstance().saveRecipientID(item.getLastMessage().getRecipientID());
-            } else if (TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
+            String myUserID = TAPChatManager.getInstance().getActiveUser().getUserID();
+            if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
                 TAPUtils.getInstance().startChatActivity(itemView.getContext(), item.getLastMessage().getRoom(), item.getTypingUsers());
             } else {
-                Toast.makeText(itemView.getContext(), "Invalid Room.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.tap_error_invalid_room), Toast.LENGTH_SHORT).show();
             }
         }
     }
