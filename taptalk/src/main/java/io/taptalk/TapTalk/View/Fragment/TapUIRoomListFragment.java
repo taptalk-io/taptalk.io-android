@@ -71,7 +71,9 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
 
 public class TapUIRoomListFragment extends Fragment {
@@ -135,7 +137,7 @@ public class TapUIRoomListFragment extends Fragment {
         new Thread(() -> TAPChatManager.getInstance().saveMessageToDatabase()).start();
         updateQueryRoomListFromBackground();
         addNetworkListener();
-        TAPBroadcastManager.register(activity, receiver, REFRESH_TOKEN_RENEWED);
+        TAPBroadcastManager.register(activity, receiver, REFRESH_TOKEN_RENEWED, RELOAD_ROOM_LIST);
     }
 
     @Override
@@ -815,11 +817,23 @@ public class TapUIRoomListFragment extends Fragment {
         }).start();
     }
 
-    BroadcastReceiver receiver = new BroadcastReceiver() {
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (REFRESH_TOKEN_RENEWED.equals(intent.getAction())) {
-                viewLoadedSequence();
+            String action = intent.getAction();
+
+            if (null == action) {
+                return;
+            }
+
+            switch (action) {
+                case REFRESH_TOKEN_RENEWED:
+                    viewLoadedSequence();
+                    break;
+                case RELOAD_ROOM_LIST:
+                    adapter.notifyItemChanged(vm.getRoomList().indexOf(
+                            vm.getRoomPointer().get(intent.getStringExtra(ROOM_ID))));
+                    break;
             }
         }
     };
