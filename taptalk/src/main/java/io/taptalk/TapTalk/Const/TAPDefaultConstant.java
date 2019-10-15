@@ -368,16 +368,17 @@ public class TAPDefaultConstant {
     public static class ChatProfileMenuType {
         public static final int MENU_NOTIFICATION = 1;
         public static final int MENU_ROOM_COLOR = 2;
-        public static final int MENU_BLOCK = 3;
-        public static final int MENU_EXIT_AND_CLEAR_CHAT = 4;
-        public static final int MENU_VIEW_MEMBERS = 5;
-        public static final int MENU_EXIT_GROUP = 6;
-        public static final int MENU_ADD_TO_CONTACTS = 7;
-        public static final int MENU_SEND_MESSAGE = 8;
-        public static final int MENU_PROMOTE_ADMIN = 9;
-        public static final int MENU_DEMOTE_ADMIN = 10;
-        public static final int MENU_REMOVE_MEMBER = 11;
-        public static final int MENU_DELETE_GROUP = 12;
+        public static final int MENU_ROOM_SEARCH_CHAT = 3;
+        public static final int MENU_BLOCK = 4;
+        public static final int MENU_EXIT_AND_CLEAR_CHAT = 5;
+        public static final int MENU_VIEW_MEMBERS = 6;
+        public static final int MENU_EXIT_GROUP = 7;
+        public static final int MENU_ADD_TO_CONTACTS = 8;
+        public static final int MENU_SEND_MESSAGE = 9;
+        public static final int MENU_PROMOTE_ADMIN = 10;
+        public static final int MENU_DEMOTE_ADMIN = 11;
+        public static final int MENU_REMOVE_MEMBER = 12;
+        public static final int MENU_DELETE_GROUP = 13;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";

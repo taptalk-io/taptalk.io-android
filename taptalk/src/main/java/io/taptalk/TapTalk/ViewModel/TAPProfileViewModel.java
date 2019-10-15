@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -15,6 +16,11 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public class TAPProfileViewModel extends AndroidViewModel {
 
     private TAPRoomModel room;
+    private List<TapChatProfileItemModel> menuItems;
+    private List<TapChatProfileItemModel> sharedMediaItems;
+    private List<TapChatProfileItemModel> adapterItems;
+    private TapChatProfileItemModel sharedMediaSectionTitle;
+    private TapChatProfileItemModel loadingItem;
     private List<TAPMessageModel> sharedMedias;
     private HashMap<String, TAPMessageModel> sharedMediasMap;
     private TAPMessageModel pendingDownloadMessage;
@@ -34,6 +40,42 @@ public class TAPProfileViewModel extends AndroidViewModel {
         this.room = room;
     }
 
+    public List<TapChatProfileItemModel> getMenuItems() {
+        return null == menuItems ? menuItems = new ArrayList<>() : menuItems;
+    }
+
+    public void setMenuItems(List<TapChatProfileItemModel> menuItems) {
+        this.menuItems = menuItems;
+    }
+
+    public List<TapChatProfileItemModel> getSharedMediaItems() {
+        return null == sharedMediaItems ? sharedMediaItems = new ArrayList<>() : sharedMediaItems;
+    }
+
+    public List<TapChatProfileItemModel> getAdapterItems() {
+        return null == adapterItems ? adapterItems = new ArrayList<>() : adapterItems;
+    }
+
+    public void setAdapterItems(List<TapChatProfileItemModel> adapterItems) {
+        this.adapterItems = adapterItems;
+    }
+
+    public TapChatProfileItemModel getSharedMediaSectionTitle() {
+        return sharedMediaSectionTitle;
+    }
+
+    public void setSharedMediaSectionTitle(TapChatProfileItemModel sharedMediaSectionTitle) {
+        this.sharedMediaSectionTitle = sharedMediaSectionTitle;
+    }
+
+    public TapChatProfileItemModel getLoadingItem() {
+        return loadingItem;
+    }
+
+    public void setLoadingItem(TapChatProfileItemModel loadingItem) {
+        this.loadingItem = loadingItem;
+    }
+
     public List<TAPMessageModel> getSharedMedias() {
         return null == sharedMedias ? sharedMedias = new ArrayList<>() : sharedMedias;
     }
@@ -45,6 +87,7 @@ public class TAPProfileViewModel extends AndroidViewModel {
     public void addSharedMedia(TAPMessageModel sharedMedia) {
         getSharedMedias().add(sharedMedia);
         getSharedMediasMap().put(sharedMedia.getLocalID(), sharedMedia);
+        getSharedMediaItems().add(new TapChatProfileItemModel(sharedMedia));
     }
 
     public TAPMessageModel getSharedMedia(String localID) {
@@ -82,8 +125,6 @@ public class TAPProfileViewModel extends AndroidViewModel {
     public void setFinishedLoadingSharedMedia(boolean finishedLoadingSharedMedia) {
         isFinishedLoadingSharedMedia = finishedLoadingSharedMedia;
     }
-
-    //Untuk Group Member Profile
 
     public TAPUserModel getGroupMemberUser() {
         return groupMemberUser;
