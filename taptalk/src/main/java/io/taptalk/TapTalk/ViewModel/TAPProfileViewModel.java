@@ -17,7 +17,6 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     private TAPRoomModel room;
     private List<TapChatProfileItemModel> menuItems;
-    private List<TapChatProfileItemModel> sharedMediaItems;
     private List<TapChatProfileItemModel> adapterItems;
     private TapChatProfileItemModel sharedMediaSectionTitle;
     private TapChatProfileItemModel loadingItem;
@@ -25,8 +24,9 @@ public class TAPProfileViewModel extends AndroidViewModel {
     private HashMap<String, TAPMessageModel> sharedMediasMap;
     private TAPMessageModel pendingDownloadMessage;
     private TAPUserModel groupMemberUser;
+    private String loadingStartText, loadingEndText;
     private long lastSharedMediaTimestamp;
-    private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isAdminGroup;
+    private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isGroupMemberProfile, isGroupAdmin;
 
     public TAPProfileViewModel(@NonNull Application application) {
         super(application);
@@ -46,10 +46,6 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setMenuItems(List<TapChatProfileItemModel> menuItems) {
         this.menuItems = menuItems;
-    }
-
-    public List<TapChatProfileItemModel> getSharedMediaItems() {
-        return null == sharedMediaItems ? sharedMediaItems = new ArrayList<>() : sharedMediaItems;
     }
 
     public List<TapChatProfileItemModel> getAdapterItems() {
@@ -87,7 +83,6 @@ public class TAPProfileViewModel extends AndroidViewModel {
     public void addSharedMedia(TAPMessageModel sharedMedia) {
         getSharedMedias().add(sharedMedia);
         getSharedMediasMap().put(sharedMedia.getLocalID(), sharedMedia);
-        getSharedMediaItems().add(new TapChatProfileItemModel(sharedMedia));
     }
 
     public TAPMessageModel getSharedMedia(String localID) {
@@ -100,6 +95,22 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setPendingDownloadMessage(TAPMessageModel pendingDownloadMessage) {
         this.pendingDownloadMessage = pendingDownloadMessage;
+    }
+
+    public String getLoadingStartText() {
+        return loadingStartText;
+    }
+
+    public void setLoadingStartText(String loadingStartText) {
+        this.loadingStartText = loadingStartText;
+    }
+
+    public String getLoadingEndText() {
+        return loadingEndText;
+    }
+
+    public void setLoadingEndText(String loadingEndText) {
+        this.loadingEndText = loadingEndText;
     }
 
     public long getLastSharedMediaTimestamp() {
@@ -134,11 +145,19 @@ public class TAPProfileViewModel extends AndroidViewModel {
         this.groupMemberUser = groupMemberUser;
     }
 
-    public boolean isAdminGroup() {
-        return isAdminGroup;
+    public boolean isGroupMemberProfile() {
+        return isGroupMemberProfile;
     }
 
-    public void setAdminGroup(boolean adminGroup) {
-        isAdminGroup = adminGroup;
+    public void setGroupMemberProfile(boolean groupMemberProfile) {
+        isGroupMemberProfile = groupMemberProfile;
+    }
+
+    public boolean isGroupAdmin() {
+        return isGroupAdmin;
+    }
+
+    public void setGroupAdmin(boolean isGroupAdmin) {
+        this.isGroupAdmin = isGroupAdmin;
     }
 }

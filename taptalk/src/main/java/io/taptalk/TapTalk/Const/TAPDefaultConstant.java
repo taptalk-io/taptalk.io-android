@@ -122,7 +122,7 @@ public class TAPDefaultConstant {
         public static final String COUNTRY_FLAG_URL = "kTAPExtraCountryFlagUrl";
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
         public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
-        public static final String IS_NEED_TO_CLOSE_ACTIVITY_BEFORE = "kTAPIsNeedToCloseActivityBefore";
+        public static final String CLOSE_ACTIVITY = "kTAPCloseActivity";
     }
 
     public static final class RequestCode {
@@ -370,7 +370,7 @@ public class TAPDefaultConstant {
         public static final int MENU_ROOM_COLOR = 2;
         public static final int MENU_ROOM_SEARCH_CHAT = 3;
         public static final int MENU_BLOCK = 4;
-        public static final int MENU_EXIT_AND_CLEAR_CHAT = 5;
+        public static final int MENU_CLEAR_CHAT = 5;
         public static final int MENU_VIEW_MEMBERS = 6;
         public static final int MENU_EXIT_GROUP = 7;
         public static final int MENU_ADD_TO_CONTACTS = 8;

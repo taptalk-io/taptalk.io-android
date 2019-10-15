@@ -383,6 +383,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 
             // TODO: 15 October 2019 SHOW RELOAD SHARED MEDIA ON API FAILURE
             llReloadSharedMedia.setVisibility(View.GONE);
+            llReloadSharedMedia.setOnClickListener(v -> chatProfileInterface.onReloadSharedMedia());
         }
     }
 

@@ -100,7 +100,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             R.id.ll_remove_button -> {
                 if (groupViewModel?.selectedMembers?.size!! > 1) {
                     TapTalkDialog.Builder(this)
-                            .setTitle("${resources.getString(R.string.tap_remove_group_members)}s")
+                            .setTitle("${resources.getString(R.string.tap_remove_group_member)}s")
                             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                             .setMessage(getString(R.string.tap_remove_multiple_members_confirmation))
                             .setPrimaryButtonTitle(getString(R.string.tap_ok))
@@ -114,7 +114,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                             .show()
                 } else {
                     TapTalkDialog.Builder(this)
-                            .setTitle(resources.getString(R.string.tap_remove_group_members))
+                            .setTitle(resources.getString(R.string.tap_remove_group_member))
                             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                             .setMessage(getString(R.string.tap_remove_member_confirmation))
                             .setPrimaryButtonTitle(getString(R.string.tap_ok))
@@ -191,9 +191,9 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                         groupViewModel?.isUpdateMember = true
                     }
 
-                    if (data?.getBooleanExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, false) == true) {
+                    if (data?.getBooleanExtra(CLOSE_ACTIVITY, false) == true) {
                         val intent = Intent()
-                        intent.putExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, true)
+                        intent.putExtra(CLOSE_ACTIVITY, true)
                         setResult(Activity.RESULT_OK, intent)
                         onBackPressed()
                     }
@@ -425,7 +425,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
         override fun onGroupMemberClicked(member: TAPUserModel?, isAdmin: Boolean) {
             if (member?.userID ?: "0" != TAPChatManager.getInstance().activeUser.userID) {
-                val intent = Intent(this@TAPGroupMemberListActivity, TAPGroupMemberProfileActivity::class.java)
+                val intent = Intent(this@TAPGroupMemberListActivity, TAPChatProfileActivity::class.java)
                 intent.putExtra(ROOM, groupViewModel?.groupData)
                 intent.putExtra(TAPDefaultConstant.K_USER, member)
                 intent.putExtra(IS_ADMIN, isAdmin)

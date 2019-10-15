@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.design.widget.AppBarLayout
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -61,7 +60,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
         groupViewModel = ViewModelProviders.of(this).get(TAPProfileViewModel::class.java)
         groupViewModel?.room = intent.getParcelableExtra(ROOM)
         groupViewModel?.groupMemberUser = intent.getParcelableExtra(K_USER)
-        groupViewModel?.isAdminGroup = intent.getBooleanExtra(IS_ADMIN, false)
+        groupViewModel?.isGroupAdmin = intent.getBooleanExtra(IS_ADMIN, false)
         groupViewModel?.sharedMedias?.clear()
     }
 
@@ -110,8 +109,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
     private fun generateGroupMemberMenu(): ArrayList<TAPMenuItem> {
         val menuItems = ArrayList<TAPMenuItem>()
         //Group Member Profile
-        if (null == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID
-                        ?: "0")
+        if (null == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID ?: "0")
                 || (null != TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID
                         ?: "0")
                         && 0 == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID
@@ -164,18 +162,18 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             menuItems.add(menuPromoteAdmin)
         }
 
-//        if (null != groupViewModel?.room && null != groupViewModel?.room?.admins
-//                && groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
-//            val menuKickMember = TAPMenuItem(
-//                    MENU_REMOVE_MEMBER,
-//                    R.drawable.tap_ic_delete_red,
-//                    R.color.tapIconGroupMemberProfileMenuRemoveMember,
-//                    R.style.tapChatProfileMenuDestructiveLabelStyle,
-//                    false,
-//                    false,
-//                    getString(R.string.tap_remove_group_members))
+        if (null != groupViewModel?.room && null != groupViewModel?.room?.admins
+                && groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
+            val menuKickMember = TAPMenuItem(
+                    MENU_REMOVE_MEMBER,
+                    R.drawable.tap_ic_delete_red,
+                    R.color.tapIconGroupMemberProfileMenuRemoveMember,
+                    R.style.tapChatProfileMenuDestructiveLabelStyle,
+                    false,
+                    false,
+                    getString(R.string.tap_remove_group_member))
 //            menuItems.add(menuKickMember)
-//        }
+        }
         return menuItems
     }
 
@@ -377,7 +375,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                         userModel?.userID ?: "0"), userModel?.name ?: "",
                 userModel?.avatarURL, TYPE_PERSONAL, "FFFFFF")
         val intent = Intent()
-        intent.putExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, true)
+        intent.putExtra(CLOSE_ACTIVITY, true)
         setResult(Activity.RESULT_OK, intent)
         onBackPressed()
     }
