@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -119,6 +120,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
@@ -147,6 +149,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
@@ -252,6 +255,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        // Reload UI in room list
+        Intent intent = new Intent(RELOAD_ROOM_LIST);
+        intent.putExtra(ROOM_ID, TAPChatManager.getInstance().getOpenRoom());
+        LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent);
+
         TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());
         TAPChatManager.getInstance().setOpenRoom(null); // Reset open room
         TAPChatManager.getInstance().removeChatListener(chatListener);

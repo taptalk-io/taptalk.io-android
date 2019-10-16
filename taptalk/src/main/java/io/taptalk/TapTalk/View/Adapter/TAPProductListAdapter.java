@@ -115,7 +115,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
             Glide.with(itemView.getContext()).load(item.getImageURL()).into(rcivProductImage);
             tvProductName.setText(item.getName());
 //            tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(Long.parseLong(item.getPrice())));
-            tvPrice.setText(String.format("%s %s", item.getCurrency(), item.getPrice()));
+            tvPrice.setText(String.format("%s %s", item.getCurrency(), TAPUtils.getInstance().formatThousandSeperator(item.getPrice())));
             if ("".equals(item.getDescription()))
                 tvProductDescription.setText(itemView.getResources().getString(R.string.tap_no_description));
             else {

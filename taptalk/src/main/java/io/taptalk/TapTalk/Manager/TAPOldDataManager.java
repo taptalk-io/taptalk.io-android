@@ -24,7 +24,8 @@ public class TAPOldDataManager {
             long currentTimestamp = System.currentTimeMillis();
             boolean isOverOneWeek = TAPTimeFormatter.getInstance().isOverOneWeek(TAPDataManager.getInstance().getLastDeleteTimestamp());
             if (BuildConfig.DEBUG) {
-                Log.e(TAG, "startAutoCleanProcess: " + (TAPDataManager.getInstance().isLastDeleteTimestampExists() && isOverOneWeek) + "\n" + TAPTimeFormatter.getInstance().formatTime(TAPDataManager.getInstance().getLastDeleteTimestamp(), "yyyy/MM/dd - HH:mm:ss"));
+                Log.e(TAG, "Start auto clean process: " + (TAPDataManager.getInstance().isLastDeleteTimestampExists() && isOverOneWeek));
+                Log.e(TAG, "Last auto clean time: " + TAPTimeFormatter.getInstance().formatTime(TAPDataManager.getInstance().getLastDeleteTimestamp(), "yyyy MMM dd - HH:mm:ss"));
             }
 
             if (TAPDataManager.getInstance().isLastDeleteTimestampExists() && isOverOneWeek) {
@@ -53,30 +54,30 @@ public class TAPOldDataManager {
     }
 
     private void autoCleanProcessFromRoomQueryResult(List<TAPMessageEntity> entities, long currentTimestamp) {
-        final long[] smallestTimestamp = {TAPTimeFormatter.getInstance().oneMonthAgoTimeStamp(currentTimestamp)};
         for (TAPMessageEntity roomEntity : entities) {
+            final long[] maxCreatedTimestamp = {TAPTimeFormatter.getInstance().oneMonthAgoTimeStamp(currentTimestamp)};
             // Check messages in existing rooms
             TAPDataManager.getInstance().getMinCreatedOfUnreadMessage(roomEntity.getRoomID(), new TAPDatabaseListener<Long>() {
                 @Override
                 public void onSelectFinished(Long minCreated) {
-                    if (0L != minCreated && minCreated < smallestTimestamp[0]) {
-                        smallestTimestamp[0] = minCreated;
+                    if (0L != minCreated && minCreated < maxCreatedTimestamp[0]) {
+                        maxCreatedTimestamp[0] = minCreated;
                     }
                     TAPDataManager.getInstance().getAllMessagesInRoomFromDatabase(roomEntity.getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
                         @Override
                         public void onSelectFinished(List<TAPMessageEntity> entities) {
                             if (null != entities && MAX_ITEMS_PER_PAGE < entities.size()) {
-                                if (entities.get(MAX_ITEMS_PER_PAGE).getCreated() < smallestTimestamp[0]) {
-                                    smallestTimestamp[0] = entities.get(MAX_ITEMS_PER_PAGE).getCreated();
-                                }
                                 // Delete messages and files if room has more than 50 messages
-                                TAPDataManager.getInstance().getRoomMediaMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener<TAPMessageEntity>() {
+                                if (entities.get(MAX_ITEMS_PER_PAGE).getCreated() < maxCreatedTimestamp[0]) {
+                                    maxCreatedTimestamp[0] = entities.get(MAX_ITEMS_PER_PAGE).getCreated();
+                                }
+                                TAPDataManager.getInstance().getRoomMediaMessageBeforeTimestamp(roomEntity.getRoomID(), maxCreatedTimestamp[0], new TAPDatabaseListener<TAPMessageEntity>() {
                                     @Override
                                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                                         for (TAPMessageEntity message : entities) {
                                             TAPDataManager.getInstance().deletePhysicalFile(message);
                                         }
-                                        TAPDataManager.getInstance().deleteRoomMessageBeforeTimestamp(roomEntity.getRoomID(), smallestTimestamp[0], new TAPDatabaseListener() {
+                                        TAPDataManager.getInstance().deleteRoomMessageBeforeTimestamp(roomEntity.getRoomID(), maxCreatedTimestamp[0], new TAPDatabaseListener() {
                                             @Override
                                             public void onDeleteFinished() {
 

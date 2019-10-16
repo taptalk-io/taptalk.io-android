@@ -73,17 +73,18 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.Taptalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
@@ -329,6 +330,40 @@ public class TAPUtils {
         return separatedContacts;
     }
 
+
+    public List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type) {
+        List<TapContactListModel> separatedContacts = new ArrayList<>();
+        List<TapContactListModel> nonAlphabeticContacts = new ArrayList<>();
+        List<TapContactListModel> filteredContacts = new ArrayList<>();
+        for (TAPUserModel contact : contacts) {
+            if (null != contact.getName() && !contact.getName().isEmpty()) {
+                TapContactListModel filteredContact = new TapContactListModel(contact, type);
+                filteredContacts.add(filteredContact);
+            }
+        }
+        int previousInitialIndexStart = 0;
+        int size = filteredContacts.size();
+        for (int i = 1; i <= size; i++) {
+            if (i == size ||
+                    filteredContacts.get(i).getUser().getName().toLowerCase().charAt(0) !=
+                            filteredContacts.get(i - 1).getUser().getName().toLowerCase().charAt(0)) {
+                List<TapContactListModel> contactSubList = filteredContacts.subList(previousInitialIndexStart, i);
+                if (Character.isAlphabetic(contactSubList.get(0).getUser().getName().toLowerCase().charAt(0))) {
+                    separatedContacts.add(new TapContactListModel(filteredContacts.get(i - 1).getUser().getName().substring(0, 1)));
+                    separatedContacts.addAll(contactSubList);
+                } else {
+                    nonAlphabeticContacts.addAll(contactSubList);
+                }
+                previousInitialIndexStart = i;
+            }
+        }
+        if (!nonAlphabeticContacts.isEmpty()) {
+            separatedContacts.add(new TapContactListModel("#"));
+            separatedContacts.addAll(nonAlphabeticContacts);
+        }
+        return separatedContacts;
+    }
+
     public String getStringFromURL(URL url) throws IOException {
         StringBuilder fullString = new StringBuilder();
         BufferedReader in = new BufferedReader(
@@ -347,6 +382,16 @@ public class TAPUtils {
     public String formatCurrencyRp(long value) {
         String str = String.format(Locale.getDefault(), "%,d", value);
         return "Rp " + str.replace(",", ".");
+    }
+
+    public String formatThousandSeperator(String value) {
+        try {
+            Long v = Long.valueOf(value);
+            String str = String.format(Locale.getDefault(), "%,d", v);
+            return str.replace(",", ".");
+        } catch (Exception e) {
+            return "0";
+        }
     }
 
     public enum ClipType {TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
@@ -401,11 +446,6 @@ public class TAPUtils {
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
         startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
-    }
-
-    // Open chat room from room list to pass typing status
-    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, LinkedHashMap<String, TAPUserModel> typingUser) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), typingUser, null);
     }
 
     // Open chat room from notification

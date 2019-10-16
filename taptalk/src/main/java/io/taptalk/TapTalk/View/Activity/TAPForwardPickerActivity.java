@@ -192,7 +192,9 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            etSearch.removeTextChangedListener(this);
             startSearch();
+            etSearch.addTextChangedListener(this);
         }
 
         @Override
