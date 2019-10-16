@@ -1077,11 +1077,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             new Thread(() -> {
                 Log.e(TAG, "onSelectFinished: " + entities.size());
-                runOnUiThread(() -> /*rvChatProfile.post(() -> */hideSharedMediaLoading())/*)*/;
+//                runOnUiThread(() -> /*rvChatProfile.post(() -> */hideSharedMediaLoading())/*)*/;
                 if (0 == entities.size() && 0 == vm.getSharedMedias().size()) {
                     // No shared media
                     vm.setFinishedLoadingSharedMedia(true);
-                    //runOnUiThread(() -> rvChatProfile.post(() -> hideSharedMediaLoading()));
+                    runOnUiThread(() -> rvChatProfile.post(() -> hideSharedMediaLoading()));
                 } else {
                     // Has shared media
                     int previousSize = vm.getSharedMedias().size();
@@ -1089,7 +1089,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         // First load
                         Log.e(TAG, "onSelectFinished: first load");
                         vm.setSharedMediaSectionTitle(new TapChatProfileItemModel(getString(R.string.tap_shared_media)));
-                        vm.getAdapterItems().add(/*vm.getAdapterItems().size() - 1, */vm.getSharedMediaSectionTitle());
+                        vm.getAdapterItems().add(vm.getSharedMediaSectionTitle());
                         runOnUiThread(() -> {
                             //adapter.notifyItemInserted(adapter.getItems().indexOf(vm.getSharedMediaSectionTitle()));
                             Log.e(TAG, "onSelectFinished: insert section title");
@@ -1123,15 +1123,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     for (TAPMessageEntity entity : entities) {
                         TAPMessageModel mediaMessage = TAPChatManager.getInstance().convertToModel(entity);
                         vm.addSharedMedia(mediaMessage);
-                        vm.getAdapterItems().add(/*vm.getAdapterItems().size() - 1, */new TapChatProfileItemModel(mediaMessage));
+                        vm.getAdapterItems().add(new TapChatProfileItemModel(mediaMessage));
                     }
                     Log.e(TAG, "onSelectFinished media size: " + vm.getSharedMedias().size());
                     vm.setLastSharedMediaTimestamp(vm.getSharedMedias().get(vm.getSharedMedias().size() - 1).getCreated());
                     vm.setLoadingSharedMedia(false);
                     runOnUiThread(() -> rvChatProfile.post(() -> {
-                        //hideSharedMediaLoading();
-                        //rvChatProfile.post(() -> adapter.notifyItemRangeInserted(vm.getMenuItems().size() + 1 + previousSize, entities.size()));
-                        adapter.notifyDataSetChanged();
+                        hideSharedMediaLoading();
+                        rvChatProfile.post(() -> adapter.notifyItemRangeInserted(vm.getMenuItems().size() + 1 + previousSize, entities.size()));
+//                        adapter.notifyDataSetChanged();
                         Log.e(TAG, "onSelectFinished adapter size: " + adapter.getItemCount());
                     }));
                 }

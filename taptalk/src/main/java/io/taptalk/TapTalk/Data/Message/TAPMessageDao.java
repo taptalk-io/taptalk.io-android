@@ -22,7 +22,7 @@ public interface TAPMessageDao {
     @Delete
     void delete(List<TAPMessageEntity> messageEntities);
 
-    @Query("delete from message_table where roomID = :roomID and created < :minimumTimestamp")
+    @Query("delete from message_table where roomID = :roomID and created <= :minimumTimestamp")
     void deleteRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -82,7 +82,7 @@ public interface TAPMessageDao {
 
     @Query("select * from message_table where" +
             " type in (" + TYPE_IMAGE + ", " + TYPE_FILE + ", " + TYPE_VIDEO + ") " +
-            "and roomID = :roomID and created < :minimumTimestamp")
+            "and roomID = :roomID and created <= :minimumTimestamp")
     List<TAPMessageEntity> getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp);
 
     @Query("select * from message_table where" +

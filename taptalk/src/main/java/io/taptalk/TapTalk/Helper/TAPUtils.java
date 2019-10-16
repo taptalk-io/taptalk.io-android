@@ -1198,7 +1198,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         return new HashSet<>(list1).equals(new HashSet<>(list2));
     }
 
-    public static String getFirstWordOfString(String text) {
+    public String getFirstWordOfString(String text) {
         if (text.contains(" ")) {
             return text.substring(0, text.indexOf(' '));
         } else {

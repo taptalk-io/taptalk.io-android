@@ -166,7 +166,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
 
             if (null != item.getMessage() && null != item.getMessage().getRoomType() && item.getMessage().getRoomType() == TAPDefaultConstant.RoomType.TYPE_GROUP) {
-                tvLastMessage.setText(Html.fromHtml(String.format("<font color='#%s'>%s: </font> %s", colorSender.length() > 6 ? colorSender.substring(colorSender.length() - 6) : colorSender, TAPUtils.getFirstWordOfString(item.getMessage().getUserFullName()), highlightedText)));
+                tvLastMessage.setText(Html.fromHtml(String.format("<font color='#%s'>%s: </font> %s", colorSender.length() > 6 ? colorSender.substring(colorSender.length() - 6) : colorSender, TAPUtils.getInstance().getFirstWordOfString(item.getMessage().getUserFullName()), highlightedText)));
             } else {
                 tvLastMessage.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
                         Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.tap_you), highlightedText)) : Html.fromHtml(highlightedText));
