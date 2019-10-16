@@ -253,9 +253,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         });
         rvChatProfile.setAdapter(adapter);
         rvChatProfile.setLayoutManager(glm);
-        SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvChatProfile.getItemAnimator();
-        if (null != messageAnimator) {
-            messageAnimator.setSupportsChangeAnimations(false);
+        SimpleItemAnimator recyclerAnimator = (SimpleItemAnimator) rvChatProfile.getItemAnimator();
+        if (null != recyclerAnimator) {
+            recyclerAnimator.setSupportsChangeAnimations(false);
         }
 
         // Load shared medias
@@ -1077,7 +1077,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             new Thread(() -> {
                 Log.e(TAG, "onSelectFinished: " + entities.size());
-                runOnUiThread(() -> rvChatProfile.post(() -> hideSharedMediaLoading()));
+                runOnUiThread(() -> /*rvChatProfile.post(() -> */hideSharedMediaLoading())/*)*/;
                 if (0 == entities.size() && 0 == vm.getSharedMedias().size()) {
                     // No shared media
                     vm.setFinishedLoadingSharedMedia(true);
@@ -1089,7 +1089,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         // First load
                         Log.e(TAG, "onSelectFinished: first load");
                         vm.setSharedMediaSectionTitle(new TapChatProfileItemModel(getString(R.string.tap_shared_media)));
-                        vm.getAdapterItems().add(vm.getAdapterItems().size() - 1, vm.getSharedMediaSectionTitle());
+                        vm.getAdapterItems().add(/*vm.getAdapterItems().size() - 1, */vm.getSharedMediaSectionTitle());
                         runOnUiThread(() -> {
                             //adapter.notifyItemInserted(adapter.getItems().indexOf(vm.getSharedMediaSectionTitle()));
                             Log.e(TAG, "onSelectFinished: insert section title");
@@ -1123,7 +1123,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     for (TAPMessageEntity entity : entities) {
                         TAPMessageModel mediaMessage = TAPChatManager.getInstance().convertToModel(entity);
                         vm.addSharedMedia(mediaMessage);
-                        vm.getAdapterItems().add(vm.getAdapterItems().size() - 1, new TapChatProfileItemModel(mediaMessage));
+                        vm.getAdapterItems().add(/*vm.getAdapterItems().size() - 1, */new TapChatProfileItemModel(mediaMessage));
                     }
                     Log.e(TAG, "onSelectFinished media size: " + vm.getSharedMedias().size());
                     vm.setLastSharedMediaTimestamp(vm.getSharedMedias().get(vm.getSharedMedias().size() - 1).getCreated());
@@ -1143,17 +1143,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (null == action) {
+            String localID = intent.getStringExtra(DownloadLocalID);
+            if (null == action || null == localID) {
                 return;
             }
             switch (action) {
                 case DownloadProgressLoading:
                 case DownloadFinish:
                 case DownloadFailed:
-                    if (null != adapter) {
-                        String localID = intent.getStringExtra(DownloadLocalID);
-                        runOnUiThread(() -> notifyItemChanged(vm.getSharedMedia(localID)));
-                    }
+                    runOnUiThread(() -> notifyItemChanged(vm.getSharedMedia(localID)));
                     break;
             }
         }
