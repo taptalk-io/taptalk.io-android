@@ -48,7 +48,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
-import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
@@ -630,11 +629,6 @@ public class TapTalk {
     }
 
     public static void showTaptalkNotification(TAPMessageModel tapMessageModel) {
-        new TAPNotificationManager.NotificationBuilder(appContext)
-                .setNotificationMessage(tapMessageModel)
-                .setSmallIcon(TapTalk.getClientAppIcon())
-                .setNeedReply(false)
-                .setOnClickAction(TapUIRoomListActivity.class)
-                .show();
+        TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(), TapUIChatActivity.class, tapMessageModel);
     }
 }
