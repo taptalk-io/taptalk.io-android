@@ -92,7 +92,7 @@
     <string name="tap_create_group">Create Group</string>
     <string name="tap_edit_group">Edit Group</string>
     <string name="tap_group_members">Group Members</string>
-    <string name="tap_remove_group_members">Remove Member</string>
+    <string name="tap_remove_group_member">Remove Member</string>
     <string name="tap_clear_and_exit_chat">Clear and Exit Chat</string>
     <string name="tap_delete_chat_room">Delete Room</string>
     <string name="tap_type_group_name">Type group name</string>
