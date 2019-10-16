@@ -80,11 +80,11 @@ import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.Taptalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
@@ -382,6 +382,16 @@ public class TAPUtils {
     public String formatCurrencyRp(long value) {
         String str = String.format(Locale.getDefault(), "%,d", value);
         return "Rp " + str.replace(",", ".");
+    }
+
+    public String formatThousandSeperator(String value) {
+        try {
+            Long v = Long.valueOf(value);
+            String str = String.format(Locale.getDefault(), "%,d", v);
+            return str.replace(",", ".");
+        } catch (Exception e) {
+            return "0";
+        }
     }
 
     public enum ClipType {TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
