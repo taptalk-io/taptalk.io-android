@@ -205,7 +205,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
 
             it.menuID == MENU_REMOVE_MEMBER -> {
                 TapTalkDialog.Builder(this)
-                        .setTitle(resources.getString(R.string.tap_remove_group_members))
+                        .setTitle(resources.getString(R.string.tap_remove_group_member))
                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                         .setMessage(getString(R.string.tap_remove_member_confirmation))
                         .setPrimaryButtonTitle(getString(R.string.tap_ok))

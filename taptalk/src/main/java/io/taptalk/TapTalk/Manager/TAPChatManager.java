@@ -1333,6 +1333,10 @@ public class TAPChatManager {
         return messageDrafts.get(getActiveRoom().getRoomID());
     }
 
+    public String getMessageFromDraft(String roomID) {
+        return messageDrafts.get(roomID);
+    }
+
     public void removeDraft() {
         messageDrafts.remove(getActiveRoom().getRoomID());
     }

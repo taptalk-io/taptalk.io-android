@@ -424,7 +424,8 @@ public class TAPDefaultConstant {
 
     public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";
-    public static final String REFRESH_TOKEN_RENEWED = "TAPRefreshTokenRenewed";
+    public static final String REFRESH_TOKEN_RENEWED = "kTAPRefreshTokenRenewed";
+    public static final String RELOAD_ROOM_LIST = "kTAPReloadRoomList";
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";

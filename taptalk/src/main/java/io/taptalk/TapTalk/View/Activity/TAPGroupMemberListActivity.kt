@@ -100,7 +100,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             R.id.ll_remove_button -> {
                 if (groupViewModel?.selectedMembers?.size!! > 1) {
                     TapTalkDialog.Builder(this)
-                            .setTitle("${resources.getString(R.string.tap_remove_group_members)}s")
+                            .setTitle("${resources.getString(R.string.tap_remove_group_member)}s")
                             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                             .setMessage(getString(R.string.tap_remove_multiple_members_confirmation))
                             .setPrimaryButtonTitle(getString(R.string.tap_ok))
@@ -114,7 +114,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                             .show()
                 } else {
                     TapTalkDialog.Builder(this)
-                            .setTitle(resources.getString(R.string.tap_remove_group_members))
+                            .setTitle(resources.getString(R.string.tap_remove_group_member))
                             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                             .setMessage(getString(R.string.tap_remove_member_confirmation))
                             .setPrimaryButtonTitle(getString(R.string.tap_ok))

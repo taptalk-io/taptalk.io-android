@@ -92,7 +92,7 @@
     <string name="tap_create_group">Create Group</string>
     <string name="tap_edit_group">Edit Group</string>
     <string name="tap_group_members">Group Members</string>
-    <string name="tap_remove_group_members">Remove Member</string>
+    <string name="tap_remove_group_member">Remove Member</string>
     <string name="tap_clear_and_exit_chat">Clear and Exit Chat</string>
     <string name="tap_delete_chat_room">Delete Room</string>
     <string name="tap_type_group_name">Type group name</string>
@@ -153,6 +153,7 @@
     <string name="tap_api_call_return_error">Oops! there is an error, please try again later.</string>
     <string name="tap_init_taptalk">Please initialize TapTalk library, read documentation for detailed information.</string>
     <string name="tap_error_open_room_failed">Unable to fetch user data, please check your connection and try again.</string>
+    <string name="tap_error_invalid_room">Invalid room.</string>
     <string name="tap_error_room_not_found">Could not find room.</string>
     <string name="tap_error_my_user_not_found">Could not find your user data.</string>
     <string name="tap_error_other_user_not_found">Could not find other user\'s data.</string>
