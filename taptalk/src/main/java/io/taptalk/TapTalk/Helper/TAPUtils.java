@@ -448,11 +448,6 @@ public class TAPUtils {
         startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
     }
 
-    // Open chat room from room list to pass typing status
-    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, LinkedHashMap<String, TAPUserModel> typingUser) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), typingUser, null);
-    }
-
     // Open chat room from notification
     public void startChatActivity(Context context, TAPRoomModel roomModel) {
         startChatActivity(context, roomModel, null, null);
