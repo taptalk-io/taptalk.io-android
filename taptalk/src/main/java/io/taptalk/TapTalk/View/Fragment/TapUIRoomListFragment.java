@@ -138,6 +138,7 @@ public class TapUIRoomListFragment extends Fragment {
         updateQueryRoomListFromBackground();
         addNetworkListener();
         TAPBroadcastManager.register(activity, receiver, REFRESH_TOKEN_RENEWED, RELOAD_ROOM_LIST);
+        TAPNotificationManager.getInstance().updateUnreadCount();
     }
 
     @Override
@@ -822,6 +823,7 @@ public class TapUIRoomListFragment extends Fragment {
                     getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
                 }
             });
+            TAPNotificationManager.getInstance().updateUnreadCount();
         }).start();
     }
 
