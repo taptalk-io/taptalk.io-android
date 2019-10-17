@@ -596,7 +596,6 @@ public class TapTalk {
     }
 
     public static void showTapTalkNotification(TAPMessageModel tapMessageModel) {
-        Log.e(TAG, "showTapTalkNotification: " + tapMessageModel.getBody());
         new TAPNotificationManager.NotificationBuilder(appContext)
                 .setNotificationMessage(tapMessageModel)
                 .setSmallIcon(TapTalk.getClientAppIcon())
