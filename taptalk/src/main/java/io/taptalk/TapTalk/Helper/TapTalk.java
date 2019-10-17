@@ -102,25 +102,6 @@ public class TapTalk {
     private static Map<String, String> customConfigs;
     public static TapTalkImplementationType implementationType;
 
-    public static boolean isTapTalkNotification(RemoteMessage remoteMessage) {
-        return remoteMessage.getData().get("identifier").equals("io.taptalk.TapTalk");
-    }
-
-    public static void handleTapTalkPushNotification(RemoteMessage remoteMessage) {
-        TAPNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
-        HashMap<String, Object> notificationMap = TAPUtils.getInstance().fromJSON(new TypeReference<HashMap<String, Object>>() {
-        }, remoteMessage.getData().get("body"));
-        try {
-            //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
-            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(),
-                    TapUIChatActivity.class,
-                    TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
-        } catch (Exception e) {
-            Log.e(TAG, "onMessageReceived: ", e);
-            e.printStackTrace();
-        }
-    }
-
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
         TapTalkEnvironmentStaging,
@@ -591,6 +572,41 @@ public class TapTalk {
 
     /**
      * =============================================================================================
+     * NOTIFICATION
+     * =============================================================================================
+     */
+
+    public static boolean isTapTalkNotification(RemoteMessage remoteMessage) {
+        return remoteMessage.getData().get("identifier").equals("io.taptalk.TapTalk");
+    }
+
+    public static void handleTapTalkPushNotification(RemoteMessage remoteMessage) {
+        TAPNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
+        HashMap<String, Object> notificationMap = TAPUtils.getInstance().fromJSON(new TypeReference<HashMap<String, Object>>() {
+        }, remoteMessage.getData().get("body"));
+        try {
+            //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
+            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(),
+                    TapUIChatActivity.class,
+                    TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
+        } catch (Exception e) {
+            Log.e(TAG, "onMessageReceived: ", e);
+            e.printStackTrace();
+        }
+    }
+
+    public static void showTapTalkNotification(TAPMessageModel tapMessageModel) {
+        Log.e(TAG, "showTapTalkNotification: " + tapMessageModel.getBody());
+        new TAPNotificationManager.NotificationBuilder(appContext)
+                .setNotificationMessage(tapMessageModel)
+                .setSmallIcon(TapTalk.getClientAppIcon())
+                .setNeedReply(false)
+                .setOnClickAction(TapUIChatActivity.class)
+                .show();
+    }
+
+    /**
+     * =============================================================================================
      * TEMP
      * =============================================================================================
      */
@@ -628,14 +644,5 @@ public class TapTalk {
     private void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
         checkTapTalkInitialized();
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
-    }
-
-    public static void showTapTalkNotification(TAPMessageModel tapMessageModel) {
-        new TAPNotificationManager.NotificationBuilder(appContext)
-                .setNotificationMessage(tapMessageModel)
-                .setSmallIcon(TapTalk.getClientAppIcon())
-                .setNeedReply(false)
-                .setOnClickAction(TapUIChatActivity.class)
-                .show();
     }
 }
