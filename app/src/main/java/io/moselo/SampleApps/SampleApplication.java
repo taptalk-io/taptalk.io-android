@@ -1,5 +1,6 @@
 package io.moselo.SampleApps;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TaptalkSample.BuildConfig;
 import io.taptalk.TaptalkSample.R;
 
@@ -34,7 +36,7 @@ public class SampleApplication extends Application {
 
         @Override
         public void onNotificationReceived(TAPMessageModel message) {
-            TapTalk.showTaptalkNotification(message);
+            TapTalk.showTapTalkNotification(message);
         }
 
         @Override
@@ -42,6 +44,13 @@ public class SampleApplication extends Application {
             Intent intent = new Intent(getApplicationContext(), TAPLoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             getApplicationContext().startActivity(intent);
+        }
+
+        @Override
+        public void onTaskRootChatRoomClosed(Activity activity) {
+            Intent intent = new Intent(activity, TapUIRoomListActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            activity.startActivity(intent);
         }
     };
 

@@ -30,6 +30,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -75,6 +76,7 @@ import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
+import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -315,6 +317,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else {
             //TAPNotificationManager.getInstance().updateUnreadCount();
             new Thread(() -> TAPChatManager.getInstance().putUnsentMessageToList()).start();
+            if (isTaskRoot()) {
+                // Trigger listener callback if no other activity is open
+                for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                    listener.onTaskRootChatRoomClosed(this);
+                }
+            }
             setResult(RESULT_OK);
             finish();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);

@@ -630,12 +630,12 @@ public class TapTalk {
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
 
-    public static void showTaptalkNotification(TAPMessageModel tapMessageModel) {
+    public static void showTapTalkNotification(TAPMessageModel tapMessageModel) {
         new TAPNotificationManager.NotificationBuilder(appContext)
                 .setNotificationMessage(tapMessageModel)
                 .setSmallIcon(TapTalk.getClientAppIcon())
                 .setNeedReply(false)
-                .setOnClickAction(TapUIRoomListActivity.class)
+                .setOnClickAction(TapUIChatActivity.class)
                 .show();
     }
 }
