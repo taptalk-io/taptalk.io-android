@@ -9,7 +9,6 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import io.taptalk.TapTalk.Interface.TapUIChatRoomInterface;
-import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
