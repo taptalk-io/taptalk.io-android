@@ -113,7 +113,7 @@ public class TapTalk {
         try {
             //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
             TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(),
-                    TapUIRoomListActivity.class,
+                    TapUIChatActivity.class,
                     TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
         } catch (Exception e) {
             Log.e(TAG, "onMessageReceived: ", e);
