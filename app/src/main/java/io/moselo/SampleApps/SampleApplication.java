@@ -57,6 +57,7 @@ public class SampleApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        TapTalk.setLoggingEnabled(true);
         TapTalk.init(this, BuildConfig.TAPTALK_SDK_APP_KEY_ID,
                 BuildConfig.TAPTALK_SDK_APP_KEY_SECRET,
                 R.drawable.ic_taptalk_logo, "TapTalk Dev Sample App", BuildConfig.TAPTALK_SDK_BASE_URL,
