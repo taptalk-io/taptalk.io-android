@@ -195,6 +195,7 @@ public class TapTalk {
 
         TAPDataManager.getInstance().updateSendingMessageToFailed();
         TAPContactManager.getInstance().setContactSyncPermissionAsked(TAPDataManager.getInstance().isContactSyncPermissionAsked());
+        TAPContactManager.getInstance().setContactSyncAllowedByUser(TAPDataManager.getInstance().isContactSyncAllowedByUser());
 
         // Init Stetho for debug build
         if (TapTalk.isLoggingEnabled)
