@@ -12,6 +12,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
+import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -334,8 +335,9 @@ public class TAPNotificationManager {
         new Thread(() -> TAPDataManager.getInstance().getUnreadCount(new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onCountedUnreadCount(int unreadCount) {
-                for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                for (TapListener listener : getTapTalkListeners()) {
                     if (unreadCount != lastBadgeCount) {
+                        Log.e(TAG, "onCountedUnreadCount: " + unreadCount);
                         listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
                         lastBadgeCount = unreadCount;
                     }
