@@ -23,6 +23,7 @@ import java.util.Map;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetRoomListListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
@@ -38,6 +39,7 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager;
+import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
@@ -45,6 +47,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
@@ -241,6 +244,19 @@ public class TapTalk {
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
                 TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
                 TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+            }
+        });
+
+
+        TapCoreRoomListManager.getInstance().getUpdatedRoomList(new TapCoreGetRoomListListener() {
+            @Override
+            public void onSuccess(List<TAPRoomListModel> roomLists) {
+                TapTalk.updateApplicationBadgeCount();
+            }
+
+            @Override
+            public void onError(String errorCode, String errorMessage) {
+                super.onError(errorCode, errorMessage);
             }
         });
     }
