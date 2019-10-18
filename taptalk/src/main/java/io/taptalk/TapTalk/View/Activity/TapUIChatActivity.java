@@ -30,7 +30,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -670,7 +669,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         // Load items from database for the First Time (First Load)
         if (vm.getRoom().isRoomDeleted()) {
-            showroomIsUnavailableState();
+            showRoomIsUnavailableState();
         } else if (vm.getMessageModels().size() == 0 && !vm.getRoom().isRoomDeleted()) {
             //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
             getAllUnreadMessage();
@@ -1448,14 +1447,17 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     !TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
                 callApiGetGroupData();
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() &&
-                    (ROOM_REMOVE_PARTICIPANT.equals(message.getAction())
-                            || LEAVE_ROOM.equals(message.getAction()))) {
+                    (ROOM_REMOVE_PARTICIPANT.equals(message.getAction()) &&
+                        null != message.getTarget() &&
+                        vm.getMyUserModel().getUserID().equals(message.getTarget().getTargetID())) ||
+                        (LEAVE_ROOM.equals(message.getAction()) &&
+                                vm.getMyUserModel().getUserID().equals(message.getUser().getUserID()))) {
                 showChatAsHistory(getString(R.string.tap_not_a_participant));
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_ADD_PARTICIPANT.equals(message.getAction())) {
                 showDefaultChatEditText();
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() && DELETE_ROOM.equals(message.getAction())) {
                 TAPChatManager.getInstance().deleteMessageFromIncomingMessages(message.getLocalID());
-                showroomIsUnavailableState();
+                showRoomIsUnavailableState();
             }
             updateMessage(message);
         }
@@ -2436,43 +2438,37 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 //Sementara Temporary buat Mastiin ga ada message nyangkut
                 setAllUnreadMessageToRead();
             }
-
-            if (0 < messageAdapter.getItems().size() && ((ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
-                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
-                    || (LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
-                    TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())))) {
-                showChatAsHistory(getString(R.string.tap_not_a_participant));
-            } else if (0 < messageAdapter.getItems().size() && DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction())) {
-                showroomIsUnavailableState();
-            }
+            checkIfChatIsAvailableAndUpdateUI();
         }
 
         @Override
         public void onError(TAPErrorModel error) {
             onError(error.getMessage());
-            if (0 < messageAdapter.getItems().size() && ((ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
-                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
-                    || (LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
-                    TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())))) {
-                showChatAsHistory(getString(R.string.tap_not_a_participant));
-            } else if (0 < messageAdapter.getItems().size() && DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction())) {
-                showroomIsUnavailableState();
-            }
         }
 
         @Override
         public void onError(String errorMessage) {
-            if (0 < messageAdapter.getItems().size() && ((ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
-                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
-                    || (LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
-                    TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())))) {
-                showChatAsHistory(getString(R.string.tap_not_a_participant));
-            } else if (0 < messageAdapter.getItems().size() && DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction())) {
-                showroomIsUnavailableState();
-            }
-
+            checkIfChatIsAvailableAndUpdateUI();
             if (0 < vm.getMessageModels().size()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
+            }
+        }
+        
+        private void checkIfChatIsAvailableAndUpdateUI() {
+            if (messageAdapter.getItems().isEmpty()) {
+                return;
+            }
+            TAPMessageModel lastMessage = messageAdapter.getItems().get(0);
+            if ((ROOM_REMOVE_PARTICIPANT.equals(lastMessage.getAction()) &&
+                    null != lastMessage.getTarget() &&
+                    vm.getMyUserModel().getUserID().equals(lastMessage.getTarget().getTargetID())) ||
+                    (LEAVE_ROOM.equals(lastMessage.getAction()) &&
+                            vm.getMyUserModel().getUserID().equals(lastMessage.getUser().getUserID()))) {
+                // User has been removed / left from group
+                showChatAsHistory(getString(R.string.tap_not_a_participant));
+            } else if (DELETE_ROOM.equals(lastMessage.getAction())) {
+                // Room was deleted
+                showRoomIsUnavailableState();
             }
         }
     };
@@ -2507,7 +2503,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 });
     }
 
-    private void showroomIsUnavailableState() {
+    private void showRoomIsUnavailableState() {
         new DeleteRoomAsync().execute(vm.getRoom().getRoomID());
         runOnUiThread(() -> {
             tvMessage.setText(getResources().getString(R.string.tap_group_unavailable));
