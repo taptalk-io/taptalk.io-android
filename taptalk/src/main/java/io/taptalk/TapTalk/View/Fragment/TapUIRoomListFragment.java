@@ -100,6 +100,7 @@ public class TapUIRoomListFragment extends Fragment {
 
     private TAPChatListener chatListener;
     private int roomBadgeCount = 0;
+    private int lastBadgeCount = 0;
 
     private TapTalkNetworkInterface networkListener = () -> {
         if (vm.isDoneFirstSetup()) {
@@ -690,6 +691,7 @@ public class TapUIRoomListFragment extends Fragment {
                 TAPDataManager.getInstance().setRoomListSetupFinished();
                 showChatRoomSetupSuccess();
             }
+            calculateBadgeCount();
         }
 
         @Override
@@ -770,7 +772,6 @@ public class TapUIRoomListFragment extends Fragment {
     };
 
     private TAPDatabaseListener<TAPMessageEntity> dbAnimatedListener = new TAPDatabaseListener<TAPMessageEntity>() {
-
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
@@ -783,7 +784,6 @@ public class TapUIRoomListFragment extends Fragment {
                     vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
                 }
             }
-
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(true);
             calculateBadgeCount();
@@ -819,13 +819,6 @@ public class TapUIRoomListFragment extends Fragment {
                 TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
             }
-//            TAPDataManager.getInstance().getUnreadCountPerRoom(roomID, new TAPDatabaseListener<TAPMessageEntity>() {
-//                @Override
-//                public void onCountedUnreadCount(String roomID, int unreadCount) {
-//                    vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
-//                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
-//                }
-//            });
             calculateBadgeCount();
         }).start();
     }
@@ -858,7 +851,10 @@ public class TapUIRoomListFragment extends Fragment {
             roomBadgeCount += hm.get(key).getUnreadCount();
         }
         for (TapListener listener : TapTalk.getTapTalkListeners()) {
-            listener.onTapTalkUnreadChatRoomBadgeCountUpdated(roomBadgeCount);
+            if (lastBadgeCount != roomBadgeCount) {
+                listener.onTapTalkUnreadChatRoomBadgeCountUpdated(roomBadgeCount);
+                lastBadgeCount = roomBadgeCount;
+            }
         }
     }
 

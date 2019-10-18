@@ -17,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -304,9 +305,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
                 !TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             showSyncContactPermissionDialog();
-        } else if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
+            TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
+            TAPContactManager.getInstance().setAndSaveContactSyncAllowedByUser(false);
+        } else if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS) ||
+                !TAPContactManager.getInstance().isContactSyncAllowedByUser()) {
             runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
-        } else {
+        } else if (TAPContactManager.getInstance().isContactSyncAllowedByUser()){
             syncContactList(false);
         }
     }
@@ -329,7 +333,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setSecondaryButtonListener(true, v -> flSync.setVisibility(View.VISIBLE))
                 .show());
-        TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
     }
 
     private void openQRScanner() {
@@ -376,6 +379,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         if (showLoading) {
             showSyncLoading();
         }
+        TAPContactManager.getInstance().setAndSaveContactSyncAllowedByUser(true);
 
         new Thread(() -> {
             List<String> newContactsPhoneNumbers = new ArrayList<>();
@@ -437,8 +441,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                         new Thread(() -> {
                             List<TAPUserModel> users = new ArrayList<>();
                             for (TAPUserModel contact : response.getUsers()) {
-                                contact.setUserAsContact();
-                                users.add(contact);
+                                if (!contact.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                                    contact.setUserAsContact();
+                                    users.add(contact);
+                                }
                             }
                             TAPDataManager.getInstance().insertMyContactToDatabase(users);
                             TAPContactManager.getInstance().updateUserData(users);
