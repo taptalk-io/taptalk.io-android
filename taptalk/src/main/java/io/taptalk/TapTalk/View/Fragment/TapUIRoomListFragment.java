@@ -489,7 +489,6 @@ public class TapUIRoomListFragment extends Fragment {
                     rvContactList.scrollToPosition(0);
             });
         }
-        Log.e(TAG, "processMessageFromSocket: calculateBadgeCount");
         calculateBadgeCount();
     }
 
@@ -690,7 +689,6 @@ public class TapUIRoomListFragment extends Fragment {
                 TAPDataManager.getInstance().setRoomListSetupFinished();
                 showChatRoomSetupSuccess();
             }
-            Log.e(TAG, "roomListView: calculateBadgeCount");
             calculateBadgeCount();
         }
 
@@ -736,7 +734,6 @@ public class TapUIRoomListFragment extends Fragment {
 
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
-            Log.e(TAG, "dbListener onSelectFinished: calculateBadgeCount");
             calculateBadgeCount();
         }
 
@@ -768,7 +765,6 @@ public class TapUIRoomListFragment extends Fragment {
 
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
-            Log.e(TAG, "dbListener onSelectedRoomList: calculateBadgeCount");
             calculateBadgeCount();
         }
     };
@@ -788,7 +784,6 @@ public class TapUIRoomListFragment extends Fragment {
             }
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(true);
-            Log.e(TAG, "dbAnimatedListener onSelectedRoomList: calculateBadgeCount");
             calculateBadgeCount();
         }
     };
@@ -822,7 +817,6 @@ public class TapUIRoomListFragment extends Fragment {
                 TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
             }
-            Log.e(TAG, "updateUnreadCountPerRoom: calculateBadgeCount");
             calculateBadgeCount();
         }).start();
     }
@@ -853,8 +847,6 @@ public class TapUIRoomListFragment extends Fragment {
         for (String key : vm.getRoomPointer().keySet()) {
             vm.setRoomBadgeCount(vm.getRoomBadgeCount() + vm.getRoomPointer().get(key).getUnreadCount());
         }
-        Log.e(TAG, "calculateBadgeCount lastBadgeCount: " + vm.getLastBadgeCount());
-        Log.e(TAG, "calculateBadgeCount roomBadgeCount: " + vm.getRoomBadgeCount());
         if (vm.getLastBadgeCount() != vm.getRoomBadgeCount()) {
             for (TapListener listener : TapTalk.getTapTalkListeners()) {
                 listener.onTapTalkUnreadChatRoomBadgeCountUpdated(vm.getRoomBadgeCount());
