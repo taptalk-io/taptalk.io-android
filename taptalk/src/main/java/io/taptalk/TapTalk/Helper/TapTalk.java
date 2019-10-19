@@ -51,7 +51,6 @@ import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
-import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
@@ -215,6 +214,17 @@ public class TapTalk {
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
+                TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
+                    @Override
+                    public void onSuccess(String successMessage) {
+                        TAPNotificationManager.getInstance().updateUnreadCount();
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                        super.onError(errorCode, errorMessage);
+                    }
+                });
                 isForeground = true;
                 TAPContactManager.getInstance().loadAllUserDataFromDatabase();
                 TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
