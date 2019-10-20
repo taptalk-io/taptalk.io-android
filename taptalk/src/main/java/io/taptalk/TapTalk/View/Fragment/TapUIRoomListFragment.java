@@ -107,6 +107,7 @@ public class TapUIRoomListFragment extends Fragment {
     };
 
     public TapUIRoomListFragment() {
+
     }
 
 
@@ -176,6 +177,7 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void initListener() {
+        TapTalk.removeGlobalChatListener();
         chatListener = new TAPChatListener() {
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {

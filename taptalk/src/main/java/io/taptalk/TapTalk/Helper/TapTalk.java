@@ -22,8 +22,8 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
-import io.taptalk.TapTalk.Listener.TapCoreGetRoomListListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
@@ -39,7 +39,6 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager;
-import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
@@ -47,7 +46,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
@@ -103,6 +101,7 @@ public class TapTalk {
     private static Map<String, String> projectConfigs;
     private static Map<String, String> customConfigs;
     public static TapTalkImplementationType implementationType;
+    private static TAPChatListener chatListener;
 
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
@@ -213,17 +212,17 @@ public class TapTalk {
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
-                TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
-                    @Override
-                    public void onSuccess(String successMessage) {
-                        TAPNotificationManager.getInstance().updateUnreadCount();
-                    }
-
-                    @Override
-                    public void onError(String errorCode, String errorMessage) {
-                        super.onError(errorCode, errorMessage);
-                    }
-                });
+//                TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
+//                    @Override
+//                    public void onSuccess(String successMessage) {
+//                        TAPNotificationManager.getInstance().updateUnreadCount();
+//                    }
+//
+//                    @Override
+//                    public void onError(String errorCode, String errorMessage) {
+//                        super.onError(errorCode, errorMessage);
+//                    }
+//                });
                 isForeground = true;
                 TAPContactManager.getInstance().loadAllUserDataFromDatabase();
                 TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
@@ -256,18 +255,54 @@ public class TapTalk {
             }
         });
 
+        if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
+                TAPDataManager.getInstance().checkAccessTokenAvailable())
+            initListener();
+    }
 
-        TapCoreRoomListManager.getInstance().getUpdatedRoomList(new TapCoreGetRoomListListener() {
+    private static void initListener() {
+        chatListener = new TAPChatListener() {
             @Override
-            public void onSuccess(List<TAPRoomListModel> roomLists) {
-                TapTalk.updateApplicationBadgeCount();
+            public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
+                Log.e(TAG, "onReceiveMessageInOtherRoom: from TapTalk");
+                updateApplicationBadgeCount();
             }
 
             @Override
-            public void onError(String errorCode, String errorMessage) {
-                super.onError(errorCode, errorMessage);
+            public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
+                Log.e(TAG, "onReceiveMessageInActiveRoom: from TapTalk");
+                updateApplicationBadgeCount();
             }
-        });
+
+            @Override
+            public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
+                Log.e(TAG, "onUpdateMessageInOtherRoom: from TapTalk");
+                updateApplicationBadgeCount();
+            }
+
+            @Override
+            public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
+                Log.e(TAG, "onUpdateMessageInActiveRoom: from TapTalk");
+                updateApplicationBadgeCount();
+            }
+
+            @Override
+            public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
+                Log.e(TAG, "onDeleteMessageInOtherRoom: from TapTalk");
+                updateApplicationBadgeCount();
+            }
+
+            @Override
+            public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
+                Log.e(TAG, "onDeleteMessageInActiveRoom: from TapTalk");
+                updateApplicationBadgeCount();
+            }
+        };
+        TAPChatManager.getInstance().addChatListener(chatListener);
+    }
+
+    public static void removeGlobalChatListener() {
+        TAPChatManager.getInstance().removeChatListener(chatListener);
     }
 
     /**
