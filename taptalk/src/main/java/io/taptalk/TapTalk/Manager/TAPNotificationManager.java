@@ -48,7 +48,7 @@ import static io.taptalk.TapTalk.Helper.TapTalk.getTapTalkListeners;
 public class TAPNotificationManager {
     private static final String TAG = TAPNotificationManager.class.getSimpleName();
     private static TAPNotificationManager instance;
-    private Map<String, List<TAPMessageModel>> notificationMessagesMap;
+    private static Map<String, List<TAPMessageModel>> notificationMessagesMap;
     private boolean isRoomListAppear;
     private int lastBadgeCount = 0;
 
@@ -119,6 +119,16 @@ public class TAPNotificationManager {
         }
     }
 
+    private static int getBadgeByMessageRoomID(String messageRoomID) {
+        int messageSize = 0;
+        for (Map.Entry<String, List<TAPMessageModel>> item : notificationMessagesMap.entrySet()) {
+            if (item.getKey().equalsIgnoreCase(messageRoomID)) {
+                messageSize += item.getValue().size();
+            }
+        }
+        return messageSize;
+    }
+
     public NotificationCompat.Builder createSummaryNotificationBubble(Context context, Class aClass) {
         int chatSize = 0, messageSize = 0;
         for (Map.Entry<String, List<TAPMessageModel>> item : notificationMessagesMap.entrySet()) {
@@ -134,6 +144,7 @@ public class TAPNotificationManager {
                 .setStyle(new NotificationCompat.InboxStyle()/*.setSummaryText(summaryContent)*/)
                 .setGroup(NOTIFICATION_GROUP_DEFAULT)
                 .setGroupSummary(true)
+                .setNumber(messageSize)
                 .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                 .setContentIntent(addPendingIntentForSummaryNotification(context, aClass))
                 .setAutoCancel(true)
@@ -401,6 +412,7 @@ public class TAPNotificationManager {
         public Notification build() {
             this.notificationBuilder = TAPNotificationManager.getInstance().createNotificationBubble(this);
             addReply();
+            notificationBuilder.setNumber(getBadgeByMessageRoomID(notificationMessage.getRoom().getRoomID()));
             if (null != roomModel && null != aClass) addPendingIntentWhenClicked();
             return this.notificationBuilder.build();
         }
