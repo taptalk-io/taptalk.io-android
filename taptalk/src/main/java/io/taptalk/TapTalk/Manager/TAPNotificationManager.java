@@ -12,7 +12,6 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -48,9 +47,8 @@ import static io.taptalk.TapTalk.Helper.TapTalk.getTapTalkListeners;
 public class TAPNotificationManager {
     private static final String TAG = TAPNotificationManager.class.getSimpleName();
     private static TAPNotificationManager instance;
-    private Map<String, List<TAPMessageModel>> notificationMessagesMap;
+    private static Map<String, List<TAPMessageModel>> notificationMessagesMap;
     private boolean isRoomListAppear;
-    private int lastBadgeCount = 0;
 
     public static TAPNotificationManager getInstance() {
         return null == instance ? (instance = new TAPNotificationManager()) : instance;
@@ -336,11 +334,7 @@ public class TAPNotificationManager {
             @Override
             public void onCountedUnreadCount(int unreadCount) {
                 for (TapListener listener : getTapTalkListeners()) {
-                    if (unreadCount != lastBadgeCount) {
-                        Log.e(TAG, "onCountedUnreadCount: " + unreadCount);
-                        listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
-                        lastBadgeCount = unreadCount;
-                    }
+                    listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
                 }
             }
         })).start();
@@ -366,11 +360,9 @@ public class TAPNotificationManager {
             if (null != notificationMessage &&
                     null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
                     TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
-                //Log.e(TAG, "setNotificationMessage: " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getUser().getName() + ": " + notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             } else if (null != notificationMessage) {
-                //Log.e(TAG, "setNotificationMessage:2 " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             }
