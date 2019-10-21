@@ -698,16 +698,18 @@ public class TapTalk {
     }
 
     public static void fetchNewMessageandUpdatedBadgeCount() {
-        TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
-            @Override
-            public void onSuccess(String s) {
-                TapTalk.updateApplicationBadgeCount();
-            }
+        if (TapTalk.isAuthenticated()) {
+            TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
+                @Override
+                public void onSuccess(String s) {
+                    TapTalk.updateApplicationBadgeCount();
+                }
 
-            @Override
-            public void onError(String s, String s1) {
-                TapTalk.updateApplicationBadgeCount();
-            }
-        });
+                @Override
+                public void onError(String s, String s1) {
+                    TapTalk.updateApplicationBadgeCount();
+                }
+            });
+        }
     }
 }
