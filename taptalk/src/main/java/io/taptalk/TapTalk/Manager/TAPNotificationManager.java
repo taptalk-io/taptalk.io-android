@@ -49,7 +49,6 @@ public class TAPNotificationManager {
     private static TAPNotificationManager instance;
     private static Map<String, List<TAPMessageModel>> notificationMessagesMap;
     private boolean isRoomListAppear;
-    private int lastBadgeCount = 0;
 
     public static TAPNotificationManager getInstance() {
         return null == instance ? (instance = new TAPNotificationManager()) : instance;
@@ -335,10 +334,7 @@ public class TAPNotificationManager {
             @Override
             public void onCountedUnreadCount(int unreadCount) {
                 for (TapListener listener : getTapTalkListeners()) {
-                    if (unreadCount != lastBadgeCount) {
-                        listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
-                        lastBadgeCount = unreadCount;
-                    }
+                    listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
                 }
             }
         })).start();
