@@ -160,6 +160,7 @@ public class TapTalk {
 
         // Init Hawk for preference
         if (BuildConfig.BUILD_TYPE.equals("dev")) {
+            // No encryption for dev build
             Hawk.init(appContext).setEncryption(new NoEncryption()).build();
         } else {
             Hawk.init(appContext).build();
@@ -213,17 +214,6 @@ public class TapTalk {
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
-                TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
-                    @Override
-                    public void onSuccess(String successMessage) {
-                        TAPNotificationManager.getInstance().updateUnreadCount();
-                    }
-
-                    @Override
-                    public void onError(String errorCode, String errorMessage) {
-                        TAPNotificationManager.getInstance().updateUnreadCount();
-                    }
-                });
                 isForeground = true;
                 TAPContactManager.getInstance().loadAllUserDataFromDatabase();
                 TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
