@@ -697,7 +697,7 @@ public class TapTalk {
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
 
-    public void fetchNewMessageandUpdatedBadgeCount() {
+    public static void fetchNewMessageandUpdatedBadgeCount() {
         TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
             @Override
             public void onSuccess(String s) {
