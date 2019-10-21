@@ -107,6 +107,7 @@ public class TapUIRoomListFragment extends Fragment {
     };
 
     public TapUIRoomListFragment() {
+
     }
 
 
@@ -176,6 +177,7 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void initListener() {
+        TapTalk.removeGlobalChatListener();
         chatListener = new TAPChatListener() {
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
@@ -489,6 +491,7 @@ public class TapUIRoomListFragment extends Fragment {
                     rvContactList.scrollToPosition(0);
             });
         }
+        calculateBadgeCount();
     }
 
     private void showSelectionActionBar() {
@@ -688,6 +691,7 @@ public class TapUIRoomListFragment extends Fragment {
                 TAPDataManager.getInstance().setRoomListSetupFinished();
                 showChatRoomSetupSuccess();
             }
+            calculateBadgeCount();
         }
 
         @Override
@@ -732,6 +736,7 @@ public class TapUIRoomListFragment extends Fragment {
 
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
+            calculateBadgeCount();
         }
 
         @Override
@@ -762,11 +767,11 @@ public class TapUIRoomListFragment extends Fragment {
 
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
+            calculateBadgeCount();
         }
     };
 
     private TAPDatabaseListener<TAPMessageEntity> dbAnimatedListener = new TAPDatabaseListener<TAPMessageEntity>() {
-
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
@@ -779,9 +784,9 @@ public class TapUIRoomListFragment extends Fragment {
                     vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
                 }
             }
-
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(true);
+            calculateBadgeCount();
         }
     };
 
@@ -802,18 +807,19 @@ public class TapUIRoomListFragment extends Fragment {
 
     private void updateUnreadCountPerRoom(String roomID) {
         new Thread(() -> {
-            if (null != activity && vm.getRoomPointer().containsKey(roomID) &&
+            if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) &&
                     TAPMessageStatusManager.getInstance().getUnreadList().containsKey(roomID) &&
                     TAPMessageStatusManager.getInstance().getUnreadList().get(roomID) <= vm.getRoomPointer().get(roomID).getUnreadCount()) {
                 vm.getRoomPointer().get(roomID).setUnreadCount(vm.getRoomPointer().get(roomID).getUnreadCount() - TAPMessageStatusManager.getInstance().getUnreadList().get(roomID));
                 TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);
-                activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
-            } else if (null != activity && vm.getRoomPointer().containsKey(roomID) &&
+                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
+            } else if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) &&
                     TAPMessageStatusManager.getInstance().getUnreadList().containsKey(roomID)) {
                 vm.getRoomPointer().get(roomID).setUnreadCount(0);
                 TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);
-                activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
+                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
             }
+            calculateBadgeCount();
         }).start();
     }
 
@@ -837,4 +843,18 @@ public class TapUIRoomListFragment extends Fragment {
             }
         }
     };
+
+    private void calculateBadgeCount() {
+        vm.setRoomBadgeCount(0);
+        for (String key : vm.getRoomPointer().keySet()) {
+            vm.setRoomBadgeCount(vm.getRoomBadgeCount() + vm.getRoomPointer().get(key).getUnreadCount());
+        }
+        if (vm.getLastBadgeCount() != vm.getRoomBadgeCount()) {
+            for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                listener.onTapTalkUnreadChatRoomBadgeCountUpdated(vm.getRoomBadgeCount());
+            }
+            vm.setLastBadgeCount(vm.getRoomBadgeCount());
+        }
+    }
+
 }

@@ -1854,7 +1854,6 @@ public class TAPChatManager {
         TapUI.getInstance().triggerTapTalkAccountButtonTapped(activity);
     }
 
-
     public void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
         TapUI.getInstance().triggerChatRoomProfileButtonTapped(activity, room, user);
     }

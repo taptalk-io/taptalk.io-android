@@ -47,9 +47,8 @@ import static io.taptalk.TapTalk.Helper.TapTalk.getTapTalkListeners;
 public class TAPNotificationManager {
     private static final String TAG = TAPNotificationManager.class.getSimpleName();
     private static TAPNotificationManager instance;
-    private Map<String, List<TAPMessageModel>> notificationMessagesMap;
+    private static Map<String, List<TAPMessageModel>> notificationMessagesMap;
     private boolean isRoomListAppear;
-
 
     public static TAPNotificationManager getInstance() {
         return null == instance ? (instance = new TAPNotificationManager()) : instance;
@@ -334,7 +333,7 @@ public class TAPNotificationManager {
         new Thread(() -> TAPDataManager.getInstance().getUnreadCount(new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onCountedUnreadCount(int unreadCount) {
-                for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                for (TapListener listener : getTapTalkListeners()) {
                     listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
                 }
             }
@@ -361,11 +360,9 @@ public class TAPNotificationManager {
             if (null != notificationMessage &&
                     null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
                     TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
-                //Log.e(TAG, "setNotificationMessage: " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getUser().getName() + ": " + notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             } else if (null != notificationMessage) {
-                //Log.e(TAG, "setNotificationMessage:2 " + TAPUtils.getInstance().toJsonString(notificationMessage));
                 setChatMessage(notificationMessage.getBody());
                 setChatSender(notificationMessage.getRoom().getRoomName());
             }

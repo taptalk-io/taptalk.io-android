@@ -62,6 +62,7 @@ import okhttp3.ResponseBody;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_AGENT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_CONTACT_SYNC_ALLOWED_BY_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASKED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
@@ -124,6 +125,7 @@ public class TAPDataManager {
         TAPContactManager.getInstance().clearUserMapByPhoneNumber();
         TAPContactManager.getInstance().resetMyCountryCode();
         TAPContactManager.getInstance().resetContactSyncPermissionAsked();
+        TAPContactManager.getInstance().resetContactSyncAllowedByUser();
         setNeedToQueryUpdateRoomList(false);
         TAPFileDownloadManager.getInstance().resetTAPFileDownloadManager();
         TAPFileUploadManager.getInstance().resetFileUploadManager();
@@ -204,6 +206,7 @@ public class TAPDataManager {
         removeMyCountryCode();
         removeMyCountryFlagUrl();
         removeContactSyncPermissionAsked();
+        removeContactSyncAllowedByUser();
     }
 
     /**
@@ -448,6 +451,17 @@ public class TAPDataManager {
         removePreference(IS_PERMISSION_SYNC_ASKED);
     }
 
+    public boolean isContactSyncAllowedByUser() {
+        return getBooleanPreference(IS_CONTACT_SYNC_ALLOWED_BY_USER);
+    }
+
+    public void saveContactSyncAllowedByUser(boolean isContactSyncAllowed) {
+        saveBooleanPreference(IS_CONTACT_SYNC_ALLOWED_BY_USER, isContactSyncAllowed);
+    }
+
+    public void removeContactSyncAllowedByUser() {
+        removePreference(IS_CONTACT_SYNC_ALLOWED_BY_USER);
+    }
 
     /**
      * MY COUNTRY CODE
