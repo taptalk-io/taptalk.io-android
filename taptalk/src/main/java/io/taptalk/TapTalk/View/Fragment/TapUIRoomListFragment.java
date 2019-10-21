@@ -75,6 +75,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 
 public class TapUIRoomListFragment extends Fragment {
 
@@ -443,32 +444,38 @@ public class TapUIRoomListFragment extends Fragment {
             if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != activity) {
                 // Update room list's last message data
                 roomLastMessage.updateValue(message);
-                int roomPos = vm.getRoomList().indexOf(roomList);
-                activity.runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
+                activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomList)));
             } else if (roomLastMessage.getCreated() < message.getCreated()) {
-                // Update room list's last message with the new message from socket
-                roomList.setLastMessage(message);
-
-                // Add unread count by 1 if sender is not self
-                if (!roomList.getLastMessage().getUser().getUserID()
-                        .equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
-                    roomList.setUnreadCount(roomList.getUnreadCount() + 1);
-                }
-
-                // Move room to top
                 int oldPos = vm.getRoomList().indexOf(roomList);
-                vm.getRoomList().remove(roomList);
-                vm.getRoomList().add(0, roomList);
+                if (LEAVE_ROOM.equals(message.getAction()) && vm.getMyUserID().equals(message.getUser().getUserID())) {
+                    // Remove room from list
+                    vm.getRoomList().remove(roomList);
+                    vm.getRoomPointer().remove(roomList.getLastMessage().getLocalID());
+                    activity.runOnUiThread(() -> adapter.notifyItemRemoved(oldPos));
+                } else {
+                    // Update room list's last message with the new message from socket
+                    roomList.setLastMessage(message);
 
-                if (null != activity) {
-                    activity.runOnUiThread(() -> {
-                        llRoomEmpty.setVisibility(View.GONE);
-                        adapter.notifyItemChanged(oldPos);
-                        adapter.notifyItemMoved(oldPos, 0);
-                        // Scroll to top
-                        if (llm.findFirstCompletelyVisibleItemPosition() == 0)
-                            rvContactList.scrollToPosition(0);
-                    });
+                    // Add unread count by 1 if sender is not self
+                    if (!roomList.getLastMessage().getUser().getUserID()
+                            .equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                        roomList.setUnreadCount(roomList.getUnreadCount() + 1);
+                    }
+
+                    // Move room to top
+                    vm.getRoomList().remove(roomList);
+                    vm.getRoomList().add(0, roomList);
+
+                    if (null != activity) {
+                        activity.runOnUiThread(() -> {
+                            llRoomEmpty.setVisibility(View.GONE);
+                            adapter.notifyItemChanged(oldPos);
+                            adapter.notifyItemMoved(oldPos, 0);
+                            // Scroll to top
+                            if (llm.findFirstCompletelyVisibleItemPosition() == 0)
+                                rvContactList.scrollToPosition(0);
+                        });
+                    }
                 }
             }
         } else if (null != activity && null != message.getHidden() && !message.getHidden()) {
