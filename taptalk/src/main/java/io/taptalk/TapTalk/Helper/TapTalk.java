@@ -39,6 +39,7 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager;
+import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
@@ -159,6 +160,7 @@ public class TapTalk {
 
         // Init Hawk for preference
         if (BuildConfig.BUILD_TYPE.equals("dev")) {
+            // No encryption for dev build
             Hawk.init(appContext).setEncryption(new NoEncryption()).build();
         } else {
             Hawk.init(appContext).build();
@@ -212,17 +214,17 @@ public class TapTalk {
         AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
             @Override
             public void onAppGotoForeground() {
-//                TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
-//                    @Override
-//                    public void onSuccess(String successMessage) {
-//                        TAPNotificationManager.getInstance().updateUnreadCount();
-//                    }
-//
-//                    @Override
-//                    public void onError(String errorCode, String errorMessage) {
-//                        super.onError(errorCode, errorMessage);
-//                    }
-//                });
+                TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
+                    @Override
+                    public void onSuccess(String successMessage) {
+                        TAPNotificationManager.getInstance().updateUnreadCount();
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                        TAPNotificationManager.getInstance().updateUnreadCount();
+                    }
+                });
                 isForeground = true;
                 TAPContactManager.getInstance().loadAllUserDataFromDatabase();
                 TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
@@ -521,7 +523,7 @@ public class TapTalk {
 
     public static void updateApplicationBadgeCount() {
         checkTapTalkInitialized();
-        TAPNotificationManager.getInstance().updateUnreadCount();
+        if (isAuthenticated()) TAPNotificationManager.getInstance().updateUnreadCount();
     }
 
     // TODO: 22 August 2019 CORE MODEL
