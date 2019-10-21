@@ -696,4 +696,18 @@ public class TapTalk {
         checkTapTalkInitialized();
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
+
+    public void fetchNewMessageandUpdatedBadgeCount() {
+        TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
+            @Override
+            public void onSuccess(String s) {
+                TapTalk.updateApplicationBadgeCount();
+            }
+
+            @Override
+            public void onError(String s, String s1) {
+                TapTalk.updateApplicationBadgeCount();
+            }
+        });
+    }
 }
