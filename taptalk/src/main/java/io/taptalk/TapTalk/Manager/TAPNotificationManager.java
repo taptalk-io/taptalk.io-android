@@ -12,7 +12,6 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -119,16 +118,6 @@ public class TAPNotificationManager {
         }
     }
 
-    private static int getBadgeByMessageRoomID(String messageRoomID) {
-        int messageSize = 0;
-        for (Map.Entry<String, List<TAPMessageModel>> item : notificationMessagesMap.entrySet()) {
-            if (item.getKey().equalsIgnoreCase(messageRoomID)) {
-                messageSize += item.getValue().size();
-            }
-        }
-        return messageSize;
-    }
-
     public NotificationCompat.Builder createSummaryNotificationBubble(Context context, Class aClass) {
         int chatSize = 0, messageSize = 0;
         for (Map.Entry<String, List<TAPMessageModel>> item : notificationMessagesMap.entrySet()) {
@@ -144,7 +133,6 @@ public class TAPNotificationManager {
                 .setStyle(new NotificationCompat.InboxStyle()/*.setSummaryText(summaryContent)*/)
                 .setGroup(NOTIFICATION_GROUP_DEFAULT)
                 .setGroupSummary(true)
-                .setNumber(messageSize)
                 .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
                 .setContentIntent(addPendingIntentForSummaryNotification(context, aClass))
                 .setAutoCancel(true)
@@ -412,7 +400,6 @@ public class TAPNotificationManager {
         public Notification build() {
             this.notificationBuilder = TAPNotificationManager.getInstance().createNotificationBubble(this);
             addReply();
-            notificationBuilder.setNumber(getBadgeByMessageRoomID(notificationMessage.getRoom().getRoomID()));
             if (null != roomModel && null != aClass) addPendingIntentWhenClicked();
             return this.notificationBuilder.build();
         }
