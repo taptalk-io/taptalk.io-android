@@ -30,6 +30,7 @@ import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapContactListListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -151,26 +152,17 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         }
 
         // Show users from contact list
-        vm.getContactListLive().observe(this, userModels -> {
-            boolean updateOnRefresh = false;
-            if (vm.getContactList().isEmpty()) {
-                updateOnRefresh = true;
-            }
-            if (userModels != null) {
-                vm.getContactList().clear();
-                vm.getContactList().addAll(userModels);
+        TAPDataManager.getInstance().getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
+            @Override
+            public void onSelectFinished(List<TAPUserModel> entities) {
+                vm.setContactList(entities);
                 vm.getContactList().removeAll(vm.getExistingMembers());
+                vm.getFilteredContacts().addAll(vm.getContactList());
                 vm.setSeparatedContactList(TAPUtils.getInstance().generateContactListForRecycler(vm.getContactList(), TYPE_SELECTABLE_CONTACT_LIST));
-            }
-            if (updateOnRefresh) {
+                vm.getAdapterItems().addAll(vm.getSeparatedContactList());
                 updateFilteredContacts(etSearch.getText().toString());
             }
-//            vm.setSeparatedContacts(TAPUtils.getInstance().separateContactsByInitial(vm.getContactList()));
-//            runOnUiThread(() -> contactListAdapter.setItems(vm.getSeparatedContacts()));
         });
-        vm.getFilteredContacts().addAll(vm.getContactList());
-        vm.setSeparatedContactList(TAPUtils.getInstance().generateContactListForRecycler(vm.getContactList(), TYPE_SELECTABLE_CONTACT_LIST));
-        vm.getAdapterItems().addAll(vm.getSeparatedContactList());
 
         vm.setRoomID(null == getIntent().getStringExtra(ROOM_ID) ? "" : getIntent().getStringExtra(ROOM_ID));
     }
