@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -84,6 +85,11 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             default:
                 return new EmptyViewHolder(parent, R.layout.tap_cell_empty);
         }
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
@@ -219,7 +225,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
         private ProgressBar pbProgress;
         private View vThumbnailOverlay;
 
-        private Drawable thumbnail;
+//        private Drawable thumbnail;
         private boolean isMediaReady;
 
         MediaThumbnailViewHolder(ViewGroup parent, int itemLayoutId) {
@@ -246,31 +252,29 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 
             Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(message.getLocalID());
 
-            if (message.getType() == TYPE_VIDEO) {
-                ivVideoIcon.setVisibility(View.VISIBLE);
-            } else {
-                ivVideoIcon.setVisibility(View.GONE);
-            }
-
             if (null == message.getData()) {
                 return;
             }
 
+            Drawable thumbnail = loadSmallThumbnail(message);
+
             // Load thumbnail when download is not in progress
             if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(message.getLocalID())) {
-                loadSmallThumbnail(message);
+//                loadSmallThumbnail(message);
+                ivThumbnail.setImageDrawable(thumbnail);
             }
 
-            new Thread(() -> {
-                BitmapDrawable mediaImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable((String) message.getData().get(FILE_ID));
-                if (null != mediaImage) {
-                    // Load image from cache
-                    activity.runOnUiThread(() -> glide.load(mediaImage)
+
+            if (message.getType() == TYPE_VIDEO) {
+                ivVideoIcon.setVisibility(View.VISIBLE);
+                Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID));
+                if (null != videoUri) {
+                    glide.load(videoUri)
                             .apply(new RequestOptions().placeholder(thumbnail))
                             .listener(new RequestListener<Drawable>() {
                                 @Override
                                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                    showMediaRequiresDownload(message, downloadProgressValue);
+                                    showMediaRequiresDownload(message, downloadProgressValue, thumbnail);
                                     return false;
                                 }
 
@@ -280,17 +284,22 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                                     return false;
                                 }
                             })
-                            .into(ivThumbnail));
+                            .into(ivThumbnail);
                 } else {
-                    // Load video thumbnail
-                    Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID));
-                    if (null != videoUri) {
-                        activity.runOnUiThread(() -> glide.load(videoUri)
+                    showMediaRequiresDownload(message, downloadProgressValue, thumbnail);
+                }
+            } else {
+                ivVideoIcon.setVisibility(View.GONE);
+                new Thread(() -> {
+                    BitmapDrawable mediaImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable((String) message.getData().get(FILE_ID));
+                    if (null != mediaImage) {
+                        // Load image from cache
+                        activity.runOnUiThread(() -> glide.load(mediaImage)
                                 .apply(new RequestOptions().placeholder(thumbnail))
                                 .listener(new RequestListener<Drawable>() {
                                     @Override
                                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                        showMediaRequiresDownload(message, downloadProgressValue);
+                                        showMediaRequiresDownload(message, downloadProgressValue, thumbnail);
                                         return false;
                                     }
 
@@ -302,20 +311,71 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                                 })
                                 .into(ivThumbnail));
                     } else {
-                        showMediaRequiresDownload(message, downloadProgressValue);
+                        showMediaRequiresDownload(message, downloadProgressValue, thumbnail);
                     }
-                }
-            }).start();
+                }).start();
+            }
+
+//            new Thread(() -> {
+//                BitmapDrawable mediaImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable((String) message.getData().get(FILE_ID));
+//                if (null != mediaImage) {
+//                    // Load image from cache
+//                    activity.runOnUiThread(() -> glide.load(mediaImage)
+//                            .apply(new RequestOptions().placeholder(thumbnail))
+//                            .listener(new RequestListener<Drawable>() {
+//                                @Override
+//                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                                    showMediaRequiresDownload(message, downloadProgressValue);
+//                                    return false;
+//                                }
+//
+//                                @Override
+//                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                                    showMediaReady(message);
+//                                    return false;
+//                                }
+//                            })
+//                            .into(ivThumbnail));
+//                } else {
+//                    // Load video thumbnail
+//                    Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID));
+//                    if (null != videoUri) {
+//                        activity.runOnUiThread(() -> glide.load(videoUri)
+//                                .apply(new RequestOptions().placeholder(thumbnail))
+//                                .listener(new RequestListener<Drawable>() {
+//                                    @Override
+//                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                                        showMediaRequiresDownload(message, downloadProgressValue);
+//                                        return false;
+//                                    }
+//
+//                                    @Override
+//                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                                        showMediaReady(message);
+//                                        return false;
+//                                    }
+//                                })
+//                                .into(ivThumbnail));
+//                    } else {
+//                        showMediaRequiresDownload(message, downloadProgressValue);
+//                    }
+//                }
+//            }).start();
+
+            clContainer.setOnLongClickListener(view -> {
+                Log.e(">>>>", "onLongClick: " + position + ". " + message.getMessageID() + " / " + message.getType() + " - " + message.getData().get(FILE_ID));
+                return false;
+            });
         }
 
-        private void loadSmallThumbnail(TAPMessageModel message) {
+        private Drawable loadSmallThumbnail(TAPMessageModel message) {
             if (null == message.getData()) {
-                return;
+                return null;
             }
-            thumbnail = null;
+//            thumbnail = null;
 //            if (null == thumbnail) {
-                new Thread(() -> {
-                    thumbnail = new BitmapDrawable(
+//                new Thread(() -> {
+                    Drawable thumbnail = new BitmapDrawable(
                             itemView.getContext().getResources(),
                             TAPFileUtils.getInstance().decodeBase64(
                                     (String) (null == message.getData().get(THUMBNAIL) ? "" :
@@ -324,15 +384,18 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                         // Set placeholder image if thumbnail fails to load
                         thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
                     }
-                    activity.runOnUiThread(() -> ivThumbnail.setImageDrawable(thumbnail));
-                }).start();
-//            } else {
+//                    activity.runOnUiThread(() -> ivThumbnail.setImageDrawable(thumbnail));
+//                }).start();
+//            }
+//            else {
 //                ivThumbnail.setImageDrawable(thumbnail);
 //            }
+            return thumbnail;
         }
 
         private void showMediaReady(TAPMessageModel message) {
             isMediaReady = true;
+            pbProgress.setProgress(0);
             clContainer.setOnClickListener(v -> chatProfileInterface.onMediaClicked(message, ivThumbnail, isMediaReady));
             if (message.getType() == TYPE_VIDEO && null != message.getData()) {
                 Number duration = (Number) message.getData().get(DURATION);
@@ -351,12 +414,13 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             flProgress.setVisibility(View.GONE);
         }
 
-        private void showMediaRequiresDownload(TAPMessageModel message, Integer downloadProgressValue) {
+        private void showMediaRequiresDownload(TAPMessageModel message, Integer downloadProgressValue, Drawable thumbnail) {
             isMediaReady = false;
             if (null == message.getData()) {
                 return;
             }
-            loadSmallThumbnail(message);
+//            loadSmallThumbnail(message);
+            ivThumbnail.setImageDrawable(thumbnail);
             new Thread(() -> {
                 Number size = (Number) message.getData().get(SIZE);
                 String videoSize = null == size ? "" : TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
