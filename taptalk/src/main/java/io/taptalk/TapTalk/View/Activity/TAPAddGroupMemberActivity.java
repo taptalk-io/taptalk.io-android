@@ -56,6 +56,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBER_ID
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
@@ -114,6 +115,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                         if (null != data) {
                             vm.setGroupName(data.getStringExtra(GROUP_NAME));
                             vm.setGroupImage(data.getParcelableExtra(GROUP_IMAGE));
+                            vm.setGroupImageUri(data.getParcelableExtra(URI));
                         }
                         break;
                 }
@@ -332,7 +334,11 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         if (null != vm.getGroupImage()) {
             intent.putExtra(GROUP_IMAGE, vm.getGroupImage());
         }
+        if (null != vm.getGroupImageUri()) {
+            intent.putExtra(URI, vm.getGroupImageUri());
+        }
         startActivityForResult(intent, CREATE_GROUP);
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void startAddMemberProcess() {

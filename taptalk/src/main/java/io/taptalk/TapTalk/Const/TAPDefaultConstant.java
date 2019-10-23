@@ -141,7 +141,8 @@ public class TAPDefaultConstant {
         public static final int SEND_FILE = 54;
         public static final int FORWARD_MESSAGE = 61;
         public static final int PICK_LOCATION = 62;
-        public static final int CREATE_GROUP = 81;
+        public static final int CREATE_GROUP = 71;
+        public static final int EDIT_GROUP = 81;
         public static final int PICK_GROUP_IMAGE = 91;
     }
 

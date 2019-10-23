@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -51,26 +52,30 @@ import io.taptalk.TapTalk.View.Adapter.TapSelectedGroupMemberAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPGroupViewModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBER_IDS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
 
 public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
-    private ImageView ivButtonBack, ivGroupPicBackground, ivLoadingProgressCreateGroup;
-    private CircleImageView civGroupImage;
-    private TextView tvTitle, tvMemberCount, tvCreateGroupBtn;
-    private EditText etGroupName;
-    private FrameLayout flCreateGroupBtn;
-    private RecyclerView rvGroupMembers;
+    private ConstraintLayout clActionBar, clSelectedMembers;
+    private FrameLayout flRemoveGroupPicture, flButtonCreateGroup, flButtonUpdateGroup;
     private LinearLayout llChangeGroupPicture;
-    private ConstraintLayout clActionBar;
+    private ImageView ivButtonBack, ivButtonClose, ivGroupPicBackground, ivLoadingProgressCreateGroup, ivLoadingProgressUpdateGroup;
+    private CircleImageView civGroupImage;
+    private TextView tvTitle, tvGroupPictureLabel, tvMemberCount, tvButtonCreateGroup, tvButtonUpdateGroup;
+    private EditText etGroupName;
+    private RecyclerView rvGroupMembers;
     private ScrollView svGroupSubject;
 
     private TapSelectedGroupMemberAdapter adapter;
@@ -92,13 +97,22 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             case RESULT_OK:
                 switch (requestCode) {
                     case PICK_GROUP_IMAGE:
-                        if (null == data.getData()) return;
+                        if (null == data.getData()) {
+                            return;
+                        }
+                        vm.setGroupPictureChanged(true);
                         vm.setRoomImageUri(data.getData());
-                        TAPImageURL groupImage = new TAPImageURL();
-                        groupImage.setThumbnail(data.getData().toString());
-                        groupImage.setFullsize(data.getData().toString());
-                        vm.getGroupData().setRoomImage(groupImage);
-                        loadGroupImage();
+
+                        if (vm.getGroupAction() == EDIT_GROUP) {
+                            loadGroupImage(vm.getRoomImageUri().toString());
+                            checkEditButtonAvailable();
+                        } else {
+                            TAPImageURL groupImage = new TAPImageURL();
+                            groupImage.setThumbnail(data.getData().toString());
+                            groupImage.setFullsize(data.getData().toString());
+                            vm.getGroupData().setRoomImage(groupImage);
+                            loadGroupImage();
+                        }
                         break;
                 }
         }
@@ -117,81 +131,131 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent();
-        if (null != vm.getGroupData().getRoomName()) {
-            intent.putExtra(GROUP_NAME, vm.getGroupData().getRoomName());
+        if (vm.isLoading()) {
+            return;
         }
-        if (null != vm.getGroupData().getRoomImage()) {
-            intent.putExtra(GROUP_IMAGE, vm.getGroupData().getRoomImage());
+        if (vm.getGroupAction() == EDIT_GROUP) {
+            super.onBackPressed();
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+        } else {
+            Intent intent = new Intent();
+            if (null != vm.getGroupData().getRoomName()) {
+                intent.putExtra(GROUP_NAME, vm.getGroupData().getRoomName());
+            }
+            if (null != vm.getGroupData().getRoomImage()) {
+                intent.putExtra(GROUP_IMAGE, vm.getGroupData().getRoomImage());
+            }
+            if (null != vm.getRoomImageUri()) {
+                intent.putExtra(URI, vm.getRoomImageUri());
+            }
+            setResult(RESULT_CANCELED, intent);
+            finish();
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
         }
-        setResult(RESULT_CANCELED, intent);
-        finish();
-        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPGroupViewModel.class);
-        vm.setMyID(getIntent().getStringExtra(MY_ID));
-        vm.setParticipantsIDs(getIntent().getStringArrayListExtra(GROUP_MEMBER_IDS));
-        vm.getGroupData().setRoomName(getIntent().getStringExtra(GROUP_NAME));
-        vm.getGroupData().setRoomImage(getIntent().getParcelableExtra(GROUP_IMAGE));
 
-        List<TAPUserModel> groupParticipants = getIntent().getParcelableArrayListExtra(GROUP_MEMBERS);
-        vm.getGroupData().setGroupParticipants(groupParticipants);
-        List<TapContactListModel> contactListModels = new ArrayList<>();
-        for (TAPUserModel user : groupParticipants) {
-            contactListModels.add(new TapContactListModel(user, TYPE_SELECTED_GROUP_MEMBER));
+        vm.setGroupAction(getIntent().getIntExtra(GROUP_ACTION, CREATE_GROUP));
+
+        if (vm.getGroupAction() == EDIT_GROUP) {
+            // Edit group
+            vm.setGroupData(getIntent().getParcelableExtra(ROOM));
+            if (null == vm.getGroupData().getRoomImage() || vm.getGroupData().getRoomImage().getThumbnail().isEmpty()) {
+                vm.setGroupPictureStartsEmpty(true);
+            }
+        } else {
+            // Create group
+            vm.getGroupData().setRoomName(getIntent().getStringExtra(GROUP_NAME));
+            vm.getGroupData().setRoomImage(getIntent().getParcelableExtra(GROUP_IMAGE));
+            vm.setRoomImageUri(getIntent().getParcelableExtra(URI));
+            vm.setMyID(getIntent().getStringExtra(MY_ID));
+            vm.setParticipantsIDs(getIntent().getStringArrayListExtra(GROUP_MEMBER_IDS));
+            vm.setGroupPictureStartsEmpty(true);
+            List<TAPUserModel> groupParticipants = getIntent().getParcelableArrayListExtra(GROUP_MEMBERS);
+            vm.getGroupData().setGroupParticipants(groupParticipants);
+            List<TapContactListModel> contactListModels = new ArrayList<>();
+            for (TAPUserModel user : groupParticipants) {
+                contactListModels.add(new TapContactListModel(user, TYPE_SELECTED_GROUP_MEMBER));
+            }
+            vm.setAdapterItems(contactListModels);
         }
-        vm.setAdapterItems(contactListModels);
     }
 
     private void initView() {
+        clActionBar = findViewById(R.id.cl_action_bar);
+        clSelectedMembers = findViewById(R.id.cl_selected_members);
+        flRemoveGroupPicture = findViewById(R.id.fl_remove_group_picture);
+        flButtonCreateGroup = findViewById(R.id.fl_button_create_group);
+        flButtonUpdateGroup = findViewById(R.id.fl_button_update_group);
+        llChangeGroupPicture = findViewById(R.id.ll_change_group_picture);
         ivButtonBack = findViewById(R.id.iv_button_back);
+        ivButtonClose = findViewById(R.id.iv_button_close);
         ivLoadingProgressCreateGroup = findViewById(R.id.iv_loading_progress_create_group);
+        ivLoadingProgressUpdateGroup = findViewById(R.id.iv_loading_progress_update_group);
         ivGroupPicBackground = findViewById(R.id.iv_group_pic_background);
         civGroupImage = findViewById(R.id.civ_group_image);
         tvTitle = findViewById(R.id.tv_title);
-        tvCreateGroupBtn = findViewById(R.id.tv_create_group_btn);
+        tvGroupPictureLabel = findViewById(R.id.tv_group_picture_label);
+        tvButtonCreateGroup = findViewById(R.id.tv_button_create_group);
+        tvButtonUpdateGroup = findViewById(R.id.tv_button_update_group);
         tvMemberCount = findViewById(R.id.tv_member_count);
         etGroupName = findViewById(R.id.et_group_name);
-        flCreateGroupBtn = findViewById(R.id.fl_create_group_btn);
         rvGroupMembers = findViewById(R.id.rv_group_members);
-        llChangeGroupPicture = findViewById(R.id.ll_change_group_picture);
         svGroupSubject = findViewById(R.id.sv_group_subject);
-        clActionBar = findViewById(R.id.cl_action_bar);
 
-        etGroupName.addTextChangedListener(groupNameWatcher);
         etGroupName.setOnFocusChangeListener(focusListener);
         svGroupSubject.getViewTreeObserver().addOnScrollChangedListener(toolbarScrollListener);
 
-        adapter = new TapSelectedGroupMemberAdapter(vm.getAdapterItems());
-        rvGroupMembers.setAdapter(adapter);
-        rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,
-                0, TAPUtils.getInstance().dpToPx(16), adapter.getItemCount(),
-                0, 0));
-        OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+        if (vm.getGroupAction() == EDIT_GROUP) {
+            // Show edit group layout
+            tvTitle.setText(R.string.tap_edit_group);
+            ivButtonBack.setVisibility(View.INVISIBLE);
+            clSelectedMembers.setVisibility(View.GONE);
+            etGroupName.addTextChangedListener(editGroupNameWatcher);
 
-        tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), adapter.getItemCount(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
-        flCreateGroupBtn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
-        loadGroupName();
-        loadGroupImage();
+            ivButtonClose.setOnClickListener(v -> onBackPressed());
+            flButtonUpdateGroup.setOnClickListener(v -> validateAndEditGroupDetails());
+            loadGroupImage(null == vm.getGroupData().getRoomImage() ? "" : vm.getGroupData().getRoomImage().getThumbnail());
+        } else {
+            // Show create group layout
+            tvTitle.setText(R.string.tap_group_subject);
+            ivButtonClose.setVisibility(View.INVISIBLE);
+            flButtonUpdateGroup.setVisibility(View.GONE);
+            flButtonCreateGroup.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
+            etGroupName.addTextChangedListener(createGroupNameWatcher);
 
-        ivButtonBack.setOnClickListener(v -> onBackPressed());
+            adapter = new TapSelectedGroupMemberAdapter(vm.getAdapterItems());
+            tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), adapter.getItemCount(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
+            rvGroupMembers.setAdapter(adapter);
+            rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,
+                    0, TAPUtils.getInstance().dpToPx(16), adapter.getItemCount(),
+                    0, 0));
+            OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+
+            ivButtonBack.setOnClickListener(v -> onBackPressed());
+            flButtonCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
+            loadGroupImage();
+        }
+
+        if (null != vm.getGroupData().getRoomName()) {
+            etGroupName.setText(vm.getGroupData().getRoomName());
+        }
+
         llChangeGroupPicture.setOnClickListener(v -> {
             TAPUtils.getInstance().animateClickButton(llChangeGroupPicture, 0.95f);
+            // TODO: 23 October 2019 SHOW BOTTOM SHEET
             TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
         });
-        flCreateGroupBtn.setOnClickListener(v -> validateAndCreateGroup());
-    }
-
-    private void loadGroupName() {
-        if (null == vm.getGroupData().getRoomName()) return;
-        etGroupName.setText(vm.getGroupData().getRoomName());
+        flRemoveGroupPicture.setOnClickListener(v -> removeGroupPicture());
     }
 
     private void loadGroupImage() {
-        if (null == vm.getGroupData().getRoomImage()) return;
+        if (null == vm.getGroupData().getRoomImage()) {
+            return;
+        }
         Glide.with(this).load(vm.getGroupData().getRoomImage().getThumbnail()).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -202,9 +266,24 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
             @Override
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                //fl_remove_group_picture.visibility = View.VISIBLE
                 return false;
             }
         }).into(civGroupImage);
+    }
+
+    private void loadGroupImage(String imageUrl) {
+        if (null == imageUrl || imageUrl.isEmpty()) {
+            civGroupImage.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getGroupData().getRoomName())));
+            civGroupImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            tvGroupPictureLabel.setText(TAPUtils.getInstance().getInitials(vm.getGroupData().getRoomName(), 1));
+            tvGroupPictureLabel.setVisibility(View.VISIBLE);
+        } else {
+            Glide.with(this).load(imageUrl).into(civGroupImage);
+            civGroupImage.setImageTintList(null);
+            tvGroupPictureLabel.setVisibility(View.GONE);
+            //fl_remove_group_picture.visibility = View.VISIBLE
+        }
     }
 
     private void validateAndCreateGroup() {
@@ -216,7 +295,118 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         }
     }
 
-    private TextWatcher groupNameWatcher = new TextWatcher() {
+    private void checkEditButtonAvailable() {
+        if ((!vm.isGroupPictureChanged() && !vm.isGroupNameChanged()) || etGroupName.getText().toString().trim().length() == 0) {
+            flButtonUpdateGroup.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
+        } else {
+            flButtonUpdateGroup.setBackgroundResource(R.drawable.tap_bg_button_active_ripple);
+        }
+    }
+
+    private void validateAndEditGroupDetails() {
+        if (!vm.isGroupPictureChanged() && !vm.isGroupNameChanged()) {
+            return;
+        }
+        String groupName = etGroupName.getText().toString().trim();
+        if (groupName.trim().isEmpty()) {
+            Toast.makeText(this, R.string.tap_error_message_group_name_empty, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        vm.getGroupData().setRoomName(groupName);
+        if (vm.isGroupNameChanged()) {
+            callUpdateGroupChatAPI();
+        } else if (vm.isGroupPictureChanged()) {
+            callUpdateGroupPictureAPI();
+        }
+    }
+
+    private void callUpdateGroupChatAPI() {
+        TAPDataManager.getInstance().updateChatRoom(vm.getGroupData().getRoomID(), etGroupName.getText().toString(), updateRoomDataView);
+    }
+
+    private void callUpdateGroupPictureAPI() {
+        TAPFileUploadManager.getInstance().uploadRoomPicture(this, vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
+    }
+
+    private void removeGroupPicture() {
+        vm.getGroupData().setRoomImage(null);
+
+        if (vm.getGroupAction() == EDIT_GROUP) {
+            civGroupImage.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getGroupData().getRoomName())));
+            civGroupImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            tvGroupPictureLabel.setText(TAPUtils.getInstance().getInitials(vm.getGroupData().getRoomName(), 1));
+            tvGroupPictureLabel.setVisibility(View.VISIBLE);
+            checkEditButtonAvailable();
+        } else {
+            civGroupImage.setImageResource(R.drawable.tap_img_default_group_avatar);
+        }
+
+        flRemoveGroupPicture.setVisibility(View.GONE);
+        vm.setGroupPictureChanged(!vm.isGroupPictureStartsEmpty());
+
+    }
+
+    private void showCreateGroupButtonLoading() {
+        vm.setLoading(true);
+        runOnUiThread(() -> {
+            tvButtonCreateGroup.setVisibility(View.GONE);
+            ivLoadingProgressCreateGroup.setVisibility(View.VISIBLE);
+            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivLoadingProgressCreateGroup);
+        });
+    }
+
+    private void hideCreateGroupButtonLoading() {
+        vm.setLoading(false);
+        runOnUiThread(() -> {
+            tvButtonUpdateGroup.setVisibility(View.VISIBLE);
+            ivLoadingProgressUpdateGroup.setVisibility(View.GONE);
+            TAPUtils.getInstance().stopViewAnimation(ivLoadingProgressUpdateGroup);
+        });
+    }
+
+    private void showUpdateGroupButtonLoading() {
+        vm.setLoading(true);
+        runOnUiThread(() -> {
+            tvButtonUpdateGroup.setVisibility(View.GONE);
+            ivLoadingProgressUpdateGroup.setVisibility(View.VISIBLE);
+            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivLoadingProgressUpdateGroup);
+        });
+    }
+
+    private void hideUpdateGroupButtonLoading() {
+        vm.setLoading(false);
+        runOnUiThread(() -> {
+            tvButtonCreateGroup.setVisibility(View.VISIBLE);
+            ivLoadingProgressCreateGroup.setVisibility(View.GONE);
+            TAPUtils.getInstance().stopViewAnimation(ivLoadingProgressCreateGroup);
+        });
+    }
+
+    private void openChatGroupProfile() {
+        Intent intent = new Intent(this, TAPChatProfileActivity.class);
+        intent.putExtra(ROOM, vm.getGroupData());
+        startActivity(intent);
+        setResult(RESULT_OK);
+        finish();
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+    }
+
+    private void openChatRoom() {
+        TAPUtils.getInstance().startChatActivity(this, vm.getGroupData());
+        setResult(RESULT_OK);
+        finish();
+        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+    }
+
+    private void finishGroupUpdate() {
+        Intent intent = new Intent();
+        intent.putExtra(ROOM, vm.getGroupData());
+        setResult(RESULT_OK, intent);
+        finish();
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
+    }
+
+    private TextWatcher createGroupNameWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -225,12 +415,34 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0 && s.toString().trim().length() > 0) {
-                flCreateGroupBtn.setBackgroundResource(R.drawable.tap_bg_button_active_ripple);
+                flButtonCreateGroup.setBackgroundResource(R.drawable.tap_bg_button_active_ripple);
                 vm.getGroupData().setRoomName(s.toString());
             } else {
-                flCreateGroupBtn.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
+                flButtonCreateGroup.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
                 vm.getGroupData().setRoomName("");
             }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+    private TextWatcher editGroupNameWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (s.length() > 0 && !s.toString().equals(vm.getGroupData().getRoomName())) {
+                vm.setGroupNameChanged(true);
+            } else if (s.length() > 0 && s.toString().equals(vm.getGroupData().getRoomName())) {
+                vm.setGroupNameChanged(false);
+            }
+            checkEditButtonAvailable();
         }
 
         @Override
@@ -260,30 +472,10 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         }
     };
 
-    private void btnStartLoadingState() {
-        tvCreateGroupBtn.setVisibility(View.GONE);
-        ivLoadingProgressCreateGroup.setVisibility(View.VISIBLE);
-        TAPUtils.getInstance().rotateAnimateInfinitely(this, ivLoadingProgressCreateGroup);
-    }
-
-    private void btnStopLoadingState() {
-        tvCreateGroupBtn.setVisibility(View.VISIBLE);
-        ivLoadingProgressCreateGroup.setVisibility(View.GONE);
-        TAPUtils.getInstance().stopViewAnimation(ivLoadingProgressCreateGroup);
-    }
-
-    private void updateGroupData(TAPCreateRoomResponse response) {
-        vm.setGroupData(response.getRoom());
-        vm.getGroupData().setGroupParticipants(response.getParticipants());
-        vm.getGroupData().setAdmins(response.getAdmins());
-        TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getGroupData());
-        //vm.getGroupData().setRoomImage();
-    }
-
     private TAPDefaultDataView<TAPCreateRoomResponse> createGroupRoomView = new TAPDefaultDataView<TAPCreateRoomResponse>() {
         @Override
         public void startLoading() {
-            btnStartLoadingState();
+            showCreateGroupButtonLoading();
         }
 
         @Override
@@ -291,39 +483,78 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             updateGroupData(response);
 
             if (null != vm.getRoomImageUri()) {
-                TAPFileUploadManager.getInstance().uploadRoomPicture(TAPGroupSubjectActivity.this,
-                        vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
+                callUpdateGroupPictureAPI();
             } else {
-                btnStopLoadingState();
-//                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-                //openChatGroupProfile();
+                hideCreateGroupButtonLoading();
                 openChatRoom();
             }
         }
 
         @Override
         public void onError(TAPErrorModel error) {
-            super.onError(error);
-            btnStopLoadingState();
+            hideCreateGroupButtonLoading();
             new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
-//                    .setPrimaryButtonListener(v -> onBackPressed())
                     .show();
         }
 
         @Override
         public void onError(String errorMessage) {
-            super.onError(errorMessage);
-            btnStopLoadingState();
+            hideCreateGroupButtonLoading();
             new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_error_message_general))
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
-//                    .setPrimaryButtonListener(v -> onBackPressed())
+                    .show();
+        }
+
+        private void updateGroupData(TAPCreateRoomResponse response) {
+            vm.setGroupData(response.getRoom());
+            vm.getGroupData().setGroupParticipants(response.getParticipants());
+            vm.getGroupData().setAdmins(response.getAdmins());
+            TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getGroupData());
+        }
+    };
+
+    private TAPDefaultDataView<TAPUpdateRoomResponse> updateRoomDataView = new TAPDefaultDataView<TAPUpdateRoomResponse>() {
+        @Override
+        public void startLoading() {
+            showUpdateGroupButtonLoading();
+        }
+
+        @Override
+        public void onSuccess(TAPUpdateRoomResponse response) {
+            if (null == vm.getRoomImageUri() && null != response.getRoom()) {
+                hideUpdateGroupButtonLoading();
+                vm.getGroupData().setRoomName(response.getRoom().getRoomName());
+                TAPGroupManager.Companion.getGetInstance().updateRoomDataNameAndImage(response.getRoom());
+                finishGroupUpdate();
+            } else {
+                callUpdateGroupPictureAPI();
+            }
+        }
+
+        @Override
+        public void onError(TAPErrorModel error) {
+            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(error.getMessage())
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                    .show();
+        }
+
+        @Override
+        public void onError(String errorMessage) {
+            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(getString(R.string.tap_error_message_general))
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .show();
         }
     };
@@ -331,64 +562,48 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPUpdateRoomResponse> changeGroupPictureView = new TAPDefaultDataView<TAPUpdateRoomResponse>() {
         @Override
         public void startLoading() {
-            super.startLoading();
-        }
-
-        @Override
-        public void endLoading() {
-            super.endLoading();
+            if (vm.getGroupAction() == EDIT_GROUP) {
+                showUpdateGroupButtonLoading();
+            }
         }
 
         @Override
         public void onSuccess(TAPUpdateRoomResponse response) {
-            super.onSuccess(response);
+            if (null == response.getRoom()) {
+                return;
+            }
             vm.getGroupData().setRoomImage(response.getRoom().getRoomImage());
-            btnStopLoadingState();
             TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
-            //openChatGroupProfile();
-            openChatRoom();
+
+            if (vm.getGroupAction() == EDIT_GROUP) {
+                hideUpdateGroupButtonLoading();
+                finishGroupUpdate();
+            } else {
+                hideCreateGroupButtonLoading();
+                openChatRoom();
+            }
         }
 
         @Override
         public void onError(TAPErrorModel error) {
-            super.onError(error);
-            btnStopLoadingState();
+            hideCreateGroupButtonLoading();
             new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
-//                    .setPrimaryButtonListener(v -> onBackPressed())
                     .show();
         }
 
         @Override
         public void onError(String errorMessage) {
-            super.onError(errorMessage);
-            btnStopLoadingState();
+            hideCreateGroupButtonLoading();
             new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_error_message_general))
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
-//                    .setPrimaryButtonListener(v -> onBackPressed())
                     .show();
         }
     };
-
-    public void openChatGroupProfile() {
-        Intent intent = new Intent(this, TAPChatProfileActivity.class);
-        intent.putExtra(ROOM, vm.getGroupData());
-        startActivity(intent);
-        setResult(RESULT_OK);
-        finish();
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-    }
-
-    public void openChatRoom() {
-        TAPUtils.getInstance().startChatActivity(this, vm.getGroupData());
-        setResult(RESULT_OK);
-        finish();
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-    }
 }

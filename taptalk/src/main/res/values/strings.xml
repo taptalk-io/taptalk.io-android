@@ -118,6 +118,7 @@
     <string name="tap_demoted_admin">Admin Demoted</string>
     <string name="tap_left_group">Left Group</string>
     <string name="tap_search_for_group_members">Search for members</string>
+    <string name="tap_search_for_users">Search for users</string>
     <string name="tap_not_a_participant">You are no longer a participant in this group</string>
 
     <!--Guides-->
