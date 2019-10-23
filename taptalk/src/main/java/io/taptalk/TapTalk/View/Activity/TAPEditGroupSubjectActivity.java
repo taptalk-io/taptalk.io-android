@@ -13,7 +13,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
@@ -66,7 +65,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_GROUP
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
 
-public class TAPGroupSubjectActivity extends TAPBaseActivity {
+public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
     private ConstraintLayout clActionBar, clSelectedMembers;
     private FrameLayout flRemoveGroupPicture, flButtonCreateGroup, flButtonUpdateGroup;
@@ -84,7 +83,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tap_activity_group_subject);
+        setContentView(R.layout.tap_activity_edit_group_subject);
 
         initViewModel();
         initView();
@@ -123,7 +122,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
                 case PERMISSION_READ_EXTERNAL_STORAGE_GALLERY:
-                    TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
+                    TAPUtils.getInstance().pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
                     break;
             }
         }
@@ -247,7 +246,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         llChangeGroupPicture.setOnClickListener(v -> {
             TAPUtils.getInstance().animateClickButton(llChangeGroupPicture, 0.95f);
             // TODO: 23 October 2019 SHOW BOTTOM SHEET
-            TAPUtils.getInstance().pickImageFromGallery(TAPGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
+            TAPUtils.getInstance().pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
         });
         flRemoveGroupPicture.setOnClickListener(v -> removeGroupPicture());
     }
@@ -260,7 +259,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                 civGroupImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
-                Toast.makeText(TAPGroupSubjectActivity.this, R.string.tap_failed_to_load_image, Toast.LENGTH_SHORT).show();
+                Toast.makeText(TAPEditGroupSubjectActivity.this, R.string.tap_failed_to_load_image, Toast.LENGTH_SHORT).show();
                 return false;
             }
 
@@ -493,7 +492,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onError(TAPErrorModel error) {
             hideCreateGroupButtonLoading();
-            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+            new TapTalkDialog.Builder(TAPEditGroupSubjectActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
@@ -504,7 +503,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onError(String errorMessage) {
             hideCreateGroupButtonLoading();
-            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+            new TapTalkDialog.Builder(TAPEditGroupSubjectActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_error_message_general))
@@ -540,7 +539,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+            new TapTalkDialog.Builder(TAPEditGroupSubjectActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
@@ -550,7 +549,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
-            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+            new TapTalkDialog.Builder(TAPEditGroupSubjectActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_error_message_general))
@@ -587,7 +586,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onError(TAPErrorModel error) {
             hideCreateGroupButtonLoading();
-            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+            new TapTalkDialog.Builder(TAPEditGroupSubjectActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(error.getMessage())
@@ -598,7 +597,7 @@ public class TAPGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onError(String errorMessage) {
             hideCreateGroupButtonLoading();
-            new TapTalkDialog.Builder(TAPGroupSubjectActivity.this)
+            new TapTalkDialog.Builder(TAPEditGroupSubjectActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(getString(R.string.tap_error_message_general))

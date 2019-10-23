@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tapDefaultBackgroundColor"
-    tools:context="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity">
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPEditGroupSubjectActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"

@@ -324,7 +324,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     }
 
     private void openGroupSubjectActivity() {
-        Intent intent = new Intent(this, TAPGroupSubjectActivity.class);
+        Intent intent = new Intent(this, TAPEditGroupSubjectActivity.class);
         intent.putExtra(MY_ID, TAPChatManager.getInstance().getActiveUser().getUserID());
         intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
         intent.putStringArrayListExtra(GROUP_MEMBER_IDS, new ArrayList<>(vm.getSelectedContactsIds()));

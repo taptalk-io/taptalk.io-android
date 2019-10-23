@@ -23,7 +23,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -386,7 +385,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void openEditGroup() {
-        Intent intent = new Intent(TAPChatProfileActivity.this, TAPGroupSubjectActivity.class);
+        Intent intent = new Intent(TAPChatProfileActivity.this, TAPEditGroupSubjectActivity.class);
         intent.putExtra(GROUP_ACTION, EDIT_GROUP);
         intent.putExtra(ROOM, vm.getRoom());
         startActivityForResult(intent, GROUP_UPDATE_DATA);
