@@ -38,6 +38,7 @@ import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPGroupManager;
@@ -48,6 +49,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TapSelectedGroupMemberAdapter;
+import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.ViewModel.TAPGroupViewModel;
 import io.taptalk.Taptalk.R;
 
@@ -59,10 +61,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_GROUP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
 
 public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
@@ -92,28 +98,30 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
-            case RESULT_OK:
-                switch (requestCode) {
-                    case PICK_GROUP_IMAGE:
-                        if (null == data.getData()) {
-                            return;
-                        }
-                        vm.setGroupPictureChanged(true);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case PICK_GROUP_IMAGE_CAMERA:
+                case PICK_GROUP_IMAGE_GALLERY:
+                    if (requestCode == PICK_GROUP_IMAGE_GALLERY && null == data.getData()) {
+                        return;
+                    } else if (requestCode == PICK_GROUP_IMAGE_GALLERY) {
                         vm.setRoomImageUri(data.getData());
+                    }
 
-                        if (vm.getGroupAction() == EDIT_GROUP) {
-                            loadGroupImage(vm.getRoomImageUri().toString());
-                            checkEditButtonAvailable();
-                        } else {
-                            TAPImageURL groupImage = new TAPImageURL();
-                            groupImage.setThumbnail(data.getData().toString());
-                            groupImage.setFullsize(data.getData().toString());
-                            vm.getGroupData().setRoomImage(groupImage);
-                            loadGroupImage();
-                        }
-                        break;
-                }
+                    vm.setGroupPictureChanged(true);
+
+                    if (vm.getGroupAction() == EDIT_GROUP) {
+                        loadGroupImage(vm.getRoomImageUri().toString());
+                        checkEditButtonAvailable();
+                    } else {
+                        TAPImageURL groupImage = new TAPImageURL();
+                        groupImage.setThumbnail(vm.getRoomImageUri().toString());
+                        groupImage.setFullsize(vm.getRoomImageUri().toString());
+                        vm.getGroupData().setRoomImage(groupImage);
+                        loadGroupImage();
+                    }
+                    break;
+            }
         }
     }
 
@@ -121,8 +129,12 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
+                case PERMISSION_CAMERA_CAMERA:
+                case PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA:
+                    vm.setRoomImageUri(TAPUtils.getInstance().takePicture(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));
+                    break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_GALLERY:
-                    TAPUtils.getInstance().pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
+                    TAPUtils.getInstance().pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_GALLERY, false);
                     break;
             }
         }
@@ -243,11 +255,8 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             etGroupName.setText(vm.getGroupData().getRoomName());
         }
 
-        llChangeGroupPicture.setOnClickListener(v -> {
-            TAPUtils.getInstance().animateClickButton(llChangeGroupPicture, 0.95f);
-            // TODO: 23 October 2019 SHOW BOTTOM SHEET
-            TAPUtils.getInstance().pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE, false);
-        });
+        civGroupImage.setOnClickListener(v -> showProfilePicturePickerBottomSheet());
+        llChangeGroupPicture.setOnClickListener(v -> showProfilePicturePickerBottomSheet());
         flRemoveGroupPicture.setOnClickListener(v -> removeGroupPicture());
     }
 
@@ -283,6 +292,12 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             tvGroupPictureLabel.setVisibility(View.GONE);
             //fl_remove_group_picture.visibility = View.VISIBLE
         }
+    }
+
+    private void showProfilePicturePickerBottomSheet() {
+        TAPUtils.getInstance().dismissKeyboard(this);
+        TAPUtils.getInstance().animateClickButton(llChangeGroupPicture, 0.95f);
+        new TAPAttachmentBottomSheet(true, profilePicturePickerListener).show(getSupportFragmentManager(), "");
     }
 
     private void validateAndCreateGroup() {
@@ -468,6 +483,18 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             clActionBar.setElevation(TAPUtils.getInstance().dpToPx(1));
         } else {
             clActionBar.setElevation(TAPUtils.getInstance().dpToPx(2));
+        }
+    };
+
+    private TAPAttachmentListener profilePicturePickerListener = new TAPAttachmentListener() {
+        @Override
+        public void onCameraSelected() {
+            vm.setRoomImageUri(TAPUtils.getInstance().takePicture(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));
+        }
+
+        @Override
+        public void onGallerySelected() {
+            TAPUtils.getInstance().pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_GALLERY, false);
         }
     };
 

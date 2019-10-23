@@ -129,8 +129,6 @@ public class TAPDefaultConstant {
         public static final int COUNTRY_PICK = 11;
         public static final int EDIT_PROFILE = 21;
         public static final int OPEN_PROFILE = 22;
-        public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
-        public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
         public static final int REGISTER = 31;
         public static final int GROUP_ADD_MEMBER = 4;
         public static final int GROUP_UPDATE_DATA = 41;
@@ -143,7 +141,10 @@ public class TAPDefaultConstant {
         public static final int PICK_LOCATION = 62;
         public static final int CREATE_GROUP = 71;
         public static final int EDIT_GROUP = 81;
-        public static final int PICK_GROUP_IMAGE = 91;
+        public static final int PICK_PROFILE_IMAGE_CAMERA = 91;
+        public static final int PICK_PROFILE_IMAGE_GALLERY = 92;
+        public static final int PICK_GROUP_IMAGE_CAMERA = 93;
+        public static final int PICK_GROUP_IMAGE_GALLERY = 94;
     }
 
     public static final class PermissionRequest {
