@@ -30,6 +30,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -258,8 +259,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         super.onDestroy();
 
         // Reload UI in room list
+        Log.e(TAG, "onDestroy: " + vm.getRoom().getRoomID());
         Intent intent = new Intent(RELOAD_ROOM_LIST);
-        intent.putExtra(ROOM_ID, TAPChatManager.getInstance().getOpenRoom());
+        intent.putExtra(ROOM_ID, vm.getRoom().getRoomID());
         LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent);
 
         TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());

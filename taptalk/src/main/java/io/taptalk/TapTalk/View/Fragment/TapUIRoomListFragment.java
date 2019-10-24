@@ -126,6 +126,7 @@ public class TapUIRoomListFragment extends Fragment {
         initListener();
         initView(view);
         viewLoadedSequence();
+        TAPBroadcastManager.register(activity, reloadRoomListReceiver, RELOAD_ROOM_LIST);
     }
 
     @Override
@@ -139,15 +140,21 @@ public class TapUIRoomListFragment extends Fragment {
         new Thread(() -> TAPChatManager.getInstance().saveMessageToDatabase()).start();
         updateQueryRoomListFromBackground();
         addNetworkListener();
-        TAPBroadcastManager.register(activity, receiver, REFRESH_TOKEN_RENEWED, RELOAD_ROOM_LIST);
+        TAPBroadcastManager.register(activity, refreshTokenReceiver, REFRESH_TOKEN_RENEWED);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         TAPNotificationManager.getInstance().setRoomListAppear(false);
-        TAPBroadcastManager.unregister(activity, receiver);
+        TAPBroadcastManager.unregister(activity, refreshTokenReceiver);
         removeNetworkListener();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        TAPBroadcastManager.unregister(activity, reloadRoomListReceiver);
     }
 
     @Override
@@ -830,24 +837,24 @@ public class TapUIRoomListFragment extends Fragment {
         }).start();
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private BroadcastReceiver refreshTokenReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (null == action) {
+            if (null == intent.getAction() || !intent.getAction().equals(REFRESH_TOKEN_RENEWED)) {
                 return;
             }
+            viewLoadedSequence();
+        }
+    };
 
-            switch (action) {
-                case REFRESH_TOKEN_RENEWED:
-                    viewLoadedSequence();
-                    break;
-                case RELOAD_ROOM_LIST:
-                    adapter.notifyItemChanged(vm.getRoomList().indexOf(
-                            vm.getRoomPointer().get(intent.getStringExtra(ROOM_ID))));
-                    break;
+    private BroadcastReceiver reloadRoomListReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null == intent.getAction() || !intent.getAction().equals(RELOAD_ROOM_LIST) || null == adapter) {
+                return;
             }
+            adapter.notifyItemChanged(vm.getRoomList().indexOf(
+                    vm.getRoomPointer().get(intent.getStringExtra(ROOM_ID))));
         }
     };
 
