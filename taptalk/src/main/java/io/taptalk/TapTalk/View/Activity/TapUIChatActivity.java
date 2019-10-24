@@ -1893,9 +1893,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void hideUnreadButtonLoading() {
-        if (null == ivUnreadButtonImage.getAnimation()) {
-            return;
-        }
         runOnUiThread(() -> {
             ivUnreadButtonImage.clearAnimation();
             clUnreadButton.setVisibility(View.GONE);
