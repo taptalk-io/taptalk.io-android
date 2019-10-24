@@ -33,11 +33,13 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAG
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.*
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
+import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPUserModel
@@ -51,18 +53,18 @@ import kotlinx.android.synthetic.main.tap_activity_my_account.iv_edit_profile_pi
 import kotlinx.android.synthetic.main.tap_activity_my_account.pb_profile_picture_progress
 import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_change_profile_picture
 import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_password
-import kotlinx.android.synthetic.main.tap_activity_register.civ_profile_picture
-import kotlinx.android.synthetic.main.tap_activity_register.cl_form_container
-import kotlinx.android.synthetic.main.tap_activity_register.cl_password
-import kotlinx.android.synthetic.main.tap_activity_register.et_email_address
-import kotlinx.android.synthetic.main.tap_activity_register.et_full_name
-import kotlinx.android.synthetic.main.tap_activity_register.et_mobile_number
-import kotlinx.android.synthetic.main.tap_activity_register.et_username
-import kotlinx.android.synthetic.main.tap_activity_register.fl_container
-import kotlinx.android.synthetic.main.tap_activity_register.tv_country_code
-import kotlinx.android.synthetic.main.tap_activity_register.tv_label_email_address_error
-import kotlinx.android.synthetic.main.tap_activity_register.tv_label_full_name_error
-import kotlinx.android.synthetic.main.tap_activity_register.v_password_separator
+import kotlinx.android.synthetic.main.tap_activity_my_account.civ_profile_picture
+import kotlinx.android.synthetic.main.tap_activity_my_account.cl_form_container
+import kotlinx.android.synthetic.main.tap_activity_my_account.cl_password
+import kotlinx.android.synthetic.main.tap_activity_my_account.et_email_address
+import kotlinx.android.synthetic.main.tap_activity_my_account.et_full_name
+import kotlinx.android.synthetic.main.tap_activity_my_account.et_mobile_number
+import kotlinx.android.synthetic.main.tap_activity_my_account.et_username
+import kotlinx.android.synthetic.main.tap_activity_my_account.fl_container
+import kotlinx.android.synthetic.main.tap_activity_my_account.tv_country_code
+import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_email_address_error
+import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_full_name_error
+import kotlinx.android.synthetic.main.tap_activity_my_account.v_password_separator
 import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
 class TAPMyAccountActivity : TAPBaseActivity() {
@@ -91,6 +93,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         initViewModel()
         initView()
         registerBroadcastReceiver()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        checkFullNameTimer.cancel()
+        checkEmailAddressTimer.cancel()
     }
 
     override fun onDestroy() {
@@ -150,6 +158,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         //et_full_name.addTextChangedListener(fullNameWatcher)
         //et_email_address.addTextChangedListener(emailWatcher)
+
+        if (TapUI.getInstance().isLogoutButtonVisible) {
+            cl_logout.visibility = View.VISIBLE
+        } else {
+            cl_logout.visibility = View.GONE
+        }
 
         if (vm.currentProfilePicture.isEmpty()) {
             civ_profile_picture.imageTintList = ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name))
@@ -400,9 +414,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         hideLoading()
 
-        val intent = Intent(this, TAPLoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
+        for (listener in TapTalk.getTapTalkListeners()) {
+            listener.onUserLogout()
+        }
     }
 
     private fun uploadProfilePicture() {

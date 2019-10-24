@@ -23,7 +23,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -74,6 +73,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NEED_TO_CLOSE_ACTIVITY_BEFORE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
@@ -82,6 +82,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_UPDATE_DATA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
@@ -384,18 +385,19 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void openEditGroup() {
-        Intent intent = new Intent(TAPChatProfileActivity.this, TAPEditGroupActivity.class);
+        Intent intent = new Intent(TAPChatProfileActivity.this, TAPEditGroupSubjectActivity.class);
+        intent.putExtra(GROUP_ACTION, EDIT_GROUP);
         intent.putExtra(ROOM, vm.getRoom());
         startActivityForResult(intent, GROUP_UPDATE_DATA);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
     }
 
     private void changeRoomColor() {
-        Log.e(TAG, "changeRoomColor: ");
+        //Log.e(TAG, "changeRoomColor: ");
     }
 
     private void blockUser() {
-        Log.e(TAG, "blockUser: ");
+        //Log.e(TAG, "blockUser: ");
     }
 
     private void clearAndExitChat() {
@@ -432,7 +434,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void clearChat() {
-        Log.e(TAG, "exitGroup: ");
+        //Log.e(TAG, "exitGroup: ");
     }
 
     private void startVideoDownload(TAPMessageModel message) {
@@ -662,7 +664,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             if (response.getSuccess()) {
                 // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
                 // TODO: 5 August 2019 USED IN CORE CHAT ROOM MANAGER
-                TAPOldDataManager.getInstance().startCleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+                TAPOldDataManager.getInstance().cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {
                         super.onDeleteFinished();
@@ -715,7 +717,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             if (response.getSuccess()) {
                 // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
                 // TODO: 5 August 2019 USED IN CORE CHAT ROOM MANAGER
-                TAPOldDataManager.getInstance().startCleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+                TAPOldDataManager.getInstance().cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {
                         super.onDeleteFinished();
@@ -762,7 +764,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             new Thread(() -> {
                 if (0 == entities.size() && 0 == vm.getSharedMedias().size()) {
                     // No shared media
-                    Log.e(TAG, "onSelectFinished: No shared media");
                     vm.setFinishedLoadingSharedMedia(true);
                     runOnUiThread(() -> ivSharedMediaLoading.setVisibility(View.GONE));
                 } else {
@@ -770,7 +771,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     int previousSize = vm.getSharedMedias().size();
                     if (0 == previousSize) {
                         // First load
-                        Log.e(TAG, "onSelectFinished: First load");
                         runOnUiThread(() -> {
                             tvSharedMediaLabel.setText(getString(R.string.tap_shared_media));
                             sharedMediaAdapter = new TAPMediaListAdapter(vm.getSharedMedias(), mediaInterface, glide);
@@ -814,7 +814,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     if (MAX_ITEMS_PER_PAGE > entities.size()) {
                         // No more medias in database
                         // TODO: 10 May 2019 CALL API BEFORE?
-                        Log.e(TAG, "onSelectFinished: No more medias in database");
                         vm.setFinishedLoadingSharedMedia(true);
                         runOnUiThread(() -> nsvProfile.getViewTreeObserver().removeOnScrollChangedListener(sharedMediaPagingScrollListener));
                     }

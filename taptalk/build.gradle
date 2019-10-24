@@ -11,32 +11,32 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 26
+        versionName "1.0.17"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             debuggable false
             consumerProguardFiles 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         staging {
-            minifyEnabled true
+            minifyEnabled false
             debuggable true
         }
         stagingUpload {
-            minifyEnabled true
+            minifyEnabled false
             debuggable false
         }
         dev {
-            minifyEnabled true
+            minifyEnabled false
             debuggable true
         }
         devUpload {
-            minifyEnabled true
+            minifyEnabled false
             debuggable false
         }
     }

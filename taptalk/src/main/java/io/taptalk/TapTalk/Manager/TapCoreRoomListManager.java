@@ -9,6 +9,7 @@ import java.util.List;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
@@ -21,12 +22,81 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
 
+@Keep
 public class TapCoreRoomListManager {
 
     private static TapCoreRoomListManager instance;
 
     public static TapCoreRoomListManager getInstance() {
         return null == instance ? instance = new TapCoreRoomListManager() : instance;
+    }
+
+    public void fetchNewMessageToDatabase(TapCommonListener listener) {
+        TAPDataManager.getInstance().getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
+            @Override
+            public void onSuccess(TAPGetRoomListResponse response) {
+                if (response.getMessages().size() > 0) {
+                    List<TAPMessageEntity> tempMessage = new ArrayList<>();
+                    List<String> userIds = new ArrayList<>();
+                    for (HashMap<String, Object> messageMap : response.getMessages()) {
+                        try {
+                            TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
+                            TAPMessageEntity entity = TAPChatManager.getInstance().convertToEntity(message);
+                            tempMessage.add(entity);
+
+                            if (message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                                userIds.add(TAPChatManager.getInstance().getOtherUserIdFromRoom(message.getRoom().getRoomID()));
+                            } else {
+                                TAPContactManager.getInstance().updateUserData(message.getUser());
+                            }
+                            if (null != message.getIsDeleted() && message.getIsDeleted()) {
+                                TAPDataManager.getInstance().deletePhysicalFile(entity);
+                            }
+                        } catch (Exception e) {
+                            listener.onError(ERROR_CODE_OTHERS, e.getMessage());
+                        }
+                    }
+                    if (userIds.size() > 0) {
+                        TAPDataManager.getInstance().getMultipleUsersByIdFromApi(userIds, new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
+                            @Override
+                            public void onSuccess(TAPGetMultipleUserResponse response) {
+                                if (null == response || response.getUsers().isEmpty()) {
+                                    return;
+                                }
+                                new Thread(() -> TAPContactManager.getInstance().updateUserData(response.getUsers())).start();
+                            }
+                        });
+                    }
+                    TAPDataManager.getInstance().insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
+                        @Override
+                        public void onInsertFinished() {
+                            List<TAPMessageModel> messages = new ArrayList<>();
+                            for (HashMap<String, Object> h : response.getMessages()) {
+                                messages.add(TAPEncryptorManager.getInstance().decryptMessage(h));
+                            }
+                            listener.onSuccess("Successfully Update Message");
+                        }
+
+                        @Override
+                        public void onInsertFailed(String errorMessage) {
+                            listener.onSuccess("Failed Update Message");
+                        }
+                    });
+                } else {
+                    listener.onSuccess("Failed Update Message");
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                listener.onError(error.getCode(), error.getMessage());
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+            }
+        });
     }
 
     private void fetchNewMessage(TapCoreGetMessageListener listener) {

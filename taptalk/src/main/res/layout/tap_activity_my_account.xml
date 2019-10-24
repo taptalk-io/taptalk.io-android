@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tapDefaultBackgroundColor"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -429,6 +431,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/tap_bg_text_field_inactive_ripple"
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/cl_password">
 
                 <TextView

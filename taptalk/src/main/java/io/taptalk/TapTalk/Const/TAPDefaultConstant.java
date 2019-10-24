@@ -106,9 +106,10 @@ public class TAPDefaultConstant {
         public static final String COPY_MESSAGE = "kTAPExtraCopyMessage";
         public static final String MY_ID = "kTAPExtraMyID";
         public static final String GROUP_MEMBERS = "kTAPExtraGroupMembers";
-        public static final String GROUP_MEMBERSIDs = "kTAPExtraGroupMembersIDs";
+        public static final String GROUP_MEMBER_IDS = "kTAPExtraGroupMembersIDs";
         public static final String GROUP_NAME = "kTAPExtraGroupName";
         public static final String GROUP_IMAGE = "kTAPExtraGroupImage";
+        public static final String GROUP_ACTION = "kTAPExtraGroupAction";
         public static final String IS_TYPING = "kTAPExtraIsTyping";
         public static final String GROUP_TYPING_MAP = "kTAPExtraGroupTypingMap";
         public static final String IS_ADMIN = "kTAPExtraIsAdmin";
@@ -128,8 +129,6 @@ public class TAPDefaultConstant {
         public static final int COUNTRY_PICK = 11;
         public static final int EDIT_PROFILE = 21;
         public static final int OPEN_PROFILE = 22;
-        public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
-        public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
         public static final int REGISTER = 31;
         public static final int GROUP_ADD_MEMBER = 4;
         public static final int GROUP_UPDATE_DATA = 41;
@@ -140,8 +139,12 @@ public class TAPDefaultConstant {
         public static final int SEND_FILE = 54;
         public static final int FORWARD_MESSAGE = 61;
         public static final int PICK_LOCATION = 62;
-        public static final int CREATE_GROUP = 81;
-        public static final int PICK_GROUP_IMAGE = 91;
+        public static final int CREATE_GROUP = 71;
+        public static final int EDIT_GROUP = 81;
+        public static final int PICK_PROFILE_IMAGE_CAMERA = 91;
+        public static final int PICK_PROFILE_IMAGE_GALLERY = 92;
+        public static final int PICK_GROUP_IMAGE_CAMERA = 93;
+        public static final int PICK_GROUP_IMAGE_GALLERY = 94;
     }
 
     public static final class PermissionRequest {
@@ -190,6 +193,13 @@ public class TAPDefaultConstant {
     public static final class ApiErrorCode {
         public static final int HTTP_HEADER_VALIDATION_FAILED = 40001;
         public static final int API_PARAMETER_VALIDATION_FAILED = 40002;
+        public static final int HTTP_HEADER_AUTHORIZATION_NOT_PROVIDED = 40101;
+        public static final int HTTP_HEADER_AUTHORIZATION_INVALID = 40102;
+        public static final int INVALID_TOKEN = 40103;
+        public static final int TOKEN_EXPIRED = 40104;
+        public static final int TOKEN_DOES_NOT_BELONG_TO_CLIENT = 40105;
+        public static final int USER_NOT_FOUND_FOR_THE_SPECIFIED_TOKEN = 40106;
+        public static final int USER_NOT_FOUND = 40401;
         public static final int SERVER_KEY_NOT_PROVIDED = 49101;
         public static final int INVALID_SERVER_KEY = 49102;
         public static final int SERVER_KEY_NOT_FOUND = 49103;
@@ -214,6 +224,8 @@ public class TAPDefaultConstant {
         public static final String ERROR_CODE_UPLOAD_CANCELLED = "90303";
         public static final String ERROR_CODE_IMAGE_UNAVAILABLE = "90304";
         public static final String ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE = "90305";
+        public static final String ERROR_CODE_CAPTION_EXCEEDS_LIMIT = "90306";
+        public static final String ERROR_CODE_PRODUCT_EMPTY = "90307";
         public static final String ERROR_CODE_OTHERS = "99999";
     }
 
@@ -230,6 +242,8 @@ public class TAPDefaultConstant {
         public static final String ERROR_MESSAGE_UPLOAD_CANCELLED = "Upload was cancelled";
         public static final String ERROR_MESSAGE_IMAGE_UNAVAILABLE = "Could not process compressed image";
         public static final String ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE = "Invalid message type. Allowed types are image (1002), video (1003), file (1004)";
+        public static final String ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT = "Media caption exceeds the %d character limit";
+        public static final String ERROR_MESSAGE_PRODUCT_EMPTY = "Provided product list is empty";
     }
 
     public static final class ClientSuccessMessages {
@@ -379,7 +393,6 @@ public class TAPDefaultConstant {
     public static final String K_RECIPIENT_ID = "kTAPRecipientID";
     public static final String K_LAST_UPDATED = "kTAPLastUpdated";
     public static final String K_IS_ROOM_LIST_SETUP_FINISHED = "kTAPIsRoomListSetupFinished";
-    public static final String K_IS_WRITE_STORAGE_PERMISSION_REQUESTED = "kTAPIsWriteStoragePermissionRequested";
     public static final String K_USER_LAST_ACTIVITY = "kTAPUserLastActivity";
     public static final String K_GROUP_DATA_MAP = "kGroupDataMap";
     public static final String K_FILE_URI_MAP = "kTAPFileUriMap";
@@ -395,6 +408,8 @@ public class TAPDefaultConstant {
     public static final String DEFAULT_CHANNEL_MAX_PARTICIPANTS = "5000";
 
     public static final int MAX_ITEMS_PER_PAGE = 50;
+    public static final int MAX_PRODUCT_SIZE = 20;
+    public static final int MAX_CAPTION_LENGTH = 100;
     public static final int SHORT_ANIMATION_TIME = 100;
     public static final int DEFAULT_ANIMATION_TIME = 200;
     public static final int IMAGE_MAX_DIMENSION = 2000;
@@ -411,7 +426,8 @@ public class TAPDefaultConstant {
 
     public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";
-    public static final String REFRESH_TOKEN_RENEWED = "TAPRefreshTokenRenewed";
+    public static final String REFRESH_TOKEN_RENEWED = "kTAPRefreshTokenRenewed";
+    public static final String RELOAD_ROOM_LIST = "kTAPReloadRoomList";
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
@@ -421,4 +437,5 @@ public class TAPDefaultConstant {
     public static final String LOADING_INDICATOR_LOCAL_ID = "kTAPFetchingOlderMessagesLocalID";
 
     public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
+    public static final String IS_CONTACT_SYNC_ALLOWED_BY_USER = "kTAPIsContactSyncAllowedByUser";
 }

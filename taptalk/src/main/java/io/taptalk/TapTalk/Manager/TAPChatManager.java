@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,6 +45,7 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPReplyToModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -52,8 +54,10 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
@@ -66,6 +70,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_CAPTION_LENGTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
@@ -81,6 +86,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
 
@@ -381,20 +387,21 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(messageModel, false);
     }
 
-    public void sendProductMessageToServer(HashMap<String, Object> productList, TAPUserModel recipientUserModel) {
-        TAPRoomModel roomModel = TAPRoomModel.Builder(TAPChatManager.getInstance().arrangeRoomId(getActiveUser().getUserID(), recipientUserModel.getUserID()),
-                recipientUserModel.getName(), 1, recipientUserModel.getAvatarURL(), "#FFFFFF");
-        triggerListenerAndSendMessage(createProductMessageModel(productList, recipientUserModel, roomModel), true);
+    public void sendProductMessageToServer(HashMap<String, Object> productList, TAPRoomModel roomModel, TapSendMessageInterface sendMessageInterface) {
+        TAPMessageModel productMessage = createProductMessageModel(productList, roomModel);
+        sendMessageListeners.put(productMessage.getLocalID(), sendMessageInterface);
+        sendMessageInterface.onStart(productMessage);
+        triggerListenerAndSendMessage(productMessage, true);
     }
 
     public void sendLocationMessage(String address, Double latitude, Double longitude) {
         triggerListenerAndSendMessage(createLocationMessageModel(address, latitude, longitude), true);
     }
 
-    public void sendLocationMessage(String address, Double latitude, Double longitude, TAPRoomModel room, TapSendMessageInterface tapSendChatInterface) {
-        TAPMessageModel messageModel = createLocationMessageModel(address, latitude, longitude, room, tapSendChatInterface);
-        sendMessageListeners.put(messageModel.getLocalID(), tapSendChatInterface);
-        tapSendChatInterface.onStart(messageModel);
+    public void sendLocationMessage(String address, Double latitude, Double longitude, TAPRoomModel room, TapSendMessageInterface tapsendMessageInterface) {
+        TAPMessageModel messageModel = createLocationMessageModel(address, latitude, longitude, room, tapsendMessageInterface);
+        sendMessageListeners.put(messageModel.getLocalID(), tapsendMessageInterface);
+        tapsendMessageInterface.onStart(messageModel);
         triggerListenerAndSendMessage(messageModel, true);
     }
 
@@ -411,7 +418,7 @@ public class TAPChatManager {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 // Add entity to list
-                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                messageEntities.add(convertToEntity(messageModel));
 
                 // Send truncated message
                 triggerListenerAndSendMessage(messageModel, true);
@@ -442,7 +449,7 @@ public class TAPChatManager {
                 tapSendMessageInterface.onStart(messageModel);
 
                 // Add entity to list
-                //messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                //messageEntities.add(convertToEntity(messageModel));
 
                 // Send truncated message
                 triggerListenerAndSendMessage(messageModel, true);
@@ -469,9 +476,9 @@ public class TAPChatManager {
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-                TAPMessageModel messageModel = createTextMessage(substr, roomModel, TAPDataManager.getInstance().getActiveUser());
+                TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 // Add entity to list
-                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                messageEntities.add(convertToEntity(messageModel));
 
                 // save LocalID to list of Reply Local IDs
                 // gunanya adalah untuk ngecek kapan semua reply message itu udah kekirim atau belom
@@ -482,7 +489,7 @@ public class TAPChatManager {
                 triggerListenerAndSendMessage(messageModel, true);
             }
         } else {
-            TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, TAPDataManager.getInstance().getActiveUser());
+            TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
 
             // save LocalID to list of Reply Local IDs
             // gunanya adalah untuk ngecek kapan semua reply message itu udah kekirim atau belom
@@ -528,7 +535,6 @@ public class TAPChatManager {
      * Construct Product Message Model
      */
     private TAPMessageModel createProductMessageModel(HashMap<String, Object> product,
-                                                      TAPUserModel recipientUserModel,
                                                       TAPRoomModel roomModel) {
         return TAPMessageModel.Builder(
                 "Product List",
@@ -536,7 +542,9 @@ public class TAPChatManager {
                 TYPE_PRODUCT,
                 System.currentTimeMillis(),
                 activeUser,
-                TYPE_PERSONAL == activeRoom.getRoomType() ? recipientUserModel.getUserID() : "0",
+                TYPE_PERSONAL == activeRoom.getRoomType() ?
+                        getOtherUserIdFromRoom(roomModel.getRoomID()) :
+                        "0",
                 product
         );
     }
@@ -1045,6 +1053,13 @@ public class TAPChatManager {
 
     private void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri fileUri, String caption, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createImageMessageModel(context, fileUri, caption, roomModel);
+
+        // Check if caption length exceeds limit
+        if (caption.length() > MAX_CAPTION_LENGTH) {
+            listener.onError(ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, MAX_CAPTION_LENGTH));
+            return;
+        }
+
         sendMessageListeners.put(messageModel.getLocalID(), listener);
         listener.onStart(messageModel);
 
@@ -1060,6 +1075,11 @@ public class TAPChatManager {
     private void createVideoMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri fileUri, String caption, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createVideoMessageModel(context, fileUri, caption, roomModel);
 
+        // Check if caption length exceeds limit
+        if (caption.length() > MAX_CAPTION_LENGTH) {
+            listener.onError(ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, MAX_CAPTION_LENGTH));
+            return;
+        }
         // Check if file size exceeds limit
         if (null != messageModel.getData() && null != messageModel.getData().get(SIZE) &&
                 ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance().getMaxFileUploadSize()) {
@@ -1312,6 +1332,10 @@ public class TAPChatManager {
 
     public String getMessageFromDraft() {
         return messageDrafts.get(getActiveRoom().getRoomID());
+    }
+
+    public String getMessageFromDraft(String roomID) {
+        return messageDrafts.get(roomID);
     }
 
     public void removeDraft() {
@@ -1581,8 +1605,26 @@ public class TAPChatManager {
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
 
-        // Insert decrypted message to database
-        incomingMessages.put(newMessage.getLocalID(), newMessage);
+
+        if (LEAVE_ROOM.equals(newMessage.getAction()) && getActiveUser().getUserID().equals(newMessage.getUser().getUserID())) {
+            // Remove all room messages if user leaves a chat room
+            new Thread(() -> {
+                for (Map.Entry<String, TAPMessageModel> entry : incomingMessages.entrySet()) {
+                    if (entry.getValue().getUser().getUserID().equals(newMessage.getUser().getUserID())) {
+                        incomingMessages.remove(entry.getKey());
+                    }
+                }
+                for (TAPMessageEntity message : saveMessages) {
+                    if (message.getRoomID().equals(newMessage.getUser().getUserID())) {
+                        saveMessages.remove(message);
+                    }
+                }
+            }).start();
+
+        } else {
+            // Insert decrypted message to database
+            incomingMessages.put(newMessage.getLocalID(), newMessage);
+        }
 
         // Query Unread Message
         //TAPNotificationManager.getInstance().updateUnreadCount();
@@ -1805,16 +1847,16 @@ public class TAPChatManager {
                     .replace("{", "")
                     .replace("}", "")
                     .replaceFirst("sender",
-                            message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                            message.getUser().getUserID().equals(getActiveUser().getUserID()) ?
                                     "You" : message.getUser().getName());
         } else {
             systemMessageBody = message.getBody()
                     .replace("{", "")
                     .replace("}", "")
-                    .replaceFirst("sender", message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                    .replaceFirst("sender", message.getUser().getUserID().equals(getActiveUser().getUserID()) ?
                             "You" : message.getUser().getName())
                     .replaceFirst("target", message.getTarget().getTargetID() != null ?
-                            message.getTarget().getTargetID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ?
+                            message.getTarget().getTargetID().equals(getActiveUser().getUserID()) ?
                                     "you" : message.getTarget().getTargetName() == null ? "" : message.getTarget().getTargetName() : "");
         }
 
@@ -1827,8 +1869,12 @@ public class TAPChatManager {
      *  ============================================================================================
      */
 
-    public void triggerChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
-        TapUI.getInstance().triggerChatRoomProfileButtonTapped(activity, user);
+    public void triggerTapTalkAccountButtonTapped(Activity activity) {
+        TapUI.getInstance().triggerTapTalkAccountButtonTapped(activity);
+    }
+
+    public void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
+        TapUI.getInstance().triggerChatRoomProfileButtonTapped(activity, room, user);
     }
 
     public void triggerMessageQuoteTapped(Activity activity, TAPMessageModel messageModel) {
@@ -1836,10 +1882,18 @@ public class TAPChatManager {
     }
 
     public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
-        return TapCustomKeyboardManager.getInstance().getCustomKeyboardItems(room, activeUser, recipientUser);
+        return TapUI.getInstance().getCustomKeyboardItems(room, activeUser, recipientUser);
     }
 
     public void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPRoomModel room, TAPUserModel activeUser, TAPUserModel otherUser) {
-        TapCustomKeyboardManager.getInstance().triggerCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, otherUser);
+        TapUI.getInstance().triggerCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, otherUser);
+    }
+
+    public void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
+        TapUI.getInstance().triggerProductListBubbleLeftOrSingleButtonTapped(activity, product, room, recipient, isSingleOption);
+    }
+
+    public void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
+        TapUI.getInstance().triggerProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
     }
 }

@@ -38,6 +38,42 @@ import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
 @Suppress("CAST_NEVER_SUCCEEDS")
 class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
+
+    var groupViewModel: TAPGroupMemberViewModel? = null
+    var adapter: TAPGroupMemberAdapter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.tap_activity_group_members)
+
+        tv_title.text = resources.getString(R.string.tap_group_members)
+        if (initViewModel()) initView()
+        else stateLoadingMember()
+    }
+
+    override fun onBackPressed() {
+        when {
+            groupViewModel?.isSearchActive == true -> {
+                showToolbar()
+            }
+            groupViewModel?.isSelectionMode == true -> {
+                if (et_search.text.isNotEmpty()) et_search.setText("")
+                cancelSelectionMode(true)
+            }
+            groupViewModel?.isUpdateMember == true -> {
+                val intent = Intent()
+                intent.putExtra(ROOM, groupViewModel?.groupData)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+            }
+            else -> {
+                finish()
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+            }
+        }
+    }
+
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.iv_button_search -> {
@@ -53,17 +89,18 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             }
 
             R.id.ll_add_button -> {
-                val intent = Intent(this, TAPAddMembersActivity::class.java)
-                intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))
+                val intent = Intent(this, TAPAddGroupMemberActivity::class.java)
+                intent.putExtra(GROUP_ACTION, GROUP_ADD_MEMBER)
                 intent.putExtra(ROOM_ID, groupViewModel?.groupData?.roomID)
+                intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))
                 startActivityForResult(intent, GROUP_ADD_MEMBER)
-                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
+                overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
             }
 
             R.id.ll_remove_button -> {
                 if (groupViewModel?.selectedMembers?.size!! > 1) {
                     TapTalkDialog.Builder(this)
-                            .setTitle("${resources.getString(R.string.tap_remove_group_members)}s")
+                            .setTitle("${resources.getString(R.string.tap_remove_group_member)}s")
                             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                             .setMessage(getString(R.string.tap_remove_multiple_members_confirmation))
                             .setPrimaryButtonTitle(getString(R.string.tap_ok))
@@ -77,7 +114,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                             .show()
                 } else {
                     TapTalkDialog.Builder(this)
-                            .setTitle(resources.getString(R.string.tap_remove_group_members))
+                            .setTitle(resources.getString(R.string.tap_remove_group_member))
                             .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                             .setMessage(getString(R.string.tap_remove_member_confirmation))
                             .setPrimaryButtonTitle(getString(R.string.tap_ok))
@@ -122,8 +159,211 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         }
     }
 
-    var groupViewModel: TAPGroupMemberViewModel? = null
-    var adapter: TAPGroupMemberAdapter? = null
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                GROUP_ADD_MEMBER -> {
+                    val updatedGroupParticipant = data?.getParcelableArrayListExtra<TAPUserModel>(GROUP_MEMBERS)
+                    groupViewModel?.groupData?.groupParticipants = updatedGroupParticipant?.toMutableList()
+                            ?: groupViewModel?.participantsList
+//                    adapter?.items = groupViewModel?.groupData?.groupParticipants
+//                    adapter?.notifyDataSetChanged()
+                    searchTextWatcher.onTextChanged(et_search.text, et_search.text.length, et_search.text.length, et_search.text.length)
+
+                    if (groupViewModel?.groupData?.groupParticipants?.size ?: 0 >= TAPGroupManager.getInstance.getGroupMaxParticipants()) {
+                        fl_add_members.visibility = View.GONE
+                    }
+                    groupViewModel?.isUpdateMember = true
+                }
+
+                GROUP_OPEN_MEMBER_PROFILE -> {
+                    if (null != data?.getParcelableExtra(ROOM)) {
+                        val roomModel: TAPRoomModel? = data.getParcelableExtra(ROOM)
+                        groupViewModel?.groupData = roomModel
+                        //adapter?.items = groupViewModel?.groupData?.groupParticipants
+                        adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
+                        adapter?.items = groupViewModel?.groupData?.groupParticipants ?: listOf()
+
+                        // Set total member count
+                        if (!adapter?.items?.contains(groupViewModel?.memberCountModel)!!) {
+                            adapter?.addItem(groupViewModel?.memberCountModel)
+                        }
+                        groupViewModel?.isUpdateMember = true
+                    }
+
+                    if (data?.getBooleanExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, false) == true) {
+                        val intent = Intent()
+                        intent.putExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, true)
+                        setResult(Activity.RESULT_OK, intent)
+                        onBackPressed()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun stateLoadingMember() {
+        rv_contact_list.visibility = View.GONE
+        ll_member_loading.visibility = View.VISIBLE
+        TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_progress)
+    }
+
+    private fun initView() {
+        tv_title.text = resources.getString(R.string.tap_group_members)
+        //groupViewModel?.groupData = intent.getParcelableExtra(ROOM)
+        //groupViewModel?.setGroupDataAndCheckAdmin(intent.getParcelableExtra(ROOM))
+        rv_contact_list.visibility = View.VISIBLE
+        ll_member_loading.visibility = View.GONE
+        iv_loading_progress.clearAnimation()
+
+        groupViewModel?.participantsList = groupViewModel?.groupData?.groupParticipants?.toMutableList()
+                ?: mutableListOf()
+        adapter = TAPGroupMemberAdapter(TAPGroupMemberAdapter.NORMAL_MODE, groupViewModel?.participantsList
+                ?: mutableListOf(), groupViewModel?.groupData?.admins
+                ?: listOf(), groupInterface)
+        adapter?.addItem(groupViewModel?.memberCountModel)
+
+        rv_contact_list.adapter = adapter
+        rv_contact_list.layoutManager = LinearLayoutManager(this)
+
+        if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
+            fl_add_members.visibility = View.VISIBLE
+        } else {
+            fl_add_members.visibility = View.GONE
+        }
+
+        OverScrollDecoratorHelper.setUpOverScroll(rv_contact_list, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+
+        iv_button_back.setOnClickListener(this)
+        iv_button_search.setOnClickListener(this)
+        iv_button_clear_text.setOnClickListener(this)
+        ll_add_button.setOnClickListener(this)
+        ll_remove_button.setOnClickListener(this)
+        ll_promote_demote_admin.setOnClickListener(this)
+        fl_loading.setOnClickListener {}
+
+        et_search.addTextChangedListener(searchTextWatcher)
+        et_search.setOnEditorActionListener(searchEditorActionListener)
+        et_search.hint = resources.getString(R.string.tap_search_for_group_members)
+
+        rv_contact_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                TAPUtils.getInstance().dismissKeyboard(this@TAPGroupMemberListActivity)
+            }
+        })
+    }
+
+    private fun initViewModel(): Boolean {
+        groupViewModel = ViewModelProviders.of(this).get(TAPGroupMemberViewModel::class.java)
+        groupViewModel?.setGroupDataAndCheckAdmin(intent.getParcelableExtra(ROOM))
+
+        return null != groupViewModel?.groupData?.groupParticipants
+    }
+
+    private fun showToolbar() {
+        groupViewModel?.isSearchActive = false
+        TAPUtils.getInstance().dismissKeyboard(this)
+        tv_title.visibility = View.VISIBLE
+        et_search.visibility = View.GONE
+        et_search.setText("")
+        iv_button_search.visibility = View.VISIBLE
+        (cl_action_bar.background as TransitionDrawable).reverseTransition(SHORT_ANIMATION_TIME)
+    }
+
+    private fun showSearchBar() {
+        groupViewModel?.isSearchActive = true
+        tv_title.visibility = View.GONE
+        et_search.visibility = View.VISIBLE
+        iv_button_search.visibility = View.GONE
+        TAPUtils.getInstance().showKeyboard(this, et_search)
+        (cl_action_bar.background as TransitionDrawable).startTransition(SHORT_ANIMATION_TIME)
+    }
+
+    private fun updateSearchedMember(keyword: String) {
+        groupViewModel?.participantsList?.clear()
+        if (keyword.isEmpty()) {
+            groupViewModel?.participantsList = groupViewModel?.groupData?.groupParticipants?.toMutableList()
+                    ?: mutableListOf()
+            adapter?.items = groupViewModel?.participantsList
+            if (!adapter?.items?.contains(groupViewModel?.memberCountModel)!!) {
+                adapter?.addItem(groupViewModel?.memberCountModel)
+            }
+        } else {
+            groupViewModel?.groupData?.groupParticipants?.forEach {
+                if (it.name.toLowerCase().contains(keyword.toLowerCase())) {
+                    groupViewModel?.participantsList?.add(it)
+                }
+            }
+            adapter?.items = groupViewModel?.participantsList
+        }
+    }
+
+    private fun cancelSelectionMode(isNeedClearAll: Boolean) {
+        groupViewModel?.isSelectionMode = false
+        groupViewModel?.selectedMembers?.clear()
+        //if (View.GONE == fl_add_members.visibility) fl_add_members.visibility = View.VISIBLE
+        ll_button_admin_action.visibility = View.GONE
+
+        if (View.GONE == ll_add_button.visibility) ll_add_button.visibility = View.VISIBLE
+        adapter?.updateCellMode(TAPGroupMemberAdapter.NORMAL_MODE)
+
+        if (isNeedClearAll) {
+            Thread(Runnable {
+                adapter?.items?.forEach {
+                    it.isSelected = false
+                }
+            }).start()
+        }
+    }
+
+    private fun startSelectionMode() {
+        groupViewModel?.isSelectionMode = true
+        ll_button_admin_action.visibility = View.VISIBLE
+        ll_promote_demote_admin.visibility = View.VISIBLE
+        ll_add_button.visibility = View.GONE
+        adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
+    }
+
+    private fun showLoading(message: String) {
+        runOnUiThread {
+            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == iv_loading_image.animation)
+                TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_image)
+            tv_loading_text.text = message
+            iv_button_search.setOnClickListener(null)
+            iv_button_clear_text.setOnClickListener(null)
+            fl_loading.visibility = View.VISIBLE
+        }
+    }
+
+    private fun endLoading(message: String) {
+        runOnUiThread {
+            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
+            iv_loading_image.clearAnimation()
+            tv_loading_text.text = message
+            Handler().postDelayed({
+                hideLoading()
+                iv_button_search.setOnClickListener(this)
+                iv_button_clear_text.setOnClickListener(this)
+            }, 1000L)
+        }
+    }
+
+    private fun hideLoading() {
+        fl_loading.visibility = View.GONE
+    }
+
+    private fun showErrorDialog(title: String, message: String) {
+        TapTalkDialog.Builder(this@TAPGroupMemberListActivity)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(title)
+                .setMessage(message)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .setPrimaryButtonListener {}
+                .show()
+    }
+
     private val groupInterface = object : TAPGroupMemberListListener() {
         override fun onContactLongPress(contact: TAPUserModel?) {
             if (groupViewModel?.isActiveUserIsAdmin == true &&
@@ -195,135 +435,6 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.tap_activity_group_members)
-
-        tv_title.text = resources.getString(R.string.tap_group_members)
-        if (initViewModel()) initView()
-        else stateLoadingMember()
-    }
-
-    private fun stateLoadingMember() {
-        sv_members.visibility = View.GONE
-        ll_member_loading.visibility = View.VISIBLE
-        TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_progress)
-    }
-
-    private fun initView() {
-        tv_title.text = resources.getString(R.string.tap_group_members)
-        //groupViewModel?.groupData = intent.getParcelableExtra(ROOM)
-        //groupViewModel?.setGroupDataAndCheckAdmin(intent.getParcelableExtra(ROOM))
-        sv_members.visibility = View.VISIBLE
-        ll_member_loading.visibility = View.GONE
-        iv_loading_progress.clearAnimation()
-
-        groupViewModel?.participantsList = groupViewModel?.groupData?.groupParticipants?.toMutableList()
-                ?: mutableListOf()
-
-        adapter = TAPGroupMemberAdapter(TAPGroupMemberAdapter.NORMAL_MODE, groupViewModel?.participantsList
-                ?: mutableListOf(), groupViewModel?.groupData?.admins ?: listOf(), groupInterface)
-        rv_contact_list.adapter = adapter
-        rv_contact_list.layoutManager = LinearLayoutManager(this)
-        rv_contact_list.setHasFixedSize(true)
-
-        if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
-            fl_add_members.visibility = View.VISIBLE
-        } else {
-            fl_add_members.visibility = View.GONE
-        }
-
-        // Set total member count
-        tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
-        tv_member_count.visibility = View.VISIBLE
-
-        OverScrollDecoratorHelper.setUpOverScroll(sv_members)
-
-        iv_button_back.setOnClickListener(this)
-        iv_button_search.setOnClickListener(this)
-        ll_add_button.setOnClickListener(this)
-        ll_remove_button.setOnClickListener(this)
-        ll_promote_demote_admin.setOnClickListener(this)
-        fl_loading.setOnClickListener {}
-
-        et_search.addTextChangedListener(searchTextWatcher)
-        et_search.setOnEditorActionListener(searchEditorActionListener)
-        et_search.hint = resources.getString(R.string.tap_search_for_group_members)
-
-        rv_contact_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                TAPUtils.getInstance().dismissKeyboard(this@TAPGroupMemberListActivity)
-            }
-        })
-    }
-
-    private fun initViewModel(): Boolean {
-        groupViewModel = ViewModelProviders.of(this).get(TAPGroupMemberViewModel::class.java)
-        groupViewModel?.setGroupDataAndCheckAdmin(intent.getParcelableExtra(ROOM))
-
-        return null != groupViewModel?.groupData?.groupParticipants
-    }
-
-    private fun showToolbar() {
-        groupViewModel?.isSearchActive = false
-        TAPUtils.getInstance().dismissKeyboard(this)
-        tv_title.visibility = View.VISIBLE
-        et_search.visibility = View.GONE
-        et_search.setText("")
-        iv_button_search.visibility = View.VISIBLE
-        (cl_action_bar.background as TransitionDrawable).reverseTransition(SHORT_ANIMATION_TIME)
-    }
-
-    private fun showSearchBar() {
-        groupViewModel?.isSearchActive = true
-        tv_title.visibility = View.GONE
-        et_search.visibility = View.VISIBLE
-        iv_button_search.visibility = View.GONE
-        TAPUtils.getInstance().showKeyboard(this, et_search)
-        (cl_action_bar.background as TransitionDrawable).startTransition(SHORT_ANIMATION_TIME)
-    }
-
-    private fun updateSearchedMember(keyword: String) {
-        groupViewModel?.participantsList?.clear()
-        if (keyword.isEmpty()) {
-            groupViewModel?.participantsList = groupViewModel?.groupData?.groupParticipants?.toMutableList()
-                    ?: mutableListOf()
-            tv_member_count.visibility = View.VISIBLE
-        } else {
-            groupViewModel?.groupData?.groupParticipants?.forEach {
-                if (it.name.toLowerCase().contains(keyword.toLowerCase())) {
-                    groupViewModel?.participantsList?.add(it)
-                }
-            }
-            tv_member_count.visibility = View.GONE
-        }
-        adapter?.items = groupViewModel?.participantsList
-    }
-
-    override fun onBackPressed() {
-        when {
-            groupViewModel?.isSearchActive == true -> {
-                showToolbar()
-            }
-            groupViewModel?.isSelectionMode == true -> {
-                if (et_search.text.isNotEmpty()) et_search.setText("")
-                cancelSelectionMode(true)
-            }
-            groupViewModel?.isUpdateMember == true -> {
-                val intent = Intent()
-                intent.putExtra(ROOM, groupViewModel?.groupData)
-                setResult(Activity.RESULT_OK, intent)
-                finish()
-                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
-            }
-            else -> {
-                finish()
-                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
-            }
-        }
-    }
-
     private val searchTextWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {}
 
@@ -349,32 +460,6 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         return@OnEditorActionListener false
     }
 
-    private fun cancelSelectionMode(isNeedClearAll: Boolean) {
-        groupViewModel?.isSelectionMode = false
-        groupViewModel?.selectedMembers?.clear()
-        //if (View.GONE == fl_add_members.visibility) fl_add_members.visibility = View.VISIBLE
-        ll_button_admin_action.visibility = View.GONE
-
-        if (View.GONE == ll_add_button.visibility) ll_add_button.visibility = View.VISIBLE
-        adapter?.updateCellMode(TAPGroupMemberAdapter.NORMAL_MODE)
-
-        if (isNeedClearAll) {
-            Thread(Runnable {
-                adapter?.items?.forEach {
-                    it.isSelected = false
-                }
-            }).start()
-        }
-    }
-
-    private fun startSelectionMode() {
-        groupViewModel?.isSelectionMode = true
-        ll_button_admin_action.visibility = View.VISIBLE
-        ll_promote_demote_admin.visibility = View.VISIBLE
-        ll_add_button.visibility = View.GONE
-        adapter?.updateCellMode(TAPGroupMemberAdapter.SELECT_MODE)
-    }
-
     private val removeRoomMembersView = object : TAPDefaultDataView<TAPCreateRoomResponse>() {
         override fun startLoading() {
             showLoading(getString(R.string.tap_removing))
@@ -391,11 +476,15 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             }
 
             //adapter?.items = groupViewModel?.groupData?.groupParticipants
-            adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
-
-            // Set total member count
-            tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
-            tv_member_count.visibility = View.VISIBLE
+            if (et_search.text.isNotEmpty()) {
+                searchTextWatcher.onTextChanged(et_search.text, et_search.text.length, et_search.text.length, et_search.text.length)
+            } else {
+                adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
+                if (!adapter?.items?.contains(groupViewModel?.memberCountModel)!!) {
+                    adapter?.addItem(groupViewModel?.memberCountModel)
+                }
+            }
+            groupViewModel?.isUpdateMember = true
             groupViewModel?.isUpdateMember = true
 
             Handler().postDelayed({
@@ -431,11 +520,14 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
             //adapter?.items = groupViewModel?.groupData?.groupParticipants
             adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
-            adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
-
-            // Set total member count
-            tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
-            tv_member_count.visibility = View.VISIBLE
+            if (et_search.text.isNotEmpty()) {
+                searchTextWatcher.onTextChanged(et_search.text, et_search.text.length, et_search.text.length, et_search.text.length)
+            } else {
+                adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
+                if (!adapter?.items?.contains(groupViewModel?.memberCountModel)!!) {
+                    adapter?.addItem(groupViewModel?.memberCountModel)
+                }
+            }
             groupViewModel?.isUpdateMember = true
 
             Handler().postDelayed({
@@ -471,11 +563,14 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
             //adapter?.items = groupViewModel?.groupData?.groupParticipants
             adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
-            adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
-
-            // Set total member count
-            tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
-            tv_member_count.visibility = View.VISIBLE
+            if (et_search.text.isNotEmpty()) {
+                searchTextWatcher.onTextChanged(et_search.text, et_search.text.length, et_search.text.length, et_search.text.length)
+            } else {
+                adapter?.setMemberItems(groupViewModel?.groupData?.groupParticipants ?: listOf())
+                if (!adapter?.items?.contains(groupViewModel?.memberCountModel)!!) {
+                    adapter?.addItem(groupViewModel?.memberCountModel)
+                }
+            }
             groupViewModel?.isUpdateMember = true
 
             Handler().postDelayed({
@@ -493,89 +588,5 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             this@TAPGroupMemberListActivity.hideLoading()
             showErrorDialog(getString(R.string.tap_error), getString(R.string.tap_error_message_general))
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                GROUP_ADD_MEMBER -> {
-                    val updatedGroupParticipant = data?.getParcelableArrayListExtra<TAPUserModel>(GROUP_MEMBERS)
-                    groupViewModel?.groupData?.groupParticipants = updatedGroupParticipant?.toMutableList()
-                            ?: groupViewModel?.participantsList
-                    adapter?.items = groupViewModel?.groupData?.groupParticipants
-                    adapter?.notifyDataSetChanged()
-
-                    if (groupViewModel?.groupData?.groupParticipants?.size ?: 0 >= TAPGroupManager.getInstance.getGroupMaxParticipants()) {
-                        fl_add_members.visibility = View.GONE
-                    }
-
-                    // Set total member count
-                    tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
-                    tv_member_count.visibility = View.VISIBLE
-                    groupViewModel?.isUpdateMember = true
-                }
-
-                GROUP_OPEN_MEMBER_PROFILE -> {
-                    if (null != data?.getParcelableExtra(ROOM)) {
-                        val roomModel: TAPRoomModel? = data.getParcelableExtra(ROOM)
-                        groupViewModel?.groupData = roomModel
-                        //adapter?.items = groupViewModel?.groupData?.groupParticipants
-                        adapter?.adminList = groupViewModel?.groupData?.admins ?: mutableListOf()
-                        adapter?.items = groupViewModel?.groupData?.groupParticipants ?: listOf()
-
-                        // Set total member count
-                        tv_member_count.text = String.format(getString(R.string.tap_group_member_count), groupViewModel?.groupData?.groupParticipants?.size)
-                        tv_member_count.visibility = View.VISIBLE
-                        groupViewModel?.isUpdateMember = true
-                    }
-
-                    if (data?.getBooleanExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, false) == true) {
-                        val intent = Intent()
-                        intent.putExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, true)
-                        setResult(Activity.RESULT_OK, intent)
-                        onBackPressed()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun showLoading(message: String) {
-        runOnUiThread {
-            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white))
-            if (null == iv_loading_image.animation)
-                TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_image)
-            tv_loading_text.text = message
-            iv_button_search.setOnClickListener(null)
-            iv_button_clear_text.setOnClickListener(null)
-            fl_loading.visibility = View.VISIBLE
-        }
-    }
-
-    private fun endLoading(message: String) {
-        runOnUiThread {
-            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
-            iv_loading_image.clearAnimation()
-            tv_loading_text.text = message
-            Handler().postDelayed({
-                hideLoading()
-                iv_button_search.setOnClickListener(this)
-                iv_button_clear_text.setOnClickListener(this)
-            }, 1000L)
-        }
-    }
-
-    private fun hideLoading() {
-        fl_loading.visibility = View.GONE
-    }
-
-    private fun showErrorDialog(title: String, message: String) {
-        TapTalkDialog.Builder(this@TAPGroupMemberListActivity)
-                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                .setTitle(title)
-                .setMessage(message)
-                .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                .setPrimaryButtonListener {}
-                .show()
     }
 }

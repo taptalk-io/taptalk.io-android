@@ -69,6 +69,12 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        searchTimer.cancel();
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
@@ -203,7 +209,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         clButtonAction.setOnClickListener(null);
 
-        if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+        if (vm.getSearchResult().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
             TypedArray typedArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance);
             tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
@@ -267,7 +273,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         clButtonAction.setOnClickListener(null);
 
-        if (vm.getSearchResult().getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID())) {
+        if (vm.getSearchResult().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
             tvButtonText.setText(getString(R.string.tap_this_is_you));
             TypedArray typedArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance);
             tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));

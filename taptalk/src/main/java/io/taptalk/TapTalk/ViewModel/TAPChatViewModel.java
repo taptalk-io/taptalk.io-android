@@ -47,7 +47,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Integer quoteAction;
     private String lastUnreadMessageLocalID;
     private long lastTimestamp = 0;
-    private int initialUnreadCount, numUsers, containerAnimationState;
+    private int initialUnreadCount, numUsers, previousEditTextSelectionIndex, containerAnimationState;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
             isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading, isScrollFromKeyboard;
 
@@ -287,7 +287,7 @@ public class TAPChatViewModel extends AndroidViewModel {
             loadingIndicator = new TAPMessageModel();
             loadingIndicator.setType(TYPE_LOADING_MESSAGE_IDENTIFIER);
             loadingIndicator.setLocalID(LOADING_INDICATOR_LOCAL_ID);
-            loadingIndicator.setUser(TAPDataManager.getInstance().getActiveUser());
+            loadingIndicator.setUser(TAPChatManager.getInstance().getActiveUser());
         }
         if (updateCreated) {
             // Update created time for loading indicator to array's last message created time
@@ -330,6 +330,14 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setNumUsers(int numUsers) {
         this.numUsers = numUsers;
+    }
+
+    public int getPreviousEditTextSelectionIndex() {
+        return previousEditTextSelectionIndex;
+    }
+
+    public void setPreviousEditTextSelectionIndex(int previousEditTextSelectionIndex) {
+        this.previousEditTextSelectionIndex = previousEditTextSelectionIndex;
     }
 
     public int getContainerAnimationState() {

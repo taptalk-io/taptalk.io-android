@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.orhanobut.hawk.Hawk;
@@ -24,6 +25,7 @@ import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -54,11 +56,13 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
+import io.taptalk.Taptalk.BuildConfig;
 import okhttp3.ResponseBody;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_AGENT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_CONTACT_SYNC_ALLOWED_BY_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASKED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
@@ -68,7 +72,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_WRITE_STORAGE_PERMISSION_REQUESTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_RECIPIENT_ID;
@@ -122,6 +125,7 @@ public class TAPDataManager {
         TAPContactManager.getInstance().clearUserMapByPhoneNumber();
         TAPContactManager.getInstance().resetMyCountryCode();
         TAPContactManager.getInstance().resetContactSyncPermissionAsked();
+        TAPContactManager.getInstance().resetContactSyncAllowedByUser();
         setNeedToQueryUpdateRoomList(false);
         TAPFileDownloadManager.getInstance().resetTAPFileDownloadManager();
         TAPFileUploadManager.getInstance().resetFileUploadManager();
@@ -149,6 +153,10 @@ public class TAPDataManager {
 
     private void saveLongTimestampPreference(String key, Long timestamp) {
         Hawk.put(key, timestamp);
+    }
+
+    private Boolean getBooleanPreference(String key) {
+        return Hawk.get(key, false);
     }
 
     private String getStringPreference(String key) {
@@ -186,9 +194,11 @@ public class TAPDataManager {
         removeConfigs();
         removeLastUpdatedMessageTimestampMap();
         removeUserLastActivityMap();
+        removeRoomDataMap();
         removeRoomListSetupFinished();
-        removeRecipientID();
-        removeWriteStoragePermissionRequested();
+        removeFileProviderPathMap();
+        removeFileMessageUriMap();
+        removeMediaVolumePreference();
         removeLastDeleteTimestamp();
         removeNotificationMap();
         removeLastCallCountryTimestamp();
@@ -196,6 +206,7 @@ public class TAPDataManager {
         removeMyCountryCode();
         removeMyCountryFlagUrl();
         removeContactSyncPermissionAsked();
+        removeContactSyncAllowedByUser();
     }
 
     /**
@@ -226,9 +237,9 @@ public class TAPDataManager {
     }
 
     public void removeConfigs() {
-        Hawk.delete(CORE);
-        Hawk.delete(PROJECT);
-        Hawk.delete(CUSTOM);
+        removePreference(CORE);
+        removePreference(PROJECT);
+        removePreference(CUSTOM);
     }
 
     /**
@@ -243,31 +254,29 @@ public class TAPDataManager {
     }
 
     public void removeCountryList() {
-        Hawk.delete(K_COUNTRY_LIST);
+        removePreference(K_COUNTRY_LIST);
     }
 
     /**
      * LAST GET COUNTRY TIMESTAMP
      */
     public long getLastCallCountryTimestamp() {
-        return Hawk.get(LAST_CALL_COUNTRY_TIMESTAMP, 0L);
+        return getLongTimestampPreference(LAST_CALL_COUNTRY_TIMESTAMP);
     }
 
     public void saveLastCallCountryTimestamp(long timestamp) {
-        Hawk.put(LAST_CALL_COUNTRY_TIMESTAMP, timestamp);
+        saveLongTimestampPreference(LAST_CALL_COUNTRY_TIMESTAMP, timestamp);
     }
 
     public void removeLastCallCountryTimestamp() {
-        Hawk.delete(LAST_CALL_COUNTRY_TIMESTAMP);
+        removePreference(LAST_CALL_COUNTRY_TIMESTAMP);
     }
 
     /**
      * ACTIVE USER
      */
     public boolean checkActiveUser() {
-        if (null == getActiveUser())
-            return false;
-        else return true;
+        return null != getActiveUser();
     }
 
     public TAPUserModel getActiveUser() {
@@ -280,7 +289,7 @@ public class TAPDataManager {
     }
 
     public void removeActiveUser() {
-        Hawk.delete(K_USER);
+        removePreference(K_USER);
     }
 
     /**
@@ -388,7 +397,7 @@ public class TAPDataManager {
     }
 
     private void removeLastUpdatedMessageTimestampMap() {
-        Hawk.delete(K_LAST_UPDATED);
+        removePreference(K_LAST_UPDATED);
     }
 
     /**
@@ -404,7 +413,7 @@ public class TAPDataManager {
     }
 
     public void removeUserLastActivityMap() {
-        Hawk.delete(K_USER_LAST_ACTIVITY);
+        removePreference(K_USER_LAST_ACTIVITY);
     }
 
     /**
@@ -419,7 +428,7 @@ public class TAPDataManager {
     }
 
     public void removeRoomDataMap() {
-        Hawk.delete(K_GROUP_DATA_MAP);
+        removePreference(K_GROUP_DATA_MAP);
     }
 
     public boolean isRoomDataMapAvailable() {
@@ -431,17 +440,28 @@ public class TAPDataManager {
      */
 
     public boolean isContactSyncPermissionAsked() {
-        return Hawk.get(IS_PERMISSION_SYNC_ASKED, false);
+        return getBooleanPreference(IS_PERMISSION_SYNC_ASKED);
     }
 
     public void saveContactSyncPermissionAsked(boolean userSyncPermissionAsked) {
-        Hawk.put(IS_PERMISSION_SYNC_ASKED, userSyncPermissionAsked);
+        saveBooleanPreference(IS_PERMISSION_SYNC_ASKED, userSyncPermissionAsked);
     }
 
     public void removeContactSyncPermissionAsked() {
-        Hawk.delete(IS_PERMISSION_SYNC_ASKED);
+        removePreference(IS_PERMISSION_SYNC_ASKED);
     }
 
+    public boolean isContactSyncAllowedByUser() {
+        return getBooleanPreference(IS_CONTACT_SYNC_ALLOWED_BY_USER);
+    }
+
+    public void saveContactSyncAllowedByUser(boolean isContactSyncAllowed) {
+        saveBooleanPreference(IS_CONTACT_SYNC_ALLOWED_BY_USER, isContactSyncAllowed);
+    }
+
+    public void removeContactSyncAllowedByUser() {
+        removePreference(IS_CONTACT_SYNC_ALLOWED_BY_USER);
+    }
 
     /**
      * MY COUNTRY CODE
@@ -456,7 +476,7 @@ public class TAPDataManager {
     }
 
     public void removeMyCountryCode() {
-        Hawk.delete(MY_COUNTRY_CODE);
+        removePreference(MY_COUNTRY_CODE);
     }
 
     public String getMyCountryFlagUrl() {
@@ -468,7 +488,7 @@ public class TAPDataManager {
     }
 
     public void removeMyCountryFlagUrl() {
-        Hawk.delete(MY_COUNTRY_FLAG_URL);
+        removePreference(MY_COUNTRY_FLAG_URL);
     }
 
     /**
@@ -488,22 +508,6 @@ public class TAPDataManager {
     }
 
     /**
-     * WRITE STORAGE PERMISSION REQUEST ON OPEN CHAT ROOM
-     */
-
-    public Boolean isWriteStoragePermissionRequested() {
-        return checkPreferenceKeyAvailable(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
-    }
-
-    public void setWriteStoragePermissionRequested(boolean isRequested) {
-        saveBooleanPreference(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED, isRequested);
-    }
-
-    public void removeWriteStoragePermissionRequested() {
-        removePreference(K_IS_WRITE_STORAGE_PERMISSION_REQUESTED);
-    }
-
-    /**
      * FILE PROVIDER PATH
      */
     public HashMap<String, String> getFileProviderPathMap() {
@@ -512,6 +516,10 @@ public class TAPDataManager {
 
     public void saveFileProviderPathMap(HashMap<String, String> fileProviderPathMap) {
         Hawk.put(K_FILE_PATH_MAP, fileProviderPathMap);
+    }
+
+    public void removeFileProviderPathMap() {
+        removePreference(K_FILE_PATH_MAP);
     }
 
     /**
@@ -523,6 +531,10 @@ public class TAPDataManager {
 
     public void saveFileMessageUriMap(HashMap<String, HashMap<String, String>> fileUriMap) {
         Hawk.put(K_FILE_URI_MAP, fileUriMap);
+    }
+
+    public void removeFileMessageUriMap() {
+        removePreference(K_FILE_URI_MAP);
     }
 
     /**
@@ -537,36 +549,8 @@ public class TAPDataManager {
         return volume == null ? 1f : volume;
     }
 
-    // TODO: 14/09/18 TEMP
-    public String getRecipientID() {
-        return Hawk.get(K_RECIPIENT_ID, "0");
-    }
-
-    // TODO: 14/09/18 TEMP
-    public void saveRecipientID(String recipientID) {
-        Hawk.put(K_RECIPIENT_ID, recipientID);
-    }
-
-    public void removeRecipientID() {
-        removePreference(K_RECIPIENT_ID);
-    }
-
-    public void deletePhysicalFile(TAPMessageEntity message) {
-        if (TYPE_IMAGE == message.getType()) {
-            try {
-                HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
-                TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else if (TYPE_VIDEO == message.getType()
-                || TYPE_FILE == message.getType()) {
-            HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
-            if (null != TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID))) {
-                TapTalk.appContext.getContentResolver().delete(TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID)), null, null);
-                TAPFileDownloadManager.getInstance().removeFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID));
-            }
-        } // FIXME: 21 August 2019 ONLY DELETE FILES IN TAPTALK FOLDER
+    public void removeMediaVolumePreference() {
+        removePreference(K_MEDIA_VOLUME);
     }
 
     /**
@@ -609,10 +593,12 @@ public class TAPDataManager {
         return getLongTimestampPreference(K_LAST_DELETE_TIMESTAMP);
     }
 
-    public Boolean checkLastDeleteTimestamp() {
-        if (!checkPreferenceKeyAvailable(K_LAST_DELETE_TIMESTAMP) || null == getLastDeleteTimestamp())
+    public Boolean isLastDeleteTimestampExists() {
+        if (!checkPreferenceKeyAvailable(K_LAST_DELETE_TIMESTAMP) || null == getLastDeleteTimestamp()) {
             return false;
-        else return 0 != getLastDeleteTimestamp();
+        } else {
+            return 0L != getLastDeleteTimestamp();
+        }
     }
 
     private void removeLastDeleteTimestamp() {
@@ -622,16 +608,16 @@ public class TAPDataManager {
     /**
      * Notification Message Map
      */
-    public void saveNotificationMessageMap(String notifMessagesMap) {
-        Hawk.put(K_NOTIFICATION_MESSAGE_MAP, notifMessagesMap);
+    public void saveNotificationMessageMap(String notificationMessagesMap) {
+        saveStringPreference(K_NOTIFICATION_MESSAGE_MAP, notificationMessagesMap);
     }
 
     public String getNotificationMessageMap() {
-        return Hawk.get(K_NOTIFICATION_MESSAGE_MAP, null);
+        return getStringPreference(K_NOTIFICATION_MESSAGE_MAP);
     }
 
     public void clearNotificationMessageMap() {
-        Hawk.delete(K_NOTIFICATION_MESSAGE_MAP);
+        removePreference(K_NOTIFICATION_MESSAGE_MAP);
     }
 
     public boolean checkNotificationMap() {
@@ -640,6 +626,37 @@ public class TAPDataManager {
 
     private void removeNotificationMap() {
         removePreference(K_NOTIFICATION_MESSAGE_MAP);
+    }
+
+    /**
+     * DELETE FILE
+     */
+    public void deletePhysicalFile(TAPMessageEntity message) {
+        if (TYPE_IMAGE == message.getType()) {
+            try {
+                // Delete image from cache
+                HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+                TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (TYPE_VIDEO == message.getType() || TYPE_FILE == message.getType()) {
+            HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+            if (null == messageData) {
+                return;
+            }
+            Uri fileMessageUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID));
+            if (null != fileMessageUri && "content".equals(fileMessageUri.getScheme()) && null != fileMessageUri.getPath() && fileMessageUri.getPath().contains(TapTalk.getClientAppName())) {
+                try {
+                    // Delete file from TapTalk folder
+                    TapTalk.appContext.getContentResolver().delete(fileMessageUri, null, null);
+                    TAPFileDownloadManager.getInstance().removeFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID));
+                } catch (IllegalArgumentException e) {
+                    if (BuildConfig.DEBUG) {
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -1074,7 +1091,7 @@ public class TAPDataManager {
     }
 
     public void deleteChatRoom(TAPRoomModel room, TAPDefaultDataView<TAPCommonResponse> view) {
-        TAPApiManager.getInstance().deleteChatRoom(room, TAPChatManager.getInstance().getActiveUser().getUserID(),
+        TAPApiManager.getInstance().deleteChatRoom(room, getActiveUser().getUserID(),
                 TAPDataManager.getInstance().getAccessTokenExpiry(), new TAPDefaultSubscriber<>(view));
     }
 

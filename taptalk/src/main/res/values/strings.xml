@@ -1,5 +1,5 @@
 <resources>
-    <string name="tap_app_name">TapTalk</string>
+    <string name="tap_app_name">TapTalk.io</string>
 
     <!--Title/Menu-->
     <string name="tap_block_user">Block User</string>
@@ -40,11 +40,16 @@
     <string name="tap_search_forward_placeholder">Search for chats or contacts</string>
 
     <!--Contacts-->
+    <string name="tap_contacts">Contacts</string>
     <string name="tap_search_for_contacts">Search for contacts</string>
+    <string name="tap_global_search">Global Search</string>
     <string name="tap_cant_find_contact">Can’t find the contact you were looking for?</string>
     <string name="tap_cant_find_person">Can’t find who you are looking for?</string>
     <string name="tap_view_blocked_contacts">View Blocked Contacts</string>
     <string name="tap_search_by_username">Search by username</string>
+    <string name="tap_no_result_found_for">No results found for \"%s\"</string>
+    <string name="tap_try_different_search">Try a different search</string>
+    <string name="tap_contact_list_empty">Your contact list seems empty…</string>
     <string name="tap_add_new_contact">Add New Contact</string>
     <string name="tap_this_is_you">This is you</string>
     <string name="you_have_added_to_your_contacts"><![CDATA[You have added <b>%s</b> to your contacts]]></string>
@@ -87,7 +92,7 @@
     <string name="tap_create_group">Create Group</string>
     <string name="tap_edit_group">Edit Group</string>
     <string name="tap_group_members">Group Members</string>
-    <string name="tap_remove_group_members">Remove Member</string>
+    <string name="tap_remove_group_member">Remove Member</string>
     <string name="tap_clear_and_exit_chat">Clear and Exit Chat</string>
     <string name="tap_delete_chat_room">Delete Room</string>
     <string name="tap_type_group_name">Type group name</string>
@@ -113,6 +118,7 @@
     <string name="tap_demoted_admin">Admin Demoted</string>
     <string name="tap_left_group">Left Group</string>
     <string name="tap_search_for_group_members">Search for members</string>
+    <string name="tap_search_for_users">Search for users</string>
     <string name="tap_not_a_participant">You are no longer a participant in this group</string>
 
     <!--Guides-->
@@ -148,6 +154,7 @@
     <string name="tap_api_call_return_error">Oops! there is an error, please try again later.</string>
     <string name="tap_init_taptalk">Please initialize TapTalk library, read documentation for detailed information.</string>
     <string name="tap_error_open_room_failed">Unable to fetch user data, please check your connection and try again.</string>
+    <string name="tap_error_invalid_room">Invalid room.</string>
     <string name="tap_error_room_not_found">Could not find room.</string>
     <string name="tap_error_my_user_not_found">Could not find your user data.</string>
     <string name="tap_error_other_user_not_found">Could not find other user\'s data.</string>
@@ -174,6 +181,7 @@
     <string name="tap_error_upload_profile_picture">An error occurred while uploading your profile picture, would you like to try again?</string>
     <string name="tap_error_could_not_find_message">Could not find message.</string>
     <string name="tap_error_assign_another_admin">Please assign another admin before leaving.</string>
+    <string name="tap_error_active_user_is_null">Could not find active user data. Please make sure the client app is authenticated.</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>

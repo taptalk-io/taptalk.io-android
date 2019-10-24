@@ -1,7 +1,10 @@
 package io.taptalk.TapTalk.Listener;
 
+import android.support.annotation.Keep;
+
 import io.taptalk.TapTalk.Interface.TapTalkGeneralInterface;
 
+@Keep
 public abstract class TAPGeneralListener<T> implements TapTalkGeneralInterface<T> {
     @Override
     public void onClick() {

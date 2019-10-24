@@ -20,6 +20,8 @@ public class TAPRoomListViewModel extends AndroidViewModel {
     private static boolean isShouldNotLoadFromAPI = false;
     private boolean isDoneFirstSetup = false;
     private boolean isDoneFirstApiSetup = false;
+    private int roomBadgeCount;
+    private int lastBadgeCount;
     private String myUserID;
 
     public TAPRoomListViewModel(@NonNull Application application) {
@@ -107,5 +109,21 @@ public class TAPRoomListViewModel extends AndroidViewModel {
 
     public void setDoneFirstApiSetup(boolean doneFirstApiSetup) {
         isDoneFirstApiSetup = doneFirstApiSetup;
+    }
+
+    public int getRoomBadgeCount() {
+        return roomBadgeCount;
+    }
+
+    public void setRoomBadgeCount(int roomBadgeCount) {
+        this.roomBadgeCount = roomBadgeCount;
+    }
+
+    public int getLastBadgeCount() {
+        return lastBadgeCount;
+    }
+
+    public void setLastBadgeCount(int lastBadgeCount) {
+        this.lastBadgeCount = lastBadgeCount;
     }
 }

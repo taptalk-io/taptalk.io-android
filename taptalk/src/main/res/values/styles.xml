@@ -231,6 +231,11 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="tapContactListUsernameStyle" parent="tapFontFamilyRegular">
+        <item name="android:textColor">@color/tapContactListUsernameColor</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="tapRoomListNameStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapRoomListNameColor</item>
@@ -655,8 +660,8 @@
     </style>
 
 
-    <style name="tapProductDetailsLabelStyle" parent="tapFontFamilyMedium">
-        <item name="android:textColor">@color/tapColorPrimaryDark</item>
+    <style name="tapProductDetailsLabelStyle" parent="tapFontFamilyBold">
+        <item name="android:textColor">@color/tapColorAccent</item>
         <item name="android:textSize">12sp</item>
     </style>
 

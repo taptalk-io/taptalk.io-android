@@ -21,7 +21,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_GOOGLE_API_KEY" />
+            android:value="AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -33,13 +33,14 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service android:name="io.taptalk.TapTalk.Firebase.MyFireMsgService">
+        <service android:name="io.taptalk.TapTalk.Firebase.TapFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <activity android:name="io.moselo.SampleApps.MainActivity">
+        <activity android:name="io.moselo.SampleApps.Activity.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -47,6 +48,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="io.moselo.SampleApps.Activity.TAPLoginActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name="io.moselo.SampleApps.Activity.TAPRegisterActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

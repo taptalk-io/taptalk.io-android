@@ -1,9 +1,12 @@
 package io.taptalk.TapTalk.Listener;
 
+import android.support.annotation.Keep;
+
 import io.taptalk.TapTalk.Interface.TapTalkAttachmentInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
+@Keep
 public abstract class TAPAttachmentListener implements TapTalkAttachmentInterface {
     @Override public void onDocumentSelected() {}
     @Override public void onCameraSelected() {}

@@ -35,6 +35,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_LEAVE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
+@Keep
 public class TapCoreChatRoomManager {
 
     private static TapCoreChatRoomManager instance;
@@ -267,7 +268,7 @@ public class TapCoreChatRoomManager {
             @Override
             public void onSuccess(TAPCommonResponse tapCommonResponse, String localID) {
                 if (tapCommonResponse.getSuccess()) {
-                    TAPOldDataManager.getInstance().startCleanRoomPhysicalData(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
+                    TAPOldDataManager.getInstance().cleanRoomPhysicalData(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
                         @Override
                         public void onDeleteFinished() {
                             TAPDataManager.getInstance().deleteMessageByRoomId(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
@@ -301,7 +302,7 @@ public class TapCoreChatRoomManager {
             @Override
             public void onSuccess(TAPCommonResponse response) {
                 if (response.getSuccess()) {
-                    TAPOldDataManager.getInstance().startCleanRoomPhysicalData(groupRoomID, new TAPDatabaseListener() {
+                    TAPOldDataManager.getInstance().cleanRoomPhysicalData(groupRoomID, new TAPDatabaseListener() {
                         @Override
                         public void onDeleteFinished() {
                             TAPDataManager.getInstance().deleteMessageByRoomId(groupRoomID, new TAPDatabaseListener() {

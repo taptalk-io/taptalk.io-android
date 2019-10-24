@@ -15,60 +15,100 @@ import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
-import io.taptalk.TapTalk.Listener.TapUIListener;
+import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
+import io.taptalk.TapTalk.Listener.TapUIChatRoomListener;
+import io.taptalk.TapTalk.Listener.TapUIRoomListListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
+import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
-import io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity;
+import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
-import io.taptalk.TapTalk.View.Activity.TAPRoomListActivity;
-import io.taptalk.TapTalk.View.Fragment.TAPMainRoomListFragment;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
+import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TapUI {
 
     private static TapUI instance;
 
-    private List<TapUIListener> tapUIListeners;
+    private List<TapUIRoomListListener> tapUIRoomListListeners;
+    private List<TapUIChatRoomListener> tapUIChatRoomListeners;
+    private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
+
+    private boolean isMyAccountButtonHidden;
+    private boolean isLogoutButtonVisible;
 
     public static TapUI getInstance() {
         return null == instance ? instance = new TapUI() : instance;
     }
 
-    private List<TapUIListener> getTapUIListeners() {
-        return null == tapUIListeners ? tapUIListeners = new ArrayList<>() : tapUIListeners;
+    private List<TapUIRoomListListener> getRoomListListeners() {
+        return null == tapUIRoomListListeners ? tapUIRoomListListeners = new ArrayList<>() : tapUIRoomListListeners;
     }
 
-    public void addUIListener(TapUIListener listener) {
-        getTapUIListeners().add(listener);
+    public void addRoomListListener(TapUIRoomListListener listener) {
+        getRoomListListeners().add(listener);
     }
 
-    public void removeUIListener(TapUIListener listener) {
-        getTapUIListeners().remove(listener);
+    public void removeRoomListListener(TapUIRoomListListener listener) {
+        getRoomListListeners().remove(listener);
     }
 
-    public TAPMainRoomListFragment getRoomListFragment() {
-        return TAPMainRoomListFragment.newInstance();
+    private List<TapUIChatRoomListener> getChatRoomListeners() {
+        return null == tapUIChatRoomListeners ? tapUIChatRoomListeners = new ArrayList<>() : tapUIChatRoomListeners;
+    }
+
+    public void addChatRoomListener(TapUIChatRoomListener listener) {
+        getChatRoomListeners().add(listener);
+    }
+
+    public void removeChatRoomListener(TapUIChatRoomListener listener) {
+        getChatRoomListeners().remove(listener);
+    }
+
+    private List<TapUICustomKeyboardListener> getCustomKeyboardListeners() {
+        return null == tapUICustomKeyboardListeners ? tapUICustomKeyboardListeners = new ArrayList<>() : tapUICustomKeyboardListeners;
+    }
+
+    public void addCustomKeyboardListener(TapUICustomKeyboardListener listener) {
+        getCustomKeyboardListeners().add(listener);
+    }
+
+    public void removeCustomKeyboardListener(TapUICustomKeyboardListener listener) {
+        getCustomKeyboardListeners().remove(listener);
+    }
+
+    public TapUIMainRoomListFragment getRoomListFragment() {
+        return TapUIMainRoomListFragment.newInstance();
     }
 
     public void openRoomList(Context context) {
-        Intent intent = new Intent(context, TAPRoomListActivity.class);
+        Intent intent = new Intent(context, TapUIRoomListActivity.class);
         context.startActivity(intent);
     }
 
     public void openGroupChatCreator(Context context) {
-        Intent intent = new Intent(context, TAPCreateNewGroupActivity.class);
+        Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
+        intent.putExtra(GROUP_ACTION, CREATE_GROUP);
         context.startActivity(intent);
     }
 
@@ -228,58 +268,99 @@ public class TapUI {
         openChatRoomWithRoomModel(context, roomModel);
     }
 
-    public void openTapTalkUserProfile(Context context, TAPUserModel userModel) {
-        WeakReference<Context> contextWeakReference = new WeakReference<>(context);
-        TAPDataManager.getInstance().getRoomModel(userModel, new TAPDatabaseListener<TAPRoomModel>() {
-            @Override
-            public void onSelectFinished(TAPRoomModel roomModel) {
-                if (null == contextWeakReference.get()) {
-                    return;
-                }
-                Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
-                intent.putExtra(ROOM, roomModel);
-                contextWeakReference.get().startActivity(intent);
-                if (contextWeakReference.get() instanceof Activity) {
-                    ((Activity) contextWeakReference.get()).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-                }
-            }
-        });
+    public void setMyAccountButtonInRoomListVisible(boolean isVisible) {
+        isMyAccountButtonHidden = !isVisible;
     }
 
-    public void openTapTalkUserProfile(Context context, String xcUserID) {
-        TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
-            @Override
-            public void onSelectFinished(TAPUserModel userModel) {
-                openTapTalkUserProfile(context, userModel);
-            }
+    public boolean isMyAccountButtonVisible() {
+        return !isMyAccountButtonHidden;
+    }
 
-            @Override
-            public void onSelectFailed(String errorMessage) {
-            }
-        });
+    public void setLogoutButtonVisible(boolean isVisible) {
+        isLogoutButtonVisible = isVisible;
+    }
+
+    public boolean isLogoutButtonVisible() {
+        return isLogoutButtonVisible;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
         TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
     }
 
-    void triggerChatRoomProfileButtonTapped(Activity activity, TAPUserModel user) {
-        if (getTapUIListeners().isEmpty()) {
-            openTapTalkUserProfile(activity, user);
+    void triggerTapTalkAccountButtonTapped(Activity activity) {
+        if (getRoomListListeners().isEmpty()) {
+            WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
+            Intent intent = new Intent(contextWeakReference.get(), TAPMyAccountActivity.class);
+            contextWeakReference.get().startActivityForResult(intent, EDIT_PROFILE);
+            contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         } else {
-            for (TapUIListener listener : getTapUIListeners()) {
-                listener.onTapTalkChatRoomProfileButtonTapped(activity, user);
+            for (TapUIRoomListListener listener : getRoomListListeners()) {
+                listener.onTapTalkAccountButtonTapped(activity);
+            }
+        }
+    }
+
+    void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
+        if (getChatRoomListeners().isEmpty()) {
+            WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
+            Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
+            intent.putExtra(ROOM, room);
+            if (room.getRoomType() == TYPE_PERSONAL) {
+                contextWeakReference.get().startActivity(intent);
+            } else if (room.getRoomType() == TYPE_GROUP) {
+                contextWeakReference.get().startActivityForResult(intent, OPEN_PROFILE);
+            }
+            contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        } else {
+            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+                switch (room.getRoomType()) {
+                    case TYPE_PERSONAL:
+                        listener.onTapTalkUserProfileButtonTapped(activity, room, user);
+                        break;
+                    case TYPE_GROUP:
+                        listener.onTapTalkGroupChatProfileButtonTapped(activity, room);
+                        break;
+                }
             }
         }
     }
 
     void triggerMessageQuoteTapped(Activity activity, TAPMessageModel messageModel) {
-        for (TapUIListener listener : getTapUIListeners()) {
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             HashMap<String, Object> userInfo = null;
             if (null != messageModel.getData() && null != messageModel.getData().get(USER_INFO)) {
                 userInfo = (HashMap<String, Object>) messageModel.getData().get(USER_INFO);
             }
             listener.onTapTalkMessageQuoteTapped(activity, messageModel, userInfo);
+        }
+    }
+
+    void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            listener.onTapTalkProductListBubbleLeftOrSingleButtonTapped(activity, product, room, recipient, isSingleOption);
+        }
+    }
+
+    void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            listener.onTapTalkProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
+        }
+    }
+
+    List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
+        for (TapUICustomKeyboardListener listener : getCustomKeyboardListeners()) {
+            List<TAPCustomKeyboardItemModel> items = listener.setCustomKeyboardItems(room, activeUser, recipientUser);
+            if (null != items && !items.isEmpty()) {
+                return items;
+            }
+        }
+        return null;
+    }
+
+    void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
+        for (TapUICustomKeyboardListener listener : getCustomKeyboardListeners()) {
+            listener.onCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, recipientUser);
         }
     }
 }

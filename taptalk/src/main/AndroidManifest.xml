@@ -27,17 +27,13 @@
             android:name="io.taptalk.TapTalk.Helper.CustomTabLayout.TAPKeepAliveService"
             android:exported="true" />
 
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPLoginActivity"
-            android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRoomListActivity"
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPSearchContactActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity"
             android:screenOrientation="portrait" />
@@ -51,15 +47,11 @@
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPForwardPickerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPRegisterActivity"
-            android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPAddMembersActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCreateNewGroupActivity"
+        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity"
             android:screenOrientation="portrait" />
@@ -68,7 +60,7 @@
             android:windowSoftInputMode="adjustNothing"
             android:screenOrientation="portrait" />
         <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPChatActivity"
+            android:name="io.taptalk.TapTalk.View.Activity.TapUIChatActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:screenOrientation="portrait" />
         <activity
@@ -76,7 +68,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
+            android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
@@ -86,10 +78,6 @@
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity"
             android:configChanges="orientation|screenSize"

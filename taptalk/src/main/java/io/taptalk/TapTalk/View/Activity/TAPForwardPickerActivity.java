@@ -143,8 +143,6 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
             ivButtonClearText.setVisibility(View.GONE);
         } else {
             TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
-            //flag untuk nandain kalau skrg lagi tidak munculin halaman recent Search
-            vm.setRecentSearchShown(false);
             ivButtonClearText.setVisibility(View.VISIBLE);
         }
     }
@@ -194,7 +192,9 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            etSearch.removeTextChangedListener(this);
             startSearch();
+            etSearch.addTextChangedListener(this);
         }
 
         @Override

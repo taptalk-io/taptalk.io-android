@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_info_label"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="24dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="24dp"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_info_label"
+        style="@style/tapInfoLabelBodyStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/tap_cant_find_contact" />
+
+    <TextView
+        android:id="@+id/tv_info_action_button"
+        style="@style/tapClickableLabelStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/tap_view_blocked_contacts" />
+
+</LinearLayout>
