@@ -278,6 +278,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
+        if (0 < etChat.getText().length() && etChat.getText().length() >= vm.getPreviousEditTextSelectionIndex()) {
+            etChat.setSelection(vm.getPreviousEditTextSelectionIndex());
+        }
         if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
             callApiGetGroupData();
         } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
@@ -297,6 +300,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
+        vm.setPreviousEditTextSelectionIndex(etChat.getSelectionEnd());
     }
 
     @Override
@@ -1039,8 +1043,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
             }
+            boolean hadFocus = etChat.hasFocus();
             if (showKeyboard) {
                 TAPUtils.getInstance().showKeyboard(this, etChat);
+            }
+            if (!hadFocus && etChat.getSelectionEnd() == 0) {
+                etChat.setSelection(etChat.getText().length());
             }
         });
     }
@@ -1078,7 +1086,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
         ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
         ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
-        etChat.requestFocus();
+        //etChat.requestFocus();
+        TAPUtils.getInstance().showKeyboard(this, etChat);
     }
 
     private void showCustomKeyboard() {
@@ -1913,32 +1922,40 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0 && s.toString().trim().length() > 0) {
+                // Hide chat menu and enable send button when EditText is filled
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
                 ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
             } else if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0) {
+                // Hide chat menu but keep send button disabled if trimmed text is empty
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
                 ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive_ripple);
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
-            } else if (s.length() > 0 && s.toString().trim().length() > 0) {
-                if (vm.isCustomKeyboardEnabled()) {
-                    ivChatMenu.setVisibility(View.VISIBLE);
-                    ivButtonChatMenu.setVisibility(View.VISIBLE);
-                }
-                ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
-                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+            //} else if (s.length() > 0 && s.toString().trim().length() > 0) {
+            //    if (vm.isCustomKeyboardEnabled()) {
+            //        ivChatMenu.setVisibility(View.VISIBLE);
+            //        ivButtonChatMenu.setVisibility(View.VISIBLE);
+            //    }
+            //    ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
+            //    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
             } else {
-                if (vm.isCustomKeyboardEnabled()) {
+                if (vm.isCustomKeyboardEnabled() && s.length() == 0) {
+                    // Show chat menu if text is empty
                     ivChatMenu.setVisibility(View.VISIBLE);
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
+                } else {
+                    ivChatMenu.setVisibility(View.GONE);
+                    ivButtonChatMenu.setVisibility(View.GONE);
                 }
                 if (vm.getQuoteAction() == FORWARD) {
+                    // Enable send button if message to forward exists
                     ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
                     ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
                 } else {
+                    // Disable send button
                     ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive_ripple);
                     ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
                 }
@@ -1956,11 +1973,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onFocusChange(View v, boolean hasFocus) {
             if (hasFocus && vm.isCustomKeyboardEnabled()) {
                 vm.setScrollFromKeyboard(true);
-                rvCustomKeyboard.setVisibility(View.GONE);
-                ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
-                ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
-                ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
-                TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
+                //rvCustomKeyboard.setVisibility(View.GONE);
+                //ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
+                //ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
+                //ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
+                //TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
 
                 if (0 < etChat.getText().toString().length()) {
                     ivChatMenu.setVisibility(View.GONE);
@@ -1968,7 +1985,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
             } else if (hasFocus) {
                 vm.setScrollFromKeyboard(true);
-                TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
+                //TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
+            } else {
+                etChat.requestFocus();
             }
         }
     };
