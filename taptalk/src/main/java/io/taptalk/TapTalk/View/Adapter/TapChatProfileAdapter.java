@@ -8,7 +8,6 @@ import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -35,7 +34,6 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
-import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
@@ -264,30 +262,54 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                 ivThumbnail.setImageDrawable(thumbnail);
             }
 
+            String fileID = (String) message.getData().get(FILE_ID);
 
             if (message.getType() == TYPE_VIDEO) {
                 ivVideoIcon.setVisibility(View.VISIBLE);
-                Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID));
-                if (null != videoUri) {
-                    glide.load(videoUri)
-                            .apply(new RequestOptions().placeholder(thumbnail))
-                            .listener(new RequestListener<Drawable>() {
-                                @Override
-                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                    showMediaRequiresDownload(message, downloadProgressValue, thumbnail);
-                                    return false;
-                                }
+                if (TAPFileDownloadManager.getInstance().checkPhysicalFileExists(message)) {
+                    new Thread(() -> {
+                        BitmapDrawable videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
+                        activity.runOnUiThread(() -> glide.load(videoThumbnail)
+                                .apply(new RequestOptions().placeholder(thumbnail))
+                                .listener(new RequestListener<Drawable>() {
+                                    @Override
+                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                        showMediaRequiresDownload(message, downloadProgressValue, thumbnail);
+                                        return false;
+                                    }
 
-                                @Override
-                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                    showMediaReady(message);
-                                    return false;
-                                }
-                            })
-                            .into(ivThumbnail);
+                                    @Override
+                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                        showMediaReady(message);
+                                        return false;
+                                    }
+                                })
+                                .into(ivThumbnail));
+                    }).start();
                 } else {
                     showMediaRequiresDownload(message, downloadProgressValue, thumbnail);
                 }
+//                Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID));
+//                if (null != videoUri) {
+//                    glide.load(videoUri)
+//                            .apply(new RequestOptions().placeholder(thumbnail))
+//                            .listener(new RequestListener<Drawable>() {
+//                                @Override
+//                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                                    showMediaRequiresDownload(message, downloadProgressValue, thumbnail);
+//                                    return false;
+//                                }
+//
+//                                @Override
+//                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                                    showMediaReady(message);
+//                                    return false;
+//                                }
+//                            })
+//                            .into(ivThumbnail);
+//                } else {
+//                    showMediaRequiresDownload(message, downloadProgressValue, thumbnail);
+//                }
             } else {
                 ivVideoIcon.setVisibility(View.GONE);
                 new Thread(() -> {

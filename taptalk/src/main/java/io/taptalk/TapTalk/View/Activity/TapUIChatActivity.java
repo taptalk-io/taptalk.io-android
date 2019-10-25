@@ -254,30 +254,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         glide = Glide.with(this);
         bindViews();
         initRoom();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        // Reload UI in room list
-        Intent intent = new Intent(RELOAD_ROOM_LIST);
-        intent.putExtra(ROOM_ID, vm.getRoom().getRoomID());
-        LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent);
-
-        TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());
-        TAPChatManager.getInstance().setOpenRoom(null); // Reset open room
-        TAPChatManager.getInstance().removeChatListener(chatListener);
-        TAPConnectionManager.getInstance().removeSocketListener(socketListener);
-        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
-        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-        TAPFileDownloadManager.getInstance().clearFailedDownloads(); // Remove failed download list from active room
+        registerBroadcastManager();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerBroadcastManager();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
@@ -299,7 +281,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        TAPBroadcastManager.unregister(this, broadcastReceiver);
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
@@ -311,6 +292,25 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         super.onStop();
         sendTypingEmitDelayTimer.cancel();
         typingIndicatorTimeoutTimer.cancel();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Reload UI in room list
+        Intent intent = new Intent(RELOAD_ROOM_LIST);
+        intent.putExtra(ROOM_ID, vm.getRoom().getRoomID());
+        LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent);
+
+        TAPBroadcastManager.unregister(this, broadcastReceiver);
+        TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());
+        TAPChatManager.getInstance().setOpenRoom(null); // Reset open room
+        TAPChatManager.getInstance().removeChatListener(chatListener);
+        TAPConnectionManager.getInstance().removeSocketListener(socketListener);
+        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
+        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+        TAPFileDownloadManager.getInstance().clearFailedDownloads(); // Remove failed download list from active room
     }
 
     @Override
