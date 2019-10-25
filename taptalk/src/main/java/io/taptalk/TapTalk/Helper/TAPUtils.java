@@ -257,7 +257,7 @@ public class TAPUtils {
     }
 
     public int getRandomColor(String s) {
-        if (s.length() == 0) {
+        if (null == s || s.length() == 0) {
             return 0;
         }
         int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.tapDefaultRoomAvatarBackgroundColors);
@@ -266,7 +266,7 @@ public class TAPUtils {
     }
 
     public String getInitials(String s, int maxLength) {
-        if (s.length() == 0) {
+        if (null == s || s.length() == 0) {
             return "";
         }
         String initials = s.replaceAll("([^\\s])[^\\s]+", "$1").replaceAll("\\s", "");

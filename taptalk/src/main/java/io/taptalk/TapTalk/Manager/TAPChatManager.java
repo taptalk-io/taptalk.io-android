@@ -86,6 +86,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
 
@@ -1604,8 +1605,26 @@ public class TAPChatManager {
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
 
-        // Insert decrypted message to database
-        incomingMessages.put(newMessage.getLocalID(), newMessage);
+
+        if (LEAVE_ROOM.equals(newMessage.getAction()) && getActiveUser().getUserID().equals(newMessage.getUser().getUserID())) {
+            // Remove all room messages if user leaves a chat room
+            new Thread(() -> {
+                for (Map.Entry<String, TAPMessageModel> entry : incomingMessages.entrySet()) {
+                    if (entry.getValue().getUser().getUserID().equals(newMessage.getUser().getUserID())) {
+                        incomingMessages.remove(entry.getKey());
+                    }
+                }
+                for (TAPMessageEntity message : saveMessages) {
+                    if (message.getRoomID().equals(newMessage.getUser().getUserID())) {
+                        saveMessages.remove(message);
+                    }
+                }
+            }).start();
+
+        } else {
+            // Insert decrypted message to database
+            incomingMessages.put(newMessage.getLocalID(), newMessage);
+        }
 
         // Query Unread Message
         //TAPNotificationManager.getInstance().updateUnreadCount();

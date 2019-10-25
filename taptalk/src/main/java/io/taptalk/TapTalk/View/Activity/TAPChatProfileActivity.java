@@ -83,6 +83,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
@@ -91,6 +92,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_UPDATE_DATA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
@@ -490,6 +492,14 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         Log.e(TAG, "changeRoomColor: ");
     }
 
+    private void openEditGroup() {
+        Intent intent = new Intent(TAPChatProfileActivity.this, TAPEditGroupSubjectActivity.class);
+        intent.putExtra(GROUP_ACTION, EDIT_GROUP);
+        intent.putExtra(ROOM, vm.getRoom());
+        startActivityForResult(intent, GROUP_UPDATE_DATA);
+        overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+    }
+
     private void searchChat() {
         Log.e(TAG, "searchChat: ");
     }
@@ -599,13 +609,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .setSecondaryButtonListener(v -> {
                 })
                 .show();
-    }
-
-    private void openEditGroup() {
-        Intent intent = new Intent(TAPChatProfileActivity.this, TAPEditGroupActivity.class);
-        intent.putExtra(ROOM, vm.getRoom());
-        startActivityForResult(intent, GROUP_UPDATE_DATA);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
     }
 
     private void startVideoDownload(TAPMessageModel message) {
