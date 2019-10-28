@@ -813,11 +813,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         try {
                             retriever.setDataSource(itemView.getContext(), videoUri);
                             videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
+                            TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, videoThumbnail);
                         } catch (Exception e) {
                             e.printStackTrace();
                             videoThumbnail = (BitmapDrawable) thumbnail;
                         }
-                        TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, videoThumbnail);
                     }
                     // Load full-size thumbnail from cache
                     if (null != videoThumbnail) {

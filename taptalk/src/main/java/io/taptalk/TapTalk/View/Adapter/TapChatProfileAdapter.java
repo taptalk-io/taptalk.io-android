@@ -8,6 +8,8 @@ import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -49,6 +51,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.ME
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
@@ -285,8 +288,8 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 
             String fileID = (String) message.getData().get(FILE_ID);
 
-            if (TAPCacheManager.getInstance(itemView.getContext()).containsCache(fileID)) {
-                // Image exists in cache
+            if (TAPCacheManager.getInstance(itemView.getContext()).containsCache(fileID) || TAPFileDownloadManager.getInstance().checkPhysicalFileExists(message)) {
+                // Image exists in cache / file exists in storage
                 if (message.getType() == TYPE_VIDEO && null != message.getData()) {
                     Number duration = (Number) message.getData().get(DURATION);
                     if (null != duration) {
@@ -307,10 +310,25 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                     BitmapDrawable mediaThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (position == getAdapterPosition()) {
                         // Load image only if view has not been recycled
-                        activity.runOnUiThread(() -> {
-                            if (null != mediaThumbnail) {
+                        if (message.getType() == TYPE_VIDEO && null == mediaThumbnail) {
+                            // Get full-size thumbnail from Uri
+                            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                            String dataUri = (String) message.getData().get(FILE_URI);
+                            Uri videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), fileID);
+                            try {
+                                retriever.setDataSource(itemView.getContext(), videoUri);
+                                mediaThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
+                                TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, mediaThumbnail);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                mediaThumbnail = (BitmapDrawable) thumbnail;
+                            }
+                        }
+                        if (null != mediaThumbnail) {
+                            BitmapDrawable finalMediaThumbnail = mediaThumbnail;
+                            activity.runOnUiThread(() -> {
                                 // Load media thumbnail
-                                glide.load(mediaThumbnail)
+                                glide.load(finalMediaThumbnail)
                                 .apply(new RequestOptions().placeholder(thumbnail))
                                 .listener(new RequestListener<Drawable>() {
                                     @Override
@@ -330,8 +348,8 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                                         }
                                     }
                                 }).into(ivThumbnail);
-                            }
-                        });
+                            });
+                        }
                     }
                 }).start();
             } else {
