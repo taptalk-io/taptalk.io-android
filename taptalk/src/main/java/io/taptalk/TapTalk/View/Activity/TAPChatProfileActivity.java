@@ -167,6 +167,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     if (null == data) {
                         return;
                     }
+
                     if (null != data.getParcelableExtra(ROOM)) {
                         vm.setRoom(data.getParcelableExtra(ROOM));
                         updateView();
@@ -221,14 +222,13 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 getResources().getColor(R.color.tapTransparentBlack),
                 getResources().getColor(R.color.tapTransparentBlack40)}));
 
-        // Initialize menus
-        vm.setMenuItems(generateChatProfileMenu());
-        vm.getAdapterItems().addAll(vm.getMenuItems());
-
         if (!vm.isGroupMemberProfile()) {
             // Show loading on start
             vm.setLoadingItem(new TapChatProfileItemModel(TYPE_LOADING_LAYOUT));
             vm.getAdapterItems().add(vm.getLoadingItem());
+
+            // Load shared medias
+            new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
         }
 
         // Setup recycler view
@@ -259,9 +259,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         if (null != recyclerAnimator) {
             recyclerAnimator.setSupportsChangeAnimations(false);
         }
-
-        // Load shared medias
-        new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
 
         appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
 
@@ -307,6 +304,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             tvCollapsedName.setText(vm.getRoom().getRoomName());
         }
 
+        // Show / hide edit group button
         if (!vm.isGroupMemberProfile() && null != vm.getRoom() &&
                 TYPE_GROUP == vm.getRoom().getRoomType() && null != vm.getRoom().getAdmins() &&
                 vm.getRoom().getAdmins().contains(TAPChatManager.getInstance().getActiveUser().getUserID())) {
@@ -315,9 +313,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             ivButtonEdit.setVisibility(View.GONE);
         }
 
-        // Update Room Menu
+        // Update room menu
+        vm.getAdapterItems().removeAll(vm.getMenuItems());
         vm.setMenuItems(generateChatProfileMenu());
-        //if (null != adapter) adapter.setItems(vm.getAdapterItems());
+        vm.getAdapterItems().addAll(0, vm.getMenuItems());
+        if (null != adapter) {
+            adapter.setItems(vm.getAdapterItems());
+            adapter.notifyDataSetChanged();
+        }
+
     }
 
     private List<TapChatProfileItemModel> generateChatProfileMenu() {
@@ -469,16 +473,16 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             }
 
             // Remove member
-            //if (null != vm.getRoom().getAdmins() &&
-            //        vm.getRoom().getAdmins().contains(TAPChatManager.getInstance().getActiveUser().getUserID())) {
-            //    TapChatProfileItemModel menuRemoveMember = new TapChatProfileItemModel(
-            //            MENU_REMOVE_MEMBER,
-            //            getString(R.string.tap_remove_group_member),
-            //            R.drawable.tap_ic_delete_red,
-            //            R.color.tapIconGroupMemberProfileMenuRemoveMember,
-            //            R.style.tapChatProfileMenuDestructiveLabelStyle);
-            //    menuItems.add(menuRemoveMember);
-            //}
+            if (null != vm.getRoom().getAdmins() &&
+                    vm.getRoom().getAdmins().contains(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                TapChatProfileItemModel menuRemoveMember = new TapChatProfileItemModel(
+                        MENU_REMOVE_MEMBER,
+                        getString(R.string.tap_remove_group_member),
+                        R.drawable.tap_ic_delete_red,
+                        R.color.tapIconGroupMemberProfileMenuRemoveMember,
+                        R.style.tapChatProfileMenuDestructiveLabelStyle);
+                menuItems.add(menuRemoveMember);
+            }
         }
 
         return menuItems;
@@ -513,7 +517,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void viewMembers() {
-        Log.e(TAG, "viewMembers: ");
         Intent intent = new Intent(TAPChatProfileActivity.this, TAPGroupMemberListActivity.class);
         intent.putExtra(ROOM, vm.getRoom());
         startActivityForResult(intent, GROUP_UPDATE_DATA);
@@ -1036,6 +1039,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPCreateRoomResponse> userActionView = new TAPDefaultDataView<TAPCreateRoomResponse>() {
         @Override
         public void startLoading() {
+            // TODO: 28 October 2019 DISABLE ONBACKPRESSED
             showLoadingPopup(vm.getLoadingStartText());
         }
 
@@ -1155,7 +1159,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             }
             switch (action) {
                 case DownloadProgressLoading:
-                case DownloadFinish: // TODO: 25 October 2019 SHARED MEDIA SHOWS MISSING FILE AFTER DOWNLOADING VIDEO (IMAGE NOT IN CACHE)
+                case DownloadFinish:
                 case DownloadFailed:
                     runOnUiThread(() -> notifyItemChanged(vm.getSharedMedia(localID)));
                     break;
