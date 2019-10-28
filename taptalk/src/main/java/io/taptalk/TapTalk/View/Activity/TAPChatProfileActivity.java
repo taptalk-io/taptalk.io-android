@@ -825,6 +825,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         @Override
         public void onMediaClicked(TAPMessageModel item, ImageView ivThumbnail, boolean isMediaReady) {
+            Log.e(TAG, "onMediaClicked: " + item.getMessageID() + " / " + item.getType() + " - " + item.getData().get(FILE_ID));
             if (item.getType() == TYPE_IMAGE && isMediaReady) {
                 // Preview image detail
                 Intent intent = new Intent(TAPChatProfileActivity.this, TAPImageDetailPreviewActivity.class);
@@ -1103,8 +1104,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                                     if (null != view) {
                                         int[] location = new int[2];
                                         view.getLocationOnScreen(location);
+                                        Log.e(TAG, "getLocationOnScreen: " + location[1]);
                                         if (!vm.isFinishedLoadingSharedMedia() && location[1] < TAPUtils.getInstance().getScreenHeight()) {
                                             // Load more if view holder is visible
+                                            // TODO: 25 October 2019 NOT LOADED IF RECYCLER IS QUICKLY SCROLLED TO BOTTOM
                                             if (!vm.isLoadingSharedMedia()) {
                                                 vm.setLoadingSharedMedia(true);
                                                 showSharedMediaLoading();
@@ -1152,7 +1155,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             }
             switch (action) {
                 case DownloadProgressLoading:
-                case DownloadFinish:
+                case DownloadFinish: // TODO: 25 October 2019 SHARED MEDIA SHOWS MISSING FILE AFTER DOWNLOADING VIDEO (IMAGE NOT IN CACHE)
                 case DownloadFailed:
                     runOnUiThread(() -> notifyItemChanged(vm.getSharedMedia(localID)));
                     break;

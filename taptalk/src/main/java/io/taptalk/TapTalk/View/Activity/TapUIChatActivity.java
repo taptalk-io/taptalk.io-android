@@ -1560,8 +1560,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         @Override
         public void onMessageQuoteClicked(TAPMessageModel message) {
             TAPChatManager.getInstance().triggerMessageQuoteTapped(TapUIChatActivity.this, message);
-            if (null != message.getReplyTo() && (
-                    null == message.getForwardFrom() ||
+            if (null != message.getReplyTo() &&
+                    message.getReplyTo().getMessageType() != -1 && // FIXME: 25 October 2019 MESSAGE TYPE -1 IS USED FOR DUMMY MESSAGE IN CHAT MANAGER setQuotedMessage
+                    (null == message.getForwardFrom() ||
                             null == message.getForwardFrom().getFullname() ||
                             message.getForwardFrom().getFullname().isEmpty())) {
                 scrollToMessage(message.getReplyTo().getLocalID());
