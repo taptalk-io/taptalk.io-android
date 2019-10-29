@@ -65,7 +65,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
@@ -80,7 +79,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LE
 public class TapUIRoomListFragment extends Fragment {
 
     private String TAG = TapUIRoomListFragment.class.getSimpleName();
-    private TapUIMainRoomListFragment fragment;
+    private TapUIMainRoomListFragment mainRoomListFragment;
 
     private Activity activity;
 
@@ -115,7 +114,7 @@ public class TapUIRoomListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        fragment = (TapUIMainRoomListFragment) this.getParentFragment();
+        mainRoomListFragment = (TapUIMainRoomListFragment) this.getParentFragment();
         return inflater.inflate(R.layout.tap_fragment_room_list, container, false);
     }
 
@@ -326,12 +325,7 @@ public class TapUIRoomListFragment extends Fragment {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
-        cvButtonSearch.setOnClickListener(v -> {
-            TAPUtils.getInstance().animateClickButton(cvButtonSearch, 0.97f);
-            if (null != fragment) {
-                fragment.showSearchChat();
-            }
-        });
+        cvButtonSearch.setOnClickListener(v -> showSearchChat());
         vButtonMyAccount.setOnClickListener(v -> openMyAccountActivity());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         tvStartNewChat.setOnClickListener(v -> {
@@ -365,14 +359,17 @@ public class TapUIRoomListFragment extends Fragment {
         }
     }
 
+    private void showSearchChat() {
+        TAPUtils.getInstance().animateClickButton(cvButtonSearch, 0.97f);
+        TAPChatManager.getInstance().triggerSearchChatBarTapped(activity, mainRoomListFragment);
+    }
+
     private void openMyAccountActivity() {
         TAPChatManager.getInstance().triggerTapTalkAccountButtonTapped(activity);
     }
 
     private void openNewChatActivity() {
-        Intent intent = new Intent(activity, TAPNewChatActivity.class);
-        startActivity(intent);
-        activity.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        TAPChatManager.getInstance().triggerNewChatButtonTapped(activity);
     }
 
     private void viewLoadedSequence() {

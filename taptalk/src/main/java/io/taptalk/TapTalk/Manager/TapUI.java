@@ -333,6 +333,16 @@ public class TapUI {
         TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
     }
 
+    void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
+        if (getRoomListListeners().isEmpty() && null != mainRoomListFragment) {
+            mainRoomListFragment.showSearchChat();
+        } else {
+            for (TapUIRoomListListener listener : getRoomListListeners()) {
+                listener.onSearchChatBarTapped(activity, mainRoomListFragment);
+            }
+        }
+    }
+
     void triggerTapTalkAccountButtonTapped(Activity activity) {
         if (getRoomListListeners().isEmpty()) {
             WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
@@ -342,6 +352,19 @@ public class TapUI {
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
                 listener.onTapTalkAccountButtonTapped(activity);
+            }
+        }
+    }
+
+    void triggerNewChatButtonTapped(Activity activity) {
+        if (getRoomListListeners().isEmpty()) {
+            WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
+            Intent intent = new Intent(contextWeakReference.get(), TAPNewChatActivity.class);
+            contextWeakReference.get().startActivity(intent);
+            contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        } else {
+            for (TapUIRoomListListener listener : getRoomListListeners()) {
+                listener.onNewChatButtonTapped(activity);
             }
         }
     }
