@@ -798,13 +798,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         .into(rcivVideoThumbnail);
             } else if ((((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent) && null != videoUri &&
-                    TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item))) {
+                    TAPFileDownloadManager.getInstance().checkPhysicalFileExists(item))) {
                 // Video has finished downloading or uploading
                 tvMediaInfo.setText(null == duration ? "" : TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
                 ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_play_white));
                 ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFilePlayMedia)));
                 pbProgress.setVisibility(View.GONE);
-                rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item)));
+                rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, TAPFileDownloadManager.getInstance().checkPhysicalFileExists(item)));
                 new Thread(() -> {
                     BitmapDrawable videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (null == videoThumbnail) {
@@ -813,11 +813,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         try {
                             retriever.setDataSource(itemView.getContext(), videoUri);
                             videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
+                            TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, videoThumbnail);
                         } catch (Exception e) {
                             e.printStackTrace();
                             videoThumbnail = (BitmapDrawable) thumbnail;
                         }
-                        TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, videoThumbnail);
                     }
                     // Load full-size thumbnail from cache
                     if (null != videoThumbnail) {
@@ -829,7 +829,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                             .placeholder(thumbnail)
                                             .centerCrop())
                                     .into(rcivVideoThumbnail);
-                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item)));
+                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, TAPFileDownloadManager.getInstance().checkPhysicalFileExists(item)));
                         });
                     }
                 }).start();
@@ -1041,7 +1041,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent) && null != fileUri &&
-                    TAPFileDownloadManager.getInstance().checkPhysicalFileIsExist(item)) {
+                    TAPFileDownloadManager.getInstance().checkPhysicalFileExists(item)) {
                 // File has finished downloading or uploading
                 tvMessageStatus.setText(item.getMessageStatusText());
                 tvFileInfo.setText(TAPUtils.getInstance().getFileDisplayInfo(item));

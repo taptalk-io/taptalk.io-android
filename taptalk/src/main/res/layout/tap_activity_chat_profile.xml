@@ -108,99 +108,14 @@
         android:tint="@color/tapIconTransparentBackgroundBackButton"
         android:visibility="gone" />
 
-
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/nsv_profile"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_chat_profile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:overScrollMode="never"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <!--focusableInTouchMode is needed to prevent RecyclerView from scrolling to top of NestedScrollView-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusableInTouchMode="true"
-            android:orientation="vertical">
-
-            <View
-                android:id="@+id/v_profile_separator"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:alpha="0"
-                android:background="@color/tapGreyDc"
-                android:elevation="2dp" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_menu_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:overScrollMode="never"
-                android:paddingStart="1dp"
-                android:paddingEnd="0dp" />
-
-            <include layout="@layout/tap_cell_section_title" />
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_shared_media"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:overScrollMode="never"
-                android:paddingStart="1dp"
-                android:paddingEnd="0dp"
-                android:visibility="gone" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:id="@+id/iv_shared_media_loading"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="108dp"
-                    android:src="@drawable/tap_ic_loading_progress_circle_white"
-                    android:tint="@color/tapIconLoadingProgressPrimary" />
-
-                <LinearLayout
-                    android:id="@+id/ll_reload_shared_media"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        style="@style/tapInfoLabelBodyStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/tap_unable_to_load_shared_media" />
-
-                    <TextView
-                        style="@style/tapClickableLabelStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center"
-                        android:text="@string/tap_try_again" />
-
-                </LinearLayout>
-
-            </FrameLayout>
-
-        </LinearLayout>
-
-    </android.support.v4.widget.NestedScrollView>
+        android:paddingStart="1dp"
+        android:paddingEnd="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <include layout="@layout/tap_layout_popup_loading_screen" />
 

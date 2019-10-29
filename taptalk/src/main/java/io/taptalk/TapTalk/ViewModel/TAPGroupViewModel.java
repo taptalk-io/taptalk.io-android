@@ -18,6 +18,8 @@ public class TAPGroupViewModel extends AndroidViewModel {
     private List<String> participantsIDs;
     private String myID;
     private Uri roomImageUri;
+    private int groupAction;
+    private boolean isGroupPictureChanged, isGroupPictureStartsEmpty, isGroupNameChanged, isLoading;
 
     public TAPGroupViewModel(@NonNull Application application) {
         super(application);
@@ -62,5 +64,45 @@ public class TAPGroupViewModel extends AndroidViewModel {
 
     public void setRoomImageUri(Uri roomImageUri) {
         this.roomImageUri = roomImageUri;
+    }
+
+    public int getGroupAction() {
+        return groupAction;
+    }
+
+    public void setGroupAction(int groupAction) {
+        this.groupAction = groupAction;
+    }
+
+    public boolean isGroupPictureChanged() {
+        return isGroupPictureChanged;
+    }
+
+    public void setGroupPictureChanged(boolean groupPictureChanged) {
+        isGroupPictureChanged = groupPictureChanged;
+    }
+
+    public boolean isGroupPictureStartsEmpty() {
+        return isGroupPictureStartsEmpty;
+    }
+
+    public void setGroupPictureStartsEmpty(boolean groupPictureStartsEmpty) {
+        isGroupPictureStartsEmpty = groupPictureStartsEmpty;
+    }
+
+    public boolean isGroupNameChanged() {
+        return isGroupNameChanged;
+    }
+
+    public void setGroupNameChanged(boolean groupNameChanged) {
+        isGroupNameChanged = groupNameChanged;
+    }
+
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    public void setLoading(boolean loading) {
+        isLoading = loading;
     }
 }

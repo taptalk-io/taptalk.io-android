@@ -68,7 +68,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPGroupSubjectActivity"
+            android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupSubjectActivity"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait" />
         <activity
@@ -78,10 +78,6 @@
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupActivity"
-            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity"
             android:configChanges="orientation|screenSize"

@@ -26,14 +26,15 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_VIEW_MEMBERS;
 
+@Deprecated
 public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseViewHolder<TAPMenuItem>> {
 
-    private TAPChatProfileActivity.ProfileMenuInterface menuInterface;
+//    private TAPChatProfileActivity.ProfileMenuInterface menuInterface;
 
-    public TAPMenuButtonAdapter(List<TAPMenuItem> items, TAPChatProfileActivity.ProfileMenuInterface menuInterface) {
-        setItems(items, true);
-        this.menuInterface = menuInterface;
-    }
+//    public TAPMenuButtonAdapter(List<TAPMenuItem> items, TAPChatProfileActivity.ProfileMenuInterface menuInterface) {
+//        setItems(items, true);
+//        this.menuInterface = menuInterface;
+//    }
 
     @NonNull
     @Override
@@ -79,7 +80,7 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                         item.setChecked(isChecked);
-                        menuInterface.onMenuClicked(item);
+//                        menuInterface.onMenuClicked(item);
                         if (isChecked) {
                             // Turn switch ON
                             getTransitionInactive().cancel();
@@ -130,7 +131,7 @@ public class TAPMenuButtonAdapter extends TAPBaseAdapter<TAPMenuItem, TAPBaseVie
                 if (item.isSwitchMenu()) {
                     swMenuSwitch.setChecked(!swMenuSwitch.isChecked());
                 } else {
-                    menuInterface.onMenuClicked(item);
+//                    menuInterface.onMenuClicked(item);
                 }
             });
         }

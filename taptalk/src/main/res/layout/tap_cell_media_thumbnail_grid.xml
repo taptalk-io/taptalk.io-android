@@ -4,7 +4,8 @@
     android:id="@+id/cl_container"
     android:layout_width="120dp"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground">
+    android:background="@color/tapWhite"
+    android:foreground="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/iv_thumbnail"

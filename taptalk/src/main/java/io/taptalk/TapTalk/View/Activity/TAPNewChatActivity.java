@@ -37,6 +37,7 @@ import io.taptalk.TapTalk.Listener.TapContactListListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
@@ -183,21 +184,27 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void setupMenuButtons() {
-        TapContactListModel menuAddNewContact = new TapContactListModel(
-                MENU_ID_ADD_NEW_CONTACT,
-                getString(R.string.tap_new_contact),
-                R.drawable.tap_ic_new_contact_orange);
-        vm.getMenuButtonList().add(menuAddNewContact);
-        TapContactListModel menuScanQRCode = new TapContactListModel(
-                MENU_ID_SCAN_QR_CODE,
-                getString(R.string.tap_scan_qr_code),
-                R.drawable.tap_ic_scan_qr_orange);
-        vm.getMenuButtonList().add(menuScanQRCode);
-        TapContactListModel menuCreateNewGroup = new TapContactListModel(
-                MENU_ID_CREATE_NEW_GROUP,
-                getString(R.string.tap_new_group),
-                R.drawable.tap_ic_new_group_orange);
-        vm.getMenuButtonList().add(menuCreateNewGroup);
+        if (TapUI.getInstance().isNewContactMenuButtonVisible()) {
+            TapContactListModel menuAddNewContact = new TapContactListModel(
+                    MENU_ID_ADD_NEW_CONTACT,
+                    getString(R.string.tap_new_contact),
+                    R.drawable.tap_ic_new_contact_orange);
+            vm.getMenuButtonList().add(menuAddNewContact);
+        }
+        if (TapUI.getInstance().isScanQRMenuButtonVisible()) {
+            TapContactListModel menuScanQRCode = new TapContactListModel(
+                    MENU_ID_SCAN_QR_CODE,
+                    getString(R.string.tap_scan_qr_code),
+                    R.drawable.tap_ic_scan_qr_orange);
+            vm.getMenuButtonList().add(menuScanQRCode);
+        }
+        if (TapUI.getInstance().isNewGroupMenuButtonVisible()) {
+            TapContactListModel menuCreateNewGroup = new TapContactListModel(
+                    MENU_ID_CREATE_NEW_GROUP,
+                    getString(R.string.tap_new_group),
+                    R.drawable.tap_ic_new_group_orange);
+            vm.getMenuButtonList().add(menuCreateNewGroup);
+        }
     }
 
     private void showToolbar() {
@@ -243,6 +250,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         vm.getAdapterItems().addAll(vm.getSeparatedContactList());
 
         // TODO: 11 October 2019 TEMPORARILY DISABLED FEATURE
+        // TODO: 29 October 2019 CHECK IF VIEW BLOCKED CONTACTS MENU IS VISIBLE IN TAP UI
         //setViewBlockedContactsInfoLabelItem();
         //vm.getAdapterItems().add(vm.getInfoLabelItem());
 
@@ -262,8 +270,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             }
         }
 
-        setAddNewContactInfoLabelItem();
-        vm.getAdapterItems().add(vm.getInfoLabelItem());
+        if (TapUI.getInstance().isNewContactMenuButtonVisible()) {
+            setAddNewContactInfoLabelItem();
+            vm.getAdapterItems().add(vm.getInfoLabelItem());
+        }
 
         if (null != adapter) {
             adapter.setItems(vm.getAdapterItems(), false);

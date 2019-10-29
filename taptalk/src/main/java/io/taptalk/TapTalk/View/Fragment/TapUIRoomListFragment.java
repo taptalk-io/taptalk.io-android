@@ -65,7 +65,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
@@ -75,18 +74,19 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 
 public class TapUIRoomListFragment extends Fragment {
 
     private String TAG = TapUIRoomListFragment.class.getSimpleName();
-    private TapUIMainRoomListFragment fragment;
+    private TapUIMainRoomListFragment mainRoomListFragment;
 
     private Activity activity;
 
     private ConstraintLayout clButtonSearch, clSelection;
-    private FrameLayout flSetupContainer;
+    private FrameLayout flButtonSearch, flSetupContainer;
     private LinearLayout llRoomEmpty, llRetrySetup;
-    private TextView tvSelectionCount, tvMyAvatarLabel, tvStartNewChat, tvSetupChat, tvSetupChatDescription;
+    private TextView tvSelectionCount, tvMyAvatarLabel, tvStartNewChatDescription, tvStartNewChat, tvSetupChat, tvSetupChatDescription;
     private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivSetupChat, ivSetupChatLoading;
     private CircleImageView civMyAvatarImage;
     private CardView cvButtonSearch;
@@ -114,7 +114,7 @@ public class TapUIRoomListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        fragment = (TapUIMainRoomListFragment) this.getParentFragment();
+        mainRoomListFragment = (TapUIMainRoomListFragment) this.getParentFragment();
         return inflater.inflate(R.layout.tap_fragment_room_list, container, false);
     }
 
@@ -125,6 +125,7 @@ public class TapUIRoomListFragment extends Fragment {
         initListener();
         initView(view);
         viewLoadedSequence();
+        TAPBroadcastManager.register(activity, reloadRoomListReceiver, RELOAD_ROOM_LIST);
     }
 
     @Override
@@ -138,15 +139,21 @@ public class TapUIRoomListFragment extends Fragment {
         new Thread(() -> TAPChatManager.getInstance().saveMessageToDatabase()).start();
         updateQueryRoomListFromBackground();
         addNetworkListener();
-        TAPBroadcastManager.register(activity, receiver, REFRESH_TOKEN_RENEWED, RELOAD_ROOM_LIST);
+        TAPBroadcastManager.register(activity, refreshTokenReceiver, REFRESH_TOKEN_RENEWED);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         TAPNotificationManager.getInstance().setRoomListAppear(false);
-        TAPBroadcastManager.unregister(activity, receiver);
+        TAPBroadcastManager.unregister(activity, refreshTokenReceiver);
         removeNetworkListener();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        TAPBroadcastManager.unregister(activity, reloadRoomListReceiver);
     }
 
     @Override
@@ -243,11 +250,13 @@ public class TapUIRoomListFragment extends Fragment {
     private void initView(View view) {
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         //clSelection = view.findViewById(R.id.cl_selection);
+        flButtonSearch = view.findViewById(R.id.fl_button_search);
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
         llRetrySetup = view.findViewById(R.id.ll_retry_setup);
         //tvSelectionCount = view.findViewById(R.id.tv_selection_count);
         tvMyAvatarLabel = view.findViewById(R.id.tv_my_avatar_image_label);
+        tvStartNewChatDescription = view.findViewById(R.id.tv_start_new_chat_description);
         tvStartNewChat = view.findViewById(R.id.tv_start_new_chat);
         tvSetupChat = view.findViewById(R.id.tv_setup_chat);
         tvSetupChatDescription = view.findViewById(R.id.tv_setup_chat_description);
@@ -273,10 +282,24 @@ public class TapUIRoomListFragment extends Fragment {
 
         flSetupContainer.setVisibility(View.GONE);
 
+        if (TapUI.getInstance().isSearchChatBarVisible()) {
+            flButtonSearch.setVisibility(View.VISIBLE);
+        } else {
+            flButtonSearch.setVisibility(View.GONE);
+        }
+
         if (TapUI.getInstance().isMyAccountButtonVisible()) {
             civMyAvatarImage.setVisibility(View.VISIBLE);
         } else {
             civMyAvatarImage.setVisibility(View.GONE);
+        }
+
+        if (TapUI.getInstance().isNewChatButtonVisible()) {
+            tvStartNewChat.setVisibility(View.VISIBLE);
+            tvStartNewChatDescription.setVisibility(View.VISIBLE);
+        } else {
+            tvStartNewChat.setVisibility(View.GONE);
+            tvStartNewChatDescription.setVisibility(View.GONE);
         }
 
         if (vm.isSelecting()) {
@@ -302,12 +325,7 @@ public class TapUIRoomListFragment extends Fragment {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
-        cvButtonSearch.setOnClickListener(v -> {
-            TAPUtils.getInstance().animateClickButton(cvButtonSearch, 0.97f);
-            if (null != fragment) {
-                fragment.showSearchChat();
-            }
-        });
+        cvButtonSearch.setOnClickListener(v -> showSearchChat());
         vButtonMyAccount.setOnClickListener(v -> openMyAccountActivity());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         tvStartNewChat.setOnClickListener(v -> {
@@ -341,14 +359,17 @@ public class TapUIRoomListFragment extends Fragment {
         }
     }
 
+    private void showSearchChat() {
+        TAPUtils.getInstance().animateClickButton(cvButtonSearch, 0.97f);
+        TAPChatManager.getInstance().triggerSearchChatBarTapped(activity, mainRoomListFragment);
+    }
+
     private void openMyAccountActivity() {
         TAPChatManager.getInstance().triggerTapTalkAccountButtonTapped(activity);
     }
 
     private void openNewChatActivity() {
-        Intent intent = new Intent(activity, TAPNewChatActivity.class);
-        startActivity(intent);
-        activity.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        TAPChatManager.getInstance().triggerNewChatButtonTapped(activity);
     }
 
     private void viewLoadedSequence() {
@@ -443,32 +464,38 @@ public class TapUIRoomListFragment extends Fragment {
             if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != activity) {
                 // Update room list's last message data
                 roomLastMessage.updateValue(message);
-                int roomPos = vm.getRoomList().indexOf(roomList);
-                activity.runOnUiThread(() -> adapter.notifyItemChanged(roomPos));
+                activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomList)));
             } else if (roomLastMessage.getCreated() < message.getCreated()) {
-                // Update room list's last message with the new message from socket
-                roomList.setLastMessage(message);
-
-                // Add unread count by 1 if sender is not self
-                if (!roomList.getLastMessage().getUser().getUserID()
-                        .equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
-                    roomList.setUnreadCount(roomList.getUnreadCount() + 1);
-                }
-
-                // Move room to top
                 int oldPos = vm.getRoomList().indexOf(roomList);
-                vm.getRoomList().remove(roomList);
-                vm.getRoomList().add(0, roomList);
+                if (LEAVE_ROOM.equals(message.getAction()) && vm.getMyUserID().equals(message.getUser().getUserID())) {
+                    // Remove room from list
+                    vm.getRoomList().remove(roomList);
+                    vm.getRoomPointer().remove(roomList.getLastMessage().getLocalID());
+                    activity.runOnUiThread(() -> adapter.notifyItemRemoved(oldPos));
+                } else {
+                    // Update room list's last message with the new message from socket
+                    roomList.setLastMessage(message);
 
-                if (null != activity) {
-                    activity.runOnUiThread(() -> {
-                        llRoomEmpty.setVisibility(View.GONE);
-                        adapter.notifyItemChanged(oldPos);
-                        adapter.notifyItemMoved(oldPos, 0);
-                        // Scroll to top
-                        if (llm.findFirstCompletelyVisibleItemPosition() == 0)
-                            rvContactList.scrollToPosition(0);
-                    });
+                    // Add unread count by 1 if sender is not self
+                    if (!roomList.getLastMessage().getUser().getUserID()
+                            .equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                        roomList.setUnreadCount(roomList.getUnreadCount() + 1);
+                    }
+
+                    // Move room to top
+                    vm.getRoomList().remove(roomList);
+                    vm.getRoomList().add(0, roomList);
+
+                    if (null != activity) {
+                        activity.runOnUiThread(() -> {
+                            llRoomEmpty.setVisibility(View.GONE);
+                            adapter.notifyItemChanged(oldPos);
+                            adapter.notifyItemMoved(oldPos, 0);
+                            // Scroll to top
+                            if (llm.findFirstCompletelyVisibleItemPosition() == 0)
+                                rvContactList.scrollToPosition(0);
+                        });
+                    }
                 }
             }
         } else if (null != activity && null != message.getHidden() && !message.getHidden()) {
@@ -516,7 +543,7 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void showNewChatButton() {
-        if (ivButtonNewChat.getVisibility() == View.VISIBLE) {
+        if (!TapUI.getInstance().isNewChatButtonVisible() || ivButtonNewChat.getVisibility() == View.VISIBLE) {
             return;
         }
         ivButtonNewChat.setTranslationY(TAPUtils.getInstance().dpToPx(120));
@@ -823,24 +850,24 @@ public class TapUIRoomListFragment extends Fragment {
         }).start();
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private BroadcastReceiver refreshTokenReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (null == action) {
+            if (null == intent.getAction() || !intent.getAction().equals(REFRESH_TOKEN_RENEWED)) {
                 return;
             }
+            viewLoadedSequence();
+        }
+    };
 
-            switch (action) {
-                case REFRESH_TOKEN_RENEWED:
-                    viewLoadedSequence();
-                    break;
-                case RELOAD_ROOM_LIST:
-                    adapter.notifyItemChanged(vm.getRoomList().indexOf(
-                            vm.getRoomPointer().get(intent.getStringExtra(ROOM_ID))));
-                    break;
+    private BroadcastReceiver reloadRoomListReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null == intent.getAction() || !intent.getAction().equals(RELOAD_ROOM_LIST) || null == adapter) {
+                return;
             }
+            adapter.notifyItemChanged(vm.getRoomList().indexOf(
+                    vm.getRoomPointer().get(intent.getStringExtra(ROOM_ID))));
         }
     };
 
