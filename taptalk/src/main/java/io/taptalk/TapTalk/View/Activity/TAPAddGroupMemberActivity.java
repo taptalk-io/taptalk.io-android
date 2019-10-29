@@ -39,6 +39,7 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
@@ -365,8 +366,13 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             vm.getAdapterItems().addAll(vm.getSeparatedContactList());
             if (vm.getAdapterItems().isEmpty()) {
                 tvInfoEmptyContact.setText(getString(R.string.tap_contact_list_empty));
-                tvButtonEmptyContact.setText(getString(R.string.tap_add_new_contact));
-                llEmptyContact.setOnClickListener(v -> openNewContactActivity());
+                if (TapUI.getInstance().isNewContactMenuButtonVisible()) {
+                    tvButtonEmptyContact.setText(getString(R.string.tap_add_new_contact));
+                    tvButtonEmptyContact.setVisibility(View.VISIBLE);
+                    llEmptyContact.setOnClickListener(v -> openNewContactActivity());
+                } else {
+                    tvButtonEmptyContact.setVisibility(View.GONE);
+                }
                 llEmptyContact.setVisibility(View.VISIBLE);
                 rvContactList.setVisibility(View.GONE);
             } else {

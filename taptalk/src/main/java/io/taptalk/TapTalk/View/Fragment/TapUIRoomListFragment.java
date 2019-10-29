@@ -85,9 +85,9 @@ public class TapUIRoomListFragment extends Fragment {
     private Activity activity;
 
     private ConstraintLayout clButtonSearch, clSelection;
-    private FrameLayout flSetupContainer;
+    private FrameLayout flButtonSearch, flSetupContainer;
     private LinearLayout llRoomEmpty, llRetrySetup;
-    private TextView tvSelectionCount, tvMyAvatarLabel, tvStartNewChat, tvSetupChat, tvSetupChatDescription;
+    private TextView tvSelectionCount, tvMyAvatarLabel, tvStartNewChatDescription, tvStartNewChat, tvSetupChat, tvSetupChatDescription;
     private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivSetupChat, ivSetupChatLoading;
     private CircleImageView civMyAvatarImage;
     private CardView cvButtonSearch;
@@ -251,11 +251,13 @@ public class TapUIRoomListFragment extends Fragment {
     private void initView(View view) {
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         //clSelection = view.findViewById(R.id.cl_selection);
+        flButtonSearch = view.findViewById(R.id.fl_button_search);
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
         llRetrySetup = view.findViewById(R.id.ll_retry_setup);
         //tvSelectionCount = view.findViewById(R.id.tv_selection_count);
         tvMyAvatarLabel = view.findViewById(R.id.tv_my_avatar_image_label);
+        tvStartNewChatDescription = view.findViewById(R.id.tv_start_new_chat_description);
         tvStartNewChat = view.findViewById(R.id.tv_start_new_chat);
         tvSetupChat = view.findViewById(R.id.tv_setup_chat);
         tvSetupChatDescription = view.findViewById(R.id.tv_setup_chat_description);
@@ -281,10 +283,24 @@ public class TapUIRoomListFragment extends Fragment {
 
         flSetupContainer.setVisibility(View.GONE);
 
+        if (TapUI.getInstance().isSearchChatBarVisible()) {
+            flButtonSearch.setVisibility(View.VISIBLE);
+        } else {
+            flButtonSearch.setVisibility(View.GONE);
+        }
+
         if (TapUI.getInstance().isMyAccountButtonVisible()) {
             civMyAvatarImage.setVisibility(View.VISIBLE);
         } else {
             civMyAvatarImage.setVisibility(View.GONE);
+        }
+
+        if (TapUI.getInstance().isNewChatButtonVisible()) {
+            tvStartNewChat.setVisibility(View.VISIBLE);
+            tvStartNewChatDescription.setVisibility(View.VISIBLE);
+        } else {
+            tvStartNewChat.setVisibility(View.GONE);
+            tvStartNewChatDescription.setVisibility(View.GONE);
         }
 
         if (vm.isSelecting()) {
@@ -530,7 +546,7 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void showNewChatButton() {
-        if (ivButtonNewChat.getVisibility() == View.VISIBLE) {
+        if (!TapUI.getInstance().isNewChatButtonVisible() || ivButtonNewChat.getVisibility() == View.VISIBLE) {
             return;
         }
         ivButtonNewChat.setTranslationY(TAPUtils.getInstance().dpToPx(120));

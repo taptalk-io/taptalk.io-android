@@ -54,7 +54,12 @@ public class TapUI {
     private List<TapUIChatRoomListener> tapUIChatRoomListeners;
     private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
 
+    private boolean isSearchChatBarHidden;
     private boolean isMyAccountButtonHidden;
+    private boolean isNewChatButtonHidden;
+    private boolean isNewContactMenuButtonHidden;
+    private boolean isScanQRMenuButtonHidden;
+    private boolean isNewGroupMenuButtonHidden;
     private boolean isLogoutButtonVisible;
 
     public static TapUI getInstance() {
@@ -268,12 +273,52 @@ public class TapUI {
         openChatRoomWithRoomModel(context, roomModel);
     }
 
-    public void setMyAccountButtonInRoomListVisible(boolean isVisible) {
-        isMyAccountButtonHidden = !isVisible;
+    public boolean isSearchChatBarVisible() {
+        return !isSearchChatBarHidden;
+    }
+
+    public void setSearchChatBarInRoomListVisible(boolean isVisible) {
+        isSearchChatBarHidden = !isVisible;
     }
 
     public boolean isMyAccountButtonVisible() {
         return !isMyAccountButtonHidden;
+    }
+
+    public void setMyAccountButtonInRoomListVisible(boolean isVisible) {
+        isMyAccountButtonHidden = !isVisible;
+    }
+
+    public boolean isNewChatButtonVisible() {
+        return !isNewChatButtonHidden;
+    }
+
+    public void setNewChatButtonInRoomListVisible(boolean isVisible) {
+        isNewChatButtonHidden = !isVisible;
+    }
+
+    public boolean isNewContactMenuButtonVisible() {
+        return !isNewContactMenuButtonHidden;
+    }
+
+    public void setNewContactMenuButtonVisible(boolean isVisible) {
+        isNewContactMenuButtonHidden = !isVisible;
+    }
+
+    public boolean isScanQRMenuButtonVisible() {
+        return !isScanQRMenuButtonHidden;
+    }
+
+    public void setScanQRMenuButtonVisible(boolean isVisible) {
+        isScanQRMenuButtonHidden = !isVisible;
+    }
+
+    public boolean isNewGroupMenuButtonVisible() {
+        return !isNewGroupMenuButtonHidden;
+    }
+
+    public void setNewGroupMenuButtonVisible(boolean isVisible) {
+        isNewGroupMenuButtonHidden = !isVisible;
     }
 
     public void setLogoutButtonVisible(boolean isVisible) {

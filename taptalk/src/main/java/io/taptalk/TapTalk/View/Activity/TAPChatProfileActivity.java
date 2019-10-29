@@ -1062,6 +1062,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 intent.putExtra(ROOM, vm.getRoom());
                 setResult(RESULT_OK, intent);
                 finish();
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
             }, 1000L);
         }
 
