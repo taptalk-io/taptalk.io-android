@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.design.widget.AppBarLayout
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -61,7 +60,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
         groupViewModel = ViewModelProviders.of(this).get(TAPProfileViewModel::class.java)
         groupViewModel?.room = intent.getParcelableExtra(ROOM)
         groupViewModel?.groupMemberUser = intent.getParcelableExtra(K_USER)
-        groupViewModel?.isAdminGroup = intent.getBooleanExtra(IS_ADMIN, false)
+        groupViewModel?.isGroupAdmin = intent.getBooleanExtra(IS_ADMIN, false)
         groupViewModel?.sharedMedias?.clear()
     }
 
@@ -77,13 +76,13 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                         ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack),
                         ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack40)))
 
-        val menuButtonItem = generateGroupMemberMenu()
-        menuAdapter = TAPMenuButtonAdapter(menuButtonItem, profileMenuInterface)
-        rv_menu_buttons.adapter = menuAdapter
-        rv_menu_buttons.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-
-        app_bar_layout.addOnOffsetChangedListener(offsetChangedListener)
-        iv_shared_media_loading.visibility = View.GONE
+//        val menuButtonItem = generateGroupMemberMenu()
+//        menuAdapter = TAPMenuButtonAdapter(menuButtonItem, profileMenuInterface)
+//        rv_menu_buttons.adapter = menuAdapter
+//        rv_menu_buttons.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+//
+//        app_bar_layout.addOnOffsetChangedListener(offsetChangedListener)
+//        iv_shared_media_loading.visibility = View.GONE
 
         iv_button_back.setOnClickListener { onBackPressed() }
         fl_loading.setOnClickListener {}
@@ -110,8 +109,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
     private fun generateGroupMemberMenu(): ArrayList<TAPMenuItem> {
         val menuItems = ArrayList<TAPMenuItem>()
         //Group Member Profile
-        if (null == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID
-                        ?: "0")
+        if (null == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID ?: "0")
                 || (null != TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID
                         ?: "0")
                         && 0 == TAPContactManager.getInstance().getUserData(groupViewModel?.groupMemberUser?.userID
@@ -164,61 +162,61 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
             menuItems.add(menuPromoteAdmin)
         }
 
-//        if (null != groupViewModel?.room && null != groupViewModel?.room?.admins
-//                && groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
-//            val menuKickMember = TAPMenuItem(
-//                    MENU_REMOVE_MEMBER,
-//                    R.drawable.tap_ic_delete_red,
-//                    R.color.tapIconGroupMemberProfileMenuRemoveMember,
-//                    R.style.tapChatProfileMenuDestructiveLabelStyle,
-//                    false,
-//                    false,
-//                    getString(R.string.tap_remove_group_members))
+        if (null != groupViewModel?.room && null != groupViewModel?.room?.admins
+                && groupViewModel?.room?.admins?.contains(TAPChatManager.getInstance().activeUser.userID) == true) {
+            val menuKickMember = TAPMenuItem(
+                    MENU_REMOVE_MEMBER,
+                    R.drawable.tap_ic_delete_red,
+                    R.color.tapIconGroupMemberProfileMenuRemoveMember,
+                    R.style.tapChatProfileMenuDestructiveLabelStyle,
+                    false,
+                    false,
+                    getString(R.string.tap_remove_group_member))
 //            menuItems.add(menuKickMember)
-//        }
+        }
         return menuItems
     }
 
-    private val profileMenuInterface = TAPChatProfileActivity.ProfileMenuInterface {
-        when {
-            it.menuID == MENU_SEND_MESSAGE -> openChatRoom(groupViewModel?.groupMemberUser)
-            it.menuID == MENU_ADD_TO_CONTACTS -> TAPDataManager.getInstance().addContactApi(groupViewModel?.groupMemberUser?.userID
-                    ?: "0", addContactView)
-            it.menuID == MENU_PROMOTE_ADMIN -> {
-                TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.room?.roomID,
-                        listOf(groupViewModel?.groupMemberUser?.userID), promoteAdminView)
-            }
-            it.menuID == MENU_DEMOTE_ADMIN -> {
-                val show = TapTalkDialog.Builder(this)
-                        .setTitle(resources.getString(R.string.tap_demote_admin))
-                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                        .setMessage(getString(R.string.tap_demote_admin_confirmation))
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .setPrimaryButtonListener {
-                            TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.room?.roomID,
-                                    listOf(groupViewModel?.groupMemberUser?.userID), demoteAdminView)
-                        }
-                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                        .setSecondaryButtonListener {}
-                        .show()
-            }
-
-            it.menuID == MENU_REMOVE_MEMBER -> {
-                TapTalkDialog.Builder(this)
-                        .setTitle(resources.getString(R.string.tap_remove_group_member))
-                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                        .setMessage(getString(R.string.tap_remove_member_confirmation))
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .setPrimaryButtonListener {
-                            TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.room?.roomID,
-                                    listOf(groupViewModel?.groupMemberUser?.userID), removeRoomMembersView)
-                        }
-                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                        .setSecondaryButtonListener {}
-                        .show()
-            }
-        }
-    }
+//    private val profileMenuInterface = TAPChatProfileActivity.ProfileMenuInterface {
+//        when {
+//            it.menuID == MENU_SEND_MESSAGE -> openChatRoom(groupViewModel?.groupMemberUser)
+//            it.menuID == MENU_ADD_TO_CONTACTS -> TAPDataManager.getInstance().addContactApi(groupViewModel?.groupMemberUser?.userID
+//                    ?: "0", addContactView)
+//            it.menuID == MENU_PROMOTE_ADMIN -> {
+//                TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.room?.roomID,
+//                        listOf(groupViewModel?.groupMemberUser?.userID), promoteAdminView)
+//            }
+//            it.menuID == MENU_DEMOTE_ADMIN -> {
+//                val show = TapTalkDialog.Builder(this)
+//                        .setTitle(resources.getString(R.string.tap_demote_admin))
+//                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+//                        .setMessage(getString(R.string.tap_demote_admin_confirmation))
+//                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                        .setPrimaryButtonListener {
+//                            TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.room?.roomID,
+//                                    listOf(groupViewModel?.groupMemberUser?.userID), demoteAdminView)
+//                        }
+//                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+//                        .setSecondaryButtonListener {}
+//                        .show()
+//            }
+//
+//            it.menuID == MENU_REMOVE_MEMBER -> {
+//                TapTalkDialog.Builder(this)
+//                        .setTitle(resources.getString(R.string.tap_remove_group_members))
+//                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+//                        .setMessage(getString(R.string.tap_remove_member_confirmation))
+//                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+//                        .setPrimaryButtonListener {
+//                            TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.room?.roomID,
+//                                    listOf(groupViewModel?.groupMemberUser?.userID), removeRoomMembersView)
+//                        }
+//                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+//                        .setSecondaryButtonListener {}
+//                        .show()
+//            }
+//        }
+//    }
 
     private val offsetChangedListener = object : AppBarLayout.OnOffsetChangedListener {
 
@@ -252,10 +250,6 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                         .alpha(1f)
                         .setDuration(DEFAULT_ANIMATION_TIME.toLong())
                         .start()
-                v_profile_separator.animate()
-                        .alpha(1f)
-                        .setDuration(DEFAULT_ANIMATION_TIME.toLong())
-                        .start()
                 getTransitionToExpand()!!.cancel()
                 getTransitionToCollapse()!!.start()
             } else if (abs(verticalOffset) < scrollRange && isShowing) {
@@ -268,10 +262,6 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                         .start()
                 tv_collapsed_name.animate()
                         .translationY(nameTranslationY.toFloat())
-                        .alpha(0f)
-                        .setDuration(DEFAULT_ANIMATION_TIME.toLong())
-                        .start()
-                v_profile_separator.animate()
                         .alpha(0f)
                         .setDuration(DEFAULT_ANIMATION_TIME.toLong())
                         .start()
@@ -385,7 +375,7 @@ class TAPGroupMemberProfileActivity : TAPBaseActivity() {
                         userModel?.userID ?: "0"), userModel?.name ?: "",
                 userModel?.avatarURL, TYPE_PERSONAL, "FFFFFF")
         val intent = Intent()
-        intent.putExtra(IS_NEED_TO_CLOSE_ACTIVITY_BEFORE, true)
+        intent.putExtra(CLOSE_ACTIVITY, true)
         setResult(Activity.RESULT_OK, intent)
         onBackPressed()
     }

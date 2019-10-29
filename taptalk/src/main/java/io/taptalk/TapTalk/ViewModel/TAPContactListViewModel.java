@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.ViewModel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private List<TapContactListModel> adapterItems;
     private TapContactListModel infoLabelItem;
     private TAPImageURL groupImage;
+    private Uri groupImageUri;
     private String groupName;
     private String roomID;
     private String pendingSearch;
@@ -137,6 +139,14 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setGroupImage(TAPImageURL groupImage) {
         this.groupImage = groupImage;
+    }
+
+    public Uri getGroupImageUri() {
+        return groupImageUri;
+    }
+
+    public void setGroupImageUri(Uri groupImageUri) {
+        this.groupImageUri = groupImageUri;
     }
 
     public String getGroupName() {

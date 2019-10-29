@@ -49,7 +49,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="@color/tapTransparentWhite"
-            android:hint="@string/tap_search_for_contacts"
+            android:hint="@string/tap_search_for_users"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"

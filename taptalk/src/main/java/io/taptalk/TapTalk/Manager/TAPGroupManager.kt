@@ -89,12 +89,12 @@ class TAPGroupManager {
             if (null != response.participants && response.participants!!.isNotEmpty()) {
                 room.groupParticipants = response.participants
             } else {
-                room.groupParticipants = TAPGroupManager.getInstance.getGroupData(response.room!!.roomID)?.groupParticipants
+                room.groupParticipants = getInstance.getGroupData(response.room!!.roomID)?.groupParticipants
             }
             if (null != response.admins && response.admins!!.isNotEmpty()) {
                 room.admins = response.admins
             } else {
-                room.admins = TAPGroupManager.getInstance.getGroupData(response.room!!.roomID)?.admins
+                room.admins = getInstance.getGroupData(response.room!!.roomID)?.admins
             }
             addGroupData(room)
         }
@@ -104,7 +104,7 @@ class TAPGroupManager {
     fun updateGroupDataFromResponse(response: TAPUpdateRoomResponse): TAPRoomModel? {
         val room = response.room
         if (null != room) {
-            val existingRoom = TAPGroupManager.getInstance.getGroupData(response.room!!.roomID)
+            val existingRoom = getInstance.getGroupData(response.room!!.roomID)
             room.groupParticipants = existingRoom?.groupParticipants
             room.admins = existingRoom?.admins
             updateRoomDataNameAndImage(room)

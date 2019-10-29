@@ -16,6 +16,8 @@ class TAPGroupMemberViewModel(application: Application) : AndroidViewModel(appli
     var selectedMembers : LinkedHashMap<String?, TAPUserModel?> = linkedMapOf()
     var adminButtonStatus : AdminButtonShowed = AdminButtonShowed.NOT_SHOWED
     var memberCountModel : TAPUserModel? = TAPUserModel("", "")
+    var loadingStartText : String = ""
+    var loadingEndText : String = ""
 
     enum class AdminButtonShowed {
         PROMOTE, DEMOTE, NOT_SHOWED

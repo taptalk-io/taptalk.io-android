@@ -32,7 +32,7 @@ public abstract class TAPBaseViewHolder<T>
 
     public final void performBind(T item, int position) {
         this.item = item;
-        onBind(item, position);
+        onBind(getItem(), position);
     }
 
     protected T getItem() {
