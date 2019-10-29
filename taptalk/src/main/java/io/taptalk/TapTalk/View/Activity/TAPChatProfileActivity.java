@@ -140,6 +140,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     @Override
     public void onBackPressed() {
+        if (vm.isApiCallOnProgress()) {
+            return;
+        }
         if (leaveRoom) {
             setResult(RESULT_OK);
             TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
@@ -529,7 +532,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setMessage(this.getString(R.string.tap_leave_group_confirmation))
                 .setPrimaryButtonTitle(this.getString(R.string.tap_ok))
-                .setPrimaryButtonListener(v -> TAPDataManager.getInstance().leaveChatRoom(vm.getRoom().getRoomID(), exitChatView))
+                .setPrimaryButtonListener(v -> {
+                    vm.setLoadingStartText(getString(R.string.tap_loading));
+                    vm.setLoadingEndText(getString(R.string.tap_left_group));
+                    TAPDataManager.getInstance().leaveChatRoom(vm.getRoom().getRoomID(), deleteRoomView);
+                })
                 .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                 .setSecondaryButtonListener(v -> {
                 })
@@ -607,7 +614,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setMessage(this.getString(R.string.tap_delete_group_confirmation))
                 .setPrimaryButtonTitle(this.getString(R.string.tap_ok))
-                .setPrimaryButtonListener(v -> TAPDataManager.getInstance().deleteChatRoom(vm.getRoom(), deleteRoomView))
+                .setPrimaryButtonListener(v -> {
+                    vm.setLoadingStartText(getString(R.string.tap_loading));
+                    vm.setLoadingEndText(getString(R.string.tap_group_deleted));
+                    TAPDataManager.getInstance().deleteChatRoom(vm.getRoom(), deleteRoomView);
+                })
                 .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                 .setSecondaryButtonListener(v -> {
                 })
@@ -653,6 +664,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void showLoadingPopup(String message) {
+        vm.setApiCallOnProgress(true);
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
@@ -664,6 +676,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void hideLoadingPopup(String message) {
+        vm.setApiCallOnProgress(false);
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
@@ -675,6 +688,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void hideLoadingPopup() {
+        vm.setApiCallOnProgress(false);
         flLoading.setVisibility(View.GONE);
     }
 
@@ -880,7 +894,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPCreateRoomResponse> getRoomView = new TAPDefaultDataView<TAPCreateRoomResponse>() {
         @Override
         public void onSuccess(TAPCreateRoomResponse response) {
-            super.onSuccess(response);
             vm.setRoom(response.getRoom());
             vm.getRoom().setGroupParticipants(response.getParticipants());
             vm.getRoom().setAdmins(response.getAdmins());
@@ -902,80 +915,22 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         }
     };
 
-    private TAPDefaultDataView<TAPCommonResponse> exitChatView = new TAPDefaultDataView<TAPCommonResponse>() {
-        @Override
-        public void startLoading() {
-            showLoadingPopup(getString(R.string.tap_loading));
-        }
-
-        @Override
-        public void onSuccess(TAPCommonResponse response) {
-            super.onSuccess(response);
-            if (response.getSuccess()) {
-                // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
-                // TODO: 5 August 2019 USED IN CORE CHAT ROOM MANAGER
-                TAPOldDataManager.getInstance().cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
-                    @Override
-                    public void onDeleteFinished() {
-                        super.onDeleteFinished();
-                        TAPDataManager.getInstance().deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
-                            @Override
-                            public void onDeleteFinished() {
-                                super.onDeleteFinished();
-                                hideLoadingPopup(getString(R.string.tap_left_group));
-                                leaveRoom = true;
-                                runOnUiThread(TAPChatProfileActivity.this::onBackPressed);
-                                TAPGroupManager.Companion.getGetInstance().removeGroupData(vm.getRoom().getRoomID());
-                            }
-                        });
-                    }
-                });
-            } else {
-                TAPChatProfileActivity.this.hideLoadingPopup();
-                new TapTalkDialog.Builder(TAPChatProfileActivity.this)
-                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                        .setTitle(getString(R.string.tap_failed))
-                        .setMessage(null != response.getMessage() ? response.getMessage()
-                                : getResources().getString(R.string.tap_error_assign_another_admin))
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .show();
-            }
-        }
-
-        @Override
-        public void onError(TAPErrorModel error) {
-            hideLoadingPopup();
-            showErrorDialog(getString(R.string.tap_error), error.getMessage());
-        }
-
-        @Override
-        public void onError(String errorMessage) {
-            hideLoadingPopup();
-            showErrorDialog(getString(R.string.tap_error), getString(R.string.tap_error_message_general));
-        }
-    };
-
     private TAPDefaultDataView<TAPCommonResponse> deleteRoomView = new TAPDefaultDataView<TAPCommonResponse>() {
         @Override
         public void startLoading() {
-            showLoadingPopup(getString(R.string.tap_loading));
+            showLoadingPopup(vm.getLoadingStartText());
         }
 
         @Override
         public void onSuccess(TAPCommonResponse response) {
-            super.onSuccess(response);
             if (response.getSuccess()) {
-                // TODO: 2019-07-03 NEED ADJUSTMENT AFTER IMPLEMENT PROMOTE ADMIN
-                // TODO: 5 August 2019 USED IN CORE CHAT ROOM MANAGER
                 TAPOldDataManager.getInstance().cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {
-                        super.onDeleteFinished();
                         TAPDataManager.getInstance().deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                             @Override
                             public void onDeleteFinished() {
-                                super.onDeleteFinished();
-                                hideLoadingPopup(getString(R.string.tap_group_deleted));
+                                hideLoadingPopup(vm.getLoadingEndText());
                                 leaveRoom = true;
                                 runOnUiThread(TAPChatProfileActivity.this::onBackPressed);
                                 TAPGroupManager.Companion.getGetInstance().removeGroupData(vm.getRoom().getRoomID());
@@ -984,7 +939,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     }
                 });
             } else {
-                TAPChatProfileActivity.this.hideLoadingPopup();
+                hideLoadingPopup();
                 new TapTalkDialog.Builder(TAPChatProfileActivity.this)
                         .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                         .setTitle(getString(R.string.tap_failed))
@@ -1025,11 +980,13 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
+            hideLoadingPopup();
             showErrorDialog(getString(R.string.tap_error), error.getMessage());
         }
 
         @Override
         public void onError(String errorMessage) {
+            hideLoadingPopup();
             showErrorDialog(getString(R.string.tap_error), errorMessage);
         }
     };
@@ -1037,14 +994,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPCreateRoomResponse> userActionView = new TAPDefaultDataView<TAPCreateRoomResponse>() {
         @Override
         public void startLoading() {
-            // TODO: 28 October 2019 DISABLE ONBACKPRESSED
             showLoadingPopup(vm.getLoadingStartText());
-        }
-
-        @Override
-        public void endLoading() {
-            vm.setLoadingStartText("");
-            vm.setLoadingEndText("");
         }
 
         @Override
