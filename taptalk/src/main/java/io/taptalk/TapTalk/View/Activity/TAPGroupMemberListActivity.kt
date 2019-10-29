@@ -65,11 +65,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 intent.putExtra(ROOM, groupViewModel?.groupData)
                 setResult(Activity.RESULT_OK, intent)
                 finish()
-                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
             }
             else -> {
                 finish()
-                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
             }
         }
     }

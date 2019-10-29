@@ -782,7 +782,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private ChatProfileInterface chatProfileInterface = new ChatProfileInterface() {
         @Override
         public void onMenuClicked(TapChatProfileItemModel item) {
-            Log.e(TAG, "onMenuClicked: " + item.getMenuId());
             switch (item.getMenuId()) {
                 case MENU_NOTIFICATION:
                     toggleNotification(item.isChecked());
@@ -828,7 +827,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         @Override
         public void onMediaClicked(TAPMessageModel item, ImageView ivThumbnail, boolean isMediaReady) {
-            Log.e(TAG, "onMediaClicked: " + item.getMessageID() + " / " + item.getType() + " - " + item.getData().get(FILE_ID));
             if (item.getType() == TYPE_IMAGE && isMediaReady) {
                 // Preview image detail
                 Intent intent = new Intent(TAPChatProfileActivity.this, TAPImageDetailPreviewActivity.class);
@@ -977,7 +975,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             @Override
                             public void onDeleteFinished() {
                                 super.onDeleteFinished();
-                                hideLoadingPopup(getString(R.string.tap_delete_group));
+                                hideLoadingPopup(getString(R.string.tap_group_deleted));
                                 leaveRoom = true;
                                 runOnUiThread(TAPChatProfileActivity.this::onBackPressed);
                                 TAPGroupManager.Companion.getGetInstance().removeGroupData(vm.getRoom().getRoomID());
@@ -1084,8 +1082,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             new Thread(() -> {
-                Log.e(TAG, "onSelectFinished: " + entities.size());
-//                runOnUiThread(() -> /*rvChatProfile.post(() -> */hideSharedMediaLoading())/*)*/;
                 if (0 == entities.size() && 0 == vm.getSharedMedias().size()) {
                     // No shared media
                     vm.setFinishedLoadingSharedMedia(true);
@@ -1095,28 +1091,17 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     int previousSize = vm.getSharedMedias().size();
                     if (0 == previousSize) {
                         // First load
-                        Log.e(TAG, "onSelectFinished: first load");
                         vm.setSharedMediaSectionTitle(new TapChatProfileItemModel(getString(R.string.tap_shared_media)));
                         vm.getAdapterItems().add(vm.getSharedMediaSectionTitle());
                         runOnUiThread(() -> {
-                            //adapter.notifyItemInserted(adapter.getItems().indexOf(vm.getSharedMediaSectionTitle()));
-                            Log.e(TAG, "onSelectFinished: insert section title");
                             if (MAX_ITEMS_PER_PAGE <= entities.size()) {
                                 sharedMediaPagingScrollListener = () -> {
-                                    // Get coordinates of view holder (last index - half of max item per load)
-                                    View view = glm.findViewByPosition(vm.getMenuItems().size() + 1 + vm.getSharedMedias().size() - (MAX_ITEMS_PER_PAGE / 2));
-                                    if (null != view) {
-                                        int[] location = new int[2];
-                                        view.getLocationOnScreen(location);
-                                        Log.e(TAG, "getLocationOnScreen: " + location[1]);
-                                        if (!vm.isFinishedLoadingSharedMedia() && location[1] < TAPUtils.getInstance().getScreenHeight()) {
-                                            // Load more if view holder is visible
-                                            // TODO: 25 October 2019 NOT LOADED IF RECYCLER IS QUICKLY SCROLLED TO BOTTOM
-                                            if (!vm.isLoadingSharedMedia()) {
-                                                vm.setLoadingSharedMedia(true);
-                                                showSharedMediaLoading();
-                                                new Thread(() -> TAPDataManager.getInstance().getRoomMedias(vm.getLastSharedMediaTimestamp(), vm.getRoom().getRoomID(), sharedMediaListener)).start();
-                                            }
+                                    if (!vm.isFinishedLoadingSharedMedia() && glm.findLastVisibleItemPosition() > (vm.getMenuItems().size() + vm.getSharedMedias().size() - (MAX_ITEMS_PER_PAGE / 2))) {
+                                        // Load more if view holder is visible
+                                        if (!vm.isLoadingSharedMedia()) {
+                                            vm.setLoadingSharedMedia(true);
+                                            showSharedMediaLoading();
+                                            new Thread(() -> TAPDataManager.getInstance().getRoomMedias(vm.getLastSharedMediaTimestamp(), vm.getRoom().getRoomID(), sharedMediaListener)).start();
                                         }
                                     }
                                 };
@@ -1135,14 +1120,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         vm.addSharedMedia(mediaMessage);
                         vm.getAdapterItems().add(new TapChatProfileItemModel(mediaMessage));
                     }
-                    Log.e(TAG, "onSelectFinished media size: " + vm.getSharedMedias().size());
                     vm.setLastSharedMediaTimestamp(vm.getSharedMedias().get(vm.getSharedMedias().size() - 1).getCreated());
                     vm.setLoadingSharedMedia(false);
                     runOnUiThread(() -> rvChatProfile.post(() -> {
                         hideSharedMediaLoading();
                         rvChatProfile.post(() -> adapter.notifyItemRangeInserted(vm.getMenuItems().size() + 1 + previousSize, entities.size()));
-//                        adapter.notifyDataSetChanged();
-                        Log.e(TAG, "onSelectFinished adapter size: " + adapter.getItemCount());
                     }));
                 }
             }).start();
