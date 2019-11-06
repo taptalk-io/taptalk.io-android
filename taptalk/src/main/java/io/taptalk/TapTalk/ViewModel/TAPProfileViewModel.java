@@ -26,7 +26,7 @@ public class TAPProfileViewModel extends AndroidViewModel {
     private TAPUserModel groupMemberUser;
     private String loadingStartText, loadingEndText;
     private long lastSharedMediaTimestamp;
-    private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isGroupMemberProfile, isGroupAdmin;
+    private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isApiCallOnProgress, isGroupMemberProfile, isGroupAdmin;
 
     public TAPProfileViewModel(@NonNull Application application) {
         super(application);
@@ -143,6 +143,14 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setGroupMemberUser(TAPUserModel groupMemberUser) {
         this.groupMemberUser = groupMemberUser;
+    }
+
+    public boolean isApiCallOnProgress() {
+        return isApiCallOnProgress;
+    }
+
+    public void setApiCallOnProgress(boolean apiCallOnProgress) {
+        isApiCallOnProgress = apiCallOnProgress;
     }
 
     public boolean isGroupMemberProfile() {
