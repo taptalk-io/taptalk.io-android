@@ -32,6 +32,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -873,8 +874,14 @@ public class TapUIRoomListFragment extends Fragment {
 
     private void calculateBadgeCount() {
         vm.setRoomBadgeCount(0);
-        for (String key : vm.getRoomPointer().keySet()) {
-            vm.setRoomBadgeCount(vm.getRoomBadgeCount() + vm.getRoomPointer().get(key).getUnreadCount());
+        try {
+            for (String key : vm.getRoomPointer().keySet()) {
+                vm.setRoomBadgeCount(vm.getRoomBadgeCount() + vm.getRoomPointer().get(key).getUnreadCount());
+            }
+        } catch (ConcurrentModificationException e) { // FIXME: 29 October 2019
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "calculateBadgeCount: " + e.getMessage());
+            }
         }
         if (vm.getLastBadgeCount() != vm.getRoomBadgeCount()) {
             for (TapListener listener : TapTalk.getTapTalkListeners()) {
