@@ -261,7 +261,7 @@ public class TAPUtils {
             return 0;
         }
         int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.tapDefaultRoomAvatarBackgroundColors);
-        int index = (((int) s.charAt(0)) + s.length()) % randomColors.length;
+        int index = (((int) s.charAt(0)) + (int) s.charAt(s.length() - 1) + s.length()) % randomColors.length;
         return randomColors[index];
     }
 
