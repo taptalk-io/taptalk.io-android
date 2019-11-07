@@ -284,6 +284,12 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
+    public void getNonContactUsers(TAPDatabaseListener<TAPUserModel> listener) {
+        if (null != myContactRepository)
+            myContactRepository.getNonContactUsers(listener);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
     public LiveData<List<TAPUserModel>> getMyContactList() {
         if (null != myContactRepository)
             return myContactRepository.getMyContactListLive();
@@ -293,6 +299,12 @@ public class TAPDatabaseManager {
     public void searchAllMyContacts(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
         if (null != myContactRepository)
             myContactRepository.searchAllMyContacts(keyword, listener);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void searchNonContactUsers(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        if (null != myContactRepository)
+            myContactRepository.searchNonContactUsers(keyword, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 

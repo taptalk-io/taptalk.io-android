@@ -59,6 +59,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -330,13 +331,17 @@ public class TAPUtils {
         return separatedContacts;
     }
 
-
     public List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type) {
+        return generateContactListForRecycler(contacts, type, null);
+    }
+
+    public List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type, @Nullable Map<String, TapContactListModel> contactListPointer) {
         List<TapContactListModel> separatedContacts = new ArrayList<>();
         List<TapContactListModel> nonAlphabeticContacts = new ArrayList<>();
         List<TapContactListModel> filteredContacts = new ArrayList<>();
         for (TAPUserModel contact : contacts) {
-            if (null != contact.getName() && !contact.getName().isEmpty()) {
+            if (null != contact.getUsername() && !contact.getUsername().isEmpty() &&
+                    null != contact.getName() && !contact.getName().isEmpty()) {
                 TapContactListModel filteredContact = new TapContactListModel(contact, type);
                 filteredContacts.add(filteredContact);
             }
@@ -355,6 +360,9 @@ public class TAPUtils {
                     nonAlphabeticContacts.addAll(contactSubList);
                 }
                 previousInitialIndexStart = i;
+            }
+            if (null != contactListPointer) {
+                contactListPointer.put(filteredContacts.get(i - 1).getUser().getUsername(), filteredContacts.get(i - 1));
             }
         }
         if (!nonAlphabeticContacts.isEmpty()) {
