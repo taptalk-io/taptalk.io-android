@@ -83,6 +83,17 @@ public class TAPMyContactRepository {
         }).start();
     }
 
+    public void getNonContactUsers(TAPDatabaseListener<TAPUserModel> listener) {
+        new Thread(() -> {
+            try {
+                List<TAPUserModel> nonContactList = myContactDao.getNonContactUsers();
+                listener.onSelectFinished(nonContactList);
+            } catch (Exception e) {
+                listener.onSelectFailed(e.getMessage());
+            }
+        }).start();
+    }
+
     public LiveData<List<TAPUserModel>> getMyContactListLive() {
         return myContactListLive;
     }
@@ -95,6 +106,17 @@ public class TAPMyContactRepository {
                     .replace("_", "\\_") + '%';
             List<TAPUserModel> myContactList = myContactDao.searchAllMyContacts(queryKeyword);
             listener.onSelectFinished(myContactList);
+        }).start();
+    }
+
+    public void searchNonContactUsers(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        new Thread(() -> {
+            String queryKeyword = '%' + keyword
+                    .replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_") + '%';
+            List<TAPUserModel> nonContactList = myContactDao.searchNonContactUsers(queryKeyword);
+            listener.onSelectFinished(nonContactList);
         }).start();
     }
 

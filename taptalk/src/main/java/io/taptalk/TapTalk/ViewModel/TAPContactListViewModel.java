@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -24,10 +26,15 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private List<TAPUserModel> filteredContacts;
     private List<TAPUserModel> selectedContacts;
     private List<TAPUserModel> existingMembers;
+    private List<TAPUserModel> contactSearchResult;
+    private List<TAPUserModel> nonContactSearchResult;
     private List<String> selectedContactsIds;
+    private HashMap<String, TapContactListModel> contactListPointer;
     private List<TapContactListModel> separatedContactList;
     private List<TapContactListModel> selectedContactList;
     private List<TapContactListModel> menuButtonList;
+    private List<TapContactListModel> contactListSearchResult;
+    private List<TapContactListModel> nonContactListSearchResult;
     private List<TapContactListModel> adapterItems;
     private TapContactListModel infoLabelItem;
     private TAPImageURL groupImage;
@@ -37,6 +44,9 @@ public class TAPContactListViewModel extends AndroidViewModel {
     private String pendingSearch;
     private boolean isSelecting;
     private boolean isFirstContactSyncDone;
+    private boolean isContactQueryFinished;
+    private boolean isNonContactQueryFinished;
+    private boolean isNeedToCallGetUserApi;
     private int initialGroupSize = 0;
     private int groupAction;
 
@@ -93,6 +103,26 @@ public class TAPContactListViewModel extends AndroidViewModel {
         this.existingMembers = existingMembers;
     }
 
+    public List<TAPUserModel> getContactSearchResult() {
+        return contactSearchResult == null ? contactSearchResult = new ArrayList<>() : contactSearchResult;
+    }
+
+    public void setContactSearchResult(List<TAPUserModel> contactSearchResult) {
+        this.contactSearchResult = contactSearchResult;
+    }
+
+    public List<TAPUserModel> getNonContactSearchResult() {
+        return nonContactSearchResult == null ? nonContactSearchResult = new ArrayList<>() : nonContactSearchResult;
+    }
+
+    public void setNonContactSearchResult(List<TAPUserModel> nonContactSearchResult) {
+        this.nonContactSearchResult = nonContactSearchResult;
+    }
+
+    public HashMap<String, TapContactListModel> getContactListPointer() {
+        return null == contactListPointer ? contactListPointer = new LinkedHashMap<>() : contactListPointer;
+    }
+
     public List<TapContactListModel> getSeparatedContactList() {
         return null == separatedContactList ? separatedContactList = new ArrayList<>() : separatedContactList;
     }
@@ -115,6 +145,22 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setMenuButtonList(List<TapContactListModel> menuButtonList) {
         this.menuButtonList = menuButtonList;
+    }
+
+    public List<TapContactListModel> getContactListSearchResult() {
+        return null == contactListSearchResult ? contactListSearchResult = new ArrayList<>() : contactListSearchResult;
+    }
+
+    public void setContactListSearchResult(List<TapContactListModel> contactListSearchResult) {
+        this.contactListSearchResult = contactListSearchResult;
+    }
+
+    public List<TapContactListModel> getNonContactListSearchResult() {
+        return null == nonContactListSearchResult ? nonContactListSearchResult = new ArrayList<>() : nonContactListSearchResult;
+    }
+
+    public void setNonContactListSearchResult(List<TapContactListModel> nonContactListSearchResult) {
+        this.nonContactListSearchResult = nonContactListSearchResult;
     }
 
     public List<TapContactListModel> getAdapterItems() {
@@ -187,6 +233,30 @@ public class TAPContactListViewModel extends AndroidViewModel {
 
     public void setFirstContactSyncDone(boolean firstContactSyncDone) {
         isFirstContactSyncDone = firstContactSyncDone;
+    }
+
+    public boolean isContactQueryFinished() {
+        return isContactQueryFinished;
+    }
+
+    public void setContactQueryFinished(boolean contactQueryFinished) {
+        isContactQueryFinished = contactQueryFinished;
+    }
+
+    public boolean isNonContactQueryFinished() {
+        return isNonContactQueryFinished;
+    }
+
+    public void setNonContactQueryFinished(boolean nonContactQueryFinished) {
+        isNonContactQueryFinished = nonContactQueryFinished;
+    }
+
+    public boolean isNeedToCallGetUserApi() {
+        return isNeedToCallGetUserApi;
+    }
+
+    public void setNeedToCallGetUserApi(boolean needToCallGetUserApi) {
+        isNeedToCallGetUserApi = needToCallGetUserApi;
     }
 
     public int getInitialGroupSize() {
