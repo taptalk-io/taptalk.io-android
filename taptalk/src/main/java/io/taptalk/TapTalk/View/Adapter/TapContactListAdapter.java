@@ -32,7 +32,6 @@ import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_IN
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_MENU_BUTTON;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SECTION_TITLE;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTABLE_CONTACT_LIST;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
 
 public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, TAPBaseViewHolder<TapContactListModel>> {
 
@@ -109,6 +108,7 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
                 // Set initial as avatar
+                Glide.with(itemView.getContext()).clear(civAvatar);
                 civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
                 civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
                 tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));

@@ -25,7 +25,6 @@ import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
-import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -74,7 +73,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_RECIPIENT_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
@@ -884,12 +882,20 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getMyContactList(listener);
     }
 
+    public void getNonContactUsersFromDatabase(TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().getNonContactUsers(listener);
+    }
+
     public LiveData<List<TAPUserModel>> getMyContactList() {
         return TAPDatabaseManager.getInstance().getMyContactList();
     }
 
     public void searchAllMyContacts(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance().searchAllMyContacts(keyword, listener);
+    }
+
+    public void searchNonContactUsersFromDatabase(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().searchNonContactUsers(keyword, listener);
     }
 
     public void insertMyContactToDatabase(TAPUserModel... userModels) {
