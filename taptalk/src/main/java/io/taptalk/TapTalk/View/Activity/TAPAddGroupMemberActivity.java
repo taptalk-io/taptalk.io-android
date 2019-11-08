@@ -406,7 +406,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             vm.setNeedToCallGetUserApi(true);
 
             // Search matching contacts from database
-            TAPDataManager.getInstance().searchAllMyContacts(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
+            TAPDataManager.getInstance().searchContactsByNameAndUsername(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
                 @Override
                 public void onSelectFinished(List<TAPUserModel> entities) {
                     if (null != entities && !entities.isEmpty()) {

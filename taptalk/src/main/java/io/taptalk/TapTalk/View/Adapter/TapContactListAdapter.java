@@ -37,7 +37,6 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
 
     private TapContactListListener listener;
     private String myID;
-    private boolean isAnimating = true;
 
     public TapContactListAdapter(List<TapContactListModel> contactList) {
         setItems(contactList, false);
@@ -170,7 +169,6 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                         } else {
                             listener.onContactDeselected(item);
                         }
-                        isAnimating = true;
                         notifyItemChanged(position);
                     }
                     break;

@@ -890,8 +890,12 @@ public class TAPDataManager {
         return TAPDatabaseManager.getInstance().getMyContactList();
     }
 
-    public void searchAllMyContacts(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
-        TAPDatabaseManager.getInstance().searchAllMyContacts(keyword, listener);
+    public void searchContactsByName(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().searchContactsByName(keyword, listener);
+    }
+
+    public void searchContactsByNameAndUsername(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().searchContactsByNameAndUsername(keyword, listener);
     }
 
     public void searchNonContactUsersFromDatabase(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
