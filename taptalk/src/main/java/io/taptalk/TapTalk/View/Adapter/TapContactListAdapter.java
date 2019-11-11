@@ -119,7 +119,12 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
 
             // Set name and username
             tvFullName.setText(user.getName());
-            tvUsername.setText(String.format("@%s", user.getUsername()));
+            if (null != user.getUsername() && !user.getUsername().isEmpty()) {
+                tvUsername.setText(String.format("@%s", user.getUsername()));
+                tvUsername.setVisibility(View.VISIBLE);
+            } else {
+                tvUsername.setVisibility(View.GONE);
+            }
 
             // Remove separator on last item
             if (position == getItemCount() - 1 || getItemAt(position + 1).getType() != item.getType()) {
