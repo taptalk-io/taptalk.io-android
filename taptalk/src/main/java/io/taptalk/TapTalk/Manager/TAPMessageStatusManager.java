@@ -250,7 +250,7 @@ public class TAPMessageStatusManager {
                     Log.e(TAG, "updateMessageStatusToRead onSuccess: " + response.getUpdatedMessageIDs().size());
                     if (null != response.getUpdatedMessageIDs()/* && !response.getUpdatedMessageIDs().isEmpty()*/) {
                         new Thread(() -> {
-                            if (getApiDeliveredRequestMap().containsKey(tempReadRequestID)) { // TODO: 13 November 2019 REMOVE FROM READ MAP?
+                            if (getApiReadRequestMap().containsKey(tempReadRequestID)) {
                                 removeApiDeliveredRequestMapItem(tempReadRequestID);
                             }
                             List<TAPMessageEntity> messageEntities = new ArrayList<>();
@@ -280,8 +280,8 @@ public class TAPMessageStatusManager {
 
                 private void onApiError() {
                     new Thread(() -> {
-                        if (getApiDeliveredRequestMap().containsKey(tempReadRequestID)) {
-                            addApiReadRequestMapItem(readRequestID, getApiDeliveredRequestMap().get(tempReadRequestID));
+                        if (getApiReadRequestMap().containsKey(tempReadRequestID)) {
+                            addApiReadRequestMapItem(readRequestID, getApiReadRequestMap().get(tempReadRequestID));
                             removeApiReadRequestMapItem(tempReadRequestID);
                         }
                     }).start();
