@@ -38,16 +38,17 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
+@Deprecated
 public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>> {
 
-    private TAPChatProfileActivity.MediaInterface mediaInterface;
+    private TAPChatProfileActivity.ChatProfileInterface chatProfileInterface;
     private RequestManager glide;
     private int gridWidth;
 
-    public TAPMediaListAdapter(List<TAPMessageModel> items, TAPChatProfileActivity.MediaInterface mediaInterface, RequestManager glide) {
+    public TAPMediaListAdapter(List<TAPMessageModel> items, TAPChatProfileActivity.ChatProfileInterface chatProfileInterface, RequestManager glide) {
         setItems(items, true);
         gridWidth = TAPUtils.getInstance().getScreenWidth() / 3;
-        this.mediaInterface = mediaInterface;
+        this.chatProfileInterface = chatProfileInterface;
         this.glide = glide;
     }
 
@@ -143,7 +144,7 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
 
         private void setMediaReady(TAPMessageModel item) {
             isMediaReady = true;
-            clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
+            clContainer.setOnClickListener(v -> chatProfileInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
             if (item.getType() == TYPE_VIDEO && null != item.getData()) {
                 Number duration = (Number) item.getData().get(DURATION);
                 if (null != duration) {
@@ -193,14 +194,14 @@ public class TAPMediaListAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBase
                         pbProgress.setProgress(downloadProgressValue);
                         ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
                         ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileCancelUploadDownload)));
-                        clContainer.setOnClickListener(v -> mediaInterface.onCancelDownloadClicked(item));
+                        clContainer.setOnClickListener(v -> chatProfileInterface.onCancelDownloadClicked(item));
                     } else {
                         // Show download button
                         tvMediaInfo.setText(videoSize);
                         pbProgress.setProgress(0);
                         ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
                         ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileUploadDownload)));
-                        clContainer.setOnClickListener(v -> mediaInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
+                        clContainer.setOnClickListener(v -> chatProfileInterface.onMediaClicked(item, ivThumbnail, isMediaReady));
                     }
                     tvMediaInfo.setVisibility(View.VISIBLE);
                     flProgress.setVisibility(View.VISIBLE);

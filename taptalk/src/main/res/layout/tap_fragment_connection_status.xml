@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ll_connection_status"
     android:layout_width="match_parent"
     android:layout_height="20dp"
     android:gravity="center"
     android:orientation="horizontal"
-    app:layout_constraintBottom_toTopOf="@id/rv_contact_list"
-    app:layout_constraintTop_toBottomOf="@+id/cl_button_search"
     tools:background="@drawable/tap_bg_status_connected">
 
     <TextView

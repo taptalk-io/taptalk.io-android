@@ -166,7 +166,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
 
             if (null != item.getMessage() && null != item.getMessage().getRoomType() && item.getMessage().getRoomType() == TAPDefaultConstant.RoomType.TYPE_GROUP) {
-                tvLastMessage.setText(Html.fromHtml(String.format("<font color='#%s'>%s: </font> %s", colorSender.length() > 6 ? colorSender.substring(colorSender.length() - 6) : colorSender, TAPUtils.getFirstWordOfString(item.getMessage().getUserFullName()), highlightedText)));
+                tvLastMessage.setText(Html.fromHtml(String.format("<font color='#%s'>%s: </font> %s", colorSender.length() > 6 ? colorSender.substring(colorSender.length() - 6) : colorSender, TAPUtils.getInstance().getFirstWordOfString(item.getMessage().getUserFullName()), highlightedText)));
             } else {
                 tvLastMessage.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
                         Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.tap_you), highlightedText)) : Html.fromHtml(highlightedText));
@@ -203,19 +203,17 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                 ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSending)));
             }
 
-            clContainer.setOnClickListener(v -> {
-                TAPUtils.getInstance().startChatActivity(itemView.getContext(),
-                        message.getRoomID(),
-                        message.getRoomName(),
-                        // TODO: 18 October 2018 REMOVE CHECK
-                        /* TEMPORARY CHECK FOR NULL IMAGE */null != message.getRoomImage() ?
-                                TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
-                                }, message.getRoomImage())
-                                /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
-                        message.getRoomType(),
-                        message.getRoomColor(),
-                        message.getLocalID());
-            });
+            clContainer.setOnClickListener(v -> TAPUtils.getInstance().startChatActivity(itemView.getContext(),
+                    message.getRoomID(),
+                    message.getRoomName(),
+                    // TODO: 18 October 2018 REMOVE CHECK
+                    /* TEMPORARY CHECK FOR NULL IMAGE */null != message.getRoomImage() ?
+                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                            }, message.getRoomImage())
+                            /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
+                    message.getRoomType(),
+                    message.getRoomColor(),
+                    message.getLocalID()));
         }
     }
 
@@ -310,15 +308,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             clContainer.setOnClickListener(v -> {
                 if (null == roomListInterface) {
                     // Open chat room
-                    TAPUtils.getInstance().startChatActivity(itemView.getContext(),
-                            room.getRoomID(),
-                            room.getRoomName(),
-                            room.getRoomImage(),
-                            room.getRoomType(),
-                            room.getRoomColor(),
-                            room.getUnreadCount(),
-                            null);
-
+                    TAPUtils.getInstance().startChatActivity(itemView.getContext(), room);
                     TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
                     TAPDataManager.getInstance().insertToDatabase(recentItem);
                 } else {

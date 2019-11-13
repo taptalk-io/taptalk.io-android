@@ -59,6 +59,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -80,11 +81,11 @@ import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.Taptalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
@@ -257,16 +258,16 @@ public class TAPUtils {
     }
 
     public int getRandomColor(String s) {
-        if (s.length() == 0) {
+        if (null == s || s.length() == 0) {
             return 0;
         }
         int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.tapDefaultRoomAvatarBackgroundColors);
-        int index = (((int) s.charAt(0)) + s.length()) % randomColors.length;
+        int index = (((int) s.charAt(0)) + (int) s.charAt(s.length() - 1) + s.length()) % randomColors.length;
         return randomColors[index];
     }
 
     public String getInitials(String s, int maxLength) {
-        if (s.length() == 0) {
+        if (null == s || s.length() == 0) {
             return "";
         }
         String initials = s.replaceAll("([^\\s])[^\\s]+", "$1").replaceAll("\\s", "");
@@ -330,13 +331,17 @@ public class TAPUtils {
         return separatedContacts;
     }
 
-
     public List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type) {
+        return generateContactListForRecycler(contacts, type, null);
+    }
+
+    public List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type, @Nullable Map<String, TapContactListModel> contactListPointer) {
         List<TapContactListModel> separatedContacts = new ArrayList<>();
         List<TapContactListModel> nonAlphabeticContacts = new ArrayList<>();
         List<TapContactListModel> filteredContacts = new ArrayList<>();
         for (TAPUserModel contact : contacts) {
-            if (null != contact.getName() && !contact.getName().isEmpty()) {
+            if (null != contact.getUsername() && !contact.getUsername().isEmpty() &&
+                    null != contact.getName() && !contact.getName().isEmpty()) {
                 TapContactListModel filteredContact = new TapContactListModel(contact, type);
                 filteredContacts.add(filteredContact);
             }
@@ -355,6 +360,9 @@ public class TAPUtils {
                     nonAlphabeticContacts.addAll(contactSubList);
                 }
                 previousInitialIndexStart = i;
+            }
+            if (null != contactListPointer) {
+                contactListPointer.put(filteredContacts.get(i - 1).getUser().getUsername(), filteredContacts.get(i - 1));
             }
         }
         if (!nonAlphabeticContacts.isEmpty()) {
@@ -382,6 +390,16 @@ public class TAPUtils {
     public String formatCurrencyRp(long value) {
         String str = String.format(Locale.getDefault(), "%,d", value);
         return "Rp " + str.replace(",", ".");
+    }
+
+    public String formatThousandSeperator(String value) {
+        try {
+            Long v = Long.valueOf(value);
+            String str = String.format(Locale.getDefault(), "%,d", v);
+            return str.replace(",", ".");
+        } catch (Exception e) {
+            return "0";
+        }
     }
 
     public enum ClipType {TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
@@ -436,11 +454,6 @@ public class TAPUtils {
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
         startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
-    }
-
-    // Open chat room from room list to pass typing status
-    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, int unreadCount, LinkedHashMap<String, TAPUserModel> typingUser) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor, unreadCount), typingUser, null);
     }
 
     // Open chat room from notification
@@ -1203,7 +1216,7 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         return new HashSet<>(list1).equals(new HashSet<>(list2));
     }
 
-    public static String getFirstWordOfString(String text) {
+    public String getFirstWordOfString(String text) {
         if (text.contains(" ")) {
             return text.substring(0, text.indexOf(' '));
         } else {

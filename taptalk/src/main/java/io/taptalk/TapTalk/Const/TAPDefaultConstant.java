@@ -122,15 +122,13 @@ public class TAPDefaultConstant {
         public static final String COUNTRY_FLAG_URL = "kTAPExtraCountryFlagUrl";
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
         public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
-        public static final String IS_NEED_TO_CLOSE_ACTIVITY_BEFORE = "kTAPIsNeedToCloseActivityBefore";
+        public static final String CLOSE_ACTIVITY = "kTAPCloseActivity";
     }
 
     public static final class RequestCode {
         public static final int COUNTRY_PICK = 11;
         public static final int EDIT_PROFILE = 21;
         public static final int OPEN_PROFILE = 22;
-        public static final int PICK_PROFILE_IMAGE_CAMERA = 2;
-        public static final int PICK_PROFILE_IMAGE_GALLERY = 23;
         public static final int REGISTER = 31;
         public static final int GROUP_ADD_MEMBER = 4;
         public static final int GROUP_UPDATE_DATA = 41;
@@ -141,8 +139,12 @@ public class TAPDefaultConstant {
         public static final int SEND_FILE = 54;
         public static final int FORWARD_MESSAGE = 61;
         public static final int PICK_LOCATION = 62;
-        public static final int CREATE_GROUP = 81;
-        public static final int PICK_GROUP_IMAGE = 91;
+        public static final int CREATE_GROUP = 71;
+        public static final int EDIT_GROUP = 81;
+        public static final int PICK_PROFILE_IMAGE_CAMERA = 91;
+        public static final int PICK_PROFILE_IMAGE_GALLERY = 92;
+        public static final int PICK_GROUP_IMAGE_CAMERA = 93;
+        public static final int PICK_GROUP_IMAGE_GALLERY = 94;
     }
 
     public static final class PermissionRequest {
@@ -368,16 +370,17 @@ public class TAPDefaultConstant {
     public static class ChatProfileMenuType {
         public static final int MENU_NOTIFICATION = 1;
         public static final int MENU_ROOM_COLOR = 2;
-        public static final int MENU_BLOCK = 3;
-        public static final int MENU_EXIT_AND_CLEAR_CHAT = 4;
-        public static final int MENU_VIEW_MEMBERS = 5;
-        public static final int MENU_EXIT_GROUP = 6;
-        public static final int MENU_ADD_TO_CONTACTS = 7;
-        public static final int MENU_SEND_MESSAGE = 8;
-        public static final int MENU_PROMOTE_ADMIN = 9;
-        public static final int MENU_DEMOTE_ADMIN = 10;
-        public static final int MENU_REMOVE_MEMBER = 11;
-        public static final int MENU_DELETE_GROUP = 12;
+        public static final int MENU_ROOM_SEARCH_CHAT = 3;
+        public static final int MENU_BLOCK = 4;
+        public static final int MENU_CLEAR_CHAT = 5;
+        public static final int MENU_VIEW_MEMBERS = 6;
+        public static final int MENU_EXIT_GROUP = 7;
+        public static final int MENU_ADD_TO_CONTACTS = 8;
+        public static final int MENU_SEND_MESSAGE = 9;
+        public static final int MENU_PROMOTE_ADMIN = 10;
+        public static final int MENU_DEMOTE_ADMIN = 11;
+        public static final int MENU_REMOVE_MEMBER = 12;
+        public static final int MENU_DELETE_GROUP = 13;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -424,7 +427,8 @@ public class TAPDefaultConstant {
 
     public static final String FILEPROVIDER_AUTHORITY = TapTalk.appContext.getPackageName() + ".fileprovider";
     public static final String CONTACT_LIST = "kTAPContactList";
-    public static final String REFRESH_TOKEN_RENEWED = "TAPRefreshTokenRenewed";
+    public static final String REFRESH_TOKEN_RENEWED = "kTAPRefreshTokenRenewed";
+    public static final String RELOAD_ROOM_LIST = "kTAPReloadRoomList";
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
@@ -434,4 +438,5 @@ public class TAPDefaultConstant {
     public static final String LOADING_INDICATOR_LOCAL_ID = "kTAPFetchingOlderMessagesLocalID";
 
     public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
+    public static final String IS_CONTACT_SYNC_ALLOWED_BY_USER = "kTAPIsContactSyncAllowedByUser";
 }

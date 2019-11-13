@@ -22,6 +22,7 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
 import io.taptalk.TapTalk.Listener.TapListener;
@@ -38,6 +39,7 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager;
+import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
@@ -48,7 +50,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
-import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
@@ -101,25 +102,7 @@ public class TapTalk {
     private static Map<String, String> projectConfigs;
     private static Map<String, String> customConfigs;
     public static TapTalkImplementationType implementationType;
-
-    public static boolean isTapTalkNotification(RemoteMessage remoteMessage) {
-        return remoteMessage.getData().get("identifier").equals("io.taptalk.TapTalk");
-    }
-
-    public static void handleTapTalkPushNotification(RemoteMessage remoteMessage) {
-        TAPNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
-        HashMap<String, Object> notificationMap = TAPUtils.getInstance().fromJSON(new TypeReference<HashMap<String, Object>>() {
-        }, remoteMessage.getData().get("body"));
-        try {
-            //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
-            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(),
-                    TapUIRoomListActivity.class,
-                    TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
-        } catch (Exception e) {
-            Log.e(TAG, "onMessageReceived: ", e);
-            e.printStackTrace();
-        }
-    }
+    private static TAPChatListener chatListener;
 
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
@@ -214,6 +197,7 @@ public class TapTalk {
 
         TAPDataManager.getInstance().updateSendingMessageToFailed();
         TAPContactManager.getInstance().setContactSyncPermissionAsked(TAPDataManager.getInstance().isContactSyncPermissionAsked());
+        TAPContactManager.getInstance().setContactSyncAllowedByUser(TAPDataManager.getInstance().isContactSyncAllowedByUser());
 
         // Init Stetho for debug build
         if (TapTalk.isLoggingEnabled)
@@ -261,6 +245,55 @@ public class TapTalk {
                 TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
             }
         });
+
+        if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
+                TAPDataManager.getInstance().checkAccessTokenAvailable())
+            initListener();
+    }
+
+    private static void initListener() {
+        chatListener = new TAPChatListener() {
+            @Override
+            public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
+                Log.e(TAG, "onReceiveMessageInOtherRoom: from TapTalk");
+                updateApplicationBadgeCount();
+            }
+
+            @Override
+            public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
+                Log.e(TAG, "onReceiveMessageInActiveRoom: from TapTalk");
+                updateApplicationBadgeCount();
+            }
+
+            @Override
+            public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
+                Log.e(TAG, "onUpdateMessageInOtherRoom: from TapTalk");
+                updateApplicationBadgeCount();
+            }
+
+            @Override
+            public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
+                Log.e(TAG, "onUpdateMessageInActiveRoom: from TapTalk");
+                updateApplicationBadgeCount();
+            }
+
+            @Override
+            public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
+                Log.e(TAG, "onDeleteMessageInOtherRoom: from TapTalk");
+                updateApplicationBadgeCount();
+            }
+
+            @Override
+            public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
+                Log.e(TAG, "onDeleteMessageInActiveRoom: from TapTalk");
+                updateApplicationBadgeCount();
+            }
+        };
+        TAPChatManager.getInstance().addChatListener(chatListener);
+    }
+
+    public static void removeGlobalChatListener() {
+        TAPChatManager.getInstance().removeChatListener(chatListener);
     }
 
     /**
@@ -479,7 +512,7 @@ public class TapTalk {
 
     public static void updateApplicationBadgeCount() {
         checkTapTalkInitialized();
-        TAPNotificationManager.getInstance().updateUnreadCount();
+        if (isAuthenticated()) TAPNotificationManager.getInstance().updateUnreadCount();
     }
 
     // TODO: 22 August 2019 CORE MODEL
@@ -591,6 +624,40 @@ public class TapTalk {
 
     /**
      * =============================================================================================
+     * NOTIFICATION
+     * =============================================================================================
+     */
+
+    public static boolean isTapTalkNotification(RemoteMessage remoteMessage) {
+        return remoteMessage.getData().get("identifier").equals("io.taptalk.TapTalk");
+    }
+
+    public static void handleTapTalkPushNotification(RemoteMessage remoteMessage) {
+        TAPNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
+        HashMap<String, Object> notificationMap = TAPUtils.getInstance().fromJSON(new TypeReference<HashMap<String, Object>>() {
+        }, remoteMessage.getData().get("body"));
+        try {
+            //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
+            TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(),
+                    TapUIChatActivity.class,
+                    TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
+        } catch (Exception e) {
+            Log.e(TAG, "onMessageReceived: ", e);
+            e.printStackTrace();
+        }
+    }
+
+    public static void showTapTalkNotification(TAPMessageModel tapMessageModel) {
+        new TAPNotificationManager.NotificationBuilder(appContext)
+                .setNotificationMessage(tapMessageModel)
+                .setSmallIcon(TapTalk.getClientAppIcon())
+                .setNeedReply(false)
+                .setOnClickAction(TapUIChatActivity.class)
+                .show();
+    }
+
+    /**
+     * =============================================================================================
      * TEMP
      * =============================================================================================
      */
@@ -630,12 +697,19 @@ public class TapTalk {
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
 
-    public static void showTaptalkNotification(TAPMessageModel tapMessageModel) {
-        new TAPNotificationManager.NotificationBuilder(appContext)
-                .setNotificationMessage(tapMessageModel)
-                .setSmallIcon(TapTalk.getClientAppIcon())
-                .setNeedReply(false)
-                .setOnClickAction(TapUIRoomListActivity.class)
-                .show();
+    public static void fetchNewMessageandUpdatedBadgeCount() {
+        if (TapTalk.isAuthenticated()) {
+            TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
+                @Override
+                public void onSuccess(String s) {
+                    TapTalk.updateApplicationBadgeCount();
+                }
+
+                @Override
+                public void onError(String s, String s1) {
+                    TapTalk.updateApplicationBadgeCount();
+                }
+            });
+        }
     }
 }
