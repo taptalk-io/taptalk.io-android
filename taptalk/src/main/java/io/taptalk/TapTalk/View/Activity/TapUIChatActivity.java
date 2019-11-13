@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -22,6 +23,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -63,6 +65,7 @@ import io.taptalk.TapTalk.Helper.SwipeBackLayout.SwipeBackLayout;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener;
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -74,6 +77,7 @@ import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
+import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -119,6 +123,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
@@ -133,6 +138,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
@@ -147,6 +153,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
@@ -247,27 +254,18 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         glide = Glide.with(this);
         bindViews();
         initRoom();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());
-        TAPChatManager.getInstance().setOpenRoom(null); // Reset open room
-        TAPChatManager.getInstance().removeChatListener(chatListener);
-        TAPConnectionManager.getInstance().removeSocketListener(socketListener);
-        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
-        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-        TAPFileDownloadManager.getInstance().clearFailedDownloads(); // Remove failed download list from active room
+        registerBroadcastManager();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerBroadcastManager();
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
+        if (0 < etChat.getText().length() && etChat.getText().length() >= vm.getPreviousEditTextSelectionIndex()) {
+            etChat.setSelection(vm.getPreviousEditTextSelectionIndex());
+        }
         if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
             callApiGetGroupData();
         } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
@@ -283,10 +281,10 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        TAPBroadcastManager.unregister(this, broadcastReceiver);
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
+        vm.setPreviousEditTextSelectionIndex(etChat.getSelectionEnd());
     }
 
     @Override
@@ -294,6 +292,25 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         super.onStop();
         sendTypingEmitDelayTimer.cancel();
         typingIndicatorTimeoutTimer.cancel();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Reload UI in room list
+        Intent intent = new Intent(RELOAD_ROOM_LIST);
+        intent.putExtra(ROOM_ID, vm.getRoom().getRoomID());
+        LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent);
+
+        TAPBroadcastManager.unregister(this, broadcastReceiver);
+        TAPChatManager.getInstance().updateUnreadCountInRoomList(TAPChatManager.getInstance().getOpenRoom());
+        TAPChatManager.getInstance().setOpenRoom(null); // Reset open room
+        TAPChatManager.getInstance().removeChatListener(chatListener);
+        TAPConnectionManager.getInstance().removeSocketListener(socketListener);
+        vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
+        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+        TAPFileDownloadManager.getInstance().clearFailedDownloads(); // Remove failed download list from active room
     }
 
     @Override
@@ -306,6 +323,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else {
             //TAPNotificationManager.getInstance().updateUnreadCount();
             new Thread(() -> TAPChatManager.getInstance().putUnsentMessageToList()).start();
+            if (isTaskRoot()) {
+                // Trigger listener callback if no other activity is open
+                for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                    listener.onTaskRootChatRoomClosed(this);
+                }
+            }
             setResult(RESULT_OK);
             finish();
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
@@ -653,7 +676,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         // Load items from database for the First Time (First Load)
         if (vm.getRoom().isRoomDeleted()) {
-            showroomIsUnavailableState();
+            showRoomIsUnavailableState();
         } else if (vm.getMessageModels().size() == 0 && !vm.getRoom().isRoomDeleted()) {
             //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
             getAllUnreadMessage();
@@ -965,12 +988,22 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
             // Add other quotable message type here
-            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO)
-                    && null != message.getData()) {
+            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
-                rcivQuoteImage.setImageDrawable(TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get(FILE_ID)));
+                Drawable drawable = TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get(FILE_ID));
+                if (null != drawable) {
+                    rcivQuoteImage.setImageDrawable(drawable);
+                } else {
+                    // Show small thumbnail
+                    Drawable thumbnail = new BitmapDrawable(
+                            getResources(),
+                            TAPFileUtils.getInstance().decodeBase64(
+                                    (String) (null == message.getData().get(THUMBNAIL) ? "" :
+                                            message.getData().get(THUMBNAIL))));
+                    rcivQuoteImage.setImageDrawable(thumbnail);
+                }
                 rcivQuoteImage.setColorFilter(null);
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -1023,8 +1056,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
             }
+            boolean hadFocus = etChat.hasFocus();
             if (showKeyboard) {
                 TAPUtils.getInstance().showKeyboard(this, etChat);
+            }
+            if (!hadFocus && etChat.getSelectionEnd() == 0) {
+                etChat.setSelection(etChat.getText().length());
             }
         });
     }
@@ -1062,7 +1099,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
         ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
         ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
-        etChat.requestFocus();
+        //etChat.requestFocus();
+        TAPUtils.getInstance().showKeyboard(this, etChat);
     }
 
     private void showCustomKeyboard() {
@@ -1431,14 +1469,17 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     !TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
                 callApiGetGroupData();
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() &&
-                    (ROOM_REMOVE_PARTICIPANT.equals(message.getAction())
-                            || LEAVE_ROOM.equals(message.getAction()))) {
+                    (ROOM_REMOVE_PARTICIPANT.equals(message.getAction()) &&
+                        null != message.getTarget() &&
+                        vm.getMyUserModel().getUserID().equals(message.getTarget().getTargetID())) ||
+                        (LEAVE_ROOM.equals(message.getAction()) &&
+                                vm.getMyUserModel().getUserID().equals(message.getUser().getUserID()))) {
                 showChatAsHistory(getString(R.string.tap_not_a_participant));
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() && ROOM_ADD_PARTICIPANT.equals(message.getAction())) {
                 showDefaultChatEditText();
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() && DELETE_ROOM.equals(message.getAction())) {
                 TAPChatManager.getInstance().deleteMessageFromIncomingMessages(message.getLocalID());
-                showroomIsUnavailableState();
+                showRoomIsUnavailableState();
             }
             updateMessage(message);
         }
@@ -1519,8 +1560,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         @Override
         public void onMessageQuoteClicked(TAPMessageModel message) {
             TAPChatManager.getInstance().triggerMessageQuoteTapped(TapUIChatActivity.this, message);
-            if (null != message.getReplyTo() && (
-                    null == message.getForwardFrom() ||
+            if (null != message.getReplyTo() &&
+                    message.getReplyTo().getMessageType() != -1 && // FIXME: 25 October 2019 MESSAGE TYPE -1 IS USED FOR DUMMY MESSAGE IN CHAT MANAGER setQuotedMessage
+                    (null == message.getForwardFrom() ||
                             null == message.getForwardFrom().getFullname() ||
                             message.getForwardFrom().getFullname().isEmpty())) {
                 scrollToMessage(message.getReplyTo().getLocalID());
@@ -1852,9 +1894,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void hideUnreadButtonLoading() {
-        if (null == ivUnreadButtonImage.getAnimation()) {
-            return;
-        }
         runOnUiThread(() -> {
             ivUnreadButtonImage.clearAnimation();
             clUnreadButton.setVisibility(View.GONE);
@@ -1894,32 +1933,40 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0 && s.toString().trim().length() > 0) {
+                // Hide chat menu and enable send button when EditText is filled
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
                 ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
             } else if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0) {
+                // Hide chat menu but keep send button disabled if trimmed text is empty
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
                 ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive_ripple);
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
-            } else if (s.length() > 0 && s.toString().trim().length() > 0) {
-                if (vm.isCustomKeyboardEnabled()) {
-                    ivChatMenu.setVisibility(View.VISIBLE);
-                    ivButtonChatMenu.setVisibility(View.VISIBLE);
-                }
-                ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
-                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+            //} else if (s.length() > 0 && s.toString().trim().length() > 0) {
+            //    if (vm.isCustomKeyboardEnabled()) {
+            //        ivChatMenu.setVisibility(View.VISIBLE);
+            //        ivButtonChatMenu.setVisibility(View.VISIBLE);
+            //    }
+            //    ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
+            //    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
             } else {
-                if (vm.isCustomKeyboardEnabled()) {
+                if (vm.isCustomKeyboardEnabled() && s.length() == 0) {
+                    // Show chat menu if text is empty
                     ivChatMenu.setVisibility(View.VISIBLE);
                     ivButtonChatMenu.setVisibility(View.VISIBLE);
+                } else {
+                    ivChatMenu.setVisibility(View.GONE);
+                    ivButtonChatMenu.setVisibility(View.GONE);
                 }
                 if (vm.getQuoteAction() == FORWARD) {
+                    // Enable send button if message to forward exists
                     ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
                     ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
                 } else {
+                    // Disable send button
                     ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive_ripple);
                     ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
                 }
@@ -1937,11 +1984,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onFocusChange(View v, boolean hasFocus) {
             if (hasFocus && vm.isCustomKeyboardEnabled()) {
                 vm.setScrollFromKeyboard(true);
-                rvCustomKeyboard.setVisibility(View.GONE);
-                ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
-                ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
-                ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
-                TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
+                //rvCustomKeyboard.setVisibility(View.GONE);
+                //ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
+                //ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
+                //ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
+                //TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
 
                 if (0 < etChat.getText().toString().length()) {
                     ivChatMenu.setVisibility(View.GONE);
@@ -1949,7 +1996,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
             } else if (hasFocus) {
                 vm.setScrollFromKeyboard(true);
-                TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
+                //TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
+            } else {
+                etChat.requestFocus();
             }
         }
     };
@@ -2419,43 +2468,37 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 //Sementara Temporary buat Mastiin ga ada message nyangkut
                 setAllUnreadMessageToRead();
             }
-
-            if (0 < messageAdapter.getItems().size() && ((ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
-                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
-                    || (LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
-                    TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())))) {
-                showChatAsHistory(getString(R.string.tap_not_a_participant));
-            } else if (0 < messageAdapter.getItems().size() && DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction())) {
-                showroomIsUnavailableState();
-            }
+            checkIfChatIsAvailableAndUpdateUI();
         }
 
         @Override
         public void onError(TAPErrorModel error) {
             onError(error.getMessage());
-            if (0 < messageAdapter.getItems().size() && ((ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
-                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
-                    || (LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
-                    TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())))) {
-                showChatAsHistory(getString(R.string.tap_not_a_participant));
-            } else if (0 < messageAdapter.getItems().size() && DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction())) {
-                showroomIsUnavailableState();
-            }
         }
 
         @Override
         public void onError(String errorMessage) {
-            if (0 < messageAdapter.getItems().size() && ((ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
-                    && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
-                    || (LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
-                    TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())))) {
-                showChatAsHistory(getString(R.string.tap_not_a_participant));
-            } else if (0 < messageAdapter.getItems().size() && DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction())) {
-                showroomIsUnavailableState();
-            }
-
+            checkIfChatIsAvailableAndUpdateUI();
             if (0 < vm.getMessageModels().size()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
+            }
+        }
+        
+        private void checkIfChatIsAvailableAndUpdateUI() {
+            if (messageAdapter.getItems().isEmpty()) {
+                return;
+            }
+            TAPMessageModel lastMessage = messageAdapter.getItems().get(0);
+            if ((ROOM_REMOVE_PARTICIPANT.equals(lastMessage.getAction()) &&
+                    null != lastMessage.getTarget() &&
+                    vm.getMyUserModel().getUserID().equals(lastMessage.getTarget().getTargetID())) ||
+                    (LEAVE_ROOM.equals(lastMessage.getAction()) &&
+                            vm.getMyUserModel().getUserID().equals(lastMessage.getUser().getUserID()))) {
+                // User has been removed / left from group
+                showChatAsHistory(getString(R.string.tap_not_a_participant));
+            } else if (DELETE_ROOM.equals(lastMessage.getAction())) {
+                // Room was deleted
+                showRoomIsUnavailableState();
             }
         }
     };
@@ -2490,7 +2533,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 });
     }
 
-    private void showroomIsUnavailableState() {
+    private void showRoomIsUnavailableState() {
         new DeleteRoomAsync().execute(vm.getRoom().getRoomID());
         runOnUiThread(() -> {
             tvMessage.setText(getResources().getString(R.string.tap_group_unavailable));

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -15,12 +16,17 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public class TAPProfileViewModel extends AndroidViewModel {
 
     private TAPRoomModel room;
+    private List<TapChatProfileItemModel> menuItems;
+    private List<TapChatProfileItemModel> adapterItems;
+    private TapChatProfileItemModel sharedMediaSectionTitle;
+    private TapChatProfileItemModel loadingItem;
     private List<TAPMessageModel> sharedMedias;
     private HashMap<String, TAPMessageModel> sharedMediasMap;
     private TAPMessageModel pendingDownloadMessage;
     private TAPUserModel groupMemberUser;
+    private String loadingStartText, loadingEndText;
     private long lastSharedMediaTimestamp;
-    private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isAdminGroup;
+    private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isApiCallOnProgress, isGroupMemberProfile, isGroupAdmin;
 
     public TAPProfileViewModel(@NonNull Application application) {
         super(application);
@@ -32,6 +38,38 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setRoom(TAPRoomModel room) {
         this.room = room;
+    }
+
+    public List<TapChatProfileItemModel> getMenuItems() {
+        return null == menuItems ? menuItems = new ArrayList<>() : menuItems;
+    }
+
+    public void setMenuItems(List<TapChatProfileItemModel> menuItems) {
+        this.menuItems = menuItems;
+    }
+
+    public List<TapChatProfileItemModel> getAdapterItems() {
+        return null == adapterItems ? adapterItems = new ArrayList<>() : adapterItems;
+    }
+
+    public void setAdapterItems(List<TapChatProfileItemModel> adapterItems) {
+        this.adapterItems = adapterItems;
+    }
+
+    public TapChatProfileItemModel getSharedMediaSectionTitle() {
+        return sharedMediaSectionTitle;
+    }
+
+    public void setSharedMediaSectionTitle(TapChatProfileItemModel sharedMediaSectionTitle) {
+        this.sharedMediaSectionTitle = sharedMediaSectionTitle;
+    }
+
+    public TapChatProfileItemModel getLoadingItem() {
+        return loadingItem;
+    }
+
+    public void setLoadingItem(TapChatProfileItemModel loadingItem) {
+        this.loadingItem = loadingItem;
     }
 
     public List<TAPMessageModel> getSharedMedias() {
@@ -59,6 +97,22 @@ public class TAPProfileViewModel extends AndroidViewModel {
         this.pendingDownloadMessage = pendingDownloadMessage;
     }
 
+    public String getLoadingStartText() {
+        return loadingStartText;
+    }
+
+    public void setLoadingStartText(String loadingStartText) {
+        this.loadingStartText = loadingStartText;
+    }
+
+    public String getLoadingEndText() {
+        return loadingEndText;
+    }
+
+    public void setLoadingEndText(String loadingEndText) {
+        this.loadingEndText = loadingEndText;
+    }
+
     public long getLastSharedMediaTimestamp() {
         return lastSharedMediaTimestamp;
     }
@@ -83,8 +137,6 @@ public class TAPProfileViewModel extends AndroidViewModel {
         isFinishedLoadingSharedMedia = finishedLoadingSharedMedia;
     }
 
-    //Untuk Group Member Profile
-
     public TAPUserModel getGroupMemberUser() {
         return groupMemberUser;
     }
@@ -93,11 +145,27 @@ public class TAPProfileViewModel extends AndroidViewModel {
         this.groupMemberUser = groupMemberUser;
     }
 
-    public boolean isAdminGroup() {
-        return isAdminGroup;
+    public boolean isApiCallOnProgress() {
+        return isApiCallOnProgress;
     }
 
-    public void setAdminGroup(boolean adminGroup) {
-        isAdminGroup = adminGroup;
+    public void setApiCallOnProgress(boolean apiCallOnProgress) {
+        isApiCallOnProgress = apiCallOnProgress;
+    }
+
+    public boolean isGroupMemberProfile() {
+        return isGroupMemberProfile;
+    }
+
+    public void setGroupMemberProfile(boolean groupMemberProfile) {
+        isGroupMemberProfile = groupMemberProfile;
+    }
+
+    public boolean isGroupAdmin() {
+        return isGroupAdmin;
+    }
+
+    public void setGroupAdmin(boolean isGroupAdmin) {
+        this.isGroupAdmin = isGroupAdmin;
     }
 }

@@ -52,6 +52,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
+import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
@@ -86,6 +87,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
 
@@ -1333,6 +1335,10 @@ public class TAPChatManager {
         return messageDrafts.get(getActiveRoom().getRoomID());
     }
 
+    public String getMessageFromDraft(String roomID) {
+        return messageDrafts.get(roomID);
+    }
+
     public void removeDraft() {
         messageDrafts.remove(getActiveRoom().getRoomID());
     }
@@ -1600,8 +1606,26 @@ public class TAPChatManager {
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
 
-        // Insert decrypted message to database
-        incomingMessages.put(newMessage.getLocalID(), newMessage);
+
+        if (LEAVE_ROOM.equals(newMessage.getAction()) && getActiveUser().getUserID().equals(newMessage.getUser().getUserID())) {
+            // Remove all room messages if user leaves a chat room
+            new Thread(() -> {
+                for (Map.Entry<String, TAPMessageModel> entry : incomingMessages.entrySet()) {
+                    if (entry.getValue().getUser().getUserID().equals(newMessage.getUser().getUserID())) {
+                        incomingMessages.remove(entry.getKey());
+                    }
+                }
+                for (TAPMessageEntity message : saveMessages) {
+                    if (message.getRoomID().equals(newMessage.getUser().getUserID())) {
+                        saveMessages.remove(message);
+                    }
+                }
+            }).start();
+
+        } else {
+            // Insert decrypted message to database
+            incomingMessages.put(newMessage.getLocalID(), newMessage);
+        }
 
         // Query Unread Message
         //TAPNotificationManager.getInstance().updateUnreadCount();
@@ -1846,10 +1870,17 @@ public class TAPChatManager {
      *  ============================================================================================
      */
 
+    public void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
+        TapUI.getInstance().triggerSearchChatBarTapped(activity, mainRoomListFragment);
+    }
+
     public void triggerTapTalkAccountButtonTapped(Activity activity) {
         TapUI.getInstance().triggerTapTalkAccountButtonTapped(activity);
     }
 
+    public void triggerNewChatButtonTapped(Activity activity) {
+        TapUI.getInstance().triggerNewChatButtonTapped(activity);
+    }
 
     public void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
         TapUI.getInstance().triggerChatRoomProfileButtonTapped(activity, room, user);

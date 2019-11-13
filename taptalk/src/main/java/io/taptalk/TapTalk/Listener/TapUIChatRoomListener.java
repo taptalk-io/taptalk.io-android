@@ -3,12 +3,12 @@ package io.taptalk.TapTalk.Listener;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.Keep;
+import android.support.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import io.taptalk.TapTalk.Interface.TapUIChatRoomInterface;
-import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -34,7 +34,7 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
     }
 
     @Override
-    public void onTapTalkMessageQuoteTapped(Activity activity, TAPMessageModel message, HashMap<String, Object> userInfo) {
+    public void onTapTalkMessageQuoteTapped(Activity activity, TAPMessageModel message, @Nullable HashMap<String, Object> userInfo) {
 
     }
 

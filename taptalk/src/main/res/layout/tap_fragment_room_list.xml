@@ -219,6 +219,7 @@
             android:text="@string/tap_no_chats_to_show" />
 
         <TextView
+            android:id="@+id/tv_start_new_chat_description"
             style="@style/tapInfoLabelBodyStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -253,7 +254,7 @@
         android:padding="16dp"
         android:src="@drawable/tap_ic_pencil_chat"
         android:tint="@color/tapIconStartNewChatButton"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

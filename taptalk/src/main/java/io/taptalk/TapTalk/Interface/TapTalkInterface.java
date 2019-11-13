@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Interface;
 
+import android.app.Activity;
+
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 public interface TapTalkInterface {
@@ -10,4 +12,6 @@ public interface TapTalkInterface {
     void onNotificationReceived(TAPMessageModel message);
 
     void onUserLogout();
+
+    void onTaskRootChatRoomClosed(Activity activity);
 }
