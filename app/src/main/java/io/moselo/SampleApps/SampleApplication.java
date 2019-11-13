@@ -2,18 +2,15 @@ package io.moselo.SampleApps;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Intent;
 import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 
-import io.moselo.SampleApps.Activity.TAPLoginActivity;
 import io.moselo.SampleApps.CustomBubbleClass.OrderCardBubbleClass;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TaptalkSample.BuildConfig;
 import io.taptalk.TaptalkSample.R;
 
@@ -39,14 +36,12 @@ public class SampleApplication extends Application {
 
         @Override
         public void onUserLogout() {
-            
+
         }
 
         @Override
         public void onTaskRootChatRoomClosed(Activity activity) {
-            Intent intent = new Intent(activity, TapUIRoomListActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            activity.startActivity(intent);
+
         }
     };
 
