@@ -31,6 +31,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -905,6 +906,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     vm.addUnreadMessage(newMessage);
                     vm.addMessagePointer(newMessage);
                     updateUnreadCount();
+                    Log.e(TAG, "updateMessage: " + newMessage.getMessageID() + " - " + newMessage.getBody() + " " + newMessage.getIsRead());
                 }
                 updateMessageDecoration();
             });
@@ -1463,6 +1465,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
+            Log.e(TAG, "onReceiveMessageInActiveRoom: " + message.getMessageID() + " - " + message.getBody() + " " + message.getIsRead());
             if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType() &&
                     TYPE_SYSTEM_MESSAGE == message.getType() && (ROOM_ADD_PARTICIPANT.equals(message.getAction())
                     || ROOM_REMOVE_PARTICIPANT.equals(message.getAction())) &&
@@ -1552,7 +1555,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onMessageRead(TAPMessageModel message) {
             if (vm.getUnreadCount() == 0) return;
 
-            message.setIsRead(true);
+            //message.setIsRead(true);
             vm.removeUnreadMessage(message.getLocalID());
             updateUnreadCount();
         }
@@ -2354,36 +2357,32 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
-            //response message itu entity jadi buat disimpen ke database
-            List<TAPMessageEntity> responseMessages = new ArrayList<>();
-            //messageAfterModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
-            List<TAPMessageModel> messageAfterModels = new ArrayList<>();
+            List<TAPMessageEntity> responseMessages = new ArrayList<>(); // Entities to be saved to database
+            List<TAPMessageModel> messageAfterModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
+            HashMap<String, TAPMessageModel> unreadMessageModels = new HashMap<>(); // Results to be marked as read with messageID as key
 
             int unreadCount = 0;
-            //untuk tau index mana buat disisipin unread message identifier
-            int unreadMessageIndex = -1;
-            //untuk dapet created yang paling kecil dari unread message
+            int unreadMessageIndex = -1; // Index for unread message identifier
             long smallestUnreadCreated = 0L;
+
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-
-                    //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
-                    // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
                     String newID = message.getLocalID();
                     if (vm.getMessagePointer().containsKey(newID)) {
-                        //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
+                        // Update existing message
                         runOnUiThread(() -> {
                             vm.updateMessagePointer(message);
                             messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                         });
                     } else if (!vm.getMessagePointer().containsKey(newID)) {
-                        //kalau belom ada masukin kedalam list dan hash map
+                        // Insert new message to list and HashMap
                         messageAfterModels.add(message);
                         vm.addMessagePointer(message);
                         if (null == message.getIsRead() || !message.getIsRead()) {
                             // Add unread count if new message has not been read
                             unreadCount++;
+                            unreadMessageModels.put(message.getMessageID(), message);
                         }
 
                         if ("".equals(vm.getLastUnreadMessageLocalID())
@@ -2397,8 +2396,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
                     new Thread(() -> {
-                        //ini buat update last update timestamp yang ada di preference
-                        //ini di taruh di new Thread biar ga bkin scrollingnya lag
+                        // Update last updated timestamp in preference (new thread to prevent stutter when scrolling)
                         if (null != message.getUpdated() &&
                                 TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()) {
                             TAPDataManager.getInstance().saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
@@ -2415,15 +2413,15 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             }
 
             if (-1 != unreadMessageIndex && 0L != smallestUnreadCreated) {
+                // Insert unread indicator
                 TAPMessageModel unreadIndicator = insertUnreadMessageIdentifier(
                         messageAfterModels.get(unreadMessageIndex).getCreated(),
                         messageAfterModels.get(unreadMessageIndex).getUser());
                 messageAfterModels.add(unreadMessageIndex, unreadIndicator);
             }
 
-            //sorting message balikan dari api after
-            //messageAfterModels ini adalah message balikan api yang belom ada di recyclerView
             if (0 < messageAfterModels.size()) {
+                // Update new message status to delivered
                 TAPMessageStatusManager.getInstance().updateMessageStatusToDelivered(messageAfterModels);
             }
 
@@ -2432,16 +2430,15 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     clEmptyChat.setVisibility(View.GONE);
                 }
                 flMessageList.setVisibility(View.VISIBLE);
-                //masukin datanya ke dalem recyclerView
-                //posisinya dimasukin ke index 0 karena brati dy message baru yang belom ada
                 updateMessageDecoration();
+                // Insert new messages to first index
                 messageAdapter.addMessage(0, messageAfterModels, false);
-                //Setelah masukin ke dalem adapter semuanya di sort biar rapi sesuai timestamp
+                // Sort adapter items according to timestamp
                 mergeSort(messageAdapter.getItems(), ASCENDING);
                 showUnreadButton(vm.getUnreadIndicator());
-                //ini buat ngecek kalau user lagi ada di bottom pas masuk data lgsg di scroll jdi ke paling bawah lagi
-                //kalau user ga lagi ada di bottom ga usah di turunin
+
                 if (vm.isOnBottom() && 0 < messageAfterModels.size()) {
+                    // Scroll recycler to bottom
                     rvMessageList.scrollToPosition(0);
                 }
                 if (rvMessageList.getVisibility() != View.VISIBLE) {
@@ -2452,21 +2449,19 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
             });
 
-            if (0 < responseMessages.size())
-                TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
-                });
+            if (0 < responseMessages.size()) {
+                // Save entities to database
+                TAPDataManager.getInstance().insertToDatabase(responseMessages, false, new TAPDatabaseListener() {});
+            }
 
-            //ngecek isInitialApiCallFinished karena kalau dari onResume, api before itu ga perlu untuk di panggil lagi
             if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
+                // Fetch older messages on first call
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
             }
 
             if (!vm.isInitialAPICallFinished()) {
-                //ubah initialApiCallFinished jdi true (brati udah dipanggil pas onCreate / pas pertama kali di buka
                 vm.setInitialAPICallFinished(true);
-
-                //Sementara Temporary buat Mastiin ga ada message nyangkut
-                setAllUnreadMessageToRead();
+                setAllUnreadMessageToRead(unreadMessageModels);
             }
             checkIfChatIsAvailableAndUpdateUI();
         }
@@ -2503,24 +2498,32 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    private void setAllUnreadMessageToRead() {
-        new Thread(() -> TAPDataManager.getInstance().getAllMessageThatNotRead(TAPChatManager.getInstance().getOpenRoom(),
-                new TAPDatabaseListener<TAPMessageEntity>() {
-                    @Override
-                    public void onSelectFinished(List<TAPMessageEntity> entities) {
-                        for (TAPMessageEntity entity : entities) {
-                            if (vm.getMessagePointer().containsKey(entity.getLocalID())) {
-                                markMessageAsRead(vm.getMessagePointer().get(entity.getLocalID()));
-                            } else {
-                                markMessageAsRead(TAPChatManager.getInstance().convertToModel(entity));
+    // FIXME: 11 November 2019 ALL messages forced as read on first "After" Api completion
+    private void setAllUnreadMessageToRead(HashMap<String, TAPMessageModel> unreadMessages) {
+        new Thread(() -> {
+            markMessageAsRead(new ArrayList<>(unreadMessages.values()));
+            TAPDataManager.getInstance().getAllUnreadMessagesFromRoom(TAPChatManager.getInstance().getOpenRoom(),
+                    new TAPDatabaseListener<TAPMessageEntity>() {
+                        @Override
+                        public void onSelectFinished(List<TAPMessageEntity> entities) {
+                            List<TAPMessageModel> pendingReadList = new ArrayList<>();
+                            for (TAPMessageEntity entity : entities) {
+                                if (!unreadMessages.containsKey(entity.getMessageID()) && vm.getMessagePointer().containsKey(entity.getLocalID())) {
+                                    // Add unread message from pointer to pending list
+                                    pendingReadList.add(vm.getMessagePointer().get(entity.getLocalID()));
+                                } else if (!unreadMessages.containsKey(entity.getMessageID())) {
+                                    // Convert entity to model and add to pending list
+                                    pendingReadList.add(TAPChatManager.getInstance().convertToModel(entity));
+                                }
                             }
+                            markMessageAsRead(pendingReadList);
                         }
-                    }
-                })).start();
+                    });
+        }).start();
     }
 
     private void getAllUnreadMessage() {
-        TAPDataManager.getInstance().getAllMessageThatNotRead(TAPChatManager.getInstance().getOpenRoom(),
+        TAPDataManager.getInstance().getAllUnreadMessagesFromRoom(TAPChatManager.getInstance().getOpenRoom(),
                 new TAPDatabaseListener<TAPMessageEntity>() {
                     @Override
                     public void onSelectFinished(List<TAPMessageEntity> entities) {
@@ -2553,6 +2556,16 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             if (null != readMessage.getIsRead() && !readMessage.getIsRead()) {
                 TAPMessageStatusManager.getInstance().addUnreadListByOne(readMessage.getRoom().getRoomID());
                 TAPMessageStatusManager.getInstance().addReadMessageQueue(readMessage);
+            }
+        }).start();
+    }
+
+    private void markMessageAsRead(List<TAPMessageModel> readMessages) {
+        new Thread(() -> {
+            if (!readMessages.isEmpty()) {
+                TAPMessageStatusManager.getInstance().addUnreadList(vm.getRoom().getRoomID(), readMessages.size());
+                TAPMessageStatusManager.getInstance().addReadMessageQueue(readMessages);
+                Log.e(TAG, "addReadMessageQueue: " + readMessages.size());
             }
         }).start();
     }

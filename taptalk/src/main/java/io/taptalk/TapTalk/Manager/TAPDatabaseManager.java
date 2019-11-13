@@ -162,9 +162,9 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getAllMessageThatNotRead(String myID, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+    public void getAllUnreadMessagesFromRoom(String myID, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
-            messageRepository.getAllMessageThatNotRead(myID, roomID, listener);
+            messageRepository.getAllUnreadMessagesFromRoom(myID, roomID, listener);
         else throw new IllegalStateException("Message Repository was not initialized");
     }
 

@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.Data.Message;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -17,7 +16,6 @@ import io.taptalk.TapTalk.Data.TapTalkDatabase;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -164,9 +162,9 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public void getAllMessageThatNotRead(String myID, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+    public void getAllUnreadMessagesFromRoom(String myID, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         new Thread(() -> {
-            List<TAPMessageEntity> messageEntities = messageDao.getAllMessageThatNotRead(myID, roomID);
+            List<TAPMessageEntity> messageEntities = messageDao.getAllUnreadMessagesFromRoom(myID, roomID);
             listener.onSelectFinished(messageEntities);
         }).start();
     }

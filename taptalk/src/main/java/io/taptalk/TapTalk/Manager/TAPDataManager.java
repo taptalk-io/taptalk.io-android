@@ -787,11 +787,11 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
     }
 
-    public void getAllMessageThatNotRead(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+    public void getAllUnreadMessagesFromRoom(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser())
             return;
 
-        TAPDatabaseManager.getInstance().getAllMessageThatNotRead(getActiveUser().getUserID(), roomID, listener);
+        TAPDatabaseManager.getInstance().getAllUnreadMessagesFromRoom(getActiveUser().getUserID(), roomID, listener);
     }
 
     public void getRoomList(boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
