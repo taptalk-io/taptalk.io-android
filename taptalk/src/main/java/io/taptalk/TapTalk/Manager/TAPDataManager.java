@@ -756,6 +756,14 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().updateFailedStatusToSending(localID);
     }
 
+    public void updateMessageAsReadInDatabase(String messageID) {
+        TAPDatabaseManager.getInstance().updateMessageAsRead(messageID);
+    }
+
+    public void updateMessagesAsReadInDatabase(List<String> messageIDs) {
+        TAPDatabaseManager.getInstance().updateMessagesAsRead(messageIDs);
+    }
+
     public LiveData<List<TAPMessageEntity>> getMessagesLiveData() {
         return TAPDatabaseManager.getInstance().getMessagesLiveData();
     }

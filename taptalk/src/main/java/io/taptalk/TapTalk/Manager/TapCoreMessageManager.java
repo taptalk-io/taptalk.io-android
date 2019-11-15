@@ -279,7 +279,7 @@ public class TapCoreMessageManager {
     }
 
     public void markMessageAsRead(TAPMessageModel message) {
-        TAPMessageStatusManager.getInstance().addReadMessageQueue(message);
+        TAPMessageStatusManager.getInstance().addReadMessageQueue(message.getMessageID());
     }
 
     public void getOlderMessagesBeforeTimestamp(String roomID, long maxCreatedTimestamp, int numberOfItems, TapCoreGetOlderMessageListener listener) {

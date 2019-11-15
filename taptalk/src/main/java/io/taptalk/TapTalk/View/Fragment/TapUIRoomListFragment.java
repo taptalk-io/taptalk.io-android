@@ -71,6 +71,7 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
@@ -126,7 +127,7 @@ public class TapUIRoomListFragment extends Fragment {
         initListener();
         initView(view);
         viewLoadedSequence();
-        TAPBroadcastManager.register(activity, reloadRoomListReceiver, RELOAD_ROOM_LIST);
+        TAPBroadcastManager.register(activity, reloadRoomListReceiver, RELOAD_ROOM_LIST, CLEAR_ROOM_LIST_BADGE);
     }
 
     @Override
@@ -838,13 +839,11 @@ public class TapUIRoomListFragment extends Fragment {
             if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) &&
                     TAPMessageStatusManager.getInstance().getUnreadList().containsKey(roomID) &&
                     TAPMessageStatusManager.getInstance().getUnreadList().get(roomID) <= vm.getRoomPointer().get(roomID).getUnreadCount()) {
-                if (BuildConfig.DEBUG) Log.e(TAG, "updateUnreadCountPerRoom: " + roomID + " " + vm.getRoomPointer().get(roomID).getUnreadCount() + " - " + TAPMessageStatusManager.getInstance().getUnreadList().get(roomID));
                 vm.getRoomPointer().get(roomID).setUnreadCount(vm.getRoomPointer().get(roomID).getUnreadCount() - TAPMessageStatusManager.getInstance().getUnreadList().get(roomID));
                 TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
             } else if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) &&
                     TAPMessageStatusManager.getInstance().getUnreadList().containsKey(roomID)) {
-                if (BuildConfig.DEBUG) Log.e(TAG, "updateUnreadCountPerRoom: " + roomID + " 0");
                 vm.getRoomPointer().get(roomID).setUnreadCount(0);
                 TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
@@ -866,25 +865,30 @@ public class TapUIRoomListFragment extends Fragment {
     private BroadcastReceiver reloadRoomListReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (null == intent.getAction() || !intent.getAction().equals(RELOAD_ROOM_LIST) || null == adapter) {
+            if (null == intent.getAction() || null == adapter) {
                 return;
             }
-            adapter.notifyItemChanged(vm.getRoomList().indexOf(
-                    vm.getRoomPointer().get(intent.getStringExtra(ROOM_ID))));
+            String roomID = intent.getStringExtra(ROOM_ID);
+            switch (intent.getAction()) {
+                case RELOAD_ROOM_LIST:
+                    adapter.notifyItemChanged(vm.getRoomList().indexOf(
+                            vm.getRoomPointer().get(roomID)));
+                    break;
+                case CLEAR_ROOM_LIST_BADGE:
+                    if (vm.getRoomPointer().containsKey(roomID)) {
+                        vm.getRoomPointer().get(roomID).setUnreadCount(0);
+                        TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);
+                    }
+                    break;
+            }
         }
     };
 
     private void calculateBadgeCount() {
         vm.setRoomBadgeCount(0);
-//        try {
-            for (Map.Entry<String, TAPRoomListModel> entry : vm.getRoomPointer().entrySet()) {
-                vm.setRoomBadgeCount(vm.getRoomBadgeCount() + entry.getValue().getUnreadCount());
-            }
-//        } catch (Exception e) { // FIXME: 29 October 2019 ConcurrentModificationException, NullPointerException (TAPRoomListModel.getUnreadCount())
-//            if (BuildConfig.DEBUG) {
-//                Log.e(TAG, "calculateBadgeCount: " + e.getMessage());
-//            }
-//        }
+        for (Map.Entry<String, TAPRoomListModel> entry : vm.getRoomPointer().entrySet()) {
+            vm.setRoomBadgeCount(vm.getRoomBadgeCount() + entry.getValue().getUnreadCount());
+        }
         if (vm.getLastBadgeCount() != vm.getRoomBadgeCount()) {
             for (TapListener listener : TapTalk.getTapTalkListeners()) {
                 listener.onTapTalkUnreadChatRoomBadgeCountUpdated(vm.getRoomBadgeCount());

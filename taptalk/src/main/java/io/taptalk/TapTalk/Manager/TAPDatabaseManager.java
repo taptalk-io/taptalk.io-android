@@ -114,6 +114,20 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void updateMessageAsRead(String messageID) {
+        if (null != messageRepository)
+            messageRepository.updateMessageAsRead(messageID);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void updateMessagesAsRead(List<String> messageIDs) {
+        if (null != messageRepository)
+            messageRepository.updateMessagesAsRead(messageIDs);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public LiveData<List<TAPMessageEntity>> getMessagesLiveData() {
         if (null != messageRepository)
             return messageRepository.getAllMessagesLiveData();

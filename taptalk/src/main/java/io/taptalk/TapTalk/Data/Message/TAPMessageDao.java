@@ -112,6 +112,12 @@ public interface TAPMessageDao {
     @Query("update Message_Table set isFailedSend = 0, isSending = 1 where localID = :localID")
     void updateFailedStatusToSending(String localID);
 
+    @Query("update Message_Table set isDelivered = 1, isRead = 1 where messageID = :messageID")
+    void updateMessageAsRead(String messageID);
+
+    @Query("update Message_Table set isDelivered = 1, isRead = 1 where messageID in (:messageIDs)")
+    void updateMessagesAsRead(List<String> messageIDs);
+
     @Query("delete from Message_Table where roomID = :roomId")
     void deleteMessageByRoomId(String roomId);
 }

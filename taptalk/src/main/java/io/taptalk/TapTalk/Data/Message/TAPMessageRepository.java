@@ -287,6 +287,21 @@ public class TAPMessageRepository {
         new Thread(() -> messageDao.updateFailedStatusToSending(localID)).start();
     }
 
+    public void updateMessageAsRead(final String messageID) {
+        new Thread(() -> messageDao.updateMessageAsRead(messageID)).start();
+    }
+
+    public void updateMessagesAsRead(final List<String> messageIDs) {
+        if (null == messageIDs || messageIDs.isEmpty()) {
+            return;
+        }
+        if (messageIDs.size() == 1) {
+            updateMessageAsRead(messageIDs.get(0));
+        } else {
+            new Thread(() -> messageDao.updateMessagesAsRead(messageIDs)).start();
+        }
+    }
+
     public void deleteMessageByRoomId(final String roomId, TAPDatabaseListener listener) {
         new Thread(() -> {
             messageDao.deleteMessageByRoomId(roomId);
