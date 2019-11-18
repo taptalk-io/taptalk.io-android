@@ -265,9 +265,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
-        if (0 < etChat.getText().length() && etChat.getText().length() >= vm.getPreviousEditTextSelectionIndex()) {
-            etChat.setSelection(vm.getPreviousEditTextSelectionIndex());
-        }
+//        if (0 < etChat.getText().length() && etChat.getText().length() >= vm.getPreviousEditTextSelectionIndex()) {
+//            etChat.setSelection(vm.getPreviousEditTextSelectionIndex());
+//        }
         if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
             callApiGetGroupData();
         } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
@@ -286,7 +286,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
-        vm.setPreviousEditTextSelectionIndex(etChat.getSelectionEnd());
+//        vm.setPreviousEditTextSelectionIndex(etChat.getSelectionEnd());
     }
 
     @Override
@@ -1986,11 +1986,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onFocusChange(View v, boolean hasFocus) {
             if (hasFocus && vm.isCustomKeyboardEnabled()) {
                 vm.setScrollFromKeyboard(true);
-                //rvCustomKeyboard.setVisibility(View.GONE);
-                //ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
-                //ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
-                //ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
-                //TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
+                rvCustomKeyboard.setVisibility(View.GONE);
+                ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
+                ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
+                ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
+                TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
 
                 if (0 < etChat.getText().toString().length()) {
                     ivChatMenu.setVisibility(View.GONE);
@@ -1998,10 +1998,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
             } else if (hasFocus) {
                 vm.setScrollFromKeyboard(true);
-                //TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
-            } else {
-                etChat.requestFocus();
+                TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
             }
+//            else {
+//                etChat.requestFocus();
+//            }
         }
     };
 
