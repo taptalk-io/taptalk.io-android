@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 public abstract class TapCoreReceiveMessageListener implements TapReceiveMessageInterface {
     @Override
     public void onReceiveNewMessage(TAPMessageModel message) {
-        
+
     }
 
     @Override

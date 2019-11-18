@@ -61,6 +61,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.Taptalk.R;
 
@@ -87,6 +88,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
@@ -127,9 +130,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private TAPMessageModel expandedBubble;
     private TAPUserModel myUserModel;
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
+    private RequestManager glide;
     private float initialTranslationX = TAPUtils.getInstance().dpToPx(-22);
     private long defaultAnimationTime = 200L;
-    private RequestManager glide;
 
     public TAPMessageAdapter(RequestManager glide, TAPChatListener chatListener) {
         myUserModel = TAPChatManager.getInstance().getActiveUser();
@@ -168,9 +171,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ProductVH prodHolder = new ProductVH(parent, R.layout.tap_cell_chat_bubble_product_list);
                 prodHolder.setIsRecyclable(false);
                 return prodHolder;
-//            case TYPE_BUBBLE_ORDER_CARD:
-//                TAPBaseCustomBubble orderBubble = TAPCustomBubbleManager.getInstance().getCustomBubbleMap().get(TYPE_BUBBLE_ORDER_CARD);
-//                return orderBubble.createCustomViewHolder(parent, this, myUserModel, orderBubble.getCustomBubbleListener());
             case TYPE_BUBBLE_UNREAD_STATUS:
                 return new BasicVH(parent, R.layout.tap_cell_unread_status);
             case TYPE_BUBBLE_LOADING:
@@ -1569,6 +1569,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (null != tvUserName) {
                     tvUserName.setText(item.getUser().getName());
                     tvUserName.setVisibility(View.VISIBLE);
+                }
+                if (null != civAvatar) {
+                    civAvatar.setOnClickListener(v -> {
+                        // Open group member profile
+                        Activity activity = (Activity) vh.itemView.getContext();
+                        if (null == activity) {
+                            return;
+                        }
+                        Intent intent = new Intent(activity, TAPChatProfileActivity.class);
+                        intent.putExtra(ROOM, item.getRoom());
+                        intent.putExtra(K_USER, item.getUser());
+                        activity.startActivity(intent);
+                        activity.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+                    });
                 }
             } else {
                 // Hide avatar and name
