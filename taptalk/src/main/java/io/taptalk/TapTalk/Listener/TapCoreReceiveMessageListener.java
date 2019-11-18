@@ -7,24 +7,13 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 @Keep
 public abstract class TapCoreReceiveMessageListener implements TapReceiveMessageInterface {
-
     @Override
-    public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-
+    public void onReceiveNewMessage(TAPMessageModel message) {
+        
     }
 
     @Override
-    public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-
-    }
-
-    @Override
-    public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-
-    }
-
-    @Override
-    public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
+    public void onReceiveUpdatedMessage(TAPMessageModel message) {
 
     }
 }

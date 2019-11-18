@@ -182,6 +182,7 @@ public class TAPMessageStatusManager {
         }).start();
     }
 
+    // TODO: 18 November 2019 CHANGE PARAMETER TO MESSAGE ID
     private void updateMessageStatusToDelivered(int tempDeliveredRequestID, List<TAPMessageModel> newMessageModels) {
         new Thread(() -> {
             List<String> messageIds = new ArrayList<>();
