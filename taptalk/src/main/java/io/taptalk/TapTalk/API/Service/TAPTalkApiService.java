@@ -38,13 +38,13 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPProjectConfigResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import retrofit2.http.Body;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import rx.Observable;
 
@@ -58,7 +58,7 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TAPSendCustomMessageResponse>> sendCustomMessage(@Body TAPSendCustomMessageRequest request);
 
     @POST("auth/access_token/request")
-    Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> getAccessToken();
+    Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> getAccessToken(@Header("Authorization") String authTicket);
 
     @POST("client/login/request_otp")
     Observable<TAPBaseResponse<TAPLoginOTPResponse>> requestOTPLogin(@Body TAPLoginOTPRequest request);
