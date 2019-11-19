@@ -181,12 +181,62 @@
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl_contact_action"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+
+        <TextView
+            android:id="@+id/tv_button_block_contact"
+            style="@style/tapClickableDestructiveLabelStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/tap_block_user"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tv_button_add_to_contacts"
+            />
+
+        <TextView
+            android:id="@+id/tv_button_add_to_contacts"
+            style="@style/tapClickableLabelStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="@string/tap_add_to_contacts"
+            app:layout_goneMarginStart="56dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_button_block_contact"
+            app:layout_constraintEnd_toStartOf="@+id/iv_button_dismiss_contact_action"
+            />
+
+        <ImageView
+            android:id="@+id/iv_button_dismiss_contact_action"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/tap_ic_demote_admins"
+            android:tint="@color/tapButtonIconPrimaryColor"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_button_add_to_contacts"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_empty_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/fl_chat_composer_and_history"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+        app:layout_constraintTop_toBottomOf="@id/cl_contact_action">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="0dp"
@@ -290,7 +340,7 @@
         android:descendantFocusability="blocksDescendants"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/fl_chat_composer_and_history"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
+        app:layout_constraintTop_toBottomOf="@id/cl_contact_action"
         tools:background="@color/tapTransparentCharcoal40">
 
         <io.taptalk.TapTalk.Helper.TAPChatRecyclerView
@@ -310,7 +360,7 @@
         android:descendantFocusability="blocksDescendants"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
+        app:layout_constraintTop_toBottomOf="@id/cl_contact_action"
         tools:background="@color/tapTransparentCharcoal40">
 
         <include layout="@layout/tap_cell_chat_system_message" />
@@ -321,7 +371,7 @@
         android:id="@+id/fl_loading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/cl_action_bar">
+        app:layout_constraintTop_toBottomOf="@+id/cl_contact_action">
 
         <fragment
             android:id="@+id/f_connection_status"
@@ -345,7 +395,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cl_action_bar">
+        app:layout_constraintTop_toBottomOf="@+id/cl_contact_action">
 
         <TextView
             android:id="@+id/tv_unread_button_count"

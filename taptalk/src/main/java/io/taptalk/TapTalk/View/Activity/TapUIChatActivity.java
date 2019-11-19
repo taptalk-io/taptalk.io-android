@@ -206,16 +206,18 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList, flRoomUnavailable, flChatComposerAndHistory;
     private LinearLayout llButtonDeleteChat;
-    private ConstraintLayout clContainer, clUnreadButton, clEmptyChat, clQuote, clChatComposer,
-            clRoomOnlineStatus, clRoomTypingStatus, clChatHistory;
+    private ConstraintLayout clContainer, clContactAction, clUnreadButton, clEmptyChat, clQuote,
+            clChatComposer, clRoomOnlineStatus, clRoomTypingStatus, clChatHistory;
     private EditText etChat;
-    private ImageView ivButtonBack, ivRoomIcon, ivUnreadButtonImage, ivButtonCancelReply, ivChatMenu,
-            ivButtonChatMenu, ivButtonAttach, ivSend, ivButtonSend, ivToBottom, ivRoomTypingIndicator;
+    private ImageView ivButtonBack, ivRoomIcon, ivButtonDismissContactAction, ivUnreadButtonImage,
+            ivButtonCancelReply, ivChatMenu, ivButtonChatMenu, ivButtonAttach, ivSend, ivButtonSend,
+            ivToBottom, ivRoomTypingIndicator;
     private CircleImageView civRoomImage, civMyAvatarEmpty, civRoomAvatarEmpty;
     private TAPRoundedCornerImageView rcivQuoteImage;
     private TextView tvRoomName, tvRoomStatus, tvRoomImageLabel, tvUnreadButtonCount,
             tvChatEmptyGuide, tvMyAvatarLabelEmpty, tvRoomAvatarLabelEmpty, tvProfileDescription,
-            tvQuoteTitle, tvQuoteContent, tvBadgeUnread, tvRoomTypingStatus, tvChatHistoryContent, tvMessage;
+            tvQuoteTitle, tvQuoteContent, tvBadgeUnread, tvButtonBlockContact, tvButtonAddToContacts,
+            tvRoomTypingStatus, tvChatHistoryContent, tvMessage;
     private View vRoomImage, vStatusBadge, vQuoteDecoration;
     private TAPConnectionStatusFragment fConnectionStatus;
 
@@ -486,6 +488,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         flChatComposerAndHistory = (FrameLayout) findViewById(R.id.fl_chat_composer_and_history);
         llButtonDeleteChat = (LinearLayout) findViewById(R.id.ll_button_delete_chat);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
+        clContactAction = (ConstraintLayout) findViewById(R.id.cl_contact_action);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
         clChatHistory = (ConstraintLayout) findViewById(R.id.cl_chat_history);
@@ -495,6 +498,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
         ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
         ivRoomIcon = (ImageView) findViewById(R.id.iv_room_icon);
+        ivButtonDismissContactAction = (ImageView) findViewById(R.id.iv_button_dismiss_contact_action);
         ivUnreadButtonImage = (ImageView) findViewById(R.id.iv_unread_button_image);
         ivButtonCancelReply = (ImageView) findViewById(R.id.iv_cancel_reply);
         ivChatMenu = (ImageView) findViewById(R.id.iv_chat_menu);
@@ -512,6 +516,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         tvRoomStatus = (TextView) findViewById(R.id.tv_room_status);
         tvRoomImageLabel = (TextView) findViewById(R.id.tv_room_image_label);
         tvRoomTypingStatus = (TextView) findViewById(R.id.tv_room_typing_status);
+        tvButtonBlockContact = (TextView) findViewById(R.id.tv_button_block_contact);
+        tvButtonAddToContacts = (TextView) findViewById(R.id.tv_button_add_to_contacts);
         tvUnreadButtonCount = (TextView) findViewById(R.id.tv_unread_button_count);
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
         tvMyAvatarLabelEmpty = (TextView) findViewById(R.id.tv_my_avatar_label_empty);
@@ -730,6 +736,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         vRoomImage.setOnClickListener(v -> openRoomProfile());
         ivButtonBack.setOnClickListener(v -> closeActivity());
+        tvButtonBlockContact.setOnClickListener(v -> blockContact());
+        tvButtonAddToContacts.setOnClickListener(v -> addUserToContacts());
+        ivButtonDismissContactAction.setOnClickListener(v -> dismissContactAction());
         ivButtonCancelReply.setOnClickListener(v -> hideQuoteLayout());
         ivButtonAttach.setOnClickListener(v -> openAttachMenu());
         ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
@@ -777,6 +786,21 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private void closeActivity() {
         rvCustomKeyboard.setVisibility(View.GONE);
         onBackPressed();
+    }
+
+    private void blockContact() {
+        // TODO: 19 November 2019
+        clContactAction.setVisibility(View.GONE);
+    }
+
+    private void addUserToContacts() {
+        // TODO: 19 November 2019 CALL ADD CONTACT API
+        clContactAction.setVisibility(View.GONE);
+    }
+
+    private void dismissContactAction() {
+        // TODO: 19 November 2019 UPDATE PREFERENCE
+        clContactAction.setVisibility(View.GONE);
     }
 
     private void cancelNotificationWhenEnterRoom() {
@@ -1302,6 +1326,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                             vm.setOtherUserModel(response.getUser());
                             initRoom();
                         }
+
+                        // TODO: 19 November 2019 SHOW CONTACT ACTION
                     }
 
                     @Override
