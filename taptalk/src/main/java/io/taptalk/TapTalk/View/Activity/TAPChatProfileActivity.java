@@ -363,6 +363,19 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
                 // Personal chat room
 
+                // Add to contacts
+                TAPUserModel contact = TAPContactManager.getInstance().getUserData(
+                        TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID()));
+                if (null == contact || null == contact.getIsContact() || contact.getIsContact() == 0) {
+                    TapChatProfileItemModel menuAddToContact = new TapChatProfileItemModel(
+                            MENU_ADD_TO_CONTACTS,
+                            getString(R.string.tap_add_to_contacts),
+                            R.drawable.tap_ic_add_circle_grey,
+                            R.color.tapIconGroupMemberProfileMenuAddToContacts,
+                            R.style.tapChatProfileMenuLabelStyle);
+                    menuItems.add(menuAddToContact);
+                }
+
                 // Block user
                 TapChatProfileItemModel menuBlock = new TapChatProfileItemModel(
                         MENU_BLOCK,
@@ -432,7 +445,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
             // Add to contacts
             TAPUserModel contact = TAPContactManager.getInstance().getUserData(vm.getGroupMemberUser().getUserID());
-            if (null == contact || (null != contact.getIsContact() && contact.getIsContact() == 0)) {
+            if (null == contact || null == contact.getIsContact() || contact.getIsContact() == 0) {
                 TapChatProfileItemModel menuAddToContact = new TapChatProfileItemModel(
                         MENU_ADD_TO_CONTACTS,
                         getString(R.string.tap_add_to_contacts),
@@ -487,7 +500,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 menuItems.add(menuRemoveMember);
             }
         }
-
         return menuItems;
     }
 
@@ -544,7 +556,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void addToContacts() {
-        TAPDataManager.getInstance().addContactApi(vm.getGroupMemberUser().getUserID(), addContactView);
+        if (vm.isGroupMemberProfile()) {
+            TAPDataManager.getInstance().addContactApi(vm.getGroupMemberUser().getUserID(), addContactView);
+        } else if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
+            TAPDataManager.getInstance().addContactApi(TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID()), addContactView);
+        }
     }
 
     private void openChatRoom(TAPUserModel userModel) {
@@ -906,12 +922,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPGetUserResponse> getUserView = new TAPDefaultDataView<TAPGetUserResponse>() {
         @Override
         public void onSuccess(TAPGetUserResponse response) {
-            glide.load(response.getUser().getAvatarURL().getFullsize())
-                    .apply(new RequestOptions().placeholder(ivProfile.getDrawable()))
-                    .into(ivProfile);
-            String name = response.getUser().getName();
-            tvFullName.setText(name);
-            tvCollapsedName.setText(name);
+            TAPUserModel user = response.getUser();
+            TAPContactManager.getInstance().updateUserData(user);
+            vm.getRoom().setRoomImage(user.getAvatarURL());
+            vm.getRoom().setRoomName(user.getName());
+            updateView();
         }
     };
 
@@ -972,10 +987,12 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPAddContactResponse response) {
             TAPUserModel newContact = response.getUser().setUserAsContact();
-            TAPDataManager.getInstance().insertMyContactToDatabase(new TAPDatabaseListener<TAPUserModel>() {
-            }, newContact);
+            //TAPDataManager.getInstance().insertMyContactToDatabase(new TAPDatabaseListener<TAPUserModel>() {
+            //}, newContact);
+            Log.e(TAG, "onSuccess: " + newContact.getUserID() + " " + newContact.getIsContact());
             TAPContactManager.getInstance().updateUserData(newContact);
             hideLoadingPopup(getString(R.string.tap_added_contact));
+            updateView();
         }
 
         @Override

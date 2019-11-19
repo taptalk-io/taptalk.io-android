@@ -2088,8 +2088,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         // Load room avatar
                         if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
-                        } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType() &&
-                                null != vm.getOtherUserModel().getAvatarURL().getThumbnail() && !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
+                        } else if (null != vm.getRoom() &&
+                                TYPE_PERSONAL == vm.getRoom().getRoomType() &&
+                                null != vm.getOtherUserModel() &&
+                                null != vm.getOtherUserModel().getAvatarURL().getThumbnail() &&
+                                !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                         } else {
                             loadInitialsToProfilePicture(civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
