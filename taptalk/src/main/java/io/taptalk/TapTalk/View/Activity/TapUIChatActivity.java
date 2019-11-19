@@ -31,7 +31,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -119,6 +118,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
@@ -157,7 +157,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
@@ -340,80 +341,86 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        switch (resultCode) {
-            case RESULT_OK:
-                // Set active room to prevent null pointer when returning to chat
-                TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
-                switch (requestCode) {
-                    case SEND_IMAGE_FROM_CAMERA:
-                        if (null == vm.getCameraImageUri()) {
-                            return;
+        if (resultCode == RESULT_OK) {
+            // Set active room to prevent null pointer when returning to chat
+            TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
+            switch (requestCode) {
+                case SEND_IMAGE_FROM_CAMERA:
+                    if (null == vm.getCameraImageUri()) {
+                        return;
+                    }
+                    ArrayList<TAPMediaPreviewModel> imageCameraUris = new ArrayList<>();
+                    imageCameraUris.add(TAPMediaPreviewModel.Builder(vm.getCameraImageUri(), TYPE_IMAGE, true));
+                    openMediaPreviewPage(imageCameraUris);
+                    break;
+                case SEND_MEDIA_FROM_GALLERY:
+                    if (null == intent) {
+                        return;
+                    }
+                    ArrayList<TAPMediaPreviewModel> galleryMediaPreviews = new ArrayList<>();
+                    ClipData clipData = intent.getClipData();
+                    if (null != clipData) {
+                        // Multiple media selection
+                        galleryMediaPreviews = TAPUtils.getInstance().getPreviewsFromClipData(TapUIChatActivity.this, clipData, true);
+                    } else {
+                        // Single media selection
+                        Uri uri = intent.getData();
+                        galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TapUIChatActivity.this, uri), true));
+                    }
+                    openMediaPreviewPage(galleryMediaPreviews);
+                    break;
+                case SEND_MEDIA_FROM_PREVIEW:
+                    ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);
+                    if (null != medias && 0 < medias.size()) {
+                        TAPChatManager.getInstance().sendImageOrVideoMessage(TapTalk.appContext, vm.getRoom(), medias);
+                    }
+                    break;
+                case FORWARD_MESSAGE:
+                    TAPRoomModel room = intent.getParcelableExtra(ROOM);
+                    if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
+                        // Show message in composer
+                        showQuoteLayout(intent.getParcelableExtra(MESSAGE), FORWARD, false);
+                    } else {
+                        // Open selected chat room
+                        TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE), FORWARD);
+                        TAPUtils.getInstance().startChatActivity(TapUIChatActivity.this, room);
+                        finish();
+                    }
+                    break;
+                case PICK_LOCATION:
+                    String address = intent.getStringExtra(LOCATION_NAME) == null ? "" : intent.getStringExtra(LOCATION_NAME);
+                    Double latitude = intent.getDoubleExtra(LATITUDE, 0.0);
+                    Double longitude = intent.getDoubleExtra(LONGITUDE, 0.0);
+                    TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
+                    break;
+                case SEND_FILE:
+                    File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
+                    if (null != tempFile) {
+                        if (TAPFileUploadManager.getInstance().isSizeAllowedForUpload(tempFile.length()))
+                            TAPChatManager.getInstance().sendFileMessage(TapUIChatActivity.this, tempFile);
+                        else {
+                            new TapTalkDialog.Builder(TapUIChatActivity.this)
+                                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                                    .setTitle("Sorry")
+                                    .setMessage("Maximum file size is " + TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize()) + ".")
+                                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                                    .show();
                         }
-                        ArrayList<TAPMediaPreviewModel> imageCameraUris = new ArrayList<>();
-                        imageCameraUris.add(TAPMediaPreviewModel.Builder(vm.getCameraImageUri(), TYPE_IMAGE, true));
-                        openMediaPreviewPage(imageCameraUris);
-                        break;
-                    case SEND_MEDIA_FROM_GALLERY:
-                        if (null == intent) {
-                            return;
-                        }
-                        ArrayList<TAPMediaPreviewModel> galleryMediaPreviews = new ArrayList<>();
-                        ClipData clipData = intent.getClipData();
-                        if (null != clipData) {
-                            // Multiple media selection
-                            galleryMediaPreviews = TAPUtils.getInstance().getPreviewsFromClipData(TapUIChatActivity.this, clipData, true);
-                        } else {
-                            // Single media selection
-                            Uri uri = intent.getData();
-                            galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(TapUIChatActivity.this, uri), true));
-                        }
-                        openMediaPreviewPage(galleryMediaPreviews);
-                        break;
-                    case SEND_MEDIA_FROM_PREVIEW:
-                        ArrayList<TAPMediaPreviewModel> medias = intent.getParcelableArrayListExtra(MEDIA_PREVIEWS);
-                        if (null != medias && 0 < medias.size()) {
-                            TAPChatManager.getInstance().sendImageOrVideoMessage(TapTalk.appContext, vm.getRoom(), medias);
-                        }
-                        break;
-                    case FORWARD_MESSAGE:
-                        TAPRoomModel room = intent.getParcelableExtra(ROOM);
-                        if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
-                            // Show message in composer
-                            showQuoteLayout(intent.getParcelableExtra(MESSAGE), FORWARD, false);
-                        } else {
-                            // Open selected chat room
-                            TAPChatManager.getInstance().setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE), FORWARD);
-                            TAPUtils.getInstance().startChatActivity(TapUIChatActivity.this, room);
-                            finish();
-                        }
-                        break;
-                    case PICK_LOCATION:
-                        String address = intent.getStringExtra(LOCATION_NAME) == null ? "" : intent.getStringExtra(LOCATION_NAME);
-                        Double latitude = intent.getDoubleExtra(LATITUDE, 0.0);
-                        Double longitude = intent.getDoubleExtra(LONGITUDE, 0.0);
-                        TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
-                        break;
-                    case SEND_FILE:
-                        File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
-                        if (null != tempFile) {
-                            if (TAPFileUploadManager.getInstance().isSizeAllowedForUpload(tempFile.length()))
-                                TAPChatManager.getInstance().sendFileMessage(TapUIChatActivity.this, tempFile);
-                            else {
-                                new TapTalkDialog.Builder(TapUIChatActivity.this)
-                                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                                        .setTitle("Sorry")
-                                        .setMessage("Maximum file size is " + TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize()) + ".")
-                                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                                        .show();
-                            }
-                        }
-                        break;
+                    }
+                    break;
 
-                    case OPEN_PROFILE:
-                        deleteGroup = true;
+                case OPEN_GROUP_PROFILE:
+                    deleteGroup = true;
+                    rvCustomKeyboard.setVisibility(View.GONE);
+                    onBackPressed();
+                    break;
+                case OPEN_MEMBER_PROFILE:
+                    if (intent.getBooleanExtra(CLOSE_ACTIVITY, false)) {
+                        rvCustomKeyboard.setVisibility(View.GONE);
                         onBackPressed();
-                        break;
-                }
+                    }
+                    break;
+            }
         }
     }
 
@@ -779,6 +786,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void openRoomProfile() {
         TAPChatManager.getInstance().triggerChatRoomProfileButtonTapped(TapUIChatActivity.this, vm.getRoom(), vm.getOtherUserModel());
+        hideUnreadButton();
+    }
+
+    private void openGroupMemberProfile(TAPUserModel groupMember) {
+        TAPChatManager.getInstance().triggerChatRoomProfileButtonTapped(TapUIChatActivity.this, vm.getRoom(), groupMember);
         hideUnreadButton();
     }
 
@@ -1569,6 +1581,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                             message.getForwardFrom().getFullname().isEmpty())) {
                 scrollToMessage(message.getReplyTo().getLocalID());
             }
+        }
+
+        @Override
+        public void onGroupMemberAvatarClicked(TAPMessageModel message) {
+            openGroupMemberProfile(message.getUser());
         }
 
         @Override

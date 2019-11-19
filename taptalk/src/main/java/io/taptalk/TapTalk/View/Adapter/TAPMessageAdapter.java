@@ -1577,11 +1577,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         if (null == activity) {
                             return;
                         }
-                        Intent intent = new Intent(activity, TAPChatProfileActivity.class);
-                        intent.putExtra(ROOM, item.getRoom());
-                        intent.putExtra(K_USER, item.getUser());
-                        activity.startActivity(intent);
-                        activity.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+                        chatListener.onGroupMemberAvatarClicked(item);
                     });
                 }
             } else {
