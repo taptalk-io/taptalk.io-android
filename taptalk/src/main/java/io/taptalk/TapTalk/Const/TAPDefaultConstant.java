@@ -400,8 +400,11 @@ public class TAPDefaultConstant {
     public static final String K_FILE_URI_MAP = "kTAPFileUriMap";
     public static final String K_FILE_PATH_MAP = "kTAPFilePathMap";
     public static final String K_MEDIA_VOLUME = "kTAPMediaVolume";
+    public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
+    public static final String IS_CONTACT_SYNC_ALLOWED_BY_USER = "kTAPIsContactSyncAllowedByUser";
+    public static final String K_CHAT_ROOM_CONTACT_ACTION = "kTAPChatRoomContactAction";
+
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
-    public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
     public static final String DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE = "26214400";
     public static final String DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE = "10485760";
@@ -438,7 +441,4 @@ public class TAPDefaultConstant {
     public static final String MY_COUNTRY_FLAG_URL = "kMyCountryFlagUrl";
     public static final String UNREAD_INDICATOR_LOCAL_ID = "kTAPUnreadIndicatorLocalIdentity";
     public static final String LOADING_INDICATOR_LOCAL_ID = "kTAPFetchingOlderMessagesLocalID";
-
-    public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
-    public static final String IS_CONTACT_SYNC_ALLOWED_BY_USER = "kTAPIsContactSyncAllowedByUser";
 }

@@ -91,6 +91,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -794,13 +795,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void addUserToContacts() {
-        // TODO: 19 November 2019 CALL ADD CONTACT API
         clContactAction.setVisibility(View.GONE);
+        TAPDataManager.getInstance().addContactApi(vm.getOtherUserID(), addContactView);
     }
 
     private void dismissContactAction() {
-        // TODO: 19 November 2019 UPDATE PREFERENCE
         clContactAction.setVisibility(View.GONE);
+        TAPDataManager.getInstance().saveChatRoomContactActionDismissed(vm.getRoom().getRoomID());
     }
 
     private void cancelNotificationWhenEnterRoom() {
@@ -1327,7 +1328,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                             initRoom();
                         }
 
-                        // TODO: 19 November 2019 SHOW CONTACT ACTION
+                        if (!TAPDataManager.getInstance().isChatRoomContactActionDismissed(vm.getRoom().getRoomID()) &&
+                                (null == vm.getOtherUserModel().getIsContact() || vm.getOtherUserModel().getIsContact() == 0)) {
+                            clContactAction.setVisibility(View.VISIBLE);
+                        } else {
+                            clContactAction.setVisibility(View.GONE);
+                        }
                     }
 
                     @Override
@@ -2772,6 +2778,14 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         @Override
         public void onError(Throwable throwable) {
             hideLoadingOlderMessagesIndicator();
+        }
+    };
+
+    private TAPDefaultDataView<TAPAddContactResponse> addContactView = new TAPDefaultDataView<TAPAddContactResponse>() {
+        @Override
+        public void onSuccess(TAPAddContactResponse response) {
+            TAPUserModel newContact = response.getUser().setUserAsContact();
+            TAPContactManager.getInstance().updateUserData(newContact);
         }
     };
 

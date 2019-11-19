@@ -989,7 +989,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPUserModel newContact = response.getUser().setUserAsContact();
             //TAPDataManager.getInstance().insertMyContactToDatabase(new TAPDatabaseListener<TAPUserModel>() {
             //}, newContact);
-            Log.e(TAG, "onSuccess: " + newContact.getUserID() + " " + newContact.getIsContact());
             TAPContactManager.getInstance().updateUserData(newContact);
             hideLoadingPopup(getString(R.string.tap_added_contact));
             updateView();

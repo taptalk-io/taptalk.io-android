@@ -66,6 +66,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASK
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_CHAT_ROOM_CONTACT_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
@@ -205,6 +206,7 @@ public class TAPDataManager {
         removeMyCountryFlagUrl();
         removeContactSyncPermissionAsked();
         removeContactSyncAllowedByUser();
+        removeChatRoomContactActionDismissed();
     }
 
     /**
@@ -459,6 +461,29 @@ public class TAPDataManager {
 
     public void removeContactSyncAllowedByUser() {
         removePreference(IS_CONTACT_SYNC_ALLOWED_BY_USER);
+    }
+
+    /**
+     * CHAT ROOM CONTACT ACTION
+     */
+
+    private HashMap<String, Boolean> getChatRoomContactActionsMap() {
+        return Hawk.get(K_CHAT_ROOM_CONTACT_ACTION, new HashMap<>());
+    }
+
+    public boolean isChatRoomContactActionDismissed(String roomID) {
+        Boolean isDismissed = getChatRoomContactActionsMap().get(roomID);
+        return null == isDismissed ? false : isDismissed;
+    }
+
+    public void saveChatRoomContactActionDismissed(String roomID) {
+        HashMap<String, Boolean> map = getChatRoomContactActionsMap();
+        map.put(roomID, true);
+        Hawk.put(K_CHAT_ROOM_CONTACT_ACTION, map);
+    }
+
+    public void removeChatRoomContactActionDismissed() {
+        removePreference(K_CHAT_ROOM_CONTACT_ACTION);
     }
 
     /**
