@@ -1162,6 +1162,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void openAttachMenu() {
+        if (!etChat.hasFocus()) {
+            etChat.requestFocus();
+        }
         TAPUtils.getInstance().dismissKeyboard(this);
         TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
