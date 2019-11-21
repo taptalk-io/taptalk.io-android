@@ -219,7 +219,7 @@ public class TAPApiManager {
     }
 
     public void getAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
-        execute(homingPigeon.getAccessToken(), subscriber);
+        execute(homingPigeon.getAccessToken("Bearer " + TAPDataManager.getInstance().getAuthTicket()), subscriber);
     }
 
     public void requestOTPLogin(String loginMethod, int countryID, String phone, Subscriber<TAPBaseResponse<TAPLoginOTPResponse>> subscriber) {
@@ -233,7 +233,7 @@ public class TAPApiManager {
     }
 
     public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
-        return hpRefresh.refreshAccessToken()
+        return hpRefresh.refreshAccessToken(TAPDataManager.getInstance().getRefreshToken())
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
                     if (RESPONSE_SUCCESS == response.getStatus()) {
@@ -253,7 +253,7 @@ public class TAPApiManager {
     }
 
     public void refreshAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
-        execute(hpRefresh.refreshAccessToken(), subscriber);
+        execute(hpRefresh.refreshAccessToken(TAPDataManager.getInstance().getRefreshToken()), subscriber);
     }
 
     public void validateAccessToken(Subscriber<TAPBaseResponse<TAPErrorModel>> subscriber) {

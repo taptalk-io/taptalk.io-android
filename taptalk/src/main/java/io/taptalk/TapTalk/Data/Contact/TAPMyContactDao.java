@@ -41,8 +41,11 @@ public interface TAPMyContactDao {
     @Query("select * from MyContact where isContact = 1 and deleted is null or deleted = 0 order by name, userID collate nocase asc")
     LiveData<List<TAPUserModel>> getAllMyContactLive();
 
+    @Query("select * from MyContact where name like :keyword escape '\\' and isContact = 1 and deleted is null or deleted = 0 order by name, userID asc")
+    List<TAPUserModel> searchContactsByName(String keyword);
+
     @Query("select * from MyContact where (name like :keyword escape '\\' or username like :keyword escape '\\') and isContact = 1 and deleted is null or deleted = 0 order by name, userID asc")
-    List<TAPUserModel> searchAllMyContacts(String keyword);
+    List<TAPUserModel> searchContactsByNameAndUsername(String keyword);
 
     @Query("select * from MyContact where (name like :keyword escape '\\' or username like :keyword escape '\\') and isContact = 0 and deleted is null or deleted = 0 order by name, userID asc")
     List<TAPUserModel> searchNonContactUsers(String keyword);

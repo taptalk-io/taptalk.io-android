@@ -199,7 +199,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                         val intent = Intent()
                         intent.putExtra(CLOSE_ACTIVITY, true)
                         setResult(Activity.RESULT_OK, intent)
-                        onBackPressed()
+                        if (groupViewModel?.isUpdateMember == true) {
+                            intent.putExtra(ROOM, groupViewModel?.groupData)
+                        }
+                        finish()
+                        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
                     }
                 }
             }

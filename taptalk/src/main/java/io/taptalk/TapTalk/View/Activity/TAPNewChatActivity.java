@@ -265,7 +265,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         vm.getAdapterItems().clear();
         for (TapContactListModel contact : vm.getSeparatedContactList()) {
             TAPUserModel user = contact.getUser();
-            if (null != user && (user.getName().toLowerCase().contains(searchKeyword)/* || (null != user.getUsername() && user.getUsername().contains(searchKeyword))*/)) {
+            if (null != user && (user.getName().toLowerCase().contains(searchKeyword) ||
+                    (null != user.getUsername() && user.getUsername().contains(searchKeyword)))) {
                 vm.getAdapterItems().add(contact);
             }
         }

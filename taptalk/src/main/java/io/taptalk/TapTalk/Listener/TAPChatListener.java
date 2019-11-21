@@ -24,6 +24,7 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     @Override public void onReceiveStartTyping(TAPTypingModel typingModel) {}
     @Override public void onReceiveStopTyping(TAPTypingModel typingModel) {}
     @Override public void onMessageQuoteClicked(TAPMessageModel message) {}
+    @Override public void onGroupMemberAvatarClicked(TAPMessageModel message) {}
     @Override public void onOutsideClicked() {}
     @Override public void onBubbleExpanded() {}
     @Override public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {}

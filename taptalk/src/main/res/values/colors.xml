@@ -37,6 +37,7 @@
     <color name="tapButtonActiveBorderColor">@color/tapColorPrimary</color>
     <color name="tapButtonDestructiveBackgroundColor">@color/tapColorError</color>
     <color name="tapButtonIconColor">@color/tapColorTextLight</color>
+    <color name="tapButtonIconPrimaryColor">@color/tapColorPrimary</color>
     <color name="tapButtonIconDestructiveColor">@color/tapColorError</color>
 
     <color name="tapSwitchActiveBackgroundColor">@color/tapColorPrimary</color>

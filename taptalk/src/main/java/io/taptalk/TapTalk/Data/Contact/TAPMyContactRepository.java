@@ -98,13 +98,24 @@ public class TAPMyContactRepository {
         return myContactListLive;
     }
 
-    public void searchAllMyContacts(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+    public void searchContactsByName(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
         new Thread(() -> {
             String queryKeyword = '%' + keyword
                     .replace("\\", "\\\\")
                     .replace("%", "\\%")
                     .replace("_", "\\_") + '%';
-            List<TAPUserModel> myContactList = myContactDao.searchAllMyContacts(queryKeyword);
+            List<TAPUserModel> myContactList = myContactDao.searchContactsByName(queryKeyword);
+            listener.onSelectFinished(myContactList);
+        }).start();
+    }
+
+    public void searchContactsByNameAndUsername(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        new Thread(() -> {
+            String queryKeyword = '%' + keyword
+                    .replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_") + '%';
+            List<TAPUserModel> myContactList = myContactDao.searchContactsByNameAndUsername(queryKeyword);
             listener.onSelectFinished(myContactList);
         }).start();
     }
