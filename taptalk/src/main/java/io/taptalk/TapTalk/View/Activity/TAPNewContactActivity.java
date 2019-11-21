@@ -265,7 +265,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         // Set cover image
         // TODO: 25 October 2018 CHECK AND LOAD COVER IMAGE
-        ivExpertCover.setImageDrawable(getDrawable(R.drawable.moselo_default_cover));
+        //ivExpertCover.setImageDrawable(getDrawable(R.drawable.moselo_default_cover));
         ivExpertCover.setBackground(null);
 
         tvFullName.setText(vm.getSearchResult().getName());

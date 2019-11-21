@@ -46,7 +46,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
     private VideoView videoView;
     private TextView tvCurrentTime, tvCurrentTimeDummy, tvDuration, tvDurationDummy, tvLoadingText;
     private ImageView ivButtonClose, ivButtonSave, ivButtonMute, ivButtonPlayPause, ivSaving;
-    private SeekBar seekBar;
+    private SeekBar seekBar; // TODO: 21 November 2019 STYLE SEEK BAR FOR API BELOW 21
 
     private TAPVideoPlayerViewModel vm;
 

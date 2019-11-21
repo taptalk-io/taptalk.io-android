@@ -153,6 +153,7 @@
                     android:id="@+id/iv_edit_group_picture_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/tap_ic_edit_orange"
                     android:tint="@color/tapIconChangePicture" />
@@ -164,6 +165,7 @@
                 style="@style/tapFormLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:text="@string/tap_group_name"
@@ -207,6 +209,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
+                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     app:layout_constraintStart_toStartOf="parent"

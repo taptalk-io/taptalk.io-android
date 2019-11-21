@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
@@ -122,6 +121,7 @@
                 style="@style/tapPopupLoadingLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 android:gravity="end"
                 android:text="@string/tap_loading_members" />
@@ -164,6 +164,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginLeft="4dp"
                 android:layout_marginStart="4dp"
                 android:lineSpacingExtra="6sp"
                 android:text="@string/tap_add_members" />
@@ -200,6 +201,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginLeft="4dp"
                     android:layout_marginStart="4dp"
                     android:text="@string/tap_promote_admin" />
 
@@ -226,6 +228,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginLeft="4dp"
                     android:layout_marginStart="4dp"
                     android:text="@string/tap_remove_group_member" />
 
