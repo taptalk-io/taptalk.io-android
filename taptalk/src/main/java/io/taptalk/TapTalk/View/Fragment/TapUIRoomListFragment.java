@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -338,8 +339,11 @@ public class TapUIRoomListFragment extends Fragment {
         //ivButtonMute.setOnClickListener(v -> {});
         //ivButtonDelete.setOnClickListener(v -> {});
         //ivButtonMore.setOnClickListener(v -> {});
-        flSetupContainer.setOnClickListener(v -> {
-        });
+        flSetupContainer.setOnClickListener(v -> {});
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != getContext()) {
+            ivButtonNewChat.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_start_new_chat_button_ripple));
+        }
     }
 
     private void reloadProfilePicture() {

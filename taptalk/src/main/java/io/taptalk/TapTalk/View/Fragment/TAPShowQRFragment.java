@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Fragment;
 
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -68,9 +69,12 @@ public class TAPShowQRFragment extends Fragment {
                 ((TAPBarcodeScannerActivity) getActivity()).showScanner();
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e("<>><><", "onViewCreated: ",e );
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != getContext()) {
+            btnScanQRCode.setBackground(getContext().getDrawable(R.drawable.tap_bg_button_active_ripple));
+        }
     }
 
     Bitmap encodeAsBitmap(String str) throws WriterException {

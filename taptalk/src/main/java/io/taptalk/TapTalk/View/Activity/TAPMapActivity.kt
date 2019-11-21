@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.location.*
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.app.ActivityCompat
@@ -276,6 +277,10 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         recycler_view.adapter = adapter
         if (TAPUtils.getInstance().hasPermissions(this, PERMISSIONS[0])) {
             getLocation()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            iv_current_location.background = getDrawable(R.drawable.tap_bg_recenter_location_button_ripple)
         }
     }
 

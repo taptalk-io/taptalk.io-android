@@ -199,7 +199,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
                 android:layout_margin="16dp"
-                android:background="@drawable/tap_bg_button_active_ripple"
+                android:background="@drawable/tap_bg_button_active"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

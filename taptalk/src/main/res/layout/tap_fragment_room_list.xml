@@ -253,7 +253,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/tap_bg_start_new_chat_button_ripple"
+        android:background="@drawable/tap_bg_start_new_chat_button"
         android:elevation="8dp"
         android:padding="16dp"
         android:src="@drawable/tap_ic_pencil_chat"

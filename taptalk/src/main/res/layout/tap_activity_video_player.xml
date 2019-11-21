@@ -81,7 +81,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/tap_bg_b3474747_rounded_16dp"
+        android:background="@drawable/tap_bg_video_player_seekbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/iv_button_mute"
         app:layout_constraintStart_toStartOf="parent">

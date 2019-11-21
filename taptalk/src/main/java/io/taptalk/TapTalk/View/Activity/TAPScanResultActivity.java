@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -106,6 +107,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         } else if (null != scanResult) {
             scanResult = scanResult.replace("id:", "");
             setUpFromScanQR();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            llButton.setBackground(getDrawable(R.drawable.tap_bg_scan_result_button_ripple));
         }
     }
 

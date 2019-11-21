@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
@@ -181,6 +182,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 TAPUtils.getInstance().dismissKeyboard(TAPNewChatActivity.this);
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            llButtonSync.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
+        }
     }
 
     private void setupMenuButtons() {

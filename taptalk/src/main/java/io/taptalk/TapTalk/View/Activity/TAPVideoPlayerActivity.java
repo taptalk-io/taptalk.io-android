@@ -7,11 +7,13 @@ import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -137,6 +139,12 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         }
 
         seekBar.setOnSeekBarChangeListener(seekBarListener);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonClose.setBackground(getDrawable(R.drawable.tap_bg_video_player_button_ripple));
+            ivButtonSave.setBackground(getDrawable(R.drawable.tap_bg_video_player_button_ripple));
+            ivButtonMute.setBackground(getDrawable(R.drawable.tap_bg_video_player_button_ripple));
+        }
     }
 
     private void updateVideoViewParams() {
@@ -262,11 +270,11 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         if (vm.getMediaVolume() > 0f) {
             // Mute video
             vm.setMediaVolume(0f);
-            ivButtonMute.setImageDrawable(getDrawable(R.drawable.tap_ic_volume_off));
+            ivButtonMute.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_volume_off));
         } else {
             // Turn sound on
             vm.setMediaVolume(1f);
-            ivButtonMute.setImageDrawable(getDrawable(R.drawable.tap_ic_volume_on));
+            ivButtonMute.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_volume_on));
         }
         vm.getMediaPlayer().setVolume(vm.getMediaVolume(), vm.getMediaVolume());
     }
@@ -283,14 +291,14 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         vm.setVideoPlaying(false);
         vm.setPausedPosition(vm.getMediaPlayer().getCurrentPosition());
         vm.getMediaPlayer().pause();
-        ivButtonPlayPause.setImageDrawable(getDrawable(R.drawable.tap_ic_button_play));
+        ivButtonPlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_button_play));
         stopProgressTimer();
     }
 
     private void resumeVideo() {
         vm.setVideoPlaying(true);
         vm.getMediaPlayer().seekTo(vm.getPausedPosition());
-        ivButtonPlayPause.setImageDrawable(getDrawable(R.drawable.tap_ic_button_pause));
+        ivButtonPlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_button_pause));
     }
 
     private void saveVideo() {
@@ -308,7 +316,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
 
     private void showLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }
@@ -320,7 +328,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
 
     private void endLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
             tvLoadingText.setText(getString(R.string.tap_video_saved));
             flLoading.setOnClickListener(v -> hideLoading());
@@ -348,7 +356,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
                 vm.setVideoPlaying(true);
                 TAPVideoPlayerActivity.this.startProgressTimer();
                 vm.setMediaVolume(TAPDataManager.getInstance().getMediaVolumePreference());
-                ivButtonMute.setImageDrawable(vm.getMediaVolume() > 0f ? TAPVideoPlayerActivity.this.getDrawable(R.drawable.tap_ic_volume_on) : TAPVideoPlayerActivity.this.getDrawable(R.drawable.tap_ic_volume_off));
+                ivButtonMute.setImageDrawable(vm.getMediaVolume() > 0f ? ContextCompat.getDrawable(TAPVideoPlayerActivity.this, R.drawable.tap_ic_volume_on) : ContextCompat.getDrawable(TAPVideoPlayerActivity.this, R.drawable.tap_ic_volume_off));
                 tvDuration.setText(TAPUtils.getInstance().getMediaDurationString(vm.getDuration(), vm.getDuration()));
                 vm.setFirstLoadFinished(true);
             }

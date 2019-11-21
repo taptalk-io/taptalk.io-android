@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -234,7 +236,11 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             tvTitle.setText(R.string.tap_group_subject);
             ivButtonClose.setVisibility(View.INVISIBLE);
             flButtonUpdateGroup.setVisibility(View.GONE);
-            flButtonCreateGroup.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
+            } else {
+                flButtonCreateGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive_ripple));
+            }
             etGroupName.addTextChangedListener(createGroupNameWatcher);
 
             adapter = new TapSelectedGroupMemberAdapter(vm.getAdapterItems());
@@ -258,6 +264,11 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         civGroupImage.setOnClickListener(v -> showProfilePicturePickerBottomSheet());
         llChangeGroupPicture.setOnClickListener(v -> showProfilePicturePickerBottomSheet());
         flRemoveGroupPicture.setOnClickListener(v -> removeGroupPicture());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
+            flButtonUpdateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
+        }
     }
 
     private void loadGroupImage() {
@@ -311,9 +322,17 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
     private void checkEditButtonAvailable() {
         if ((!vm.isGroupPictureChanged() && !vm.isGroupNameChanged()) || etGroupName.getText().toString().trim().length() == 0) {
-            flButtonUpdateGroup.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                flButtonUpdateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
+            } else {
+                flButtonUpdateGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive));
+            }
         } else {
-            flButtonUpdateGroup.setBackgroundResource(R.drawable.tap_bg_button_active_ripple);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                flButtonUpdateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
+            } else {
+                flButtonUpdateGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active));
+            }
         }
     }
 
@@ -429,10 +448,18 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.length() > 0 && s.toString().trim().length() > 0) {
-                flButtonCreateGroup.setBackgroundResource(R.drawable.tap_bg_button_active_ripple);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
+                } else {
+                    flButtonCreateGroup.setBackground(ContextCompat.getDrawable(TAPEditGroupSubjectActivity.this, R.drawable.tap_bg_button_active));
+                }
                 vm.getGroupData().setRoomName(s.toString());
             } else {
-                flButtonCreateGroup.setBackgroundResource(R.drawable.tap_bg_button_inactive_ripple);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
+                } else {
+                    flButtonCreateGroup.setBackground(ContextCompat.getDrawable(TAPEditGroupSubjectActivity.this, R.drawable.tap_bg_button_inactive));
+                }
                 vm.getGroupData().setRoomName("");
             }
         }

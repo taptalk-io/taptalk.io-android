@@ -3,8 +3,10 @@ package io.moselo.SampleApps.Fragment
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -97,12 +99,20 @@ class TAPPhoneLoginFragment : Fragment() {
                 val textCount = /*s?.length ?: 0*/ checkAndEditPhoneNumber().length + defaultCallingCode.length
                 when (textCount) {
                     in 7..15 -> {
-                        fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_button_active_ripple)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_active_ripple)
+                        } else {
+                            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_active)
+                        }
                         fl_continue_btn.setOnClickListener { attemptLogin() }
                         fl_continue_btn.isClickable = true
                     }
                     else -> {
-                        fl_continue_btn.background = resources.getDrawable(R.drawable.tap_bg_button_inactive_ripple)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_inactive_ripple)
+                        } else {
+                            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_inactive)
+                        }
                         fl_continue_btn.setOnClickListener(null)
                         fl_continue_btn.isClickable = false
                     }

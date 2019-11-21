@@ -153,7 +153,7 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_margin="16dp"
-            android:background="@drawable/tap_bg_recenter_location_button_ripple"
+            android:background="@drawable/tap_bg_recenter_location_button"
             android:padding="16dp"
             android:src="@drawable/tap_ic_current_location"
             android:tint="@color/tapIconLocationPickerRecenter"

@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -310,6 +311,10 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            flButtonContinue.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
+        }
     }
 
     private void showToolbar() {

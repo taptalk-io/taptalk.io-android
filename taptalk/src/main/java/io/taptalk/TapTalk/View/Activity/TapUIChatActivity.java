@@ -750,6 +750,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 //        if (null == vm.getRoom().getGroupParticipants()) {
 //            showChatAsHistory(getString(R.string.tap_not_a_participant));
 //        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+            llButtonDeleteChat.setBackground(getDrawable(R.drawable.tap_bg_button_destructive_ripple));
+            ivButtonAttach.setBackground(getDrawable(R.drawable.tap_bg_chat_composer_attachment_ripple));
+            ivToBottom.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
+            clUnreadButton.setBackground(getDrawable(R.drawable.tap_bg_white_rounded_8dp_ripple));
+        }
     }
 
     private void initHelper() {
@@ -1135,7 +1142,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void showNormalKeyboard() {
         rvCustomKeyboard.setVisibility(View.GONE);
-        ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_burger_menu_ripple));
+        } else {
+            ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_burger_menu));
+        }
         ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
         ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
         //etChat.requestFocus();
@@ -1147,7 +1158,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         etChat.clearFocus();
         new Handler().postDelayed(() -> {
             rvCustomKeyboard.setVisibility(View.VISIBLE);
-            ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_show_keyboard_ripple);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_show_keyboard_ripple));
+            } else {
+                ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_show_keyboard));
+            }
             ivChatMenu.setImageResource(R.drawable.tap_ic_keyboard_white);
             ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerShowKeyboard));
         }, 150L);
@@ -1155,7 +1170,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void hideKeyboards() {
         rvCustomKeyboard.setVisibility(View.GONE);
-        ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_burger_menu_ripple));
+        } else {
+            ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_burger_menu));
+        }
         ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
         ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
         TAPUtils.getInstance().dismissKeyboard(this);
@@ -1990,14 +2009,22 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 // Hide chat menu and enable send button when EditText is filled
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
-                ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_ripple));
+                } else {
+                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
+                }
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
             } else if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0) {
                 // Hide chat menu but keep send button disabled if trimmed text is empty
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
-                ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive_ripple);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_inactive_ripple));
+                } else {
+                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
+                }
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
             //} else if (s.length() > 0 && s.toString().trim().length() > 0) {
             //    if (vm.isCustomKeyboardEnabled()) {
@@ -2017,11 +2044,19 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
                 if (vm.getQuoteAction() == FORWARD) {
                     // Enable send button if message to forward exists
-                    ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_ripple));
+                    } else {
+                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
+                    }
                     ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
                 } else {
                     // Disable send button
-                    ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive_ripple);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_inactive_ripple));
+                    } else {
+                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
+                    }
                     ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
                 }
             }

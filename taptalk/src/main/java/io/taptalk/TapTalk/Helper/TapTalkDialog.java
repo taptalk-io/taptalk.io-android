@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.UiThread;
@@ -115,12 +116,25 @@ public class TapTalkDialog extends Dialog {
         Resources res = getContext().getResources();
         switch (dialogType) {
             case ERROR_DIALOG:
-                primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_error_ripple));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                    primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_error_ripple));
+                } else {
+                    primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_error));
+                }
                 break;
             case DEFAULT:
             default:
-                primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_success_ripple));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                    primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_success_ripple));
+                } else {
+                    primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_success));
+                }
                 break;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+            secondary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_secondary_button_ripple));
+        } else {
+            secondary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_secondary_button));
         }
     }
 

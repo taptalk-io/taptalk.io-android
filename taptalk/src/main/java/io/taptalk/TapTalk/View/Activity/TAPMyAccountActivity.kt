@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
@@ -226,6 +227,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tv_label_password.visibility = View.GONE
         cl_password.visibility = View.GONE
         fl_button_update.visibility = View.GONE
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cl_password.background = getDrawable(R.drawable.tap_bg_text_field_inactive_ripple)
+            cl_logout.background = getDrawable(R.drawable.tap_bg_text_field_inactive_ripple)
+        }
     }
 
     private fun registerBroadcastReceiver() {
@@ -373,12 +379,20 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun enableContinueButton() {
-        fl_button_update.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            fl_button_update.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
+        } else {
+            fl_button_update.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active)
+        }
         //fl_button_update.setOnClickListener { register() }
     }
 
     private fun disableContinueButton() {
-        fl_button_update.background = getDrawable(R.drawable.tap_bg_button_inactive)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            fl_button_update.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive_ripple)
+        } else {
+            fl_button_update.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+        }
         fl_button_update.setOnClickListener(null)
     }
 

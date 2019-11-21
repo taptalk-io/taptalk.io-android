@@ -5,10 +5,12 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -113,6 +115,10 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         ivButtonBack.setOnClickListener(v -> onBackPressed());
         ivButtonClearText.setOnClickListener(v -> clearSearch());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
+        }
     }
 
     private void initListener() {
@@ -379,7 +385,11 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         public void onContactCheckFinished(int isContact) {
             // Update action button after contact check finishes
             runOnUiThread(() -> {
-                clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    clButtonAction.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
+                } else {
+                    clButtonAction.setBackground(ContextCompat.getDrawable(TAPNewContactActivity.this, R.drawable.tap_bg_button_active));
+                }
                 TypedArray typedArray = obtainStyledAttributes(R.style.tapButtonLabelStyle, R.styleable.TextAppearance);
                 tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
                 typedArray.recycle();

@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.content.ContextCompat
@@ -390,12 +391,20 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun enableContinueButton() {
-        fl_button_continue.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            fl_button_continue.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
+        } else {
+            fl_button_continue.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active)
+        }
         fl_button_continue.setOnClickListener { register() }
     }
 
     private fun disableContinueButton() {
-        fl_button_continue.background = getDrawable(R.drawable.tap_bg_button_inactive)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            fl_button_continue.background = getDrawable(R.drawable.tap_bg_button_inactive)
+        } else {
+            fl_button_continue.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+        }
         fl_button_continue.setOnClickListener(null)
     }
 

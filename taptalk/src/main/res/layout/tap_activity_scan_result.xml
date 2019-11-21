@@ -216,7 +216,7 @@
                 android:layout_height="54dp"
                 android:alpha="1"
                 android:animateLayoutChanges="true"
-                android:background="@drawable/tap_bg_scan_result_button_ripple"
+                android:background="@drawable/tap_bg_scan_result_button"
                 android:gravity="center"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
