@@ -75,28 +75,28 @@ public class TapCoreMessageManager {
                     @Override
                     public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
                         for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
-                            listener.onReceiveMessageInActiveRoom(message);
+                            listener.onReceiveNewMessage(message);
                         }
                     }
 
                     @Override
                     public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
                         for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
-                            listener.onReceiveMessageInOtherRoom(message);
+                            listener.onReceiveNewMessage(message);
                         }
                     }
 
                     @Override
                     public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
                         for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
-                            listener.onUpdateMessageInActiveRoom(message);
+                            listener.onReceiveUpdatedMessage(message);
                         }
                     }
 
                     @Override
                     public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
                         for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
-                            listener.onUpdateMessageInOtherRoom(message);
+                            listener.onReceiveUpdatedMessage(message);
                         }
                     }
                 };
@@ -279,7 +279,7 @@ public class TapCoreMessageManager {
     }
 
     public void markMessageAsRead(TAPMessageModel message) {
-        TAPMessageStatusManager.getInstance().addReadMessageQueue(message);
+        TAPMessageStatusManager.getInstance().addReadMessageQueue(message.getMessageID());
     }
 
     public void getOlderMessagesBeforeTimestamp(String roomID, long maxCreatedTimestamp, int numberOfItems, TapCoreGetOlderMessageListener listener) {

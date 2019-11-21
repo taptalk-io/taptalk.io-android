@@ -39,10 +39,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
@@ -376,19 +378,21 @@ public class TapUI {
             intent.putExtra(ROOM, room);
             if (room.getRoomType() == TYPE_PERSONAL) {
                 contextWeakReference.get().startActivity(intent);
+            } else if (room.getRoomType() == TYPE_GROUP && null != user) {
+                intent.putExtra(K_USER, user);
+                contextWeakReference.get().startActivityForResult(intent, OPEN_MEMBER_PROFILE);
             } else if (room.getRoomType() == TYPE_GROUP) {
-                contextWeakReference.get().startActivityForResult(intent, OPEN_PROFILE);
+                contextWeakReference.get().startActivityForResult(intent, OPEN_GROUP_PROFILE);
             }
             contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
         } else {
             for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-                switch (room.getRoomType()) {
-                    case TYPE_PERSONAL:
-                        listener.onTapTalkUserProfileButtonTapped(activity, room, user);
-                        break;
-                    case TYPE_GROUP:
-                        listener.onTapTalkGroupChatProfileButtonTapped(activity, room);
-                        break;
+                if (room.getRoomType() == TYPE_PERSONAL) {
+                    listener.onTapTalkUserProfileButtonTapped(activity, room, user);
+                } else if (room.getRoomType() == TYPE_GROUP && null != user) {
+                    listener.onTapTalkGroupMemberAvatarTapped(activity, room, user);
+                } else if (room.getRoomType() == TYPE_GROUP) {
+                    listener.onTapTalkGroupChatProfileButtonTapped(activity, room);
                 }
             }
         }

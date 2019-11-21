@@ -3,24 +3,37 @@ package io.taptalk.TapTalk.Model;
 import java.util.LinkedHashMap;
 
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPRoomListModel {
     private TAPMessageModel lastMessage;
     private String lastMessageTimestamp;
-    private int unreadCount;
     private LinkedHashMap<String, TAPUserModel> typingUsers;
+    private int unreadCount;
+    private int defaultAvatarBackgroundColor; // Save default color in model to prevent lag on bind
 
     public TAPRoomListModel(TAPMessageModel lastMessage, int unreadCount) {
         this.lastMessage = lastMessage;
         this.unreadCount = unreadCount;
         this.lastMessageTimestamp = TAPTimeFormatter.getInstance().durationString(lastMessage.getCreated());
+
+        TAPRoomModel room = lastMessage.getRoom();
+        if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
+            defaultAvatarBackgroundColor = TAPUtils.getInstance().getRandomColor(room.getRoomName());
+        }
     }
 
     public static TAPRoomListModel buildWithLastMessage(TAPMessageModel lastMessage) {
-        TAPRoomListModel roomModel = new TAPRoomListModel();
-        roomModel.setLastMessage(lastMessage);
-        roomModel.setLastMessageTimestamp(TAPTimeFormatter.getInstance().durationString(lastMessage.getCreated()));
-        return roomModel;
+        TAPRoomListModel roomListModel = new TAPRoomListModel();
+        roomListModel.setLastMessage(lastMessage);
+        roomListModel.setLastMessageTimestamp(TAPTimeFormatter.getInstance().durationString(lastMessage.getCreated()));
+
+        TAPRoomModel room = lastMessage.getRoom();
+        if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
+            roomListModel.setDefaultAvatarBackgroundColor(TAPUtils.getInstance().getRandomColor(room.getRoomName()));
+        }
+
+        return roomListModel;
     }
 
     public TAPRoomListModel() {
@@ -52,6 +65,14 @@ public class TAPRoomListModel {
 
     public void setUnreadCount(int unreadCount) {
         this.unreadCount = unreadCount;
+    }
+
+    public int getDefaultAvatarBackgroundColor() {
+        return defaultAvatarBackgroundColor;
+    }
+
+    public void setDefaultAvatarBackgroundColor(int defaultAvatarBackgroundColor) {
+        this.defaultAvatarBackgroundColor = defaultAvatarBackgroundColor;
     }
 
     public LinkedHashMap<String, TAPUserModel> getTypingUsers() {
