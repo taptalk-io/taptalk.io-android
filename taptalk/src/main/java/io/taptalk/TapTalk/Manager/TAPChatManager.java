@@ -860,7 +860,6 @@ public class TAPChatManager {
 
         // Build message model
         TAPMessageModel messageModel;
-        Log.e(TAG, "createImageMessageModel: " + activeRoom.getRoomType());
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
                     generateImageCaption(caption),
@@ -895,7 +894,6 @@ public class TAPChatManager {
 
         // Build message model
         TAPMessageModel messageModel;
-        Log.e(TAG, "createImageMessageModel: " + roomModel.getRoomType());
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
                     generateImageCaption(caption),
@@ -986,9 +984,12 @@ public class TAPChatManager {
         // Get video data
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(context, fileUri);
-        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        String rotation = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        }
         int width, height;
-        if (rotation.equals("90") || rotation.equals("270")) {
+        if (null != rotation && (rotation.equals("90") || rotation.equals("270"))) {
             // Swap width and height when video is rotated
             width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
             height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
@@ -1169,8 +1170,6 @@ public class TAPChatManager {
         if (null == imageMessage.getData()) {
             return imageMessage;
         }
-        Log.e(TAG, "Height: " + bitmap.getHeight());
-        Log.e(TAG, "Width: " + bitmap.getWidth());
         TAPDataImageModel imageData = new TAPDataImageModel(imageMessage.getData());
         imageData.setWidth(bitmap.getWidth());
         imageData.setHeight(bitmap.getHeight());
