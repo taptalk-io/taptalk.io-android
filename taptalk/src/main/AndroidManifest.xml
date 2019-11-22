@@ -41,8 +41,6 @@
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberProfileActivity"
-            android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPForwardPickerActivity"

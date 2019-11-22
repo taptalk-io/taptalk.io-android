@@ -1988,7 +1988,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         addItem(messages, true);
     }
 
-    public void addMessageFirstFromAPI(List<TAPMessageModel> messages) {
+    public void addOlderMessagesFromApi(List<TAPMessageModel> messages) {
         addItem(messages, false);
         notifyDataSetChanged();
     }

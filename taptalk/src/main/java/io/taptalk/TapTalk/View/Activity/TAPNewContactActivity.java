@@ -11,6 +11,7 @@ import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -200,12 +201,12 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         // Set avatar
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
             glide.load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
-            civAvatar.setImageTintList(null);
+            ImageViewCompat.setImageTintList(civAvatar, null);
             tvAvatarLabel.setVisibility(View.GONE);
         } else {
 //            civAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-            civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName())));
-            civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName())));
+            civAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getSearchResult().getName(), 2));
             tvAvatarLabel.setVisibility(View.VISIBLE);
         }
@@ -251,12 +252,12 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         // Set avatar
         if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
             glide.load(vm.getSearchResult().getAvatarURL().getThumbnail()).into(civAvatar);
-            civAvatar.setImageTintList(null);
+            ImageViewCompat.setImageTintList(civAvatar, null);
             tvAvatarLabel.setVisibility(View.GONE);
         } else {
 //            civAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-            civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName())));
-            civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName())));
+            civAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getSearchResult().getName(), 2));
             tvAvatarLabel.setVisibility(View.VISIBLE);
         }
@@ -454,11 +455,14 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
-            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPNewContactActivity.this)) {
-                // No internet connection
-                vm.setPendingSearch(etSearch.getText().toString());
-                showConnectionLost();
-                endLoading();
+            // TODO: 22 November 2019 NETWORK STATE MANAGER
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPNewContactActivity.this)) {
+                    // No internet connection
+                    vm.setPendingSearch(etSearch.getText().toString());
+                    showConnectionLost();
+                    endLoading();
+                }
             }
         }
     };

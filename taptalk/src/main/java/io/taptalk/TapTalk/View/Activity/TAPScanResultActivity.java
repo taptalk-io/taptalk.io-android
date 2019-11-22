@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.view.View;
@@ -255,10 +256,10 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     private void loadProfilePicture(CircleImageView imageView, TextView avatarLabel, TAPUserModel userModel) {
         if (null != userModel.getAvatarURL() && !userModel.getAvatarURL().getThumbnail().isEmpty()) {
             glide.load(userModel.getAvatarURL().getThumbnail()).into(imageView);
-            imageView.setImageTintList(null);
+            ImageViewCompat.setImageTintList(imageView, null);
             avatarLabel.setVisibility(View.GONE);
         } else {
-            imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(userModel.getName())));
+            ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(userModel.getName())));
             imageView.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
             avatarLabel.setText(TAPUtils.getInstance().getInitials(userModel.getName(), 2));
             avatarLabel.setVisibility(View.VISIBLE);

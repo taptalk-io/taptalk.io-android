@@ -151,9 +151,12 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         // Get video data
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(TAPVideoPlayerActivity.this, vm.getVideoUri());
-        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        String rotation = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        }
         int width, height;
-        if (rotation.equals("90") || rotation.equals("270")) {
+        if (null != rotation && (rotation.equals("90") || rotation.equals("270"))) {
             // Swap width and height when video is rotated
             width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
             height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));

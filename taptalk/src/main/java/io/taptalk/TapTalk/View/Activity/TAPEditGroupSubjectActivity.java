@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -219,7 +220,6 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         svGroupSubject = findViewById(R.id.sv_group_subject);
 
         etGroupName.setOnFocusChangeListener(focusListener);
-        svGroupSubject.getViewTreeObserver().addOnScrollChangedListener(toolbarScrollListener);
 
         if (vm.getGroupAction() == EDIT_GROUP) {
             // Show edit group layout
@@ -268,6 +268,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
             flButtonUpdateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
+            svGroupSubject.getViewTreeObserver().addOnScrollChangedListener(toolbarScrollListener);
         }
     }
 
@@ -278,7 +279,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         Glide.with(this).load(vm.getGroupData().getRoomImage().getThumbnail()).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                civGroupImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+                civGroupImage.setImageDrawable(ContextCompat.getDrawable(TAPEditGroupSubjectActivity.this, R.drawable.tap_bg_circle_9b9b9b));
                 Toast.makeText(TAPEditGroupSubjectActivity.this, R.string.tap_failed_to_load_image, Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -293,13 +294,13 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
     private void loadGroupImage(String imageUrl) {
         if (null == imageUrl || imageUrl.isEmpty()) {
-            civGroupImage.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getGroupData().getRoomName())));
-            civGroupImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getGroupData().getRoomName())));
+            civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             tvGroupPictureLabel.setText(TAPUtils.getInstance().getInitials(vm.getGroupData().getRoomName(), 1));
             tvGroupPictureLabel.setVisibility(View.VISIBLE);
         } else {
             Glide.with(this).load(imageUrl).into(civGroupImage);
-            civGroupImage.setImageTintList(null);
+            ImageViewCompat.setImageTintList(civGroupImage, null);
             tvGroupPictureLabel.setVisibility(View.GONE);
             //fl_remove_group_picture.visibility = View.VISIBLE
         }
@@ -365,13 +366,14 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         vm.getGroupData().setRoomImage(null);
 
         if (vm.getGroupAction() == EDIT_GROUP) {
-            civGroupImage.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getGroupData().getRoomName())));
-            civGroupImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getGroupData().getRoomName())));
+            civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             tvGroupPictureLabel.setText(TAPUtils.getInstance().getInitials(vm.getGroupData().getRoomName(), 1));
             tvGroupPictureLabel.setVisibility(View.VISIBLE);
             checkEditButtonAvailable();
         } else {
-            civGroupImage.setImageResource(R.drawable.tap_img_default_group_avatar);
+            ImageViewCompat.setImageTintList(civGroupImage, null);
+            civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_group_avatar));
         }
 
         flRemoveGroupPicture.setVisibility(View.GONE);
@@ -501,15 +503,17 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     };
 
     private ViewTreeObserver.OnScrollChangedListener toolbarScrollListener = () -> {
-        int y = svGroupSubject.getScrollY();
-        int x = ivGroupPicBackground.getHeight();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int y = svGroupSubject.getScrollY();
+            int x = ivGroupPicBackground.getHeight();
 
-        if (y == 0) {
-            clActionBar.setElevation(0);
-        } else if (y < x) {
-            clActionBar.setElevation(TAPUtils.getInstance().dpToPx(1));
-        } else {
-            clActionBar.setElevation(TAPUtils.getInstance().dpToPx(2));
+            if (y == 0) {
+                clActionBar.setElevation(0);
+            } else if (y < x) {
+                clActionBar.setElevation(TAPUtils.getInstance().dpToPx(1));
+            } else {
+                clActionBar.setElevation(TAPUtils.getInstance().dpToPx(2));
+            }
         }
     };
 

@@ -343,7 +343,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun showLoading(message: String) {
         runOnUiThread {
-            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white))
+            iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_loading_progress_circle_white))
             if (null == iv_loading_image.animation)
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_image)
             tv_loading_text.text = message
@@ -355,7 +355,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun endLoading(message: String) {
         runOnUiThread {
-            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
+            iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_checklist_pumpkin))
             iv_loading_image.clearAnimation()
             tv_loading_text.text = message
             Handler().postDelayed({

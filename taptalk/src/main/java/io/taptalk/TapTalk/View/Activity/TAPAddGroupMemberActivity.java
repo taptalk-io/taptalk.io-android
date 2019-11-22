@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -292,14 +293,16 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
         if (vm.getGroupAction() == CREATE_GROUP) {
             tvTitle.setText(getString(R.string.tap_new_group));
-            ivButtonBack.setImageResource(R.drawable.tap_ic_chevron_left_white);
-            ivButtonBack.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavBarBackButton)));
+            ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
+            ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
+                    getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavBarBackButton)));
             tvButtonText.setText(getString(R.string.tap_continue_s));
             flButtonContinue.setOnClickListener(v -> openGroupSubjectActivity());
         } else if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
             tvTitle.setText(getString(R.string.tap_add_members));
-            ivButtonBack.setImageResource(R.drawable.tap_ic_close_grey);
-            ivButtonBack.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavBarCloseButton)));
+            ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
+            ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
+                    getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavBarCloseButton)));
             tvButtonText.setText(getString(R.string.tap_add_members));
             flButtonContinue.setOnClickListener(v -> startAddMemberProcess());
         }
@@ -321,7 +324,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         vm.setSelecting(false);
         TAPUtils.getInstance().dismissKeyboard(this);
         if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
-            ivButtonBack.setImageResource(R.drawable.tap_ic_close_grey);
+            ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
         }
         tvTitle.setVisibility(View.VISIBLE);
         etSearch.setVisibility(View.GONE);
@@ -333,7 +336,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     private void showSearchBar() {
         vm.setSelecting(true);
         if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
-            ivButtonBack.setImageResource(R.drawable.tap_ic_chevron_left_white);
+            ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
         }
         tvTitle.setVisibility(View.GONE);
         etSearch.setVisibility(View.VISIBLE);
@@ -631,7 +634,9 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
-            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPAddGroupMemberActivity.this)) {
+            // TODO: 22 November 2019 NETWORK STATE MANAGER
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                    !TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPAddGroupMemberActivity.this)) {
                 // No internet connection
                 vm.setPendingSearch(etSearch.getText().toString());
             }

@@ -53,6 +53,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_ADD_NEW_CONTACT;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS;
@@ -578,13 +579,13 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 return;
             }
             if (!TAPChatManager.getInstance().getActiveUser().getUserID().equals(user.getUserID())) {
-                // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
+                // TODO: 25 October 2018 SET ROOM COLOR
                 TAPUtils.getInstance().startChatActivity(
                         TAPNewChatActivity.this,
                         TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), user.getUserID()),
                         user.getName(),
                         user.getAvatarURL(),
-                        1,
+                        TYPE_PERSONAL,
                         /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(user.getName()) + "");
             }
         }
