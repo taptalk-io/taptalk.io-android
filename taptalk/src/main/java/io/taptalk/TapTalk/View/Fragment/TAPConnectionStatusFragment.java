@@ -101,9 +101,10 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
 
     private void initConnectionStatus() {
         TAPConnectionManager.getInstance().addSocketListener(this);
-        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()))
+        // TODO: 22 November 2019 NETWORK STATE MANAGER
+        /*if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()))
             onSocketDisconnected();
-        else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED)
+        else */if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED)
             llConnectionStatus.setVisibility(View.GONE);
         else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTING)
             onSocketConnecting();
@@ -134,11 +135,12 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     private void setStatusConnecting() {
-        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()) ||
-                TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTING ||
-                hideUntilNextConnect) {
-            return;
-        }
+        // TODO: 22 November 2019 NETWORK STATE MANAGER
+//        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()) ||
+//                TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTING ||
+//                hideUntilNextConnect) {
+//            return;
+//        }
 
         activity.runOnUiThread(() -> {
             llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
@@ -153,9 +155,6 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     private void setStatusWaitingForNetwork() {
-//        if (TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) {
-//            return;
-//        }
         if (hideUntilNextConnect) {
             return;
         }

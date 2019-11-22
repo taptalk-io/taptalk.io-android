@@ -142,7 +142,7 @@ public class TapUISearchChatFragment extends Fragment {
     }
 
     private void setRecentSearchItemsFromDatabase() {
-        //observe databasenya pake live data
+        // Observe database with live data
         vm.getRecentSearchList().observe(this, hpRecentSearchEntities -> {
             vm.clearRecentSearches();
 
@@ -167,27 +167,21 @@ public class TapUISearchChatFragment extends Fragment {
                 }
             }
 
-            //kalau ada perubahan sama databasenya ga lgsg diubah karena nnti bakal ngilangin hasil search yang muncul
-            //kalau lagi muncul hasil search updatenya tunggu fungsi showRecentSearch dipanggil
-            //kalau lagi muncul halaman recent search baru set items
             if (vm.getSearchState() == vm.STATE_RECENT_SEARCHES && null != getActivity())
+                // Set items when search is not is progress
                 getActivity().runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
         });
 
         showRecentSearches();
     }
 
-    //ini function buat munculin recent search nya lagi
-    //jadi dy gantiin isi recyclerView nya sama list yang diisi di setRecentSearchItemsFromDatabase (dari LiveData)
     private void showRecentSearches() {
         if (null != getActivity()) {
             getActivity().runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
-            //flag untuk nandain kalau skrg lagi munculin halaman recent Search
             vm.setSearchState(vm.STATE_RECENT_SEARCHES);
         }
     }
 
-    //ini fungsi buat set tampilan kalau lagi empty
     private void setEmptyState() {
         TAPSearchChatModel emptyItem = new TAPSearchChatModel(EMPTY_STATE);
         vm.clearSearchResults();
