@@ -129,7 +129,8 @@ public class TAPChatManager {
         @Override
         public void onSocketDisconnected() {
             if (TapTalk.isForeground &&
-                    TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext) &&
+                    // TODO: 25 November 2019 NETWORK STATE MANAGER
+                    /*TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext) &&*/
                     DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
                 TAPConnectionManager.getInstance().reconnect();
         }

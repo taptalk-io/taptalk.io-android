@@ -97,7 +97,7 @@ public class TAPFileUtils {
 
     public String getFilePath(final Context context, final Uri uri) {
         // DocumentProvider
-        if (DocumentsContract.isDocumentUri(context, uri)) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri)) {
             // ExternalStorageProvider
             if (isExternalStorageDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
