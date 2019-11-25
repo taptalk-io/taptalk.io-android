@@ -6,6 +6,8 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.NetworkRequest;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.List;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class TAPNetworkStateManager extends ConnectivityManager.NetworkCallback {
     private static final String TAG = TAPNetworkStateManager.class.getSimpleName();
     private static TAPNetworkStateManager instance;

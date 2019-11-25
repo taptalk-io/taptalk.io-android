@@ -168,10 +168,10 @@ public class TAPApiManager {
 
         int code = br.getStatus();
         if (BuildConfig.DEBUG && code != RESPONSE_SUCCESS)
-            Log.e(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
+            Log.d(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
 
         if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
-            Log.e(TAG, "validateResponse: √√ NO ERROR √√");
+            Log.d(TAG, "validateResponse: √√ NO ERROR √√");
         else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken && !isLogout) {
             return raiseApiRefreshTokenRunningException();
         } else if (code == UNAUTHORIZED && !isLogout) {

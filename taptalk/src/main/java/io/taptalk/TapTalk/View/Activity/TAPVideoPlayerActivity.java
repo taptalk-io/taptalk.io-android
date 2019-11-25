@@ -320,9 +320,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
     private void showLoading() {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
-            if (null == ivSaving.getAnimation()) {
-                TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
-            }
+            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             tvLoadingText.setText(getString(R.string.tap_saving));
             ivButtonSave.setOnClickListener(null);
             flLoading.setVisibility(View.VISIBLE);

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -676,6 +677,7 @@ public class TAPDataManager {
                     TAPFileDownloadManager.getInstance().removeFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID));
                 } catch (IllegalArgumentException e) {
                     if (BuildConfig.DEBUG) {
+                        Log.e(TAG, "deletePhysicalFile: " + e.getMessage());
                     }
                 }
             }
