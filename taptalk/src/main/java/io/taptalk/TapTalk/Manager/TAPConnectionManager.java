@@ -12,6 +12,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -108,7 +109,8 @@ public class TAPConnectionManager {
 
             @Override
             public void onMessage(ByteBuffer bytes) {
-                String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
+                //String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
+                String tempMessage = Charset.forName("UTF-8").decode(bytes).toString();
                 String messages[] = tempMessage.split("\\r?\\n");
                 // TODO: 23/11/18 NANTI HARUS DIUBAH KARENA COMPLEXITYNYA JELEK
                 for (String message : messages) {
@@ -166,7 +168,8 @@ public class TAPConnectionManager {
                 }
             }
         };
-        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
+        // TODO: 25 November 2019 NETWORK STATE MANAGER
+        //TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
     }
 
     public void addSocketListener(TapTalkSocketInterface listener) {
@@ -191,13 +194,14 @@ public class TAPConnectionManager {
 
     public void send(String messageString) {
         if (webSocketClient.isOpen()) {
-            webSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
+            webSocketClient.send(messageString.getBytes(Charset.forName("UTF-8")));
         }
     }
 
     public void connect() {
-        if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
-                TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
+        if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) /*&&
+                // TODO: 25 November 2019 NETWORK STATE MANAGER
+                TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)*/) {
             try {
                 webSocketUri = new URI(getWebSocketEndpoint());
                 Map<String, String> websocketHeader = new HashMap<>();
@@ -214,8 +218,9 @@ public class TAPConnectionManager {
     public void connect(TapCommonInterface listener) {
         if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
             listener.onError(ERROR_CODE_ALREADY_CONNECTED, ERROR_MESSAGE_ALREADY_CONNECTED);
-        } else if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
-            listener.onError(ERROR_CODE_NO_INTERNET, ERROR_MESSAGE_NO_INTERNET);
+            // TODO: 25 November 2019 NETWORK STATE MANAGER
+//        } else if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
+//            listener.onError(ERROR_CODE_NO_INTERNET, ERROR_MESSAGE_NO_INTERNET);
         } else {
             try {
                 webSocketUri = new URI(getWebSocketEndpoint());

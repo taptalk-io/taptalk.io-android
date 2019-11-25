@@ -239,7 +239,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
             } else {
-                flButtonCreateGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive_ripple));
+                flButtonCreateGroup.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive));
             }
             etGroupName.addTextChangedListener(createGroupNameWatcher);
 
