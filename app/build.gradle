@@ -158,8 +158,10 @@ dependencies {
 
     //Crashlytics
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-    implementation 'com.crashlytics.sdk.android:crashlytics-ndk:2.1.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics-ndk:2.1.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.android.support:multidex:1.0.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

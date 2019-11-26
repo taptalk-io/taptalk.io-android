@@ -119,7 +119,7 @@ dependencies {
     implementation 'com.android.support:customtabs:28.0.0'
 
     // Multidex support prior to Android 5.0
-    implementation 'com.android.support:multidex:1.0.3'
+//    implementation 'com.android.support:multidex:1.0.3'
 
     GoogleServicesPlugin.config.disableVersionCheck = true
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
