@@ -74,6 +74,7 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
@@ -128,6 +129,7 @@ public class TapUIRoomListFragment extends Fragment {
         initView(view);
         viewLoadedSequence();
         TAPBroadcastManager.register(activity, reloadRoomListReceiver, RELOAD_ROOM_LIST, CLEAR_ROOM_LIST_BADGE);
+        TAPBroadcastManager.register(activity, reloadProfilePictureReceiver, RELOAD_PROFILE_PICTURE);
     }
 
     @Override
@@ -156,13 +158,7 @@ public class TapUIRoomListFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         TAPBroadcastManager.unregister(activity, reloadRoomListReceiver);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == EDIT_PROFILE) {
-            reloadProfilePicture();
-        }
+        TAPBroadcastManager.unregister(activity, reloadProfilePictureReceiver);
     }
 
     @Override
@@ -880,6 +876,15 @@ public class TapUIRoomListFragment extends Fragment {
                         TAPMessageStatusManager.getInstance().clearUnreadListPerRoomID(roomID);
                     }
                     break;
+            }
+        }
+    };
+
+    private BroadcastReceiver reloadProfilePictureReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (null != intent.getAction() && RELOAD_PROFILE_PICTURE.equals(intent.getAction())) {
+                reloadProfilePicture();
             }
         }
     };
