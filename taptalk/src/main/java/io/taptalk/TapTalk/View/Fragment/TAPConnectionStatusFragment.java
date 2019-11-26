@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Fragment;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManagerNonLol;
 import io.taptalk.Taptalk.R;
 
 public class TAPConnectionStatusFragment extends Fragment implements TapTalkSocketInterface {
@@ -102,14 +104,16 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     private void initConnectionStatus() {
         TAPConnectionManager.getInstance().addSocketListener(this);
         // TODO: 22 November 2019 NETWORK STATE MANAGER
-        /*if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()))
             onSocketDisconnected();
-        else */if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED)
+        else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP && !TAPNetworkStateManagerNonLol.getInstance().hasNetworkConnection(getContext()))
+            onSocketDisconnected();
+        else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED)
             llConnectionStatus.setVisibility(View.GONE);
         else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTING)
             onSocketConnecting();
         else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED ||
-                 TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED)
+                TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED)
             onSocketDisconnected();
     }
 

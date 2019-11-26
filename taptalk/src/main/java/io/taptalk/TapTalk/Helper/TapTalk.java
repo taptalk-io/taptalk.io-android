@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Helper;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -219,7 +220,11 @@ public class TapTalk {
                 TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
                 TAPChatManager.getInstance().setFinishChatFlow(false);
                 // TODO: 25 November 2019 NETWORK STATE MANAGER
-                //TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
+                } else {
+//                    TAPNetworkStateManagerNonLol.getInstance().registerCallback(TapTalk.appContext);
+                }
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
                 TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
@@ -239,7 +244,9 @@ public class TapTalk {
                 TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
                 TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
                 // TODO: 25 November 2019 NETWORK STATE MANAGER
-                //TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
+                }
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);

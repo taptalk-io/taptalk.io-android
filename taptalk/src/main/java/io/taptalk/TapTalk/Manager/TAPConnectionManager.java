@@ -1,8 +1,10 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Base64;
+import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -13,7 +15,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapCommonInterface;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
@@ -33,10 +33,8 @@ import io.taptalk.Taptalk.BuildConfig;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLOSE_FOR_RECONNECT_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ALREADY_CONNECTED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_NO_INTERNET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ALREADY_CONNECTED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_NO_INTERNET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_CONNECT;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
@@ -162,14 +160,20 @@ public class TAPConnectionManager {
             if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
                 TAPDataManager.getInstance().validateAccessToken(validateAccessView);
                 if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
+                    Log.e("]]]]", "reconnect " );
                     reconnect();
                 } else if (TapTalk.isAutoConnectEnabled() && NOT_CONNECTED == connectionStatus) {
+                    Log.e("]]]]", "connect " );
                     connect();
                 }
             }
         };
         // TODO: 25 November 2019 NETWORK STATE MANAGER
-        //TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
+        } else {
+            TAPNetworkStateManagerNonLol.getInstance().addNetworkListener(networkListener);
+        }
     }
 
     public void addSocketListener(TapTalkSocketInterface listener) {
@@ -199,18 +203,33 @@ public class TAPConnectionManager {
     }
 
     public void connect() {
-        if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) /*&&
-                // TODO: 25 November 2019 NETWORK STATE MANAGER
-                TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)*/) {
-            try {
-                webSocketUri = new URI(getWebSocketEndpoint());
-                Map<String, String> websocketHeader = new HashMap<>();
-                createHeaderForConnectWebSocket(websocketHeader);
-                initWebSocketClient(webSocketUri, websocketHeader);
-                connectionStatus = CONNECTING;
-                webSocketClient.connect();
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Log.e("]]]]]", "connect lollipop: ");
+            if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) && TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
+                try {
+                    webSocketUri = new URI(getWebSocketEndpoint());
+                    Map<String, String> websocketHeader = new HashMap<>();
+                    createHeaderForConnectWebSocket(websocketHeader);
+                    initWebSocketClient(webSocketUri, websocketHeader);
+                    connectionStatus = CONNECTING;
+                    webSocketClient.connect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            Log.e("]]]]]", "connect below lollipop: ");
+            if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) && TAPNetworkStateManagerNonLol.getInstance().hasNetworkConnection(appContext)) {
+                try {
+                    webSocketUri = new URI(getWebSocketEndpoint());
+                    Map<String, String> websocketHeader = new HashMap<>();
+                    createHeaderForConnectWebSocket(websocketHeader);
+                    initWebSocketClient(webSocketUri, websocketHeader);
+                    connectionStatus = CONNECTING;
+                    webSocketClient.connect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
