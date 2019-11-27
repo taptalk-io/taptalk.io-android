@@ -634,9 +634,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
-            // TODO: 22 November 2019 NETWORK STATE MANAGER
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                    !TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPAddGroupMemberActivity.this)) {
+            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPAddGroupMemberActivity.this)) {
                 // No internet connection
                 vm.setPendingSearch(etSearch.getText().toString());
             }

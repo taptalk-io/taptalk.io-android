@@ -219,12 +219,7 @@ public class TapTalk {
                 TAPContactManager.getInstance().loadAllUserDataFromDatabase();
                 TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
                 TAPChatManager.getInstance().setFinishChatFlow(false);
-                // TODO: 25 November 2019 NETWORK STATE MANAGER
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
-                } else {
-//                    TAPNetworkStateManagerNonLol.getInstance().registerCallback(TapTalk.appContext);
-                }
+                TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().triggerSaveNewMessage();
                 TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
                 TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
@@ -243,10 +238,7 @@ public class TapTalk {
                 isForeground = false;
                 TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
                 TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
-                // TODO: 25 November 2019 NETWORK STATE MANAGER
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
-                }
+                TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
                 TAPChatManager.getInstance().updateMessageWhenEnterBackground();
                 TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
                 TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);

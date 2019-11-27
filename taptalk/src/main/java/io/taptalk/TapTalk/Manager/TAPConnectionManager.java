@@ -33,8 +33,10 @@ import io.taptalk.Taptalk.BuildConfig;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLOSE_FOR_RECONNECT_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ALREADY_CONNECTED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_NO_INTERNET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ALREADY_CONNECTED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_NO_INTERNET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_CONNECT;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
@@ -160,20 +162,15 @@ public class TAPConnectionManager {
             if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
                 TAPDataManager.getInstance().validateAccessToken(validateAccessView);
                 if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
-                    Log.e("]]]]", "reconnect " );
+                    Log.e(TAG, "onNetworkAvailable(): reconnect " );
                     reconnect();
                 } else if (TapTalk.isAutoConnectEnabled() && NOT_CONNECTED == connectionStatus) {
-                    Log.e("]]]]", "connect " );
+                    Log.e(TAG, "onNetworkAvailable(): connect " );
                     connect();
                 }
             }
         };
-        // TODO: 25 November 2019 NETWORK STATE MANAGER
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
-        } else {
-            TAPNetworkStateManagerNonLol.getInstance().addNetworkListener(networkListener);
-        }
+        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
     }
 
     public void addSocketListener(TapTalkSocketInterface listener) {
@@ -203,33 +200,20 @@ public class TAPConnectionManager {
     }
 
     public void connect() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Log.e("]]]]]", "connect lollipop: ");
-            if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) && TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
-                try {
-                    webSocketUri = new URI(getWebSocketEndpoint());
-                    Map<String, String> websocketHeader = new HashMap<>();
-                    createHeaderForConnectWebSocket(websocketHeader);
-                    initWebSocketClient(webSocketUri, websocketHeader);
-                    connectionStatus = CONNECTING;
-                    webSocketClient.connect();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            Log.e("]]]]]", "connect below lollipop: ");
-            if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) && TAPNetworkStateManagerNonLol.getInstance().hasNetworkConnection(appContext)) {
-                try {
-                    webSocketUri = new URI(getWebSocketEndpoint());
-                    Map<String, String> websocketHeader = new HashMap<>();
-                    createHeaderForConnectWebSocket(websocketHeader);
-                    initWebSocketClient(webSocketUri, websocketHeader);
-                    connectionStatus = CONNECTING;
-                    webSocketClient.connect();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        Log.e(TAG, "connect: " + connectionStatus);
+        Log.e(TAG, "connect: hasNetworkConnection " + TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext));
+        if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
+                TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
+            try {
+                webSocketUri = new URI(getWebSocketEndpoint());
+                Map<String, String> webSocketHeader = new HashMap<>();
+                createHeaderForConnectWebSocket(webSocketHeader);
+                initWebSocketClient(webSocketUri, webSocketHeader);
+                connectionStatus = CONNECTING;
+                webSocketClient.connect();
+                Log.e(TAG, "connect: webSocketClient.connect()");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -237,9 +221,8 @@ public class TAPConnectionManager {
     public void connect(TapCommonInterface listener) {
         if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
             listener.onError(ERROR_CODE_ALREADY_CONNECTED, ERROR_MESSAGE_ALREADY_CONNECTED);
-            // TODO: 25 November 2019 NETWORK STATE MANAGER
-//        } else if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
-//            listener.onError(ERROR_CODE_NO_INTERNET, ERROR_MESSAGE_NO_INTERNET);
+        } else if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
+            listener.onError(ERROR_CODE_NO_INTERNET, ERROR_MESSAGE_NO_INTERNET);
         } else {
             try {
                 webSocketUri = new URI(getWebSocketEndpoint());
@@ -289,6 +272,7 @@ public class TAPConnectionManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
+                Log.e(TAG, "reconnect: " + connectionStatus);
                 if (DISCONNECTED == connectionStatus && !TAPChatManager.getInstance().isFinishChatFlow()) {
                     connectionStatus = CONNECTING;
                     try {
@@ -300,6 +284,7 @@ public class TAPConnectionManager {
                         TAPDataManager.getInstance().validateAccessToken(new TAPDefaultDataView<TAPErrorModel>() {
                         });
                         close(CLOSE_FOR_RECONNECT_CODE);
+                        Log.e(TAG, "reconnect: call connect()");
                         connect();
                     } catch (IllegalStateException e) {
                         e.printStackTrace();

@@ -146,9 +146,8 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
             TapTalkDialog.Builder(this)
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setTitle(getString(R.string.tap_error))
-                    // TODO NETWORK STATE MANAGER
-                    //.setMessage(if (TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
-                    //    getString(R.string.tap_error_message_general) else getString(R.string.tap_no_internet_show_error))
+                    .setMessage(if (TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
+                        getString(R.string.tap_error_message_general) else getString(R.string.tap_no_internet_show_error))
                     .setMessage(getString(R.string.tap_error_message_general))
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .show()

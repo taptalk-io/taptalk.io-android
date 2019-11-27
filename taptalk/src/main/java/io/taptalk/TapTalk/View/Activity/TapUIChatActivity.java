@@ -89,6 +89,7 @@ import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
@@ -1315,8 +1316,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void callApiGetUserByUserID() {
         new Thread(() -> {
-            if (TAPChatManager.getInstance().isNeedToCalledUpdateRoomStatusAPI() /*&& // TODO: 22 November 2019 NETWORK STATE MANAGER
-                    TAPNetworkStateManager.getInstance().hasNetworkConnection(this)*/)
+            if (TAPChatManager.getInstance().isNeedToCalledUpdateRoomStatusAPI() &&
+                    TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
                 TAPDataManager.getInstance().getUserByIdFromApi(vm.getOtherUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
                     @Override
                     public void onSuccess(TAPGetUserResponse response) {

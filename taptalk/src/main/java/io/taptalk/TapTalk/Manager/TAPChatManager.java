@@ -131,14 +131,12 @@ public class TAPChatManager {
         public void onSocketDisconnected() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 if (TapTalk.isForeground &&
-                        // TODO: 25 November 2019 NETWORK STATE MANAGER
                         TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext) &&
                         DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
                     TAPConnectionManager.getInstance().reconnect();
             } else {
                 if (TapTalk.isForeground &&
-                        // TODO: 25 November 2019 NETWORK STATE MANAGER
-                        TAPNetworkStateManagerNonLol.getInstance().hasNetworkConnection(TapTalk.appContext) &&
+                        TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext) &&
                         DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
                     TAPConnectionManager.getInstance().reconnect();
             }

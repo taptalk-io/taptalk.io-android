@@ -27,11 +27,11 @@
             android:name="io.taptalk.TapTalk.Helper.CustomTabLayout.TAPKeepAliveService"
             android:exported="true" />
         <receiver
-            android:name="io.taptalk.TapTalk.Manager.NetworkListener"
+            android:name="io.taptalk.TapTalk.Manager.TAPNetworkStateManager$TapNetworkBroadcastReceiver"
             android:label="NetworkChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+<!--                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />-->
             </intent-filter>
         </receiver>
 

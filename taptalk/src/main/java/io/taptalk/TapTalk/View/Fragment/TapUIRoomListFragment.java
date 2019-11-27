@@ -838,13 +838,11 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void addNetworkListener() {
-        // TODO: 22 November 2019 NETWORK STATE MANAGER
-//        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
+        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
     }
 
     private void removeNetworkListener() {
-        // TODO: 22 November 2019 NETWORK STATE MANAGER
-//        TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
+        TAPNetworkStateManager.getInstance().removeNetworkListener(networkListener);
     }
 
     private void updateUnreadCountPerRoom(String roomID) {

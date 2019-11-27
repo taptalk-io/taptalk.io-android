@@ -455,14 +455,11 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
-            // TODO: 22 November 2019 NETWORK STATE MANAGER
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPNewContactActivity.this)) {
-                    // No internet connection
-                    vm.setPendingSearch(etSearch.getText().toString());
-                    showConnectionLost();
-                    endLoading();
-                }
+            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPNewContactActivity.this)) {
+                // No internet connection
+                vm.setPendingSearch(etSearch.getText().toString());
+                showConnectionLost();
+                endLoading();
             }
         }
     };
