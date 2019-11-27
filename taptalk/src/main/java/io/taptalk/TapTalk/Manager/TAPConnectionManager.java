@@ -1,10 +1,8 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Base64;
-import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -162,10 +160,8 @@ public class TAPConnectionManager {
             if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
                 TAPDataManager.getInstance().validateAccessToken(validateAccessView);
                 if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
-                    Log.e(TAG, "onNetworkAvailable(): reconnect " );
                     reconnect();
                 } else if (TapTalk.isAutoConnectEnabled() && NOT_CONNECTED == connectionStatus) {
-                    Log.e(TAG, "onNetworkAvailable(): connect " );
                     connect();
                 }
             }
@@ -200,8 +196,6 @@ public class TAPConnectionManager {
     }
 
     public void connect() {
-        Log.e(TAG, "connect: " + connectionStatus);
-        Log.e(TAG, "connect: hasNetworkConnection " + TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext));
         if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
                 TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
             try {
@@ -211,7 +205,6 @@ public class TAPConnectionManager {
                 initWebSocketClient(webSocketUri, webSocketHeader);
                 connectionStatus = CONNECTING;
                 webSocketClient.connect();
-                Log.e(TAG, "connect: webSocketClient.connect()");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -272,7 +265,6 @@ public class TAPConnectionManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                Log.e(TAG, "reconnect: " + connectionStatus);
                 if (DISCONNECTED == connectionStatus && !TAPChatManager.getInstance().isFinishChatFlow()) {
                     connectionStatus = CONNECTING;
                     try {
@@ -284,7 +276,6 @@ public class TAPConnectionManager {
                         TAPDataManager.getInstance().validateAccessToken(new TAPDefaultDataView<TAPErrorModel>() {
                         });
                         close(CLOSE_FOR_RECONNECT_CODE);
-                        Log.e(TAG, "reconnect: call connect()");
                         connect();
                     } catch (IllegalStateException e) {
                         e.printStackTrace();

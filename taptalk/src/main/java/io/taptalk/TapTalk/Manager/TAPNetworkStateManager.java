@@ -9,18 +9,13 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
-
-import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
 public class TAPNetworkStateManager {
     private static final String TAG = TAPNetworkStateManager.class.getSimpleName();
@@ -29,8 +24,6 @@ public class TAPNetworkStateManager {
 
     private TapNetworkCallback networkCallback;
     private NetworkRequest networkRequest;
-
-    //private TapNetworkBroadcastReceiver networkBroadcastReceiver;
 
     public static TAPNetworkStateManager getInstance() {
         return instance == null ? (instance = new TAPNetworkStateManager()) : instance;
@@ -46,24 +39,19 @@ public class TAPNetworkStateManager {
                     .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
                     .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
                     .build();
-        } else {
-            // Use BroadcastReceiver for below API 21
-            //networkBroadcastReceiver = new TapNetworkBroadcastReceiver();
         }
     }
 
     public void registerCallback(Context context) {
-        Log.e(TAG, "onAppGotoForeground: registerCallback");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != networkCallback) {
             getConnectivityManager(context).registerNetworkCallback(networkRequest, networkCallback);
-        } else /*if (TAPConnectionManager.getInstance().getConnectionStatus() == NOT_CONNECTED)*/ {
-            // TODO: 27 November 2019
-           triggerConnectivityChange();
+        } else  {
+            // Broadcast receiver will not receive callback right away, trigger connectivity change manually to update connection status
+            triggerConnectivityChange();
         }
     }
 
     public void unregisterCallback(Context context) {
-        Log.e(TAG, "onAppGotoBackground: unregisterCallback");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != networkCallback) {
             getConnectivityManager(context).unregisterNetworkCallback(networkCallback);
         }
@@ -76,11 +64,8 @@ public class TAPNetworkStateManager {
                 null != connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI) &&
                 (NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() ||
                         NetworkInfo.State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState())) {
-//            Log.e(TAG, "hasNetworkConnection: true");
             return true;
         } else {
-//            Toast.makeText(context, "No Network Available.", Toast.LENGTH_SHORT).show();
-//            Log.e(TAG, "hasNetworkConnection: false");
             return false;
         }
     }
@@ -108,10 +93,8 @@ public class TAPNetworkStateManager {
 
     private void triggerConnectivityChange() {
         if (TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
-            Log.e(TAG, "onReceive: hasNetworkConnection");
             TAPNetworkStateManager.getInstance().onNetworkAvailable();
         } else {
-            Log.e(TAG, "onReceive: No Network Connection");
             TAPNetworkStateManager.getInstance().onNetworkLost();
         }
     }
@@ -135,14 +118,12 @@ public class TAPNetworkStateManager {
         @Override
         public void onAvailable(Network network) {
             super.onAvailable(network);
-            Log.e(TAG, "onAvailable: " );
             onNetworkAvailable();
         }
 
         @Override
         public void onLost(Network network) {
             super.onLost(network);
-            Log.e(TAG, "onLost: " );
             onNetworkLost();
         }
     }
@@ -154,8 +135,9 @@ public class TAPNetworkStateManager {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.e(TAG, "onReceive: " + intent.getAction());
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ||
+                    null == intent.getAction() ||
+                    !intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE")) {
                 return;
             }
             TAPNetworkStateManager.getInstance().triggerConnectivityChange();
