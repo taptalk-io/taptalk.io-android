@@ -694,9 +694,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             getAllUnreadMessage();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Show/hide ivToBottom
-            rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+        // Show/hide ivToBottom
+        rvMessageList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
                 if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
                     ivToBottom.setVisibility(View.INVISIBLE);
@@ -719,8 +721,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     ivToBottom.setVisibility(View.VISIBLE);
                     vm.setScrollFromKeyboard(false);
                 }
-            });
-        }
+            }
+        });
 
         LayoutTransition containerTransition = clContainer.getLayoutTransition();
         containerTransition.addTransitionListener(containerTransitionListener);
@@ -1114,6 +1116,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private void scrollToBottom() {
         rvMessageList.scrollToPosition(0);
         ivToBottom.setVisibility(View.INVISIBLE);
+        vm.setOnBottom(true);
         vm.clearUnreadMessages();
         updateUnreadCount();
     }

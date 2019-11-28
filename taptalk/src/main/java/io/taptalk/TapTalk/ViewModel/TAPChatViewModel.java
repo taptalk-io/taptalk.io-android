@@ -58,6 +58,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     public TAPChatViewModel(Application application) {
         super(application);
         allMessages = TAPDataManager.getInstance().getMessagesLiveData();
+        setOnBottom(true);
     }
 
     public LiveData<List<TAPMessageEntity>> getAllMessages() {
