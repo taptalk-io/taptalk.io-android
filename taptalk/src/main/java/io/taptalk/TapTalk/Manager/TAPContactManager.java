@@ -133,9 +133,9 @@ public class TAPContactManager {
     }
 
     public String convertPhoneNumber(String phone) {
-        if (phone.contains("*") || phone.contains("#") || phone.contains(";") || phone.contains(","))
+        if (phone.contains("*") || phone.contains("#") || phone.contains(";") || phone.contains(",") || phone.isEmpty()) {
             return "";
-
+        }
         String tempPhone = phone.replaceAll("[^\\d]", "");
         String prefix = tempPhone.substring(0, getMyCountryCode().length());
 

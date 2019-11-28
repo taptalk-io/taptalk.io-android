@@ -64,7 +64,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.Taptalk.R;
 
@@ -91,8 +90,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
@@ -466,12 +463,27 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String imageCaption = (String) item.getData().get(CAPTION);
             String fileID = (String) item.getData().get(FILE_ID);
 
-            if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
-                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
+            if (((null != item.getQuote() &&
+                    null != item.getQuote().getTitle() &&
+                    !item.getQuote().getTitle().isEmpty()) ||
+                    (null != item.getForwardFrom() &&
+                            null != item.getForwardFrom().getFullname() &&
+                            !item.getForwardFrom().getFullname().isEmpty())) &&
+                    null != widthDimension &&
+                    null != heightDimension) {
                 // Fix layout when quote/forward exists
+                float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
+                // Set image width to maximum
                 rcivImageBody.getLayoutParams().width = 0;
-                if (null != widthDimension && null != heightDimension && (widthDimension.floatValue() / heightDimension.floatValue()) > 3) {
-                    rcivImageBody.getLayoutParams().height = TAPUtils.getInstance().dpToPx(78);
+                if (imageRatio >  (float) rcivImageBody.getMaxWidth() / (float) rcivImageBody.getMinHeight()) {
+                    // Set minimum height if image width exceeds limit
+                    rcivImageBody.getLayoutParams().height = rcivImageBody.getMinHeight();
+                } else if (imageRatio < (float) rcivImageBody.getMaxHeight() / (float) rcivImageBody.getMaxWidth()) {
+                    // Set maximum height if image height exceeds limit
+                    rcivImageBody.getLayoutParams().height = rcivImageBody.getMaxHeight();
+                } else {
+                    // Set default image height
+                    rcivImageBody.getLayoutParams().height = (int) (rcivImageBody.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
                 }
                 rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivImageBody.setTopLeftRadius(0);
@@ -713,12 +725,28 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
             videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), fileID);
 
-            if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
-                    (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty())) {
+
+            if (((null != item.getQuote() &&
+                    null != item.getQuote().getTitle() &&
+                    !item.getQuote().getTitle().isEmpty()) ||
+                    (null != item.getForwardFrom() &&
+                            null != item.getForwardFrom().getFullname() &&
+                            !item.getForwardFrom().getFullname().isEmpty())) &&
+                    null != widthDimension &&
+                    null != heightDimension) {
                 // Fix layout when quote/forward exists
+                float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
+                // Set image width to maximum
                 rcivVideoThumbnail.getLayoutParams().width = 0;
-                if (null != widthDimension && null != heightDimension && (widthDimension.floatValue() / heightDimension.floatValue()) > 3) {
-                    rcivVideoThumbnail.getLayoutParams().height = TAPUtils.getInstance().dpToPx(78);
+                if (imageRatio >  (float) rcivVideoThumbnail.getMaxWidth() / (float) rcivVideoThumbnail.getMinHeight()) {
+                    // Set minimum height if image width exceeds limit
+                    rcivVideoThumbnail.getLayoutParams().height = rcivVideoThumbnail.getMinHeight();
+                } else if (imageRatio < (float) rcivVideoThumbnail.getMaxHeight() / (float) rcivVideoThumbnail.getMaxWidth()) {
+                    // Set maximum height if image height exceeds limit
+                    rcivVideoThumbnail.getLayoutParams().height = rcivVideoThumbnail.getMaxHeight();
+                } else {
+                    // Set default image height
+                    rcivVideoThumbnail.getLayoutParams().height = (int) (rcivVideoThumbnail.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
                 }
                 rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivVideoThumbnail.setTopLeftRadius(0);
