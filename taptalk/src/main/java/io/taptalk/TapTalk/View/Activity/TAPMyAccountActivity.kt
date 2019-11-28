@@ -16,6 +16,7 @@ import android.os.CountDownTimer
 import android.os.Handler
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.ImageViewCompat
+import android.support.v4.content.LocalBroadcastManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
@@ -27,11 +28,9 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_CAMERA
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_GALLERY
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.*
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -698,6 +697,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                         enableEditing()
                         reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
                     }
+                    LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))
                 }
                 UploadFailed -> {
                     val userID = intent.getStringExtra(K_USER_ID)
