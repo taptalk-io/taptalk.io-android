@@ -173,6 +173,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_ADD_PARTICIPANT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_REMOVE_PARTICIPANT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UNREAD_INDICATOR_LOCAL_ID;
@@ -1531,6 +1532,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() && DELETE_ROOM.equals(message.getAction())) {
                 TAPChatManager.getInstance().deleteMessageFromIncomingMessages(message.getLocalID());
                 showRoomIsUnavailableState();
+            } else if (TYPE_SYSTEM_MESSAGE == message.getType() && UPDATE_ROOM.equals(message.getAction())) {
+                vm.getRoom().setRoomName(message.getRoom().getRoomName());
+                vm.getRoom().setRoomImage(message.getRoom().getRoomImage());
+                tvRoomName.setText(vm.getRoom().getRoomName());
+                if (null != vm.getRoom().getRoomImage()) {
+                    civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage, tvRoomImageLabel));
+                }
             }
             updateMessage(message);
         }
