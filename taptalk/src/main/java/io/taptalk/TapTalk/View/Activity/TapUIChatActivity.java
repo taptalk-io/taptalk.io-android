@@ -470,12 +470,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             cancelNotificationWhenEnterRoom();
             //registerBroadcastManager();
 
-            if (null != clChatHistory) {
-                clChatHistory.setVisibility(View.GONE);
-            }
-            if (null != clChatComposer) {
-                clChatComposer.setVisibility(View.VISIBLE);
-            }
+//            if (null != clChatHistory) {
+//                clChatHistory.setVisibility(View.GONE);
+//            }
+//            if (null != clChatComposer) {
+//                clChatComposer.setVisibility(View.VISIBLE);
+//            }
 
         } else if (vm.getMessageModels().size() == 0) {
             initView();
@@ -693,6 +693,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         // Load items from database for the First Time (First Load)
         if (vm.getRoom().isRoomDeleted()) {
             showRoomIsUnavailableState();
+        } else if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getDeleted()) {
+            showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
         } else if (vm.getMessageModels().size() == 0 && !vm.getRoom().isRoomDeleted()) {
             //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
             getAllUnreadMessage();

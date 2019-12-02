@@ -349,7 +349,7 @@ public class TapUI {
         if (getRoomListListeners().isEmpty()) {
             WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
             Intent intent = new Intent(contextWeakReference.get(), TAPMyAccountActivity.class);
-            contextWeakReference.get().startActivityForResult(intent, EDIT_PROFILE);
+            contextWeakReference.get().startActivity(intent);
             contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
