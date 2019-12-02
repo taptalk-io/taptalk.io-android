@@ -240,10 +240,10 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                 }
                 runOnUiThread(() -> {
                     adapter.setItems(vm.getSearchResults(), false);
-                    TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
+                    TAPDataManager.getInstance().searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
                 });
             } else {
-                TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
+                TAPDataManager.getInstance().searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
             }
         }
     };

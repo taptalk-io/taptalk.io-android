@@ -20,6 +20,7 @@ public interface TapTalkChatInterface {
     void onReceiveStartTyping(TAPTypingModel typingModel);
     void onReceiveStopTyping(TAPTypingModel typingModel);
     void onMessageQuoteClicked(TAPMessageModel message);
+    void onGroupMemberAvatarClicked(TAPMessageModel message);
     void onOutsideClicked();
     void onBubbleExpanded();
     void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus);
