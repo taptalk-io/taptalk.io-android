@@ -52,6 +52,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
+import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
@@ -115,7 +116,7 @@ public class TAPChatManager {
     private int maxRetryAttempt = 10;
     private int pendingRetryInterval = 60 * 1000;
     private final int maxImageSize = 2000;
-    private final Integer CHARACTER_LIMIT = 1000;
+    private final Integer CHARACTER_LIMIT = 4000;
 
     private TapTalkSocketInterface socketListener = new TapTalkSocketInterface() {
         @Override
@@ -1869,8 +1870,16 @@ public class TAPChatManager {
      *  ============================================================================================
      */
 
+    public void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
+        TapUI.getInstance().triggerSearchChatBarTapped(activity, mainRoomListFragment);
+    }
+
     public void triggerTapTalkAccountButtonTapped(Activity activity) {
         TapUI.getInstance().triggerTapTalkAccountButtonTapped(activity);
+    }
+
+    public void triggerNewChatButtonTapped(Activity activity) {
+        TapUI.getInstance().triggerNewChatButtonTapped(activity);
     }
 
     public void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {

@@ -506,7 +506,7 @@ public class TAPFileDownloadManager {
                         new String[]{mimeType}, null);
     }
 
-    public boolean checkPhysicalFileIsExist(TAPMessageModel message) {
+    public boolean checkPhysicalFileExists(TAPMessageModel message) {
         return (null != message.getData() && null != message.getData().get(FILE_ID) &&
                 null != getFileMessageUri(message.getRoom().getRoomID(),
                 (String) message.getData().get(FILE_ID)) && null != getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(),

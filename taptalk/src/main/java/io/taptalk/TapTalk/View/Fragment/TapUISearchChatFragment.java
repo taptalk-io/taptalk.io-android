@@ -252,11 +252,11 @@ public class TapUISearchChatFragment extends Fragment {
                 if (null != contactSearchListener) {
                     getActivity().runOnUiThread(() -> {
                         adapter.setItems(vm.getSearchResults(), false);
-                        TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
+                        TAPDataManager.getInstance().searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
                     });
                 }
             } else if (null != contactSearchListener) {
-                TAPDataManager.getInstance().searchAllMyContacts(vm.getSearchKeyword(), contactSearchListener);
+                TAPDataManager.getInstance().searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
             }
         }
     };

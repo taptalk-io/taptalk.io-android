@@ -83,18 +83,51 @@ public class TAPMyContactRepository {
         }).start();
     }
 
+    public void getNonContactUsers(TAPDatabaseListener<TAPUserModel> listener) {
+        new Thread(() -> {
+            try {
+                List<TAPUserModel> nonContactList = myContactDao.getNonContactUsers();
+                listener.onSelectFinished(nonContactList);
+            } catch (Exception e) {
+                listener.onSelectFailed(e.getMessage());
+            }
+        }).start();
+    }
+
     public LiveData<List<TAPUserModel>> getMyContactListLive() {
         return myContactListLive;
     }
 
-    public void searchAllMyContacts(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+    public void searchContactsByName(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
         new Thread(() -> {
             String queryKeyword = '%' + keyword
                     .replace("\\", "\\\\")
                     .replace("%", "\\%")
                     .replace("_", "\\_") + '%';
-            List<TAPUserModel> myContactList = myContactDao.searchAllMyContacts(queryKeyword);
+            List<TAPUserModel> myContactList = myContactDao.searchContactsByName(queryKeyword);
             listener.onSelectFinished(myContactList);
+        }).start();
+    }
+
+    public void searchContactsByNameAndUsername(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        new Thread(() -> {
+            String queryKeyword = '%' + keyword
+                    .replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_") + '%';
+            List<TAPUserModel> myContactList = myContactDao.searchContactsByNameAndUsername(queryKeyword);
+            listener.onSelectFinished(myContactList);
+        }).start();
+    }
+
+    public void searchNonContactUsers(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        new Thread(() -> {
+            String queryKeyword = '%' + keyword
+                    .replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_") + '%';
+            List<TAPUserModel> nonContactList = myContactDao.searchNonContactUsers(queryKeyword);
+            listener.onSelectFinished(nonContactList);
         }).start();
     }
 

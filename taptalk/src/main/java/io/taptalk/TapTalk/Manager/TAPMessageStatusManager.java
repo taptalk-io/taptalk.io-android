@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,11 +17,12 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public class TAPMessageStatusManager {
     private static final String TAG = TAPMessageStatusManager.class.getSimpleName();
     private static TAPMessageStatusManager instance;
-    private List<TAPMessageModel> readMessageQueue;
+    private List<String> readMessageQueue;
+    private List<String> messagesMarkedAsRead; // Message IDs already processed as read by API
     private List<TAPMessageModel> deliveredMessageQueue;
     private int readRequestID = 0;
     private int deliveredRequestID = 0;
-    private Map<Integer, List<TAPMessageModel>> apiReadRequestMap;
+    private Map<Integer, List<String>> apiReadRequestMap;
     private Map<Integer, List<TAPMessageModel>> apiDeliveredRequestMap;
     private Map<String, Integer> unreadList;
 
@@ -27,24 +30,32 @@ public class TAPMessageStatusManager {
         return null == instance ? instance = new TAPMessageStatusManager() : instance;
     }
 
-    public List<TAPMessageModel> getReadMessageQueue() {
+    public List<String> getReadMessageQueue() {
         return null == readMessageQueue ? readMessageQueue = new ArrayList<>() : readMessageQueue;
     }
 
-    public void addReadMessageQueue(TAPMessageModel readMessage) {
-        getReadMessageQueue().add(readMessage);
+    public void addReadMessageQueue(String readMessageId) {
+        getReadMessageQueue().add(readMessageId);
     }
 
-    public void removeReadMessageQueue(List<TAPMessageModel> readMessages) {
-        getReadMessageQueue().removeAll(readMessages);
+    public void addReadMessageQueue(List<String> readMessagesId) {
+        getReadMessageQueue().addAll(readMessagesId);
     }
 
-    public void removeReadMessageQueue(TAPMessageModel readMessage) {
-        getReadMessageQueue().remove(readMessage);
+    public void removeReadMessageQueue(List<String> readMessageId) {
+        getReadMessageQueue().removeAll(readMessageId);
+    }
+
+    public void removeReadMessageQueue(String readMessageId) {
+        getReadMessageQueue().remove(readMessageId);
     }
 
     public void clearReadMessageQueue() {
         getReadMessageQueue().clear();
+    }
+
+    public List<String> getMessagesMarkedAsRead() {
+        return null == messagesMarkedAsRead ? messagesMarkedAsRead = new ArrayList<>() : messagesMarkedAsRead;
     }
 
     public List<TAPMessageModel> getDeliveredMessageQueue() {
@@ -55,15 +66,19 @@ public class TAPMessageStatusManager {
         getDeliveredMessageQueue().add(deliveredMessage);
     }
 
+    public void removeDeliveredMessageQueue(List<TAPMessageModel> deliveredMessages) {
+        getDeliveredMessageQueue().removeAll(deliveredMessages);
+    }
+
     public void clearDeliveredMessageQueue() {
         getDeliveredMessageQueue().clear();
     }
 
-    public Map<Integer, List<TAPMessageModel>> getApiReadRequestMap() {
+    public Map<Integer, List<String>> getApiReadRequestMap() {
         return null == apiReadRequestMap ? apiReadRequestMap = new LinkedHashMap<>() : apiReadRequestMap;
     }
 
-    public void addApiReadRequestMapItem(int readRequestID, List<TAPMessageModel> apiReadRequestMapItem) {
+    public void addApiReadRequestMapItem(int readRequestID, List<String> apiReadRequestMapItem) {
         if (getApiReadRequestMap().containsKey(readRequestID))
             getApiReadRequestMap().get(readRequestID).addAll(apiReadRequestMapItem);
         else
@@ -93,7 +108,7 @@ public class TAPMessageStatusManager {
         return null == unreadList ? unreadList = new LinkedHashMap<>() : unreadList;
     }
 
-    private void addUnreadList(String roomID, int unread) {
+    public void addUnreadList(String roomID, int unread) {
         if (getUnreadList().containsKey(roomID)) {
             int tempUnread = getUnreadList().get(roomID) + unread;
             getUnreadList().put(roomID, tempUnread);
@@ -116,21 +131,19 @@ public class TAPMessageStatusManager {
 
     public void triggerCallMessageStatusApi() {
         new Thread(() -> {
-            //ini buat delivered
+            // Mark delivered
             if (0 < getDeliveredMessageQueue().size()) {
                 List<TAPMessageModel> tempMessageDeliveredModel = new ArrayList<>(getDeliveredMessageQueue());
                 addApiDeliveredRequestMapItem(deliveredRequestID, tempMessageDeliveredModel);
-                deliveredApiCallProcedure(tempMessageDeliveredModel);
-                clearDeliveredMessageQueue();
+                updateMessageStatusToDelivered(deliveredRequestID, new ArrayList<>(tempMessageDeliveredModel));
                 deliveredRequestID++;
             }
 
-            //ini buat read
+            // Mark read
             if (0 < getReadMessageQueue().size()) {
-                List<TAPMessageModel> tempMessageReadModel = new ArrayList<>(getReadMessageQueue());
-                addApiReadRequestMapItem(readRequestID, tempMessageReadModel);
-                readApiCallProcedure(tempMessageReadModel);
-                clearReadMessageQueue();
+                List<String> tempMessageReadModelIds = new ArrayList<>(getReadMessageQueue());
+                addApiReadRequestMapItem(readRequestID, tempMessageReadModelIds);
+                updateMessageStatusToRead(readRequestID, new ArrayList<>(tempMessageReadModelIds));
                 readRequestID++;
             }
         }).start();
@@ -139,35 +152,9 @@ public class TAPMessageStatusManager {
     public void updateMessageStatusWhenAppToBackground() {
         //updateMessageReadStatusInView();
         if (0 < getDeliveredMessageQueue().size()) {
-            deliveredApiCallProcedure(new ArrayList<>(getDeliveredMessageQueue()));
-            clearDeliveredMessageQueue();
+            updateMessageStatusToDelivered(deliveredRequestID, new ArrayList<>(getDeliveredMessageQueue()));
+            //clearDeliveredMessageQueue();
         }
-    }
-
-    private void deliveredApiCallProcedure(List<TAPMessageModel> tempMessageModel) {
-        updateMessageStatusToDelivered(deliveredRequestID, new ArrayList<>(tempMessageModel));
-        new Thread(() -> {
-            List<TAPMessageEntity> messageEntities = new ArrayList<>();
-            for (TAPMessageModel messageModel : tempMessageModel) {
-                messageModel.updateDeliveredMessage();
-                messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
-            }
-            TAPDataManager.getInstance().insertToDatabase(messageEntities, false);
-        }).start();
-    }
-
-    private void readApiCallProcedure(List<TAPMessageModel> tempMessageModel) {
-        updateMessageStatusToRead(readRequestID, new ArrayList<>(tempMessageModel));
-        new Thread(() -> {
-            List<TAPMessageEntity> messageEntities = new ArrayList<>();
-            for (TAPMessageModel messageModel : tempMessageModel) {
-                if (null != messageModel) {
-                    messageModel.updateReadMessage();
-                    messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
-                }
-            }
-            TAPDataManager.getInstance().insertToDatabase(messageEntities, false);
-        }).start();
     }
 
     public void updateMessageStatusToDeliveredFromNotification(TAPMessageModel newMessageModel) {
@@ -195,31 +182,43 @@ public class TAPMessageStatusManager {
         }).start();
     }
 
+    // TODO: 18 November 2019 CHANGE PARAMETER TO MESSAGE ID
     private void updateMessageStatusToDelivered(int tempDeliveredRequestID, List<TAPMessageModel> newMessageModels) {
         new Thread(() -> {
             List<String> messageIds = new ArrayList<>();
             for (TAPMessageModel model : newMessageModels) {
                 messageIds.add(model.getMessageID());
             }
+            removeDeliveredMessageQueue(newMessageModels);
             TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
                 @Override
                 public void onSuccess(TAPUpdateMessageStatusResponse response) {
-                    super.onSuccess(response);
-                    new Thread(() -> {
-                        if (getApiDeliveredRequestMap().containsKey(tempDeliveredRequestID))
-                            removeApiDeliveredRequestMapItem(tempDeliveredRequestID);
-                    }).start();
+                    if (null != response.getUpdatedMessageIDs()) {
+                        new Thread(() -> {
+                            if (getApiDeliveredRequestMap().containsKey(tempDeliveredRequestID)) {
+                                removeApiDeliveredRequestMapItem(tempDeliveredRequestID);
+                            }
+                            List<TAPMessageEntity> messageEntities = new ArrayList<>();
+                            for (TAPMessageModel messageModel : newMessageModels) {
+                                if (null != messageModel) {
+                                    messageModel.updateDeliveredMessage();
+                                    messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                                }
+                            }
+                            if (!messageEntities.isEmpty()) {
+                                TAPDataManager.getInstance().insertToDatabase(messageEntities, false);
+                            }
+                        }).start();
+                    }
                 }
 
                 @Override
                 public void onError(String errorMessage) {
-                    super.onError(errorMessage);
                     onApiError();
                 }
 
                 @Override
                 public void onError(TAPErrorModel error) {
-                    super.onError(error);
                     onApiError();
                 }
 
@@ -235,39 +234,37 @@ public class TAPMessageStatusManager {
         }).start();
     }
 
-    private void updateMessageStatusToRead(int tempReadRequestID, List<TAPMessageModel> newMessageModels) {
+    private void updateMessageStatusToRead(int tempReadRequestID, List<String> newMessageIds) {
         new Thread(() -> {
-            List<String> messageIds = new ArrayList<>();
-            for (TAPMessageModel model : newMessageModels) {
-                if (null != model)
-                    messageIds.add(model.getMessageID());
-            }
-            TAPDataManager.getInstance().updateMessageStatusAsRead(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            getMessagesMarkedAsRead().addAll(newMessageIds);
+            removeReadMessageQueue(newMessageIds);
+            TAPDataManager.getInstance().updateMessageStatusAsRead(newMessageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
                 @Override
                 public void onSuccess(TAPUpdateMessageStatusResponse response) {
-                    super.onSuccess(response);
-                    new Thread(() -> {
-                        if (getApiDeliveredRequestMap().containsKey(tempReadRequestID))
-                            removeApiDeliveredRequestMapItem(tempReadRequestID);
-                    }).start();
+                    if (null != response.getUpdatedMessageIDs()) {
+                        new Thread(() -> {
+                            if (getApiReadRequestMap().containsKey(tempReadRequestID)) {
+                                removeApiDeliveredRequestMapItem(tempReadRequestID);
+                            }
+                            TAPDataManager.getInstance().updateMessagesAsReadInDatabase(newMessageIds);
+                        }).start();
+                    }
                 }
 
                 @Override
                 public void onError(String errorMessage) {
-                    super.onError(errorMessage);
                     onApiError();
                 }
 
                 @Override
                 public void onError(TAPErrorModel error) {
-                    super.onError(error);
                     onApiError();
                 }
 
                 private void onApiError() {
                     new Thread(() -> {
-                        if (getApiDeliveredRequestMap().containsKey(tempReadRequestID)) {
-                            addApiReadRequestMapItem(readRequestID, getApiDeliveredRequestMap().get(tempReadRequestID));
+                        if (getApiReadRequestMap().containsKey(tempReadRequestID)) {
+                            addApiReadRequestMapItem(readRequestID, getApiReadRequestMap().get(tempReadRequestID));
                             removeApiReadRequestMapItem(tempReadRequestID);
                         }
                     }).start();

@@ -32,13 +32,11 @@ import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_IN
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_MENU_BUTTON;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SECTION_TITLE;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTABLE_CONTACT_LIST;
-import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
 
 public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, TAPBaseViewHolder<TapContactListModel>> {
 
     private TapContactListListener listener;
     private String myID;
-    private boolean isAnimating = true;
 
     public TapContactListAdapter(List<TapContactListModel> contactList) {
         setItems(contactList, false);
@@ -109,6 +107,7 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
                 // Set initial as avatar
+                Glide.with(itemView.getContext()).clear(civAvatar);
                 civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
                 civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
                 tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
@@ -118,8 +117,14 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
             // Change avatar icon and background
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE
 
-            // Set name
+            // Set name and username
             tvFullName.setText(user.getName());
+            if (null != user.getUsername() && !user.getUsername().isEmpty()) {
+                tvUsername.setText(String.format("@%s", user.getUsername()));
+                tvUsername.setVisibility(View.VISIBLE);
+            } else {
+                tvUsername.setVisibility(View.GONE);
+            }
 
             // Remove separator on last item
             if (position == getItemCount() - 1 || getItemAt(position + 1).getType() != item.getType()) {
@@ -132,18 +137,14 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
             if (item.getType() == TYPE_SELECTABLE_CONTACT_LIST && item.isSelected()) {
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_active);
                 ivSelection.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive)));
-                tvUsername.setText(String.format("@%s", user.getUsername()));
                 ivSelection.setVisibility(View.VISIBLE);
-                tvUsername.setVisibility(View.VISIBLE);
             } else if (item.getType() == TYPE_SELECTABLE_CONTACT_LIST) {
                 ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive);
                 ivSelection.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive)));
                 tvUsername.setText(String.format("@%s", user.getUsername()));
                 ivSelection.setVisibility(View.VISIBLE);
-                tvUsername.setVisibility(View.VISIBLE);
             } else {
                 ivSelection.setVisibility(View.GONE);
-                tvUsername.setVisibility(View.GONE);
             }
 
             itemView.setOnClickListener(v -> onContactClicked(item, position));
@@ -170,7 +171,6 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                         } else {
                             listener.onContactDeselected(item);
                         }
-                        isAnimating = true;
                         notifyItemChanged(position);
                     }
                     break;

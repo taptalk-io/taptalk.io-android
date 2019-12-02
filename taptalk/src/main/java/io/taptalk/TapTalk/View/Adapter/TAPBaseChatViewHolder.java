@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.Taptalk.BuildConfig;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -36,7 +37,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
     @Override
     protected void onBind(TAPMessageModel item, int position) {
-
+        // TODO: 13 November 2019 MARK MESSAGE READ HERE?
     }
 
     protected void setMessage(TAPMessageModel message) {
@@ -56,12 +57,16 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
     }
 
     protected void markMessageAsRead(TAPMessageModel item, TAPUserModel myUserModel) {
-        if ((null == item.getIsRead() || !item.getIsRead()) && !myUserModel.getUserID().equals(item.getUser().getUserID())
-                && (null != item.getSending() && !item.getSending())) {
+        if (!myUserModel.getUserID().equals(item.getUser().getUserID()) &&
+                (null == item.getIsRead() || !item.getIsRead()) &&
+                (null != item.getSending() && !item.getSending()) &&
+                !TAPMessageStatusManager.getInstance().getReadMessageQueue().contains(item.getMessageID()) &&
+                !TAPMessageStatusManager.getInstance().getMessagesMarkedAsRead().contains(item.getMessageID())
+        ) {
             item.updateReadMessage();
             new Thread(() -> {
                 TAPMessageStatusManager.getInstance().addUnreadListByOne(item.getRoom().getRoomID());
-                TAPMessageStatusManager.getInstance().addReadMessageQueue(item.copyMessageModel());
+                TAPMessageStatusManager.getInstance().addReadMessageQueue(item.getMessageID());
             }).start();
         }
     }
@@ -72,7 +77,9 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
             intent.putExtra(MESSAGE, message);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-            Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.getInstance().toJsonString(message));
+            if (BuildConfig.DEBUG) {
+                Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.getInstance().toJsonString(message));
+            }
             return true;
         });
     }

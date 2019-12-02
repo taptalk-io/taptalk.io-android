@@ -35,13 +35,22 @@ public interface TAPMyContactDao {
     @Query("select * from MyContact where isContact = 1 and deleted is null or deleted = 0 order by name, userID collate nocase asc")
     List<TAPUserModel> getAllMyContact();
 
-    @Query("select * from MyContact where isContact = 1 AND deleted is null or deleted = 0 order by name, userID collate nocase asc")
+    @Query("select * from MyContact where isContact = 0 and deleted is null or deleted = 0 order by name, userID collate nocase asc")
+    List<TAPUserModel> getNonContactUsers();
+
+    @Query("select * from MyContact where isContact = 1 and deleted is null or deleted = 0 order by name, userID collate nocase asc")
     LiveData<List<TAPUserModel>> getAllMyContactLive();
 
-    @Query("select * from MyContact where name like :keyword escape '\\' and isContact = 1 order by name, userID asc")
-    List<TAPUserModel> searchAllMyContacts(String keyword);
+    @Query("select * from MyContact where name like :keyword escape '\\' and isContact = 1 and deleted is null or deleted = 0 order by name, userID asc")
+    List<TAPUserModel> searchContactsByName(String keyword);
 
-    @Query("select count(userID) from MyContact where userID like :userID and isContact = 1 ")
+    @Query("select * from MyContact where (name like :keyword escape '\\' or username like :keyword escape '\\') and isContact = 1 and deleted is null or deleted = 0 order by name, userID asc")
+    List<TAPUserModel> searchContactsByNameAndUsername(String keyword);
+
+    @Query("select * from MyContact where (name like :keyword escape '\\' or username like :keyword escape '\\') and isContact = 0 and deleted is null or deleted = 0 order by name, userID asc")
+    List<TAPUserModel> searchNonContactUsers(String keyword);
+
+    @Query("select count(userID) from MyContact where userID like :userID and isContact = 1 and deleted is null or deleted = 0 ")
     Integer checkUserInMyContacts(String userID);
 
     @Query("select * from MyContact where xcUserID = :xcUserID")

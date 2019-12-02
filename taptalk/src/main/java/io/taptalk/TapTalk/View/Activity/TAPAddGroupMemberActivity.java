@@ -39,6 +39,7 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
@@ -90,7 +91,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        updateFilteredContacts(etSearch.getText().toString().toLowerCase());
+        updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
     }
 
     @Override
@@ -106,7 +107,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             case RESULT_OK:
                 switch (requestCode) {
                     case CREATE_GROUP:
-                        onBackPressed();
+                        finish();
                         break;
                 }
             case RESULT_CANCELED:
@@ -160,9 +161,22 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 vm.setContactList(entities);
                 vm.getContactList().removeAll(vm.getExistingMembers());
                 vm.getFilteredContacts().addAll(vm.getContactList());
-                vm.setSeparatedContactList(TAPUtils.getInstance().generateContactListForRecycler(vm.getContactList(), TYPE_SELECTABLE_CONTACT_LIST));
-                vm.getAdapterItems().addAll(vm.getSeparatedContactList());
-                updateFilteredContacts(etSearch.getText().toString());
+                vm.setSeparatedContactList(TAPUtils.getInstance().generateContactListForRecycler(vm.getContactList(), TYPE_SELECTABLE_CONTACT_LIST, vm.getContactListPointer()));
+                updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
+
+                // Put non-contact users from database to pointer
+                TAPDataManager.getInstance().getNonContactUsersFromDatabase(new TAPDatabaseListener<TAPUserModel>() {
+                    @Override
+                    public void onSelectFinished(List<TAPUserModel> entities) {
+                        for (TAPUserModel user : entities) {
+                            if (null != user.getUsername() && !user.getUsername().isEmpty() &&
+                                    null != user.getName() && !user.getName().isEmpty()) {
+                                TapContactListModel filteredContact = new TapContactListModel(user, TYPE_SELECTABLE_CONTACT_LIST);
+                                vm.getContactListPointer().put(user.getUsername(), filteredContact);
+                            }
+                        }
+                    }
+                });
             }
         });
 
@@ -359,40 +373,112 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     private void updateFilteredContacts(String searchKeyword) {
         vm.getAdapterItems().clear();
         vm.getFilteredContacts().clear();
-        if (searchKeyword.trim().isEmpty()) {
+        vm.getContactSearchResult().clear();
+        vm.getNonContactSearchResult().clear();
+        vm.getContactListSearchResult().clear();
+        vm.getNonContactListSearchResult().clear();
+        vm.setContactQueryFinished(false);
+        vm.setNonContactQueryFinished(false);
+
+        if (searchKeyword.isEmpty()) {
             // Show all contacts
             vm.getFilteredContacts().addAll(vm.getContactList());
             vm.getAdapterItems().addAll(vm.getSeparatedContactList());
+            vm.setNeedToCallGetUserApi(false);
             if (vm.getAdapterItems().isEmpty()) {
                 tvInfoEmptyContact.setText(getString(R.string.tap_contact_list_empty));
-                tvButtonEmptyContact.setText(getString(R.string.tap_add_new_contact));
-                llEmptyContact.setOnClickListener(v -> openNewContactActivity());
+                if (TapUI.getInstance().isNewContactMenuButtonVisible()) {
+                    tvButtonEmptyContact.setText(getString(R.string.tap_add_new_contact));
+                    tvButtonEmptyContact.setVisibility(View.VISIBLE);
+                    llEmptyContact.setOnClickListener(v -> openNewContactActivity());
+                } else {
+                    tvButtonEmptyContact.setVisibility(View.GONE);
+                }
                 llEmptyContact.setVisibility(View.VISIBLE);
                 rvContactList.setVisibility(View.GONE);
             } else {
                 llEmptyContact.setVisibility(View.GONE);
                 rvContactList.setVisibility(View.VISIBLE);
             }
+            contactListAdapter.setItems(vm.getAdapterItems());
         } else {
             // Show filtered contacts
-            List<TapContactListModel> filteredContactListModels = new ArrayList<>();
-            List<TAPUserModel> filteredContacts = new ArrayList<>();
-            for (TapContactListModel contact : vm.getSeparatedContactList()) {
-                TAPUserModel user = contact.getUser();
-                if (null != user && (user.getName().toLowerCase().contains(searchKeyword) || (null != user.getUsername() && user.getUsername().contains(searchKeyword)))) {
-                    filteredContactListModels.add(contact);
-                    filteredContacts.add(user);
+            vm.setNeedToCallGetUserApi(true);
+
+            // Search matching contacts from database
+            TAPDataManager.getInstance().searchContactsByNameAndUsername(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
+                @Override
+                public void onSelectFinished(List<TAPUserModel> entities) {
+                    if (null != entities && !entities.isEmpty()) {
+                        for (TAPUserModel contact : entities) {
+                            if (vm.getContactListPointer().containsKey(contact.getUsername()) && !vm.getExistingMembers().contains(contact)) {
+                                vm.getContactSearchResult().add(contact);
+                                vm.getContactListSearchResult().add(vm.getContactListPointer().get(contact.getUsername()));
+                                if (searchKeyword.equalsIgnoreCase(contact.getUsername())) {
+                                    vm.setNeedToCallGetUserApi(false);
+                                }
+                            }
+                        }
+                    }
+                    vm.setContactQueryFinished(true);
+                    if (vm.isNonContactQueryFinished()) {
+                        showFilteredContactFromDatabaseAndCallApi();
+                    }
                 }
-            }
-            vm.getFilteredContacts().addAll(filteredContacts);
-            if (!vm.getFilteredContacts().isEmpty()) {
-                vm.getAdapterItems().add(new TapContactListModel(getString(R.string.tap_contacts)));
-                vm.getAdapterItems().addAll(filteredContactListModels);
-            }
+            });
+
+            // Search matching non-contact users from database
+            TAPDataManager.getInstance().searchNonContactUsersFromDatabase(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
+                @Override
+                public void onSelectFinished(List<TAPUserModel> entities) {
+                    if (null != entities && !entities.isEmpty()) {
+                        for (TAPUserModel user : entities) {
+                            if (vm.getContactListPointer().containsKey(user.getUsername()) && !vm.getExistingMembers().contains(user)) {
+                                vm.getNonContactSearchResult().add(user);
+                                vm.getNonContactListSearchResult().add(vm.getContactListPointer().get(user.getUsername()));
+                                if (searchKeyword.equalsIgnoreCase(user.getUsername())) {
+                                    vm.setNeedToCallGetUserApi(false);
+                                }
+                            }
+                        }
+                    }
+                    vm.setNonContactQueryFinished(true);
+                    if (vm.isContactQueryFinished()) {
+                        showFilteredContactFromDatabaseAndCallApi();
+                    }
+                }
+            });
+        }
+    }
+
+    private synchronized void showFilteredContactFromDatabaseAndCallApi() {
+        // Update view after both contact and non-contact database query is finished
+        if (!vm.getAdapterItems().isEmpty()) {
+            return;
+        }
+        if (!vm.getContactSearchResult().isEmpty()) {
+            // Add contact search result to view
+            vm.getAdapterItems().add(new TapContactListModel(getString(R.string.tap_contacts)));
+            vm.getFilteredContacts().addAll(vm.getContactSearchResult());
+            vm.getAdapterItems().addAll(vm.getContactListSearchResult());
+        }
+        if (!vm.getNonContactSearchResult().isEmpty()) {
+            // Add non-contact search result to view
+            vm.getAdapterItems().add(new TapContactListModel(getString(R.string.tap_global_search)));
+            vm.getFilteredContacts().addAll(vm.getNonContactSearchResult());
+            vm.getAdapterItems().addAll(vm.getNonContactListSearchResult());
+        }
+
+        if (vm.isNeedToCallGetUserApi()) {
+            // Call get user API if no matching username is found in database result
+            TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
+        }
+
+        runOnUiThread(() -> {
             llEmptyContact.setVisibility(View.GONE);
             rvContactList.setVisibility(View.VISIBLE);
-        }
-        contactListAdapter.setItems(vm.getAdapterItems());
+            contactListAdapter.setItems(vm.getAdapterItems());
+        });
     }
 
     private void openNewContactActivity() {
@@ -402,25 +488,33 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     }
 
     private void showGlobalSearchLoading() {
-        ivGlobalSearchLoading.setVisibility(View.VISIBLE);
-        TAPUtils.getInstance().rotateAnimateInfinitely(TAPAddGroupMemberActivity.this, ivGlobalSearchLoading);
+        runOnUiThread(() -> {
+            ivGlobalSearchLoading.setVisibility(View.VISIBLE);
+            TAPUtils.getInstance().rotateAnimateInfinitely(TAPAddGroupMemberActivity.this, ivGlobalSearchLoading);
+        });
     }
 
     private void hideGlobalSearchLoading() {
-        ivGlobalSearchLoading.clearAnimation();
-        ivGlobalSearchLoading.setVisibility(View.GONE);
+        runOnUiThread(() -> {
+            ivGlobalSearchLoading.clearAnimation();
+            ivGlobalSearchLoading.setVisibility(View.GONE);
+        });
     }
 
     private void showButtonLoading() {
-        tvButtonText.setVisibility(View.GONE);
-        ivButtonLoading.setVisibility(View.VISIBLE);
-        TAPUtils.getInstance().rotateAnimateInfinitely(this, ivButtonLoading);
+        runOnUiThread(() -> {
+            tvButtonText.setVisibility(View.GONE);
+            ivButtonLoading.setVisibility(View.VISIBLE);
+            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivButtonLoading);
+        });
     }
 
     private void hideButtonLoading() {
-        ivButtonLoading.clearAnimation();
-        ivButtonLoading.setVisibility(View.GONE);
-        tvButtonText.setVisibility(View.VISIBLE);
+        runOnUiThread(() -> {
+            ivButtonLoading.clearAnimation();
+            ivButtonLoading.setVisibility(View.GONE);
+            tvButtonText.setVisibility(View.VISIBLE);
+        });
     }
 
     private TextWatcher searchTextWatcher = new TextWatcher() {
@@ -438,11 +532,11 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             if (s.length() == 0) {
                 vm.setPendingSearch("");
                 ivButtonClearText.setVisibility(View.GONE);
+                updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
             } else {
                 searchTimer.start();
                 ivButtonClearText.setVisibility(View.VISIBLE);
             }
-            updateFilteredContacts(s.toString().toLowerCase());
             etSearch.addTextChangedListener(this);
         }
 
@@ -455,7 +549,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     private TextView.OnEditorActionListener searchEditorListener = new TextView.OnEditorActionListener() {
         @Override
         public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-            updateFilteredContacts(etSearch.getText().toString().toLowerCase());
+            updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
             TAPDataManager.getInstance().cancelUserSearchApiCall();
             TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
             TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
@@ -471,13 +565,14 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
         @Override
         public void onFinish() {
-            TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
+            updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
         }
     };
 
     TAPDefaultDataView<TAPGetUserResponse> getUserView = new TAPDefaultDataView<TAPGetUserResponse>() {
         @Override
         public void startLoading() {
+            vm.setNeedToCallGetUserApi(false);
             showGlobalSearchLoading();
         }
 
@@ -489,11 +584,22 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPGetUserResponse response) {
             TAPUserModel userResponse = response.getUser();
+
+            // Save user response to database
             TAPContactManager.getInstance().updateUserData(userResponse);
+
+            if (!vm.getContactListPointer().containsKey(userResponse.getUsername())) {
+                // Add user response to pointer
+                TapContactListModel contactListResponse = new TapContactListModel(userResponse, TYPE_SELECTABLE_CONTACT_LIST);
+                vm.getContactListPointer().put(userResponse.getUsername(), contactListResponse);
+            }
+
             if (!vm.getFilteredContacts().contains(userResponse) && !vm.getExistingMembers().contains(userResponse)) {
-                TapContactListModel globalSearchResult = new TapContactListModel(userResponse, TYPE_SELECTABLE_CONTACT_LIST);
-                vm.getAdapterItems().add(new TapContactListModel(getString(R.string.tap_global_search)));
-                vm.getAdapterItems().add(globalSearchResult);
+                // Add user response to view
+                if (vm.getNonContactSearchResult().isEmpty()) {
+                    vm.getAdapterItems().add(new TapContactListModel(getString(R.string.tap_global_search)));
+                }
+                vm.getAdapterItems().add(vm.getContactListPointer().get(userResponse.getUsername()));
                 contactListAdapter.setItems(vm.getAdapterItems());
             } else {
                 onError(new TAPErrorModel());
@@ -507,7 +613,10 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 runOnUiThread(() -> {
                     tvInfoEmptyContact.setText(String.format(getString(R.string.tap_no_result_found_for), etSearch.getText().toString()));
                     tvButtonEmptyContact.setText(getString(R.string.tap_try_different_search));
-                    llEmptyContact.setOnClickListener(v -> etSearch.setText(""));
+                    llEmptyContact.setOnClickListener(v -> {
+                        TAPUtils.getInstance().showKeyboard(TAPAddGroupMemberActivity.this, etSearch);
+                        etSearch.setSelection(etSearch.getText().length());
+                    });
                     llEmptyContact.setVisibility(View.VISIBLE);
                     rvContactList.setVisibility(View.GONE);
                 });

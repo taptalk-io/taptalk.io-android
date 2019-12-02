@@ -25,7 +25,6 @@ import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
-import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -67,6 +66,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASK
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_CHAT_ROOM_CONTACT_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
@@ -74,7 +74,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_RECIPIENT_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
@@ -207,6 +206,7 @@ public class TAPDataManager {
         removeMyCountryFlagUrl();
         removeContactSyncPermissionAsked();
         removeContactSyncAllowedByUser();
+        removeChatRoomContactActionDismissed();
     }
 
     /**
@@ -461,6 +461,29 @@ public class TAPDataManager {
 
     public void removeContactSyncAllowedByUser() {
         removePreference(IS_CONTACT_SYNC_ALLOWED_BY_USER);
+    }
+
+    /**
+     * CHAT ROOM CONTACT ACTION
+     */
+
+    private HashMap<String, Boolean> getChatRoomContactActionsMap() {
+        return Hawk.get(K_CHAT_ROOM_CONTACT_ACTION, new HashMap<>());
+    }
+
+    public boolean isChatRoomContactActionDismissed(String roomID) {
+        Boolean isDismissed = getChatRoomContactActionsMap().get(roomID);
+        return null == isDismissed ? false : isDismissed;
+    }
+
+    public void saveChatRoomContactActionDismissed(String roomID) {
+        HashMap<String, Boolean> map = getChatRoomContactActionsMap();
+        map.put(roomID, true);
+        Hawk.put(K_CHAT_ROOM_CONTACT_ACTION, map);
+    }
+
+    public void removeChatRoomContactActionDismissed() {
+        removePreference(K_CHAT_ROOM_CONTACT_ACTION);
     }
 
     /**
@@ -758,6 +781,14 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().updateFailedStatusToSending(localID);
     }
 
+    public void updateMessageAsReadInDatabase(String messageID) {
+        TAPDatabaseManager.getInstance().updateMessageAsRead(messageID);
+    }
+
+    public void updateMessagesAsReadInDatabase(List<String> messageIDs) {
+        TAPDatabaseManager.getInstance().updateMessagesAsRead(messageIDs);
+    }
+
     public LiveData<List<TAPMessageEntity>> getMessagesLiveData() {
         return TAPDatabaseManager.getInstance().getMessagesLiveData();
     }
@@ -789,11 +820,11 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
     }
 
-    public void getAllMessageThatNotRead(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+    public void getAllUnreadMessagesFromRoom(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser())
             return;
 
-        TAPDatabaseManager.getInstance().getAllMessageThatNotRead(getActiveUser().getUserID(), roomID, listener);
+        TAPDatabaseManager.getInstance().getAllUnreadMessagesFromRoom(getActiveUser().getUserID(), roomID, listener);
     }
 
     public void getRoomList(boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
@@ -884,12 +915,24 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().getMyContactList(listener);
     }
 
+    public void getNonContactUsersFromDatabase(TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().getNonContactUsers(listener);
+    }
+
     public LiveData<List<TAPUserModel>> getMyContactList() {
         return TAPDatabaseManager.getInstance().getMyContactList();
     }
 
-    public void searchAllMyContacts(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
-        TAPDatabaseManager.getInstance().searchAllMyContacts(keyword, listener);
+    public void searchContactsByName(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().searchContactsByName(keyword, listener);
+    }
+
+    public void searchContactsByNameAndUsername(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().searchContactsByNameAndUsername(keyword, listener);
+    }
+
+    public void searchNonContactUsersFromDatabase(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        TAPDatabaseManager.getInstance().searchNonContactUsers(keyword, listener);
     }
 
     public void insertMyContactToDatabase(TAPUserModel... userModels) {

@@ -122,13 +122,14 @@ public class TAPDefaultConstant {
         public static final String COUNTRY_FLAG_URL = "kTAPExtraCountryFlagUrl";
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
         public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
-        public static final String IS_NEED_TO_CLOSE_ACTIVITY_BEFORE = "kTAPIsNeedToCloseActivityBefore";
+        public static final String CLOSE_ACTIVITY = "kTAPCloseActivity";
     }
 
     public static final class RequestCode {
         public static final int COUNTRY_PICK = 11;
         public static final int EDIT_PROFILE = 21;
-        public static final int OPEN_PROFILE = 22;
+        public static final int OPEN_GROUP_PROFILE = 22;
+        public static final int OPEN_MEMBER_PROFILE = 23;
         public static final int REGISTER = 31;
         public static final int GROUP_ADD_MEMBER = 4;
         public static final int GROUP_UPDATE_DATA = 41;
@@ -370,16 +371,17 @@ public class TAPDefaultConstant {
     public static class ChatProfileMenuType {
         public static final int MENU_NOTIFICATION = 1;
         public static final int MENU_ROOM_COLOR = 2;
-        public static final int MENU_BLOCK = 3;
-        public static final int MENU_EXIT_AND_CLEAR_CHAT = 4;
-        public static final int MENU_VIEW_MEMBERS = 5;
-        public static final int MENU_EXIT_GROUP = 6;
-        public static final int MENU_ADD_TO_CONTACTS = 7;
-        public static final int MENU_SEND_MESSAGE = 8;
-        public static final int MENU_PROMOTE_ADMIN = 9;
-        public static final int MENU_DEMOTE_ADMIN = 10;
-        public static final int MENU_REMOVE_MEMBER = 11;
-        public static final int MENU_DELETE_GROUP = 12;
+        public static final int MENU_ROOM_SEARCH_CHAT = 3;
+        public static final int MENU_BLOCK = 4;
+        public static final int MENU_CLEAR_CHAT = 5;
+        public static final int MENU_VIEW_MEMBERS = 6;
+        public static final int MENU_EXIT_GROUP = 7;
+        public static final int MENU_ADD_TO_CONTACTS = 8;
+        public static final int MENU_SEND_MESSAGE = 9;
+        public static final int MENU_PROMOTE_ADMIN = 10;
+        public static final int MENU_DEMOTE_ADMIN = 11;
+        public static final int MENU_REMOVE_MEMBER = 12;
+        public static final int MENU_DELETE_GROUP = 13;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -398,8 +400,11 @@ public class TAPDefaultConstant {
     public static final String K_FILE_URI_MAP = "kTAPFileUriMap";
     public static final String K_FILE_PATH_MAP = "kTAPFilePathMap";
     public static final String K_MEDIA_VOLUME = "kTAPMediaVolume";
+    public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
+    public static final String IS_CONTACT_SYNC_ALLOWED_BY_USER = "kTAPIsContactSyncAllowedByUser";
+    public static final String K_CHAT_ROOM_CONTACT_ACTION = "kTAPChatRoomContactAction";
+
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
-    public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
     public static final String DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE = "26214400";
     public static final String DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE = "10485760";
@@ -428,6 +433,8 @@ public class TAPDefaultConstant {
     public static final String CONTACT_LIST = "kTAPContactList";
     public static final String REFRESH_TOKEN_RENEWED = "kTAPRefreshTokenRenewed";
     public static final String RELOAD_ROOM_LIST = "kTAPReloadRoomList";
+    public static final String CLEAR_ROOM_LIST_BADGE = "kTAPClearRoomListBadge";
+    public static final String RELOAD_PROFILE_PICTURE = "kTAPReloadProfilePicture";
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
@@ -435,7 +442,4 @@ public class TAPDefaultConstant {
     public static final String MY_COUNTRY_FLAG_URL = "kMyCountryFlagUrl";
     public static final String UNREAD_INDICATOR_LOCAL_ID = "kTAPUnreadIndicatorLocalIdentity";
     public static final String LOADING_INDICATOR_LOCAL_ID = "kTAPFetchingOlderMessagesLocalID";
-
-    public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
-    public static final String IS_CONTACT_SYNC_ALLOWED_BY_USER = "kTAPIsContactSyncAllowedByUser";
 }

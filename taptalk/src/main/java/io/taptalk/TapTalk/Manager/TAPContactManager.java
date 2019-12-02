@@ -42,13 +42,15 @@ public class TAPContactManager {
     }
 
     public void updateUserData(TAPUserModel user) {
-        if (!user.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) && null == getUserDataMap().get(user.getUserID())) {
+        String myUserId = TAPChatManager.getInstance().getActiveUser().getUserID();
+        String incomingUserId = user.getUserID();
+        if (!incomingUserId.equals(myUserId) && null == getUserDataMap().get(incomingUserId)) {
             // Add new user to map
             user.checkAndSetContact(0);
-            getUserDataMap().put(user.getUserID(), user);
-        } else if (!user.getUserID().equals(TAPDataManager.getInstance().getActiveUser().getUserID()) && null != getUserDataMap().get(user.getUserID())) {
+            getUserDataMap().put(incomingUserId, user);
+        } else if (!incomingUserId.equals(myUserId)) {
             // Update user data in map
-            getUserDataMap().get(user.getUserID()).updateValue(user);
+            getUserDataMap().get(incomingUserId).updateValue(user);
         }
         saveUserDataToDatabase(user);
     }
@@ -131,9 +133,9 @@ public class TAPContactManager {
     }
 
     public String convertPhoneNumber(String phone) {
-        if (phone.contains("*") || phone.contains("#") || phone.contains(";") || phone.contains(","))
+        if (phone.contains("*") || phone.contains("#") || phone.contains(";") || phone.contains(",") || phone.isEmpty()) {
             return "";
-
+        }
         String tempPhone = phone.replaceAll("[^\\d]", "");
         String prefix = tempPhone.substring(0, getMyCountryCode().length());
 

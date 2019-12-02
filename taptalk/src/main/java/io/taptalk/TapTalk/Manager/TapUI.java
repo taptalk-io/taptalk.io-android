@@ -39,10 +39,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
@@ -54,7 +56,12 @@ public class TapUI {
     private List<TapUIChatRoomListener> tapUIChatRoomListeners;
     private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
 
+    private boolean isSearchChatBarHidden;
     private boolean isMyAccountButtonHidden;
+    private boolean isNewChatButtonHidden;
+    private boolean isNewContactMenuButtonHidden;
+    private boolean isScanQRMenuButtonHidden;
+    private boolean isNewGroupMenuButtonHidden;
     private boolean isLogoutButtonVisible;
 
     public static TapUI getInstance() {
@@ -268,12 +275,52 @@ public class TapUI {
         openChatRoomWithRoomModel(context, roomModel);
     }
 
-    public void setMyAccountButtonInRoomListVisible(boolean isVisible) {
-        isMyAccountButtonHidden = !isVisible;
+    public boolean isSearchChatBarVisible() {
+        return !isSearchChatBarHidden;
+    }
+
+    public void setSearchChatBarInRoomListVisible(boolean isVisible) {
+        isSearchChatBarHidden = !isVisible;
     }
 
     public boolean isMyAccountButtonVisible() {
         return !isMyAccountButtonHidden;
+    }
+
+    public void setMyAccountButtonInRoomListVisible(boolean isVisible) {
+        isMyAccountButtonHidden = !isVisible;
+    }
+
+    public boolean isNewChatButtonVisible() {
+        return !isNewChatButtonHidden;
+    }
+
+    public void setNewChatButtonInRoomListVisible(boolean isVisible) {
+        isNewChatButtonHidden = !isVisible;
+    }
+
+    public boolean isNewContactMenuButtonVisible() {
+        return !isNewContactMenuButtonHidden;
+    }
+
+    public void setNewContactMenuButtonVisible(boolean isVisible) {
+        isNewContactMenuButtonHidden = !isVisible;
+    }
+
+    public boolean isScanQRMenuButtonVisible() {
+        return !isScanQRMenuButtonHidden;
+    }
+
+    public void setScanQRMenuButtonVisible(boolean isVisible) {
+        isScanQRMenuButtonHidden = !isVisible;
+    }
+
+    public boolean isNewGroupMenuButtonVisible() {
+        return !isNewGroupMenuButtonHidden;
+    }
+
+    public void setNewGroupMenuButtonVisible(boolean isVisible) {
+        isNewGroupMenuButtonHidden = !isVisible;
     }
 
     public void setLogoutButtonVisible(boolean isVisible) {
@@ -288,15 +335,38 @@ public class TapUI {
         TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
     }
 
+    void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
+        if (getRoomListListeners().isEmpty() && null != mainRoomListFragment) {
+            mainRoomListFragment.showSearchChat();
+        } else {
+            for (TapUIRoomListListener listener : getRoomListListeners()) {
+                listener.onSearchChatBarTapped(activity, mainRoomListFragment);
+            }
+        }
+    }
+
     void triggerTapTalkAccountButtonTapped(Activity activity) {
         if (getRoomListListeners().isEmpty()) {
             WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
             Intent intent = new Intent(contextWeakReference.get(), TAPMyAccountActivity.class);
-            contextWeakReference.get().startActivityForResult(intent, EDIT_PROFILE);
+            contextWeakReference.get().startActivity(intent);
             contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
                 listener.onTapTalkAccountButtonTapped(activity);
+            }
+        }
+    }
+
+    void triggerNewChatButtonTapped(Activity activity) {
+        if (getRoomListListeners().isEmpty()) {
+            WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
+            Intent intent = new Intent(contextWeakReference.get(), TAPNewChatActivity.class);
+            contextWeakReference.get().startActivity(intent);
+            contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        } else {
+            for (TapUIRoomListListener listener : getRoomListListeners()) {
+                listener.onNewChatButtonTapped(activity);
             }
         }
     }
@@ -308,19 +378,21 @@ public class TapUI {
             intent.putExtra(ROOM, room);
             if (room.getRoomType() == TYPE_PERSONAL) {
                 contextWeakReference.get().startActivity(intent);
+            } else if (room.getRoomType() == TYPE_GROUP && null != user) {
+                intent.putExtra(K_USER, user);
+                contextWeakReference.get().startActivityForResult(intent, OPEN_MEMBER_PROFILE);
             } else if (room.getRoomType() == TYPE_GROUP) {
-                contextWeakReference.get().startActivityForResult(intent, OPEN_PROFILE);
+                contextWeakReference.get().startActivityForResult(intent, OPEN_GROUP_PROFILE);
             }
             contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
         } else {
             for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-                switch (room.getRoomType()) {
-                    case TYPE_PERSONAL:
-                        listener.onTapTalkUserProfileButtonTapped(activity, room, user);
-                        break;
-                    case TYPE_GROUP:
-                        listener.onTapTalkGroupChatProfileButtonTapped(activity, room);
-                        break;
+                if (room.getRoomType() == TYPE_PERSONAL) {
+                    listener.onTapTalkUserProfileButtonTapped(activity, room, user);
+                } else if (room.getRoomType() == TYPE_GROUP && null != user) {
+                    listener.onTapTalkGroupMemberAvatarTapped(activity, room, user);
+                } else if (room.getRoomType() == TYPE_GROUP) {
+                    listener.onTapTalkGroupChatProfileButtonTapped(activity, room);
                 }
             }
         }
