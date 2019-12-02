@@ -133,11 +133,14 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             Activity.RESULT_OK -> {
                 when (requestCode) {
                     PICK_PROFILE_IMAGE_CAMERA -> {
-                        reloadProfilePicture(vm.profilePictureUri, true, true)
+                        if (null != intent?.data) {
+                            vm.profilePictureUri = intent.data
+                        }
+                        reloadProfilePicture(vm.profilePictureUri, showErrorMessage = true, uploadPicture = true)
                     }
                     PICK_PROFILE_IMAGE_GALLERY -> {
                         vm.profilePictureUri = intent?.data
-                        reloadProfilePicture(vm.profilePictureUri, true, true)
+                        reloadProfilePicture(vm.profilePictureUri, showErrorMessage = true, uploadPicture = true)
                     }
                 }
             }

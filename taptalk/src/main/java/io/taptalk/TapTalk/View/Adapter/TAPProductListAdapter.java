@@ -98,7 +98,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 // My products
                 vButtonSeparator.setVisibility(View.GONE);
                 tvButtonTwo.setVisibility(View.GONE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     tvButtonOne.setBackgroundResource(R.drawable.tap_bg_product_list_single_button_ripple);
                 } else {
                     tvButtonOne.setBackgroundResource(R.drawable.tap_bg_product_list_single_button);
@@ -113,7 +113,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 }
                 vButtonSeparator.setVisibility(View.VISIBLE);
                 tvButtonTwo.setVisibility(View.VISIBLE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     tvButtonOne.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_left_button_ripple));
                     tvButtonTwo.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_right_button_ripple));
                 } else {

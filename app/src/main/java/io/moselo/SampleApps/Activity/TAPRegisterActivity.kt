@@ -118,6 +118,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
             Activity.RESULT_OK -> {
                 when (requestCode) {
                     PICK_PROFILE_IMAGE_CAMERA -> {
+                        if (null != intent?.data) {
+                            vm.profilePictureUri = intent.data
+                        }
                         reloadProfilePicture(true)
                     }
                     PICK_PROFILE_IMAGE_GALLERY -> {

@@ -343,6 +343,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
             switch (requestCode) {
                 case SEND_IMAGE_FROM_CAMERA:
+                    if (null != intent && null != intent.getData()) {
+                        vm.setCameraImageUri(intent.getData());
+                    }
                     if (null == vm.getCameraImageUri()) {
                         return;
                     }
@@ -749,7 +752,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 //            showChatAsHistory(getString(R.string.tap_not_a_participant));
 //        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             llButtonDeleteChat.setBackground(getDrawable(R.drawable.tap_bg_button_destructive_ripple));
             ivButtonAttach.setBackground(getDrawable(R.drawable.tap_bg_chat_composer_attachment_ripple));
             ivToBottom.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));

@@ -1002,7 +1002,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
                 tvUserName = itemView.findViewById(R.id.tv_user_name);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     flFileIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_left_ripple));
                 } else {
                     flFileIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_left));
@@ -1010,7 +1010,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivSending = itemView.findViewById(R.id.iv_sending);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     flFileIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_right_ripple));
                 } else {
                     flFileIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_right));

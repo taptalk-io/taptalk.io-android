@@ -116,7 +116,7 @@ public class TapTalkDialog extends Dialog {
         Resources res = getContext().getResources();
         switch (dialogType) {
             case ERROR_DIALOG:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_error_ripple));
                 } else {
                     primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_error));
@@ -124,14 +124,14 @@ public class TapTalkDialog extends Dialog {
                 break;
             case DEFAULT:
             default:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_success_ripple));
                 } else {
                     primary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_primary_button_success));
                 }
                 break;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             secondary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_secondary_button_ripple));
         } else {
             secondary.setBackground(res.getDrawable(R.drawable.tap_bg_dialog_secondary_button));

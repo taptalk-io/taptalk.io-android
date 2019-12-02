@@ -129,7 +129,7 @@ public class TAPUtils {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            Log.e("><><><", "toJsonString: ", e);
+            Log.e(TAG, "toJsonString: ", e);
             return "{}";
         }
     }
@@ -146,7 +146,7 @@ public class TAPUtils {
         try {
             return objectMapper.readValue(jsonPacket, type);
         } catch (Exception e) {
-            Log.e(TAPUtils.class.getSimpleName(), "fromJSON: ", e);
+            Log.e(TAG, "fromJSON: ", e);
             return null;
         }
     }
@@ -376,7 +376,7 @@ public class TAPUtils {
     public enum ClipType {TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
 
     public void clipToRoundedRectangle(View view, int cornerRadius, ClipType clipType) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             view.setOutlineProvider(new ViewOutlineProvider() {
                 @Override
                 public void getOutline(View view, Outline outline) {
@@ -558,7 +558,10 @@ public class TAPUtils {
                     File dir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                     File image = File.createTempFile(filename, ".jpeg", dir);
                     Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        // FIXME: 2 December 2019 MediaStore.EXTRA_OUTPUT crashes on Android 4
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    }
                     activity.startActivityForResult(intent, requestCode);
                     // Save file path to map
                     TAPFileDownloadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());

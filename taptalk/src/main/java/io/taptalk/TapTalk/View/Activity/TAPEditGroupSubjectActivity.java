@@ -107,7 +107,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
                 case PICK_GROUP_IMAGE_GALLERY:
                     if (requestCode == PICK_GROUP_IMAGE_GALLERY && null == data.getData()) {
                         return;
-                    } else if (requestCode == PICK_GROUP_IMAGE_GALLERY) {
+                    } else if (null != data && null != data.getData()) {
                         vm.setRoomImageUri(data.getData());
                     }
 
