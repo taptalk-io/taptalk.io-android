@@ -116,7 +116,7 @@ public class TAPChatManager {
     private int maxRetryAttempt = 10;
     private int pendingRetryInterval = 60 * 1000;
     private final int maxImageSize = 2000;
-    private final Integer CHARACTER_LIMIT = 1000;
+    private final Integer CHARACTER_LIMIT = 4000;
 
     private TapTalkSocketInterface socketListener = new TapTalkSocketInterface() {
         @Override

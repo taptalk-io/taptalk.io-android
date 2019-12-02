@@ -62,7 +62,7 @@ public interface TAPMessageDao {
     List<TAPMessageEntity> getAllRoomList();
 
     @Query("select * from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID order by created asc")
-    List<TAPMessageEntity> getAllMessageThatNotRead(String userID, String roomID);
+    List<TAPMessageEntity> getAllUnreadMessagesFromRoom(String userID, String roomID);
 
     @Query("select * from (select roomID, max(created) as max_created from Message_Table group by roomID) " +
             "secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created where roomName like :keyword escape '\\' group by firstQuery.roomID order by firstQuery.created desc")
@@ -111,6 +111,12 @@ public interface TAPMessageDao {
 
     @Query("update Message_Table set isFailedSend = 0, isSending = 1 where localID = :localID")
     void updateFailedStatusToSending(String localID);
+
+    @Query("update Message_Table set isDelivered = 1, isRead = 1 where messageID = :messageID")
+    void updateMessageAsRead(String messageID);
+
+    @Query("update Message_Table set isDelivered = 1, isRead = 1 where messageID in (:messageIDs)")
+    void updateMessagesAsRead(List<String> messageIDs);
 
     @Query("delete from Message_Table where roomID = :roomId")
     void deleteMessageByRoomId(String roomId);

@@ -128,7 +128,8 @@ public class TAPDefaultConstant {
     public static final class RequestCode {
         public static final int COUNTRY_PICK = 11;
         public static final int EDIT_PROFILE = 21;
-        public static final int OPEN_PROFILE = 22;
+        public static final int OPEN_GROUP_PROFILE = 22;
+        public static final int OPEN_MEMBER_PROFILE = 23;
         public static final int REGISTER = 31;
         public static final int GROUP_ADD_MEMBER = 4;
         public static final int GROUP_UPDATE_DATA = 41;
@@ -399,8 +400,11 @@ public class TAPDefaultConstant {
     public static final String K_FILE_URI_MAP = "kTAPFileUriMap";
     public static final String K_FILE_PATH_MAP = "kTAPFilePathMap";
     public static final String K_MEDIA_VOLUME = "kTAPMediaVolume";
+    public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
+    public static final String IS_CONTACT_SYNC_ALLOWED_BY_USER = "kTAPIsContactSyncAllowedByUser";
+    public static final String K_CHAT_ROOM_CONTACT_ACTION = "kTAPChatRoomContactAction";
+
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
-    public static final String DB_ENCRYPT_PASS = "MoseloOlesom";
 
     public static final String DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE = "26214400";
     public static final String DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE = "10485760";
@@ -429,6 +433,8 @@ public class TAPDefaultConstant {
     public static final String CONTACT_LIST = "kTAPContactList";
     public static final String REFRESH_TOKEN_RENEWED = "kTAPRefreshTokenRenewed";
     public static final String RELOAD_ROOM_LIST = "kTAPReloadRoomList";
+    public static final String CLEAR_ROOM_LIST_BADGE = "kTAPClearRoomListBadge";
+    public static final String RELOAD_PROFILE_PICTURE = "kTAPReloadProfilePicture";
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
@@ -436,7 +442,4 @@ public class TAPDefaultConstant {
     public static final String MY_COUNTRY_FLAG_URL = "kMyCountryFlagUrl";
     public static final String UNREAD_INDICATOR_LOCAL_ID = "kTAPUnreadIndicatorLocalIdentity";
     public static final String LOADING_INDICATOR_LOCAL_ID = "kTAPFetchingOlderMessagesLocalID";
-
-    public static final String IS_PERMISSION_SYNC_ASKED = "kTAPIsPermissionSyncAsked";
-    public static final String IS_CONTACT_SYNC_ALLOWED_BY_USER = "kTAPIsContactSyncAllowedByUser";
 }

@@ -114,6 +114,20 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void updateMessageAsRead(String messageID) {
+        if (null != messageRepository)
+            messageRepository.updateMessageAsRead(messageID);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void updateMessagesAsRead(List<String> messageIDs) {
+        if (null != messageRepository)
+            messageRepository.updateMessagesAsRead(messageIDs);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public LiveData<List<TAPMessageEntity>> getMessagesLiveData() {
         if (null != messageRepository)
             return messageRepository.getAllMessagesLiveData();
@@ -162,9 +176,9 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getAllMessageThatNotRead(String myID, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+    public void getAllUnreadMessagesFromRoom(String myID, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
-            messageRepository.getAllMessageThatNotRead(myID, roomID, listener);
+            messageRepository.getAllUnreadMessagesFromRoom(myID, roomID, listener);
         else throw new IllegalStateException("Message Repository was not initialized");
     }
 
@@ -296,9 +310,15 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void searchAllMyContacts(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+    public void searchContactsByName(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
         if (null != myContactRepository)
-            myContactRepository.searchAllMyContacts(keyword, listener);
+            myContactRepository.searchContactsByName(keyword, listener);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void searchContactsByNameAndUsername(String keyword, TAPDatabaseListener<TAPUserModel> listener) {
+        if (null != myContactRepository)
+            myContactRepository.searchContactsByNameAndUsername(keyword, listener);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 

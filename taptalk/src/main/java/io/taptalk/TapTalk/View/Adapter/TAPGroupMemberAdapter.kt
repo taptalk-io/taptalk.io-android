@@ -67,6 +67,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
         private val civAvatar: CircleImageView = itemView.findViewById(R.id.civ_avatar)
         private val tvAvatarLabel: TextView = itemView.findViewById(R.id.tv_avatar_label)
         private val tvFullName: TextView = itemView.findViewById(R.id.tv_full_name)
+        private val tvUsername: TextView = itemView.findViewById(R.id.tv_username)
         private val tvMemberRole: TextView = itemView.findViewById(R.id.tv_member_role)
         private val vSeparator: View = itemView.findViewById(R.id.v_separator)
         private val ivSelection: ImageView = itemView.findViewById(R.id.iv_selection)
@@ -99,6 +100,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
 
             // Set name
             tvFullName.text = item?.name ?: ""
+            tvUsername.visibility = View.GONE
 
             // Hide separator on last item
             if ((groupAdapter.getItemViewType(groupAdapter.itemCount - 1) == 1 &&
