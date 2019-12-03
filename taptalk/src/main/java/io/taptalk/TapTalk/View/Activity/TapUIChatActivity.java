@@ -1535,6 +1535,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() && UPDATE_ROOM.equals(message.getAction())) {
                 vm.getRoom().setRoomName(message.getRoom().getRoomName());
                 vm.getRoom().setRoomImage(message.getRoom().getRoomImage());
+                TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getRoom());
                 tvRoomName.setText(vm.getRoom().getRoomName());
                 if (null != vm.getRoom().getRoomImage()) {
                     civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage, tvRoomImageLabel));
