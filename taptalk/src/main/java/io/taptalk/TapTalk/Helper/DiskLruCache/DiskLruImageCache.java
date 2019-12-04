@@ -98,9 +98,7 @@ public class DiskLruImageCache {
 
     public BitmapDrawable getBitmapDrawable(Context context, String key) {
         BitmapDrawable bitmapDrawable = null;
-        DiskLruCache.Snapshot snapshot = null;
-        try {
-            snapshot = diskCache.get(key);
+        try (DiskLruCache.Snapshot snapshot = diskCache.get(key)) {
             if (snapshot == null) {
                 return null;
             }
@@ -112,10 +110,8 @@ public class DiskLruImageCache {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (snapshot != null) {
-                snapshot.close();
-            }
+        } catch (OutOfMemoryError e) {
+            e.printStackTrace();
         }
         if (BuildConfig.DEBUG) {
             Log.d("cache_test_DISK_", bitmapDrawable == null ? "" : "image read from disk " + key);
