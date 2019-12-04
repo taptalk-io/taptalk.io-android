@@ -76,7 +76,7 @@ public class TAPFileUploadManager {
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
     private HashMap<String, Integer> uploadProgressMapPercent;
     private HashMap<String, Long> uploadProgressMapBytes;
-    private HashMap<String, TapSendMessageInterface> sendMessageListeners = new HashMap<>();
+    private HashMap<String, TapSendMessageInterface> sendMessageListeners;
 
     public static TAPFileUploadManager getInstance() {
         return null == instance ? instance = new TAPFileUploadManager() : instance;
@@ -95,6 +95,10 @@ public class TAPFileUploadManager {
     public Long getMaxUserPhotoUploadSize() {
         String maxFileSize = TapTalk.getCoreConfigs().get(USER_PHOTO_MAX_FILE_SIZE);
         return null == maxFileSize ? Long.valueOf(DEFAULT_USER_PHOTO_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
+    }
+
+    public HashMap<String, TapSendMessageInterface> getSendMessageListeners() {
+        return null == sendMessageListeners ? sendMessageListeners = new LinkedHashMap<>() : sendMessageListeners;
     }
 
     private HashMap<String, Integer> getUploadProgressMapPercent() {
@@ -193,7 +197,7 @@ public class TAPFileUploadManager {
     // TODO: 2019-08-05 addUploadQueueWithListener
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, TapSendMessageInterface listener) {
         addUploadQueue(messageModel);
-        sendMessageListeners.put(messageModel.getLocalID(), listener);
+        getSendMessageListeners().put(messageModel.getLocalID(), listener);
         if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
             uploadImage(context, roomID);
         } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_VIDEO == messageModel.getType()) {
@@ -211,7 +215,7 @@ public class TAPFileUploadManager {
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap, TapSendMessageInterface listener) {
         getBitmapQueue().put(messageModel.getLocalID(), bitmap);
         addUploadQueue(messageModel);
-        sendMessageListeners.put(messageModel.getLocalID(), listener);
+        getSendMessageListeners().put(messageModel.getLocalID(), listener);
         if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
             uploadImage(context, roomID);
         } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_VIDEO == messageModel.getType()) {
@@ -518,8 +522,8 @@ public class TAPFileUploadManager {
                 Intent intent = new Intent(UploadProgressLoading);
                 intent.putExtra(UploadLocalID, localID);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
                 }
             }
 
@@ -537,12 +541,12 @@ public class TAPFileUploadManager {
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
                 saveImageToCacheAndSendMessage(context, roomID, bitmap, encodedThumbnail, messageModel.copyMessageModel(), response);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
                     long size = 0L;
                     if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
                         size = ((Number) messageModel.getData().get(SIZE)).longValue();
                     }
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
                 }
             }
 
@@ -597,8 +601,8 @@ public class TAPFileUploadManager {
                 Intent intent = new Intent(UploadProgressLoading);
                 intent.putExtra(UploadLocalID, localID);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
                 }
             }
 
@@ -617,12 +621,12 @@ public class TAPFileUploadManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 sendFileMessageAfterUploadSuccess(context, roomID, videoFile.getName(), mimeType, messageModel.copyMessageModel(), response);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
                     long size = 0L;
                     if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
                         size = ((Number) messageModel.getData().get(SIZE)).longValue();
                     }
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
                 }
             }
 
@@ -665,8 +669,8 @@ public class TAPFileUploadManager {
                 Intent intent = new Intent(UploadProgressLoading);
                 intent.putExtra(UploadLocalID, localID);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
                 }
             }
 
@@ -685,12 +689,12 @@ public class TAPFileUploadManager {
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
                 sendFileMessageAfterUploadSuccess(context, roomID, file.getName(), mimeType, messageModel.copyMessageModel(), response);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
                     long size = 0L;
                     if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
                         size = ((Number) messageModel.getData().get(SIZE)).longValue();
                     }
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
                 }
             }
 
@@ -734,9 +738,9 @@ public class TAPFileUploadManager {
     }
 
     private void triggerSendMessageError(String localID, String errorCode, String errorMessage) {
-        if (null != sendMessageListeners.get(localID)) {
-            sendMessageListeners.get(localID).onError(errorCode, errorMessage);
-            sendMessageListeners.remove(localID);
+        if (null != getSendMessageListeners().get(localID)) {
+            getSendMessageListeners().get(localID).onError(errorCode, errorMessage);
+            getSendMessageListeners().remove(localID);
         }
     }
 

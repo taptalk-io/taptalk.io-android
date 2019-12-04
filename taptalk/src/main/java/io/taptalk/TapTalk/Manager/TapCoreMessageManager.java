@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
+import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCoreFileDownloadListener;
@@ -49,8 +51,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_PRODUCT_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadImageData;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
+import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 @Keep
 public class TapCoreMessageManager {
@@ -59,6 +67,8 @@ public class TapCoreMessageManager {
 
     private List<TapCoreReceiveMessageListener> receiveMessageListeners;
     private TAPChatListener chatListener;
+
+    private boolean isUploadMessageFileToExternalServerEnabled;
 
     public static TapCoreMessageManager getInstance() {
         return null == instance ? instance = new TapCoreMessageManager() : instance;
@@ -384,6 +394,37 @@ public class TapCoreMessageManager {
                 listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
+    }
+
+    public boolean isUploadMessageFileToExternalServerEnabled() {
+        return isUploadMessageFileToExternalServerEnabled;
+    }
+
+    public void setUploadMessageFileToExternalServerEnabled(boolean isEnabled) {
+        this.isUploadMessageFileToExternalServerEnabled = isEnabled;
+    }
+
+    public void onFileUploadProgress(TAPMessageModel tapMessageModel, int percentCompleted, long bytesUploaded) {
+        TAPFileUploadManager.getInstance().addUploadProgressMap(tapMessageModel.getLocalID(), percentCompleted, bytesUploaded);
+        Intent intent = new Intent(UploadProgressLoading);
+        intent.putExtra(UploadLocalID, tapMessageModel.getLocalID());
+        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+        TapSendMessageInterface listener = TAPFileUploadManager.getInstance().getSendMessageListeners().get(tapMessageModel.getLocalID());
+        if (null != listener) {
+            listener.onProgress(tapMessageModel, percentCompleted, bytesUploaded);
+        }
+    }
+
+    public void onFileUploadCompleted(TAPMessageModel tapMessageModel, String fileUrl) {
+        HashMap<String, Object> messageData = tapMessageModel.getData();
+        if (null == messageData) {
+            messageData = new HashMap<>();
+        }
+        messageData.put(FILE_URL, fileUrl);
+        Intent intent = new Intent(UploadProgressFinish);
+        intent.putExtra(UploadLocalID, tapMessageModel.getLocalID());
+        intent.putExtra(UploadImageData, messageData);
+        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
     }
 
     /**

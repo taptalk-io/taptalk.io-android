@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Listener;
 
+import android.net.Uri;
 import android.support.annotation.Keep;
 
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
@@ -26,5 +27,10 @@ public abstract class TapCoreSendMessageListener implements TapSendMessageInterf
     @Override
     public void onProgress(TAPMessageModel message, int percentage, long bytes) {
 
+    }
+
+    @Override
+    public boolean onRequestFileUpload(TAPMessageModel tapMessageModel, Uri fileUri) {
+        return true;
     }
 }
