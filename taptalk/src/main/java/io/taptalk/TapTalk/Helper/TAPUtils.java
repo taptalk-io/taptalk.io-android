@@ -73,6 +73,7 @@ import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -775,7 +776,7 @@ public class TAPUtils {
                     listener.onSelectFinished(entity);
                 } else {
                     // Get user data from API
-                    if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                    if (TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
                         TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
                             @Override
                             public void onSuccess(TAPGetUserResponse response) {
@@ -792,7 +793,7 @@ public class TAPUtils {
 
                             @Override
                             public void onError(Throwable throwable) {
-                                if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                                if (TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
                                     TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, this);
                                 } else {
                                     listener.onSelectFailed(TapTalk.appContext.getString(R.string.tap_error_open_room_failed));

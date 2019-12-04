@@ -210,6 +210,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         clButtonAction.setOnClickListener(null);
 
         if (vm.getSearchResult().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+            ivButtonImage.setVisibility(View.GONE);
+            tvButtonText.setVisibility(View.VISIBLE);
             tvButtonText.setText(getString(R.string.tap_this_is_you));
             TypedArray typedArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance);
             tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
@@ -274,6 +276,8 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         clButtonAction.setOnClickListener(null);
 
         if (vm.getSearchResult().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+            ivButtonImage.setVisibility(View.GONE);
+            tvButtonText.setVisibility(View.VISIBLE);
             tvButtonText.setText(getString(R.string.tap_this_is_you));
             TypedArray typedArray = obtainStyledAttributes(R.style.tapClickableLabelStyle, R.styleable.TextAppearance);
             tvButtonText.setTextColor(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1));
