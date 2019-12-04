@@ -233,7 +233,7 @@ public class TAPApiManager {
     }
 
     public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
-        return hpRefresh.refreshAccessToken(TAPDataManager.getInstance().getRefreshToken())
+        return hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance().getRefreshToken())
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
                     if (RESPONSE_SUCCESS == response.getStatus()) {
@@ -253,7 +253,7 @@ public class TAPApiManager {
     }
 
     public void refreshAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
-        execute(hpRefresh.refreshAccessToken(TAPDataManager.getInstance().getRefreshToken()), subscriber);
+        execute(hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance().getRefreshToken()), subscriber);
     }
 
     public void validateAccessToken(Subscriber<TAPBaseResponse<TAPErrorModel>> subscriber) {

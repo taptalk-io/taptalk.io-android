@@ -63,12 +63,8 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     @Override
     public void onResume() {
         super.onResume();
-        initConnectionStatus();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+        // TODO: 28 November 2019 CONNECTION STATUS TEMPORARILY HIDDEN
+        //initConnectionStatus();
     }
 
     @Override
@@ -97,6 +93,9 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
         llConnectionStatus = view.findViewById(R.id.ll_connection_status);
         ivConnectionStatus = view.findViewById(R.id.iv_connection_status);
         tvConnectionStatus = view.findViewById(R.id.tv_connection_status);
+
+        // TODO: 28 November 2019 CONNECTION STATUS TEMPORARILY HIDDEN
+        llConnectionStatus.setVisibility(View.GONE);
     }
 
     private void initConnectionStatus() {
