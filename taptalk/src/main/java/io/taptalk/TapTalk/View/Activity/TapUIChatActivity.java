@@ -278,9 +278,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
             callApiGetUserByUserID();
 
-        if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
+        if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             callApiAfter();
-        } else if (vm.isInitialAPICallFinished() && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
+        } else if (vm.isInitialAPICallFinished() && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
     }
@@ -1422,8 +1422,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void restartFailedDownloads() {
         if (TAPFileDownloadManager.getInstance().hasFailedDownloads() &&
-                TAPConnectionManager.getInstance().getConnectionStatus() ==
-                        CONNECTED) {
+                TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             // Notify chat bubbles with failed download
             for (String localID : TAPFileDownloadManager.getInstance().getFailedDownloads()) {
                 if (vm.getMessagePointer().containsKey(localID)) {
