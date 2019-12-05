@@ -902,8 +902,12 @@ public class TapUIRoomListFragment extends Fragment {
 
     private void calculateBadgeCount() {
         vm.setRoomBadgeCount(0);
-        for (Map.Entry<String, TAPRoomListModel> entry : vm.getRoomPointer().entrySet()) {
-            vm.setRoomBadgeCount(vm.getRoomBadgeCount() + entry.getValue().getUnreadCount());
+        try {
+            for (Map.Entry<String, TAPRoomListModel> entry : vm.getRoomPointer().entrySet()) {
+                vm.setRoomBadgeCount(vm.getRoomBadgeCount() + entry.getValue().getUnreadCount());
+            }
+        } catch (ConcurrentModificationException e) { // FIXME: 5 Dec 2019
+            e.printStackTrace();
         }
         if (vm.getLastBadgeCount() != vm.getRoomBadgeCount()) {
             for (TapListener listener : TapTalk.getTapTalkListeners()) {

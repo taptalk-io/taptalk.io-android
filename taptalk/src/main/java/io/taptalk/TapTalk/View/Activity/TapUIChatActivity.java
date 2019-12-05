@@ -2878,7 +2878,23 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     // Interface for swipe back
     public interface SwipeBackInterface {
         void onSwipeBack();
+        void onSwipeToFinishActivity();
     }
 
-    private SwipeBackInterface swipeInterface = () -> TAPUtils.getInstance().dismissKeyboard(TapUIChatActivity.this);
+    private SwipeBackInterface swipeInterface = new SwipeBackInterface() {
+        @Override
+        public void onSwipeBack() {
+            TAPUtils.getInstance().dismissKeyboard(TapUIChatActivity.this);
+        }
+
+        @Override
+        public void onSwipeToFinishActivity() {
+            if (isTaskRoot()) {
+                // Trigger listener callback if no other activity is open
+                for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                    listener.onTaskRootChatRoomClosed(TapUIChatActivity.this);
+                }
+            }
+        }
+    };
 }
