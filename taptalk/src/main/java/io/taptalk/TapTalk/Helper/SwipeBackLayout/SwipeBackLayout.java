@@ -602,6 +602,9 @@ public class SwipeBackLayout extends ConstraintLayout {
                 top = yvel < 0 || yvel == 0 && mScrollPercent > mScrollThreshold ? -(childHeight
                         + mShadowBottom.getIntrinsicHeight() + OVERSCROLL_DISTANCE) : 0;
             }
+            if (mScrollPercent >= mScrollThreshold && null != swipeInterface) {
+                swipeInterface.onSwipeToFinishActivity();
+            }
 
             mDragHelper.settleCapturedViewAt(left, top);
             invalidate();
