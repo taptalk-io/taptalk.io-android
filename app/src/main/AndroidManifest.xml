@@ -7,7 +7,6 @@
     <uses-permission android:name="oppo.permission.OPPO_COMPONENT_SAFE" />
 
     <application
-        android:name="io.moselo.SampleApps.SampleApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/tap_app_name"
