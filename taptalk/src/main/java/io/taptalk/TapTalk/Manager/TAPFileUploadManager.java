@@ -28,6 +28,7 @@ import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
+import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -176,16 +177,11 @@ public class TAPFileUploadManager {
         return getUploadQueue(roomID).isEmpty();
     }
 
-    /**
-     * Masukin Message Model ke dalem Queue Upload
-     *
-     * @param roomID
-     * @param messageModel
-     */
-    // Previously addQueueUploadImage
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel) {
         addUploadQueue(messageModel);
-        if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
+        if (1 == getUploadQueueSize(roomID) && TapCoreMessageManager.getInstance().isUploadMessageFileToExternalServerEnabled()) {
+            requestFileUploadToExternalServer(context, roomID);
+        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
             uploadImage(context, roomID);
         } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_VIDEO == messageModel.getType()) {
             uploadVideo(context, roomID);
@@ -194,17 +190,9 @@ public class TAPFileUploadManager {
         }
     }
 
-    // TODO: 2019-08-05 addUploadQueueWithListener
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, TapSendMessageInterface listener) {
-        addUploadQueue(messageModel);
         getSendMessageListeners().put(messageModel.getLocalID(), listener);
-        if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
-            uploadImage(context, roomID);
-        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_VIDEO == messageModel.getType()) {
-            uploadVideo(context, roomID);
-        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_FILE == messageModel.getType()) {
-            uploadFile(context, roomID);
-        }
+        addUploadQueue(context, roomID, messageModel);
     }
 
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap) {
@@ -214,15 +202,8 @@ public class TAPFileUploadManager {
 
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap, TapSendMessageInterface listener) {
         getBitmapQueue().put(messageModel.getLocalID(), bitmap);
-        addUploadQueue(messageModel);
         getSendMessageListeners().put(messageModel.getLocalID(), listener);
-        if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
-            uploadImage(context, roomID);
-        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_VIDEO == messageModel.getType()) {
-            uploadVideo(context, roomID);
-        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_FILE == messageModel.getType()) {
-            uploadFile(context, roomID);
-        }
+        addUploadQueue(context, roomID, messageModel);
     }
 
     public void uploadRoomPicture(Context context, Uri imageUri, String roomID,
@@ -292,6 +273,46 @@ public class TAPFileUploadManager {
             File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
             TAPDataManager.getInstance().uploadProfilePicture(imageFile, mimeType, uploadCallbacks, uploadProfilePictureView);
         });
+    }
+
+    private void requestFileUploadToExternalServer(Context context, String roomID) {
+        if (isUploadQueueEmpty(roomID)) {
+            // Queue is empty
+            return;
+        }
+        TAPMessageModel messageModel = getUploadQueue(roomID).get(0);
+        HashMap<String, Object> messageData = messageModel.getData();
+
+        if (null == messageData) {
+            // No data / Uri
+            Log.e(TAG, context.getString(R.string.tap_error_message_data_empty));
+            getUploadQueue(roomID).remove(0);
+            getBitmapQueue().remove(messageModel.getLocalID());
+            Intent intent = new Intent(UploadFailed);
+            intent.putExtra(UploadLocalID, messageModel.getLocalID());
+            intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_data_empty));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            return;
+        }
+
+        String fileUri = (String) messageData.get(FILE_URI);
+
+        if (null == fileUri) {
+            // Image data does not contain Uri
+            Log.e(TAG, context.getString(R.string.tap_error_message_uri_empty));
+            getUploadQueue(roomID).remove(0);
+            getBitmapQueue().remove(messageModel.getLocalID());
+            Intent intent = new Intent(UploadFailed);
+            intent.putExtra(UploadLocalID, messageModel.getLocalID());
+            intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_uri_empty));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+        }
+
+        for (TapListener listener : TapTalk.getTapTalkListeners()) {
+            listener.onRequestFileUpload(messageModel, Uri.parse(fileUri));
+        }
     }
 
     private void uploadImage(Context context, String roomID) {
