@@ -32,6 +32,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1682,17 +1683,20 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     break;
                 case UploadProgressFinish:
                     localID = intent.getStringExtra(UploadLocalID);
+                    TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
                     if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadImageData) &&
                             intent.getSerializableExtra(UploadImageData) instanceof HashMap) {
-                        TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
+                        // Set image data
+                        Log.e(TAG, "UploadProgressFinish: Set image data");
                         messageModel.setData((HashMap<String, Object>) intent.getSerializableExtra(UploadImageData));
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
                     } else if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadFileData) &&
                             intent.getSerializableExtra(UploadFileData) instanceof HashMap) {
-                        TAPMessageModel messageModel = vm.getMessagePointer().get(localID);
+                        // Put file data
+                        Log.e(TAG, "UploadProgressFinish: Put file data");
                         messageModel.putData((HashMap<String, Object>) intent.getSerializableExtra(UploadFileData));
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
                     }
+                    Log.e(TAG, "UploadProgressFinish data: " + TAPUtils.getInstance().toJsonString(messageModel.getData()));
+                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
                     break;
                 case UploadFailed:
                     localID = intent.getStringExtra(UploadLocalID);

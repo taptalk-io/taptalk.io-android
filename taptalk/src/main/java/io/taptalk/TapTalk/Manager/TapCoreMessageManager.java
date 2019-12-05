@@ -30,7 +30,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCoreFileDownloadListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
-import io.taptalk.TapTalk.Listener.TapCoreReceiveMessageListener;
+import io.taptalk.TapTalk.Listener.TapCoreMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -51,12 +51,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_PRODUCT_SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadImageData;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
@@ -65,7 +62,7 @@ public class TapCoreMessageManager {
 
     private static TapCoreMessageManager instance;
 
-    private List<TapCoreReceiveMessageListener> receiveMessageListeners;
+    private List<TapCoreMessageListener> coreMessageListeners;
     private TAPChatListener chatListener;
 
     private boolean isUploadMessageFileToExternalServerEnabled;
@@ -74,38 +71,38 @@ public class TapCoreMessageManager {
         return null == instance ? instance = new TapCoreMessageManager() : instance;
     }
 
-    private List<TapCoreReceiveMessageListener> getReceiveMessageListeners() {
-        return null == receiveMessageListeners ? receiveMessageListeners = new ArrayList<>() : receiveMessageListeners;
+    private List<TapCoreMessageListener> getCoreMessageListeners() {
+        return null == coreMessageListeners ? coreMessageListeners = new ArrayList<>() : coreMessageListeners;
     }
 
-    public void addMessageListener(TapCoreReceiveMessageListener listener) {
-        if (getReceiveMessageListeners().isEmpty()) {
+    public void addMessageListener(TapCoreMessageListener listener) {
+        if (getCoreMessageListeners().isEmpty()) {
             if (null == chatListener) {
                 chatListener = new TAPChatListener() {
                     @Override
                     public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
                             listener.onReceiveNewMessage(message);
                         }
                     }
 
                     @Override
                     public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
                             listener.onReceiveNewMessage(message);
                         }
                     }
 
                     @Override
                     public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
                             listener.onReceiveUpdatedMessage(message);
                         }
                     }
 
                     @Override
                     public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
-                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
                             listener.onReceiveUpdatedMessage(message);
                         }
                     }
@@ -113,12 +110,12 @@ public class TapCoreMessageManager {
             }
             TAPChatManager.getInstance().addChatListener(chatListener);
         }
-        getReceiveMessageListeners().add(listener);
+        getCoreMessageListeners().add(listener);
     }
 
-    public void removeMessageListener(TapCoreReceiveMessageListener listener) {
-        getReceiveMessageListeners().remove(listener);
-        if (getReceiveMessageListeners().isEmpty()) {
+    public void removeMessageListener(TapCoreMessageListener listener) {
+        getCoreMessageListeners().remove(listener);
+        if (getCoreMessageListeners().isEmpty()) {
             TAPChatManager.getInstance().removeChatListener(chatListener);
         }
     }
@@ -416,15 +413,13 @@ public class TapCoreMessageManager {
     }
 
     public void onFileUploadCompleted(TAPMessageModel tapMessageModel, String fileUrl) {
-        HashMap<String, Object> messageData = tapMessageModel.getData();
-        if (null == messageData) {
-            messageData = new HashMap<>();
+        TAPFileUploadManager.getInstance().onFileUploadFromExternalServerFinished(tapMessageModel, fileUrl);
+    }
+
+    void triggerRequestMessageFileUpload(TAPMessageModel messageModel, Uri fileUri) {
+        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+            listener.onRequestMessageFileUpload(messageModel, fileUri);
         }
-        messageData.put(FILE_URL, fileUrl);
-        Intent intent = new Intent(UploadProgressFinish);
-        intent.putExtra(UploadLocalID, tapMessageModel.getLocalID());
-        intent.putExtra(UploadImageData, messageData);
-        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
     }
 
     /**

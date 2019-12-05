@@ -55,7 +55,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.CHAT_MEDIA_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.ROOM_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USER_PHOTO_MAX_FILE_SIZE;
@@ -68,6 +72,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgress;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
+import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TAPFileUploadManager {
 
@@ -181,7 +186,7 @@ public class TAPFileUploadManager {
         addUploadQueue(messageModel);
         if (1 == getUploadQueueSize(roomID) && TapCoreMessageManager.getInstance().isUploadMessageFileToExternalServerEnabled()) {
             requestFileUploadToExternalServer(context, roomID);
-        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
+        } else if (1 == getUploadQueueSize(roomID) && TYPE_IMAGE == messageModel.getType()) {
             uploadImage(context, roomID);
         } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_VIDEO == messageModel.getType()) {
             uploadVideo(context, roomID);
@@ -310,9 +315,7 @@ public class TAPFileUploadManager {
             triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
         }
 
-        for (TapListener listener : TapTalk.getTapTalkListeners()) {
-            listener.onRequestFileUpload(messageModel, Uri.parse(fileUri));
-        }
+        TAPChatManager.getInstance().triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
     }
 
     private void uploadImage(Context context, String roomID) {
@@ -820,7 +823,7 @@ public class TAPFileUploadManager {
     private Bitmap fixImageOrientation(Bitmap bitmap, Uri imageUri) {
         String pathName;
         if (null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
-            pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+            pathName = TAPFileUtils.getInstance().getFilePath(appContext, imageUri);
         } else {
             pathName = imageUri.toString();
         }
@@ -887,10 +890,12 @@ public class TAPFileUploadManager {
      */
     public void uploadNextSequence(Context context, String roomID) {
         getUploadQueue(roomID).remove(0);
-        //ini ngecek kalau kosong ga perlu jalanin lagi
         if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
+                && null != getUploadQueue(roomID).get(0)) {
+            requestFileUploadToExternalServer(context, roomID);
+        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
                 && null != getUploadQueue(roomID).get(0)
-                && TAPDefaultConstant.MessageType.TYPE_IMAGE == getUploadQueue(roomID).get(0).getType()) {
+                && TYPE_IMAGE == getUploadQueue(roomID).get(0).getType()) {
             uploadImage(context, roomID);
         } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
                 && null != getUploadQueue(roomID).get(0)
@@ -922,7 +927,6 @@ public class TAPFileUploadManager {
                                                 String encodedThumbnail, TAPMessageModel messageModel,
                                                 TAPUploadFileResponse response) {
         try {
-            //add ke dalem cache
             new Thread(() -> {
                 try {
                     String fileID = response.getId();
@@ -957,7 +961,6 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadImageData, imageDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-            //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
             getBitmapQueue().remove(messageModel.getLocalID());
         } catch (Exception e) {
@@ -995,10 +998,67 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadFileData, fileDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-            //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void onFileUploadFromExternalServerFinished(TAPMessageModel messageModel, String fileUrl) {
+        HashMap<String, Object> messageData = messageModel.getData();
+        if (null == messageData) {
+            messageData = new HashMap<>();
+        }
+        // Update message data with file URL, remove file Uri
+        messageData.put(FILE_URL, fileUrl);
+        messageData.remove(FILE_URI);
+
+        // Update upload progress map
+        String localID = messageModel.getLocalID();
+        long size = 0L;
+        if (null != messageData.get(SIZE)) {
+            size = ((Number) messageData.get(SIZE)).longValue();
+        }
+        addUploadProgressMap(localID, 100, size);
+
+        // Put data to message model
+        if (null != messageModel.getData()) {
+            messageModel.putData(messageData);
+        } else {
+            messageModel.setData(messageData);
+        }
+        Log.e(TAG, "onFileUploadFromExternalServerFinished messageModel.getData: " + TAPUtils.getInstance().toJsonString(messageModel.getData()));
+
+        if (messageModel.getType() == TYPE_IMAGE) {
+            Log.e(TAG, "onFileUploadFromExternalServerFinished: send image");
+            // Send image message to server
+            new Thread(() -> TAPChatManager.getInstance().sendImageMessageToServer(messageModel)).start();
+
+            // Notify message sent
+            Intent intent = new Intent(UploadProgressFinish);
+            intent.putExtra(UploadLocalID,localID);
+            intent.putExtra(UploadImageData, messageModel.getData());
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+
+            // Check for next upload in queue
+            uploadNextSequence(appContext, messageModel.getRoom().getRoomID());
+            getBitmapQueue().remove(messageModel.getLocalID());
+        } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_FILE) {
+            Log.e(TAG, "onFileUploadFromExternalServerFinished: send video/file");
+            // Save Uri map with file URL as key
+            TAPFileDownloadManager.getInstance().saveFileMessageUri(messageModel.getRoom().getRoomID(), fileUrl, (String) messageModel.getData().get(FILE_URI));
+
+            // Send video/file message to server
+            new Thread(() -> TAPChatManager.getInstance().sendFileMessageToServer(messageModel)).start();
+
+            // Notify message sent
+            Intent intent = new Intent(UploadProgressFinish);
+            intent.putExtra(UploadLocalID, localID);
+            intent.putExtra(UploadFileData, messageModel.getData());
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+
+            // Check for next upload in queue
+            uploadNextSequence(appContext, messageModel.getRoom().getRoomID());
         }
     }
 

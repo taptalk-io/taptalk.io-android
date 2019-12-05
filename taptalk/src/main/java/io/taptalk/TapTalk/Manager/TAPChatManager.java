@@ -1912,4 +1912,13 @@ public class TAPChatManager {
     public void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         TapUI.getInstance().triggerProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
     }
+
+    /**
+     * =============================================================================================
+     * TAP CORE
+     * ============================================================================================
+     */
+    public void triggerRequestMessageFileUpload(TAPMessageModel messageModel, Uri fileUri) {
+        TapCoreMessageManager.getInstance().triggerRequestMessageFileUpload(messageModel, fileUri);
+    }
 }

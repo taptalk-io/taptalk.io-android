@@ -96,6 +96,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.HEIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
@@ -461,6 +462,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Number widthDimension = (Number) item.getData().get(WIDTH);
             Number heightDimension = (Number) item.getData().get(HEIGHT);
             String imageUri = (String) item.getData().get(FILE_URI);
+            String imageUrl = (String) item.getData().get(FILE_URL);
             String imageCaption = (String) item.getData().get(CAPTION);
             String fileID = (String) item.getData().get(FILE_ID);
 
@@ -538,7 +540,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setImageDrawable(thumbnail);
             }
 
-            if (null != fileID && !fileID.isEmpty()) {
+            if (null != imageUrl && !imageUrl.isEmpty()) {
+                // Load image from URL
+                glide.load(imageUrl)
+                        .transition(DrawableTransitionOptions.withCrossFade(100))
+                        .apply(new RequestOptions()
+                                .placeholder(thumbnail)
+                                .centerCrop())
+                        .into(rcivImageBody);
+                // TODO: 005, 5 Dec 2019 SAVE THUMBNAIL TO DATA? 
+                rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
+            } else if (null != fileID && !fileID.isEmpty()) {
                 new Thread(() -> {
                     BitmapDrawable cachedImage = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
                     if (null != cachedImage) {
