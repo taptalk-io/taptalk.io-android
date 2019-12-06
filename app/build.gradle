@@ -10,8 +10,8 @@ android {
         applicationId "io.taptalk.TapTalkSample"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 27
-        versionName "1.0.18"
+        versionCode 29
+        versionName "1.0.19"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -60,7 +60,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             minifyEnabled true
             zipAlignEnabled true
-            buildConfigField("String", "GOOGLE_MAPS_API_KEY", '"AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"')
+            buildConfigField("String", "GOOGLE_MAPS_API_KEY", '"AIzaSyDqRal61I487_PK7V2kiQnVebcrM7QnTW0"')
             buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", '"d1e5dfe23d1e00bf54bc2316f"')
             buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", '"NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh"')
             buildConfigField("String", "TAPTALK_SDK_BASE_URL", '"https://engine.taptalk.io/api"')
@@ -71,7 +71,7 @@ android {
             minifyEnabled false
             applicationIdSuffix '.staging'
             versionNameSuffix '-STAGING'
-            buildConfigField("String", "GOOGLE_MAPS_API_KEY", '"AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"')
+            buildConfigField("String", "GOOGLE_MAPS_API_KEY", '"AIzaSyDqRal61I487_PK7V2kiQnVebcrM7QnTW0"')
             buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", '"b43b48745dfa0e44k1"')
             buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", '"MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4"')
             buildConfigField("String", "TAPTALK_SDK_BASE_URL", '"https://engine-stg.taptalk.io/api"')
@@ -82,7 +82,7 @@ android {
             minifyEnabled false
             applicationIdSuffix '.staging'
             versionNameSuffix '-STAGING'
-            buildConfigField("String", "GOOGLE_MAPS_API_KEY", '"AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"')
+            buildConfigField("String", "GOOGLE_MAPS_API_KEY", '"AIzaSyDqRal61I487_PK7V2kiQnVebcrM7QnTW0"')
             buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", '"b43b48745dfa0e44k1"')
             buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", '"MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4"')
             buildConfigField("String", "TAPTALK_SDK_BASE_URL", '"https://engine-stg.taptalk.io/api"')
@@ -93,7 +93,7 @@ android {
             minifyEnabled false
             applicationIdSuffix '.dev'
             versionNameSuffix '-DEV'
-            buildConfigField("String", "GOOGLE_MAPS_API_KEY", '"AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"')
+            buildConfigField("String", "GOOGLE_MAPS_API_KEY", '"AIzaSyDqRal61I487_PK7V2kiQnVebcrM7QnTW0"')
             buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", '"d1e5dfe23d1e00bf54bc2316f"')
             buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", '"NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh"')
             buildConfigField("String", "TAPTALK_SDK_BASE_URL", '"https://engine-dev.taptalk.io/api"')
@@ -104,7 +104,7 @@ android {
             minifyEnabled false
             applicationIdSuffix '.dev'
             versionNameSuffix '-DEV'
-            buildConfigField("String", "GOOGLE_MAPS_API_KEY", '"AIzaSyA1kCb7yq2shvC3BnzriJLcTfzQdmzSnPA"')
+            buildConfigField("String", "GOOGLE_MAPS_API_KEY", '"AIzaSyDqRal61I487_PK7V2kiQnVebcrM7QnTW0"')
             buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", '"d1e5dfe23d1e00bf54bc2316f"')
             buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", '"NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh"')
             buildConfigField("String", "TAPTALK_SDK_BASE_URL", '"https://engine-dev.taptalk.io/api"')

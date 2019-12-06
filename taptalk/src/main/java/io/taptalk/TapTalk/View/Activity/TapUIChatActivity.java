@@ -173,6 +173,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_ADD_PARTICIPANT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_REMOVE_PARTICIPANT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UNREAD_INDICATOR_LOCAL_ID;
@@ -193,13 +194,6 @@ import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.
 public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private String TAG = TapUIChatActivity.class.getSimpleName();
-
-    //interface for swipe back
-    public interface SwipeBackInterface {
-        void onSwipeBack();
-    }
-
-    private SwipeBackInterface swipeInterface = () -> TAPUtils.getInstance().dismissKeyboard(TapUIChatActivity.this);
 
     // View
     private SwipeBackLayout sblChat;
@@ -277,9 +271,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
             callApiGetUserByUserID();
 
-        if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
+        if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             callApiAfter();
-        } else if (vm.isInitialAPICallFinished() && TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED) {
+        } else if (vm.isInitialAPICallFinished() && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
     }
@@ -1421,8 +1415,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void restartFailedDownloads() {
         if (TAPFileDownloadManager.getInstance().hasFailedDownloads() &&
-                TAPConnectionManager.getInstance().getConnectionStatus() ==
-                        CONNECTED) {
+                TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             // Notify chat bubbles with failed download
             for (String localID : TAPFileDownloadManager.getInstance().getFailedDownloads()) {
                 if (vm.getMessagePointer().containsKey(localID)) {
@@ -1531,6 +1524,14 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             } else if (TYPE_SYSTEM_MESSAGE == message.getType() && DELETE_ROOM.equals(message.getAction())) {
                 TAPChatManager.getInstance().deleteMessageFromIncomingMessages(message.getLocalID());
                 showRoomIsUnavailableState();
+            } else if (TYPE_SYSTEM_MESSAGE == message.getType() && UPDATE_ROOM.equals(message.getAction())) {
+                vm.getRoom().setRoomName(message.getRoom().getRoomName());
+                vm.getRoom().setRoomImage(message.getRoom().getRoomImage());
+                TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getRoom());
+                tvRoomName.setText(vm.getRoom().getRoomName());
+                if (null != vm.getRoom().getRoomImage()) {
+                    civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage, tvRoomImageLabel));
+                }
             }
             updateMessage(message);
         }
@@ -2877,4 +2878,27 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             return null;
         }
     }
+
+    // Interface for swipe back
+    public interface SwipeBackInterface {
+        void onSwipeBack();
+        void onSwipeToFinishActivity();
+    }
+
+    private SwipeBackInterface swipeInterface = new SwipeBackInterface() {
+        @Override
+        public void onSwipeBack() {
+            TAPUtils.getInstance().dismissKeyboard(TapUIChatActivity.this);
+        }
+
+        @Override
+        public void onSwipeToFinishActivity() {
+            if (isTaskRoot()) {
+                // Trigger listener callback if no other activity is open
+                for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                    listener.onTaskRootChatRoomClosed(TapUIChatActivity.this);
+                }
+            }
+        }
+    };
 }

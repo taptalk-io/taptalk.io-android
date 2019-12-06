@@ -56,6 +56,7 @@ import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
@@ -541,7 +542,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         }));
                         if (null == TAPFileDownloadManager.getInstance().getDownloadProgressPercent(item.getLocalID())) {
                             // Download image
-                            if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                            if (TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
                                 TAPFileDownloadManager.getInstance().downloadImage(TapTalk.appContext, item);
                             } else {
                                 activity.runOnUiThread(() -> flProgress.setVisibility(View.GONE));
