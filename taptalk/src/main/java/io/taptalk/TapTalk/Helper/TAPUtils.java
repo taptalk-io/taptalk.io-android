@@ -33,6 +33,7 @@ import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -1035,6 +1036,21 @@ public class TAPUtils {
         } else {
             return IMAGE_JPEG;
         }
+    }
+
+    public String getMimeTypeFromUrl(String url) {
+        try {
+            String type = null;
+            String extension = url.substring(url.lastIndexOf(".") + 1);
+            if (extension != null) {
+                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            }
+            Log.e(TAG, "getMimeTypeFromUrl: " + type);
+            return type;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void rotateAnimateInfinitely(Context context, View view) {

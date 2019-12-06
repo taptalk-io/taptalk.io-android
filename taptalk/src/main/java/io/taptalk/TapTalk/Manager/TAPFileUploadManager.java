@@ -56,6 +56,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -405,7 +406,6 @@ public class TAPFileUploadManager {
             uploadNextSequence(context, roomID);
             return;
         }
-        // TODO: 2019-08-05 Call image upload API Here
         callImageUploadAPI(context, roomID, messageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
     }
 
@@ -532,7 +532,6 @@ public class TAPFileUploadManager {
         }).start();
     }
 
-    // TODO: 2019-08-05 API HERE
     private void callImageUploadAPI(Context context, String roomID, TAPMessageModel messageModel, File imageFile,
                                     Bitmap bitmap, String encodedThumbnail, String mimeType,
                                     TAPDataImageModel imageData) {
@@ -1009,7 +1008,9 @@ public class TAPFileUploadManager {
         if (null == messageData) {
             messageData = new HashMap<>();
         }
-        // Update message data with file URL, remove file Uri
+        // Update message data with media type and file URL, remove file Uri
+        String mimeType = TAPUtils.getInstance().getMimeTypeFromUrl(fileUrl);
+        messageData.put(MEDIA_TYPE, mimeType);
         messageData.put(FILE_URL, fileUrl);
         messageData.remove(FILE_URI);
 
