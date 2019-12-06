@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -52,7 +54,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -141,6 +146,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEven
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
@@ -156,6 +162,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
@@ -444,6 +451,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_FILE:
                     TAPUtils.getInstance().openDocumentPicker(TapUIChatActivity.this);
+                    break;
+                case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO:
+                    if (null != attachmentListener) {
+                        attachmentListener.onSaveVideoToGallery(vm.getPendingDownloadMessage());
+                    }
                     break;
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE:
                     startFileDownload(vm.getPendingDownloadMessage());
@@ -2363,31 +2375,59 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onSaveImageToGallery(TAPMessageModel message) {
-            if (null != message.getData() &&
-                    null != message.getData().get(FILE_ID) &&
-                    null != message.getData().get(MEDIA_TYPE)) {
-                TAPFileDownloadManager.getInstance().writeImageFileToDisk(TapUIChatActivity.this,
-                        System.currentTimeMillis(), TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable((String) message.getData().get(FILE_ID)).getBitmap(),
-                        (String) message.getData().get(MEDIA_TYPE), new TapTalkActionInterface() {
-                            @Override
-                            public void onSuccess(String message) {
-                                runOnUiThread(() -> Toast.makeText(TapUIChatActivity.this, message, Toast.LENGTH_SHORT).show());
-                            }
+            if (!TAPUtils.getInstance().hasPermissions(TapUIChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                // Request storage permission
+                vm.setPendingDownloadMessage(message);
+                ActivityCompat.requestPermissions(TapUIChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
+            } else if (null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
+                new Thread(() -> {
+                    vm.setPendingDownloadMessage(null);
+                    Bitmap bitmap = null;
+                    if (null != message.getData().get(FILE_ID)) {
+                        // Get bitmap from cache
+                        bitmap = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable((String) message.getData().get(FILE_ID)).getBitmap();
+                    } else if (null != message.getData().get(FILE_URL)) {
+                        // Get bitmap from URL
+                        try {
+                            URL imageUrl = new URL((String) message.getData().get(FILE_URL));
+                            bitmap = BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream());
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-                            @Override
-                            public void onError(String errorMessage) {
+                    if (null != bitmap) {
+                        TAPFileDownloadManager.getInstance().writeImageFileToDisk(TapUIChatActivity.this,
+                                System.currentTimeMillis(), bitmap,
+                                (String) message.getData().get(MEDIA_TYPE), new TapTalkActionInterface() {
+                                    @Override
+                                    public void onSuccess(String message) {
+                                        runOnUiThread(() -> Toast.makeText(TapUIChatActivity.this, message, Toast.LENGTH_SHORT).show());
+                                    }
 
-                            }
-                        });
+                                    @Override
+                                    public void onError(String errorMessage) {
+                                        runOnUiThread(() -> Toast.makeText(TapUIChatActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
+                                    }
+                                });
+                    }
+                }).start();
             }
         }
 
         @Override
         public void onSaveVideoToGallery(TAPMessageModel message) {
-            if (null != message.getData() &&
-                    null != message.getData().get(FILE_ID) &&
-                    null != message.getData().get(MEDIA_TYPE) &&
-                    null != message.getData().get(FILE_ID)) {
+            if (!TAPUtils.getInstance().hasPermissions(TapUIChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                // Request storage permission
+                vm.setPendingDownloadMessage(message);
+                ActivityCompat.requestPermissions(TapUIChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
+            } else if (null != message.getData() &&
+                        null != message.getData().get(FILE_ID) &&
+                        null != message.getData().get(MEDIA_TYPE) &&
+                        null != message.getData().get(FILE_ID)) {
+                vm.setPendingDownloadMessage(null);
                 TAPFileDownloadManager.getInstance().writeFileToDisk(TapUIChatActivity.this, message, new TapTalkActionInterface() {
                     @Override
                     public void onSuccess(String message) {
@@ -2400,6 +2440,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     }
                 });
             }
+            // TODO: 6 Dec 2019 HANDLE FILE URL
         }
 
         @Override
@@ -2420,6 +2461,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     }
                 });
             }
+            // TODO: 6 Dec 2019 HANDLE FILE URL
         }
     };
 
