@@ -40,7 +40,7 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
             case COUNTRY_ITEM:
                 return new CountryItemViewHolder(false, viewGroup, R.layout.tap_country_recycle_item);
             case COUNTRY_INITIAL:
-                return new CountryInitialViewHolder(viewGroup, R.layout.tap_country_initial_recycle_item);
+                return new CountryInitialViewHolder(viewGroup, R.layout.tap_country_initial_recycle_item); // TODO: 21 November 2019 USE CELL SECTION TITLE?
             case COUNTRY_ITEM_BOTTOM:
                 return new CountryItemViewHolder(true, viewGroup, R.layout.tap_country_recycle_item);
             default:

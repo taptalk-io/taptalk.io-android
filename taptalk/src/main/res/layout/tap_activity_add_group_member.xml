@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tapDefaultBackgroundColor">
+    android:background="@color/tapDefaultBackgroundColor"
+    tools:context="io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cl_action_bar"
@@ -23,8 +24,8 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_close_grey"
-            android:tint="@color/tapIconNavBarCloseButton"
+            android:src="@drawable/tap_ic_chevron_left_white"
+            android:tint="@color/tapIconNavBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -37,7 +38,7 @@
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:text="@string/tap_add_members"
+            android:text="@string/tap_new_group"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/iv_button_search"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
@@ -49,7 +50,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="@color/tapTransparentWhite"
-            android:hint="@string/tap_search_for_users"
+            android:hint="@string/tap_search_for_contacts"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"
@@ -89,13 +90,63 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_empty_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+
+        <TextView
+            android:id="@+id/tv_info_empty_contact"
+            style="@style/tapInfoLabelBodyStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:text="@string/tap_contact_list_empty" />
+
+        <TextView
+            android:id="@+id/tv_button_empty_contact"
+            style="@style/tapClickableLabelStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/tap_add_new_contact" />
+
+    </LinearLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_contact_list"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintBottom_toTopOf="@id/ll_group_members"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
+
+    <ImageView
+        android:id="@+id/iv_global_search_loading"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
+        android:src="@drawable/tap_ic_loading_progress_circle_white"
+        android:tint="@color/tapIconLoadingProgressPrimary"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_contact_list" />
 
     <LinearLayout
         android:id="@+id/ll_group_members"
@@ -112,6 +163,7 @@
             style="@style/tapSectionHeaderLabelStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             tools:text="Group Members (5/50)" />
@@ -123,21 +175,21 @@
             android:layout_marginTop="10dp" />
 
         <FrameLayout
-            android:id="@+id/fl_add_members_btn"
+            android:id="@+id/fl_button_continue"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="28dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/tap_bg_button_active_ripple"
+            android:background="@drawable/tap_bg_button_active"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rv_group_members">
 
             <TextView
-                android:id="@+id/tv_add_members_btn"
+                android:id="@+id/tv_button_text"
                 style="@style/tapButtonLabelStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -145,7 +197,7 @@
                 android:text="@string/tap_add_members" />
 
             <ImageView
-                android:id="@+id/iv_loading_progress_add_members"
+                android:id="@+id/iv_button_loading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

@@ -50,7 +50,6 @@ public class TAPDefaultSubscriber<T extends TAPBaseResponse<D>, V extends TAPDef
     @Override
     public void onError(Throwable e) {
         e.printStackTrace();
-        Log.e("><><><", "onError: ",e );
         if (null != localID) {
             view.onError(e.getMessage(), localID);
             view.onError(e, localID);

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.location.*
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.support.v4.app.ActivityCompat
@@ -55,7 +56,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         googleMap = map
         var latLng: LatLng?
         if (0.0 == longitude && 0.0 == latitude && 0.0 == currentLongitude && 0.0 == currentLatitude) {
-            //Location of Monumen Nasional,` Indonesia
+            // Location of Monumen Nasional,` Indonesia
             longitude = 106.827114
             latitude = -6.175403
             latLng = LatLng(latitude, longitude)
@@ -95,7 +96,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         tv_location.setHint(R.string.tap_searching_for_address)
         tv_location.text = ""
 
-        recycler_view.visibility = View.GONE
+        cv_search_result.visibility = View.GONE
         TAPUtils.getInstance().dismissKeyboard(this)
     }
 
@@ -105,7 +106,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
         iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
 
-        recycler_view.visibility = View.GONE
+        cv_search_result.visibility = View.GONE
         isSearch = !isSameKeyword
     }
 
@@ -134,7 +135,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
             R.id.tv_clear -> {
                 et_keyword.setText("")
                 tv_clear.visibility = View.GONE
-                recycler_view.visibility = View.GONE
+                cv_search_result.visibility = View.GONE
                 locationList.clear()
             }
         }
@@ -147,6 +148,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                     .setTitle(getString(R.string.tap_error))
                     .setMessage(if (TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
                         getString(R.string.tap_error_message_general) else getString(R.string.tap_no_internet_show_error))
+                    .setMessage(getString(R.string.tap_error_message_general))
                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
                     .show()
         }
@@ -195,7 +197,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 getGeoCoderAddress()
                 iv_location.setImageResource(R.drawable.tap_ic_location_pumpkin_orange)
                 iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
-                recycler_view.visibility = View.GONE
+                cv_search_result.visibility = View.GONE
                 if (et_keyword.isFocused)
                     et_keyword.clearFocus()
             }
@@ -256,7 +258,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
             if (hasFocus) {
                 rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_active)
                 if (!TAPUtils.getInstance().isListEmpty(locationList) && et_keyword.text.isNotEmpty())
-                    recycler_view.visibility = View.VISIBLE
+                    cv_search_result.visibility = View.VISIBLE
             } else {
                 rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_inactive)
             }
@@ -276,6 +278,10 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         recycler_view.adapter = adapter
         if (TAPUtils.getInstance().hasPermissions(this, PERMISSIONS[0])) {
             getLocation()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            iv_current_location.background = getDrawable(R.drawable.tap_bg_recenter_location_button_ripple)
         }
     }
 
@@ -397,7 +403,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                 if (!TAPUtils.getInstance().isListEmpty(locationList) && 1 == locationList.size) {
                                     locationList[0].myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
                                     adapter?.items = locationList
-                                    recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
+                                    cv_search_result.visibility = if (isSearch) View.VISIBLE else View.GONE
                                 } else if (!TAPUtils.getInstance().isListEmpty(locationList)) {
                                     locationList[0].myReturnType = TAPLocationItem.MyReturnType.FIRST
                                     locationList[locationList.size - 1].myReturnType = TAPLocationItem.MyReturnType.LAST
@@ -406,7 +412,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                         locationList.subList(0, 5)
                                     }
                                     adapter?.items = locationList
-                                    recycler_view.visibility = if (isSearch) View.VISIBLE else View.GONE
+                                    cv_search_result.visibility = if (isSearch) View.VISIBLE else View.GONE
                                 }
                             }
                         } catch (e: UninitializedPropertyAccessException) {
@@ -429,7 +435,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             isSameKeyword = false
             isSearch = true
-            recycler_view.visibility = View.GONE
+            cv_search_result.visibility = View.GONE
             if (0 < et_keyword.text.toString().length) {
                 tv_clear.visibility = View.VISIBLE
             } else {

@@ -1,14 +1,12 @@
 package io.moselo.SampleApps;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Intent;
-import android.widget.Toast;
+import android.support.multidex.MultiDexApplication;
 
 import com.facebook.stetho.Stetho;
 
 import io.moselo.SampleApps.Activity.TAPLoginActivity;
-import io.moselo.SampleApps.CustomBubbleClass.OrderCardBubbleClass;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TapUI;
@@ -17,7 +15,7 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TaptalkSample.BuildConfig;
 import io.taptalk.TaptalkSample.R;
 
-public class SampleApplication extends Application {
+public class SampleApplication extends MultiDexApplication {
 
     private static final String TAG = "SampleApplication";
 
@@ -69,7 +67,6 @@ public class SampleApplication extends Application {
                         .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                         .build());
         TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
-        TapUI.getInstance().addCustomBubble(new OrderCardBubbleClass(R.layout.sample_cell_chat_order_card, 3001, () -> Toast.makeText(SampleApplication.this, "OrderDetails Click", Toast.LENGTH_SHORT).show()));
         TapUI.getInstance().setLogoutButtonVisible(true);
     }
 }
