@@ -26,6 +26,14 @@
         <service
             android:name="io.taptalk.TapTalk.Helper.CustomTabLayout.TAPKeepAliveService"
             android:exported="true" />
+        <receiver
+            android:name="io.taptalk.TapTalk.Manager.TAPNetworkStateManager$TapNetworkBroadcastReceiver"
+            android:label="NetworkChangeReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+<!--                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />-->
+            </intent-filter>
+        </receiver>
 
         <activity android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity"
             android:screenOrientation="portrait" />
@@ -40,8 +48,6 @@
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberProfileActivity"
             android:screenOrientation="portrait" />
         <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity"
             android:screenOrientation="portrait" />

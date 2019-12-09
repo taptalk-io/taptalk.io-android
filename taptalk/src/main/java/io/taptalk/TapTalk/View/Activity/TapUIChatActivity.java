@@ -24,6 +24,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -343,6 +344,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
             switch (requestCode) {
                 case SEND_IMAGE_FROM_CAMERA:
+                    if (null != intent && null != intent.getData()) {
+                        vm.setCameraImageUri(intent.getData());
+                    }
                     if (null == vm.getCameraImageUri()) {
                         return;
                     }
@@ -675,7 +679,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
         }
 
-        //ini listener buat scroll pagination (di Init View biar kebuat cuman sekali aja)
+        // Listener for scroll pagination
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
@@ -684,7 +688,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             }
         };
 
-        // Load items from database for the First Time (First Load)
+        // Load items from database for the first time
         if (vm.getRoom().isRoomDeleted()) {
             showRoomIsUnavailableState();
         } else if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getDeleted()) {
@@ -694,9 +698,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             getAllUnreadMessage();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Show/hide ivToBottom
-            rvMessageList.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+        // Show/hide ivToBottom
+        rvMessageList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
                 if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
                     vm.setOnBottom(true);
                     ivToBottom.setVisibility(View.INVISIBLE);
@@ -719,8 +725,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     ivToBottom.setVisibility(View.VISIBLE);
                     vm.setScrollFromKeyboard(false);
                 }
-            });
-        }
+            }
+        });
 
         LayoutTransition containerTransition = clContainer.getLayoutTransition();
         containerTransition.addTransitionListener(containerTransitionListener);
@@ -746,6 +752,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 //        if (null == vm.getRoom().getGroupParticipants()) {
 //            showChatAsHistory(getString(R.string.tap_not_a_participant));
 //        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            llButtonDeleteChat.setBackground(getDrawable(R.drawable.tap_bg_button_destructive_ripple));
+            ivButtonAttach.setBackground(getDrawable(R.drawable.tap_bg_chat_composer_attachment_ripple));
+            ivToBottom.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
+            clUnreadButton.setBackground(getDrawable(R.drawable.tap_bg_white_rounded_8dp_ripple));
+        }
     }
 
     private void initHelper() {
@@ -825,7 +838,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
             @Override
             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                imageView.setImageTintList(null);
+                ImageViewCompat.setImageTintList(imageView, null);
                 tvAvatarLabel.setVisibility(View.GONE);
                 return false;
             }
@@ -834,10 +847,10 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void loadInitialsToProfilePicture(ImageView imageView, TextView tvAvatarLabel) {
         if (tvAvatarLabel == tvMyAvatarLabelEmpty) {
-            imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(TAPChatManager.getInstance().getActiveUser().getName())));
+            ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(TAPChatManager.getInstance().getActiveUser().getName())));
             tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(TAPChatManager.getInstance().getActiveUser().getName(), 2));
         } else {
-            imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
+            ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
             tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName(), vm.getRoom().getRoomType() == TYPE_PERSONAL ? 2 : 1));
         }
         imageView.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
@@ -864,24 +877,19 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void updateMessageDecoration() {
-        //ini buat margin atas sma bawah chatnya (recyclerView Message List)
+        // Update decoration for the top item in recycler view
         if (rvMessageList.getItemDecorationCount() > 0) {
             rvMessageList.removeItemDecorationAt(0);
         }
         rvMessageList.addItemDecoration(new TAPVerticalDecoration(TAPUtils.getInstance().dpToPx(10), 0, messageAdapter.getItemCount() - 1));
     }
 
-    // Previously attemptSend
     private void buildAndSendTextMessage() {
         String message = etChat.getText().toString();
-        //ngecekin yang mau di kirim itu kosong atau nggak
         if (!TextUtils.isEmpty(message.trim())) {
-            //ngereset isi edit text yang buat kirim chat
             etChat.setText("");
-            //tutup bubble yang lagi expand
             messageAdapter.shrinkExpandedBubble();
             TAPChatManager.getInstance().sendTextMessage(message);
-            //scroll to Bottom
             rvMessageList.scrollToPosition(0);
         } else {
             TAPChatManager.getInstance().checkAndSendForwardedMessage(vm.getRoom());
@@ -890,7 +898,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         }
     }
 
-    // Previously addNewTextMessage
     private void updateMessage(final TAPMessageModel newMessage) {
         if (vm.getContainerAnimationState() == vm.ANIMATING) {
             // Hold message if layout is animating
@@ -899,7 +906,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else {
             // Message is added after transition finishes in containerTransitionListener
             runOnUiThread(() -> {
-                //ini ngecek kalau masih ada logo empty chat ilangin dlu
+                // Remove empty chat layout if still shown
                 if (clEmptyChat.getVisibility() == View.VISIBLE) {
                     clEmptyChat.setVisibility(View.GONE);
                     flMessageList.setVisibility(View.VISIBLE);
@@ -907,7 +914,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             });
             // Replace pending message with new message
             String newID = newMessage.getLocalID();
-            //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
             boolean ownMessage = newMessage.getUser().getUserID().equals(TAPChatManager
                     .getInstance().getActiveUser().getUserID());
             runOnUiThread(() -> {
@@ -954,13 +960,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else {
             // Message is added after transition finishes in containerTransitionListener
             runOnUiThread(() -> {
-                //ini ngecek kalau masih ada logo empty chat ilangin dlu
+                // Remove empty chat layout if still shown
                 if (clEmptyChat.getVisibility() == View.VISIBLE) {
                     clEmptyChat.setVisibility(View.GONE);
                     flMessageList.setVisibility(View.VISIBLE);
                 }
             });
-            //nentuin itu messagenya yang ngirim user sndiri atau lawan chat user
             boolean ownMessage = newMessage.getUser().getUserID().equals(TAPChatManager
                     .getInstance().getActiveUser().getUserID());
             runOnUiThread(() -> {
@@ -983,8 +988,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         runOnUiThread(() -> {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
             if (-1 != position) {
+                // Update message in pointer and adapter
                 vm.updateMessagePointer(message);
-                //update data yang ada di adapter soalnya kalau cumah update data yang ada di view model dy ga berubah
                 messageAdapter.getItemAt(position).updateValue(message);
                 messageAdapter.notifyItemChanged(position);
             }
@@ -994,18 +999,16 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         });
     }
 
-    //ngecek kalau messagenya udah ada di hash map brati udah ada di recycler view update aja
-    // tapi kalau belum ada brati belom ada di recycler view jadi harus d add
     private List<TAPMessageModel> addBeforeTextMessage(final TAPMessageModel newMessage) {
         List<TAPMessageModel> tempBeforeMessages = new ArrayList<>();
         String newID = newMessage.getLocalID();
 
         if (vm.getMessagePointer().containsKey(newID)) {
-            //kalau udah ada cek posisinya dan update data yang ada di dlem modelnya
+            // Update existing message
             vm.updateMessagePointer(newMessage);
             runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID))));
         } else {
-            //kalau belom ada masukin kedalam list dan hash map
+            // Add new message to pointer
             tempBeforeMessages.add(newMessage);
             vm.addMessagePointer(newMessage);
         }
@@ -1054,9 +1057,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             } else if (message.getType() == TYPE_FILE && null != message.getData()) {
                 // Show file quote
                 vQuoteDecoration.setVisibility(View.GONE);
-                rcivQuoteImage.setImageDrawable(getDrawable(R.drawable.tap_ic_documents_white));
+                rcivQuoteImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_documents_white));
                 rcivQuoteImage.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconFile));
-                rcivQuoteImage.setBackground(getDrawable(R.drawable.tap_bg_quote_layout_file));
+                rcivQuoteImage.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_quote_layout_file));
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteTitle.setText(TAPUtils.getInstance().getFileDisplayName(message));
@@ -1117,6 +1120,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private void scrollToBottom() {
         rvMessageList.scrollToPosition(0);
         ivToBottom.setVisibility(View.INVISIBLE);
+        vm.setOnBottom(true);
         vm.clearUnreadMessages();
         updateUnreadCount();
     }
@@ -1131,7 +1135,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void showNormalKeyboard() {
         rvCustomKeyboard.setVisibility(View.GONE);
-        ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_burger_menu_ripple));
+        } else {
+            ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_burger_menu));
+        }
         ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
         ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
         //etChat.requestFocus();
@@ -1143,7 +1151,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         etChat.clearFocus();
         new Handler().postDelayed(() -> {
             rvCustomKeyboard.setVisibility(View.VISIBLE);
-            ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_show_keyboard_ripple);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_show_keyboard_ripple));
+            } else {
+                ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_show_keyboard));
+            }
             ivChatMenu.setImageResource(R.drawable.tap_ic_keyboard_white);
             ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerShowKeyboard));
         }, 150L);
@@ -1151,7 +1163,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void hideKeyboards() {
         rvCustomKeyboard.setVisibility(View.GONE);
-        ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_burger_menu_ripple));
+        } else {
+            ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_burger_menu));
+        }
         ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
         ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
         TAPUtils.getInstance().dismissKeyboard(this);
@@ -1184,7 +1200,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
             vStatusBadge.setVisibility(View.VISIBLE);
-            vStatusBadge.setBackground(getDrawable(R.drawable.tap_bg_circle_active));
+            vStatusBadge.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_active));
             tvRoomStatus.setText(getString(R.string.tap_active_now));
             vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable);
         });
@@ -1265,17 +1281,15 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         startActivityForResult(intent, SEND_MEDIA_FROM_PREVIEW);
     }
 
-    //ini Fungsi buat manggil Api Before
     private void fetchBeforeMessageFromAPIAndUpdateUI(TAPDefaultDataView<TAPGetMessageListByRoomResponse> beforeView) {
-        /*fetchBeforeMessageFromAPIAndUpdateUI rules:
-         * parameternya max created adalah Created yang paling kecil dari yang ada di recyclerView*/
         new Thread(() -> {
-            //ini ngecek kalau misalnya isi message modelnya itu kosong manggil api before maxCreated = current TimeStamp
             if (0 < vm.getMessageModels().size()) {
+                // Use oldest message's create time as parameter
                 TAPDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(), MAX_ITEMS_PER_PAGE,
                         beforeView);
             } else {
+                // Use current timestamp as parameter if message list is empty
                 TAPDataManager.getInstance().getMessageListByRoomBefore(vm.getRoom().getRoomID(),
                         System.currentTimeMillis(), MAX_ITEMS_PER_PAGE,
                         beforeView);
@@ -1389,22 +1403,15 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void callApiAfter() {
-        /*call api after rules:
-        --> kalau chat ga kosong, dan kita udah ada lastTimeStamp di preference
-            brati parameternya minCreated = created pling kecil dari yang ada di recyclerView
-            dan last Updatenya = dari preference
-        --> kalau chat ga kosong, dan kita belum ada lastTimeStamp di preference
-            brati parameternya minCreated = lastUpdated = created paling kecil dari yang ada di recyclerView
-        --> selain itu ga usah manggil api after
-
-        ps: di jalanin di new Thread biar ga ganggun main Thread aja*/
         new Thread(() -> {
             if (vm.getMessageModels().size() > 0 && !TAPDataManager.getInstance().checkKeyInLastMessageTimestamp(vm.getRoom().getRoomID())) {
+                // Set oldest message's create time as minCreated and lastUpdated if last updated timestamp does not exist in preference
                 TAPDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
                         messageAfterView);
             } else if (vm.getMessageModels().size() > 0) {
+                // Set oldest message's create time as minCreated, last updated timestamp is obtained from preference
                 TAPDataManager.getInstance().getMessageListByRoomAfter(vm.getRoom().getRoomID(),
                         vm.getMessageModels().get(vm.getMessageModels().size() - 1).getCreated(),
                         TAPDataManager.getInstance().getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()),
@@ -1428,18 +1435,14 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void mergeSort(List<TAPMessageModel> messages, int sortDirection) {
         int messageListSize = messages.size();
-        //merge proses divide
+
         if (messageListSize < 2) {
             return;
         }
 
-        //ambil nilai tengah
         int leftListSize = messageListSize / 2;
-        //sisa dari mediannya
         int rightListSize = messageListSize - leftListSize;
-        //bkin list kiri sejumlah median sizenya
         List<TAPMessageModel> leftList = new ArrayList<>(leftListSize);
-        //bikin list kanan sejumlah sisanya (size - median)
         List<TAPMessageModel> rightList = new ArrayList<>(rightListSize);
 
         for (int index = 0; index < leftListSize; index++)
@@ -1448,20 +1451,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         for (int index = leftListSize; index < messageListSize; index++)
             rightList.add((index - leftListSize), messages.get(index));
 
-        //recursive
         mergeSort(leftList, sortDirection);
         mergeSort(rightList, sortDirection);
 
-        //setelah selesai lalu di gabungin sambil di sort
         merge(messages, leftList, rightList, leftListSize, rightListSize, sortDirection);
     }
 
     private void merge(List<TAPMessageModel> messagesAll, List<TAPMessageModel> leftList, List<TAPMessageModel> rightList, int leftSize, int rightSize, int sortDirection) {
-        //Merge adalah fungsi buat Conquernya
-
-        //index left buat nentuin index leftList
-        //index right buat nentuin index rightList
-        //index combine buat nentuin index saat gabungin jd 1 list
         int indexLeft = 0, indexRight = 0, indexCombine = 0;
 
         while (indexLeft < leftSize && indexRight < rightSize) {
@@ -1484,7 +1480,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             }
         }
 
-        //looping untuk masukin sisa di list masing masing
         while (indexLeft < leftSize) {
             messagesAll.set(indexCombine, leftList.get(indexLeft));
             indexLeft += 1;
@@ -1921,7 +1916,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             }
             tvUnreadButtonCount.setText(String.format(getString(R.string.tap_s_unread_messages),
                     vm.getInitialUnreadCount() > 99 ? getString(R.string.tap_over_99) : vm.getInitialUnreadCount()));
-            ivUnreadButtonImage.setImageDrawable(getDrawable(R.drawable.tap_ic_chevron_up_circle_orange));
+            ivUnreadButtonImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_up_circle_orange));
             ivUnreadButtonImage.clearAnimation();
             clUnreadButton.setVisibility(View.VISIBLE);
             clUnreadButton.setOnClickListener(v -> scrollToMessage(UNREAD_INDICATOR_LOCAL_ID));
@@ -1941,7 +1936,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private void showUnreadButtonLoading() {
         runOnUiThread(() -> {
             tvUnreadButtonCount.setText(getString(R.string.tap_loading));
-            ivUnreadButtonImage.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivUnreadButtonImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivUnreadButtonImage.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivUnreadButtonImage);
             }
@@ -1993,14 +1988,22 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 // Hide chat menu and enable send button when EditText is filled
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
-                ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_ripple));
+                } else {
+                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
+                }
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
             } else if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0) {
                 // Hide chat menu but keep send button disabled if trimmed text is empty
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
-                ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive_ripple);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_inactive_ripple));
+                } else {
+                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
+                }
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
             //} else if (s.length() > 0 && s.toString().trim().length() > 0) {
             //    if (vm.isCustomKeyboardEnabled()) {
@@ -2020,11 +2023,19 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
                 if (vm.getQuoteAction() == FORWARD) {
                     // Enable send button if message to forward exists
-                    ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_ripple));
+                    } else {
+                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
+                    }
                     ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
                 } else {
                     // Disable send button
-                    ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive_ripple);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_inactive_ripple));
+                    } else {
+                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
+                    }
                     ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
                 }
             }
@@ -2168,25 +2179,21 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
 
-                    //ini buat ngecek kalau room nya kosong manggil api before aja
-                    //sebaliknya kalau roomnya ada isinya manggil after baru before*
-                    //* = kalau jumlah itemnya < 50
                     if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size()) {
-                    /* Call Message List API
-                    Kalau misalnya lastUpdatednya ga ada di preference last updated dan min creatednya sama
-                    Kalau misalnya ada di preference last updatednya ambil dari yang ada di preference (min created ambil dari getCreated)
-                    kalau last updated dari getUpdated */
+                        // Only Fetch newer messages from API if message is below 50
                         callApiAfter();
                         if (null != vm.getTappedMessageLocalID()) {
                             scrollToMessage(vm.getTappedMessageLocalID());
                         }
                     } else if (MAX_ITEMS_PER_PAGE <= vm.getMessageModels().size()) {
+                        // Fetch newer messages from API and add pagination listener if message is over 50
                         rvMessageList.addOnScrollListener(endlessScrollListener);
                         callApiAfter();
                         if (null != vm.getTappedMessageLocalID()) {
                             scrollToMessage(vm.getTappedMessageLocalID());
                         }
                     } else {
+                        // Fetch older messages from API if room has no message
                         fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
                     }
                 });
@@ -2645,14 +2652,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         }).start();
     }
 
-    //message before yang di panggil setelah api after pas awal (cuman di panggil sekali doang)
     private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
-            //response message itu entity jadi buat disimpen ke database
-            List<TAPMessageEntity> responseMessages = new ArrayList<>();
-            //messageBeforeModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
-            List<TAPMessageModel> messageBeforeModels = new ArrayList<>();
+            List<TAPMessageEntity> responseMessages = new ArrayList<>();  // Entities to be saved to database
+            List<TAPMessageModel> messageBeforeModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
@@ -2663,8 +2667,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
             }
 
-            //sorting message balikan dari api before
-            //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
+            // Sort adapter items according to timestamp
             mergeSort(messageBeforeModels, ASCENDING);
 
             List<TAPMessageModel> finalMessageBeforeModels = messageBeforeModels;
@@ -2681,14 +2684,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     flMessageList.setVisibility(View.VISIBLE);
                 }
 
-                //ini di taronya di belakang karena message before itu buat message yang lama-lama
-                messageAdapter.addMessageFirstFromAPI(finalMessageBeforeModels);
+                // Add messages to last index
+                messageAdapter.addOlderMessagesFromApi(finalMessageBeforeModels);
 
                 if (0 < finalMessageBeforeModels.size())
                     vm.setLastTimestamp(finalMessageBeforeModels.get(finalMessageBeforeModels.size() - 1).getCreated());
 
                 updateMessageDecoration();
-                //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> {
                     vm.setMessageModels(messageAdapter.getItems());
                     if (null != vm.getTappedMessageLocalID()) {
@@ -2725,15 +2727,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         }
     };
 
-    //message before yang di panggil pas pagination db balikin data di bawah limit
     private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeViewPaging = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             hideLoadingOlderMessagesIndicator();
-            //response message itu entity jadi buat disimpen ke database
-            List<TAPMessageEntity> responseMessages = new ArrayList<>();
-            //messageBeforeModels itu model yang buat diisi sama hasil api after yang belum ada di recyclerView
-            List<TAPMessageModel> messageBeforeModels = new ArrayList<>();
+            List<TAPMessageEntity> responseMessages = new ArrayList<>(); // Entities to be saved to database
+            List<TAPMessageModel> messageBeforeModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
@@ -2744,21 +2743,18 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
             }
 
-            //ini ngecek kalau misalnya balikan apinya itu perPagenya > pageCount brati berenti ga usah pagination lagi (State.DONE)
-            //selain itu paginationnya bisa lanjut lagi
+            // Check if room has more messages
             state = response.getHasMore() ? STATE.LOADED : STATE.DONE;
 
-            //sorting message balikan dari api before
-            //messageBeforeModels ini adalah message balikan api yang belom ada di recyclerView
+            // Sort adapter items according to timestamp
             mergeSort(messageBeforeModels, ASCENDING);
             runOnUiThread(() -> {
-                //ini di taronya di belakang karena message before itu buat message yang lama-lama
+                // Add messages to last index
                 messageAdapter.addMessage(messageBeforeModels);
 
                 if (0 < messageBeforeModels.size())
                     vm.setLastTimestamp(messageBeforeModels.get(messageBeforeModels.size() - 1).getCreated());
 
-                //mastiin message models yang ada di view model sama isinya kyak yang ada di recyclerView
                 new Thread(() -> {
                     vm.setMessageModels(messageAdapter.getItems());
                     if (null != vm.getTappedMessageLocalID()) {

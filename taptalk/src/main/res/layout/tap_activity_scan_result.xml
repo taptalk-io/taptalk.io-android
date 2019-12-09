@@ -29,13 +29,13 @@
         android:alpha="1"
         android:animateLayoutChanges="true"
         android:clipToPadding="true"
+        android:visibility="gone"
         app:cardCornerRadius="32dp"
         app:cardUseCompatPadding="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        android:visibility="gone"
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -216,7 +216,7 @@
                 android:layout_height="54dp"
                 android:alpha="1"
                 android:animateLayoutChanges="true"
-                android:background="@drawable/tap_bg_scan_result_button_ripple"
+                android:background="@drawable/tap_bg_scan_result_button"
                 android:gravity="center"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -244,6 +244,7 @@
                     style="@style/tapButtonLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
                     android:layout_marginStart="4dp"
                     android:gravity="center"
                     android:text="@string/tap_add_to_contacts" />

@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -165,7 +166,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
 
     private void showLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }
@@ -177,7 +178,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
 
     private void endLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
             tvLoadingText.setText(getString(R.string.tap_image_saved));
             flLoading.setOnClickListener(v -> hideLoading());

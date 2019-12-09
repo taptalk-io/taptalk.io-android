@@ -2,7 +2,9 @@ package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -96,9 +98,13 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 // My products
                 vButtonSeparator.setVisibility(View.GONE);
                 tvButtonTwo.setVisibility(View.GONE);
-                tvButtonOne.setBackgroundResource(R.drawable.tap_bg_product_list_single_button_ripple);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    tvButtonOne.setBackgroundResource(R.drawable.tap_bg_product_list_single_button_ripple);
+                } else {
+                    tvButtonOne.setBackgroundResource(R.drawable.tap_bg_product_list_single_button);
+                }
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(11), TAPUtils.getInstance().dpToPx(2), 0, 0);
-                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_8dp_1dp_8dp_8dp_stroke_eaeaea_1dp));
+                flContainer.setForeground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_rounded_8dp_1dp_8dp_8dp_stroke_eaeaea_1dp));
             } else {
                 // Other seller's products
                 tvButtonTwo.setText(item.getButtonOption2Text());
@@ -107,9 +113,15 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 }
                 vButtonSeparator.setVisibility(View.VISIBLE);
                 tvButtonTwo.setVisibility(View.VISIBLE);
-                tvButtonOne.setBackgroundResource(R.drawable.tap_bg_product_list_left_button_ripple);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    tvButtonOne.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_left_button_ripple));
+                    tvButtonTwo.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_right_button_ripple));
+                } else {
+                    tvButtonOne.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_left_button));
+                    tvButtonTwo.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_right_button));
+                }
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(2), TAPUtils.getInstance().dpToPx(11), 0, 0);
-                flContainer.setForeground(itemView.getContext().getDrawable(R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp));
+                flContainer.setForeground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp));
             }
 
             Glide.with(itemView.getContext()).load(item.getImageURL()).into(rcivProductImage);

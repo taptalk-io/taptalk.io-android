@@ -10,10 +10,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -132,8 +136,8 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
         @Override
         protected void onBind(TapChatProfileItemModel item, int position) {
             // Set menu icon
-            ivMenuIcon.setImageResource(item.getIconResource());
-            ivMenuIcon.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(item.getIconColorResource())));
+            ivMenuIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), item.getIconResource()));
+            ImageViewCompat.setImageTintList(ivMenuIcon, ColorStateList.valueOf(itemView.getResources().getColor(item.getIconColorResource())));
 
             // Set menu label text
             tvMenuLabel.setText(item.getItemLabel());
@@ -153,7 +157,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                 swMenuSwitch.setVisibility(View.VISIBLE);
                 swMenuSwitch.setChecked(item.isChecked());
                 int switchColorRes = item.isChecked() ? R.color.tapSwitchActiveBackgroundColor : R.color.tapSwitchInactiveBackgroundColor;
-                changeSwitchColor(itemView.getResources().getColor(switchColorRes));
+                changeSwitchColor(ContextCompat.getColor(itemView.getContext(), switchColorRes));
                 swMenuSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     private ValueAnimator transitionToActive, transitionToInactive;
 
@@ -163,23 +167,34 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                         chatProfileInterface.onMenuClicked(item);
                         if (isChecked) {
                             // Turn switch ON
-                            getTransitionInactive().cancel();
-                            getTransitionActive().start();
-                            changeSwitchColor(itemView.getResources().getColor(R.color.tapSwitchActiveBackgroundColor));
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                getTransitionInactive().cancel();
+                                getTransitionActive().start();
+                            } else {
+                                ImageViewCompat.setImageTintList(ivMenuIcon, ContextCompat.getColorStateList(
+                                        itemView.getContext(), R.color.tapIconChatProfileMenuNotificationActive));
+                            }
+                            changeSwitchColor(ContextCompat.getColor(itemView.getContext(), R.color.tapSwitchActiveBackgroundColor));
 
                         } else {
                             // Turn switch OFF
-                            getTransitionActive().cancel();
-                            getTransitionInactive().start();
-                            changeSwitchColor(itemView.getResources().getColor(R.color.tapSwitchInactiveBackgroundColor));
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                getTransitionActive().cancel();
+                                getTransitionInactive().start();
+                            } else {
+                                ImageViewCompat.setImageTintList(ivMenuIcon, ContextCompat.getColorStateList(
+                                        itemView.getContext(), R.color.tapIconChatProfileMenuNotificationInactive));
+                            }
+                            changeSwitchColor(ContextCompat.getColor(itemView.getContext(), R.color.tapSwitchInactiveBackgroundColor));
                         }
                     }
 
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     private ValueAnimator getTransitionActive() {
                         if (null == transitionToActive) {
                             transitionToActive = ValueAnimator.ofArgb(
-                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileMenuNotificationInactive),
-                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileMenuNotificationActive));
+                                    ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatProfileMenuNotificationInactive),
+                                    ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatProfileMenuNotificationActive));
                             transitionToActive.setDuration(DEFAULT_ANIMATION_TIME);
                             transitionToActive.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -187,11 +202,12 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                         return transitionToActive;
                     }
 
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     private ValueAnimator getTransitionInactive() {
                         if (null == transitionToInactive) {
                             transitionToInactive = ValueAnimator.ofArgb(
-                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileMenuNotificationActive),
-                                    itemView.getContext().getResources().getColor(R.color.tapIconChatProfileMenuNotificationInactive));
+                                    ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatProfileMenuNotificationActive),
+                                    ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatProfileMenuNotificationInactive));
                             transitionToInactive.setDuration(DEFAULT_ANIMATION_TIME);
                             transitionToInactive.addUpdateListener(valueAnimator -> ivMenuIcon.setColorFilter(
                                     (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -260,7 +276,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                                         message.getData().get(THUMBNAIL))));
                 if (thumbnail.getIntrinsicHeight() <= 0) {
                     // Set placeholder image if thumbnail fails to load
-                    thumbnail = itemView.getContext().getDrawable(R.drawable.tap_bg_grey_e4);
+                    thumbnail = ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_grey_e4);
                 }
 //            }
 
@@ -360,8 +376,8 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                     pbProgress.setProgress(0);
                     clContainer.setOnClickListener(v -> chatProfileInterface.onMediaClicked(message, ivThumbnail, isMediaReady));
                     tvMediaInfo.setText(videoSize);
-                    ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_download_white));
-                    ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileUploadDownload)));
+                    ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_white));
+                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileUploadDownload)));
                 } else {
                     // Media is downloading
                     isMediaReady = false;
@@ -373,8 +389,8 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                     //    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
                     //}
                     tvMediaInfo.setText(videoSize);
-                    ivButtonProgress.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_ic_cancel_white));
-                    ivButtonProgress.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileCancelUploadDownload)));
+                    ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
+                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileCancelUploadDownload)));
                     clContainer.setOnClickListener(v -> chatProfileInterface.onCancelDownloadClicked(message));
                 }
                 tvMediaInfo.setVisibility(View.VISIBLE);

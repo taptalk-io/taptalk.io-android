@@ -7,17 +7,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -682,7 +687,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private void showLoadingPopup(String message) {
         vm.setApiCallOnProgress(true);
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }
@@ -694,7 +699,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private void hideLoadingPopup(String message) {
         vm.setApiCallOnProgress(false);
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
             tvLoadingText.setText(message);
             flLoading.setOnClickListener(v -> hideLoadingPopup());
@@ -750,8 +755,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         .alpha(1f)
                         .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
-                getTransitionToExpand().cancel();
-                getTransitionToCollapse().start();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    getTransitionToExpand().cancel();
+                    getTransitionToCollapse().start();
+                } else {
+                    ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton)));
+                    ImageViewCompat.setImageTintList(ivButtonEdit, ColorStateList.valueOf(ContextCompat.
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton)));
+                }
             } else if (Math.abs(verticalOffset) < scrollRange && isShowing) {
                 // Hide Toolbar
                 isShowing = false;
@@ -765,16 +777,24 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         .alpha(0f)
                         .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
-                getTransitionToCollapse().cancel();
-                getTransitionToExpand().start();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    getTransitionToCollapse().cancel();
+                    getTransitionToExpand().start();
+                } else {
+                    ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton)));
+                    ImageViewCompat.setImageTintList(ivButtonEdit, ColorStateList.valueOf(ContextCompat.
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton)));
+                }
             }
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         private ValueAnimator getTransitionToCollapse() {
             if (null == transitionToCollapse) {
                 transitionToCollapse = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.tapIconTransparentBackgroundBackButton),
-                        getResources().getColor(R.color.tapIconNavBarBackButton));
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton),
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton));
                 transitionToCollapse.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToCollapse.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -784,11 +804,12 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             return transitionToCollapse;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         private ValueAnimator getTransitionToExpand() {
             if (null == transitionToExpand) {
                 transitionToExpand = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.tapIconNavBarBackButton),
-                        getResources().getColor(R.color.tapIconTransparentBackgroundBackButton));
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton),
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton));
                 transitionToExpand.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToExpand.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));

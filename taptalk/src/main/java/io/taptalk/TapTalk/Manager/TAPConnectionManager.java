@@ -12,7 +12,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +21,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapCommonInterface;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
@@ -108,7 +107,8 @@ public class TAPConnectionManager {
 
             @Override
             public void onMessage(ByteBuffer bytes) {
-                String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
+                //String tempMessage = StandardCharsets.UTF_8.decode(bytes).toString();
+                String tempMessage = Charset.forName("UTF-8").decode(bytes).toString();
                 String messages[] = tempMessage.split("\\r?\\n");
                 // TODO: 23/11/18 NANTI HARUS DIUBAH KARENA COMPLEXITYNYA JELEK
                 for (String message : messages) {
@@ -191,7 +191,7 @@ public class TAPConnectionManager {
 
     public void send(String messageString) {
         if (webSocketClient.isOpen()) {
-            webSocketClient.send(messageString.getBytes(StandardCharsets.UTF_8));
+            webSocketClient.send(messageString.getBytes(Charset.forName("UTF-8")));
         }
     }
 
@@ -200,9 +200,9 @@ public class TAPConnectionManager {
                 TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
             try {
                 webSocketUri = new URI(getWebSocketEndpoint());
-                Map<String, String> websocketHeader = new HashMap<>();
-                createHeaderForConnectWebSocket(websocketHeader);
-                initWebSocketClient(webSocketUri, websocketHeader);
+                Map<String, String> webSocketHeader = new HashMap<>();
+                createHeaderForConnectWebSocket(webSocketHeader);
+                initWebSocketClient(webSocketUri, webSocketHeader);
                 connectionStatus = CONNECTING;
                 webSocketClient.connect();
             } catch (Exception e) {

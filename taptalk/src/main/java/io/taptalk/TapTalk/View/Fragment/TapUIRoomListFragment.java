@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -334,8 +336,11 @@ public class TapUIRoomListFragment extends Fragment {
         //ivButtonMute.setOnClickListener(v -> {});
         //ivButtonDelete.setOnClickListener(v -> {});
         //ivButtonMore.setOnClickListener(v -> {});
-        flSetupContainer.setOnClickListener(v -> {
-        });
+        flSetupContainer.setOnClickListener(v -> {});
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != getContext()) {
+            ivButtonNewChat.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_start_new_chat_button_ripple));
+        }
     }
 
     private void reloadProfilePicture() {
@@ -345,13 +350,15 @@ public class TapUIRoomListFragment extends Fragment {
                 && !TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail().isEmpty()) {
             Glide.with(activity).load(TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail())
                     .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
-            civMyAvatarImage.setImageTintList(null);
+            ImageViewCompat.setImageTintList(civMyAvatarImage, null);
             tvMyAvatarLabel.setVisibility(View.GONE);
         } else if (null != activity && null != user) {
 //            Glide.with(activity).load(activity.getDrawable(R.drawable.tap_img_default_avatar))
 //                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
-            civMyAvatarImage.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
-            civMyAvatarImage.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
+            if (null != getContext()) {
+                civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
+            }
             tvMyAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
             tvMyAvatarLabel.setVisibility(View.VISIBLE);
         }
@@ -522,14 +529,18 @@ public class TapUIRoomListFragment extends Fragment {
     private void showSelectionActionBar() {
         vm.setSelecting(true);
         //tvSelectionCount.setText(vm.getSelectedCount() + "");
-        clButtonSearch.setElevation(0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            clButtonSearch.setElevation(0);
+        }
         clButtonSearch.setVisibility(View.INVISIBLE);
         //clSelection.setVisibility(View.VISIBLE);
     }
 
     private void hideSelectionActionBar() {
         vm.setSelecting(false);
-        clButtonSearch.setElevation(TAPUtils.getInstance().dpToPx(2));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            clButtonSearch.setElevation(TAPUtils.getInstance().dpToPx(2));
+        }
         clButtonSearch.setVisibility(View.VISIBLE);
         //clSelection.setVisibility(View.INVISIBLE);
     }
