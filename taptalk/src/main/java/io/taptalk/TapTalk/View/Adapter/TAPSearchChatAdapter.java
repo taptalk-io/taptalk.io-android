@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.widget.ImageViewCompat;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
@@ -180,27 +181,27 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             // Message is read
             if (null != message.getIsRead() && message.getIsRead()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_read_orange);
-                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageRead)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageRead)));
             }
             // Message is delivered
             else if (null != message.getDelivered() && message.getDelivered()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_delivered_grey);
-                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDelivered)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDelivered)));
             }
             // Message failed to send
             else if (null != message.getFailedSend() && message.getFailedSend()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_warning_red_circle_background);
-                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageFailed)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageFailed)));
             }
             // Message sent
             else if (null != message.getSending() && !message.getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_sent_grey);
-                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSent)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSent)));
             }
             // Message is sending
             else if (null != message.getSending() && message.getSending()) {
                 ivMessageStatus.setImageResource(R.drawable.tap_ic_sending_grey);
-                ivMessageStatus.setImageTintList(ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSending)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSending)));
             }
 
             clContainer.setOnClickListener(v -> TAPUtils.getInstance().startChatActivity(itemView.getContext(),
@@ -255,11 +256,11 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             // Load avatar
             if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
                 Glide.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
-                civAvatar.setImageTintList(null);
+                ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
 //                civAvatar.setImageDrawable(itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
-                civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(room.getRoomName())));
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(room.getRoomName())));
                 civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
                 tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
                 tvAvatarLabel.setVisibility(View.VISIBLE);

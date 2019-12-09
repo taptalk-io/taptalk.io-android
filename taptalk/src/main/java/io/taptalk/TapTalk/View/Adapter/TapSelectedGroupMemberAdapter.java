@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.content.res.ColorStateList;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -72,10 +73,10 @@ public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactList
                         .load(user.getAvatarURL().getThumbnail())
                         .apply(new RequestOptions().centerCrop())
                         .into(civAvatar);
-                civAvatar.setImageTintList(null);
+                ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
-                civAvatar.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
                 civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
                 tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
@@ -100,7 +101,7 @@ public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactList
 //                ivAvatarIcon.setBackground(null);
             } else {
                 ivAvatarIcon.setImageResource(R.drawable.tap_ic_remove_red_circle_background);
-                ivAvatarIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconRemoveItemBackground)));
+                ImageViewCompat.setImageTintList(ivAvatarIcon, ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconRemoveItemBackground)));
                 ivAvatarIcon.setBackgroundResource(R.drawable.tap_bg_circle_remove_item);
                 ivAvatarIcon.setVisibility(View.VISIBLE);
             }
