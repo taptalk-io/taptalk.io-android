@@ -204,7 +204,7 @@ public class TapCoreMessageManager {
         if (!TAPUtils.getInstance().hasPermissions(TapTalk.appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             listener.onError(ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE);
         } else {
-            TAPFileDownloadManager.getInstance().downloadFile(TapTalk.appContext, message);
+            TAPFileDownloadManager.getInstance().downloadMessageFile(message);
 
             BroadcastReceiver downloadProgressReceiver = new BroadcastReceiver() {
                 @Override

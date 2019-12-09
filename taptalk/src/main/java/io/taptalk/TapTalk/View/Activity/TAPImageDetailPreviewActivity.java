@@ -72,7 +72,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
         initView();
 
         supportPostponeEnterTransition();
-        if (null != fileUrl) {
+        if (null != fileUrl && !fileUrl.isEmpty()) {
             // Load image from URL
             tivImageDetail.post(() -> Glide.with(TAPImageDetailPreviewActivity.this)
                     .load(fileUrl)
@@ -91,7 +91,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
                         }
                     })
                     .into(tivImageDetail));
-        } else if (null != fileID) {
+        } else if (null != fileID && !fileID.isEmpty()) {
             new Thread(() -> {
                 // Load image from cache
                 image = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(fileID);

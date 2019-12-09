@@ -1188,4 +1188,8 @@ public class TAPUtils {
             return text;
         }
     }
+
+    public String removeNonAlphaNumeric(String s) {
+        return s.replaceAll("[^A-Za-z0-9]", "");
+    }
 }

@@ -658,7 +658,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         } else {
             // Download file
             vm.setPendingDownloadMessage(null);
-            TAPFileDownloadManager.getInstance().downloadFile(TAPChatProfileActivity.this, message);
+            TAPFileDownloadManager.getInstance().downloadMessageFile(message);
         }
         notifyItemChanged(message);
     }

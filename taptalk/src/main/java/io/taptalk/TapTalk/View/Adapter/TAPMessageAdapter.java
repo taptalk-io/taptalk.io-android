@@ -54,7 +54,6 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
@@ -548,7 +547,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .placeholder(thumbnail)
                                 .centerCrop())
                         .into(rcivImageBody);
-                // TODO: 005, 5 Dec 2019 SAVE THUMBNAIL TO DATA? 
                 rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
             } else if (null != fileID && !fileID.isEmpty()) {
                 new Thread(() -> {
@@ -731,13 +729,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Number widthDimension = (Number) item.getData().get(WIDTH);
             Number heightDimension = (Number) item.getData().get(HEIGHT);
             String videoCaption = (String) item.getData().get(CAPTION);
+            String fileUrl = (String) item.getData().get(FILE_URL);
             String fileID = (String) item.getData().get(FILE_ID);
             String dataUri = (String) item.getData().get(FILE_URI);
+            String key = null != fileUrl ? TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
 
             Integer uploadProgressPercent = TAPFileUploadManager.getInstance().getUploadProgressPercent(localID);
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
-            videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), fileID);
-
+            videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), key);
 
             if (((null != item.getQuote() &&
                     null != item.getQuote().getTitle() &&
@@ -848,16 +847,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_play_white));
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFilePlayMedia)));
                 pbProgress.setVisibility(View.GONE);
-                rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, TAPFileDownloadManager.getInstance().checkPhysicalFileExists(item)));
+                rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, key, TAPFileDownloadManager.getInstance().checkPhysicalFileExists(item)));
                 new Thread(() -> {
-                    BitmapDrawable videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(fileID);
+                    BitmapDrawable videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(key);
                     if (null == videoThumbnail) {
                         // Get full-size thumbnail from Uri
                         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                         try {
                             retriever.setDataSource(itemView.getContext(), videoUri);
                             videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
-                            TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, videoThumbnail);
+                            TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(key, videoThumbnail);
                         } catch (Exception e) {
                             e.printStackTrace();
                             videoThumbnail = (BitmapDrawable) thumbnail;
@@ -873,7 +872,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                             .placeholder(thumbnail)
                                             .centerCrop())
                                     .into(rcivVideoThumbnail);
-                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, TAPFileDownloadManager.getInstance().checkPhysicalFileExists(item)));
+                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, key, TAPFileDownloadManager.getInstance().checkPhysicalFileExists(item)));
                         });
                     }
                 }).start();
@@ -930,11 +929,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
 
-        private void openVideoPlayer(TAPMessageModel message, boolean isPhysicalFileExist) {
+        private void openVideoPlayer(TAPMessageModel message, String key, boolean isPhysicalFileExist) {
             if (null == message.getData()) {
                 return;
             }
-            Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID));
+            Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), key);
             if (null == videoUri || !isPhysicalFileExist) {
                 // Prompt download
                 this.videoUri = null;

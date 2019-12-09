@@ -83,7 +83,7 @@ public class TAPDefaultConstant {
         public static final String ITEMS = "items";
         public static final String FILE_ID = "fileID";
         public static final String FILE_NAME = "fileName";
-        public static final String FILE_URL = "fileURL";
+        public static final String FILE_URL = "url";
         public static final String IMAGE_URL = "imageURL";
         public static final String MEDIA_TYPE = "mediaType";
         public static final String DURATION = "duration";

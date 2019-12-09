@@ -1814,7 +1814,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else {
             // Download file
             vm.setPendingDownloadMessage(null);
-            TAPFileDownloadManager.getInstance().downloadFile(TapUIChatActivity.this, message);
+            TAPFileDownloadManager.getInstance().downloadMessageFile(message);
         }
     }
 
@@ -1823,7 +1823,15 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         if (null == vm.getOpenedFileMessage()) {
             return;
         }
-        TAPFileDownloadManager.getInstance().removeFileMessageUri(vm.getRoom().getRoomID(), vm.getOpenedFileMessage().getLocalID());
+        if (null != vm.getOpenedFileMessage().getData()) {
+            String fileId = (String) vm.getOpenedFileMessage().getData().get(FILE_ID);
+            String fileUrl = (String) vm.getOpenedFileMessage().getData().get(FILE_URL);
+            if (null != fileUrl) {
+                fileUrl = TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase();
+            }
+            TAPFileDownloadManager.getInstance().removeFileMessageUri(vm.getRoom().getRoomID(), fileId);
+            TAPFileDownloadManager.getInstance().removeFileMessageUri(vm.getRoom().getRoomID(), fileUrl);
+        }
         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getOpenedFileMessage()));
         new TapTalkDialog.Builder(TapUIChatActivity.this)
                 .setTitle(getString(R.string.tap_error_could_not_find_file))
