@@ -34,7 +34,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1687,15 +1686,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadImageData) &&
                             intent.getSerializableExtra(UploadImageData) instanceof HashMap) {
                         // Set image data
-                        Log.e(TAG, "UploadProgressFinish: Set image data");
                         messageModel.setData((HashMap<String, Object>) intent.getSerializableExtra(UploadImageData));
                     } else if (vm.getMessagePointer().containsKey(localID) && intent.hasExtra(UploadFileData) &&
                             intent.getSerializableExtra(UploadFileData) instanceof HashMap) {
                         // Put file data
-                        Log.e(TAG, "UploadProgressFinish: Put file data");
                         messageModel.putData((HashMap<String, Object>) intent.getSerializableExtra(UploadFileData));
                     }
-                    Log.e(TAG, "UploadProgressFinish data: " + TAPUtils.getInstance().toJsonString(messageModel.getData()));
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(messageModel));
                     break;
                 case UploadFailed:
@@ -1857,7 +1853,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 runOnUiThread(() -> {
                     rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     rvMessageList.post(() -> {
-                        Log.e(TAG, "scrollToMessage: " + messageLayoutManager.findFirstVisibleItemPosition());
                         if (messageLayoutManager.findFirstVisibleItemPosition() > 0) {
                             vm.setOnBottom(false);
                             ivToBottom.setVisibility(View.VISIBLE);

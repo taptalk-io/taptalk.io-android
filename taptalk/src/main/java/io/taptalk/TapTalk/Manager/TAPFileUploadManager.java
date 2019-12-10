@@ -317,14 +317,12 @@ public class TAPFileUploadManager {
             return;
         }
 
-
         if (messageModel.getType() == TYPE_IMAGE) {
             // Generate small thumbnail for image
             createAndResizeImageFile(context, Uri.parse(fileUri), THUMB_MAX_DIMENSION, thumbBitmap -> {
                 String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
                 messageData.put(THUMBNAIL, thumbBase64);
                 messageModel.setData(messageData);
-                Log.e(TAG, "requestFileUploadToExternalServer: generate thumbnail");
                 TAPChatManager.getInstance().triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
             });
         } else if (messageModel.getType() == TYPE_VIDEO) {
@@ -931,20 +929,21 @@ public class TAPFileUploadManager {
      */
     public void uploadNextSequence(Context context, String roomID) {
         getUploadQueue(roomID).remove(0);
-        if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
-                && null != getUploadQueue(roomID).get(0)) {
+        if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size()) &&
+                null != getUploadQueue(roomID).get(0) &&
+                TapCoreMessageManager.getInstance().isUploadMessageFileToExternalServerEnabled()) {
             requestFileUploadToExternalServer(context, roomID);
-        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
-                && null != getUploadQueue(roomID).get(0)
-                && TYPE_IMAGE == getUploadQueue(roomID).get(0).getType()) {
+        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size()) &&
+                null != getUploadQueue(roomID).get(0) &&
+                TYPE_IMAGE == getUploadQueue(roomID).get(0).getType()) {
             uploadImage(context, roomID);
-        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
-                && null != getUploadQueue(roomID).get(0)
-                && TAPDefaultConstant.MessageType.TYPE_VIDEO == getUploadQueue(roomID).get(0).getType()) {
+        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size()) &&
+                null != getUploadQueue(roomID).get(0) &&
+                TAPDefaultConstant.MessageType.TYPE_VIDEO == getUploadQueue(roomID).get(0).getType()) {
             uploadVideo(context, roomID);
-        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
-                && null != getUploadQueue(roomID).get(0)
-                && TAPDefaultConstant.MessageType.TYPE_FILE == getUploadQueue(roomID).get(0).getType()) {
+        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size()) &&
+                null != getUploadQueue(roomID).get(0) &&
+                TAPDefaultConstant.MessageType.TYPE_FILE == getUploadQueue(roomID).get(0).getType()) {
             uploadFile(context, roomID);
         }
     }
