@@ -1075,7 +1075,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String localID = item.getLocalID();
             Integer uploadProgressPercent = TAPFileUploadManager.getInstance().getUploadProgressPercent(localID);
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
-            fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), (String) item.getData().get(FILE_ID));
+            String fileUrl = (String) item.getData().get(FILE_URL);
+            String fileID = (String) item.getData().get(FILE_ID);
+            String key = null != fileUrl ? TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
+            fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), key);
 
             tvFileName.setText(TAPUtils.getInstance().getFileDisplayName(item));
             tvFileInfoDummy.setText(TAPUtils.getInstance().getFileDisplayDummyInfo(item));

@@ -148,41 +148,51 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
     }
 
     private void updateVideoViewParams() {
-        // Get video data
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(TAPVideoPlayerActivity.this, vm.getVideoUri());
-        String rotation = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-        }
-        int width, height;
-        if (null != rotation && (rotation.equals("90") || rotation.equals("270"))) {
-            // Swap width and height when video is rotated
-            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-        } else {
-            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-        }
+        try {
+            // Get video data
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(TAPVideoPlayerActivity.this, vm.getVideoUri());
+            String rotation = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+            }
+            int width, height;
+            if (null != rotation && (rotation.equals("90") || rotation.equals("270"))) {
+                // Swap width and height when video is rotated
+                width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            } else {
+                width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+                height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+            }
 
-        // Fix videoView layout params
-        float videoRatio = (float) width / (float) height;
-        float screenRatio = (float) TAPUtils.getInstance().getScreenWidth() / (float) TAPUtils.getInstance().getScreenHeight();
-        if (screenRatio > videoRatio) {
-            videoView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            videoView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-        } else {
-            videoView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-            videoView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
+            // Fix videoView layout params
+            float videoRatio = (float) width / (float) height;
+            float screenRatio = (float) TAPUtils.getInstance().getScreenWidth() / (float) TAPUtils.getInstance().getScreenHeight();
+            if (screenRatio > videoRatio) {
+                videoView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                videoView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+            } else {
+                videoView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+                videoView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
 
-        retriever.release();
+            retriever.release();
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
     private void loadVideo() {
-        videoView.setVideoURI(vm.getVideoUri());
-        videoView.setOnPreparedListener(onPreparedListener);
-        videoView.setOnCompletionListener(onCompletionListener);
+        try {
+            videoView.setVideoURI(vm.getVideoUri());
+            videoView.setOnPreparedListener(onPreparedListener);
+            videoView.setOnCompletionListener(onCompletionListener);
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
     private void startProgressTimer() {
