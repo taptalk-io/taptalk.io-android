@@ -1047,7 +1047,6 @@ public class TAPUtils {
             if (extension != null) {
                 type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
             }
-            Log.e(TAG, "getMimeTypeFromUrl: " + type);
             return type;
         } catch (Exception e) {
             e.printStackTrace();
