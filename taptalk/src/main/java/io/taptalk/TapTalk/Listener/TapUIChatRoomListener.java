@@ -9,7 +9,6 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import io.taptalk.TapTalk.Interface.TapUIChatRoomInterface;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -38,15 +37,7 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
 
     @Override
     public void onTapTalkGroupMemberAvatarTapped(Activity activity, TAPRoomModel room, TAPUserModel user) {
-        //openTapTalkChatProfile(activity, room, user);
-        TAPRoomModel userRoom = TAPRoomModel.Builder(
-                TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), user.getUserID()),
-                user.getUsername(),
-                TYPE_PERSONAL,
-                user.getAvatarURL(),
-                "",
-                0);
-        onTapTalkUserProfileButtonTapped(activity, userRoom, user);
+        openTapTalkChatProfile(activity, room, user);
     }
 
     @Override
