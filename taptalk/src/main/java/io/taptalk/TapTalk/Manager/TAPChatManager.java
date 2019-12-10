@@ -76,6 +76,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_CAPTION_LENGTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
@@ -1293,8 +1294,8 @@ public class TAPChatManager {
         }
         if ((messageToForward.getType() == TYPE_VIDEO || messageToForward.getType() == TYPE_FILE) && null != messageToForward.getData()) {
             // Copy file message Uri to destination room
-            String fileID = (String) messageToForward.getData().get(FILE_ID);
-            TAPFileDownloadManager.getInstance().saveFileMessageUri(room.getRoomID(), fileID, TAPFileDownloadManager.getInstance().getFileMessageUri(messageToForward.getRoom().getRoomID(), fileID));
+            String key = TAPUtils.getInstance().getUriKeyFromMessage(messageToForward);
+            TAPFileDownloadManager.getInstance().saveFileMessageUri(room.getRoomID(), key, TAPFileDownloadManager.getInstance().getFileMessageUri(messageToForward.getRoom().getRoomID(), key));
         }
         return TAPMessageModel.BuilderForwardedMessage(
                 messageToForward,

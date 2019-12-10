@@ -99,6 +99,12 @@ public class TAPDefaultConstant {
         public static final String LONGITUDE = "longitude";
     }
 
+    public static final class QuoteFileType {
+        public static final String FILE = "file";
+        public static final String IMAGE = "image";
+        public static final String VIDEO = "video";
+    }
+
     public static final class Extras {
         public static final String MESSAGE = "kTAPExtraMessage";
         public static final String ROOM = "kTAPExtraRoom";

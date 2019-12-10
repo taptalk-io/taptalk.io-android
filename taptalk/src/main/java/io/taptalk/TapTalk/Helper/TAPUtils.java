@@ -98,7 +98,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -1191,5 +1193,17 @@ public class TAPUtils {
 
     public String removeNonAlphaNumeric(String s) {
         return s.replaceAll("[^A-Za-z0-9]", "");
+    }
+
+    /**
+     * @return key String to get file message Uri from TapDownloadManager
+     */
+    public String getUriKeyFromMessage(TAPMessageModel message) {
+        if (null == message.getData()) {
+            return "";
+        }
+        String fileUrl = (String) message.getData().get(FILE_URL);
+        String fileID = (String) message.getData().get(FILE_ID);
+        return null != fileUrl ? TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
     }
 }

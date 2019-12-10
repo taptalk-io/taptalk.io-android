@@ -17,10 +17,14 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.VIDEO;
 
 /**
  * If this class has more attribute, don't forget to add it to copyMessageModel function
@@ -144,8 +148,10 @@ public class TAPMessageModel implements Parcelable {
             quoteContent = quotedMessage.getBody();
         }
         String quoteFileID = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(FILE_ID);
-        String quoteImageURL = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(IMAGE_URL);
-        String quoteFileType = String.valueOf(quotedMessage.getType()); // TODO: 8 March 2019 CHANGE FILE TYPE
+        String quoteImageURL = null == quotedMessage.getData() ? "" : null != quotedMessage.getData().get(FILE_URL) ? (String) quotedMessage.getData().get(FILE_URL) : (String) quotedMessage.getData().get(IMAGE_URL);
+        String quoteFileType = quotedMessage.getType() == TYPE_IMAGE ? IMAGE :
+                        quotedMessage.getType() == TYPE_VIDEO ? VIDEO :
+                        quotedMessage.getType() == TYPE_FILE ? FILE : "";
         TAPQuoteModel quote = new TAPQuoteModel(quoteTitle, quoteContent, quoteFileID, quoteImageURL, quoteFileType);
         TAPReplyToModel reply = new TAPReplyToModel(quotedMessage.getMessageID()
                 , quotedMessage.getLocalID(), quotedMessage.getType()

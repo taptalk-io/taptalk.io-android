@@ -111,6 +111,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.CREATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
@@ -729,10 +732,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Number widthDimension = (Number) item.getData().get(WIDTH);
             Number heightDimension = (Number) item.getData().get(HEIGHT);
             String videoCaption = (String) item.getData().get(CAPTION);
-            String fileUrl = (String) item.getData().get(FILE_URL);
-            String fileID = (String) item.getData().get(FILE_ID);
             String dataUri = (String) item.getData().get(FILE_URI);
-            String key = null != fileUrl ? TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
+            String key = TAPUtils.getInstance().getUriKeyFromMessage(item);
 
             Integer uploadProgressPercent = TAPFileUploadManager.getInstance().getUploadProgressPercent(localID);
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
@@ -1075,9 +1076,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String localID = item.getLocalID();
             Integer uploadProgressPercent = TAPFileUploadManager.getInstance().getUploadProgressPercent(localID);
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(localID);
-            String fileUrl = (String) item.getData().get(FILE_URL);
-            String fileID = (String) item.getData().get(FILE_ID);
-            String key = null != fileUrl ? TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
+            String key = TAPUtils.getInstance().getUriKeyFromMessage(item);
             fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), key);
 
             tvFileName.setText(TAPUtils.getInstance().getFileDisplayName(item));
@@ -1783,35 +1782,53 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent.setText(quote.getContent());
             String quoteImageURL = quote.getImageURL();
             String quoteFileID = quote.getFileID();
-            if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
+            if (null != quoteImageURL && !quoteImageURL.isEmpty() &&
+                    (quote.getFileType().equals(String.valueOf(TYPE_IMAGE)) ||
+                            quote.getFileType().equals(IMAGE))) {
                 // Get quote image from URL
                 glide.load(quoteImageURL).into(rcivQuoteImage);
+                ImageViewCompat.setImageTintList(rcivQuoteImage, null);
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
-            } else if (null != quoteFileID && !quoteFileID.isEmpty()) {
-                // Get quote image from file ID
-                if (quote.getFileType().equals((String.valueOf(TYPE_FILE)))) {
-                    // Load file icon
-                    rcivQuoteImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_documents_white));
-                    ImageViewCompat.setImageTintList(rcivQuoteImage, tvQuoteTitle.getTextColors());
-                    //updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
-                    rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
-                } else {
-                    // Load image from file ID
-                    // TODO: 8 March 2019 IMAGE MIGHT NOT EXIST IN CACHE
+            } else if (quote.getFileType().equals(String.valueOf(TYPE_IMAGE)) ||
+                    quote.getFileType().equals(String.valueOf(TYPE_VIDEO)) ||
+                    quote.getFileType().equals(IMAGE) ||
+                    quote.getFileType().equals(VIDEO)) {
+                glide.clear(rcivQuoteImage);
+                String key = "";
+                if (null != quoteFileID && !quoteFileID.isEmpty()) {
+                    key = quoteFileID;
+                } else if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
+                    key = TAPUtils.getInstance().removeNonAlphaNumeric(quoteImageURL).toLowerCase();
+                }
+                // Get quote image from cache
+                // TODO: 8 March 2019 IMAGE MIGHT NOT EXIST IN CACHE
+                if (!key.isEmpty()) {
+                    String finalKey = key;
                     new Thread(() -> {
-                        BitmapDrawable image = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(quoteFileID);
+                        BitmapDrawable image = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(finalKey);
                         ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                            ImageViewCompat.setImageTintList(rcivQuoteImage, null);
                             rcivQuoteImage.setImageDrawable(image);
                             rcivQuoteImage.setBackground(null);
                             rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         });
                     }).start();
                 }
+                updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
+                vQuoteDecoration.setVisibility(View.GONE);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteContent.setMaxLines(1);
+            } else if (quote.getFileType().equals(String.valueOf(TYPE_FILE)) || quote.getFileType().equals(FILE)) {
+                // Load file icon
+                glide.clear(rcivQuoteImage);
+                rcivQuoteImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_documents_white));
+                ImageViewCompat.setImageTintList(rcivQuoteImage, tvQuoteTitle.getTextColors());
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
                 vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);

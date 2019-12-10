@@ -711,35 +711,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             getAllUnreadMessage();
         }
 
-        // Show/hide ivToBottom
-        rvMessageList.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
-                    vm.setOnBottom(true);
-                    ivToBottom.setVisibility(View.INVISIBLE);
-                    tvBadgeUnread.setVisibility(View.INVISIBLE);
-                    vm.clearUnreadMessages();
-                } else if (null != messageAdapter && !messageAdapter.getItems().isEmpty() &&
-                        null != messageAdapter.getItems().get(0) &&
-                        null != messageAdapter.getItems().get(0).getHidden() &&
-                        messageAdapter.getItems().get(0).getHidden()) {
-                    vm.setOnBottom(true);
-                    ivToBottom.setVisibility(View.INVISIBLE);
-                    tvBadgeUnread.setVisibility(View.INVISIBLE);
-                    vm.clearUnreadMessages();
-                } else if (!vm.isScrollFromKeyboard()) {
-                    vm.setOnBottom(false);
-                    ivToBottom.setVisibility(View.VISIBLE);
-                    hideUnreadButton();
-                } else {
-                    vm.setOnBottom(false);
-                    ivToBottom.setVisibility(View.VISIBLE);
-                    vm.setScrollFromKeyboard(false);
-                }
-            }
-        });
+        rvMessageList.addOnScrollListener(messageListScrollListener);
 
         LayoutTransition containerTransition = clContainer.getLayoutTransition();
         containerTransition.addTransitionListener(containerTransitionListener);
@@ -1043,7 +1015,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
-                Drawable drawable = TAPCacheManager.getInstance(this).getBitmapDrawable((String) message.getData().get(FILE_ID));
+                Drawable drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.getInstance().getUriKeyFromMessage(message));
                 if (null != drawable) {
                     rcivQuoteImage.setImageDrawable(drawable);
                 } else {
@@ -1078,8 +1050,24 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 tvQuoteTitle.setText(TAPUtils.getInstance().getFileDisplayName(message));
                 tvQuoteContent.setText(TAPUtils.getInstance().getFileDisplayInfo(message));
                 tvQuoteContent.setMaxLines(1);
+            } else if (null != message.getData() && null != message.getData().get(FILE_URL)) {
+                // Show image quote from file URL
+                glide.load((String) message.getData().get(FILE_URL)).into(rcivQuoteImage);
+                rcivQuoteImage.setColorFilter(null);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                vQuoteDecoration.setVisibility(View.GONE);
+
+                if (quotedOwnMessage) {
+                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                } else {
+                    tvQuoteTitle.setText(message.getUser().getName());
+                }
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
             } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
-                // Show image quote from URL
+                // Show image quote from image URL
                 glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
                 rcivQuoteImage.setColorFilter(null);
                 rcivQuoteImage.setBackground(null);
@@ -1868,7 +1856,15 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 // Scroll to message
                 runOnUiThread(() -> {
                     rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
-                    hideUnreadButtonLoading();
+                    rvMessageList.post(() -> {
+                        Log.e(TAG, "scrollToMessage: " + messageLayoutManager.findFirstVisibleItemPosition());
+                        if (messageLayoutManager.findFirstVisibleItemPosition() > 0) {
+                            vm.setOnBottom(false);
+                            ivToBottom.setVisibility(View.VISIBLE);
+                            hideUnreadButton();
+                            hideUnreadButtonLoading();
+                        }
+                    });
                 });
             }
         } else if (state != STATE.DONE) {
@@ -1998,6 +1994,36 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             updateMessageDecoration();
         }));
     }
+
+    private RecyclerView.OnScrollListener messageListScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            // Show/hide ivToBottom
+            if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+                vm.setOnBottom(true);
+                ivToBottom.setVisibility(View.INVISIBLE);
+                tvBadgeUnread.setVisibility(View.INVISIBLE);
+                vm.clearUnreadMessages();
+            } else if (null != messageAdapter && !messageAdapter.getItems().isEmpty() &&
+                    null != messageAdapter.getItems().get(0) &&
+                    null != messageAdapter.getItems().get(0).getHidden() &&
+                    messageAdapter.getItems().get(0).getHidden()) {
+                vm.setOnBottom(true);
+                ivToBottom.setVisibility(View.INVISIBLE);
+                tvBadgeUnread.setVisibility(View.INVISIBLE);
+                vm.clearUnreadMessages();
+            } else if (!vm.isScrollFromKeyboard()) {
+                vm.setOnBottom(false);
+                ivToBottom.setVisibility(View.VISIBLE);
+                hideUnreadButton();
+            } else {
+                vm.setOnBottom(false);
+                ivToBottom.setVisibility(View.VISIBLE);
+                vm.setScrollFromKeyboard(false);
+            }
+        }
+    };
 
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override
