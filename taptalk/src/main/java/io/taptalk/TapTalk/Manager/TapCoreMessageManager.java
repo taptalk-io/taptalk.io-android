@@ -187,6 +187,10 @@ public class TapCoreMessageManager {
         return TAPMessageModel.BuilderWithQuotedMessage(messageBody, room, type, System.currentTimeMillis(), TAPChatManager.getInstance().getActiveUser(), TYPE_PERSONAL == room.getRoomType() ? TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()) : "0", messageData, quotedMessage);
     }
 
+    public TAPMessageModel constructTapTalkMessageModelWithQuote(String messageBody, TAPRoomModel room, Integer type, @Nullable HashMap<String, Object> messageData, String quoteTitle, String quoteContent, String quoteImageUrl) {
+        return TAPMessageModel.BuilderWithQuote(messageBody, room, type, System.currentTimeMillis(), TAPChatManager.getInstance().getActiveUser(), TYPE_PERSONAL == room.getRoomType() ? TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()) : "0", messageData, quoteTitle, quoteContent, quoteImageUrl);
+    }
+
     public void sendCustomMessage(TAPMessageModel customMessage, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().sendMessage(customMessage, listener);
     }

@@ -159,6 +159,13 @@ public class TAPMessageModel implements Parcelable {
         return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, created, null, null, null);
     }
 
+    public static TAPMessageModel BuilderWithQuote(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, String quoteTitle, String quoteContent, String quoteImageUrl) {
+        String localID = TAPUtils.getInstance().generateRandomString(32);
+
+        TAPQuoteModel quote = new TAPQuoteModel(quoteTitle, quoteContent, "", quoteImageUrl, (null == quoteImageUrl || quoteImageUrl.isEmpty()) ? "" : IMAGE);
+        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, null, null, false, true, false, false, false, false, created, null, null, null);
+    }
+
     public static TAPMessageModel BuilderForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, Long created, TAPUserModel user, String recipientID) {
         String localID = TAPUtils.getInstance().generateRandomString(32);
         TAPForwardFromModel forwardFrom;
