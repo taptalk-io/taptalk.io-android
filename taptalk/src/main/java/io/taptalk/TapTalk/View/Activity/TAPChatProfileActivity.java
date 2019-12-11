@@ -697,7 +697,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void hideLoadingPopup(String message) {
-        vm.setApiCallOnProgress(false);
+        //vm.setApiCallOnProgress(false);
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
