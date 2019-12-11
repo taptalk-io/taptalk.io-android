@@ -292,7 +292,7 @@ public class TAPChatViewModel extends AndroidViewModel {
         }
         if (updateCreated) {
             // Update created time for loading indicator to array's last message created time
-            loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated());
+            loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated() - 1L);
         }
         return loadingIndicator;
     }

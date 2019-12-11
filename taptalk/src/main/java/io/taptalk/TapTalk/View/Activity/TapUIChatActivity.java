@@ -1403,6 +1403,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void callApiAfter() {
+        if (!vm.isInitialAPICallFinished()) {
+            showLoadingOlderMessagesIndicator();
+        }
         new Thread(() -> {
             if (vm.getMessageModels().size() > 0 && !TAPDataManager.getInstance().checkKeyInLastMessageTimestamp(vm.getRoom().getRoomID())) {
                 // Set oldest message's create time as minCreated and lastUpdated if last updated timestamp does not exist in preference
@@ -2604,6 +2607,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size() && !vm.isInitialAPICallFinished()) {
                 // Fetch older messages on first call
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
+            } else {
+                hideLoadingOlderMessagesIndicator();
             }
 
             if (!vm.isInitialAPICallFinished()) {
@@ -2752,6 +2757,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 if (clEmptyChat.getVisibility() == View.VISIBLE && 0 < finalMessageBeforeModels.size()) {
                     clEmptyChat.setVisibility(View.GONE);
                 }
+
+                hideLoadingOlderMessagesIndicator();
 
                 if (!(0 < messageAdapter.getItems().size() && (ROOM_REMOVE_PARTICIPANT.equals(messageAdapter.getItems().get(0).getAction())
                         && TAPChatManager.getInstance().getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getTarget().getTargetID()))
