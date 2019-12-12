@@ -520,7 +520,6 @@ public class TAPUtils {
     /**
      * Reminder: Handle onRequestPermissionsResult in activity
      */
-    // TODO: 21 March 2019 GET VIDEO FROM GOOGLE DRIVE
     public void pickMediaFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Check read & write storage permission
@@ -564,7 +563,6 @@ public class TAPUtils {
                     File image = File.createTempFile(filename, ".jpeg", dir);
                     Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        // FIXME: 2 December 2019 MediaStore.EXTRA_OUTPUT crashes on Android 4
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     }
                     activity.startActivityForResult(intent, requestCode);
