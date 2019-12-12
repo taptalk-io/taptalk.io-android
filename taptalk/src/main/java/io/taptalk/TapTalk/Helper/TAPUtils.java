@@ -21,6 +21,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
@@ -942,7 +943,7 @@ public class TAPUtils {
 
     public void openCustomTabLayout(Activity activity, String url) {
         CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-        intentBuilder.setToolbarColor(activity.getResources().getColor(R.color.tapPurplyTwo));
+        intentBuilder.setToolbarColor(ContextCompat.getColor(activity, R.color.tapColorPrimary));
         intentBuilder.setShowTitle(true);
         intentBuilder.setStartAnimations(activity, R.anim.tap_slide_left, R.anim.tap_stay);
         intentBuilder.setExitAnimations(activity, R.anim.tap_stay,

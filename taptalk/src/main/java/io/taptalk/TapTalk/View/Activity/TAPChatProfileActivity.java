@@ -225,10 +225,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         // Set gradient for profile picture overlay
         vGradient.setBackground(new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM, new int[]{
-                getResources().getColor(R.color.tapTransparentBlack40),
-                getResources().getColor(R.color.tapTransparentBlack18),
-                getResources().getColor(R.color.tapTransparentBlack),
-                getResources().getColor(R.color.tapTransparentBlack40)}));
+                ContextCompat.getColor(this, R.color.tapTransparentBlack40),
+                ContextCompat.getColor(this, R.color.tapTransparentBlack18),
+                ContextCompat.getColor(this, R.color.tapTransparentBlack),
+                ContextCompat.getColor(this, R.color.tapTransparentBlack40)}));
 
         if (!vm.isGroupMemberProfile()) {
             // Show loading on start
@@ -298,9 +298,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
                     .into(ivProfile);
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-            ivProfile.setImageResource(R.drawable.tap_img_default_group_avatar);
+            ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_group_avatar));
         } else {
-            ivProfile.setImageResource(R.drawable.tap_img_default_avatar);
+            ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_avatar));
         }
 
         // Update room name

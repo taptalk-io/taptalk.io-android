@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.CardView;
 import android.text.Html;
@@ -260,7 +261,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             avatarLabel.setVisibility(View.GONE);
         } else {
             ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(userModel.getName())));
-            imageView.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             avatarLabel.setText(TAPUtils.getInstance().getInitials(userModel.getName(), 2));
             avatarLabel.setVisibility(View.VISIBLE);
         }
@@ -299,7 +300,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     llTextUsername.setVisibility(View.GONE);
                     tvAlreadyContact.setVisibility(View.VISIBLE);
                     llButton.setVisibility(View.VISIBLE);
-                    ivButtonIcon.setImageResource(R.drawable.tap_ic_send_message_grey);
+                    ivButtonIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_send_message_grey));
                     tvButtonTitle.setText(getString(R.string.tap_chat_now));
                     llButton.animate().alpha(1f).start();
                     civMyUserAvatar.animate()
@@ -360,7 +361,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     llTextUsername.setVisibility(View.GONE);
                     llAddSuccess.setVisibility(View.VISIBLE);
                     llButton.setVisibility(View.VISIBLE);
-                    ivButtonIcon.setImageResource(R.drawable.tap_ic_send_message_grey);
+                    ivButtonIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_send_message_grey));
                     tvButtonTitle.setText(getString(R.string.tap_chat_now));
                     llButton.animate().alpha(1f).start();
                     civMyUserAvatar.animate()

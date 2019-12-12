@@ -837,7 +837,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getRoom().getRoomName())));
             tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getRoom().getRoomName(), vm.getRoom().getRoomType() == TYPE_PERSONAL ? 2 : 1));
         }
-        imageView.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+        imageView.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_circle_9b9b9b));
         tvAvatarLabel.setVisibility(View.VISIBLE);
     }
 
@@ -878,7 +878,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else {
             TAPChatManager.getInstance().checkAndSendForwardedMessage(vm.getRoom());
             ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
-            ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_inactive);
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
         }
     }
 
@@ -1140,7 +1140,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else {
             ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_burger_menu));
         }
-        ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
+        ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_burger_white));
         ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
         //etChat.requestFocus();
         TAPUtils.getInstance().showKeyboard(this, etChat);
@@ -1156,7 +1156,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             } else {
                 ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_show_keyboard));
             }
-            ivChatMenu.setImageResource(R.drawable.tap_ic_keyboard_white);
+            ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_keyboard_white));
             ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerShowKeyboard));
         }, 150L);
     }
@@ -1168,7 +1168,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else {
             ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_burger_menu));
         }
-        ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
+        ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_burger_white));
         ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
         TAPUtils.getInstance().dismissKeyboard(this);
     }
@@ -2060,7 +2060,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             //        ivChatMenu.setVisibility(View.VISIBLE);
             //        ivButtonChatMenu.setVisibility(View.VISIBLE);
             //    }
-            //    ivButtonSend.setImageResource(R.drawable.tap_bg_chat_composer_send_ripple);
+            //    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, );(R.drawable.tap_bg_chat_composer_send_ripple));
             //    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
             } else {
                 if (vm.isCustomKeyboardEnabled() && s.length() == 0) {
@@ -2103,8 +2103,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             if (hasFocus && vm.isCustomKeyboardEnabled()) {
                 vm.setScrollFromKeyboard(true);
                 rvCustomKeyboard.setVisibility(View.GONE);
-                ivButtonChatMenu.setImageResource(R.drawable.tap_bg_chat_composer_burger_menu_ripple);
-                ivChatMenu.setImageResource(R.drawable.tap_ic_burger_white);
+                ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_burger_menu_ripple));
+                ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_burger_white));
                 ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
                 TAPUtils.getInstance().showKeyboard(TapUIChatActivity.this, etChat);
 

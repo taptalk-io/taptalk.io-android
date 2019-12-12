@@ -99,9 +99,9 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 vButtonSeparator.setVisibility(View.GONE);
                 tvButtonTwo.setVisibility(View.GONE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    tvButtonOne.setBackgroundResource(R.drawable.tap_bg_product_list_single_button_ripple);
+                    tvButtonOne.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_single_button_ripple));
                 } else {
-                    tvButtonOne.setBackgroundResource(R.drawable.tap_bg_product_list_single_button);
+                    tvButtonOne.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_single_button));
                 }
                 rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(11), TAPUtils.getInstance().dpToPx(2), 0, 0);
                 flContainer.setForeground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_rounded_8dp_1dp_8dp_8dp_stroke_eaeaea_1dp));
@@ -138,12 +138,12 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 String ratingString = item.getRating();
                 ivRatingIcon.setVisibility(View.VISIBLE);
                 tvRating.setText(ratingString);
-                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tapColorAccent));
+                tvRating.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.tapColorAccent));
             } else {
                 // Product has no rating
                 ivRatingIcon.setVisibility(View.GONE);
                 tvRating.setText(itemView.getContext().getString(R.string.tap_no_review_yet));
-                tvRating.setTextColor(itemView.getContext().getResources().getColor(R.color.tapColorTextMedium));
+                tvRating.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.tapColorTextMedium));
             }
 
             flContainer.setOnClickListener(v -> chatListener.onOutsideClicked());

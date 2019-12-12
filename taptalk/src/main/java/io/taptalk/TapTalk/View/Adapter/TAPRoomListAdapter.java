@@ -88,7 +88,6 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
         @Override
         protected void onBind(TAPRoomListModel item, int position) {
-            Resources resource = itemView.getContext().getResources();
             TAPRoomModel room = item.getLastMessage().getRoom();
 
             // Set room image
@@ -117,7 +116,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             //} else {
             // Item not selected
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
-            clContainer.setBackgroundColor(resource.getColor(R.color.tapWhite));
+            clContainer.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.tapWhite));
             //ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
             if (room.getRoomType() == TYPE_GROUP) {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
@@ -164,7 +163,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Set message to typing
                 String typingStatus = String.format(itemView.getContext().getString(R.string.tap_typing_single), item.getFirstTypingUserName());
                 tvGroupSenderName.setText(typingStatus);
-                tvGroupSenderName.setTextColor(itemView.getResources().getColor(R.color.tapRoomListMessageColor));
+                tvGroupSenderName.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.tapRoomListMessageColor));
                 tvLastMessage.setText("");
                 tvGroupSenderName.setVisibility(View.VISIBLE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
@@ -176,7 +175,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Set message to multiple users typing
                 String typingStatus = String.format(itemView.getContext().getString(R.string.tap_people_typing), item.getTypingUsersSize());
                 tvGroupSenderName.setText(typingStatus);
-                tvGroupSenderName.setTextColor(itemView.getResources().getColor(R.color.tapRoomListMessageColor));
+                tvGroupSenderName.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.tapRoomListMessageColor));
                 tvLastMessage.setText("");
                 tvGroupSenderName.setVisibility(View.VISIBLE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
@@ -208,7 +207,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Show group room with last message
                 tvLastMessage.setText(item.getLastMessage().getBody());
                 tvGroupSenderName.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) ? itemView.getContext().getString(R.string.tap_you) : item.getLastMessage().getUser().getName());
-                tvGroupSenderName.setTextColor(itemView.getResources().getColor(R.color.tapGroupRoomListSenderNameColor));
+                tvGroupSenderName.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.tapGroupRoomListSenderNameColor));
                 tvGroupSenderName.setVisibility(View.VISIBLE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
@@ -227,10 +226,10 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Check if room is muted
             if (room.isMuted()) {
                 ivMute.setVisibility(View.VISIBLE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_room_list_unread_badge_inactive));
+                tvBadgeUnread.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_room_list_unread_badge_inactive));
             } else {
                 ivMute.setVisibility(View.GONE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_room_list_unread_badge));
+                tvBadgeUnread.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_room_list_unread_badge));
             }
 
             // Change Status Message Icon
@@ -242,32 +241,32 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Message is deleted
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_block_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDeleted)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDeleted)));
             }
             // Message is read
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageRead)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
             }
             // Message is delivered
             else if (null != item.getLastMessage() && null != item.getLastMessage().getDelivered() && item.getLastMessage().getDelivered()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDelivered)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDelivered)));
             }
             // Message failed to send
             else if (null != item.getLastMessage() && null != item.getLastMessage().getFailedSend() && item.getLastMessage().getFailedSend()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_warning_red_circle_background));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageFailed)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageFailed)));
             }
             // Message sent
             else if (null != item.getLastMessage() && null != item.getLastMessage().getSending() && !item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSent)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSent)));
             }
             // Message is sending
             else if (null != item.getLastMessage() && null != item.getLastMessage().getSending() && item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sending_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSending)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSending)));
             }
 
             // Show unread count
