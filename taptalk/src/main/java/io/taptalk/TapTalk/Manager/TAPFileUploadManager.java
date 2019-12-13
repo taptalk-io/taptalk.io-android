@@ -390,7 +390,6 @@ public class TAPFileUploadManager {
                     // Create thumbnail
                     createAndResizeImageFile(context, imageUri, THUMB_MAX_DIMENSION, thumbBitmap -> {
                         String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
-                        // TODO: 2019-08-05 Function Call here
                         checkAndUploadCompressedImage(context, roomID, messageModel, imageUri, imageData, bitmap, thumbBase64);
                     }));
         } else if (null != getBitmapQueue().get(messageModel.getLocalID())) {
@@ -399,7 +398,6 @@ public class TAPFileUploadManager {
             createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, bitmap1 ->
                     createAndResizeImageFile(bitmap1, THUMB_MAX_DIMENSION, thumbBitmap -> {
                         String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
-                        // TODO: 2019-08-05 Function Call here
                         checkAndUploadCompressedImage(context, roomID, messageModel, null, imageData, bitmap1, thumbBase64);
                     }));
         } else {

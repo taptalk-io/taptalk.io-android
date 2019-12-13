@@ -55,7 +55,6 @@ public class TAPOnlineStatusModel implements Parcelable {
     public TAPOnlineStatusModel() {
     }
 
-    // TODO: 5 December 2018 ADD USER MODEL TO CONSTRUCTOR
     public TAPOnlineStatusModel(Boolean isOnline, Long lastActive) {
         this.isOnline = isOnline;
         this.lastActive = lastActive;

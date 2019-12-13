@@ -90,7 +90,6 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void updateMessagePointer(TAPMessageModel newMessage) {
-        // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
         TAPMessageModel message = getMessagePointer().get(newMessage.getLocalID());
         if (null != message) {
             message.updateValue(newMessage);
@@ -447,7 +446,6 @@ public class TAPChatViewModel extends AndroidViewModel {
         return 0;
     }
 
-    // TODO: 14/09/18 ini harus di ganti untuk flow Chat Group (ini cuma bisa chat 1v1)
     public String getOtherUserID() {
         try {
             String[] tempUserID = room.getRoomID().split("-");
