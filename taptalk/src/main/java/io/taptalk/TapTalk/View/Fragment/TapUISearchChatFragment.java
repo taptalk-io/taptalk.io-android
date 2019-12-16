@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
@@ -113,7 +114,7 @@ public class TapUISearchChatFragment extends Fragment {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        adapter = new TAPSearchChatAdapter(vm.getSearchResults());
+        adapter = new TAPSearchChatAdapter(vm.getSearchResults(), Glide.with(this));
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
@@ -227,21 +228,25 @@ public class TapUISearchChatFragment extends Fragment {
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
                 for (TAPMessageEntity entity : entities) {
-                    TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
-                    // Convert message to room model
-                    TAPRoomModel room = new TAPRoomModel(
-                            entity.getRoomID(),
-                            entity.getRoomName(),
-                            entity.getRoomType(),
-                            // TODO: 18 October 2018 REMOVE CHECK
-                            /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
-                            }, entity.getRoomImage())
-                            /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
-                            entity.getRoomColor());
-                    room.setUnreadCount(unreadMap.get(room.getRoomID()));
-                    result.setRoom(room);
-                    vm.addSearchResult(result);
+                    String myId = TAPChatManager.getInstance().getActiveUser().getUserID();
+                    // Exclude active user's own room
+                    if (!entity.getRoomID().equals(TAPChatManager.getInstance().arrangeRoomId(myId, myId))) {
+                        TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
+                        // Convert message to room model
+                        TAPRoomModel room = new TAPRoomModel(
+                                entity.getRoomID(),
+                                entity.getRoomName(),
+                                entity.getRoomType(),
+                                // TODO: 18 October 2018 REMOVE CHECK
+                                /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
+                                TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                                }, entity.getRoomImage())
+                                /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
+                                entity.getRoomColor());
+                        room.setUnreadCount(unreadMap.get(room.getRoomID()));
+                        result.setRoom(room);
+                        vm.addSearchResult(result);
+                    }
                 }
                 if (null != contactSearchListener) {
                     getActivity().runOnUiThread(() -> {

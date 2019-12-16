@@ -195,10 +195,18 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPProfileViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(ROOM));
+        if (null == vm.getRoom()) {
+            finish();
+        }
         vm.setGroupMemberUser(getIntent().getParcelableExtra(K_USER));
         if (null != vm.getGroupMemberUser()) {
             vm.setGroupMemberProfile(true);
             vm.setGroupAdmin(getIntent().getBooleanExtra(IS_ADMIN, false));
+            vm.setUserDataFromManager(TAPContactManager.getInstance().getUserData(vm.getGroupMemberUser().getUserID()));
+        } else if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
+            vm.setUserDataFromManager(TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID())));
+        } else if (vm.getRoom().getRoomType() == TYPE_GROUP) {
+            vm.setGroupDataFromManager(TAPGroupManager.Companion.getGetInstance().getGroupData(vm.getRoom().getRoomID()));
         }
         vm.getSharedMedias().clear();
     }
@@ -287,27 +295,57 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     private void updateView() {
         // Update room image
-        if (vm.isGroupMemberProfile() && null != vm.getGroupMemberUser().getAvatarURL()) {
+        if (null != vm.getUserDataFromManager() &&
+                null != vm.getUserDataFromManager().getAvatarURL() &&
+                !vm.getUserDataFromManager().getAvatarURL().getFullsize().isEmpty()) {
+            // Load image from contact manager
+            glide.load(vm.getUserDataFromManager().getAvatarURL().getFullsize())
+                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
+                    .into(ivProfile);
+        } else if (null != vm.getGroupDataFromManager() &&
+                null != vm.getGroupDataFromManager().getRoomImage() &&
+                !vm.getGroupDataFromManager().getRoomImage().getFullsize().isEmpty()) {
+            // Load image from group manager
+            glide.load(vm.getGroupDataFromManager().getRoomImage().getFullsize())
+                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
+                    .into(ivProfile);
+        } else if (vm.isGroupMemberProfile() && null != vm.getGroupMemberUser().getAvatarURL()) {
+            // Load member image from intent
             glide.load(vm.getGroupMemberUser().getAvatarURL().getFullsize())
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
                     .into(ivProfile);
         } else if (!vm.isGroupMemberProfile() &&
                 null != vm.getRoom().getRoomImage() &&
                 !vm.getRoom().getRoomImage().getFullsize().isEmpty()) {
+            // Load room image from intent
             glide.load(vm.getRoom().getRoomImage().getFullsize())
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
                     .into(ivProfile);
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+            // Show default group avatar
             ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_group_avatar));
         } else {
+            // Show default user avatar
             ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_avatar));
         }
 
         // Update room name
-        if (vm.isGroupMemberProfile()) {
+        if (null != vm.getUserDataFromManager() &&
+                !vm.getUserDataFromManager().getName().isEmpty()) {
+            // Set name from contact manager
+            tvFullName.setText(vm.getUserDataFromManager().getName());
+            tvCollapsedName.setText(vm.getUserDataFromManager().getName());
+        } else if (null != vm.getGroupDataFromManager() &&
+                !vm.getGroupDataFromManager().getRoomName().isEmpty()) {
+            // Set name from group manager
+            tvFullName.setText(vm.getGroupDataFromManager().getRoomName());
+            tvCollapsedName.setText(vm.getGroupDataFromManager().getRoomName());
+        } else if (vm.isGroupMemberProfile()) {
+            // Set name from passed member profile intent
             tvFullName.setText(vm.getGroupMemberUser().getName());
             tvCollapsedName.setText(vm.getGroupMemberUser().getName());
         } else {
+            // Set name from passed room intent
             tvFullName.setText(vm.getRoom().getRoomName());
             tvCollapsedName.setText(vm.getRoom().getRoomName());
         }

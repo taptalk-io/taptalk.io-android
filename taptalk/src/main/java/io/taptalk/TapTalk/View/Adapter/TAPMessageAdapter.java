@@ -54,6 +54,7 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPCustomBubbleManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
@@ -1618,7 +1619,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             // Message from others
             if (item.getRoom().getRoomType() == TYPE_GROUP) {
                 // Load avatar and name if room type is group
-                if (null != civAvatar && null != tvAvatarLabel && null != item.getUser().getAvatarURL() && !item.getUser().getAvatarURL().getThumbnail().isEmpty()) {
+                TAPUserModel user = TAPContactManager.getInstance().getUserData(item.getUser().getUserID());
+                if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
+                    glide.load(user.getAvatarURL().getThumbnail()).into(civAvatar);
+                    ImageViewCompat.setImageTintList(civAvatar, null);
+                    civAvatar.setVisibility(View.VISIBLE);
+                    tvAvatarLabel.setVisibility(View.GONE);
+                } else if (null != civAvatar && null != tvAvatarLabel && null != item.getUser().getAvatarURL() && !item.getUser().getAvatarURL().getThumbnail().isEmpty()) {
                     glide.load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
                     ImageViewCompat.setImageTintList(civAvatar, null);
                     civAvatar.setVisibility(View.VISIBLE);

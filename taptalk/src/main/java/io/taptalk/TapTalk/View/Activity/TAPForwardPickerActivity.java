@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
@@ -95,7 +96,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         ivButtonSearch.setOnClickListener(v -> showSearchBar());
         ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 
-        adapter = new TAPSearchChatAdapter(vm.getSearchResults(), roomListInterface);
+        adapter = new TAPSearchChatAdapter(vm.getSearchResults(), Glide.with(this), roomListInterface);
         rvForwardList.setAdapter(adapter);
         rvForwardList.setHasFixedSize(false);
         rvForwardList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));

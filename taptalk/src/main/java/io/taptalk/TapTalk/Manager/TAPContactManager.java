@@ -44,15 +44,27 @@ public class TAPContactManager {
     public void updateUserData(TAPUserModel user) {
         String myUserId = TAPChatManager.getInstance().getActiveUser().getUserID();
         String incomingUserId = user.getUserID();
-        if (!incomingUserId.equals(myUserId) && null == getUserDataMap().get(incomingUserId)) {
+        TAPUserModel existingUser = getUserDataMap().get(incomingUserId);
+        if (!incomingUserId.equals(myUserId) && null == existingUser) {
             // Add new user to map
             user.checkAndSetContact(0);
             getUserDataMap().put(incomingUserId, user);
-        } else if (!incomingUserId.equals(myUserId)) {
+            saveUserDataToDatabase(user);
+        } else if (!incomingUserId.equals(myUserId) &&
+                null != existingUser.getUpdated() &&
+                null != user.getUpdated() &&
+                existingUser.getUpdated() < user.getUpdated()) {
             // Update user data in map
-            getUserDataMap().get(incomingUserId).updateValue(user);
+            existingUser.updateValue(user);
+            saveUserDataToDatabase(user);
+        } else if (incomingUserId.equals(myUserId) &&
+                null != TAPChatManager.getInstance().getActiveUser().getUpdated() &&
+                null != user.getUpdated() &&
+                TAPChatManager.getInstance().getActiveUser().getUpdated() < user.getUpdated()) {
+            // Update active user
+            TAPChatManager.getInstance().saveActiveUser(user);
+            saveUserDataToDatabase(user);
         }
-        saveUserDataToDatabase(user);
     }
 
     public void updateUserData(List<TAPUserModel> users) {

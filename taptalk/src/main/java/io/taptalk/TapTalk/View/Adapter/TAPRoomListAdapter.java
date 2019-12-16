@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
@@ -14,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import java.util.List;
 
@@ -25,7 +24,8 @@ import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
+import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -40,10 +40,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
     private TAPRoomListViewModel vm;
     private TapTalkRoomListInterface tapTalkRoomListInterface;
+    private RequestManager glide;
 
-    public TAPRoomListAdapter(TAPRoomListViewModel vm, TapTalkRoomListInterface tapTalkRoomListInterface) {
+    public TAPRoomListAdapter(TAPRoomListViewModel vm, RequestManager glide, TapTalkRoomListInterface tapTalkRoomListInterface) {
         setItems(vm.getRoomList(), false);
         this.vm = vm;
+        this.glide = glide;
         this.tapTalkRoomListInterface = tapTalkRoomListInterface;
     }
 
@@ -89,16 +91,34 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         @Override
         protected void onBind(TAPRoomListModel item, int position) {
             TAPRoomModel room = item.getLastMessage().getRoom();
+            TAPUserModel user = null;
+            TAPRoomModel group = null;
+
+            if (room.getRoomType() == TYPE_PERSONAL) {
+                user = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()));
+            } else if (room.getRoomType() == TYPE_GROUP) {
+                group = TAPGroupManager.Companion.getGetInstance().getGroupData(room.getRoomID());
+            }
 
             // Set room image
-            if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
+            if (null != user && null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
+                // Load user avatar
+                glide.load(user.getAvatarURL().getThumbnail()).into(civAvatar);
+                ImageViewCompat.setImageTintList(civAvatar, null);
+                tvAvatarLabel.setVisibility(View.GONE);
+            } else if (null != group && null != group.getRoomImage() && !group.getRoomImage().getThumbnail().isEmpty()) {
+                // Load group image
+                glide.load(group.getRoomImage().getThumbnail()).into(civAvatar);
+                ImageViewCompat.setImageTintList(civAvatar, null);
+                tvAvatarLabel.setVisibility(View.GONE);
+            } else if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
                 // Load room image
-                Glide.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
+                glide.load(room.getRoomImage().getThumbnail()).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
                 // Show initial
-                Glide.with(itemView.getContext()).clear(civAvatar);
+                glide.clear(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(item.getDefaultAvatarBackgroundColor()));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
                 tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
@@ -120,7 +140,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             //ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
             if (room.getRoomType() == TYPE_GROUP) {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
-                Glide.with(itemView.getContext()).load(R.drawable.tap_ic_group_icon).into(ivAvatarIcon);
+                glide.load(R.drawable.tap_ic_group_icon).into(ivAvatarIcon);
             } else {
                 tvGroupSenderName.setVisibility(View.GONE);
                 ivAvatarIcon.setVisibility(View.GONE);
@@ -136,8 +156,16 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
             //}
 
-            // Set name and timestamp text
-            tvFullName.setText(room.getRoomName());
+            // Set room name
+            if (null != user && null != user.getName() && !user.getName().isEmpty()) {
+                tvFullName.setText(user.getName());
+            } else if (null != group && null != group.getRoomName() && !group.getRoomName().isEmpty()) {
+                tvFullName.setText(group.getRoomName());
+            } else {
+                tvFullName.setText(room.getRoomName());
+            }
+
+            // Set last message timestamp
             tvLastMessageTime.setText(item.getLastMessageTimestamp());
 
             String draft = TAPChatManager.getInstance().getMessageFromDraft(item.getLastMessage().getRoom().getRoomID());
@@ -154,7 +182,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 ivPersonalRoomTypingIndicator.setVisibility(View.VISIBLE);
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
                 if (null == ivPersonalRoomTypingIndicator.getDrawable()) {
-                    Glide.with(itemView.getContext()).load(R.raw.gif_typing_indicator).into(ivPersonalRoomTypingIndicator);
+                    glide.load(R.raw.gif_typing_indicator).into(ivPersonalRoomTypingIndicator);
                 }
                 //typingAnimationTimer.start();
                 //typingIndicatorTimeOutTimer.cancel();
@@ -169,7 +197,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.VISIBLE);
                 if (null == ivGroupRoomTypingIndicator.getDrawable()) {
-                    Glide.with(itemView.getContext()).load(R.raw.gif_typing_indicator).into(ivGroupRoomTypingIndicator);
+                    glide.load(R.raw.gif_typing_indicator).into(ivGroupRoomTypingIndicator);
                 }
             } else if (1 < item.getTypingUsersSize() && TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
                 // Set message to multiple users typing
@@ -181,7 +209,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.VISIBLE);
                 if (null == ivGroupRoomTypingIndicator.getDrawable()) {
-                    Glide.with(itemView.getContext()).load(R.raw.gif_typing_indicator).into(ivGroupRoomTypingIndicator);
+                    glide.load(R.raw.gif_typing_indicator).into(ivGroupRoomTypingIndicator);
                 }
             } else if (null != TAPChatManager.getInstance().getActiveUser() && null != item.getLastMessage().getUser() &&
                     TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) &&

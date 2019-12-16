@@ -327,6 +327,7 @@ public class TAPDefaultConstant {
         public static final String ROOM_REMOVE_PARTICIPANT = "room/removeParticipant";
         public static final String ROOM_PROMOTE_ADMIN = "room/promoteAdmin";
         public static final String ROOM_DEMOTE_ADMIN = "room/demoteAdmin";
+        public static final String UPDATE_USER = "user/update";
     }
 
     public static final class ProjectConfigType {

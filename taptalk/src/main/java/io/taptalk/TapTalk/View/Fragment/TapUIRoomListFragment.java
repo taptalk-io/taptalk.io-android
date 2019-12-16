@@ -75,11 +75,14 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
 
 public class TapUIRoomListFragment extends Fragment {
 
@@ -307,7 +310,7 @@ public class TapUIRoomListFragment extends Fragment {
         }
         vm.setDoneFirstApiSetup(TAPDataManager.getInstance().isRoomListSetupFinished());
 
-        adapter = new TAPRoomListAdapter(vm, tapTalkRoomListInterface);
+        adapter = new TAPRoomListAdapter(vm, Glide.with(this), tapTalkRoomListInterface);
         llm = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false) {
             @Override
             public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
@@ -522,6 +525,13 @@ public class TapUIRoomListFragment extends Fragment {
                 if (llm.findFirstCompletelyVisibleItemPosition() == 0)
                     rvContactList.scrollToPosition(0);
             });
+        }
+
+        if (null != roomList && message.getType() == TYPE_SYSTEM_MESSAGE &&
+                null != message.getAction() &&
+                (message.getAction().equals(UPDATE_ROOM) || message.getAction().equals(UPDATE_USER))) {
+            // Update room details
+            activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomList)));
         }
         calculateBadgeCount();
     }
