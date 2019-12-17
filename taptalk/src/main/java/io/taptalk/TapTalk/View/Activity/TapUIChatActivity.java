@@ -712,12 +712,17 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         // Load items from database for the first time
         if (vm.getRoom().isRoomDeleted()) {
-            showRoomIsUnavailableState();
+            //showRoomIsUnavailableState();
+            showChatAsHistory(getString(R.string.tap_group_unavailable));
         } else if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getDeleted()) {
             showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
-        } else if (vm.getMessageModels().size() == 0 && !vm.getRoom().isRoomDeleted()) {
-            //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
-            // TODO: 017, 17 Dec 2019 SHOW MESSAGES IN DELETED ROOM
+        }
+//        else if (vm.getMessageModels().size() == 0 && !vm.getRoom().isRoomDeleted()) {
+//            //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+//            getAllUnreadMessage();
+//        }
+
+        if (vm.getMessageModels().size() == 0) {
             getAllUnreadMessage();
         }
 
@@ -1452,8 +1457,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             showDefaultChatEditText();
         } else if (DELETE_ROOM.equals(message.getAction())) {
             // Room deleted
-            TAPChatManager.getInstance().deleteMessageFromIncomingMessages(message.getLocalID());
-            showRoomIsUnavailableState();
+            //TAPChatManager.getInstance().deleteMessageFromIncomingMessages(message.getLocalID());
+            //showRoomIsUnavailableState();
+            showChatAsHistory(getString(R.string.tap_group_unavailable));
         } else {
             updateRoomDetailFromSystemMessage(message);
         }
@@ -2713,7 +2719,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 showChatAsHistory(getString(R.string.tap_not_a_participant));
             } else if (DELETE_ROOM.equals(lastMessage.getAction())) {
                 // Room was deleted
-                showRoomIsUnavailableState();
+                //showRoomIsUnavailableState();
+                showChatAsHistory(getString(R.string.tap_group_unavailable));
             }
         }
     };
@@ -2768,21 +2775,19 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 });
     }
 
-    private void showRoomIsUnavailableState() {
-        // TODO: 017, 17 Dec 2019 USE showChatAsHistory() INSTEAD
-        new DeleteRoomAsync().execute(vm.getRoom().getRoomID());
-        runOnUiThread(() -> {
-            tvMessage.setText(getResources().getString(R.string.tap_group_unavailable));
-            flRoomUnavailable.setVisibility(View.VISIBLE);
-            flMessageList.setVisibility(View.GONE);
-            clEmptyChat.setVisibility(View.GONE);
-            flChatComposerAndHistory.setVisibility(View.GONE);
-            if (null != vRoomImage) {
-                vRoomImage.setClickable(false);
-            }
-        });
-
-    }
+//    private void showRoomIsUnavailableState() {
+//        new DeleteRoomAsync().execute(vm.getRoom().getRoomID());
+//        runOnUiThread(() -> {
+//            tvMessage.setText(getResources().getString(R.string.tap_group_unavailable));
+//            flRoomUnavailable.setVisibility(View.VISIBLE);
+//            flMessageList.setVisibility(View.GONE);
+//            clEmptyChat.setVisibility(View.GONE);
+//            flChatComposerAndHistory.setVisibility(View.GONE);
+//            if (null != vRoomImage) {
+//                vRoomImage.setClickable(false);
+//            }
+//        });
+//    }
 
 //    private void markMessageAsRead(TAPMessageModel readMessage) {
 //        new Thread(() -> {
