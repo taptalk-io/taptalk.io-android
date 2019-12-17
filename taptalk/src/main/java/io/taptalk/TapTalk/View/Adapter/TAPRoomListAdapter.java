@@ -101,12 +101,14 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Set room image
-            if (null != user && null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
+            if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
+                    null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
                 // Load user avatar
                 glide.load(user.getAvatarURL().getThumbnail()).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
-            } else if (null != group && null != group.getRoomImage() && !group.getRoomImage().getThumbnail().isEmpty()) {
+            } else if (null != group && !group.isRoomDeleted() && null != group.getRoomImage() &&
+                    !group.getRoomImage().getThumbnail().isEmpty()) {
                 // Load group image
                 glide.load(group.getRoomImage().getThumbnail()).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
@@ -157,9 +159,11 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             //}
 
             // Set room name
-            if (null != user && null != user.getName() && !user.getName().isEmpty()) {
+            if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
+                    null != user.getName() && !user.getName().isEmpty()) {
                 tvFullName.setText(user.getName());
-            } else if (null != group && null != group.getRoomName() && !group.getRoomName().isEmpty()) {
+            } else if (null != group && !group.isRoomDeleted() && null != group.getRoomName() &&
+                    !group.getRoomName().isEmpty()) {
                 tvFullName.setText(group.getRoomName());
             } else {
                 tvFullName.setText(room.getRoomName());

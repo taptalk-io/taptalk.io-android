@@ -587,7 +587,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         getWindow().setBackgroundDrawable(null);
 
         // Set room name
-        if (vm.getRoom().getRoomType() == TYPE_PERSONAL && null != vm.getOtherUserModel() && !vm.getOtherUserModel().getName().isEmpty()) {
+        if (vm.getRoom().getRoomType() == TYPE_PERSONAL && null != vm.getOtherUserModel() &&
+                (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L) &&
+                !vm.getOtherUserModel().getName().isEmpty()) {
             tvRoomName.setText(vm.getOtherUserModel().getName());
         } else {
             tvRoomName.setText(vm.getRoom().getRoomName());
@@ -595,12 +597,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         if (null != vm.getRoom() &&
                 TYPE_PERSONAL == vm.getRoom().getRoomType() && null != vm.getOtherUserModel() &&
+                (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L) &&
                 null != vm.getOtherUserModel().getAvatarURL().getThumbnail() &&
                 !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
             // Load user avatar URL
             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomImage, tvRoomImageLabel);
             vm.getRoom().setRoomImage(vm.getOtherUserModel().getAvatarURL());
-        } else if (null != vm.getRoom() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
+        } else if (null != vm.getRoom() && !vm.getRoom().isRoomDeleted() && null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
             // Load room image
             loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage, tvRoomImageLabel);
         } else {
@@ -714,6 +717,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
         } else if (vm.getMessageModels().size() == 0 && !vm.getRoom().isRoomDeleted()) {
             //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
+            // TODO: 017, 17 Dec 2019 SHOW MESSAGES IN DELETED ROOM
             getAllUnreadMessage();
         }
 
@@ -2765,6 +2769,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void showRoomIsUnavailableState() {
+        // TODO: 017, 17 Dec 2019 USE showChatAsHistory() INSTEAD
         new DeleteRoomAsync().execute(vm.getRoom().getRoomID());
         runOnUiThread(() -> {
             tvMessage.setText(getResources().getString(R.string.tap_group_unavailable));
