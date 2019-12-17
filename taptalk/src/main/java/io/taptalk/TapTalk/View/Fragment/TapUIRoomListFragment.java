@@ -349,18 +349,25 @@ public class TapUIRoomListFragment extends Fragment {
     private void reloadProfilePicture() {
         // TODO: 7 May 2019 CHECK IF PROFILE IS HIDDEN
         TAPUserModel user = TAPChatManager.getInstance().getActiveUser();
-        if (null != activity && null != user && null != user.getAvatarURL()
-                && !TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail().isEmpty()) {
-            Glide.with(activity).load(TAPChatManager.getInstance().getActiveUser().getAvatarURL().getThumbnail())
-                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
-            ImageViewCompat.setImageTintList(civMyAvatarImage, null);
-            tvMyAvatarLabel.setVisibility(View.GONE);
-        } else if (null != activity && null != user) {
+        if (null != user && null != user.getAvatarURL()
+                && !user.getAvatarURL().getThumbnail().isEmpty()) {
+            if (null != getActivity()) {
+                getActivity().runOnUiThread(() -> {
+                    Glide.with(this).load(user.getAvatarURL().getThumbnail()).into(civMyAvatarImage);
+                    ImageViewCompat.setImageTintList(civMyAvatarImage, null);
+                    tvMyAvatarLabel.setVisibility(View.GONE);
+                });
+            }
+        } else if (null != user) {
 //            Glide.with(activity).load(activity.getDrawable(R.drawable.tap_img_default_avatar))
 //                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
-            ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
-            if (null != getContext()) {
-                civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
+            if (null != getActivity()) {
+                getActivity().runOnUiThread(() -> {
+                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
+                    if (null != getContext()) {
+                        civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
+                    }
+                });
             }
             tvMyAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
             tvMyAvatarLabel.setVisibility(View.VISIBLE);
@@ -533,7 +540,21 @@ public class TapUIRoomListFragment extends Fragment {
             // Update room details
             activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomList)));
         }
+        updateProfilePictureFromSystemMessage(message);
         calculateBadgeCount();
+    }
+
+    private void updateProfilePictureFromSystemMessage(TAPMessageModel message) {
+        if (message.getType() == TYPE_SYSTEM_MESSAGE &&
+                null != message.getAction() &&
+                message.getAction().equals(UPDATE_USER) &&
+                message.getRoom().getRoomID().equals(TAPChatManager.getInstance().arrangeRoomId(
+                        TAPChatManager.getInstance().getActiveUser().getUserID(),
+                        TAPChatManager.getInstance().getActiveUser().getUserID())) &&
+                civMyAvatarImage.getVisibility() == View.VISIBLE) {
+            // Update user avatar
+            reloadProfilePicture();
+        }
     }
 
     private void showSelectionActionBar() {
@@ -684,6 +705,7 @@ public class TapUIRoomListFragment extends Fragment {
                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
                 List<TAPMessageModel> deliveredMessages = new ArrayList<>();
                 List<String> userIds = new ArrayList<>();
+                TAPMessageModel updateProfileSystemMessage = null;
                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                     try {
                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
@@ -705,9 +727,23 @@ public class TapUIRoomListFragment extends Fragment {
                         if (null != message.getIsDeleted() && message.getIsDeleted()) {
                             TAPDataManager.getInstance().deletePhysicalFile(entity);
                         }
+
+                        if (message.getType() == TYPE_SYSTEM_MESSAGE &&
+                                null != message.getAction() &&
+                                message.getAction().equals(UPDATE_USER) &&
+                                (null == updateProfileSystemMessage ||
+                                        updateProfileSystemMessage.getCreated() < message.getCreated())) {
+                            // Store update profile system message
+                            updateProfileSystemMessage = message;
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
+
+                if (null != updateProfileSystemMessage) {
+                    // Update room detail if update room system message exists in API result
+                    updateProfilePictureFromSystemMessage(updateProfileSystemMessage);
                 }
 
                 // Update status to delivered

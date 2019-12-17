@@ -63,7 +63,6 @@ public class TAPContactManager {
                 TAPChatManager.getInstance().getActiveUser().getUpdated() < user.getUpdated()) {
             // Update active user
             TAPChatManager.getInstance().saveActiveUser(user);
-            saveUserDataToDatabase(user);
         }
     }
 
