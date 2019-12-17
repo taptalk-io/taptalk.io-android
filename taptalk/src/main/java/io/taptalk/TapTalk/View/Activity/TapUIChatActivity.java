@@ -281,6 +281,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             callApiGetUserByUserID();
 
         if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
+            // TODO: 17 Dec 2019 API ALREADY CALLED ON SOCKET CONNECT?
             callApiAfter();
         } else if (vm.isInitialAPICallFinished() && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
@@ -700,8 +701,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if (!vm.isOnBottom())
+                if (!vm.isOnBottom()) {
                     loadMoreMessagesFromDatabase();
+                }
             }
         };
 
@@ -938,6 +940,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
                 updateMessageDecoration();
             });
+            updateFirstVisibleMessageIndex();
         }
     }
 
@@ -970,6 +973,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
                 updateMessageDecoration();
             });
+            updateFirstVisibleMessageIndex();
         }
     }
 
@@ -985,6 +989,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 //            else {
 //                new Thread(() -> updateMessage(message)).start();
 //            }
+            if (0 == position) {
+                updateFirstVisibleMessageIndex();
+            }
         });
     }
 
@@ -1003,6 +1010,18 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         }
         //updateMessageDecoration();
         return tempBeforeMessages;
+    }
+
+    private void updateFirstVisibleMessageIndex() {
+        new Thread(() -> {
+            vm.setFirstVisibleItemIndex(0);
+            if (null != messageAdapter.getItemAt(0).getHidden() && messageAdapter.getItemAt(0).getHidden()) {
+                while (null != vm.getMessageModels().get(vm.getFirstVisibleItemIndex()).getHidden() &&
+                        vm.getMessageModels().get(vm.getFirstVisibleItemIndex()).getHidden()) {
+                    vm.setFirstVisibleItemIndex(vm.getFirstVisibleItemIndex() + 1);
+                }
+            }
+        }).start();
     }
 
     private void showQuoteLayout(@Nullable TAPMessageModel message, int quoteAction, boolean showKeyboard) {
@@ -2034,24 +2053,16 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
             // Show/hide ivToBottom
-            if (messageLayoutManager.findFirstVisibleItemPosition() == 0) {
+            if (messageLayoutManager.findFirstVisibleItemPosition() <= vm.getFirstVisibleItemIndex()) {
                 vm.setOnBottom(true);
                 ivToBottom.setVisibility(View.INVISIBLE);
                 tvBadgeUnread.setVisibility(View.INVISIBLE);
                 vm.clearUnreadMessages();
-            } else if (null != messageAdapter && !messageAdapter.getItems().isEmpty() &&
-                    null != messageAdapter.getItems().get(0) &&
-                    null != messageAdapter.getItems().get(0).getHidden() &&
-                    messageAdapter.getItems().get(0).getHidden()) {
-                vm.setOnBottom(true);
-                ivToBottom.setVisibility(View.INVISIBLE);
-                tvBadgeUnread.setVisibility(View.INVISIBLE);
-                vm.clearUnreadMessages();
-            } else if (!vm.isScrollFromKeyboard()) {
+            } else if (messageLayoutManager.findFirstVisibleItemPosition() > vm.getFirstVisibleItemIndex() && !vm.isScrollFromKeyboard()) {
                 vm.setOnBottom(false);
                 ivToBottom.setVisibility(View.VISIBLE);
                 hideUnreadButton();
-            } else {
+            } else if (messageLayoutManager.findFirstVisibleItemPosition() > vm.getFirstVisibleItemIndex()) {
                 vm.setOnBottom(false);
                 ivToBottom.setVisibility(View.VISIBLE);
                 vm.setScrollFromKeyboard(false);
@@ -2571,6 +2582,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         }
 
                         if ("".equals(vm.getLastUnreadMessageLocalID())
+                                && null != message.getHidden() && !message.getHidden()
                                 && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
                                 && (null != message.getIsRead() && !message.getIsRead())
                                 && null == vm.getUnreadIndicator()) {
@@ -2667,6 +2679,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 setAllUnreadMessageToRead(unreadMessageIds);
             }
             checkIfChatIsAvailableAndUpdateUI();
+            updateFirstVisibleMessageIndex();
         }
 
         @Override

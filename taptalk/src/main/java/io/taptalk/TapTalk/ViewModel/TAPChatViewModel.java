@@ -47,7 +47,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Integer quoteAction;
     private String lastUnreadMessageLocalID;
     private long lastTimestamp = 0;
-    private int initialUnreadCount, numUsers, /*previousEditTextSelectionIndex, */containerAnimationState;
+    private int initialUnreadCount, numUsers, containerAnimationState, firstVisibleItemIndex;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
             isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading, isScrollFromKeyboard;
 
@@ -332,20 +332,20 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.numUsers = numUsers;
     }
 
-//    public int getPreviousEditTextSelectionIndex() {
-//        return previousEditTextSelectionIndex;
-//    }
-//
-//    public void setPreviousEditTextSelectionIndex(int previousEditTextSelectionIndex) {
-//        this.previousEditTextSelectionIndex = previousEditTextSelectionIndex;
-//    }
-
     public int getContainerAnimationState() {
         return containerAnimationState;
     }
 
     public void setContainerAnimationState(int containerAnimationState) {
         this.containerAnimationState = containerAnimationState;
+    }
+
+    public int getFirstVisibleItemIndex() {
+        return firstVisibleItemIndex;
+    }
+
+    public void setFirstVisibleItemIndex(int firstVisibleItemIndex) {
+        this.firstVisibleItemIndex = firstVisibleItemIndex;
     }
 
     public boolean isActiveUserTyping() {
