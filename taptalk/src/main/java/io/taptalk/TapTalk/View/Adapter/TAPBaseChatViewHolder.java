@@ -16,10 +16,10 @@ import java.util.regex.Pattern;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.Taptalk.BuildConfig;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -77,7 +77,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
             intent.putExtra(MESSAGE, message);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-            if (BuildConfig.DEBUG) {
+            if (TapTalk.isLoggingEnabled) {
                 Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.getInstance().toJsonString(message));
             }
             return true;
