@@ -47,7 +47,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Integer quoteAction;
     private String lastUnreadMessageLocalID;
     private long lastTimestamp = 0;
-    private int initialUnreadCount, numUsers, /*previousEditTextSelectionIndex, */containerAnimationState;
+    private int initialUnreadCount, numUsers, containerAnimationState, firstVisibleItemIndex;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
             isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading, isScrollFromKeyboard;
 
@@ -90,7 +90,6 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void updateMessagePointer(TAPMessageModel newMessage) {
-        // TODO: 19 November 2018 FIX NULL POINTER ON MESSAGE POINTER
         TAPMessageModel message = getMessagePointer().get(newMessage.getLocalID());
         if (null != message) {
             message.updateValue(newMessage);
@@ -292,7 +291,7 @@ public class TAPChatViewModel extends AndroidViewModel {
         }
         if (updateCreated) {
             // Update created time for loading indicator to array's last message created time
-            loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated());
+            loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated() - 1L);
         }
         return loadingIndicator;
     }
@@ -333,20 +332,20 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.numUsers = numUsers;
     }
 
-//    public int getPreviousEditTextSelectionIndex() {
-//        return previousEditTextSelectionIndex;
-//    }
-//
-//    public void setPreviousEditTextSelectionIndex(int previousEditTextSelectionIndex) {
-//        this.previousEditTextSelectionIndex = previousEditTextSelectionIndex;
-//    }
-
     public int getContainerAnimationState() {
         return containerAnimationState;
     }
 
     public void setContainerAnimationState(int containerAnimationState) {
         this.containerAnimationState = containerAnimationState;
+    }
+
+    public int getFirstVisibleItemIndex() {
+        return firstVisibleItemIndex;
+    }
+
+    public void setFirstVisibleItemIndex(int firstVisibleItemIndex) {
+        this.firstVisibleItemIndex = firstVisibleItemIndex;
     }
 
     public boolean isActiveUserTyping() {
@@ -447,7 +446,6 @@ public class TAPChatViewModel extends AndroidViewModel {
         return 0;
     }
 
-    // TODO: 14/09/18 ini harus di ganti untuk flow Chat Group (ini cuma bisa chat 1v1)
     public String getOtherUserID() {
         try {
             String[] tempUserID = room.getRoomID().split("-");

@@ -21,6 +21,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
@@ -33,6 +34,7 @@ import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -97,7 +99,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -516,7 +520,6 @@ public class TAPUtils {
     /**
      * Reminder: Handle onRequestPermissionsResult in activity
      */
-    // TODO: 21 March 2019 GET VIDEO FROM GOOGLE DRIVE
     public void pickMediaFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Check read & write storage permission
@@ -560,7 +563,6 @@ public class TAPUtils {
                     File image = File.createTempFile(filename, ".jpeg", dir);
                     Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        // FIXME: 2 December 2019 MediaStore.EXTRA_OUTPUT crashes on Android 4
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                     }
                     activity.startActivityForResult(intent, requestCode);
@@ -939,7 +941,7 @@ public class TAPUtils {
 
     public void openCustomTabLayout(Activity activity, String url) {
         CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-        intentBuilder.setToolbarColor(activity.getResources().getColor(R.color.tapPurplyTwo));
+        intentBuilder.setToolbarColor(ContextCompat.getColor(activity, R.color.tapColorPrimary));
         intentBuilder.setShowTitle(true);
         intentBuilder.setStartAnimations(activity, R.anim.tap_slide_left, R.anim.tap_stay);
         intentBuilder.setExitAnimations(activity, R.anim.tap_stay,
@@ -1035,6 +1037,20 @@ public class TAPUtils {
         } else {
             return IMAGE_JPEG;
         }
+    }
+
+    public String getMimeTypeFromUrl(String url) {
+        try {
+            String type = null;
+            String extension = url.substring(url.lastIndexOf(".") + 1);
+            if (extension != null) {
+                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            }
+            return type;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void rotateAnimateInfinitely(Context context, View view) {
@@ -1171,5 +1187,21 @@ public class TAPUtils {
         } else {
             return text;
         }
+    }
+
+    public String removeNonAlphaNumeric(String s) {
+        return s.replaceAll("[^A-Za-z0-9]", "");
+    }
+
+    /**
+     * @return key String to get file message Uri from TapDownloadManager
+     */
+    public String getUriKeyFromMessage(TAPMessageModel message) {
+        if (null == message.getData()) {
+            return "";
+        }
+        String fileUrl = (String) message.getData().get(FILE_URL);
+        String fileID = (String) message.getData().get(FILE_ID);
+        return null != fileUrl ? TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
     }
 }

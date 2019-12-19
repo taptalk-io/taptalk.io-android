@@ -77,7 +77,7 @@ public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactList
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
-                civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+                civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
                 tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
             }
@@ -97,12 +97,12 @@ public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactList
                 ivAvatarIcon.setVisibility(View.GONE);
 //            } else if ((null == listener || item.getUserID().equals(myID)) /*&& item.getUserRole().equals("2")*/) {
 //                ivAvatarIcon.setVisibility(View.VISIBLE);
-//                ivAvatarIcon.setImageResource(R.drawable.tap_ic_verified);
+//                ivAvatarIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext());(, R.drawable.tap_ic_verified));
 //                ivAvatarIcon.setBackground(null);
             } else {
-                ivAvatarIcon.setImageResource(R.drawable.tap_ic_remove_red_circle_background);
+                ivAvatarIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_remove_red_circle_background));
                 ImageViewCompat.setImageTintList(ivAvatarIcon, ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconRemoveItemBackground)));
-                ivAvatarIcon.setBackgroundResource(R.drawable.tap_bg_circle_remove_item);
+                ivAvatarIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_remove_item));
                 ivAvatarIcon.setVisibility(View.VISIBLE);
             }
 

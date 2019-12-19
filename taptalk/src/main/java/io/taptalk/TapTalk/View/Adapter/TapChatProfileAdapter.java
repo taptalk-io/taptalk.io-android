@@ -137,7 +137,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
         protected void onBind(TapChatProfileItemModel item, int position) {
             // Set menu icon
             ivMenuIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), item.getIconResource()));
-            ImageViewCompat.setImageTintList(ivMenuIcon, ColorStateList.valueOf(itemView.getResources().getColor(item.getIconColorResource())));
+            ImageViewCompat.setImageTintList(ivMenuIcon, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), item.getIconColorResource())));
 
             // Set menu label text
             tvMenuLabel.setText(item.getItemLabel());
@@ -377,7 +377,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                     clContainer.setOnClickListener(v -> chatProfileInterface.onMediaClicked(message, ivThumbnail, isMediaReady));
                     tvMediaInfo.setText(videoSize);
                     ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_white));
-                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileUploadDownload)));
+                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownload)));
                 } else {
                     // Media is downloading
                     isMediaReady = false;
@@ -390,7 +390,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                     //}
                     tvMediaInfo.setText(videoSize);
                     ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
-                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconFileCancelUploadDownload)));
+                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileCancelUploadDownload)));
                     clContainer.setOnClickListener(v -> chatProfileInterface.onCancelDownloadClicked(message));
                 }
                 tvMediaInfo.setVisibility(View.VISIBLE);

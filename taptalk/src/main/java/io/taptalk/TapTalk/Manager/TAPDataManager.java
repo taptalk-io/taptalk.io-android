@@ -978,7 +978,6 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance().updateMyContact(userModels);
     }
 
-    // FIXME: 25 October 2018 MAKE FUNCTION RETURN BOOLEAN OR GET FRIEND STATUS FROM API
     public void checkUserInMyContacts(String userID, TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance().checkUserInMyContacts(userID, listener);
     }

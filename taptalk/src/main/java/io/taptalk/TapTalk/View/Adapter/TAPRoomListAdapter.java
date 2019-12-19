@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
@@ -14,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import java.util.List;
 
@@ -25,7 +24,8 @@ import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
+import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -40,10 +40,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
     private TAPRoomListViewModel vm;
     private TapTalkRoomListInterface tapTalkRoomListInterface;
+    private RequestManager glide;
 
-    public TAPRoomListAdapter(TAPRoomListViewModel vm, TapTalkRoomListInterface tapTalkRoomListInterface) {
+    public TAPRoomListAdapter(TAPRoomListViewModel vm, RequestManager glide, TapTalkRoomListInterface tapTalkRoomListInterface) {
         setItems(vm.getRoomList(), false);
         this.vm = vm;
+        this.glide = glide;
         this.tapTalkRoomListInterface = tapTalkRoomListInterface;
     }
 
@@ -88,18 +90,37 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
         @Override
         protected void onBind(TAPRoomListModel item, int position) {
-            Resources resource = itemView.getContext().getResources();
             TAPRoomModel room = item.getLastMessage().getRoom();
+            TAPUserModel user = null;
+            TAPRoomModel group = null;
+
+            if (room.getRoomType() == TYPE_PERSONAL) {
+                user = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()));
+            } else if (room.getRoomType() == TYPE_GROUP) {
+                group = TAPGroupManager.Companion.getGetInstance().getGroupData(room.getRoomID());
+            }
 
             // Set room image
-            if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
+            if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
+                    null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
+                // Load user avatar
+                glide.load(user.getAvatarURL().getThumbnail()).into(civAvatar);
+                ImageViewCompat.setImageTintList(civAvatar, null);
+                tvAvatarLabel.setVisibility(View.GONE);
+            } else if (null != group && !group.isRoomDeleted() && null != group.getRoomImage() &&
+                    !group.getRoomImage().getThumbnail().isEmpty()) {
+                // Load group image
+                glide.load(group.getRoomImage().getThumbnail()).into(civAvatar);
+                ImageViewCompat.setImageTintList(civAvatar, null);
+                tvAvatarLabel.setVisibility(View.GONE);
+            } else if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
                 // Load room image
-                Glide.with(itemView.getContext()).load(room.getRoomImage().getThumbnail()).into(civAvatar);
+                glide.load(room.getRoomImage().getThumbnail()).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
                 // Show initial
-                Glide.with(itemView.getContext()).clear(civAvatar);
+                glide.clear(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(item.getDefaultAvatarBackgroundColor()));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
                 tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
@@ -117,11 +138,11 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             //} else {
             // Item not selected
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
-            clContainer.setBackgroundColor(resource.getColor(R.color.tapWhite));
+            clContainer.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.tapWhite));
             //ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
             if (room.getRoomType() == TYPE_GROUP) {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
-                Glide.with(itemView.getContext()).load(R.drawable.tap_ic_group_icon).into(ivAvatarIcon);
+                glide.load(R.drawable.tap_ic_group_icon).into(ivAvatarIcon);
             } else {
                 tvGroupSenderName.setVisibility(View.GONE);
                 ivAvatarIcon.setVisibility(View.GONE);
@@ -137,8 +158,18 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
             //}
 
-            // Set name and timestamp text
-            tvFullName.setText(room.getRoomName());
+            // Set room name
+            if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
+                    null != user.getName() && !user.getName().isEmpty()) {
+                tvFullName.setText(user.getName());
+            } else if (null != group && !group.isRoomDeleted() && null != group.getRoomName() &&
+                    !group.getRoomName().isEmpty()) {
+                tvFullName.setText(group.getRoomName());
+            } else {
+                tvFullName.setText(room.getRoomName());
+            }
+
+            // Set last message timestamp
             tvLastMessageTime.setText(item.getLastMessageTimestamp());
 
             String draft = TAPChatManager.getInstance().getMessageFromDraft(item.getLastMessage().getRoom().getRoomID());
@@ -155,7 +186,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 ivPersonalRoomTypingIndicator.setVisibility(View.VISIBLE);
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
                 if (null == ivPersonalRoomTypingIndicator.getDrawable()) {
-                    Glide.with(itemView.getContext()).load(R.raw.gif_typing_indicator).into(ivPersonalRoomTypingIndicator);
+                    glide.load(R.raw.gif_typing_indicator).into(ivPersonalRoomTypingIndicator);
                 }
                 //typingAnimationTimer.start();
                 //typingIndicatorTimeOutTimer.cancel();
@@ -164,25 +195,25 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Set message to typing
                 String typingStatus = String.format(itemView.getContext().getString(R.string.tap_typing_single), item.getFirstTypingUserName());
                 tvGroupSenderName.setText(typingStatus);
-                tvGroupSenderName.setTextColor(itemView.getResources().getColor(R.color.tapRoomListMessageColor));
+                tvGroupSenderName.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.tapRoomListMessageColor));
                 tvLastMessage.setText("");
                 tvGroupSenderName.setVisibility(View.VISIBLE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.VISIBLE);
                 if (null == ivGroupRoomTypingIndicator.getDrawable()) {
-                    Glide.with(itemView.getContext()).load(R.raw.gif_typing_indicator).into(ivGroupRoomTypingIndicator);
+                    glide.load(R.raw.gif_typing_indicator).into(ivGroupRoomTypingIndicator);
                 }
             } else if (1 < item.getTypingUsersSize() && TYPE_GROUP == item.getLastMessage().getRoom().getRoomType()) {
                 // Set message to multiple users typing
                 String typingStatus = String.format(itemView.getContext().getString(R.string.tap_people_typing), item.getTypingUsersSize());
                 tvGroupSenderName.setText(typingStatus);
-                tvGroupSenderName.setTextColor(itemView.getResources().getColor(R.color.tapRoomListMessageColor));
+                tvGroupSenderName.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.tapRoomListMessageColor));
                 tvLastMessage.setText("");
                 tvGroupSenderName.setVisibility(View.VISIBLE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.VISIBLE);
                 if (null == ivGroupRoomTypingIndicator.getDrawable()) {
-                    Glide.with(itemView.getContext()).load(R.raw.gif_typing_indicator).into(ivGroupRoomTypingIndicator);
+                    glide.load(R.raw.gif_typing_indicator).into(ivGroupRoomTypingIndicator);
                 }
             } else if (null != TAPChatManager.getInstance().getActiveUser() && null != item.getLastMessage().getUser() &&
                     TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) &&
@@ -208,7 +239,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Show group room with last message
                 tvLastMessage.setText(item.getLastMessage().getBody());
                 tvGroupSenderName.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) ? itemView.getContext().getString(R.string.tap_you) : item.getLastMessage().getUser().getName());
-                tvGroupSenderName.setTextColor(itemView.getResources().getColor(R.color.tapGroupRoomListSenderNameColor));
+                tvGroupSenderName.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.tapGroupRoomListSenderNameColor));
                 tvGroupSenderName.setVisibility(View.VISIBLE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
@@ -227,10 +258,10 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Check if room is muted
             if (room.isMuted()) {
                 ivMute.setVisibility(View.VISIBLE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_room_list_unread_badge_inactive));
+                tvBadgeUnread.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_room_list_unread_badge_inactive));
             } else {
                 ivMute.setVisibility(View.GONE);
-                tvBadgeUnread.setBackground(resource.getDrawable(R.drawable.tap_bg_room_list_unread_badge));
+                tvBadgeUnread.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_room_list_unread_badge));
             }
 
             // Change Status Message Icon
@@ -242,32 +273,32 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Message is deleted
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_block_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDeleted)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDeleted)));
             }
             // Message is read
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageRead)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
             }
             // Message is delivered
             else if (null != item.getLastMessage() && null != item.getLastMessage().getDelivered() && item.getLastMessage().getDelivered()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageDelivered)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDelivered)));
             }
             // Message failed to send
             else if (null != item.getLastMessage() && null != item.getLastMessage().getFailedSend() && item.getLastMessage().getFailedSend()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_warning_red_circle_background));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageFailed)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageFailed)));
             }
             // Message sent
             else if (null != item.getLastMessage() && null != item.getLastMessage().getSending() && !item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSent)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSent)));
             }
             // Message is sending
             else if (null != item.getLastMessage() && null != item.getLastMessage().getSending() && item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sending_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(itemView.getResources().getColor(R.color.tapIconMessageSending)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSending)));
             }
 
             // Show unread count
