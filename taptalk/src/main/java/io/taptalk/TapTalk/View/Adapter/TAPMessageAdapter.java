@@ -19,6 +19,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -402,6 +403,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+
+            Log.d("]]]]]", "Message model: " + TAPUtils.getInstance().toJsonString(item));
+
             if (!item.isAnimating()) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, null);
             }
@@ -481,7 +485,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
                 // Set image width to maximum
                 rcivImageBody.getLayoutParams().width = 0;
-                if (imageRatio >  (float) rcivImageBody.getMaxWidth() / (float) rcivImageBody.getMinHeight()) {
+                if (imageRatio > (float) rcivImageBody.getMaxWidth() / (float) rcivImageBody.getMinHeight()) {
                     // Set minimum height if image width exceeds limit
                     rcivImageBody.getLayoutParams().height = rcivImageBody.getMinHeight();
                 } else if (imageRatio < (float) rcivImageBody.getMaxHeight() / (float) rcivImageBody.getMaxWidth()) {
@@ -752,7 +756,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
                 // Set image width to maximum
                 rcivVideoThumbnail.getLayoutParams().width = 0;
-                if (imageRatio >  (float) rcivVideoThumbnail.getMaxWidth() / (float) rcivVideoThumbnail.getMinHeight()) {
+                if (imageRatio > (float) rcivVideoThumbnail.getMaxWidth() / (float) rcivVideoThumbnail.getMinHeight()) {
                     // Set minimum height if image width exceeds limit
                     rcivVideoThumbnail.getLayoutParams().height = rcivVideoThumbnail.getMinHeight();
                 } else if (imageRatio < (float) rcivVideoThumbnail.getMaxHeight() / (float) rcivVideoThumbnail.getMaxWidth()) {
