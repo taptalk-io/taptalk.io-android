@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,12 +24,13 @@ import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TAPSendMessageWithIDListener;
+import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCoreFileDownloadListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
-import io.taptalk.TapTalk.Listener.TapCoreReceiveMessageListener;
+import io.taptalk.TapTalk.Listener.TapCoreMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -51,51 +53,56 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_PRODUCT_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
+import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 @Keep
 public class TapCoreMessageManager {
 
     private static TapCoreMessageManager instance;
 
-    private List<TapCoreReceiveMessageListener> receiveMessageListeners;
+    private List<TapCoreMessageListener> coreMessageListeners;
     private TAPChatListener chatListener;
+
+    private boolean isUploadMessageFileToExternalServerEnabled;
 
     public static TapCoreMessageManager getInstance() {
         return null == instance ? instance = new TapCoreMessageManager() : instance;
     }
 
-    private List<TapCoreReceiveMessageListener> getReceiveMessageListeners() {
-        return null == receiveMessageListeners ? receiveMessageListeners = new ArrayList<>() : receiveMessageListeners;
+    private List<TapCoreMessageListener> getCoreMessageListeners() {
+        return null == coreMessageListeners ? coreMessageListeners = new ArrayList<>() : coreMessageListeners;
     }
 
-    public void addMessageListener(TapCoreReceiveMessageListener listener) {
-        if (getReceiveMessageListeners().isEmpty()) {
+    public void addMessageListener(TapCoreMessageListener listener) {
+        if (getCoreMessageListeners().isEmpty()) {
             if (null == chatListener) {
                 chatListener = new TAPChatListener() {
                     @Override
                     public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
                             listener.onReceiveNewMessage(message);
                         }
                     }
 
                     @Override
                     public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
                             listener.onReceiveNewMessage(message);
                         }
                     }
 
                     @Override
                     public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
                             listener.onReceiveUpdatedMessage(message);
                         }
                     }
 
                     @Override
                     public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
-                        for (TapCoreReceiveMessageListener listener : getReceiveMessageListeners()) {
+                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
                             listener.onReceiveUpdatedMessage(message);
                         }
                     }
@@ -103,12 +110,12 @@ public class TapCoreMessageManager {
             }
             TAPChatManager.getInstance().addChatListener(chatListener);
         }
-        getReceiveMessageListeners().add(listener);
+        getCoreMessageListeners().add(listener);
     }
 
-    public void removeMessageListener(TapCoreReceiveMessageListener listener) {
-        getReceiveMessageListeners().remove(listener);
-        if (getReceiveMessageListeners().isEmpty()) {
+    public void removeMessageListener(TapCoreMessageListener listener) {
+        getCoreMessageListeners().remove(listener);
+        if (getCoreMessageListeners().isEmpty()) {
             TAPChatManager.getInstance().removeChatListener(chatListener);
         }
     }
@@ -180,6 +187,10 @@ public class TapCoreMessageManager {
         return TAPMessageModel.BuilderWithQuotedMessage(messageBody, room, type, System.currentTimeMillis(), TAPChatManager.getInstance().getActiveUser(), TYPE_PERSONAL == room.getRoomType() ? TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()) : "0", messageData, quotedMessage);
     }
 
+    public TAPMessageModel constructTapTalkMessageModelWithQuote(String messageBody, TAPRoomModel room, Integer type, @Nullable HashMap<String, Object> messageData, String quoteTitle, String quoteContent, String quoteImageUrl) {
+        return TAPMessageModel.BuilderWithQuote(messageBody, room, type, System.currentTimeMillis(), TAPChatManager.getInstance().getActiveUser(), TYPE_PERSONAL == room.getRoomType() ? TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()) : "0", messageData, quoteTitle, quoteContent, quoteImageUrl);
+    }
+
     public void sendCustomMessage(TAPMessageModel customMessage, TapCoreSendMessageListener listener) {
         TAPChatManager.getInstance().sendMessage(customMessage, listener);
     }
@@ -197,7 +208,7 @@ public class TapCoreMessageManager {
         if (!TAPUtils.getInstance().hasPermissions(TapTalk.appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             listener.onError(ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE);
         } else {
-            TAPFileDownloadManager.getInstance().downloadFile(TapTalk.appContext, message);
+            TAPFileDownloadManager.getInstance().downloadMessageFile(message);
 
             BroadcastReceiver downloadProgressReceiver = new BroadcastReceiver() {
                 @Override
@@ -384,6 +395,35 @@ public class TapCoreMessageManager {
                 listener.onError(ERROR_CODE_OTHERS, errorMessage);
             }
         });
+    }
+
+    public boolean isUploadMessageFileToExternalServerEnabled() {
+        return isUploadMessageFileToExternalServerEnabled;
+    }
+
+    public void setUploadMessageFileToExternalServerEnabled(boolean isEnabled) {
+        this.isUploadMessageFileToExternalServerEnabled = isEnabled;
+    }
+
+    public void onFileUploadProgress(TAPMessageModel tapMessageModel, int percentCompleted, long bytesUploaded) {
+        TAPFileUploadManager.getInstance().addUploadProgressMap(tapMessageModel.getLocalID(), percentCompleted, bytesUploaded);
+        Intent intent = new Intent(UploadProgressLoading);
+        intent.putExtra(UploadLocalID, tapMessageModel.getLocalID());
+        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+        TapSendMessageInterface listener = TAPFileUploadManager.getInstance().getSendMessageListeners().get(tapMessageModel.getLocalID());
+        if (null != listener) {
+            listener.onProgress(tapMessageModel, percentCompleted, bytesUploaded);
+        }
+    }
+
+    public void onFileUploadCompleted(TAPMessageModel tapMessageModel, String fileUrl) {
+        TAPFileUploadManager.getInstance().onFileUploadFromExternalServerFinished(tapMessageModel, fileUrl);
+    }
+
+    void triggerRequestMessageFileUpload(TAPMessageModel messageModel, Uri fileUri) {
+        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+            listener.onRequestMessageFileUpload(messageModel, fileUri);
+        }
     }
 
     /**

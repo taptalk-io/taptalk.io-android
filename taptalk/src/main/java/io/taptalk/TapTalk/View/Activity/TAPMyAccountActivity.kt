@@ -171,7 +171,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         if (vm.currentProfilePicture.isEmpty()) {
             ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name)))
-            civ_profile_picture.setImageResource(R.drawable.tap_bg_circle_9b9b9b)
+            civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
             tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
             tv_profile_picture_label.visibility = View.VISIBLE
         } else {
@@ -256,7 +256,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             vm.formCheck[indexProfilePicture] = stateEmpty
 
             ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name)))
-            civ_profile_picture.setImageResource(R.drawable.tap_bg_circle_9b9b9b)
+            civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
             tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
             tv_profile_picture_label.visibility = View.VISIBLE
             // TODO temporarily disabled removing profile picture

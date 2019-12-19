@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -53,7 +54,7 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
 
             if (item.isSelected() && item.isLoading()) {
                 // Selected - Media is loading
-                flImagePreview.setBackgroundResource(R.drawable.tap_bg_selected_media_preview_thumbnail);
+                flImagePreview.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_selected_media_preview_thumbnail));
                 ivLoading.setBackground(null);
                 ivRemove.setVisibility(View.VISIBLE);
                 ivWarning.setVisibility(View.GONE);
@@ -65,7 +66,7 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
             } else if (item.isLoading()) {
                 // Not selected - Media is loading
                 flImagePreview.setBackground(null);
-                ivLoading.setBackgroundResource(R.drawable.tap_bg_remove_media_thumbnail_button_default);
+                ivLoading.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_remove_media_thumbnail_button_default));
                 ivRemove.setVisibility(View.GONE);
                 ivWarning.setVisibility(View.GONE);
                 ivLoading.setVisibility(View.VISIBLE);
@@ -75,7 +76,7 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
                 }
             } else if (item.isSelected() && (null == item.isSizeExceedsLimit() || !item.isSizeExceedsLimit())) {
                 // Selected - Media ready
-                flImagePreview.setBackgroundResource(R.drawable.tap_bg_selected_media_preview_thumbnail);
+                flImagePreview.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_selected_media_preview_thumbnail));
                 ivLoading.clearAnimation();
                 ivRemove.setVisibility(View.VISIBLE);
                 ivWarning.setVisibility(View.GONE);
@@ -83,8 +84,8 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
                 flRemove.setVisibility(View.VISIBLE);
             } else if (item.isSelected()) {
                 // Selected - Media size exceeds limit
-                flImagePreview.setBackgroundResource(R.drawable.tap_bg_selected_media_preview_thumbnail);
-                ivWarning.setImageResource(R.drawable.tap_ic_remove_red_circle_background);
+                flImagePreview.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_selected_media_preview_thumbnail));
+                ivWarning.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_remove_red_circle_background));
                 ivLoading.clearAnimation();
                 ivRemove.setVisibility(View.GONE);
                 ivWarning.setVisibility(View.VISIBLE);
@@ -97,7 +98,7 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
             } else {
                 // Not selected - Media size exceeds limit
                 flImagePreview.setBackground(null);
-                ivWarning.setImageResource(R.drawable.tap_ic_warning_red_circle_background);
+                ivWarning.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_warning_red_circle_background));
                 ivLoading.clearAnimation();
                 ivRemove.setVisibility(View.GONE);
                 ivWarning.setVisibility(View.VISIBLE);
