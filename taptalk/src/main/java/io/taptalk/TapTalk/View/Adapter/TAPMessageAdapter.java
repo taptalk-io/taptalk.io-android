@@ -539,7 +539,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             if (null != widthDimension && null != heightDimension) {
-                rcivImageBody.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
+                if (0 == widthDimension.intValue() || 0 == heightDimension.intValue()) {
+                    rcivImageBody.setImageDimensions(500, 500);
+                } else {
+                    rcivImageBody.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
+                }
             }
 
             // Load thumbnail when download is not in progress
