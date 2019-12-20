@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1551,8 +1552,12 @@ public class TAPChatManager {
     }
 
     private void insertToList(Map<String, TAPMessageModel> hashMap) {
-        for (Map.Entry<String, TAPMessageModel> message : hashMap.entrySet()) {
-            saveMessages.add(convertToEntity(message.getValue()));
+        try {
+            for (Map.Entry<String, TAPMessageModel> message : hashMap.entrySet()) {
+                saveMessages.add(convertToEntity(message.getValue()));
+            }
+        } catch (ConcurrentModificationException e) { // FIXME: 20 Dec 2019
+            e.printStackTrace();
         }
     }
 
