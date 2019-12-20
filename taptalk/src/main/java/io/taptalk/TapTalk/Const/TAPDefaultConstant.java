@@ -83,6 +83,7 @@ public class TAPDefaultConstant {
         public static final String ITEMS = "items";
         public static final String FILE_ID = "fileID";
         public static final String FILE_NAME = "fileName";
+        public static final String FILE_URL = "url";
         public static final String IMAGE_URL = "imageURL";
         public static final String MEDIA_TYPE = "mediaType";
         public static final String DURATION = "duration";
@@ -96,6 +97,12 @@ public class TAPDefaultConstant {
         public static final String ADDRESS = "address";
         public static final String LATITUDE = "latitude";
         public static final String LONGITUDE = "longitude";
+    }
+
+    public static final class QuoteFileType {
+        public static final String FILE = "file";
+        public static final String IMAGE = "image";
+        public static final String VIDEO = "video";
     }
 
     public static final class Extras {
@@ -320,6 +327,7 @@ public class TAPDefaultConstant {
         public static final String ROOM_REMOVE_PARTICIPANT = "room/removeParticipant";
         public static final String ROOM_PROMOTE_ADMIN = "room/promoteAdmin";
         public static final String ROOM_DEMOTE_ADMIN = "room/demoteAdmin";
+        public static final String UPDATE_USER = "user/update";
     }
 
     public static final class ProjectConfigType {

@@ -8,11 +8,12 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "io.taptalk.TapTalkSample"
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 28
-        versionCode 28
-        versionName "1.0.19"
+        versionCode 30
+        versionName "1.0.20"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     signingConfigs {
@@ -137,8 +138,10 @@ dependencies {
 
     //Crashlytics
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-    implementation 'com.crashlytics.sdk.android:crashlytics-ndk:2.1.0'
+    implementation 'com.crashlytics.sdk.android:crashlytics-ndk:2.1.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.android.support:multidex:1.0.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -11,6 +11,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 
 public class TAPAttachmentModel {
     private int icon;
@@ -195,7 +196,8 @@ public class TAPAttachmentModel {
         if (null != messageModel.getData() &&
                 null != messageModel.getData().get(CAPTION) &&
                 !((String) messageModel.getData().get(CAPTION)).isEmpty() &&
-                TAPCacheManager.getInstance(TapTalk.appContext).containsCache((String) messageModel.getData().get(FILE_ID))) {
+                (TAPCacheManager.getInstance(TapTalk.appContext).containsCache((String) messageModel.getData().get(FILE_ID)) ||
+                        null != messageModel.getData().get(FILE_URL))) {
             // Show Copy option to copy caption
             imageResIds.add(R.drawable.tap_ic_reply_pumpkin_orange);
             imageResIds.add(R.drawable.tap_ic_copy_pumpkin_orange);

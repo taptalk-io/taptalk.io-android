@@ -15,7 +15,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPProfileViewModel extends AndroidViewModel {
 
-    private TAPRoomModel room;
+    private TAPRoomModel room, groupDataFromManager;
     private List<TapChatProfileItemModel> menuItems;
     private List<TapChatProfileItemModel> adapterItems;
     private TapChatProfileItemModel sharedMediaSectionTitle;
@@ -23,7 +23,7 @@ public class TAPProfileViewModel extends AndroidViewModel {
     private List<TAPMessageModel> sharedMedias;
     private HashMap<String, TAPMessageModel> sharedMediasMap;
     private TAPMessageModel pendingDownloadMessage;
-    private TAPUserModel groupMemberUser;
+    private TAPUserModel groupMemberUser, userDataFromManager;
     private String loadingStartText, loadingEndText;
     private long lastSharedMediaTimestamp;
     private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isApiCallOnProgress, isGroupMemberProfile, isGroupAdmin;
@@ -143,6 +143,22 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setGroupMemberUser(TAPUserModel groupMemberUser) {
         this.groupMemberUser = groupMemberUser;
+    }
+
+    public TAPRoomModel getGroupDataFromManager() {
+        return groupDataFromManager;
+    }
+
+    public void setGroupDataFromManager(TAPRoomModel groupDataFromManager) {
+        this.groupDataFromManager = groupDataFromManager;
+    }
+
+    public TAPUserModel getUserDataFromManager() {
+        return userDataFromManager;
+    }
+
+    public void setUserDataFromManager(TAPUserModel userDataFromManager) {
+        this.userDataFromManager = userDataFromManager;
     }
 
     public boolean isApiCallOnProgress() {

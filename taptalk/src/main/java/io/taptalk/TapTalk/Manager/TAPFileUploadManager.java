@@ -54,7 +54,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.CHAT_MEDIA_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.ROOM_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USER_PHOTO_MAX_FILE_SIZE;
@@ -67,6 +73,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.U
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgress;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
+import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TAPFileUploadManager {
 
@@ -76,7 +83,7 @@ public class TAPFileUploadManager {
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
     private HashMap<String, Integer> uploadProgressMapPercent;
     private HashMap<String, Long> uploadProgressMapBytes;
-    private HashMap<String, TapSendMessageInterface> sendMessageListeners = new HashMap<>();
+    private HashMap<String, TapSendMessageInterface> sendMessageListeners;
 
     public static TAPFileUploadManager getInstance() {
         return null == instance ? instance = new TAPFileUploadManager() : instance;
@@ -95,6 +102,10 @@ public class TAPFileUploadManager {
     public Long getMaxUserPhotoUploadSize() {
         String maxFileSize = TapTalk.getCoreConfigs().get(USER_PHOTO_MAX_FILE_SIZE);
         return null == maxFileSize ? Long.valueOf(DEFAULT_USER_PHOTO_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
+    }
+
+    public HashMap<String, TapSendMessageInterface> getSendMessageListeners() {
+        return null == sendMessageListeners ? sendMessageListeners = new LinkedHashMap<>() : sendMessageListeners;
     }
 
     private HashMap<String, Integer> getUploadProgressMapPercent() {
@@ -172,16 +183,11 @@ public class TAPFileUploadManager {
         return getUploadQueue(roomID).isEmpty();
     }
 
-    /**
-     * Masukin Message Model ke dalem Queue Upload
-     *
-     * @param roomID
-     * @param messageModel
-     */
-    // Previously addQueueUploadImage
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel) {
         addUploadQueue(messageModel);
-        if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
+        if (1 == getUploadQueueSize(roomID) && TapCoreMessageManager.getInstance().isUploadMessageFileToExternalServerEnabled()) {
+            requestFileUploadToExternalServer(context, roomID);
+        } else if (1 == getUploadQueueSize(roomID) && TYPE_IMAGE == messageModel.getType()) {
             uploadImage(context, roomID);
         } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_VIDEO == messageModel.getType()) {
             uploadVideo(context, roomID);
@@ -190,17 +196,9 @@ public class TAPFileUploadManager {
         }
     }
 
-    // TODO: 2019-08-05 addUploadQueueWithListener
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, TapSendMessageInterface listener) {
-        addUploadQueue(messageModel);
-        sendMessageListeners.put(messageModel.getLocalID(), listener);
-        if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
-            uploadImage(context, roomID);
-        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_VIDEO == messageModel.getType()) {
-            uploadVideo(context, roomID);
-        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_FILE == messageModel.getType()) {
-            uploadFile(context, roomID);
-        }
+        getSendMessageListeners().put(messageModel.getLocalID(), listener);
+        addUploadQueue(context, roomID, messageModel);
     }
 
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap) {
@@ -210,15 +208,8 @@ public class TAPFileUploadManager {
 
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap, TapSendMessageInterface listener) {
         getBitmapQueue().put(messageModel.getLocalID(), bitmap);
-        addUploadQueue(messageModel);
-        sendMessageListeners.put(messageModel.getLocalID(), listener);
-        if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_IMAGE == messageModel.getType()) {
-            uploadImage(context, roomID);
-        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_VIDEO == messageModel.getType()) {
-            uploadVideo(context, roomID);
-        } else if (1 == getUploadQueueSize(roomID) && TAPDefaultConstant.MessageType.TYPE_FILE == messageModel.getType()) {
-            uploadFile(context, roomID);
-        }
+        getSendMessageListeners().put(messageModel.getLocalID(), listener);
+        addUploadQueue(context, roomID, messageModel);
     }
 
     public void uploadRoomPicture(Context context, Uri imageUri, String roomID,
@@ -290,6 +281,84 @@ public class TAPFileUploadManager {
         });
     }
 
+    private void requestFileUploadToExternalServer(Context context, String roomID) {
+        if (isUploadQueueEmpty(roomID)) {
+            // Queue is empty
+            return;
+        }
+        TAPMessageModel messageModel = getUploadQueue(roomID).get(0);
+        HashMap<String, Object> messageData = messageModel.getData();
+
+        if (null == messageData) {
+            // No data / Uri
+            Log.e(TAG, context.getString(R.string.tap_error_message_data_empty));
+            getUploadQueue(roomID).remove(0);
+            getBitmapQueue().remove(messageModel.getLocalID());
+            Intent intent = new Intent(UploadFailed);
+            intent.putExtra(UploadLocalID, messageModel.getLocalID());
+            intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_data_empty));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            return;
+        }
+
+        String fileUri = (String) messageData.get(FILE_URI);
+
+        if (null == fileUri) {
+            // Image data does not contain Uri
+            Log.e(TAG, context.getString(R.string.tap_error_message_uri_empty));
+            getUploadQueue(roomID).remove(0);
+            getBitmapQueue().remove(messageModel.getLocalID());
+            Intent intent = new Intent(UploadFailed);
+            intent.putExtra(UploadLocalID, messageModel.getLocalID());
+            intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_uri_empty));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            return;
+        }
+
+        if (messageModel.getType() == TYPE_IMAGE) {
+            // Generate small thumbnail for image
+            createAndResizeImageFile(context, Uri.parse(fileUri), THUMB_MAX_DIMENSION, thumbBitmap -> {
+                String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+                messageData.put(THUMBNAIL, thumbBase64);
+                messageModel.setData(messageData);
+                TAPChatManager.getInstance().triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
+            });
+        } else if (messageModel.getType() == TYPE_VIDEO) {
+            TAPDataImageModel videoData = new TAPDataImageModel(messageModel.getData());
+            Uri videoUri = Uri.parse(videoData.getFileUri());
+            File videoFile = new File(videoUri.toString());
+            String mimeType = TAPUtils.getInstance().getFileMimeType(videoFile);
+
+            if (videoFile.length() == 0 && null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
+                // Get video file from file Uri if map is empty
+                videoUri = Uri.parse(videoData.getFileUri());
+                videoFile = new File(TAPFileUtils.getInstance().getFilePath(context, videoUri));
+                mimeType = context.getContentResolver().getType(videoUri);
+            }
+            if (videoFile.length() == 0) {
+                // File not found
+                Log.e(TAG, context.getString(R.string.tap_error_message_uri_empty));
+                getUploadQueue(roomID).remove(0);
+                Intent intent = new Intent(UploadFailed);
+                intent.putExtra(UploadLocalID, messageModel.getLocalID());
+                intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_uri_empty));
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+                return;
+            }
+
+            // Update message data
+            videoData.setMediaType(mimeType);
+            videoData.setSize(videoFile.length());
+            messageModel.putData(videoData.toHashMap());
+            TAPChatManager.getInstance().triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
+        } else {
+            TAPChatManager.getInstance().triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
+        }
+    }
+
     private void uploadImage(Context context, String roomID) {
         if (isUploadQueueEmpty(roomID)) {
             // Queue is empty
@@ -321,7 +390,6 @@ public class TAPFileUploadManager {
                     // Create thumbnail
                     createAndResizeImageFile(context, imageUri, THUMB_MAX_DIMENSION, thumbBitmap -> {
                         String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
-                        // TODO: 2019-08-05 Function Call here
                         checkAndUploadCompressedImage(context, roomID, messageModel, imageUri, imageData, bitmap, thumbBase64);
                     }));
         } else if (null != getBitmapQueue().get(messageModel.getLocalID())) {
@@ -330,7 +398,6 @@ public class TAPFileUploadManager {
             createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, bitmap1 ->
                     createAndResizeImageFile(bitmap1, THUMB_MAX_DIMENSION, thumbBitmap -> {
                         String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
-                        // TODO: 2019-08-05 Function Call here
                         checkAndUploadCompressedImage(context, roomID, messageModel, null, imageData, bitmap1, thumbBase64);
                     }));
         } else {
@@ -377,7 +444,6 @@ public class TAPFileUploadManager {
             uploadNextSequence(context, roomID);
             return;
         }
-        // TODO: 2019-08-05 Call image upload API Here
         callImageUploadAPI(context, roomID, messageModel, imageFile, bitmap, thumbBase64, mimeType, imageData);
     }
 
@@ -504,7 +570,6 @@ public class TAPFileUploadManager {
         }).start();
     }
 
-    // TODO: 2019-08-05 API HERE
     private void callImageUploadAPI(Context context, String roomID, TAPMessageModel messageModel, File imageFile,
                                     Bitmap bitmap, String encodedThumbnail, String mimeType,
                                     TAPDataImageModel imageData) {
@@ -518,8 +583,8 @@ public class TAPFileUploadManager {
                 Intent intent = new Intent(UploadProgressLoading);
                 intent.putExtra(UploadLocalID, localID);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
                 }
             }
 
@@ -537,12 +602,12 @@ public class TAPFileUploadManager {
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
                 saveImageToCacheAndSendMessage(context, roomID, bitmap, encodedThumbnail, messageModel.copyMessageModel(), response);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
                     long size = 0L;
                     if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
                         size = ((Number) messageModel.getData().get(SIZE)).longValue();
                     }
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
                 }
             }
 
@@ -597,8 +662,8 @@ public class TAPFileUploadManager {
                 Intent intent = new Intent(UploadProgressLoading);
                 intent.putExtra(UploadLocalID, localID);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
                 }
             }
 
@@ -617,12 +682,12 @@ public class TAPFileUploadManager {
             @Override
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 sendFileMessageAfterUploadSuccess(context, roomID, videoFile.getName(), mimeType, messageModel.copyMessageModel(), response);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
                     long size = 0L;
                     if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
                         size = ((Number) messageModel.getData().get(SIZE)).longValue();
                     }
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
                 }
             }
 
@@ -665,8 +730,8 @@ public class TAPFileUploadManager {
                 Intent intent = new Intent(UploadProgressLoading);
                 intent.putExtra(UploadLocalID, localID);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, percentage, bytes);
                 }
             }
 
@@ -685,12 +750,12 @@ public class TAPFileUploadManager {
             public void onSuccess(TAPUploadFileResponse response, String localID) {
                 super.onSuccess(response, localID);
                 sendFileMessageAfterUploadSuccess(context, roomID, file.getName(), mimeType, messageModel.copyMessageModel(), response);
-                if (null != sendMessageListeners.get(messageModel.getLocalID())) {
+                if (null != getSendMessageListeners().get(messageModel.getLocalID())) {
                     long size = 0L;
                     if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
                         size = ((Number) messageModel.getData().get(SIZE)).longValue();
                     }
-                    sendMessageListeners.get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
+                    getSendMessageListeners().get(messageModel.getLocalID()).onProgress(messageModel, 100, size);
                 }
             }
 
@@ -734,9 +799,9 @@ public class TAPFileUploadManager {
     }
 
     private void triggerSendMessageError(String localID, String errorCode, String errorMessage) {
-        if (null != sendMessageListeners.get(localID)) {
-            sendMessageListeners.get(localID).onError(errorCode, errorMessage);
-            sendMessageListeners.remove(localID);
+        if (null != getSendMessageListeners().get(localID)) {
+            getSendMessageListeners().get(localID).onError(errorCode, errorMessage);
+            getSendMessageListeners().remove(localID);
         }
     }
 
@@ -795,7 +860,7 @@ public class TAPFileUploadManager {
     private Bitmap fixImageOrientation(Bitmap bitmap, Uri imageUri) {
         String pathName;
         if (null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
-            pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+            pathName = TAPFileUtils.getInstance().getFilePath(appContext, imageUri);
         } else {
             pathName = imageUri.toString();
         }
@@ -862,18 +927,21 @@ public class TAPFileUploadManager {
      */
     public void uploadNextSequence(Context context, String roomID) {
         getUploadQueue(roomID).remove(0);
-        //ini ngecek kalau kosong ga perlu jalanin lagi
-        if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
-                && null != getUploadQueue(roomID).get(0)
-                && TAPDefaultConstant.MessageType.TYPE_IMAGE == getUploadQueue(roomID).get(0).getType()) {
+        if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size()) &&
+                null != getUploadQueue(roomID).get(0) &&
+                TapCoreMessageManager.getInstance().isUploadMessageFileToExternalServerEnabled()) {
+            requestFileUploadToExternalServer(context, roomID);
+        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size()) &&
+                null != getUploadQueue(roomID).get(0) &&
+                TYPE_IMAGE == getUploadQueue(roomID).get(0).getType()) {
             uploadImage(context, roomID);
-        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
-                && null != getUploadQueue(roomID).get(0)
-                && TAPDefaultConstant.MessageType.TYPE_VIDEO == getUploadQueue(roomID).get(0).getType()) {
+        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size()) &&
+                null != getUploadQueue(roomID).get(0) &&
+                TAPDefaultConstant.MessageType.TYPE_VIDEO == getUploadQueue(roomID).get(0).getType()) {
             uploadVideo(context, roomID);
-        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size())
-                && null != getUploadQueue(roomID).get(0)
-                && TAPDefaultConstant.MessageType.TYPE_FILE == getUploadQueue(roomID).get(0).getType()) {
+        } else if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size()) &&
+                null != getUploadQueue(roomID).get(0) &&
+                TAPDefaultConstant.MessageType.TYPE_FILE == getUploadQueue(roomID).get(0).getType()) {
             uploadFile(context, roomID);
         }
     }
@@ -897,7 +965,6 @@ public class TAPFileUploadManager {
                                                 String encodedThumbnail, TAPMessageModel messageModel,
                                                 TAPUploadFileResponse response) {
         try {
-            //add ke dalem cache
             new Thread(() -> {
                 try {
                     String fileID = response.getId();
@@ -932,7 +999,6 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadImageData, imageDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-            //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
             getBitmapQueue().remove(messageModel.getLocalID());
         } catch (Exception e) {
@@ -970,10 +1036,69 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadFileData, fileDataMap);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
-            //manggil restart buat queue selanjutnya
             uploadNextSequence(context, roomID);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void onFileUploadFromExternalServerFinished(TAPMessageModel messageModel, String fileUrl) {
+        HashMap<String, Object> messageData = messageModel.getData();
+        if (null == messageData) {
+            messageData = new HashMap<>();
+        }
+        // Update message data with media type and file URL, remove file Uri
+        String fileUri = (String) messageData.get(FILE_URI);
+        String mimeType = TAPUtils.getInstance().getMimeTypeFromUrl(fileUrl);
+        messageData.put(MEDIA_TYPE, mimeType);
+        messageData.put(FILE_URL, fileUrl);
+        messageData.remove(FILE_URI);
+
+        // Update upload progress map
+        String localID = messageModel.getLocalID();
+        removeUploadProgressMap(localID);
+        TAPChatManager.getInstance().removeUploadingMessageFromHashMap(localID);
+
+        // Put data to message model
+        if (null != messageModel.getData()) {
+            messageModel.putData(messageData);
+        } else {
+            messageModel.setData(messageData);
+        }
+        //Log.e(TAG, "onFileUploadFromExternalServerFinished messageModel.getData: " + TAPUtils.getInstance().toJsonString(messageModel.getData()));
+
+        if (messageModel.getType() == TYPE_IMAGE) {
+            //Log.e(TAG, "onFileUploadFromExternalServerFinished: send image");
+            // Send image message to server
+            new Thread(() -> TAPChatManager.getInstance().sendImageMessageToServer(messageModel)).start();
+
+            // Notify message sent
+            Intent intent = new Intent(UploadProgressFinish);
+            intent.putExtra(UploadLocalID,localID);
+            intent.putExtra(UploadImageData, messageModel.getData());
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+
+            // Check for next upload in queue
+            uploadNextSequence(appContext, messageModel.getRoom().getRoomID());
+            getBitmapQueue().remove(messageModel.getLocalID());
+        } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_FILE) {
+            //Log.e(TAG, "onFileUploadFromExternalServerFinished: send video/file\n" + fileUrl + "\n" + fileUri);
+            // Save Uri map with file URL as key
+            TAPFileDownloadManager.getInstance().saveFileMessageUri(
+                    messageModel.getRoom().getRoomID(),
+                    TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase(), fileUri);
+
+            // Send video/file message to server
+            new Thread(() -> TAPChatManager.getInstance().sendFileMessageToServer(messageModel)).start();
+
+            // Notify message sent
+            Intent intent = new Intent(UploadProgressFinish);
+            intent.putExtra(UploadLocalID, localID);
+            intent.putExtra(UploadFileData, messageModel.getData());
+            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+
+            // Check for next upload in queue
+            uploadNextSequence(appContext, messageModel.getRoom().getRoomID());
         }
     }
 

@@ -5,8 +5,10 @@
     android:id="@+id/cl_quote"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:paddingLeft="0dp"
     android:paddingStart="0dp"
-    android:paddingEnd="8dp">
+    android:paddingEnd="8dp"
+    android:paddingRight="8dp">
 
     <View
         android:id="@+id/v_quote_decoration"
@@ -34,6 +36,7 @@
         style="@style/tapLeftBubbleQuoteTitleStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
         android:ellipsize="end"
@@ -53,13 +56,16 @@
         style="@style/tapLeftBubbleQuoteContentStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="12dp"
         android:ellipsize="end"
         android:maxLines="2"
+        android:paddingLeft="0dp"
         android:paddingStart="0dp"
         android:paddingEnd="8dp"
+        android:paddingRight="8dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@id/v_quote_decoration"
         app:layout_constraintEnd_toEndOf="parent"

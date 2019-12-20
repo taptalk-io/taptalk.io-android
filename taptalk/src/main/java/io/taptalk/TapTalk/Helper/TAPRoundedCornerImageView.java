@@ -237,4 +237,22 @@ public class TAPRoundedCornerImageView extends android.support.v7.widget.AppComp
         }
         setMeasuredDimension(resultWidth, resultHeight);
     }
+
+    @Override
+    public int getMaxWidth() {
+        return maxWidth;
+    }
+
+    @Override
+    public int getMaxHeight() {
+        return maxHeight;
+    }
+
+    public int getMinWidth() {
+        return minWidth;
+    }
+
+    public int getMinHeight() {
+        return minHeight;
+    }
 }

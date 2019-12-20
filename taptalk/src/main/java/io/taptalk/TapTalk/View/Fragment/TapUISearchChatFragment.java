@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
@@ -113,7 +114,7 @@ public class TapUISearchChatFragment extends Fragment {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        adapter = new TAPSearchChatAdapter(vm.getSearchResults());
+        adapter = new TAPSearchChatAdapter(vm.getSearchResults(), Glide.with(this));
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
@@ -142,7 +143,7 @@ public class TapUISearchChatFragment extends Fragment {
     }
 
     private void setRecentSearchItemsFromDatabase() {
-        //observe databasenya pake live data
+        // Observe database with live data
         vm.getRecentSearchList().observe(this, hpRecentSearchEntities -> {
             vm.clearRecentSearches();
 
@@ -167,27 +168,21 @@ public class TapUISearchChatFragment extends Fragment {
                 }
             }
 
-            //kalau ada perubahan sama databasenya ga lgsg diubah karena nnti bakal ngilangin hasil search yang muncul
-            //kalau lagi muncul hasil search updatenya tunggu fungsi showRecentSearch dipanggil
-            //kalau lagi muncul halaman recent search baru set items
             if (vm.getSearchState() == vm.STATE_RECENT_SEARCHES && null != getActivity())
+                // Set items when search is not is progress
                 getActivity().runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
         });
 
         showRecentSearches();
     }
 
-    //ini function buat munculin recent search nya lagi
-    //jadi dy gantiin isi recyclerView nya sama list yang diisi di setRecentSearchItemsFromDatabase (dari LiveData)
     private void showRecentSearches() {
         if (null != getActivity()) {
             getActivity().runOnUiThread(() -> adapter.setItems(vm.getRecentSearches(), false));
-            //flag untuk nandain kalau skrg lagi munculin halaman recent Search
             vm.setSearchState(vm.STATE_RECENT_SEARCHES);
         }
     }
 
-    //ini fungsi buat set tampilan kalau lagi empty
     private void setEmptyState() {
         TAPSearchChatModel emptyItem = new TAPSearchChatModel(EMPTY_STATE);
         vm.clearSearchResults();
@@ -233,21 +228,25 @@ public class TapUISearchChatFragment extends Fragment {
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
                 for (TAPMessageEntity entity : entities) {
-                    TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
-                    // Convert message to room model
-                    TAPRoomModel room = new TAPRoomModel(
-                            entity.getRoomID(),
-                            entity.getRoomName(),
-                            entity.getRoomType(),
-                            // TODO: 18 October 2018 REMOVE CHECK
-                            /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
-                            }, entity.getRoomImage())
-                            /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
-                            entity.getRoomColor());
-                    room.setUnreadCount(unreadMap.get(room.getRoomID()));
-                    result.setRoom(room);
-                    vm.addSearchResult(result);
+                    String myId = TAPChatManager.getInstance().getActiveUser().getUserID();
+                    // Exclude active user's own room
+                    if (!entity.getRoomID().equals(TAPChatManager.getInstance().arrangeRoomId(myId, myId))) {
+                        TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
+                        // Convert message to room model
+                        TAPRoomModel room = new TAPRoomModel(
+                                entity.getRoomID(),
+                                entity.getRoomName(),
+                                entity.getRoomType(),
+                                // TODO: 18 October 2018 REMOVE CHECK
+                                /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
+                                TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                                }, entity.getRoomImage())
+                                /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
+                                entity.getRoomColor());
+                        room.setUnreadCount(unreadMap.get(room.getRoomID()));
+                        result.setRoom(room);
+                        vm.addSearchResult(result);
+                    }
                 }
                 if (null != contactSearchListener) {
                     getActivity().runOnUiThread(() -> {

@@ -20,6 +20,8 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+
 public class TAPMessageRepository {
 
     private static final String TAG = TAPMessageRepository.class.getSimpleName();
@@ -221,8 +223,8 @@ public class TAPMessageRepository {
                         }, room.getRoomImage()), room.getRoomColor()));
             } else {
                 // Create new room model from user data
-                // TODO: 18 December 2018 DEFINE ROOM TYPE AND DEFAULT ROOM COLOR
-                listener.onSelectFinished(new TAPRoomModel(roomID, otherUserModel.getName(), 1, otherUserModel.getAvatarURL(), ""));
+                // TODO: 18 December 2018 DEFINE DEFAULT ROOM COLOR
+                listener.onSelectFinished(new TAPRoomModel(roomID, otherUserModel.getName(), TYPE_PERSONAL, otherUserModel.getAvatarURL(), ""));
             }
         }).start();
     }

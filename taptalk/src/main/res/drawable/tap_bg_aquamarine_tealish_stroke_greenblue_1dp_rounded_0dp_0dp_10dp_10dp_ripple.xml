@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="?attr/colorControlHighlight">
-    <item android:drawable="@drawable/tap_bg_aquamarine_tealish_stroke_greenblue_1dp_rounded_0dp_0dp_10dp_10dp" />
-</ripple>

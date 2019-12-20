@@ -4,8 +4,10 @@ import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.graphics.drawable.TransitionDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
@@ -260,6 +262,12 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 TAPUtils.getInstance().dismissKeyboard(this@TAPGroupMemberListActivity)
             }
         })
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ll_add_button.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
+            ll_promote_demote_admin.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
+            ll_remove_button.background = getDrawable(R.drawable.tap_bg_button_white_ripple)
+        }
     }
 
     private fun initViewModel(): Boolean {
@@ -335,7 +343,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun showLoading(message: String) {
         runOnUiThread {
-            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white))
+            iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_loading_progress_circle_white))
             if (null == iv_loading_image.animation)
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_image)
             tv_loading_text.text = message
@@ -347,7 +355,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun endLoading(message: String) {
         runOnUiThread {
-            iv_loading_image.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin))
+            iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_checklist_pumpkin))
             iv_loading_image.clearAnimation()
             tv_loading_text.text = message
             Handler().postDelayed({
@@ -379,7 +387,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 groupViewModel?.addSelectedMember(contact)
                 ll_promote_demote_admin.visibility = View.VISIBLE
-                iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_demote_admins)
+                iv_promote_demote_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_demote_admins))
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_demote_admin)
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE
                 startSelectionMode()
@@ -387,7 +395,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 groupViewModel?.addSelectedMember(contact)
                 ll_promote_demote_admin.visibility = View.VISIBLE
-                iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_appoint_admin)
+                iv_promote_demote_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_appoint_admin))
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_promote_admin)
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.PROMOTE
                 startSelectionMode()
@@ -419,13 +427,13 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                             groupViewModel?.selectedMembers?.entries?.iterator()?.next()?.value?.userID) == true
                     && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 ll_promote_demote_admin.visibility = View.VISIBLE
-                iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_demote_admins)
+                iv_promote_demote_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_demote_admins))
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_demote_admin)
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE
             } else if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.selectedMembers?.size == 1
                     && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance.getGroupMaxParticipants()) {
                 ll_promote_demote_admin.visibility = View.VISIBLE
-                iv_promote_demote_icon.setImageResource(R.drawable.tap_ic_appoint_admin)
+                iv_promote_demote_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_appoint_admin))
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_promote_admin)
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.PROMOTE
             }

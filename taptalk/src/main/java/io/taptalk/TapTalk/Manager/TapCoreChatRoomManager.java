@@ -13,7 +13,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreCreateGroupWithPictureListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
-import io.taptalk.TapTalk.Listener.TapCoreReceiveRoomStatusListener;
+import io.taptalk.TapTalk.Listener.TapCoreChatRoomListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
@@ -40,38 +40,38 @@ public class TapCoreChatRoomManager {
 
     private static TapCoreChatRoomManager instance;
 
-    private List<TapCoreReceiveRoomStatusListener> receiveRoomStatusListeners;
+    private List<TapCoreChatRoomListener> coreChatRoomListeners;
     private TAPChatListener chatListener;
 
     public static TapCoreChatRoomManager getInstance() {
         return null == instance ? instance = new TapCoreChatRoomManager() : instance;
     }
 
-    private List<TapCoreReceiveRoomStatusListener> getReceiveRoomStatusListeners() {
-        return null == receiveRoomStatusListeners ? receiveRoomStatusListeners = new ArrayList<>() : receiveRoomStatusListeners;
+    private List<TapCoreChatRoomListener> getCoreChatRoomListeners() {
+        return null == coreChatRoomListeners ? coreChatRoomListeners = new ArrayList<>() : coreChatRoomListeners;
     }
 
-    public void addRoomStatusListener(TapCoreReceiveRoomStatusListener listener) {
-        if (getReceiveRoomStatusListeners().isEmpty()) {
+    public void addChatRoomListener(TapCoreChatRoomListener listener) {
+        if (getCoreChatRoomListeners().isEmpty()) {
             if (null == chatListener) {
                 chatListener = new TAPChatListener() {
                     @Override
                     public void onReceiveStartTyping(TAPTypingModel typingModel) {
-                        for (TapCoreReceiveRoomStatusListener listener : getReceiveRoomStatusListeners()) {
+                        for (TapCoreChatRoomListener listener : getCoreChatRoomListeners()) {
                             listener.onReceiveStartTyping(typingModel.getRoomID(), typingModel.getUser());
                         }
                     }
 
                     @Override
                     public void onReceiveStopTyping(TAPTypingModel typingModel) {
-                        for (TapCoreReceiveRoomStatusListener listener : getReceiveRoomStatusListeners()) {
+                        for (TapCoreChatRoomListener listener : getCoreChatRoomListeners()) {
                             listener.onReceiveStopTyping(typingModel.getRoomID(), typingModel.getUser());
                         }
                     }
 
                     @Override
                     public void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus) {
-                        for (TapCoreReceiveRoomStatusListener listener : getReceiveRoomStatusListeners()) {
+                        for (TapCoreChatRoomListener listener : getCoreChatRoomListeners()) {
                             listener.onReceiveOnlineStatus(onlineStatus.getUser(), onlineStatus.getOnline(), onlineStatus.getLastActive());
                         }
                     }
@@ -79,12 +79,12 @@ public class TapCoreChatRoomManager {
             }
             TAPChatManager.getInstance().addChatListener(chatListener);
         }
-        getReceiveRoomStatusListeners().add(listener);
+        getCoreChatRoomListeners().add(listener);
     }
 
-    public void removeRoomStatusListener(TapCoreReceiveRoomStatusListener listener) {
-        getReceiveRoomStatusListeners().remove(listener);
-        if (getReceiveRoomStatusListeners().isEmpty()) {
+    public void removeChatRoomListener(TapCoreChatRoomListener listener) {
+        getCoreChatRoomListeners().remove(listener);
+        if (getCoreChatRoomListeners().isEmpty()) {
             TAPChatManager.getInstance().removeChatListener(chatListener);
         }
     }
