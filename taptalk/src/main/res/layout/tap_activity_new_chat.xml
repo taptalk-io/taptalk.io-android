@@ -130,7 +130,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:background="@drawable/tap_bg_button_active_ripple"
+            android:background="@drawable/tap_bg_button_active"
             android:gravity="center"
             android:orientation="horizontal">
 

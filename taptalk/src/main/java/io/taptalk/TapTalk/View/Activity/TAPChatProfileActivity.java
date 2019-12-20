@@ -7,17 +7,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -190,10 +195,18 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private void initViewModel() {
         vm = ViewModelProviders.of(this).get(TAPProfileViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(ROOM));
+        if (null == vm.getRoom()) {
+            finish();
+        }
         vm.setGroupMemberUser(getIntent().getParcelableExtra(K_USER));
         if (null != vm.getGroupMemberUser()) {
             vm.setGroupMemberProfile(true);
             vm.setGroupAdmin(getIntent().getBooleanExtra(IS_ADMIN, false));
+            vm.setUserDataFromManager(TAPContactManager.getInstance().getUserData(vm.getGroupMemberUser().getUserID()));
+        } else if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
+            vm.setUserDataFromManager(TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID())));
+        } else if (vm.getRoom().getRoomType() == TYPE_GROUP) {
+            vm.setGroupDataFromManager(TAPGroupManager.Companion.getGetInstance().getGroupData(vm.getRoom().getRoomID()));
         }
         vm.getSharedMedias().clear();
     }
@@ -220,10 +233,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         // Set gradient for profile picture overlay
         vGradient.setBackground(new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM, new int[]{
-                getResources().getColor(R.color.tapTransparentBlack40),
-                getResources().getColor(R.color.tapTransparentBlack18),
-                getResources().getColor(R.color.tapTransparentBlack),
-                getResources().getColor(R.color.tapTransparentBlack40)}));
+                ContextCompat.getColor(this, R.color.tapTransparentBlack40),
+                ContextCompat.getColor(this, R.color.tapTransparentBlack18),
+                ContextCompat.getColor(this, R.color.tapTransparentBlack),
+                ContextCompat.getColor(this, R.color.tapTransparentBlack40)}));
 
         if (!vm.isGroupMemberProfile()) {
             // Show loading on start
@@ -282,27 +295,57 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     private void updateView() {
         // Update room image
-        if (vm.isGroupMemberProfile() && null != vm.getGroupMemberUser().getAvatarURL()) {
+        if (null != vm.getUserDataFromManager() &&
+                null != vm.getUserDataFromManager().getAvatarURL() &&
+                !vm.getUserDataFromManager().getAvatarURL().getFullsize().isEmpty()) {
+            // Load image from contact manager
+            glide.load(vm.getUserDataFromManager().getAvatarURL().getFullsize())
+                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
+                    .into(ivProfile);
+        } else if (null != vm.getGroupDataFromManager() &&
+                null != vm.getGroupDataFromManager().getRoomImage() &&
+                !vm.getGroupDataFromManager().getRoomImage().getFullsize().isEmpty()) {
+            // Load image from group manager
+            glide.load(vm.getGroupDataFromManager().getRoomImage().getFullsize())
+                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
+                    .into(ivProfile);
+        } else if (vm.isGroupMemberProfile() && null != vm.getGroupMemberUser().getAvatarURL()) {
+            // Load member image from intent
             glide.load(vm.getGroupMemberUser().getAvatarURL().getFullsize())
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
                     .into(ivProfile);
         } else if (!vm.isGroupMemberProfile() &&
                 null != vm.getRoom().getRoomImage() &&
                 !vm.getRoom().getRoomImage().getFullsize().isEmpty()) {
+            // Load room image from intent
             glide.load(vm.getRoom().getRoomImage().getFullsize())
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
                     .into(ivProfile);
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-            ivProfile.setImageResource(R.drawable.tap_img_default_group_avatar);
+            // Show default group avatar
+            ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_group_avatar));
         } else {
-            ivProfile.setImageResource(R.drawable.tap_img_default_avatar);
+            // Show default user avatar
+            ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_avatar));
         }
 
         // Update room name
-        if (vm.isGroupMemberProfile()) {
+        if (null != vm.getUserDataFromManager() &&
+                !vm.getUserDataFromManager().getName().isEmpty()) {
+            // Set name from contact manager
+            tvFullName.setText(vm.getUserDataFromManager().getName());
+            tvCollapsedName.setText(vm.getUserDataFromManager().getName());
+        } else if (null != vm.getGroupDataFromManager() &&
+                !vm.getGroupDataFromManager().getRoomName().isEmpty()) {
+            // Set name from group manager
+            tvFullName.setText(vm.getGroupDataFromManager().getRoomName());
+            tvCollapsedName.setText(vm.getGroupDataFromManager().getRoomName());
+        } else if (vm.isGroupMemberProfile()) {
+            // Set name from passed member profile intent
             tvFullName.setText(vm.getGroupMemberUser().getName());
             tvCollapsedName.setText(vm.getGroupMemberUser().getName());
         } else {
+            // Set name from passed room intent
             tvFullName.setText(vm.getRoom().getRoomName());
             tvCollapsedName.setText(vm.getRoom().getRoomName());
         }
@@ -653,7 +696,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         } else {
             // Download file
             vm.setPendingDownloadMessage(null);
-            TAPFileDownloadManager.getInstance().downloadFile(TAPChatProfileActivity.this, message);
+            TAPFileDownloadManager.getInstance().downloadMessageFile(message);
         }
         notifyItemChanged(message);
     }
@@ -682,7 +725,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private void showLoadingPopup(String message) {
         vm.setApiCallOnProgress(true);
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }
@@ -692,9 +735,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void hideLoadingPopup(String message) {
-        vm.setApiCallOnProgress(false);
+        //vm.setApiCallOnProgress(false);
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
             tvLoadingText.setText(message);
             flLoading.setOnClickListener(v -> hideLoadingPopup());
@@ -750,8 +793,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         .alpha(1f)
                         .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
-                getTransitionToExpand().cancel();
-                getTransitionToCollapse().start();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    getTransitionToExpand().cancel();
+                    getTransitionToCollapse().start();
+                } else {
+                    ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton)));
+                    ImageViewCompat.setImageTintList(ivButtonEdit, ColorStateList.valueOf(ContextCompat.
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton)));
+                }
             } else if (Math.abs(verticalOffset) < scrollRange && isShowing) {
                 // Hide Toolbar
                 isShowing = false;
@@ -765,16 +815,24 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         .alpha(0f)
                         .setDuration(DEFAULT_ANIMATION_TIME)
                         .start();
-                getTransitionToCollapse().cancel();
-                getTransitionToExpand().start();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    getTransitionToCollapse().cancel();
+                    getTransitionToExpand().start();
+                } else {
+                    ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton)));
+                    ImageViewCompat.setImageTintList(ivButtonEdit, ColorStateList.valueOf(ContextCompat.
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton)));
+                }
             }
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         private ValueAnimator getTransitionToCollapse() {
             if (null == transitionToCollapse) {
                 transitionToCollapse = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.tapIconTransparentBackgroundBackButton),
-                        getResources().getColor(R.color.tapIconNavBarBackButton));
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton),
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton));
                 transitionToCollapse.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToCollapse.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -784,11 +842,12 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             return transitionToCollapse;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         private ValueAnimator getTransitionToExpand() {
             if (null == transitionToExpand) {
                 transitionToExpand = ValueAnimator.ofArgb(
-                        getResources().getColor(R.color.tapIconNavBarBackButton),
-                        getResources().getColor(R.color.tapIconTransparentBackgroundBackButton));
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton),
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton));
                 transitionToExpand.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToExpand.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));

@@ -4,11 +4,14 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -20,6 +23,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import io.taptalk.TapTalk.Helper.TAPTouchImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -33,6 +42,7 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
 
@@ -47,7 +57,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
     private ImageView ivButtonBack, ivButtonSave, ivSaving;
     private TAPTouchImageView tivImageDetail;
 
-    private String fileID, title, messageStatus, caption, mimeType;
+    private String fileUrl, fileID, title, messageStatus, caption, mimeType;
 
     private GestureDetector gestureDetector;
 
@@ -62,17 +72,39 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
         initView();
 
         supportPostponeEnterTransition();
-        new Thread(() -> {
-            image = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(fileID);
-            if (null != image) {
-                runOnUiThread(() -> {
-                    tivImageDetail.setImageDrawable(image);
-                    supportStartPostponedEnterTransition();
-                });
-            } else {
-                finish();
-            }
-        }).start();
+        if (null != fileUrl && !fileUrl.isEmpty()) {
+            // Load image from URL
+            tivImageDetail.post(() -> Glide.with(TAPImageDetailPreviewActivity.this)
+                    .load(fileUrl)
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            finish();
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            image = (BitmapDrawable) resource;
+                            supportStartPostponedEnterTransition();
+                            return false;
+                        }
+                    })
+                    .into(tivImageDetail));
+        } else if (null != fileID && !fileID.isEmpty()) {
+            new Thread(() -> {
+                // Load image from cache
+                image = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable(fileID);
+                if (null != image) {
+                    runOnUiThread(() -> {
+                        tivImageDetail.setImageDrawable(image);
+                        supportStartPostponedEnterTransition();
+                    });
+                } else {
+                    finish();
+                }
+            }).start();
+        }
     }
 
     @Override
@@ -98,6 +130,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
             Log.e(TAG, getString(R.string.tap_error_load_image_detail));
             return;
         }
+        fileUrl = (String) message.getData().get(FILE_URL);
         fileID = (String) message.getData().get(FILE_ID);
         title = message.getUser().getName();
         messageStatus = message.getMessageStatusText();
@@ -165,7 +198,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
 
     private void showLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
                 TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             }
@@ -177,7 +210,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
 
     private void endLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
             tvLoadingText.setText(getString(R.string.tap_image_saved));
             flLoading.setOnClickListener(v -> hideLoading());

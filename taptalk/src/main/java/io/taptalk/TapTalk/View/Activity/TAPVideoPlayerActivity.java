@@ -7,11 +7,13 @@ import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -46,7 +48,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
     private VideoView videoView;
     private TextView tvCurrentTime, tvCurrentTimeDummy, tvDuration, tvDurationDummy, tvLoadingText;
     private ImageView ivButtonClose, ivButtonSave, ivButtonMute, ivButtonPlayPause, ivSaving;
-    private SeekBar seekBar;
+    private SeekBar seekBar; // TODO: 21 November 2019 STYLE SEEK BAR FOR API BELOW 21
 
     private TAPVideoPlayerViewModel vm;
 
@@ -137,41 +139,60 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         }
 
         seekBar.setOnSeekBarChangeListener(seekBarListener);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonClose.setBackground(getDrawable(R.drawable.tap_bg_video_player_button_ripple));
+            ivButtonSave.setBackground(getDrawable(R.drawable.tap_bg_video_player_button_ripple));
+            ivButtonMute.setBackground(getDrawable(R.drawable.tap_bg_video_player_button_ripple));
+        }
     }
 
     private void updateVideoViewParams() {
-        // Get video data
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(TAPVideoPlayerActivity.this, vm.getVideoUri());
-        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-        int width, height;
-        if (rotation.equals("90") || rotation.equals("270")) {
-            // Swap width and height when video is rotated
-            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-        } else {
-            width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-            height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-        }
+        try {
+            // Get video data
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(TAPVideoPlayerActivity.this, vm.getVideoUri());
+            String rotation = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+            }
+            int width, height;
+            if (null != rotation && (rotation.equals("90") || rotation.equals("270"))) {
+                // Swap width and height when video is rotated
+                width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            } else {
+                width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+                height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+            }
 
-        // Fix videoView layout params
-        float videoRatio = (float) width / (float) height;
-        float screenRatio = (float) TAPUtils.getInstance().getScreenWidth() / (float) TAPUtils.getInstance().getScreenHeight();
-        if (screenRatio > videoRatio) {
-            videoView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            videoView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-        } else {
-            videoView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-            videoView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        }
+            // Fix videoView layout params
+            float videoRatio = (float) width / (float) height;
+            float screenRatio = (float) TAPUtils.getInstance().getScreenWidth() / (float) TAPUtils.getInstance().getScreenHeight();
+            if (screenRatio > videoRatio) {
+                videoView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                videoView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+            } else {
+                videoView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+                videoView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
 
-        retriever.release();
+            retriever.release();
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
     private void loadVideo() {
-        videoView.setVideoURI(vm.getVideoUri());
-        videoView.setOnPreparedListener(onPreparedListener);
-        videoView.setOnCompletionListener(onCompletionListener);
+        try {
+            videoView.setVideoURI(vm.getVideoUri());
+            videoView.setOnPreparedListener(onPreparedListener);
+            videoView.setOnCompletionListener(onCompletionListener);
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
     private void startProgressTimer() {
@@ -262,11 +283,11 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         if (vm.getMediaVolume() > 0f) {
             // Mute video
             vm.setMediaVolume(0f);
-            ivButtonMute.setImageDrawable(getDrawable(R.drawable.tap_ic_volume_off));
+            ivButtonMute.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_volume_off));
         } else {
             // Turn sound on
             vm.setMediaVolume(1f);
-            ivButtonMute.setImageDrawable(getDrawable(R.drawable.tap_ic_volume_on));
+            ivButtonMute.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_volume_on));
         }
         vm.getMediaPlayer().setVolume(vm.getMediaVolume(), vm.getMediaVolume());
     }
@@ -283,14 +304,14 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         vm.setVideoPlaying(false);
         vm.setPausedPosition(vm.getMediaPlayer().getCurrentPosition());
         vm.getMediaPlayer().pause();
-        ivButtonPlayPause.setImageDrawable(getDrawable(R.drawable.tap_ic_button_play));
+        ivButtonPlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_button_play));
         stopProgressTimer();
     }
 
     private void resumeVideo() {
         vm.setVideoPlaying(true);
         vm.getMediaPlayer().seekTo(vm.getPausedPosition());
-        ivButtonPlayPause.setImageDrawable(getDrawable(R.drawable.tap_ic_button_pause));
+        ivButtonPlayPause.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_button_pause));
     }
 
     private void saveVideo() {
@@ -308,10 +329,8 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
 
     private void showLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
-            if (null == ivSaving.getAnimation()) {
-                TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
-            }
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
+            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
             tvLoadingText.setText(getString(R.string.tap_saving));
             ivButtonSave.setOnClickListener(null);
             flLoading.setVisibility(View.VISIBLE);
@@ -320,7 +339,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
 
     private void endLoading() {
         runOnUiThread(() -> {
-            ivSaving.setImageDrawable(getDrawable(R.drawable.tap_ic_checklist_pumpkin));
+            ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
             ivSaving.clearAnimation();
             tvLoadingText.setText(getString(R.string.tap_video_saved));
             flLoading.setOnClickListener(v -> hideLoading());
@@ -348,7 +367,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
                 vm.setVideoPlaying(true);
                 TAPVideoPlayerActivity.this.startProgressTimer();
                 vm.setMediaVolume(TAPDataManager.getInstance().getMediaVolumePreference());
-                ivButtonMute.setImageDrawable(vm.getMediaVolume() > 0f ? TAPVideoPlayerActivity.this.getDrawable(R.drawable.tap_ic_volume_on) : TAPVideoPlayerActivity.this.getDrawable(R.drawable.tap_ic_volume_off));
+                ivButtonMute.setImageDrawable(vm.getMediaVolume() > 0f ? ContextCompat.getDrawable(TAPVideoPlayerActivity.this, R.drawable.tap_ic_volume_on) : ContextCompat.getDrawable(TAPVideoPlayerActivity.this, R.drawable.tap_ic_volume_off));
                 tvDuration.setText(TAPUtils.getInstance().getMediaDurationString(vm.getDuration(), vm.getDuration()));
                 vm.setFirstLoadFinished(true);
             }

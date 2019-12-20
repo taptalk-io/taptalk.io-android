@@ -6,6 +6,7 @@ import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
@@ -94,7 +96,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         ivButtonSearch.setOnClickListener(v -> showSearchBar());
         ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 
-        adapter = new TAPSearchChatAdapter(vm.getSearchResults(), roomListInterface);
+        adapter = new TAPSearchChatAdapter(vm.getSearchResults(), Glide.with(this), roomListInterface);
         rvForwardList.setAdapter(adapter);
         rvForwardList.setHasFixedSize(false);
         rvForwardList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -111,7 +113,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
     private void showToolbar() {
         TAPUtils.getInstance().dismissKeyboard(this);
-        ivButtonClose.setImageResource(R.drawable.tap_ic_close_grey);
+        ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
         tvTitle.setVisibility(View.VISIBLE);
         etSearch.setVisibility(View.GONE);
         etSearch.setText("");
@@ -120,7 +122,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     }
 
     private void showSearchBar() {
-        ivButtonClose.setImageResource(R.drawable.tap_ic_chevron_left_white);
+        ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
         tvTitle.setVisibility(View.GONE);
         etSearch.setVisibility(View.VISIBLE);
         ivButtonSearch.setVisibility(View.GONE);

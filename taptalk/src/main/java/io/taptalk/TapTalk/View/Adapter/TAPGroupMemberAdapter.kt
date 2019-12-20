@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Adapter
 
 import android.content.res.ColorStateList
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.ImageViewCompat
 import android.support.v7.util.DiffUtil
 import android.support.v7.util.DiffUtil.DiffResult
 import android.view.View
@@ -86,15 +87,15 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
 
             // Load member avatar
             if (item?.avatarURL?.thumbnail.isNullOrEmpty()) {
-                civAvatar.imageTintList = ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item?.name))
-                civAvatar.setImageResource(R.drawable.tap_bg_circle_9b9b9b)
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item?.name)))
+                civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
                 tvAvatarLabel.text = TAPUtils.getInstance().getInitials(item?.name, 2)
                 tvAvatarLabel.visibility = View.VISIBLE
             } else {
                 Glide.with(itemView.context)
                         .load(item?.avatarURL?.thumbnail)
                         .into(civAvatar)
-                civAvatar.imageTintList = null
+                ImageViewCompat.setImageTintList(civAvatar, null)
                 tvAvatarLabel.visibility = View.GONE
             }
 
@@ -119,11 +120,11 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                 ivSelection.visibility = View.GONE
             }
             if (SELECT_MODE == groupAdapter.cellMode && true == item?.isSelected) {
-                ivSelection.setImageResource(R.drawable.tap_ic_circle_active)
-                ivSelection.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive))
+                ivSelection.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_circle_active))
+                ImageViewCompat.setImageTintList(ivSelection, ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive)))
             } else {
-                ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive)
-                ivSelection.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive))
+                ivSelection.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_circle_inactive))
+                ImageViewCompat.setImageTintList(ivSelection, ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive)))
             }
 
             // Set listener for click
@@ -132,14 +133,14 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                         item.userID != TAPChatManager.getInstance().activeUser.userID) {
                     groupAdapter.groupInterface.onContactSelected(item)
                     item.isSelected = true
-                    ivSelection.setImageResource(R.drawable.tap_ic_circle_active)
-                    ivSelection.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive))
+                    ivSelection.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_circle_active))
+                    ImageViewCompat.setImageTintList(ivSelection, ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive)))
                 } else if (SELECT_MODE == groupAdapter.cellMode && true == item?.isSelected &&
                         item.userID != TAPChatManager.getInstance().activeUser.userID) {
                     groupAdapter.groupInterface.onContactDeselected(item)
                     item.isSelected = false
-                    ivSelection.setImageResource(R.drawable.tap_ic_circle_inactive)
-                    ivSelection.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive))
+                    ivSelection.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_circle_inactive))
+                    ImageViewCompat.setImageTintList(ivSelection, ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive)))
                 } else if (NORMAL_MODE == groupAdapter.cellMode) {
                     groupAdapter.groupInterface.onGroupMemberClicked(item, isAdmin)
                 }

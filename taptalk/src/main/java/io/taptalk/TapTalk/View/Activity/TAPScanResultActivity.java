@@ -2,9 +2,12 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.view.View;
@@ -27,7 +30,6 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -50,17 +52,12 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     private TextView tvButtonTitle, tvMyAvatarLabel, tvContactAvatarLabel, tvAlreadyContact,
             tvThisIsYou, tvContactUsername, tvContactFullName, tvAddSuccess;
 
-    private TAPUserModel addedContactUserModel;
-    private String scanResult;
-    private TAPUserModel myUserModel;
-    private TAPUserModel contactModel;
-
     private RequestManager glide;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tap_scan_result_activity);
+        setContentView(R.layout.tap_activity_scan_result);
         vm = ViewModelProviders.of(this).get(TAPScanResultViewModel.class);
         initView();
     }
@@ -98,15 +95,18 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         flButtonClose.setOnClickListener(v -> onBackPressed());
 
-        addedContactUserModel = getIntent().getParcelableExtra(ADDED_CONTACT);
-        scanResult = getIntent().getStringExtra(SCAN_RESULT);
-        myUserModel = TAPChatManager.getInstance().getActiveUser();
+        vm.setAddedContactUserModel(getIntent().getParcelableExtra(ADDED_CONTACT));
+        vm.setScanResult(getIntent().getStringExtra(SCAN_RESULT));
+        vm.setMyUserModel(TAPChatManager.getInstance().getActiveUser());
 
-        if (null != addedContactUserModel) {
+        if (null != vm.getAddedContactUserModel()) {
             setUpFromNewContact();
-        } else if (null != scanResult) {
-            scanResult = scanResult.replace("id:", "");
+        } else if (null != vm.getScanResult()) {
+            vm.setScanResult(vm.getScanResult().replace("id:", ""));
             setUpFromScanQR();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            llButton.setBackground(getDrawable(R.drawable.tap_bg_scan_result_button_ripple));
         }
     }
 
@@ -115,18 +115,18 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         ivLoading.setVisibility(View.GONE);
         cvResult.setVisibility(View.VISIBLE);
 
-        loadProfilePicture(civTheirContactAvatar, tvContactAvatarLabel, addedContactUserModel);
+        loadProfilePicture(civTheirContactAvatar, tvContactAvatarLabel, vm.getAddedContactUserModel());
 
-        tvContactFullName.setText(addedContactUserModel.getName());
-        tvContactUsername.setText(addedContactUserModel.getUsername());
+        tvContactFullName.setText(vm.getAddedContactUserModel().getName());
+        tvContactUsername.setText(vm.getAddedContactUserModel().getUsername());
 
-        animateAddSuccess(addedContactUserModel);
+        animateAddSuccess(vm.getAddedContactUserModel());
 
         llButton.setOnClickListener(v -> {
             TAPUtils.getInstance().startChatActivity(TAPScanResultActivity.this,
-                    TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), addedContactUserModel.getUserID()),
-                    addedContactUserModel.getName(),
-                    addedContactUserModel.getAvatarURL(),
+                    TAPChatManager.getInstance().arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getAddedContactUserModel().getUserID()),
+                    vm.getAddedContactUserModel().getName(),
+                    vm.getAddedContactUserModel().getAvatarURL(),
                     1,
                     ""); // TODO: 20 May 2019 GET ROOM COLOR
             finish();
@@ -134,7 +134,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void setUpFromScanQR() {
-        TAPDataManager.getInstance().getUserByIdFromApi(scanResult, getUserView);
+        TAPDataManager.getInstance().getUserByIdFromApi(vm.getScanResult(), getUserView);
     }
 
     private void validateScanResult(TAPUserModel userModel) {
@@ -142,14 +142,14 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         cvResult.setVisibility(View.VISIBLE);
         ivLoading.clearAnimation();
         ivLoading.setVisibility(View.GONE);
-        contactModel = userModel;
+        vm.setContactModel(userModel);
 
         loadProfilePicture(civTheirContactAvatar, tvContactAvatarLabel, userModel);
 
         tvContactFullName.setText(userModel.getName());
         tvContactUsername.setText(userModel.getUsername());
 
-        if (scanResult.equals(myUserModel.getUserID())) {
+        if (vm.getScanResult().equals(vm.getMyUserModel().getUserID())) {
             viewThisIsYou();
         } else {
             checkIsInContactAndSetUpAnimation();
@@ -157,7 +157,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void checkIsInContactAndSetUpAnimation() {
-        TAPDataManager.getInstance().checkUserInMyContacts(contactModel.getUserID(), new TAPDatabaseListener<TAPUserModel>() {
+        TAPDataManager.getInstance().checkUserInMyContacts(vm.getContactModel().getUserID(), new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onContactCheckFinished(int isContact) {
                 if (isContact != 0) animateAlreadyContact();
@@ -167,7 +167,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void handleWhenUserNotInContact() {
-        runOnUiThread(() -> llButton.setOnClickListener(v -> TAPDataManager.getInstance().addContactApi(contactModel.getUserID(), addContactView)));
+        runOnUiThread(() -> llButton.setOnClickListener(v -> TAPDataManager.getInstance().addContactApi(vm.getContactModel().getUserID(), addContactView)));
     }
 
     TAPDefaultDataView<TAPAddContactResponse> addContactView = new TAPDefaultDataView<TAPAddContactResponse>() {
@@ -192,9 +192,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             llButton.setOnClickListener(v -> {
                 TAPUtils.getInstance().startChatActivity(
                         TAPScanResultActivity.this,
-                        TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
-                        contactModel.getName(),
-                        contactModel.getAvatarURL(),
+                        TAPChatManager.getInstance().arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getContactModel().getUserID()),
+                        vm.getContactModel().getName(),
+                        vm.getContactModel().getAvatarURL(),
                         1,
                         ""); // TODO: 20 May 2019 GET ROOM COLOR
                 finish();
@@ -252,11 +252,11 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     private void loadProfilePicture(CircleImageView imageView, TextView avatarLabel, TAPUserModel userModel) {
         if (null != userModel.getAvatarURL() && !userModel.getAvatarURL().getThumbnail().isEmpty()) {
             glide.load(userModel.getAvatarURL().getThumbnail()).into(imageView);
-            imageView.setImageTintList(null);
+            ImageViewCompat.setImageTintList(imageView, null);
             avatarLabel.setVisibility(View.GONE);
         } else {
-            imageView.setImageTintList(ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(userModel.getName())));
-            imageView.setImageResource(R.drawable.tap_bg_circle_9b9b9b);
+            ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(userModel.getName())));
+            imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             avatarLabel.setText(TAPUtils.getInstance().getInitials(userModel.getName(), 2));
             avatarLabel.setVisibility(View.VISIBLE);
         }
@@ -272,7 +272,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     public void animateAlreadyContact() {
         runOnUiThread(() -> {
             llButton.setAlpha(0f);
-            loadProfilePicture(civMyUserAvatar, tvMyAvatarLabel, myUserModel);
+            loadProfilePicture(civMyUserAvatar, tvMyAvatarLabel, vm.getMyUserModel());
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             tvMyAvatarLabel.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
@@ -280,14 +280,14 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             llButton.setOnClickListener(v -> {
                 TAPUtils.getInstance().startChatActivity(
                         TAPScanResultActivity.this,
-                        TAPChatManager.getInstance().arrangeRoomId(myUserModel.getUserID(), contactModel.getUserID()),
-                        contactModel.getName(),
-                        contactModel.getAvatarURL(),
+                        TAPChatManager.getInstance().arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getContactModel().getUserID()),
+                        vm.getContactModel().getName(),
+                        vm.getContactModel().getAvatarURL(),
                         1,
                         ""); // TODO: 20 May 2019 GET ROOM COLOR
                 finish();
             });
-            tvAlreadyContact.setText(Html.fromHtml("<b>" + contactModel.getName() + "</b> "
+            tvAlreadyContact.setText(Html.fromHtml("<b>" + vm.getContactModel().getName() + "</b> "
                     + getResources().getString(R.string.tap_is_already_in_your_contacts)));
             cvResult.animate().alpha(1f).withEndAction(() -> {
                 //llButton.animate().alpha(0f).start();
@@ -295,7 +295,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     llTextUsername.setVisibility(View.GONE);
                     tvAlreadyContact.setVisibility(View.VISIBLE);
                     llButton.setVisibility(View.VISIBLE);
-                    ivButtonIcon.setImageResource(R.drawable.tap_ic_send_message_grey);
+                    ivButtonIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_send_message_grey));
                     tvButtonTitle.setText(getString(R.string.tap_chat_now));
                     llButton.animate().alpha(1f).start();
                     civMyUserAvatar.animate()
@@ -347,7 +347,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     public void animateAddSuccess(TAPUserModel contactModel) {
         runOnUiThread(() -> {
             tvAddSuccess.setText(Html.fromHtml(String.format(getString(R.string.you_have_added_to_your_contacts), contactModel.getName())));
-            loadProfilePicture(civMyUserAvatar, tvMyAvatarLabel, myUserModel);
+            loadProfilePicture(civMyUserAvatar, tvMyAvatarLabel, vm.getMyUserModel());
             civMyUserAvatar.setTranslationX(TAPUtils.getInstance().dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);
             cvResult.animate().alpha(1f).withEndAction(() -> {
@@ -356,7 +356,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     llTextUsername.setVisibility(View.GONE);
                     llAddSuccess.setVisibility(View.VISIBLE);
                     llButton.setVisibility(View.VISIBLE);
-                    ivButtonIcon.setImageResource(R.drawable.tap_ic_send_message_grey);
+                    ivButtonIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_send_message_grey));
                     tvButtonTitle.setText(getString(R.string.tap_chat_now));
                     llButton.animate().alpha(1f).start();
                     civMyUserAvatar.animate()

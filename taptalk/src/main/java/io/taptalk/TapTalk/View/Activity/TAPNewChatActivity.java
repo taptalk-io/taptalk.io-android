@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -52,6 +54,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_ADD_NEW_CONTACT;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_VIEW_BLOCKED_CONTACTS;
@@ -181,6 +184,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 TAPUtils.getInstance().dismissKeyboard(TAPNewChatActivity.this);
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            llButtonSync.setBackground(getDrawable(R.drawable.tap_bg_button_active_ripple));
+        }
     }
 
     private void setupMenuButtons() {
@@ -209,7 +216,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void showToolbar() {
         TAPUtils.getInstance().dismissKeyboard(this);
-        ivButtonClose.setImageResource(R.drawable.tap_ic_close_grey);
+        ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
         tvTitle.setVisibility(View.VISIBLE);
         etSearch.setVisibility(View.GONE);
         etSearch.setText("");
@@ -218,7 +225,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void showSearchBar() {
-        ivButtonClose.setImageResource(R.drawable.tap_ic_chevron_left_white);
+        ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
         tvTitle.setVisibility(View.GONE);
         etSearch.setVisibility(View.VISIBLE);
         ivButtonSearch.setVisibility(View.GONE);
@@ -490,13 +497,13 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void showSyncSuccessStatus(int contactSynced) {
         runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connected);
+            llConnectionStatus.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_status_connected));
             if (0 == contactSynced) {
                 tvConnectionStatus.setText(getString(R.string.tap_all_contacts_synced));
             } else {
                 tvConnectionStatus.setText(String.format(getString(R.string.tap_synced_d_contacts), contactSynced));
             }
-            ivConnectionStatus.setImageResource(R.drawable.tap_ic_checklist_pumpkin);
+            ivConnectionStatus.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
             ivConnectionStatus.setPadding(0, 0, 0, 0);
             ivConnectionStatus.clearAnimation();
             flSyncStatus.setVisibility(View.VISIBLE);
@@ -508,9 +515,9 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     private void showSyncLoadingStatus() {
         int padding = TAPUtils.getInstance().dpToPx(2);
         runOnUiThread(() -> {
-            llConnectionStatus.setBackgroundResource(R.drawable.tap_bg_status_connecting);
+            llConnectionStatus.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_status_connecting));
             tvConnectionStatus.setText(getString(R.string.tap_syncing_contacts));
-            ivConnectionStatus.setImageResource(R.drawable.tap_ic_loading_progress_circle_white);
+            ivConnectionStatus.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             ivConnectionStatus.setPadding(padding, padding, padding, padding);
             TAPUtils.getInstance().rotateAnimateInfinitely(this, ivConnectionStatus);
             llConnectionStatus.setVisibility(View.VISIBLE);
@@ -573,13 +580,13 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 return;
             }
             if (!TAPChatManager.getInstance().getActiveUser().getUserID().equals(user.getUserID())) {
-                // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
+                // TODO: 25 October 2018 SET ROOM COLOR
                 TAPUtils.getInstance().startChatActivity(
                         TAPNewChatActivity.this,
                         TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), user.getUserID()),
                         user.getName(),
                         user.getAvatarURL(),
-                        1,
+                        TYPE_PERSONAL,
                         /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(user.getName()) + "");
             }
         }

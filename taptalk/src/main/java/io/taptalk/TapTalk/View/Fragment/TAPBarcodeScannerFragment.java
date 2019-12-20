@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -129,6 +130,10 @@ public class TAPBarcodeScannerFragment extends Fragment {
                 e.printStackTrace();
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != getContext()) {
+            btnShowQRCode.setBackground(getContext().getDrawable(R.drawable.tap_bg_button_active_ripple));
+        }
     }
 
     public void startCameraSource() {
