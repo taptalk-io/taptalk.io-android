@@ -481,7 +481,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
                 // Set image width to maximum
                 rcivImageBody.getLayoutParams().width = 0;
-                if (imageRatio >  (float) rcivImageBody.getMaxWidth() / (float) rcivImageBody.getMinHeight()) {
+                if (imageRatio > (float) rcivImageBody.getMaxWidth() / (float) rcivImageBody.getMinHeight()) {
                     // Set minimum height if image width exceeds limit
                     rcivImageBody.getLayoutParams().height = rcivImageBody.getMinHeight();
                 } else if (imageRatio < (float) rcivImageBody.getMaxHeight() / (float) rcivImageBody.getMaxWidth()) {
@@ -535,7 +535,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             if (null != widthDimension && null != heightDimension) {
-                rcivImageBody.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
+                if (0 == widthDimension.intValue() || 0 == heightDimension.intValue()) {
+                    rcivImageBody.setImageDimensions(750, 750);
+                } else {
+                    rcivImageBody.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
+                }
             }
 
             // Load thumbnail when download is not in progress
@@ -752,7 +756,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
                 // Set image width to maximum
                 rcivVideoThumbnail.getLayoutParams().width = 0;
-                if (imageRatio >  (float) rcivVideoThumbnail.getMaxWidth() / (float) rcivVideoThumbnail.getMinHeight()) {
+                if (imageRatio > (float) rcivVideoThumbnail.getMaxWidth() / (float) rcivVideoThumbnail.getMinHeight()) {
                     // Set minimum height if image width exceeds limit
                     rcivVideoThumbnail.getLayoutParams().height = rcivVideoThumbnail.getMinHeight();
                 } else if (imageRatio < (float) rcivVideoThumbnail.getMaxHeight() / (float) rcivVideoThumbnail.getMaxWidth()) {
