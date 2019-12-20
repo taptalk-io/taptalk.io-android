@@ -540,7 +540,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             if (null != widthDimension && null != heightDimension) {
                 if (0 == widthDimension.intValue() || 0 == heightDimension.intValue()) {
-                    rcivImageBody.setImageDimensions(500, 500);
+                    rcivImageBody.setImageDimensions(750, 750);
                 } else {
                     rcivImageBody.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
                 }
