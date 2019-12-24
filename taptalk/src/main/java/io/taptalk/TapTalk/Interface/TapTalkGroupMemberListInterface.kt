@@ -4,11 +4,11 @@ import io.taptalk.TapTalk.Model.TAPUserModel
 
 interface TapTalkGroupMemberListInterface {
     fun onContactSelected(contact: TAPUserModel?): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return false
     }
 
     fun onContactDeselected(contact: TAPUserModel?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     fun onContactLongPress(contact: TAPUserModel?) {

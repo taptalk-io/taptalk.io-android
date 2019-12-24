@@ -21,6 +21,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
@@ -33,6 +34,7 @@ import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -97,7 +99,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
@@ -130,7 +134,7 @@ public class TAPUtils {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            Log.e("><><><", "toJsonString: ", e);
+            Log.e(TAG, "toJsonString: ", e);
             return "{}";
         }
     }
@@ -147,7 +151,7 @@ public class TAPUtils {
         try {
             return objectMapper.readValue(jsonPacket, type);
         } catch (Exception e) {
-            Log.e(TAPUtils.class.getSimpleName(), "fromJSON: ", e);
+            Log.e(TAG, "fromJSON: ", e);
             return null;
         }
     }
@@ -236,7 +240,7 @@ public class TAPUtils {
     }
 
     public boolean isRtl(Resources res) {
-        return res.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && res.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
     public boolean hasPermissions(Context context, String... permissions) {
@@ -301,37 +305,6 @@ public class TAPUtils {
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
-    /**
-     * separate contact list by initial
-     */
-    public List<List<TAPUserModel>> separateContactsByInitial(List<TAPUserModel> contacts) {
-        List<List<TAPUserModel>> separatedContacts = new ArrayList<>();
-        List<TAPUserModel> nonAlphabeticContacts = new ArrayList<>();
-        List<TAPUserModel> filteredContacts = new ArrayList<>();
-        for (TAPUserModel contact : contacts) {
-            if (null != contact.getName() && !contact.getName().isEmpty()) {
-                filteredContacts.add(contact);
-            }
-        }
-        int previousInitialIndexStart = 0;
-        int size = filteredContacts.size();
-        for (int i = 1; i <= size; i++) {
-            if (i == size ||
-                    filteredContacts.get(i).getName().toLowerCase().charAt(0) !=
-                            filteredContacts.get(i - 1).getName().toLowerCase().charAt(0)) {
-                List<TAPUserModel> contactSubList = filteredContacts.subList(previousInitialIndexStart, i);
-                if (Character.isAlphabetic(contactSubList.get(0).getName().toLowerCase().charAt(0))) {
-                    separatedContacts.add(contactSubList);
-                } else {
-                    nonAlphabeticContacts.addAll(contactSubList);
-                }
-                previousInitialIndexStart = i;
-            }
-        }
-        if (!nonAlphabeticContacts.isEmpty()) separatedContacts.add(nonAlphabeticContacts);
-        return separatedContacts;
-    }
-
     public List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type) {
         return generateContactListForRecycler(contacts, type, null);
     }
@@ -354,7 +327,9 @@ public class TAPUtils {
                     filteredContacts.get(i).getUser().getName().toLowerCase().charAt(0) !=
                             filteredContacts.get(i - 1).getUser().getName().toLowerCase().charAt(0)) {
                 List<TapContactListModel> contactSubList = filteredContacts.subList(previousInitialIndexStart, i);
-                if (Character.isAlphabetic(contactSubList.get(0).getUser().getName().toLowerCase().charAt(0))) {
+                char initial = contactSubList.get(0).getUser().getName().toLowerCase().charAt(0);
+                if ((initial >= 'a' && initial <= 'z') || (initial >= 'A' && initial <= 'Z')) { // Character.isAlphabetic not available below API 19
+                //if (Character.isAlphabetic(contactSubList.get(0).getUser().getName().toLowerCase().charAt(0))) {
                     separatedContacts.add(new TapContactListModel(filteredContacts.get(i - 1).getUser().getName().substring(0, 1)));
                     separatedContacts.addAll(contactSubList);
                 } else {
@@ -406,47 +381,49 @@ public class TAPUtils {
     public enum ClipType {TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
 
     public void clipToRoundedRectangle(View view, int cornerRadius, ClipType clipType) {
-        view.setOutlineProvider(new ViewOutlineProvider() {
-            @Override
-            public void getOutline(View view, Outline outline) {
-                int left = 0;
-                int top = 0;
-                int right = view.getWidth();
-                int bottom = view.getHeight();
-                switch (clipType) {
-                    case TOP:
-                        bottom += cornerRadius;
-                        break;
-                    case BOTTOM:
-                        top -= cornerRadius;
-                        break;
-                    case LEFT:
-                        right += cornerRadius;
-                        break;
-                    case RIGHT:
-                        left -= cornerRadius;
-                        break;
-                    case TOP_LEFT:
-                        bottom += cornerRadius;
-                        right += cornerRadius;
-                        break;
-                    case TOP_RIGHT:
-                        bottom += cornerRadius;
-                        left -= cornerRadius;
-                        break;
-                    case BOTTOM_LEFT:
-                        top -= cornerRadius;
-                        right += cornerRadius;
-                        break;
-                    case BOTTOM_RIGHT:
-                        top -= cornerRadius;
-                        left -= cornerRadius;
-                        break;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.setOutlineProvider(new ViewOutlineProvider() {
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    int left = 0;
+                    int top = 0;
+                    int right = view.getWidth();
+                    int bottom = view.getHeight();
+                    switch (clipType) {
+                        case TOP:
+                            bottom += cornerRadius;
+                            break;
+                        case BOTTOM:
+                            top -= cornerRadius;
+                            break;
+                        case LEFT:
+                            right += cornerRadius;
+                            break;
+                        case RIGHT:
+                            left -= cornerRadius;
+                            break;
+                        case TOP_LEFT:
+                            bottom += cornerRadius;
+                            right += cornerRadius;
+                            break;
+                        case TOP_RIGHT:
+                            bottom += cornerRadius;
+                            left -= cornerRadius;
+                            break;
+                        case BOTTOM_LEFT:
+                            top -= cornerRadius;
+                            right += cornerRadius;
+                            break;
+                        case BOTTOM_RIGHT:
+                            top -= cornerRadius;
+                            left -= cornerRadius;
+                            break;
+                    }
+                    outline.setRoundRect(left, top, right, bottom, cornerRadius);
                 }
-                outline.setRoundRect(left, top, right, bottom, cornerRadius);
-            }
-        });
-        view.setClipToOutline(true);
+            });
+            view.setClipToOutline(true);
+        }
     }
 
     public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
@@ -526,9 +503,14 @@ public class TAPUtils {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
         } else {
             // Permission granted
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            Intent intent;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
+            } else {
+                intent = new Intent(Intent.ACTION_GET_CONTENT);
+            }
             intent.setType(activity.getString(R.string.tap_intent_type_image));
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_title_select_picture)), requestCode);
             }
@@ -538,18 +520,22 @@ public class TAPUtils {
     /**
      * Reminder: Handle onRequestPermissionsResult in activity
      */
-    // TODO: 21 March 2019 GET VIDEO FROM GOOGLE DRIVE
     public void pickMediaFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Check read & write storage permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
         } else {
             // Permission granted
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            Intent intent;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                String[] mimeTypes = {activity.getString(R.string.tap_intent_type_image), activity.getString(R.string.tap_intent_type_video)};
+                intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images and videos
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
+            } else {
+                intent = new Intent(Intent.ACTION_GET_CONTENT);
+            }
             intent.setType(activity.getString(R.string.tap_intent_type_all));
-            String[] mimeTypes = {activity.getString(R.string.tap_intent_type_image), activity.getString(R.string.tap_intent_type_video)};
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images and videos
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_title_gallery)), requestCode);
             }
@@ -576,7 +562,9 @@ public class TAPUtils {
                     File dir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                     File image = File.createTempFile(filename, ".jpeg", dir);
                     Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    }
                     activity.startActivityForResult(intent, requestCode);
                     // Save file path to map
                     TAPFileDownloadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());
@@ -771,7 +759,6 @@ public class TAPUtils {
             @Override
             public void onSelectFinished(TAPUserModel entity) {
                 if (null != entity) {
-                    Log.e(TAG, "getUserFromXcUserID onDbSelectFinished: " + TAPUtils.getInstance().toJsonString(entity));
                     TAPContactManager.getInstance().updateUserData(entity);
                     listener.onSelectFinished(entity);
                 } else {
@@ -781,7 +768,6 @@ public class TAPUtils {
                             @Override
                             public void onSuccess(TAPGetUserResponse response) {
                                 TAPUserModel userResponse = response.getUser();
-                                Log.e(TAG, "getUserFromXcUserID onApiSuccess: " + TAPUtils.getInstance().toJsonString(userResponse));
                                 TAPContactManager.getInstance().updateUserData(userResponse);
                                 listener.onSelectFinished(userResponse);
                             }
@@ -903,11 +889,7 @@ public class TAPUtils {
         }
     }
 
-    /**
-     * Ini buat munculin dialog kalau ga ada internet
-     */
     public void showNoInternetErrorDialog(Context context) {
-        // TODO: 31/10/18 ini textnya masih dummy
         new TapTalkDialog.Builder(context)
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setTitle(context.getString(R.string.tap_error))
@@ -917,9 +899,6 @@ public class TAPUtils {
                 }).show();
     }
 
-    /**
-     * untuk ngatur margin view
-     */
     public void setMargins(View view, int left, int top, int right, int bottom) {
         if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
@@ -928,9 +907,9 @@ public class TAPUtils {
         }
     }
 
-    /*
-TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe file untuk upload gambarnya sekaligus mengcompressnya menjadi WEBP dikarenakan size bisa sangat kecil dan kualitasnya pun setara dengan PNG.
-*/
+    /**
+     * Convert Bitmap to File for Retrofit
+     */
     public File createTempFile(String mimeType, Bitmap bitmap) {
         File file = new File(TapTalk.appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                 , System.currentTimeMillis() + "." + mimeType);
@@ -951,9 +930,6 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         return file;
     }
 
-    /**
-     * Ini Untuk Search Position MessageModel dari Sebuah List berdasarkan LocalID
-     */
     public int searchMessagePositionByLocalID(List<TAPMessageModel> messageModels, String localID) {
         for (int index = 0; index < messageModels.size(); index++) {
             if (localID.equals(messageModels.get(index).getLocalID())) {
@@ -963,12 +939,9 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         return -1;
     }
 
-    /**
-     * This is a function to open Custom Tab Layout
-     */
     public void openCustomTabLayout(Activity activity, String url) {
         CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-        intentBuilder.setToolbarColor(activity.getResources().getColor(R.color.tapPurplyTwo));
+        intentBuilder.setToolbarColor(ContextCompat.getColor(activity, R.color.tapColorPrimary));
         intentBuilder.setShowTitle(true);
         intentBuilder.setStartAnimations(activity, R.anim.tap_slide_left, R.anim.tap_stay);
         intentBuilder.setExitAnimations(activity, R.anim.tap_stay,
@@ -1023,12 +996,6 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         return null == t || 0 >= t.size();
     }
 
-    /**
-     * Buat ngubah file length jadi format kb/mb/gb
-     *
-     * @param size = file.length
-     * @return
-     */
     public String getStringSizeLengthFile(long size) {
 
         DecimalFormat df = new DecimalFormat("0.##");
@@ -1049,28 +1016,15 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         return size + "B";
     }
 
-    /**
-     * Untuk Dapetin file Extension seperti jpg, png, webp, apk, dll
-     *
-     * @param file yang mau di dapatkan extensionnya
-     * @return
-     */
     public String getFileExtension(File file) {
         if (null != file) {
             String fileName = file.getName();
             int dotIndex = fileName.lastIndexOf('.');
             return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1);
         }
-
         return "";
     }
 
-    /**
-     * Untuk Dapetin file mime type seperti image/jpg, dll
-     *
-     * @param file yang mau di dapatkan mimeTypenya
-     * @return
-     */
     public String getFileMimeType(File file) {
         return URLConnection.guessContentTypeFromName(file.getName());
     }
@@ -1085,10 +1039,20 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         }
     }
 
-    /**
-     * Untuk animate rotate secara terus-terusan
-     * biasanya sih rotate buat progress bar
-     */
+    public String getMimeTypeFromUrl(String url) {
+        try {
+            String type = null;
+            String extension = url.substring(url.lastIndexOf(".") + 1);
+            if (extension != null) {
+                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            }
+            return type;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void rotateAnimateInfinitely(Context context, View view) {
         Animation rotation = AnimationUtils.loadAnimation(context, R.anim.tap_rotation_infinite);
         rotation.setFillAfter(true);
@@ -1223,5 +1187,21 @@ TODO mengconvert Bitmap menjadi file dikarenakan retrofit hanya mengenali tipe f
         } else {
             return text;
         }
+    }
+
+    public String removeNonAlphaNumeric(String s) {
+        return s.replaceAll("[^A-Za-z0-9]", "");
+    }
+
+    /**
+     * @return key String to get file message Uri from TapDownloadManager
+     */
+    public String getUriKeyFromMessage(TAPMessageModel message) {
+        if (null == message.getData()) {
+            return "";
+        }
+        String fileUrl = (String) message.getData().get(FILE_URL);
+        String fileID = (String) message.getData().get(FILE_ID);
+        return null != fileUrl ? TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
     }
 }

@@ -2,11 +2,11 @@ package io.taptalk.TapTalk.Listener;
 
 import android.support.annotation.Keep;
 
-import io.taptalk.TapTalk.Interface.TapReceiveRoomStatusInterface;
+import io.taptalk.TapTalk.Interface.TapCoreChatRoomInterface;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 @Keep
-public abstract class TapCoreReceiveRoomStatusListener implements TapReceiveRoomStatusInterface {
+public abstract class TapCoreChatRoomListener implements TapCoreChatRoomInterface {
 
     @Override
     public void onReceiveStartTyping(String roomID, TAPUserModel user) {

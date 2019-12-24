@@ -1,9 +1,13 @@
 package io.taptalk.TapTalk.Interface;
 
+import android.net.Uri;
+
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
-public interface TapReceiveMessageInterface {
+public interface TapCoreMessageInterface {
     void onReceiveNewMessage(TAPMessageModel message);
 
     void onReceiveUpdatedMessage(TAPMessageModel message);
+
+    void onRequestMessageFileUpload(TAPMessageModel tapMessageModel, Uri fileUri);
 }

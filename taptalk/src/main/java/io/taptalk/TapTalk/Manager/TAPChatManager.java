@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
@@ -75,6 +76,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_CAPTION_LENGTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
@@ -128,10 +130,17 @@ public class TAPChatManager {
 
         @Override
         public void onSocketDisconnected() {
-            if (TapTalk.isForeground &&
-                    TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext) &&
-                    DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
-                TAPConnectionManager.getInstance().reconnect();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (TapTalk.isForeground &&
+                        TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext) &&
+                        DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
+                    TAPConnectionManager.getInstance().reconnect();
+            } else {
+                if (TapTalk.isForeground &&
+                        TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext) &&
+                        DISCONNECTED == TAPConnectionManager.getInstance().getConnectionStatus())
+                    TAPConnectionManager.getInstance().reconnect();
+            }
         }
 
         @Override
@@ -860,7 +869,6 @@ public class TAPChatManager {
 
         // Build message model
         TAPMessageModel messageModel;
-        Log.e(TAG, "createImageMessageModel: " + activeRoom.getRoomType());
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
                     generateImageCaption(caption),
@@ -895,7 +903,6 @@ public class TAPChatManager {
 
         // Build message model
         TAPMessageModel messageModel;
-        Log.e(TAG, "createImageMessageModel: " + roomModel.getRoomType());
         if (null == getQuotedMessage()) {
             messageModel = TAPMessageModel.Builder(
                     generateImageCaption(caption),
@@ -986,9 +993,12 @@ public class TAPChatManager {
         // Get video data
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(context, fileUri);
-        String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        String rotation = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        }
         int width, height;
-        if (rotation.equals("90") || rotation.equals("270")) {
+        if (null != rotation && (rotation.equals("90") || rotation.equals("270"))) {
             // Swap width and height when video is rotated
             width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
             height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
@@ -1169,8 +1179,6 @@ public class TAPChatManager {
         if (null == imageMessage.getData()) {
             return imageMessage;
         }
-        Log.e(TAG, "Height: " + bitmap.getHeight());
-        Log.e(TAG, "Width: " + bitmap.getWidth());
         TAPDataImageModel imageData = new TAPDataImageModel(imageMessage.getData());
         imageData.setWidth(bitmap.getWidth());
         imageData.setHeight(bitmap.getHeight());
@@ -1286,8 +1294,8 @@ public class TAPChatManager {
         }
         if ((messageToForward.getType() == TYPE_VIDEO || messageToForward.getType() == TYPE_FILE) && null != messageToForward.getData()) {
             // Copy file message Uri to destination room
-            String fileID = (String) messageToForward.getData().get(FILE_ID);
-            TAPFileDownloadManager.getInstance().saveFileMessageUri(room.getRoomID(), fileID, TAPFileDownloadManager.getInstance().getFileMessageUri(messageToForward.getRoom().getRoomID(), fileID));
+            String key = TAPUtils.getInstance().getUriKeyFromMessage(messageToForward);
+            TAPFileDownloadManager.getInstance().saveFileMessageUri(room.getRoomID(), key, TAPFileDownloadManager.getInstance().getFileMessageUri(messageToForward.getRoom().getRoomID(), key));
         }
         return TAPMessageModel.BuilderForwardedMessage(
                 messageToForward,
@@ -1866,8 +1874,8 @@ public class TAPChatManager {
 
     /**
      * =============================================================================================
-     *  TAP UI
-     *  ============================================================================================
+     * TAP UI
+     * ============================================================================================
      */
 
     public void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
@@ -1904,5 +1912,14 @@ public class TAPChatManager {
 
     public void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         TapUI.getInstance().triggerProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
+    }
+
+    /**
+     * =============================================================================================
+     * TAP CORE
+     * ============================================================================================
+     */
+    public void triggerRequestMessageFileUpload(TAPMessageModel messageModel, Uri fileUri) {
+        TapCoreMessageManager.getInstance().triggerRequestMessageFileUpload(messageModel, fileUri);
     }
 }

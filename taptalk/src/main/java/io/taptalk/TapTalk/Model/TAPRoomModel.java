@@ -26,19 +26,19 @@ public class TAPRoomModel implements Parcelable {
     @JsonIgnore private boolean isMuted;
 
     public TAPRoomModel(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor) {
-        this.roomID = roomID;
-        this.roomName = roomName;
+        this.roomID = null != roomID ? roomID : "";
+        this.roomName = null != roomName ? roomName : "";
         this.roomType = roomType;
-        this.roomImage = roomImage;
-        this.roomColor = roomColor;
+        this.roomImage = null != roomImage ? roomImage : new TAPImageURL();
+        this.roomColor = null != roomColor ? roomColor : "";
     }
 
     public TAPRoomModel(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor, int unreadCount) {
-        this.roomID = roomID;
-        this.roomName = roomName;
+        this.roomID = null != roomID ? roomID : "";
+        this.roomName = null != roomName ? roomName : "";
         this.roomType = roomType;
-        this.roomImage = roomImage;
-        this.roomColor = roomColor;
+        this.roomImage = null != roomImage ? roomImage : new TAPImageURL();
+        this.roomColor = null != roomColor ? roomColor : "";
         this.unreadCount = unreadCount;
     }
 

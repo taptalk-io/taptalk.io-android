@@ -100,15 +100,16 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
 
     private void initConnectionStatus() {
         TAPConnectionManager.getInstance().addSocketListener(this);
-        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()))
+        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) {
             onSocketDisconnected();
-        else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED)
+        } else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
             llConnectionStatus.setVisibility(View.GONE);
-        else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTING)
+        } else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTING) {
             onSocketConnecting();
-        else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED ||
-                 TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED)
+        } else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED ||
+                TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED) {
             onSocketDisconnected();
+        }
     }
 
     private void setStatusConnected() {
@@ -152,9 +153,6 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     private void setStatusWaitingForNetwork() {
-//        if (TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) {
-//            return;
-//        }
         if (hideUntilNextConnect) {
             return;
         }

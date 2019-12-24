@@ -40,7 +40,7 @@ public class TAPVideoPlayerViewModel extends AndroidViewModel {
     }
 
     public MediaPlayer getMediaPlayer() {
-        return mediaPlayer;
+        return null != mediaPlayer ? mediaPlayer : new MediaPlayer();
     }
 
     public void setMediaPlayer(MediaPlayer mediaPlayer) {

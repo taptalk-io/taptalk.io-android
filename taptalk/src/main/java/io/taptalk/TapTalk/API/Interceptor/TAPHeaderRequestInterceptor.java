@@ -51,7 +51,7 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
                 .addHeader("Device-Model", android.os.Build.MODEL)
                 .addHeader("Device-Platform", "android")
                 .addHeader("Device-OS-Version", deviceOsVersion)
-                .addHeader("App-Version", BuildConfig.VERSION_NAME)
+                .addHeader("SDK-Version", BuildConfig.VERSION_NAME)
                 .addHeader("User-Agent", userAgent)
                 .method(original.method(), original.body())
                 .build();
