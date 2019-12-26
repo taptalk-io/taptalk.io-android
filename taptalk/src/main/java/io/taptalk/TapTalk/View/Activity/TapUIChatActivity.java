@@ -1478,7 +1478,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             if (null != vm.getRoom().getRoomImage()) {
                 civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage, tvRoomImageLabel));
             }
-        } else if (vm.getRoom().getRoomType() == TYPE_PERSONAL && UPDATE_USER.equals(message.getAction())) {
+        } else if (vm.getRoom().getRoomType() == TYPE_PERSONAL &&
+                UPDATE_USER.equals(message.getAction()) &&
+                message.getUser().getUserID().equals(vm.getOtherUserID())) {
             // Update user details
             vm.getRoom().setRoomName(message.getUser().getName());
             vm.getRoom().setRoomImage(message.getUser().getAvatarURL());
@@ -2257,14 +2259,16 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         }
 
                         // Load room avatar
-                        if (null != vm.getRoom().getRoomImage() && !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
-                            loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
-                        } else if (null != vm.getRoom() &&
+                         if (null != vm.getRoom() &&
                                 TYPE_PERSONAL == vm.getRoom().getRoomType() &&
                                 null != vm.getOtherUserModel() &&
                                 null != vm.getOtherUserModel().getAvatarURL().getThumbnail() &&
                                 !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
+                        } else if (null != vm.getRoom() &&
+                                 null != vm.getRoom().getRoomImage() &&
+                                 !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
+                            loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                         } else {
                             loadInitialsToProfilePicture(civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                         }
