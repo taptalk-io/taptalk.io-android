@@ -303,7 +303,7 @@ public class TAPNotificationManager {
     }
 
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel(roomID, 0);
         TAPNotificationManager.getInstance().removeNotificationMessagesMap(roomID);
 
