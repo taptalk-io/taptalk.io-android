@@ -29,6 +29,7 @@ import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
@@ -303,7 +304,7 @@ public class TAPNotificationManager {
     }
 
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel(roomID, 0);
         TAPNotificationManager.getInstance().removeNotificationMessagesMap(roomID);
 
@@ -447,7 +448,7 @@ public class TAPNotificationManager {
             notificationManager.notify(notificationMessage.getRoom().getRoomID(), 0, build());
 
             if (1 < TAPNotificationManager.getInstance().getNotificationMessagesMap().size()) {
-                notificationManager.notify(0, TAPNotificationManager.getInstance().createSummaryNotificationBubble(context, aClass).build());
+                notificationManager.notify(0, TAPNotificationManager.getInstance().createSummaryNotificationBubble(context, TapUIRoomListActivity.class).build());
             }
 
         }
