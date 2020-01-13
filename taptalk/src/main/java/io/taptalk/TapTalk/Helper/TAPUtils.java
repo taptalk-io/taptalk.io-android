@@ -989,6 +989,7 @@ public class TAPUtils {
             Intent intent = new Intent(activity, FilePickerActivity.class);
             intent.putExtra(FilePickerActivity.ARG_HIDDEN, true);
             activity.startActivityForResult(intent, SEND_FILE);
+            activity.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         }
     }
 
