@@ -1024,11 +1024,10 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private void updateFirstVisibleMessageIndex() {
         new Thread(() -> {
             vm.setFirstVisibleItemIndex(0);
-            if (null != messageAdapter.getItemAt(0).getHidden() && messageAdapter.getItemAt(0).getHidden()) {
-                while (null != vm.getMessageModels().get(vm.getFirstVisibleItemIndex()).getHidden() &&
-                        vm.getMessageModels().get(vm.getFirstVisibleItemIndex()).getHidden()) {
-                    vm.setFirstVisibleItemIndex(vm.getFirstVisibleItemIndex() + 1);
-                }
+            TAPMessageModel message = messageAdapter.getItemAt(vm.getFirstVisibleItemIndex());
+            while (null != message.getHidden() && message.getHidden()) {
+                vm.setFirstVisibleItemIndex(vm.getFirstVisibleItemIndex() + 1);
+                message = messageAdapter.getItemAt(vm.getFirstVisibleItemIndex());
             }
         }).start();
     }
@@ -1988,6 +1987,10 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         }
         vm.setUnreadButtonShown(true);
         rvMessageList.post(() -> runOnUiThread(() -> {
+            if (vm.isAllUnreadMessagesHidden()) {
+                // All unread messages are hidden
+                return;
+            }
             if (null != unreadIndicator) {
                 View view = messageLayoutManager.findViewByPosition(messageAdapter.getItems().indexOf(unreadIndicator));
                 if (null != view) {
@@ -2235,7 +2238,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 //                vm.setLastTimestamp(models.get(0).getCreated());
             }
 
-            if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID())) {
+            if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID()) && !vm.isAllUnreadMessagesHidden()) {
                 TAPMessageModel unreadIndicator = insertUnreadMessageIdentifier(
                         vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID()).getCreated(),
                         vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID()).getUser());
@@ -2375,7 +2378,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     }
 
                     // Insert unread indicator
-                    if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID()) && null == vm.getUnreadIndicator()) {
+                    if (vm.getMessagePointer().containsKey(vm.getLastUnreadMessageLocalID()) &&
+                            null == vm.getUnreadIndicator() && !vm.isAllUnreadMessagesHidden()) {
                         TAPMessageModel unreadIndicator = insertUnreadMessageIdentifier(
                                 vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID()).getCreated(),
                                 vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID()).getUser());
@@ -2569,6 +2573,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             int unreadMessageIndex = -1; // Index for unread message identifier
             long smallestUnreadCreated = 0L;
 
+            vm.setAllUnreadMessagesHidden(false); // Set initial value for unread identifier/button flag
+            int allUnreadsHidden = -1; // Flag to check hidden unread when looping
+
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
@@ -2596,12 +2603,16 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         }
 
                         if ("".equals(vm.getLastUnreadMessageLocalID())
-                                && null != message.getHidden() && !message.getHidden()
                                 && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
                                 && (null != message.getIsRead() && !message.getIsRead())
                                 && null == vm.getUnreadIndicator()) {
                             unreadMessageIndex = messageAfterModels.indexOf(message);
                             smallestUnreadCreated = message.getCreated();
+                            if (null != message.getHidden() && !message.getHidden()) {
+                                allUnreadsHidden = 0;
+                            } else if (null != message.getHidden() && message.getHidden() && allUnreadsHidden != 0) {
+                                allUnreadsHidden = 1;
+                            }
                         }
 
                         if (message.getType() == TYPE_SYSTEM_MESSAGE &&
@@ -2638,7 +2649,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 vm.setInitialUnreadCount(vm.getInitialUnreadCount() + unreadMessageIds.size());
             }
 
-            if (-1 != unreadMessageIndex && 0L != smallestUnreadCreated) {
+            if (allUnreadsHidden == 1) {
+                // All unread messages are hidden
+                vm.setAllUnreadMessagesHidden(true);
+            }
+            if (-1 != unreadMessageIndex && 0L != smallestUnreadCreated && !vm.isAllUnreadMessagesHidden()) {
                 // Insert unread indicator
                 TAPMessageModel unreadIndicator = insertUnreadMessageIdentifier(
                         messageAfterModels.get(unreadMessageIndex).getCreated(),
@@ -2772,8 +2787,20 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                         if (0 < entities.size()) {
                             vm.setLastUnreadMessageLocalID(entities.get(0).getLocalID());
+                            new Thread(() -> {
+                                int allUnreadsHidden = -1; // Flag to check hidden unread when looping
+                                for (TAPMessageEntity entity : entities) {
+                                    if (null != entity.getHidden() && !entity.getHidden()) {
+                                        allUnreadsHidden = 0;
+                                    } else if (null != entity.getHidden() && entity.getHidden() && allUnreadsHidden != 0) {
+                                        allUnreadsHidden = 1;
+                                    }
+                                }
+                                if (allUnreadsHidden == 1) {
+                                    vm.setAllUnreadMessagesHidden(true);
+                                }
+                            }).start();
                         }
-
                         vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
                     }
                 });
