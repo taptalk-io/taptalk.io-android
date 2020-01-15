@@ -992,8 +992,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             if (-1 != position) {
                 // Update message in pointer and adapter
                 vm.updateMessagePointer(message);
-                messageAdapter.getItemAt(position).updateValue(message);
-                messageAdapter.notifyItemChanged(position);
+                TAPMessageModel existingMessage = messageAdapter.getItemAt(position);
+                if (null != existingMessage) {
+                    existingMessage.updateValue(message);
+                    messageAdapter.notifyItemChanged(position);
+                }
             }
 //            else {
 //                new Thread(() -> updateMessage(message)).start();
@@ -1025,7 +1028,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         new Thread(() -> {
             vm.setFirstVisibleItemIndex(0);
             TAPMessageModel message = messageAdapter.getItemAt(vm.getFirstVisibleItemIndex());
-            while (null != message.getHidden() && message.getHidden()) {
+            while (null != message && null != message.getHidden() && message.getHidden()) {
                 vm.setFirstVisibleItemIndex(vm.getFirstVisibleItemIndex() + 1);
                 message = messageAdapter.getItemAt(vm.getFirstVisibleItemIndex());
             }
