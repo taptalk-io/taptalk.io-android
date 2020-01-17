@@ -90,6 +90,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
@@ -1620,8 +1621,9 @@ public class TAPChatManager {
             waitingResponses.remove(newMessage.getLocalID());
 
 
-        if (LEAVE_ROOM.equals(newMessage.getAction()) && getActiveUser().getUserID().equals(newMessage.getUser().getUserID())) {
-            // Remove all room messages if user leaves a chat room
+        if ((LEAVE_ROOM.equals(newMessage.getAction()) || DELETE_ROOM.equals(newMessage.getAction()))
+                && getActiveUser().getUserID().equals(newMessage.getUser().getUserID())) {
+            // Remove all room messages if user leaves/deletes a chat room
             new Thread(() -> {
                 for (Map.Entry<String, TAPMessageModel> entry : incomingMessages.entrySet()) {
                     if (entry.getValue().getUser().getUserID().equals(newMessage.getUser().getUserID())) {
@@ -1634,7 +1636,6 @@ public class TAPChatManager {
                     }
                 }
             }).start();
-
         } else {
             // Insert decrypted message to database
             incomingMessages.put(newMessage.getLocalID(), newMessage);
