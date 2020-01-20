@@ -32,6 +32,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPFileDownloadRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
@@ -457,6 +458,11 @@ public class TAPApiManager {
     public void getChatRoomData(String roomID, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
         TAPCommonRequest request = TAPCommonRequest.builderWithRoomID(roomID);
         execute(homingPigeon.getChatRoomData(request), subscriber);
+    }
+
+    public void getChatRoomByXcRoomID(String xcRoomID, Subscriber<TAPBaseResponse<TAPCreateRoomResponse>> subscriber) {
+        TAPGetRoomByXcRoomIDRequest request = new TAPGetRoomByXcRoomIDRequest(xcRoomID);
+        execute(homingPigeon.getChatRoomByXcRoomID(request), subscriber);
     }
 
     public void updateChatRoom(String roomID, String roomName, Subscriber<TAPBaseResponse<TAPUpdateRoomResponse>> subscriber) {
