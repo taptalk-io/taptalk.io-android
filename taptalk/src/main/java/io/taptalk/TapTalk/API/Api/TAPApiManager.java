@@ -85,8 +85,8 @@ public class TAPApiManager {
     private static final String TAG = TAPApiManager.class.getSimpleName();
 
     //ini url buat api disimpen sesuai environment
-    @NonNull private static String BaseUrlApi = "https://hp.moselo.com:8080/api/v1/";
-    @NonNull private static String BaseUrlSocket = "https://hp.moselo.com:8080/";
+    @NonNull private static String BaseUrlApi = "";
+    @NonNull private static String BaseUrlSocket = "";
 
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
