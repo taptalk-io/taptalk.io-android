@@ -13,11 +13,14 @@ import java.util.List;
 public class TAPRoomModel implements Parcelable {
 
     @JsonProperty("roomID") @JsonAlias("id") private String roomID;
+    @JsonProperty("xcRoomID") private String xcRoomID;
     @JsonProperty("name") private String roomName;
     @JsonProperty("color") private String roomColor;
     @JsonProperty("type") private int roomType;
     @JsonProperty("unreadCount") private int unreadCount;
+    @JsonProperty("lockedTime") private long lockedTimestamp;
     @JsonProperty("deleted") private long deletedTimestamp;
+    @JsonProperty("isLocked") private boolean isLocked;
     @JsonProperty("isDeleted") private boolean isRoomDeleted;
     @Nullable @JsonProperty("imageURL") private TAPImageURL roomImage;
     @Nullable @JsonIgnore private List<TAPUserModel> groupParticipants;
@@ -61,6 +64,14 @@ public class TAPRoomModel implements Parcelable {
         this.roomID = roomID;
     }
 
+    public String getXcRoomID() {
+        return xcRoomID;
+    }
+
+    public void setXcRoomID(String xcRoomID) {
+        this.xcRoomID = xcRoomID;
+    }
+
     public String getRoomName() {
         return roomName;
     }
@@ -93,12 +104,28 @@ public class TAPRoomModel implements Parcelable {
         this.unreadCount = unreadCount;
     }
 
+    public long getLockedTimestamp() {
+        return lockedTimestamp;
+    }
+
+    public void setLockedTimestamp(long lockedTimestamp) {
+        this.lockedTimestamp = lockedTimestamp;
+    }
+
     public long getDeletedTimestamp() {
         return deletedTimestamp;
     }
 
     public void setDeletedTimestamp(long deletedTimestamp) {
         this.deletedTimestamp = deletedTimestamp;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
     }
 
     public boolean isRoomDeleted() {
@@ -153,7 +180,6 @@ public class TAPRoomModel implements Parcelable {
         isMuted = muted;
     }
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -162,11 +188,14 @@ public class TAPRoomModel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.roomID);
+        dest.writeString(this.xcRoomID);
         dest.writeString(this.roomName);
         dest.writeString(this.roomColor);
         dest.writeInt(this.roomType);
         dest.writeInt(this.unreadCount);
+        dest.writeLong(this.lockedTimestamp);
         dest.writeLong(this.deletedTimestamp);
+        dest.writeByte(this.isLocked ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isRoomDeleted ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.roomImage, flags);
         dest.writeTypedList(this.groupParticipants);
@@ -177,11 +206,14 @@ public class TAPRoomModel implements Parcelable {
 
     protected TAPRoomModel(Parcel in) {
         this.roomID = in.readString();
+        this.xcRoomID = in.readString();
         this.roomName = in.readString();
         this.roomColor = in.readString();
         this.roomType = in.readInt();
         this.unreadCount = in.readInt();
+        this.lockedTimestamp = in.readLong();
         this.deletedTimestamp = in.readLong();
+        this.isLocked = in.readByte() != 0;
         this.isRoomDeleted = in.readByte() != 0;
         this.roomImage = in.readParcelable(TAPImageURL.class.getClassLoader());
         this.groupParticipants = in.createTypedArrayList(TAPUserModel.CREATOR);

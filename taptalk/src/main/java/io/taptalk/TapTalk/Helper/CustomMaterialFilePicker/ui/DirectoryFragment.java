@@ -14,6 +14,7 @@ import java.io.File;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.CompositeFilter;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.utils.FileUtils;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.widget.EmptyRecyclerView;
+import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.Taptalk.R;
 
 /**
@@ -90,6 +91,7 @@ public class DirectoryFragment extends Fragment {
         mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mDirectoryRecyclerView.setAdapter(mDirectoryAdapter);
         mDirectoryRecyclerView.setEmptyView(mEmptyView);
+        OverScrollDecoratorHelper.setUpOverScroll(mDirectoryRecyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
     }
 
     @SuppressWarnings("unchecked")

@@ -42,6 +42,7 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
 
 public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAPBaseViewHolder<TAPSearchChatModel>> {
 
@@ -261,7 +262,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             TAPRoomModel group = null;
             if (room.getRoomType() == TYPE_PERSONAL) {
                 user = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()));
-            } else if (room.getRoomType() == TYPE_GROUP) {
+            } else if (room.getRoomType() == TYPE_GROUP || room.getRoomType() == TYPE_TRANSACTION) {
                 group = TAPGroupManager.Companion.getGetInstance().getGroupData(room.getRoomID());
             }
 

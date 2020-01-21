@@ -12,14 +12,19 @@ import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
-
 @Keep
 public abstract class TapUIRoomListListener implements TapUIRoomListInterface {
     @Override
     public void onSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
         if (null != mainRoomListFragment) {
             mainRoomListFragment.showSearchChat();
+        }
+    }
+
+    @Override
+    public void onCloseRoomListTapped(Activity activity) {
+        if (null != activity) {
+            activity.onBackPressed();
         }
     }
 
