@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,6 +55,7 @@ import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
+import io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
@@ -89,6 +91,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
@@ -1551,8 +1554,12 @@ public class TAPChatManager {
     }
 
     private void insertToList(Map<String, TAPMessageModel> hashMap) {
-        for (Map.Entry<String, TAPMessageModel> message : hashMap.entrySet()) {
-            saveMessages.add(convertToEntity(message.getValue()));
+        try {
+            for (Map.Entry<String, TAPMessageModel> message : hashMap.entrySet()) {
+                saveMessages.add(convertToEntity(message.getValue()));
+            }
+        } catch (ConcurrentModificationException e) { // FIXME: 20 Dec 2019
+            e.printStackTrace();
         }
     }
 
@@ -1615,8 +1622,9 @@ public class TAPChatManager {
             waitingResponses.remove(newMessage.getLocalID());
 
 
-        if (LEAVE_ROOM.equals(newMessage.getAction()) && getActiveUser().getUserID().equals(newMessage.getUser().getUserID())) {
-            // Remove all room messages if user leaves a chat room
+        if ((LEAVE_ROOM.equals(newMessage.getAction()) || DELETE_ROOM.equals(newMessage.getAction()))
+                && getActiveUser().getUserID().equals(newMessage.getUser().getUserID())) {
+            // Remove all room messages if user leaves/deletes a chat room
             new Thread(() -> {
                 for (Map.Entry<String, TAPMessageModel> entry : incomingMessages.entrySet()) {
                     if (entry.getValue().getUser().getUserID().equals(newMessage.getUser().getUserID())) {
@@ -1629,7 +1637,6 @@ public class TAPChatManager {
                     }
                 }
             }).start();
-
         } else {
             // Insert decrypted message to database
             incomingMessages.put(newMessage.getLocalID(), newMessage);
@@ -1880,6 +1887,10 @@ public class TAPChatManager {
 
     public void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
         TapUI.getInstance().triggerSearchChatBarTapped(activity, mainRoomListFragment);
+    }
+
+    public void triggerCloseRoomListButtonTapped(Activity activity) {
+        TapUI.getInstance().triggerCloseRoomListTapped(activity);
     }
 
     public void triggerTapTalkAccountButtonTapped(Activity activity) {

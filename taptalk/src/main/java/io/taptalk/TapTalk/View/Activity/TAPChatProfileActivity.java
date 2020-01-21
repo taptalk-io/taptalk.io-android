@@ -120,7 +120,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TapChatProfileAdapter adapter;
     private GridLayoutManager glm;
     private ViewTreeObserver.OnScrollChangedListener sharedMediaPagingScrollListener;
-    private boolean leaveRoom = false;
 
     private TAPProfileViewModel vm;
 
@@ -148,11 +147,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         if (vm.isApiCallOnProgress()) {
             return;
         }
-        if (leaveRoom) {
-            setResult(RESULT_OK);
-            TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
-        }
-        finish();
+        super.onBackPressed();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 
@@ -1004,10 +999,22 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         TAPDataManager.getInstance().deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                             @Override
                             public void onDeleteFinished() {
-                                hideLoadingPopup(vm.getLoadingEndText());
-                                leaveRoom = true;
-                                runOnUiThread(TAPChatProfileActivity.this::onBackPressed);
+                                //hideLoadingPopup(vm.getLoadingEndText());
                                 TAPGroupManager.Companion.getGetInstance().removeGroupData(vm.getRoom().getRoomID());
+                                TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
+                                runOnUiThread(() -> {
+                                    ivSaving.setImageDrawable(ContextCompat.getDrawable(TAPChatProfileActivity.this, R.drawable.tap_ic_checklist_pumpkin));
+                                    ivSaving.clearAnimation();
+                                    tvLoadingText.setText(vm.getLoadingEndText());
+                                    new Handler().postDelayed(() -> {
+                                        vm.setApiCallOnProgress(false);
+                                        flLoading.setVisibility(View.GONE);
+                                        setResult(RESULT_OK);
+                                        finish();
+                                        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+                                    }, 1000L);
+                                });
+
                             }
                         });
                     }

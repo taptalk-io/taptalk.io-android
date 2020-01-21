@@ -31,7 +31,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -79,7 +78,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
@@ -91,11 +89,11 @@ public class TapUIRoomListFragment extends Fragment {
 
     private Activity activity;
 
-    private ConstraintLayout clButtonSearch, clSelection;
-    private FrameLayout flButtonSearch, flSetupContainer;
+    private ConstraintLayout clActionBar, clButtonSearch, clSelection;
+    private FrameLayout flSetupContainer;
     private LinearLayout llRoomEmpty, llRetrySetup;
     private TextView tvSelectionCount, tvMyAvatarLabel, tvStartNewChatDescription, tvStartNewChat, tvSetupChat, tvSetupChatDescription;
-    private ImageView ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivSetupChat, ivSetupChatLoading;
+    private ImageView ivButtonClose, ivButtonNewChat, ivButtonCancelSelection, ivButtonMute, ivButtonDelete, ivButtonMore, ivSetupChat, ivSetupChatLoading;
     private CircleImageView civMyAvatarImage;
     private CardView cvButtonSearch;
     private View vButtonMyAccount;
@@ -251,9 +249,9 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void initView(View view) {
+        clActionBar = view.findViewById(R.id.cl_action_bar);
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         //clSelection = view.findViewById(R.id.cl_selection);
-        flButtonSearch = view.findViewById(R.id.fl_button_search);
         flSetupContainer = view.findViewById(R.id.fl_setup_container);
         llRoomEmpty = view.findViewById(R.id.ll_room_empty);
         llRetrySetup = view.findViewById(R.id.ll_retry_setup);
@@ -263,6 +261,7 @@ public class TapUIRoomListFragment extends Fragment {
         tvStartNewChat = view.findViewById(R.id.tv_start_new_chat);
         tvSetupChat = view.findViewById(R.id.tv_setup_chat);
         tvSetupChatDescription = view.findViewById(R.id.tv_setup_chat_description);
+        ivButtonClose = view.findViewById(R.id.iv_button_close);
         ivButtonNewChat = view.findViewById(R.id.iv_button_new_chat);
         //ivButtonCancelSelection = view.findViewById(R.id.iv_button_cancel_selection);
         //ivButtonMute = view.findViewById(R.id.iv_button_mute);
@@ -286,9 +285,21 @@ public class TapUIRoomListFragment extends Fragment {
         flSetupContainer.setVisibility(View.GONE);
 
         if (TapUI.getInstance().isSearchChatBarVisible()) {
-            flButtonSearch.setVisibility(View.VISIBLE);
+            clActionBar.setVisibility(View.VISIBLE);
         } else {
-            flButtonSearch.setVisibility(View.GONE);
+            clActionBar.setVisibility(View.GONE);
+        }
+
+        if (TapUI.getInstance().isCloseRoomListButtonVisible()) {
+            ivButtonClose.setVisibility(View.VISIBLE);
+        } else {
+            ivButtonClose.setVisibility(View.GONE);
+        }
+
+        if (TapUI.getInstance().isMyAccountButtonVisible()) {
+            civMyAvatarImage.setVisibility(View.VISIBLE);
+        } else {
+            civMyAvatarImage.setVisibility(View.GONE);
         }
 
         if (TapUI.getInstance().isMyAccountButtonVisible()) {
@@ -328,6 +339,7 @@ public class TapUIRoomListFragment extends Fragment {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
+        ivButtonClose.setOnClickListener(v -> TAPChatManager.getInstance().triggerCloseRoomListButtonTapped(activity));
         cvButtonSearch.setOnClickListener(v -> showSearchChat());
         vButtonMyAccount.setOnClickListener(v -> openMyAccountActivity());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());

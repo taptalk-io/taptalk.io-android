@@ -1,8 +1,11 @@
 package io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,18 +32,20 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
     }
 
     public class DirectoryViewHolder extends RecyclerView.ViewHolder {
-        private ImageView mFileImage;
-        private TextView mFileTitle;
-        private TextView mFileSubtitle;
+        private ImageView ivFileImage;
+        private ImageView ivDirectoryChevron;
+        private TextView tvFileTitle;
+        private TextView tvFileSubtitle;
 
         public DirectoryViewHolder(View itemView, final OnItemClickListener clickListener) {
             super(itemView);
 
             itemView.setOnClickListener(v -> clickListener.onItemClick(v, getAdapterPosition()));
 
-            mFileImage = itemView.findViewById(R.id.item_file_image);
-            mFileTitle = itemView.findViewById(R.id.item_file_title);
-            mFileSubtitle = itemView.findViewById(R.id.item_file_subtitle);
+            ivFileImage = itemView.findViewById(R.id.iv_item_file_image);
+            ivDirectoryChevron = itemView.findViewById(R.id.iv_item_directory_chevron);
+            tvFileTitle = itemView.findViewById(R.id.tv_item_file_title);
+            tvFileSubtitle = itemView.findViewById(R.id.tv_item_file_subtitle);
         }
     }
 
@@ -57,34 +62,37 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
         mOnItemClickListener = listener;
     }
 
+    @NonNull
     @Override
-    public DirectoryViewHolder onCreateViewHolder(ViewGroup parent,
-                                                  int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.tap_item_file, parent, false);
-
-        return new DirectoryViewHolder(view, mOnItemClickListener);
+    public DirectoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new DirectoryViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.tap_item_file, parent, false), mOnItemClickListener);
     }
 
     @Override
-    public void onBindViewHolder(DirectoryViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DirectoryViewHolder holder, int position) {
         File currentFile = mFiles.get(position);
 
         FileTypeUtils.FileType fileType = FileTypeUtils.getFileType(currentFile);
         if (FileTypeUtils.FileType.IMAGE != fileType && FileTypeUtils.FileType.VIDEO != fileType) {
-            holder.mFileImage.setImageResource(fileType.getIcon());
-            holder.mFileImage.setAlpha(0.6f);
+            holder.ivFileImage.setImageResource(fileType.getIcon());
+            ImageViewCompat.setImageTintList(holder.ivFileImage, ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.tapColorPrimary)));
+            holder.ivFileImage.setAlpha(0.7f);
         } else {
-            Glide.with(holder.itemView.getContext()).load(currentFile).apply(new RequestOptions().centerCrop()).into(holder.mFileImage);
-            holder.mFileImage.setAlpha(1.0f);
+            Glide.with(holder.itemView.getContext()).load(currentFile).apply(new RequestOptions().centerCrop()).into(holder.ivFileImage);
+            ImageViewCompat.setImageTintList(holder.ivFileImage, null);
+            holder.ivFileImage.setAlpha(1.0f);
         }
         if (FileTypeUtils.FileType.DIRECTORY != fileType) {
             String stringBld = TAPUtils.getInstance().getStringSizeLengthFile(currentFile.length()) +
                     " - " +
                     fileType;
-            holder.mFileSubtitle.setText(stringBld);
-        } else holder.mFileSubtitle.setText(fileType.getDescription());
-        holder.mFileTitle.setText(currentFile.getName());
+            holder.tvFileSubtitle.setText(stringBld);
+            holder.ivDirectoryChevron.setVisibility(View.GONE);
+        } else {
+            holder.tvFileSubtitle.setText(fileType.getDescription());
+            holder.ivDirectoryChevron.setVisibility(View.VISIBLE);
+        }
+        holder.tvFileTitle.setText(currentFile.getName());
     }
 
     @Override

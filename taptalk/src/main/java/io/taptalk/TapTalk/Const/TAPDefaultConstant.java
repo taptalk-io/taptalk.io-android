@@ -36,6 +36,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_PERSONAL = 1;
         public static final int TYPE_GROUP = 2;
         public static final int TYPE_CHANNEL = 3;
+        public static final int TYPE_TRANSACTION = 4;
     }
 
     public static final class MessageType {

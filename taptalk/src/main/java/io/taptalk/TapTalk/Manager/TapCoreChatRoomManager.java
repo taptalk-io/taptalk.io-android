@@ -263,6 +263,31 @@ public class TapCoreChatRoomManager {
         }
     }
 
+    public void getChatRoomByXcRoomID(String xcRoomID, TapCoreGetRoomListener listener) {
+        TAPRoomModel roomModel = TAPGroupManager.Companion.getGetInstance().getGroupData(xcRoomID);
+        if (null == roomModel) {
+            TAPDataManager.getInstance().getChatRoomByXcRoomID(xcRoomID, new TAPDefaultDataView<TAPCreateRoomResponse>() {
+                @Override
+                public void onSuccess(TAPCreateRoomResponse response) {
+                    TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
+                    listener.onSuccess(room);
+                }
+
+                @Override
+                public void onError(TAPErrorModel error) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            });
+        } else {
+            listener.onSuccess(roomModel);
+        }
+    }
+
     public void deleteGroupChatRoom(TAPRoomModel groupChatRoomModel, TapCommonListener listener) {
         TAPDataManager.getInstance().deleteChatRoom(groupChatRoomModel, new TAPDefaultDataView<TAPCommonResponse>() {
             @Override

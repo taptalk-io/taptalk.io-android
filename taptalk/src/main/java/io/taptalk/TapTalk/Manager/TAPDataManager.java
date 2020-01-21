@@ -1110,6 +1110,10 @@ public class TAPDataManager {
         TAPApiManager.getInstance().getChatRoomData(roomID, new TAPDefaultSubscriber<>(view));
     }
 
+    public void getChatRoomByXcRoomID(String xcRoomID, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().getChatRoomByXcRoomID(xcRoomID, new TAPDefaultSubscriber<>(view));
+    }
+
     public void updateChatRoom(String roomID, String roomName, TAPDefaultDataView<TAPUpdateRoomResponse> view) {
         TAPApiManager.getInstance().updateChatRoom(roomID, roomName, new TAPDefaultSubscriber<>(view));
     }

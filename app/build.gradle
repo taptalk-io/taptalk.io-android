@@ -4,147 +4,147 @@ apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
 
 android {
-    def globalConfig = rootProject.extensions.getByName("ext")
-    compileSdkVersion 28
-    defaultConfig {
-        applicationId "io.taptalk.TapTalkSample"
-        minSdkVersion 16
-        targetSdkVersion 28
-        versionCode 30
-        versionName "1.0.20"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
-    }
+def globalConfig = rootProject.extensions.getByName("ext")
+compileSdkVersion 28
+defaultConfig {
+applicationId "io.taptalk.TapTalkSample"
+minSdkVersion 16
+targetSdkVersion 28
+versionCode 30
+versionName "1.0.20"
+testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+multiDexEnabled true
+}
 
-    signingConfigs {
-        release {
-            try {
-                Properties props = new Properties()
-                def propFile = file(globalConfig.signingProps)
-                if (propFile.canRead()) {
-                    props.load(new FileInputStream(propFile))
+signingConfigs {
+release {
+try {
+Properties props = new Properties()
+def propFile = file(globalConfig.signingProps)
+if (propFile.canRead()) {
+props.load(new FileInputStream(propFile))
 
-                    if (props != null
-                            && props.containsKey(globalConfig.keystoreFileName)
-                            && props.containsKey(globalConfig.keystorePasswordName)
-                            && props.containsKey(globalConfig.keyAliasName)
-                            && props.containsKey(globalConfig.keyPasswordName)) {
+if (props != null
+&& props.containsKey(globalConfig.keystoreFileName)
+&& props.containsKey(globalConfig.keystorePasswordName)
+&& props.containsKey(globalConfig.keyAliasName)
+&& props.containsKey(globalConfig.keyPasswordName)) {
 
-                        def keystoreFile = file(props[globalConfig.keystoreFileName])
-                        if (keystoreFile.canRead()) {
-                            storeFile keystoreFile
-                            storePassword props[globalConfig.keystorePasswordName]
-                            keyAlias props[globalConfig.keyAliasName]
-                            keyPassword props[globalConfig.keyPasswordName]
-                        } else {
-                            println("[GRADLE BUILD ERR]: Keystore file not found: " + props[globalConfig.keystoreFileName])
-                            android.buildTypes.release.signingConfig = null
-                        }
-                    } else {
-                        println("[GRADLE BUILD ERR]: File signing.properties found but some entries missing")
-                        android.buildTypes.release.signingConfig = null
-                    }
-                } else {
-                    println("[GRADLE BUILD ERR]: File signing.properties not found")
-                    android.buildTypes.release.signingConfig = null
-                }
-            } catch (ex) {
-                throw new InvalidUserDataException("[GRADLE BUILD ERR]: Signing FAILED. Check signing config." + ex.message)
-            }
-        }
-    }
+def keystoreFile = file(props[globalConfig.keystoreFileName])
+if (keystoreFile.canRead()) {
+storeFile keystoreFile
+storePassword props[globalConfig.keystorePasswordName]
+keyAlias props[globalConfig.keyAliasName]
+keyPassword props[globalConfig.keyPasswordName]
+} else {
+println("[GRADLE BUILD ERR]: Keystore file not found: " + props[globalConfig.keystoreFileName])
+android.buildTypes.release.signingConfig = null
+}
+} else {
+println("[GRADLE BUILD ERR]: File signing.properties found but some entries missing")
+android.buildTypes.release.signingConfig = null
+}
+} else {
+println("[GRADLE BUILD ERR]: File signing.properties not found")
+android.buildTypes.release.signingConfig = null
+}
+} catch (ex) {
+throw new InvalidUserDataException("[GRADLE BUILD ERR]: Signing FAILED. Check signing config." + ex.message)
+}
+}
+}
 
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-            debuggable false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            minifyEnabled true
-            zipAlignEnabled true
-        }
-        staging {
-            signingConfig signingConfigs.debug
-            debuggable true
-            minifyEnabled false
-            applicationIdSuffix '.staging'
-            versionNameSuffix '-STAGING'
-        }
-        stagingUpload {
-            signingConfig signingConfigs.release
-            debuggable false
-            minifyEnabled false
-            applicationIdSuffix '.staging'
-            versionNameSuffix '-STAGING'
-        }
-        dev {
-            signingConfig signingConfigs.debug
-            debuggable true
-            minifyEnabled false
-            applicationIdSuffix '.dev'
-            versionNameSuffix '-DEV'
-        }
-        devUpload {
-            signingConfig signingConfigs.release
-            debuggable false
-            minifyEnabled false
-            applicationIdSuffix '.dev'
-            versionNameSuffix '-DEV'
-        }
-    }
+buildTypes {
+release {
+signingConfig signingConfigs.release
+debuggable false
+proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+minifyEnabled true
+zipAlignEnabled true
+}
+staging {
+signingConfig signingConfigs.debug
+debuggable true
+minifyEnabled false
+applicationIdSuffix '.staging'
+versionNameSuffix '-STAGING'
+}
+stagingUpload {
+signingConfig signingConfigs.release
+debuggable false
+minifyEnabled false
+applicationIdSuffix '.staging'
+versionNameSuffix '-STAGING'
+}
+dev {
+signingConfig signingConfigs.debug
+debuggable true
+minifyEnabled false
+applicationIdSuffix '.dev'
+versionNameSuffix '-DEV'
+}
+devUpload {
+signingConfig signingConfigs.release
+debuggable false
+minifyEnabled false
+applicationIdSuffix '.dev'
+versionNameSuffix '-DEV'
+}
+}
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+compileOptions {
+sourceCompatibility JavaVersion.VERSION_1_8
+targetCompatibility JavaVersion.VERSION_1_8
+}
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support:support-v4:28.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation "com.android.support:design:28.0.0"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation project(':taptalk')
-    implementation 'com.android.support:recyclerview-v7:28.0.0'
-    implementation 'com.facebook.stetho:stetho:1.5.1'
-    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
+implementation fileTree(dir: 'libs', include: ['*.jar'])
+implementation 'com.android.support:appcompat-v7:28.0.0'
+implementation 'com.android.support:support-v4:28.0.0'
+implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+implementation "com.android.support:design:28.0.0"
+testImplementation 'junit:junit:4.12'
+androidTestImplementation 'com.android.support.test:runner:1.0.2'
+androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+implementation project(':taptalk')
+implementation 'com.android.support:recyclerview-v7:28.0.0'
+implementation 'com.facebook.stetho:stetho:1.5.1'
+implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
 
-    //OKHTTP
-    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+//OKHTTP
+implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
 
-    //Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
-    implementation 'com.squareup.retrofit2:converter-jackson:2.4.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava:2.4.0'
+//Retrofit
+implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+implementation 'com.squareup.retrofit2:converter-jackson:2.4.0'
+implementation 'com.squareup.retrofit2:adapter-rxjava:2.4.0'
 
-    //RxAndroid
-    implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'io.reactivex:rxjava:1.3.0'
+//RxAndroid
+implementation 'io.reactivex:rxandroid:1.2.1'
+implementation 'io.reactivex:rxjava:1.3.0'
 
-    //FireBase
-    implementation 'com.google.firebase:firebase-core:16.0.9'
-    implementation 'com.google.firebase:firebase-messaging:18.0.0'
+//FireBase
+implementation 'com.google.firebase:firebase-core:16.0.9'
+implementation 'com.google.firebase:firebase-messaging:18.0.0'
 
-    //Glide
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+//Glide
+implementation 'com.github.bumptech.glide:glide:4.8.0'
+annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
 
-    //HAWK
-    implementation "com.orhanobut:hawk:2.0.1"
+//HAWK
+implementation "com.orhanobut:hawk:2.0.1"
 
-    //Crashlytics
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-    implementation 'com.crashlytics.sdk.android:crashlytics-ndk:2.1.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+//Crashlytics
+implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+implementation 'com.crashlytics.sdk.android:crashlytics-ndk:2.1.1'
+implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'com.android.support:multidex:1.0.3'
+implementation 'com.android.support:multidex:1.0.3'
 }
 
 apply plugin: 'com.google.gms.google-services'
 repositories {
-    mavenCentral()
+mavenCentral()
 }
