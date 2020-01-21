@@ -55,6 +55,7 @@ import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
+import io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
@@ -1886,6 +1887,10 @@ public class TAPChatManager {
 
     public void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
         TapUI.getInstance().triggerSearchChatBarTapped(activity, mainRoomListFragment);
+    }
+
+    public void triggerCloseRoomListButtonTapped(Activity activity) {
+        TapUI.getInstance().triggerCloseRoomListTapped(activity);
     }
 
     public void triggerTapTalkAccountButtonTapped(Activity activity) {

@@ -212,7 +212,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList, flRoomUnavailable, flChatComposerAndHistory;
     private LinearLayout llButtonDeleteChat;
-    private ConstraintLayout clContainer, clRoomStatus, clContactAction, clUnreadButton,
+    private ConstraintLayout clContainer, clContactAction, clUnreadButton,
             clEmptyChat, clQuote, clChatComposer, clRoomOnlineStatus, clRoomTypingStatus,
             clChatHistory;
     private EditText etChat;
@@ -504,7 +504,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         flChatComposerAndHistory = (FrameLayout) findViewById(R.id.fl_chat_composer_and_history);
         llButtonDeleteChat = (LinearLayout) findViewById(R.id.ll_button_delete_chat);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
-        clRoomStatus = (ConstraintLayout) findViewById(R.id.cl_room_status);
         clContactAction = (ConstraintLayout) findViewById(R.id.cl_contact_action);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
@@ -677,6 +676,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             messageAnimator.setSupportsChangeAnimations(false);
         }
 
+        // Hide chat composer if room is locked
+        if (vm.getRoom().isLocked()) {
+            clChatComposer.setVisibility(View.GONE);
+        }
+
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TAPChatManager.getInstance().getCustomKeyboardItems(vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel()));
         if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
@@ -706,8 +710,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
-        } else if (null != vm.getRoom() && TYPE_TRANSACTION == vm.getRoom().getRoomType()) {
-            clRoomStatus.setVisibility(View.GONE);
         }
 
         // Listener for scroll pagination
@@ -1291,16 +1293,16 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             clRoomTypingStatus.setVisibility(View.VISIBLE);
             clRoomOnlineStatus.setVisibility(View.GONE);
 
-            if (1 == vm.getGroupTypingSize() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+            if (TYPE_PERSONAL == vm.getRoom().getRoomType()) {
                 glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
-                //tvRoomTypingStatus.setText(getString(R.string.tap_typing));
-                tvRoomTypingStatus.setText(String.format(getString(R.string.tap_typing_single), vm.getFirstTypingUserName()));
-            } else if (1 < vm.getGroupTypingSize() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+                tvRoomTypingStatus.setText(getString(R.string.tap_typing));
+            } else if (1 < vm.getGroupTypingSize()) {
                 glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
                 tvRoomTypingStatus.setText(String.format(getString(R.string.tap_people_typing), vm.getGroupTypingSize()));
             } else {
                 glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
-                tvRoomTypingStatus.setText(getString(R.string.tap_typing));
+                //tvRoomTypingStatus.setText(getString(R.string.tap_typing));
+                tvRoomTypingStatus.setText(String.format(getString(R.string.tap_typing_single), vm.getFirstTypingUserName()));
             }
         });
     }
@@ -1451,6 +1453,14 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             vRoomImage.setClickable(true);
         }
         hideKeyboards();
+    }
+
+    private void checkChatRoomLocked(TAPMessageModel message) {
+        if (null != message && message.getRoom().isLocked()) {
+            clChatComposer.setVisibility(View.VISIBLE);
+        } else {
+            clChatComposer.setVisibility(View.GONE);
+        }
     }
 
     private void handleSystemMessageAction(TAPMessageModel message) {
@@ -1613,6 +1623,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
+            checkChatRoomLocked(message);
             handleSystemMessageAction(message);
             updateMessage(message);
         }
@@ -2306,6 +2317,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         }
                         flMessageList.setVisibility(View.VISIBLE);
                         showUnreadButton(vm.getUnreadIndicator());
+                        checkChatRoomLocked(models.get(0));
                     }
                     rvMessageList.scrollToPosition(0);
                     updateMessageDecoration();
@@ -2346,6 +2358,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     }
                     if (state == STATE.DONE) {
                         updateMessageDecoration();
+                    }
+                    if (!models.isEmpty()) {
+                        checkChatRoomLocked(models.get(0));
                     }
                 });
                 if (MAX_ITEMS_PER_PAGE > entities.size() && 1 < entities.size()) {
@@ -2706,6 +2721,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 }
                 if (state == STATE.DONE) {
                     updateMessageDecoration();
+                }
+                if (!messageAfterModels.isEmpty()) {
+                    checkChatRoomLocked(messageAfterModels.get(0));
                 }
             });
 

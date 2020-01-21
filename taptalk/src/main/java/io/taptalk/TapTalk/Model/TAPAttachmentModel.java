@@ -12,6 +12,7 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
 
 public class TAPAttachmentModel {
     private int icon;
@@ -161,15 +162,21 @@ public class TAPAttachmentModel {
         List<Integer> imageResIds = new ArrayList<>(), titleResIds = new ArrayList<>(), ids = new ArrayList<>();
 
         imageResIds.add(R.drawable.tap_ic_reply_pumpkin_orange);
-        imageResIds.add(R.drawable.tap_ic_forward_pumpkin_orange);
+        if (messageModel.getRoom().getRoomType() != TYPE_TRANSACTION) {
+            imageResIds.add(R.drawable.tap_ic_forward_pumpkin_orange);
+        }
         imageResIds.add(R.drawable.tap_ic_copy_pumpkin_orange);
 
         titleResIds.add(R.string.tap_reply);
-        titleResIds.add(R.string.tap_forward);
+        if (messageModel.getRoom().getRoomType() != TYPE_TRANSACTION) {
+            titleResIds.add(R.string.tap_forward);
+        }
         titleResIds.add(R.string.tap_copy);
 
         ids.add(LONG_PRESS_REPLY);
-        ids.add(LONG_PRESS_FORWARD);
+        if (messageModel.getRoom().getRoomType() != TYPE_TRANSACTION) {
+            ids.add(LONG_PRESS_FORWARD);
+        }
         ids.add(LONG_PRESS_COPY);
 
         if (null != messageModel && null != TAPChatManager.getInstance().getActiveUser() &&
@@ -362,15 +369,21 @@ public class TAPAttachmentModel {
         List<Integer> imageResIds = new ArrayList<>(), titleResIds = new ArrayList<>(), ids = new ArrayList<>();
 
         imageResIds.add(R.drawable.tap_ic_reply_pumpkin_orange);
-        imageResIds.add(R.drawable.tap_ic_forward_pumpkin_orange);
+        if (messageModel.getRoom().getRoomType() != TYPE_TRANSACTION) {
+            imageResIds.add(R.drawable.tap_ic_forward_pumpkin_orange);
+        }
         imageResIds.add(R.drawable.tap_ic_copy_pumpkin_orange);
 
         titleResIds.add(R.string.tap_reply);
-        titleResIds.add(R.string.tap_forward);
+        if (messageModel.getRoom().getRoomType() != TYPE_TRANSACTION) {
+            titleResIds.add(R.string.tap_forward);
+        }
         titleResIds.add(R.string.tap_copy);
 
         ids.add(LONG_PRESS_REPLY);
-        ids.add(LONG_PRESS_FORWARD);
+        if (messageModel.getRoom().getRoomType() != TYPE_TRANSACTION) {
+            ids.add(LONG_PRESS_FORWARD);
+        }
         ids.add(LONG_PRESS_COPY);
 
         if (null != messageModel && null != TAPChatManager.getInstance().getActiveUser() &&
