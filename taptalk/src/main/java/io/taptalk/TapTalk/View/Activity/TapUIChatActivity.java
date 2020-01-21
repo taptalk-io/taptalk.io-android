@@ -97,6 +97,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
@@ -175,6 +176,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_PREVIEW;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
@@ -210,8 +212,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList, flRoomUnavailable, flChatComposerAndHistory;
     private LinearLayout llButtonDeleteChat;
-    private ConstraintLayout clContainer, clContactAction, clUnreadButton, clEmptyChat, clQuote,
-            clChatComposer, clRoomOnlineStatus, clRoomTypingStatus, clChatHistory;
+    private ConstraintLayout clContainer, clRoomStatus, clContactAction, clUnreadButton,
+            clEmptyChat, clQuote, clChatComposer, clRoomOnlineStatus, clRoomTypingStatus,
+            clChatHistory;
     private EditText etChat;
     private ImageView ivButtonBack, ivRoomIcon, ivButtonDismissContactAction, ivUnreadButtonImage,
             ivButtonCancelReply, ivChatMenu, ivButtonChatMenu, ivButtonAttach, ivSend, ivButtonSend,
@@ -501,6 +504,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         flChatComposerAndHistory = (FrameLayout) findViewById(R.id.fl_chat_composer_and_history);
         llButtonDeleteChat = (LinearLayout) findViewById(R.id.ll_button_delete_chat);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
+        clRoomStatus = (ConstraintLayout) findViewById(R.id.cl_room_status);
         clContactAction = (ConstraintLayout) findViewById(R.id.cl_contact_action);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
@@ -595,7 +599,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             tvRoomName.setText(vm.getRoom().getRoomName());
         }
 
-        if (null != vm.getRoom() &&
+        if (!TapUI.getInstance().isProfileButtonVisible()) {
+            civRoomImage.setVisibility(View.GONE);
+            vRoomImage.setVisibility(View.GONE);
+            tvRoomImageLabel.setVisibility(View.GONE);
+        } else if (null != vm.getRoom() &&
                 TYPE_PERSONAL == vm.getRoom().getRoomType() && null != vm.getOtherUserModel() &&
                 (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L) &&
                 null != vm.getOtherUserModel().getAvatarURL().getThumbnail() &&
@@ -698,6 +706,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
+        } else if (null != vm.getRoom() && TYPE_TRANSACTION == vm.getRoom().getRoomType()) {
+            clRoomStatus.setVisibility(View.GONE);
         }
 
         // Listener for scroll pagination
@@ -829,6 +839,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void loadProfilePicture(String image, ImageView imageView, TextView tvAvatarLabel) {
+        if (imageView.getVisibility() == View.GONE) {
+            return;
+        }
         glide.load(image).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -846,6 +859,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void loadInitialsToProfilePicture(ImageView imageView, TextView tvAvatarLabel) {
+        if (imageView.getVisibility() == View.GONE) {
+            return;
+        }
         if (tvAvatarLabel == tvMyAvatarLabelEmpty) {
             ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(TAPChatManager.getInstance().getActiveUser().getName())));
             tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(TAPChatManager.getInstance().getActiveUser().getName(), 2));

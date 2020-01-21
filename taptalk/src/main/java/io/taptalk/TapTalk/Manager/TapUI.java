@@ -59,6 +59,7 @@ public class TapUI {
     private boolean isSearchChatBarHidden;
     private boolean isMyAccountButtonHidden;
     private boolean isNewChatButtonHidden;
+    private boolean isProfileButtonHidden;
     private boolean isNewContactMenuButtonHidden;
     private boolean isScanQRMenuButtonHidden;
     private boolean isNewGroupMenuButtonHidden;
@@ -299,6 +300,14 @@ public class TapUI {
         isNewChatButtonHidden = !isVisible;
     }
 
+    public boolean isProfileButtonVisible() {
+        return !isProfileButtonHidden;
+    }
+
+    public void setProfileButtonInChatRoomVisible(boolean isVisible) {
+        isProfileButtonHidden = !isVisible;
+    }
+
     public boolean isNewContactMenuButtonVisible() {
         return !isNewContactMenuButtonHidden;
     }
@@ -323,12 +332,12 @@ public class TapUI {
         isNewGroupMenuButtonHidden = !isVisible;
     }
 
-    public void setLogoutButtonVisible(boolean isVisible) {
-        isLogoutButtonVisible = isVisible;
-    }
-
     public boolean isLogoutButtonVisible() {
         return isLogoutButtonVisible;
+    }
+
+    public void setLogoutButtonVisible(boolean isVisible) {
+        isLogoutButtonVisible = isVisible;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
