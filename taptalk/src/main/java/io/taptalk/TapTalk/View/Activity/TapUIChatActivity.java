@@ -176,7 +176,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_PREVIEW;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
@@ -583,7 +582,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         getInitialUnreadCount();
 
-        return null != vm.getMyUserModel() && (null != vm.getOtherUserModel() || (TYPE_GROUP == vm.getRoom().getRoomType()));
+        return null != vm.getMyUserModel() && (null != vm.getOtherUserModel() || (TYPE_PERSONAL != vm.getRoom().getRoomType()));
     }
 
     private void initView() {
@@ -2292,15 +2291,15 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         }
 
                         // Load room avatar
-                         if (null != vm.getRoom() &&
+                        if (null != vm.getRoom() &&
                                 TYPE_PERSONAL == vm.getRoom().getRoomType() &&
                                 null != vm.getOtherUserModel() &&
                                 null != vm.getOtherUserModel().getAvatarURL().getThumbnail() &&
                                 !vm.getOtherUserModel().getAvatarURL().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                         } else if (null != vm.getRoom() &&
-                                 null != vm.getRoom().getRoomImage() &&
-                                 !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
+                                null != vm.getRoom().getRoomImage() &&
+                                !vm.getRoom().getRoomImage().getThumbnail().isEmpty()) {
                             loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
                         } else {
                             loadInitialsToProfilePicture(civRoomAvatarEmpty, tvRoomAvatarLabelEmpty);
