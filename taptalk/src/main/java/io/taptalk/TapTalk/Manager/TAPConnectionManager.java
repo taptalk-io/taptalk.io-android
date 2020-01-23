@@ -235,6 +235,7 @@ public class TAPConnectionManager {
     }
 
     public void close(ConnectionStatus connectionStatus) {
+        Log.e("[[[[[", "close1: " + connectionStatus);
         if (CONNECTED == this.connectionStatus || CONNECTING == this.connectionStatus) {
             try {
                 this.connectionStatus = connectionStatus == NOT_CONNECTED ? connectionStatus : DISCONNECTED;
@@ -246,10 +247,12 @@ public class TAPConnectionManager {
     }
 
     public void close() {
+        Log.e("[[[[[", "close2");
         close(DISCONNECTED);
     }
 
     public void close(int code) {
+        Log.e("[[[[[", "close3 " + code);
         if (CONNECTED == connectionStatus ||
                 CONNECTING == connectionStatus) {
             try {
@@ -262,6 +265,7 @@ public class TAPConnectionManager {
     }
 
     public void reconnect() {
+        Log.e("[[[[[", "reconnect: ");
         if (reconnectAttempt < 120) reconnectAttempt++;
         long delay = RECONNECT_DELAY * (long) reconnectAttempt;
         new Timer().schedule(new TimerTask() {
