@@ -713,7 +713,23 @@ public class TapTalk {
         }
     }
 
-    private static void registerNetworkCallback() {
+    public static void registerNetworkCallback() {
+        isForeground = true;
+        TAPContactManager.getInstance().loadAllUserDataFromDatabase();
+        TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
+        TAPChatManager.getInstance().setFinishChatFlow(false);
         TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
+        TAPChatManager.getInstance().triggerSaveNewMessage();
+        TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
+        TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
+//        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+//        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+
+        // Start service on first load
+//        if (null == intent) {
+//            intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
+//            appContext.startService(intent);
+//        }
+//        TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
     }
 }
