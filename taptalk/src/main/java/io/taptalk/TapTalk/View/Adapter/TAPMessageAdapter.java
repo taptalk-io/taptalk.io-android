@@ -116,6 +116,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.CREATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
@@ -1621,8 +1622,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
         } else {
             // Message from others
-            if (item.getRoom().getRoomType() == TYPE_GROUP) {
-                // Load avatar and name if room type is group
+            if (item.getRoom().getRoomType() == TYPE_PERSONAL) {
+                // Hide avatar and name for personal room
+                if (null != civAvatar) {
+                    civAvatar.setVisibility(View.GONE);
+                }
+                if (null != tvAvatarLabel) {
+                    tvAvatarLabel.setVisibility(View.GONE);
+                }
+                if (null != tvUserName) {
+                    tvUserName.setVisibility(View.GONE);
+                }
+            } else {
+                // Load avatar and name for other room types
                 TAPUserModel user = TAPContactManager.getInstance().getUserData(item.getUser().getUserID());
                 if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
                     glide.load(user.getAvatarURL().getThumbnail()).into(civAvatar);
@@ -1655,17 +1667,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         }
                         chatListener.onGroupMemberAvatarClicked(item);
                     });
-                }
-            } else {
-                // Hide avatar and name
-                if (null != civAvatar) {
-                    civAvatar.setVisibility(View.GONE);
-                }
-                if (null != tvAvatarLabel) {
-                    tvAvatarLabel.setVisibility(View.GONE);
-                }
-                if (null != tvUserName) {
-                    tvUserName.setVisibility(View.GONE);
                 }
             }
             chatListener.onMessageRead(item);

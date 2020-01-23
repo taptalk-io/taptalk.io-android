@@ -277,10 +277,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 //        if (0 < etChat.getText().length() && etChat.getText().length() >= vm.getPreviousEditTextSelectionIndex()) {
 //            etChat.setSelection(vm.getPreviousEditTextSelectionIndex());
 //        }
-        if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-            callApiGetGroupData();
-        } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
+
+        if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             callApiGetUserByUserID();
+        } else {
+            callApiGetGroupData();
+        }
 
         if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             // TODO: 17 Dec 2019 API ALREADY CALLED ON SOCKET CONNECT?

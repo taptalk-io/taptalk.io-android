@@ -454,8 +454,6 @@ public class TAPUtils {
             return;
         }
 
-        Activity activity = (Activity) context;
-        activity.runOnUiThread(() -> dismissKeyboard(activity));
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TapUIChatActivity.class);
         intent.putExtra(ROOM, roomModel);
@@ -473,6 +471,8 @@ public class TAPUtils {
         }
         context.startActivity(intent);
         if (context instanceof Activity) {
+            Activity activity = (Activity) context;
+            activity.runOnUiThread(() -> dismissKeyboard(activity));
             activity.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
         }
     }
