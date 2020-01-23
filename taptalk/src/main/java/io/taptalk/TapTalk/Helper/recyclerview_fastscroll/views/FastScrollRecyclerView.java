@@ -240,7 +240,7 @@ public class FastScrollRecyclerView extends RecyclerView implements RecyclerView
 
         // Calculate the position and size of the scroll bar
         int scrollBarX;
-        if (TAPUtils.getInstance().isRtl(getResources())) {
+        if (TAPUtils.isRtl(getResources())) {
             scrollBarX = 0;
         } else {
             scrollBarX = getWidth() - mScrollbar.getWidth();

@@ -74,8 +74,8 @@ public class FastScrollPopup {
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setAlpha(0);
 
-        setTextSize(TAPUtils.getInstance().spToPx(mRes, 44));
-        setBackgroundSize(TAPUtils.getInstance().dpToPx(88));
+        setTextSize(TAPUtils.spToPx(mRes, 44));
+        setBackgroundSize(TAPUtils.dpToPx(88));
     }
 
     public void setBgColor(int color) {
@@ -155,7 +155,7 @@ public class FastScrollPopup {
             return new float[]{mCornerRadius, mCornerRadius, mCornerRadius, mCornerRadius, mCornerRadius, mCornerRadius, mCornerRadius, mCornerRadius};
         }
 
-        if (TAPUtils.getInstance().isRtl(mRes)) {
+        if (TAPUtils.isRtl(mRes)) {
             return new float[]{mCornerRadius, mCornerRadius, mCornerRadius, mCornerRadius, mCornerRadius, mCornerRadius, 0, 0};
         } else {
             return new float[]{mCornerRadius, mCornerRadius, mCornerRadius, mCornerRadius, 0, 0, mCornerRadius, mCornerRadius};
@@ -225,7 +225,7 @@ public class FastScrollPopup {
                 mBgBounds.right = mBgBounds.left + bgWidth;
                 mBgBounds.top = (recyclerView.getHeight() - bgHeight) / 2;
             } else {
-                if (TAPUtils.getInstance().isRtl(mRes)) {
+                if (TAPUtils.isRtl(mRes)) {
                     mBgBounds.left = (2 * recyclerView.getScrollBarWidth());
                     mBgBounds.right = mBgBounds.left + bgWidth;
                 } else {

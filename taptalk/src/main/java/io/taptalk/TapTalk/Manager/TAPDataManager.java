@@ -659,13 +659,13 @@ public class TAPDataManager {
         if (TYPE_IMAGE == message.getType()) {
             try {
                 // Delete image from cache
-                HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+                HashMap<String, Object> messageData = TAPUtils.toHashMap(message.getData());
                 TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (TYPE_VIDEO == message.getType() || TYPE_FILE == message.getType()) {
-            HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+            HashMap<String, Object> messageData = TAPUtils.toHashMap(message.getData());
             if (null == messageData) {
                 return;
             }

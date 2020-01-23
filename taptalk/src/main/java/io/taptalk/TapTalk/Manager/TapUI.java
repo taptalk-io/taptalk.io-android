@@ -133,15 +133,15 @@ public class TapUI {
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel) {
-        TAPUtils.getInstance().startChatActivity(context, roomModel, null, null);
+        TAPUtils.startChatActivity(context, roomModel, null, null);
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel, String scrollToMessageWithLocalID) {
-        TAPUtils.getInstance().startChatActivity(context, roomModel, null, scrollToMessageWithLocalID);
+        TAPUtils.startChatActivity(context, roomModel, null, scrollToMessageWithLocalID);
     }
 
     public void openChatRoom(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        TAPUtils.getInstance().startChatActivity(
+        TAPUtils.startChatActivity(
                 context,
                 roomID,
                 roomName,
@@ -219,7 +219,7 @@ public class TapUI {
             @Nullable String customQuoteImageURL,
             @Nullable HashMap<String, Object> userInfo,
             TapCommonListener listener) {
-        TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+        TAPUtils.getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel user) {
                 String roomID = TAPChatManager.getInstance().arrangeRoomId(

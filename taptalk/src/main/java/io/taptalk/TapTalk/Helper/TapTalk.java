@@ -635,10 +635,10 @@ public class TapTalk {
 
     public static void handleTapTalkPushNotification(RemoteMessage remoteMessage) {
         TAPNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
-        HashMap<String, Object> notificationMap = TAPUtils.getInstance().fromJSON(new TypeReference<HashMap<String, Object>>() {
+        HashMap<String, Object> notificationMap = TAPUtils.fromJSON(new TypeReference<HashMap<String, Object>>() {
         }, remoteMessage.getData().get("body"));
         try {
-            //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
+            //Log.e(TAG, "onMessageReceived: " + TAPUtils.toJsonString(remoteMessage));
             TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(),
                     TapUIChatActivity.class,
                     TAPEncryptorManager.getInstance().decryptMessage(notificationMap));

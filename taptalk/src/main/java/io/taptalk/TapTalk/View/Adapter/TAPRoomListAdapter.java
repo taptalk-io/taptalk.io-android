@@ -124,7 +124,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 glide.clear(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(item.getDefaultAvatarBackgroundColor()));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
+                tvAvatarLabel.setText(TAPUtils.getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
@@ -336,7 +336,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
             String myUserID = TAPChatManager.getInstance().getActiveUser().getUserID();
             if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
-                TAPUtils.getInstance().startChatActivity(itemView.getContext(), item.getLastMessage().getRoom(), item.getTypingUsers());
+                TAPUtils.startChatActivity(itemView.getContext(), item.getLastMessage().getRoom(), item.getTypingUsers());
             } else {
                 Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.tap_error_invalid_room), Toast.LENGTH_SHORT).show();
             }

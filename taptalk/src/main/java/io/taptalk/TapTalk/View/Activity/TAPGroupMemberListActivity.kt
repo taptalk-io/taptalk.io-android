@@ -215,7 +215,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     private fun stateLoadingMember() {
         rv_contact_list.visibility = View.GONE
         ll_member_loading.visibility = View.VISIBLE
-        TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_progress)
+        TAPUtils.rotateAnimateInfinitely(this, iv_loading_progress)
     }
 
     private fun initView() {
@@ -259,7 +259,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         rv_contact_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                TAPUtils.getInstance().dismissKeyboard(this@TAPGroupMemberListActivity)
+                TAPUtils.dismissKeyboard(this@TAPGroupMemberListActivity)
             }
         })
 
@@ -279,7 +279,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private fun showToolbar() {
         groupViewModel?.isSearchActive = false
-        TAPUtils.getInstance().dismissKeyboard(this)
+        TAPUtils.dismissKeyboard(this)
         tv_title.visibility = View.VISIBLE
         et_search.visibility = View.GONE
         et_search.setText("")
@@ -292,7 +292,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         tv_title.visibility = View.GONE
         et_search.visibility = View.VISIBLE
         iv_button_search.visibility = View.GONE
-        TAPUtils.getInstance().showKeyboard(this, et_search)
+        TAPUtils.showKeyboard(this, et_search)
         (cl_action_bar.background as TransitionDrawable).startTransition(SHORT_ANIMATION_TIME)
     }
 
@@ -345,7 +345,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
         runOnUiThread {
             iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_loading_progress_circle_white))
             if (null == iv_loading_image.animation)
-                TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_image)
+                TAPUtils.rotateAnimateInfinitely(this, iv_loading_image)
             tv_loading_text.text = message
             iv_button_search.setOnClickListener(null)
             iv_button_clear_text.setOnClickListener(null)
@@ -470,7 +470,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     private val searchEditorActionListener = TextView.OnEditorActionListener { _, actionId, _ ->
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-            TAPUtils.getInstance().dismissKeyboard(this@TAPGroupMemberListActivity, et_search)
+            TAPUtils.dismissKeyboard(this@TAPGroupMemberListActivity, et_search)
             return@OnEditorActionListener true
         }
         return@OnEditorActionListener false

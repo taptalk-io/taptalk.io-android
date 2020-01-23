@@ -97,7 +97,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         tv_location.text = ""
 
         cv_search_result.visibility = View.GONE
-        TAPUtils.getInstance().dismissKeyboard(this)
+        TAPUtils.dismissKeyboard(this)
     }
 
     override fun onCameraIdle() {
@@ -180,7 +180,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
 
     private val generalListener = object : TAPGeneralListener<TAPLocationItem>() {
         override fun onClick(position: Int, item: TAPLocationItem?) {
-            TAPUtils.getInstance().dismissKeyboard(this@TAPMapActivity)
+            TAPUtils.dismissKeyboard(this@TAPMapActivity)
             if (item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString().equals(et_keyword.text.toString()))
                 isSameKeyword = true
             et_keyword.setText(item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString())
@@ -257,7 +257,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         et_keyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_active)
-                if (!TAPUtils.getInstance().isListEmpty(locationList) && et_keyword.text.isNotEmpty())
+                if (!TAPUtils.isListEmpty(locationList) && et_keyword.text.isNotEmpty())
                     cv_search_result.visibility = View.VISIBLE
             } else {
                 rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_inactive)
@@ -266,7 +266,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         et_keyword.setOnEditorActionListener(object : TextView.OnEditorActionListener {
             override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    TAPUtils.getInstance().dismissKeyboard(this@TAPMapActivity)
+                    TAPUtils.dismissKeyboard(this@TAPMapActivity)
                     return true
                 }
                 return false
@@ -276,7 +276,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         adapter = TAPSearchLocationAdapter(locationList, generalListener)
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = adapter
-        if (TAPUtils.getInstance().hasPermissions(this, PERMISSIONS[0])) {
+        if (TAPUtils.hasPermissions(this, PERMISSIONS[0])) {
             getLocation()
         }
 
@@ -357,7 +357,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
             e.printStackTrace()
         }
 
-        if (!TAPUtils.getInstance().isListEmpty(addresses)) {
+        if (!TAPUtils.isListEmpty(addresses)) {
             val address: Address = addresses[0]
             try {
                 currentAddress = address.getAddressLine(0)
@@ -390,7 +390,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                 .build()
                         try {
                             placesClient.findAutocompletePredictions(request).addOnSuccessListener { p0 ->
-                                if (!TAPUtils.getInstance().isListEmpty(locationList))
+                                if (!TAPUtils.isListEmpty(locationList))
                                     locationList.clear()
 
                                 p0?.autocompletePredictions?.forEach { prediction ->
@@ -400,11 +400,11 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                     locationList.add(item)
                                 }
 
-                                if (!TAPUtils.getInstance().isListEmpty(locationList) && 1 == locationList.size) {
+                                if (!TAPUtils.isListEmpty(locationList) && 1 == locationList.size) {
                                     locationList[0].myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
                                     adapter?.items = locationList
                                     cv_search_result.visibility = if (isSearch) View.VISIBLE else View.GONE
-                                } else if (!TAPUtils.getInstance().isListEmpty(locationList)) {
+                                } else if (!TAPUtils.isListEmpty(locationList)) {
                                     locationList[0].myReturnType = TAPLocationItem.MyReturnType.FIRST
                                     locationList[locationList.size - 1].myReturnType = TAPLocationItem.MyReturnType.LAST
 
@@ -446,7 +446,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
 
     override fun onBackPressed() {
         if (et_keyword.isFocused) {
-            TAPUtils.getInstance().dismissKeyboard(this)
+            TAPUtils.dismissKeyboard(this)
             et_keyword.clearFocus()
         } else {
             super.onBackPressed()

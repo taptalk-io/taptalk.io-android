@@ -163,7 +163,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 vm.setContactList(entities);
                 vm.getContactList().removeAll(vm.getExistingMembers());
                 vm.getFilteredContacts().addAll(vm.getContactList());
-                vm.setSeparatedContactList(TAPUtils.getInstance().generateContactListForRecycler(vm.getContactList(), TYPE_SELECTABLE_CONTACT_LIST, vm.getContactListPointer()));
+                vm.setSeparatedContactList(TAPUtils.generateContactListForRecycler(vm.getContactList(), TYPE_SELECTABLE_CONTACT_LIST, vm.getContactListPointer()));
                 updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
 
                 // Put non-contact users from database to pointer
@@ -189,7 +189,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         listener = new TapContactListListener() {
             @Override
             public boolean onContactSelected(TapContactListModel contact) {
-                TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
+                TAPUtils.dismissKeyboard(TAPAddGroupMemberActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContactList().contains(contact)) {
                     if (vm.getSelectedContactList().size() + vm.getInitialGroupSize() >= TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()) {
@@ -229,7 +229,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
             @Override
             public void onContactDeselected(TapContactListModel contact) {
-                TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
+                TAPUtils.dismissKeyboard(TAPAddGroupMemberActivity.this);
                 int index = vm.getSelectedContactList().indexOf(contact);
                 vm.removeSelectedContact(contact);
                 selectedMembersAdapter.notifyItemRemoved(index);
@@ -311,7 +311,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
+                TAPUtils.dismissKeyboard(TAPAddGroupMemberActivity.this);
             }
         });
 
@@ -322,7 +322,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
     private void showToolbar() {
         vm.setSelecting(false);
-        TAPUtils.getInstance().dismissKeyboard(this);
+        TAPUtils.dismissKeyboard(this);
         if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
             ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
         }
@@ -341,7 +341,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         tvTitle.setVisibility(View.GONE);
         etSearch.setVisibility(View.VISIBLE);
         ivButtonSearch.setVisibility(View.GONE);
-        TAPUtils.getInstance().showKeyboard(this, etSearch);
+        TAPUtils.showKeyboard(this, etSearch);
         ((TransitionDrawable) clActionBar.getBackground()).startTransition(SHORT_ANIMATION_TIME);
     }
 
@@ -374,7 +374,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             rvGroupMembers.removeItemDecorationAt(0);
         }
         rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,
-                0, TAPUtils.getInstance().dpToPx(16), selectedMembersAdapter.getItemCount(),
+                0, TAPUtils.dpToPx(16), selectedMembersAdapter.getItemCount(),
                 0, 0));
     }
 
@@ -498,7 +498,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     private void showGlobalSearchLoading() {
         runOnUiThread(() -> {
             ivGlobalSearchLoading.setVisibility(View.VISIBLE);
-            TAPUtils.getInstance().rotateAnimateInfinitely(TAPAddGroupMemberActivity.this, ivGlobalSearchLoading);
+            TAPUtils.rotateAnimateInfinitely(TAPAddGroupMemberActivity.this, ivGlobalSearchLoading);
         });
     }
 
@@ -513,7 +513,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             tvButtonText.setVisibility(View.GONE);
             ivButtonLoading.setVisibility(View.VISIBLE);
-            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivButtonLoading);
+            TAPUtils.rotateAnimateInfinitely(this, ivButtonLoading);
         });
     }
 
@@ -560,7 +560,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
             TAPDataManager.getInstance().cancelUserSearchApiCall();
             TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
-            TAPUtils.getInstance().dismissKeyboard(TAPAddGroupMemberActivity.this);
+            TAPUtils.dismissKeyboard(TAPAddGroupMemberActivity.this);
             return true;
         }
     };
@@ -622,7 +622,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                     tvInfoEmptyContact.setText(String.format(getString(R.string.tap_no_result_found_for), etSearch.getText().toString()));
                     tvButtonEmptyContact.setText(getString(R.string.tap_try_different_search));
                     llEmptyContact.setOnClickListener(v -> {
-                        TAPUtils.getInstance().showKeyboard(TAPAddGroupMemberActivity.this, etSearch);
+                        TAPUtils.showKeyboard(TAPAddGroupMemberActivity.this, etSearch);
                         etSearch.setSelection(etSearch.getText().length());
                     });
                     llEmptyContact.setVisibility(View.VISIBLE);

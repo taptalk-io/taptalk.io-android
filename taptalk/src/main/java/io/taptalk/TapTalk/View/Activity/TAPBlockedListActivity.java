@@ -60,7 +60,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
         ivButtonBack = findViewById(R.id.iv_button_back);
         rvBlockedList = findViewById(R.id.rv_blocked_list);
 
-        adapter = new TapContactListAdapter(TAPUtils.getInstance().generateContactListForRecycler(vm.getFilteredContacts(), TYPE_DEFAULT_CONTACT_LIST));
+        adapter = new TapContactListAdapter(TAPUtils.generateContactListForRecycler(vm.getFilteredContacts(), TYPE_DEFAULT_CONTACT_LIST));
         rvBlockedList.setAdapter(adapter);
         rvBlockedList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvBlockedList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
