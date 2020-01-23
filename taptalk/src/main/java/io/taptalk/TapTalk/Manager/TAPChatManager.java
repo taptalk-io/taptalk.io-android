@@ -380,9 +380,11 @@ public class TAPChatManager {
         );
     }
 
-    public void sendMessage(TAPMessageModel message, TapSendMessageInterface tapSendMessageInterface) {
-        sendMessageListeners.put(message.getLocalID(), tapSendMessageInterface);
-        tapSendMessageInterface.onStart(message);
+    public void sendMessage(TAPMessageModel message, TapSendMessageInterface listener) {
+        if (null != listener) {
+            sendMessageListeners.put(message.getLocalID(), listener);
+            listener.onStart(message);
+        }
         triggerListenerAndSendMessage(message, true);
     }
 
@@ -400,10 +402,12 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(messageModel, false);
     }
 
-    public void sendProductMessageToServer(HashMap<String, Object> productList, TAPRoomModel roomModel, TapSendMessageInterface sendMessageInterface) {
+    public void sendProductMessageToServer(HashMap<String, Object> productList, TAPRoomModel roomModel, TapSendMessageInterface listener) {
         TAPMessageModel productMessage = createProductMessageModel(productList, roomModel);
-        sendMessageListeners.put(productMessage.getLocalID(), sendMessageInterface);
-        sendMessageInterface.onStart(productMessage);
+        if (null != listener) {
+            sendMessageListeners.put(productMessage.getLocalID(), listener);
+            listener.onStart(productMessage);
+        }
         triggerListenerAndSendMessage(productMessage, true);
     }
 
@@ -411,10 +415,12 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(createLocationMessageModel(address, latitude, longitude), true);
     }
 
-    public void sendLocationMessage(String address, Double latitude, Double longitude, TAPRoomModel room, TapSendMessageInterface tapsendMessageInterface) {
-        TAPMessageModel messageModel = createLocationMessageModel(address, latitude, longitude, room, tapsendMessageInterface);
-        sendMessageListeners.put(messageModel.getLocalID(), tapsendMessageInterface);
-        tapsendMessageInterface.onStart(messageModel);
+    public void sendLocationMessage(String address, Double latitude, Double longitude, TAPRoomModel room, TapSendMessageInterface listener) {
+        TAPMessageModel messageModel = createLocationMessageModel(address, latitude, longitude, room);
+        if (null != listener) {
+            sendMessageListeners.put(messageModel.getLocalID(), listener);
+            listener.onStart(messageModel);
+        }
         triggerListenerAndSendMessage(messageModel, true);
     }
 
@@ -445,7 +451,7 @@ public class TAPChatManager {
         //checkAndSendPendingMessages();
     }
 
-    public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, TapSendMessageInterface tapSendMessageInterface) {
+    public void sendTextMessageWithRoomModel(String textMessage, TAPRoomModel roomModel, TapSendMessageInterface listener) {
         Integer startIndex;
 
         checkAndSendForwardedMessage(roomModel);
@@ -458,8 +464,10 @@ public class TAPChatManager {
                 String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
 
-                sendMessageListeners.put(messageModel.getLocalID(), tapSendMessageInterface);
-                tapSendMessageInterface.onStart(messageModel);
+                if (null != listener) {
+                    sendMessageListeners.put(messageModel.getLocalID(), listener);
+                    listener.onStart(messageModel);
+                }
 
                 // Add entity to list
                 //messageEntities.add(convertToEntity(messageModel));
@@ -469,8 +477,10 @@ public class TAPChatManager {
             }
         } else {
             TAPMessageModel messageModel = createTextMessage(textMessage, roomModel, getActiveUser());
-            sendMessageListeners.put(messageModel.getLocalID(), tapSendMessageInterface);
-            tapSendMessageInterface.onStart(messageModel);
+            if (null != listener) {
+                sendMessageListeners.put(messageModel.getLocalID(), listener);
+                listener.onStart(messageModel);
+            }
             // Send message
             triggerListenerAndSendMessage(messageModel, true);
         }
@@ -592,7 +602,7 @@ public class TAPChatManager {
         }
     }
 
-    private TAPMessageModel createLocationMessageModel(String address, Double latitude, Double longitude, TAPRoomModel roomModel, TapSendMessageInterface listener) {
+    private TAPMessageModel createLocationMessageModel(String address, Double latitude, Double longitude, TAPRoomModel roomModel) {
         if (null == getQuotedMessage()) {
             return TAPMessageModel.Builder(
                     TapTalk.appContext.getString(R.string.tap_location_body),
@@ -728,8 +738,10 @@ public class TAPChatManager {
             return;
         }
 
-        sendMessageListeners.put(messageModel.getLocalID(), listener);
-        listener.onStart(messageModel);
+        if (null != listener) {
+            sendMessageListeners.put(messageModel.getLocalID(), listener);
+            listener.onStart(messageModel);
+        }
 
         // Set Start Point for Progress
         TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
@@ -1074,8 +1086,10 @@ public class TAPChatManager {
             return;
         }
 
-        sendMessageListeners.put(messageModel.getLocalID(), listener);
-        listener.onStart(messageModel);
+        if (null != listener) {
+            sendMessageListeners.put(messageModel.getLocalID(), listener);
+            listener.onStart(messageModel);
+        }
 
         // Set Start Point for Progress
         TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
@@ -1100,8 +1114,11 @@ public class TAPChatManager {
             listener.onError(ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
             return;
         }
-        sendMessageListeners.put(messageModel.getLocalID(), listener);
-        listener.onStart(messageModel);
+
+        if (null != listener) {
+            sendMessageListeners.put(messageModel.getLocalID(), listener);
+            listener.onStart(messageModel);
+        }
 
         // Set Start Point for Progress
         TAPFileUploadManager.getInstance().addUploadProgressMap(messageModel.getLocalID(), 0, 0);
@@ -1245,8 +1262,10 @@ public class TAPChatManager {
 
     public void resendMessage(TAPMessageModel failedMessageModel, TapSendMessageInterface listener) {
         TAPMessageModel messageToResend = TAPMessageModel.BuilderResendMessage(failedMessageModel, System.currentTimeMillis());
-        sendMessageListeners.put(messageToResend.getLocalID(), listener);
-        listener.onStart(messageToResend);
+        if (null != listener) {
+            sendMessageListeners.put(messageToResend.getLocalID(), listener);
+            listener.onStart(messageToResend);
+        }
         triggerListenerAndSendMessage(messageToResend, true);
     }
 
@@ -1281,8 +1300,10 @@ public class TAPChatManager {
         if (null != getQuoteActions().get(roomID) && getQuoteActions().get(roomID) == FORWARD) {
             // Send forwarded message
             TAPMessageModel messageModel = buildForwardedMessage(getQuotedMessages().get(roomID), roomModel);
-            sendMessageListeners.put(messageModel.getLocalID(), listener);
-            listener.onStart(messageModel);
+            if (null != listener) {
+                sendMessageListeners.put(messageModel.getLocalID(), listener);
+                listener.onStart(messageModel);
+            }
             triggerListenerAndSendMessage(messageModel, true);
             setQuotedMessage(roomID, null, 0);
             return true;
