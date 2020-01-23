@@ -134,7 +134,11 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
                 llConnectionStatus.setVisibility(View.VISIBLE);
                 ivConnectionStatus.clearAnimation();
 
-                new Handler().postDelayed(() -> llConnectionStatus.setVisibility(View.GONE), 500L);
+                new Handler().postDelayed(() -> {
+                    if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                        llConnectionStatus.setVisibility(View.GONE);
+                    }
+                }, 500L);
             });
         }
     }
