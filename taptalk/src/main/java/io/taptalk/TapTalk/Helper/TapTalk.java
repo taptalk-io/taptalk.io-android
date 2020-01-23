@@ -728,5 +728,6 @@ public class TapTalk implements LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onAppForegrounded() {
         Log.e(TAG, "onAppForegrounded: ");
+        TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
     }
 }
