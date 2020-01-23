@@ -70,7 +70,11 @@ public class TAPConnectionManager {
         try {
 //            webSocketUri = new URI(webSocketEndpoint);
 //            initWebSocketClient(webSocketUri);
-            initNetworkListener();
+            try {
+                initNetworkListener();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             socketListeners = new ArrayList<>();
             reconnectAttempt = 0;
         } catch (Exception e) {
