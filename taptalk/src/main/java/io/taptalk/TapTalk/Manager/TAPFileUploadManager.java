@@ -218,7 +218,7 @@ public class TAPFileUploadManager {
             String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-            File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+            File imageFile = TAPUtils.getInstance().createTempFile(context, mimeTypeExtension, bitmap);
 
             TAPDataManager.getInstance().uploadRoomPicture(imageFile, mimeType, roomID, uploadProfilePictureView);
         });
@@ -276,7 +276,7 @@ public class TAPFileUploadManager {
             String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-            File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+            File imageFile = TAPUtils.getInstance().createTempFile(context, mimeTypeExtension, bitmap);
             TAPDataManager.getInstance().uploadProfilePicture(imageFile, mimeType, uploadCallbacks, uploadProfilePictureView);
         });
     }
@@ -424,7 +424,7 @@ public class TAPFileUploadManager {
         String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-        File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+        File imageFile = TAPUtils.getInstance().createTempFile(context, mimeTypeExtension, bitmap);
 
         // Update message data
         imageData.setHeight(bitmap.getHeight());

@@ -170,7 +170,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
 
         if (vm.currentProfilePicture.isEmpty()) {
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name)))
+            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
             civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
             tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
             tv_profile_picture_label.visibility = View.VISIBLE
@@ -255,7 +255,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (null == imageUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
 
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name)))
+            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
             civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
             tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
             tv_profile_picture_label.visibility = View.VISIBLE
@@ -284,7 +284,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (null == imageUrl) {
             vm.formCheck[indexProfilePicture] = stateEmpty
 
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name)))
+            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
             glide.load(R.drawable.tap_bg_circle_9b9b9b).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
             tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
             tv_profile_picture_label.visibility = View.VISIBLE

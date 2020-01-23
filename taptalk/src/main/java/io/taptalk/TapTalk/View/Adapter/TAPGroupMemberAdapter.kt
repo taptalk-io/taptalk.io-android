@@ -87,7 +87,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
 
             // Load member avatar
             if (item?.avatarURL?.thumbnail.isNullOrEmpty()) {
-                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item?.name)))
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(itemView.context, item?.name)))
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
                 tvAvatarLabel.text = TAPUtils.getInstance().getInitials(item?.name, 2)
                 tvAvatarLabel.visibility = View.VISIBLE

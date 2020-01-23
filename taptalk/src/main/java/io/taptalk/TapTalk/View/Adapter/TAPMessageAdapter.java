@@ -1086,7 +1086,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             fileUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), key);
 
             tvFileName.setText(TAPUtils.getInstance().getFileDisplayName(item));
-            tvFileInfoDummy.setText(TAPUtils.getInstance().getFileDisplayDummyInfo(item));
+            tvFileInfoDummy.setText(TAPUtils.getInstance().getFileDisplayDummyInfo(itemView.getContext(), item));
 
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Message failed to send
@@ -1648,7 +1648,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     tvAvatarLabel.setVisibility(View.GONE);
                 } else if (null != civAvatar && null != tvAvatarLabel) {
 //                    civAvatar.setImageDrawable(vh.itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
-                    ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(item.getUser().getName())));
+                    ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vh.itemView.getContext(), item.getUser().getName())));
                     civAvatar.setImageDrawable(ContextCompat.getDrawable(vh.itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
                     tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(item.getUser().getName(), 2));
                     civAvatar.setVisibility(View.VISIBLE);

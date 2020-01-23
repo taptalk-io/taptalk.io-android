@@ -14,9 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
+import io.taptalk.Taptalk.BuildConfig;
 import io.taptalk.Taptalk.R;
 
 public class TAPConnectionStatusFragment extends Fragment implements TapTalkSocketInterface {
@@ -63,8 +65,10 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     @Override
     public void onResume() {
         super.onResume();
-        // TODO: 28 November 2019 CONNECTION STATUS TEMPORARILY HIDDEN
-        //initConnectionStatus();
+        // TODO: 28 November 2019 CONNECTION STATUS SHOWN ONLY IF LOGGING IS ENABLED
+        if (TapTalk.isLoggingEnabled) {
+            initConnectionStatus();
+        }
     }
 
     @Override

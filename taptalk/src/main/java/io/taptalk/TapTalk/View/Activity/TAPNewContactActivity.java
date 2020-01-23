@@ -212,7 +212,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             tvAvatarLabel.setVisibility(View.GONE);
         } else {
 //            civAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName())));
+            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this, vm.getSearchResult().getName())));
             civAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getSearchResult().getName(), 2));
             tvAvatarLabel.setVisibility(View.VISIBLE);
@@ -266,7 +266,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             tvAvatarLabel.setVisibility(View.GONE);
         } else {
 //            civAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName())));
+            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this, vm.getSearchResult().getName())));
             civAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getSearchResult().getName(), 2));
             tvAvatarLabel.setVisibility(View.VISIBLE);
@@ -329,7 +329,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                 vm.getSearchResult().getName(),
                 vm.getSearchResult().getAvatarURL(),
                 1,
-                /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(vm.getSearchResult().getName()) + "");
+                /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(this, vm.getSearchResult().getName()) + "");
     }
 
     private void enableInput() {

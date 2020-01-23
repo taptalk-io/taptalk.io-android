@@ -294,7 +294,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
     private void loadGroupImage(String imageUrl) {
         if (null == imageUrl || imageUrl.isEmpty()) {
-            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getGroupData().getRoomName())));
+            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this, vm.getGroupData().getRoomName())));
             civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             tvGroupPictureLabel.setText(TAPUtils.getInstance().getInitials(vm.getGroupData().getRoomName(), 1));
             tvGroupPictureLabel.setVisibility(View.VISIBLE);
@@ -366,7 +366,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         vm.getGroupData().setRoomImage(null);
 
         if (vm.getGroupAction() == EDIT_GROUP) {
-            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.getGroupData().getRoomName())));
+            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this, vm.getGroupData().getRoomName())));
             civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             tvGroupPictureLabel.setText(TAPUtils.getInstance().getInitials(vm.getGroupData().getRoomName(), 1));
             tvGroupPictureLabel.setVisibility(View.VISIBLE);

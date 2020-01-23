@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 
 public class TAPRoomListModel {
     private TAPMessageModel lastMessage;
@@ -19,7 +20,9 @@ public class TAPRoomListModel {
 
         TAPRoomModel room = lastMessage.getRoom();
         if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
-            defaultAvatarBackgroundColor = TAPUtils.getInstance().getRandomColor(room.getRoomName());
+            if (null != TapTalk.appContext) {
+                defaultAvatarBackgroundColor = TAPUtils.getInstance().getRandomColor(TapTalk.appContext, room.getRoomName());
+            }
         }
     }
 
@@ -29,8 +32,8 @@ public class TAPRoomListModel {
         roomListModel.setLastMessageTimestamp(TAPTimeFormatter.getInstance().durationString(lastMessage.getCreated()));
 
         TAPRoomModel room = lastMessage.getRoom();
-        if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
-            roomListModel.setDefaultAvatarBackgroundColor(TAPUtils.getInstance().getRandomColor(room.getRoomName()));
+        if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty() && null != TapTalk.appContext) {
+            roomListModel.setDefaultAvatarBackgroundColor(TAPUtils.getInstance().getRandomColor(TapTalk.appContext, room.getRoomName()));
         }
 
         return roomListModel;

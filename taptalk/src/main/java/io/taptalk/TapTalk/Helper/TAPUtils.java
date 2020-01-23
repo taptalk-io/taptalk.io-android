@@ -224,7 +224,7 @@ public class TAPUtils {
      * converts Dp into Px
      */
     public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = TapTalk.appContext.getResources().getDisplayMetrics();
+        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
@@ -266,11 +266,11 @@ public class TAPUtils {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
-    public int getRandomColor(String s) {
+    public int getRandomColor(Context context, String s) {
         if (null == s || s.length() == 0) {
             return 0;
         }
-        int[] randomColors = TapTalk.appContext.getResources().getIntArray(R.array.tapDefaultRoomAvatarBackgroundColors);
+        int[] randomColors = context.getResources().getIntArray(R.array.tapDefaultRoomAvatarBackgroundColors);
         int index = (((int) s.charAt(0)) + (int) s.charAt(s.length() - 1) + s.length()) % randomColors.length;
         return randomColors[index];
     }
@@ -714,7 +714,7 @@ public class TAPUtils {
         }
     }
 
-    public String getFileDisplayDummyInfo(TAPMessageModel message) {
+    public String getFileDisplayDummyInfo(Context context, TAPMessageModel message) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {
             return "";
@@ -723,7 +723,7 @@ public class TAPUtils {
         Number size = (Number) data.get(SIZE);
 
         if (null != size) {
-            String dummyProgress = String.format(TapTalk.appContext.getString(R.string.tap_file_info_progress_dummy), getStringSizeLengthFile(size.longValue()));
+            String dummyProgress = String.format(context.getString(R.string.tap_file_info_progress_dummy), getStringSizeLengthFile(size.longValue()));
             if (dummyProgress.length() > fileDisplayInfo.length()) {
                 return dummyProgress;
             }
@@ -914,8 +914,8 @@ public class TAPUtils {
     /**
      * Convert Bitmap to File for Retrofit
      */
-    public File createTempFile(String mimeType, Bitmap bitmap) {
-        File file = new File(TapTalk.appContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    public File createTempFile(Context context, String mimeType, Bitmap bitmap) {
+        File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                 , System.currentTimeMillis() + "." + mimeType);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 

@@ -76,7 +76,7 @@ public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactList
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
-                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(itemView.getContext(), user.getName())));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
                 tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
                 tvAvatarLabel.setVisibility(View.VISIBLE);

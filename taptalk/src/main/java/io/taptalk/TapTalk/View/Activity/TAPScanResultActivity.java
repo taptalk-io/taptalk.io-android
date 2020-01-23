@@ -255,7 +255,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             ImageViewCompat.setImageTintList(imageView, null);
             avatarLabel.setVisibility(View.GONE);
         } else {
-            ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(userModel.getName())));
+            ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this, userModel.getName())));
             imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             avatarLabel.setText(TAPUtils.getInstance().getInitials(userModel.getName(), 2));
             avatarLabel.setVisibility(View.VISIBLE);

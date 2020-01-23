@@ -587,7 +587,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                         user.getName(),
                         user.getAvatarURL(),
                         TYPE_PERSONAL,
-                        /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(user.getName()) + "");
+                        /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(TAPNewChatActivity.this, user.getName()) + "");
             }
         }
 

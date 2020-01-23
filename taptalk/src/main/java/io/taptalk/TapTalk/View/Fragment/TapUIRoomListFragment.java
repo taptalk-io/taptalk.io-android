@@ -50,8 +50,10 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
@@ -375,7 +377,7 @@ public class TapUIRoomListFragment extends Fragment {
 //                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
             if (null != getActivity()) {
                 getActivity().runOnUiThread(() -> {
-                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
+                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(getContext(), user.getName())));
                     if (null != getContext()) {
                         civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
                     }
@@ -975,4 +977,12 @@ public class TapUIRoomListFragment extends Fragment {
         }
     }
 
+    private TAPSocketListener socketListener = new TAPSocketListener() {
+        @Override
+        public void onSocketConnected() {
+            // Run viewLoadedSequence on socket connected
+            TAPConnectionManager.getInstance().removeSocketListener(this);
+            viewLoadedSequence();
+        }
+    };
 }
