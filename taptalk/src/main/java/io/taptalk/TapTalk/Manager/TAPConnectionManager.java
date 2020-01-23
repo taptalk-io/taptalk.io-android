@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Manager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Base64;
+import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -90,7 +91,7 @@ public class TAPConnectionManager {
         webSocketClient = new WebSocketClient(webSocketUri, header) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
-                //Log.e(TAG, "onOpen: ");
+                Log.e("[[[[[", "onOpen: ");
                 connectionStatus = CONNECTED;
                 reconnectAttempt = 0;
                 List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
@@ -125,8 +126,8 @@ public class TAPConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                //Log.e(TAG, "onClose2: " + code);
-                //Log.e(TAG, "onClose: " + reason);
+                Log.e("[[[[[", "onClose2: " + code);
+                Log.e("[[[[[", "onClose: " + reason);
                 if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
                     connectionStatus = DISCONNECTED;
                 }
@@ -141,7 +142,8 @@ public class TAPConnectionManager {
 
             @Override
             public void onError(Exception ex) {
-                //Log.e(TAG, "onError: ", ex);
+                ex.printStackTrace();
+                Log.e("[[[[[", "onError: ", ex);
                 if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
                     connectionStatus = DISCONNECTED;
                 }
