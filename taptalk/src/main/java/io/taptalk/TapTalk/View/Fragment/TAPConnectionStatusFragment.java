@@ -32,7 +32,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
 
     private boolean hideUntilNextConnect;
 
-    private final int padding = TAPUtils.getInstance().dpToPx(2);
+    private final int padding = TAPUtils.dpToPx(2);
 
     public TAPConnectionStatusFragment() {
     }
@@ -98,8 +98,10 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
         ivConnectionStatus = view.findViewById(R.id.iv_connection_status);
         tvConnectionStatus = view.findViewById(R.id.tv_connection_status);
 
-        // TODO: 28 November 2019 CONNECTION STATUS TEMPORARILY HIDDEN
-        llConnectionStatus.setVisibility(View.GONE);
+        // TODO: 28 November 2019 CONNECTION STATUS SHOWN ONLY IF LOGGING IS ENABLED
+        if (TapTalk.isLoggingEnabled) {
+            llConnectionStatus.setVisibility(View.GONE);
+        }
     }
 
     private void initConnectionStatus() {
@@ -151,7 +153,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
             ivConnectionStatus.setPadding(padding, padding, padding, padding);
             llConnectionStatus.setVisibility(View.VISIBLE);
             if (null == ivConnectionStatus.getAnimation()) {
-                TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivConnectionStatus);
+                TAPUtils.rotateAnimateInfinitely(getContext(), ivConnectionStatus);
             }
         });
     }
@@ -168,7 +170,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
             ivConnectionStatus.setPadding(padding, padding, padding, padding);
             llConnectionStatus.setVisibility(View.VISIBLE);
             if (null == ivConnectionStatus.getAnimation()) {
-                TAPUtils.getInstance().rotateAnimateInfinitely(getContext(), ivConnectionStatus);
+                TAPUtils.rotateAnimateInfinitely(getContext(), ivConnectionStatus);
             }
         });
 

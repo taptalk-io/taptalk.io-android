@@ -61,7 +61,7 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
                 ivLoading.setVisibility(View.VISIBLE);
                 flRemove.setVisibility(View.VISIBLE);
                 if (null == ivLoading.getAnimation()) {
-                    TAPUtils.getInstance().rotateAnimateInfinitely(itemView.getContext(), ivLoading);
+                    TAPUtils.rotateAnimateInfinitely(itemView.getContext(), ivLoading);
                 }
             } else if (item.isLoading()) {
                 // Not selected - Media is loading
@@ -72,7 +72,7 @@ public class TAPMediaPreviewRecyclerAdapter extends TAPBaseAdapter<TAPMediaPrevi
                 ivLoading.setVisibility(View.VISIBLE);
                 flRemove.setVisibility(View.VISIBLE);
                 if (null == ivLoading.getAnimation()) {
-                    TAPUtils.getInstance().rotateAnimateInfinitely(itemView.getContext(), ivLoading);
+                    TAPUtils.rotateAnimateInfinitely(itemView.getContext(), ivLoading);
                 }
             } else if (item.isSelected() && (null == item.isSizeExceedsLimit() || !item.isSizeExceedsLimit())) {
                 // Selected - Media ready

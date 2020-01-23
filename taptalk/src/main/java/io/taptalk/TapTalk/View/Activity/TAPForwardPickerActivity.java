@@ -106,13 +106,13 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                TAPUtils.getInstance().dismissKeyboard(TAPForwardPickerActivity.this);
+                TAPUtils.dismissKeyboard(TAPForwardPickerActivity.this);
             }
         });
     }
 
     private void showToolbar() {
-        TAPUtils.getInstance().dismissKeyboard(this);
+        TAPUtils.dismissKeyboard(this);
         ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
         tvTitle.setVisibility(View.VISIBLE);
         etSearch.setVisibility(View.GONE);
@@ -126,7 +126,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         tvTitle.setVisibility(View.GONE);
         etSearch.setVisibility(View.VISIBLE);
         ivButtonSearch.setVisibility(View.GONE);
-        TAPUtils.getInstance().showKeyboard(this, etSearch);
+        TAPUtils.showKeyboard(this, etSearch);
         ((TransitionDrawable) clActionBar.getBackground()).startTransition(SHORT_ANIMATION_TIME);
     }
 
@@ -164,7 +164,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                                 entity.getRoomID(),
                                 entity.getRoomName(),
                                 entity.getRoomType(),
-                                TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                                TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
                                 }, entity.getRoomImage()),
                                 entity.getRoomColor());
                         recentItem.setRoom(roomModel);
@@ -232,7 +232,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                             entity.getRoomType(),
                             // TODO: 18 October 2018 REMOVE CHECK
                             /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                            TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
                             }, entity.getRoomImage())
                             /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
                             entity.getRoomColor());

@@ -232,7 +232,7 @@ public class TapTalkDialog extends Dialog {
         private void setDialogSize() {
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
             lp.copyFrom(dialog.getWindow().getAttributes());
-            lp.width = TAPUtils.getInstance().getScreenWidth() - TAPUtils.getInstance().dpToPx(90);
+            lp.width = TAPUtils.getScreenWidth() - TAPUtils.dpToPx(90);
             lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
             dialog.getWindow().setAttributes(lp);
         }

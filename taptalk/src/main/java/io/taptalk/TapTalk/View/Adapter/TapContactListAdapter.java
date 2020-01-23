@@ -109,9 +109,9 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
             } else {
                 // Set initial as avatar
                 Glide.with(itemView.getContext()).clear(civAvatar);
-                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(itemView.getContext(), user.getName())));
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), user.getName())));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
+                tvAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
@@ -251,7 +251,7 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
 
             tvInfoActionButton.setOnClickListener(v -> {
                 if (null != listener) {
-                    TAPUtils.getInstance().animateClickButton(tvInfoActionButton, 0.95f);
+                    TAPUtils.animateClickButton(tvInfoActionButton, 0.95f);
                     listener.onInfoLabelButtonTapped(item.getActionId());
                 }
             });

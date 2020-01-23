@@ -21,7 +21,7 @@ public class TAPRoomListModel {
         TAPRoomModel room = lastMessage.getRoom();
         if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
             if (null != TapTalk.appContext) {
-                defaultAvatarBackgroundColor = TAPUtils.getInstance().getRandomColor(TapTalk.appContext, room.getRoomName());
+                defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getRoomName());
             }
         }
     }
@@ -33,7 +33,7 @@ public class TAPRoomListModel {
 
         TAPRoomModel room = lastMessage.getRoom();
         if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty() && null != TapTalk.appContext) {
-            roomListModel.setDefaultAvatarBackgroundColor(TAPUtils.getInstance().getRandomColor(TapTalk.appContext, room.getRoomName()));
+            roomListModel.setDefaultAvatarBackgroundColor(TAPUtils.getRandomColor(TapTalk.appContext, room.getRoomName()));
         }
 
         return roomListModel;

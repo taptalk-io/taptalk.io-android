@@ -70,7 +70,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         initViewModel();
         initView();
         initListener();
-        TAPUtils.getInstance().showKeyboard(this, etSearch);
+        TAPUtils.showKeyboard(this, etSearch);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private void clearSearch() {
         //showEmpty();
-        TAPUtils.getInstance().dismissKeyboard(this);
+        TAPUtils.dismissKeyboard(this);
         etSearch.setText("");
         etSearch.clearFocus();
     }
@@ -212,9 +212,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             tvAvatarLabel.setVisibility(View.GONE);
         } else {
 //            civAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this, vm.getSearchResult().getName())));
+            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getSearchResult().getName())));
             civAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
-            tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getSearchResult().getName(), 2));
+            tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getName(), 2));
             tvAvatarLabel.setVisibility(View.VISIBLE);
         }
 
@@ -235,7 +235,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             // Check if user is in my contacts
             tvButtonText.setVisibility(View.GONE);
             ivButtonImage.setVisibility(View.GONE);
-            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivResultButtonLoading);
+            TAPUtils.rotateAnimateInfinitely(this, ivResultButtonLoading);
             ivResultButtonLoading.setVisibility(View.VISIBLE);
             TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
         }
@@ -266,9 +266,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             tvAvatarLabel.setVisibility(View.GONE);
         } else {
 //            civAvatar.setImageDrawable(getDrawable(R.drawable.tap_img_default_avatar));
-            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this, vm.getSearchResult().getName())));
+            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getSearchResult().getName())));
             civAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
-            tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(vm.getSearchResult().getName(), 2));
+            tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getName(), 2));
             tvAvatarLabel.setVisibility(View.VISIBLE);
         }
 
@@ -302,7 +302,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             // Check if user is in my contacts
             tvButtonText.setVisibility(View.GONE);
             ivButtonImage.setVisibility(View.GONE);
-            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivResultButtonLoading);
+            TAPUtils.rotateAnimateInfinitely(this, ivResultButtonLoading);
             ivResultButtonLoading.setVisibility(View.VISIBLE);
             TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
         }
@@ -323,13 +323,13 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private void openChatRoom() {
         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
-        TAPUtils.getInstance().startChatActivity(
+        TAPUtils.startChatActivity(
                 this,
                 TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
                 vm.getSearchResult().getName(),
                 vm.getSearchResult().getAvatarURL(),
                 1,
-                /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(this, vm.getSearchResult().getName()) + "");
+                /* TEMPORARY ROOM COLOR */TAPUtils.getRandomColor(this, vm.getSearchResult().getName()) + "");
     }
 
     private void enableInput() {
@@ -344,12 +344,12 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     private void disableInput() {
         runOnUiThread(() -> {
             tvButtonText.setVisibility(View.GONE);
-            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivResultButtonLoading);
+            TAPUtils.rotateAnimateInfinitely(this, ivResultButtonLoading);
             ivResultButtonLoading.setVisibility(View.VISIBLE);
             etSearch.setEnabled(false);
             etSearch.removeTextChangedListener(contactSearchWatcher);
             ivButtonClearText.setOnClickListener(null);
-            TAPUtils.getInstance().dismissKeyboard(this);
+            TAPUtils.dismissKeyboard(this);
         });
     }
 
@@ -531,7 +531,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     private void startLoading() {
         ivButtonClearText.setVisibility(View.GONE);
         ivProgressSearch.setVisibility(View.VISIBLE);
-        TAPUtils.getInstance().rotateAnimateInfinitely(TAPNewContactActivity.this, ivProgressSearch);
+        TAPUtils.rotateAnimateInfinitely(TAPNewContactActivity.this, ivProgressSearch);
     }
 
     private void endLoading() {

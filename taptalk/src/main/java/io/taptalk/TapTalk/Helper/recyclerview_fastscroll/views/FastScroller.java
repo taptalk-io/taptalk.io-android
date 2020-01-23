@@ -109,10 +109,10 @@ public class FastScroller {
         mRecyclerView = recyclerView;
         mPopup = new FastScrollPopup(resources, recyclerView);
 
-        mThumbHeight = TAPUtils.getInstance().dpToPx(48);
-        mWidth = TAPUtils.getInstance().dpToPx(8);
+        mThumbHeight = TAPUtils.dpToPx(48);
+        mWidth = TAPUtils.dpToPx(8);
 
-        mTouchInset = TAPUtils.getInstance().dpToPx(-24);
+        mTouchInset = TAPUtils.dpToPx(-24);
 
         mThumb = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTrack = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -131,8 +131,8 @@ public class FastScroller {
             int trackColor = typedArray.getColor(R.styleable.FastScrollRecyclerView_fastScrollTrackColor, 0x28000000);
             int popupBgColor = typedArray.getColor(R.styleable.FastScrollRecyclerView_fastScrollPopupBgColor, 0xff000000);
             int popupTextColor = typedArray.getColor(R.styleable.FastScrollRecyclerView_fastScrollPopupTextColor, 0xffffffff);
-            int popupTextSize = typedArray.getDimensionPixelSize(R.styleable.FastScrollRecyclerView_fastScrollPopupTextSize, TAPUtils.getInstance().spToPx(resources, 44));
-            int popupBackgroundSize = typedArray.getDimensionPixelSize(R.styleable.FastScrollRecyclerView_fastScrollPopupBackgroundSize, TAPUtils.getInstance().dpToPx(88));
+            int popupTextSize = typedArray.getDimensionPixelSize(R.styleable.FastScrollRecyclerView_fastScrollPopupTextSize, TAPUtils.spToPx(resources, 44));
+            int popupBackgroundSize = typedArray.getDimensionPixelSize(R.styleable.FastScrollRecyclerView_fastScrollPopupBackgroundSize, TAPUtils.dpToPx(88));
             @PopupTextVerticalAlignmentMode int popupTextVerticalAlignmentMode = typedArray.getInteger(R.styleable.FastScrollRecyclerView_fastScrollPopupTextVerticalAlignmentMode, PopupTextVerticalAlignmentMode.TEXT_BOUNDS);
             @PopupPosition int popupPosition = typedArray.getInteger(R.styleable.FastScrollRecyclerView_fastScrollPopupPosition, PopupPosition.ADJACENT);
 
@@ -155,7 +155,7 @@ public class FastScroller {
                     if (mAutoHideAnimator != null) {
                         mAutoHideAnimator.cancel();
                     }
-                    mAutoHideAnimator = ObjectAnimator.ofInt(FastScroller.this, "offsetX", (TAPUtils.getInstance().isRtl(mRecyclerView.getResources()) ? -1 : 1) * mWidth);
+                    mAutoHideAnimator = ObjectAnimator.ofInt(FastScroller.this, "offsetX", (TAPUtils.isRtl(mRecyclerView.getResources()) ? -1 : 1) * mWidth);
                     mAutoHideAnimator.setInterpolator(new FastOutLinearInInterpolator());
                     mAutoHideAnimator.setDuration(200);
                     mAutoHideAnimator.start();

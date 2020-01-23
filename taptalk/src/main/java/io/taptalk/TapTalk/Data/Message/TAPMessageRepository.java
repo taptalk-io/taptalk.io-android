@@ -219,7 +219,7 @@ public class TAPMessageRepository {
             if (null != room && null != room.getRoomName() && !room.getRoomName().isEmpty()) {
                 // Get room model from saved message
                 listener.onSelectFinished(new TAPRoomModel(roomID, room.getRoomName(), room.getRoomType(),
-                        TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                        TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
                         }, room.getRoomImage()), room.getRoomColor()));
             } else {
                 // Create new room model from user data

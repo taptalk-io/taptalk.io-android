@@ -117,43 +117,37 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 public class TAPUtils {
 
     private static final String TAG = TAPUtils.class.getSimpleName();
-    private static TAPUtils instance;
-    private ObjectMapper objectMapper;
-
-    public static TAPUtils getInstance() {
-        return instance == null ? (instance = new TAPUtils()) : instance;
-    }
-
-
-    public TAPUtils() {
-        objectMapper = new ObjectMapper();
+    
+    public static ObjectMapper createObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
         objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
         objectMapper.configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true);
+        return objectMapper;
     }
 
-    public String toJsonString(Object object) {
+    public static String toJsonString(Object object) {
         try {
-            return objectMapper.writeValueAsString(object);
+            return createObjectMapper().writeValueAsString(object);
         } catch (JsonProcessingException e) {
             Log.e(TAG, "toJsonString: ", e);
             return "{}";
         }
     }
 
-    public JSONObject toJsonObject(Object object) {
+    public static JSONObject toJsonObject(Object object) {
         try {
-            return new JSONObject(objectMapper.writeValueAsString(object));
+            return new JSONObject(createObjectMapper().writeValueAsString(object));
         } catch (Exception e) {
             return null;
         }
     }
 
-    public <T> T fromJSON(final TypeReference<T> type, final String jsonPacket) {
+    public static <T> T fromJSON(final TypeReference<T> type, final String jsonPacket) {
         try {
-            return objectMapper.readValue(jsonPacket, type);
+            return createObjectMapper().readValue(jsonPacket, type);
         } catch (Exception e) {
             Log.e(TAG, "fromJSON: ", e);
             return null;
@@ -161,9 +155,9 @@ public class TAPUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public HashMap<String, Object> toHashMap(Object object) {
+    public static HashMap<String, Object> toHashMap(Object object) {
         try {
-            return objectMapper.convertValue(object, HashMap.class);
+            return createObjectMapper().convertValue(object, HashMap.class);
         } catch (Exception e) {
             Log.e(TAG, "toHashMap: ", e);
             e.printStackTrace();
@@ -171,9 +165,9 @@ public class TAPUtils {
         }
     }
 
-    public HashMap<String, Object> toHashMap(String jsonString) {
+    public static HashMap<String, Object> toHashMap(String jsonString) {
         try {
-            return objectMapper.readValue(jsonString, new TypeReference<HashMap<String, Object>>() {
+            return createObjectMapper().readValue(jsonString, new TypeReference<HashMap<String, Object>>() {
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -181,9 +175,9 @@ public class TAPUtils {
         }
     }
 
-    public <T> T convertObject(Object fromObject, TypeReference<T> toObjectType) {
+    public static <T> T convertObject(Object fromObject, TypeReference<T> toObjectType) {
         try {
-            return objectMapper.convertValue(fromObject, toObjectType);
+            return createObjectMapper().convertValue(fromObject, toObjectType);
         } catch (Exception e) {
             Log.e(TAG, "convertObject: ", e);
             return null;
@@ -196,7 +190,7 @@ public class TAPUtils {
      * @param length length for string to generate
      * @return generated string
      */
-    public String generateRandomString(int length) {
+    public static String generateRandomString(int length) {
         String AB = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
         Random rnd = new Random();
         StringBuilder sb = new StringBuilder(length);
@@ -208,7 +202,7 @@ public class TAPUtils {
     /**
      * generate random number for temporary user ID
      */
-    public int generateRandomNumber(int randomNum) {
+    public static int generateRandomNumber(int randomNum) {
         Random rnd = new Random();
         return rnd.nextInt(randomNum) + 1;
     }
@@ -216,19 +210,19 @@ public class TAPUtils {
     /**
      * substring for chat above char limit
      */
-    public String mySubString(String myString, int start, int length) {
+    public static String mySubString(String myString, int start, int length) {
         return myString.substring(start, Math.min(start + length, myString.length()));
     }
 
     /**
      * converts Dp into Px
      */
-    public int dpToPx(int dp) {
+    public static int dpToPx(int dp) {
         DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    public int dpToPx(Resources res, float dp) {
+    public static int dpToPx(Resources res, float dp) {
         return (int) (dp * res.getDisplayMetrics().density);
     }
 
@@ -239,15 +233,15 @@ public class TAPUtils {
      * @param sp  the value in sp
      * @return int
      */
-    public int spToPx(Resources res, float sp) {
+    public static int spToPx(Resources res, float sp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, res.getDisplayMetrics());
     }
 
-    public boolean isRtl(Resources res) {
+    public static boolean isRtl(Resources res) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && res.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
-    public boolean hasPermissions(Context context, String... permissions) {
+    public static boolean hasPermissions(Context context, String... permissions) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
                 if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -258,15 +252,15 @@ public class TAPUtils {
         return true;
     }
 
-    public int getScreenWidth() {
+    public static int getScreenWidth() {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
-    public int getScreenHeight() {
+    public static int getScreenHeight() {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
-    public int getRandomColor(Context context, String s) {
+    public static int getRandomColor(Context context, String s) {
         if (null == s || s.length() == 0) {
             return 0;
         }
@@ -275,7 +269,7 @@ public class TAPUtils {
         return randomColors[index];
     }
 
-    public String getInitials(String s, int maxLength) {
+    public static String getInitials(String s, int maxLength) {
         if (null == s || s.length() == 0) {
             return "";
         }
@@ -286,7 +280,7 @@ public class TAPUtils {
         return initials;
     }
 
-    public void dismissKeyboard(Activity activity) {
+    public static void dismissKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = activity.getCurrentFocus();
         if (view == null) {
@@ -297,23 +291,23 @@ public class TAPUtils {
         view.clearFocus();
     }
 
-    public void dismissKeyboard(Activity activity, View view) {
+    public static void dismissKeyboard(Activity activity, View view) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         Objects.requireNonNull(imm).hideSoftInputFromWindow(view.getWindowToken(), 0);
         view.clearFocus();
     }
 
-    public void showKeyboard(Activity activity, View view) {
+    public static void showKeyboard(Activity activity, View view) {
         view.requestFocus();
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
-    public List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type) {
+    public static List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type) {
         return generateContactListForRecycler(contacts, type, null);
     }
 
-    public List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type, @Nullable Map<String, TapContactListModel> contactListPointer) {
+    public static List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type, @Nullable Map<String, TapContactListModel> contactListPointer) {
         List<TapContactListModel> separatedContacts = new ArrayList<>();
         List<TapContactListModel> nonAlphabeticContacts = new ArrayList<>();
         List<TapContactListModel> filteredContacts = new ArrayList<>();
@@ -352,7 +346,7 @@ public class TAPUtils {
         return separatedContacts;
     }
 
-    public String getStringFromURL(URL url) throws IOException {
+    public static String getStringFromURL(URL url) throws IOException {
         StringBuilder fullString = new StringBuilder();
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(
@@ -367,12 +361,12 @@ public class TAPUtils {
         return fullString.toString();
     }
 
-    public String formatCurrencyRp(long value) {
+    public static String formatCurrencyRp(long value) {
         String str = String.format(Locale.getDefault(), "%,d", value);
         return "Rp " + str.replace(",", ".");
     }
 
-    public String formatThousandSeperator(String value) {
+    public static String formatThousandSeperator(String value) {
         try {
             Long v = Long.valueOf(value);
             String str = String.format(Locale.getDefault(), "%,d", v);
@@ -384,7 +378,7 @@ public class TAPUtils {
 
     public enum ClipType {TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
 
-    public void clipToRoundedRectangle(View view, int cornerRadius, ClipType clipType) {
+    public static void clipToRoundedRectangle(View view, int cornerRadius, ClipType clipType) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             view.setOutlineProvider(new ViewOutlineProvider() {
                 @Override
@@ -430,25 +424,25 @@ public class TAPUtils {
         }
     }
 
-    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
+    public static void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
         startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, null);
     }
 
-    public void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
+    public static void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
         startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
     }
 
     // Open chat room from notification
-    public void startChatActivity(Context context, TAPRoomModel roomModel) {
+    public static void startChatActivity(Context context, TAPRoomModel roomModel) {
         startChatActivity(context, roomModel, null, null);
     }
 
     // Open chat room from notification
-    public void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser) {
+    public static void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser) {
         startChatActivity(context, roomModel, typingUser, null);
     }
 
-    public void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
+    public static void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
         if (TYPE_PERSONAL == roomModel.getRoomType() && TAPChatManager.getInstance().getActiveUser().getUserID().equals(
                 TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
             return;
@@ -477,7 +471,7 @@ public class TAPUtils {
         }
     }
 
-    public void openProfileActivity(Context context, TAPRoomModel room) {
+    public static void openProfileActivity(Context context, TAPRoomModel room) {
         Intent intent = new Intent(context, TAPChatProfileActivity.class);
         intent.putExtra(ROOM, room);
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
@@ -489,7 +483,7 @@ public class TAPUtils {
         }
     }
 
-    public void openLocationPicker(Activity activity) {
+    public static void openLocationPicker(Activity activity) {
         if (!hasPermissions(activity, Manifest.permission.ACCESS_FINE_LOCATION)) {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
         } else {
@@ -501,7 +495,7 @@ public class TAPUtils {
     /**
      * Reminder: Handle onRequestPermissionsResult in activity
      */
-    public void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
+    public static void pickImageFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Check read & write storage permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
@@ -524,7 +518,7 @@ public class TAPUtils {
     /**
      * Reminder: Handle onRequestPermissionsResult in activity
      */
-    public void pickMediaFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
+    public static void pickMediaFromGallery(Activity activity, int requestCode, boolean allowMultiple) {
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE) || !hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Check read & write storage permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_GALLERY);
@@ -550,7 +544,7 @@ public class TAPUtils {
      * @return Uri to receive saved image path
      * Reminder: Handle onRequestPermissionsResult in activity using the returned Uri
      */
-    public Uri takePicture(Activity activity, int requestCode) {
+    public static Uri takePicture(Activity activity, int requestCode) {
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
@@ -582,7 +576,7 @@ public class TAPUtils {
         return null;
     }
 
-    public boolean openFile(Context context, Uri uri, String mimeType) {
+    public static boolean openFile(Context context, Uri uri, String mimeType) {
         String path = TAPFileDownloadManager.getInstance().getFileProviderPath(uri);
         if (null == path) {
             return false;
@@ -605,11 +599,11 @@ public class TAPUtils {
         }
     }
 
-    public void openVideoPreview(Context context, Uri uri) {
+    public static void openVideoPreview(Context context, Uri uri) {
         openVideoPreview(context, uri, null);
     }
 
-    public void openVideoPreview(Context context, Uri uri, @Nullable TAPMessageModel message) {
+    public static void openVideoPreview(Context context, Uri uri, @Nullable TAPMessageModel message) {
         Intent intent = new Intent(context, TAPVideoPlayerActivity.class);
         intent.putExtra(URI, uri.toString());
         if (null != message) {
@@ -625,7 +619,7 @@ public class TAPUtils {
     /**
      * Current and maxDuration are in milliseconds
      */
-    public String getMediaDurationString(int current, int maxDuration) {
+    public static String getMediaDurationString(int current, int maxDuration) {
         int secondMs = 1000;
         int minuteMs = 1000 * 60;
         int hourMs = 1000 * 60 * 60;
@@ -652,7 +646,7 @@ public class TAPUtils {
         }
     }
 
-    public String getMediaDurationStringDummy(int maxDuration) {
+    public static String getMediaDurationStringDummy(int maxDuration) {
         int hourMs = 1000 * 60 * 60;
 
         if (maxDuration > hourMs) {
@@ -662,7 +656,7 @@ public class TAPUtils {
         }
     }
 
-    public String getFileDisplayName(TAPMessageModel message) {
+    public static String getFileDisplayName(TAPMessageModel message) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {
             return "";
@@ -678,7 +672,7 @@ public class TAPUtils {
         }
     }
 
-    public String getFileDisplayInfo(TAPMessageModel message) {
+    public static String getFileDisplayInfo(TAPMessageModel message) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {
             return "";
@@ -701,7 +695,7 @@ public class TAPUtils {
         return String.format("%s %s", displaySize, displayExtension).toUpperCase();
     }
 
-    public String getFileDisplayProgress(TAPMessageModel message, Long progressBytes) {
+    public static String getFileDisplayProgress(TAPMessageModel message, Long progressBytes) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {
             return "";
@@ -714,7 +708,7 @@ public class TAPUtils {
         }
     }
 
-    public String getFileDisplayDummyInfo(Context context, TAPMessageModel message) {
+    public static String getFileDisplayDummyInfo(Context context, TAPMessageModel message) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {
             return "";
@@ -731,7 +725,7 @@ public class TAPUtils {
         return fileDisplayInfo;
     }
 
-    public ArrayList<TAPMediaPreviewModel> getPreviewsFromClipData(Context context, ClipData clipData, boolean isFirstSelected) {
+    public static ArrayList<TAPMediaPreviewModel> getPreviewsFromClipData(Context context, ClipData clipData, boolean isFirstSelected) {
         ArrayList<TAPMediaPreviewModel> uris = new ArrayList<>();
         int itemSize = clipData.getItemCount();
         for (int count = 0; count < itemSize; count++) {
@@ -745,7 +739,7 @@ public class TAPUtils {
         return uris;
     }
 
-    public int getMessageTypeFromFileUri(Context context, Uri uri) {
+    public static int getMessageTypeFromFileUri(Context context, Uri uri) {
         String type = context.getContentResolver().getType(uri);
         // Add message types here
         if (null != type && type.contains("image")) {
@@ -757,7 +751,7 @@ public class TAPUtils {
         }
     }
 
-    public void getUserFromXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
+    public static void getUserFromXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
         // Get user from Contact Manager
         TAPDataManager.getInstance().getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
@@ -798,7 +792,7 @@ public class TAPUtils {
         });
     }
 
-    public int adjustAlpha(@ColorInt int color, float factor) {
+    public static int adjustAlpha(@ColorInt int color, float factor) {
         int alpha = Math.round(Color.alpha(color) * factor);
         int red = Color.red(color);
         int green = Color.green(color);
@@ -818,7 +812,7 @@ public class TAPUtils {
      * This call has no effect on non-translucent activities or on activities
      * with the {@link android.R.attr#windowIsFloating} attribute.
      */
-    public void convertActivityFromTranslucent(Activity activity) {
+    public static void convertActivityFromTranslucent(Activity activity) {
         try {
             Method method = Activity.class.getDeclaredMethod("convertFromTranslucent");
             method.setAccessible(true);
@@ -839,7 +833,7 @@ public class TAPUtils {
      * This call has no effect on non-translucent activities or on activities
      * with the {@link android.R.attr#windowIsFloating} attribute.
      */
-    public void convertActivityToTranslucent(Activity activity) {
+    public static void convertActivityToTranslucent(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             convertActivityToTranslucentAfterL(activity);
         } else {
@@ -850,7 +844,7 @@ public class TAPUtils {
     /**
      * Calling the convertToTranslucent method on platforms before Android 5.0
      */
-    public void convertActivityToTranslucentBeforeL(Activity activity) {
+    public static void convertActivityToTranslucentBeforeL(Activity activity) {
         try {
             Class<?>[] classes = Activity.class.getDeclaredClasses();
             Class<?> translucentConversionListenerClazz = null;
@@ -893,7 +887,7 @@ public class TAPUtils {
         }
     }
 
-    public void showNoInternetErrorDialog(Context context) {
+    public static void showNoInternetErrorDialog(Context context) {
         new TapTalkDialog.Builder(context)
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setTitle(context.getString(R.string.tap_error))
@@ -903,7 +897,7 @@ public class TAPUtils {
                 }).show();
     }
 
-    public void setMargins(View view, int left, int top, int right, int bottom) {
+    public static void setMargins(View view, int left, int top, int right, int bottom) {
         if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
             p.setMargins(left, top, right, bottom);
@@ -914,7 +908,7 @@ public class TAPUtils {
     /**
      * Convert Bitmap to File for Retrofit
      */
-    public File createTempFile(Context context, String mimeType, Bitmap bitmap) {
+    public static File createTempFile(Context context, String mimeType, Bitmap bitmap) {
         File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                 , System.currentTimeMillis() + "." + mimeType);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -934,7 +928,7 @@ public class TAPUtils {
         return file;
     }
 
-    public int searchMessagePositionByLocalID(List<TAPMessageModel> messageModels, String localID) {
+    public static int searchMessagePositionByLocalID(List<TAPMessageModel> messageModels, String localID) {
         for (int index = 0; index < messageModels.size(); index++) {
             if (localID.equals(messageModels.get(index).getLocalID())) {
                 return index;
@@ -943,7 +937,7 @@ public class TAPUtils {
         return -1;
     }
 
-    public void openCustomTabLayout(Activity activity, String url) {
+    public static void openCustomTabLayout(Activity activity, String url) {
         CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
         intentBuilder.setToolbarColor(ContextCompat.getColor(activity, R.color.tapColorPrimary));
         intentBuilder.setShowTitle(true);
@@ -959,32 +953,32 @@ public class TAPUtils {
                 });
     }
 
-    public void composeEmail(Activity activity, String emailRecipient) {
+    public static void composeEmail(Activity activity, String emailRecipient) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse(emailRecipient));
         activity.startActivity(Intent.createChooser(intent, "Send mail"));
     }
 
-    public void openDialNumber(Activity activity, String phoneNumber) {
+    public static void openDialNumber(Activity activity, String phoneNumber) {
         Intent intent = new Intent(Intent.ACTION_DIAL);
         intent.setData(Uri.parse(phoneNumber));
         activity.startActivity(intent);
     }
 
-    public void composeSMS(Activity activity, String phoneNumber) {
+    public static void composeSMS(Activity activity, String phoneNumber) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setType("vnd.android-dir/mms-sms");
         intent.putExtra("address", phoneNumber);
         activity.startActivity(intent);
     }
 
-    public void openMaps(Activity activity, Double latitude, Double longitude) {
+    public static void openMaps(Activity activity, Double latitude, Double longitude) {
         Uri googleMapUrl = Uri.parse("https://www.google.com/maps/search/?api=1&query=" + latitude + "," + longitude + "&z=16");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, googleMapUrl);
         activity.startActivity(mapIntent);
     }
 
-    public void openDocumentPicker(Activity activity) {
+    public static void openDocumentPicker(Activity activity) {
         if (!hasPermissions(activity, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             // Check read storage permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_READ_EXTERNAL_STORAGE_FILE);
@@ -997,11 +991,11 @@ public class TAPUtils {
         }
     }
 
-    public boolean isListEmpty(List t) {
+    public static boolean isListEmpty(List t) {
         return null == t || 0 >= t.size();
     }
 
-    public String getStringSizeLengthFile(long size) {
+    public static String getStringSizeLengthFile(long size) {
 
         DecimalFormat df = new DecimalFormat("0.##");
 
@@ -1021,7 +1015,7 @@ public class TAPUtils {
         return size + "B";
     }
 
-    public String getFileExtension(File file) {
+    public static String getFileExtension(File file) {
         if (null != file) {
             String fileName = file.getName();
             int dotIndex = fileName.lastIndexOf('.');
@@ -1030,21 +1024,21 @@ public class TAPUtils {
         return "";
     }
 
-    public String getFileMimeType(File file) {
+    public static String getFileMimeType(File file) {
         return URLConnection.guessContentTypeFromName(file.getName());
     }
 
-    public String getImageMimeType(Context context, Uri imageUri) {
+    public static String getImageMimeType(Context context, Uri imageUri) {
         if (null != imageUri && null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
             return context.getContentResolver().getType(imageUri);
         } else if (null != imageUri) {
-            return TAPUtils.getInstance().getFileMimeType(new File(imageUri.toString()));
+            return getFileMimeType(new File(imageUri.toString()));
         } else {
             return IMAGE_JPEG;
         }
     }
 
-    public String getMimeTypeFromUrl(String url) {
+    public static String getMimeTypeFromUrl(String url) {
         try {
             String type = null;
             String extension = url.substring(url.lastIndexOf(".") + 1);
@@ -1058,18 +1052,18 @@ public class TAPUtils {
         return null;
     }
 
-    public void rotateAnimateInfinitely(Context context, View view) {
+    public static void rotateAnimateInfinitely(Context context, View view) {
         Animation rotation = AnimationUtils.loadAnimation(context, R.anim.tap_rotation_infinite);
         rotation.setFillAfter(true);
         view.startAnimation(rotation);
     }
 
-    public void stopViewAnimation(View view) {
+    public static void stopViewAnimation(View view) {
         view.clearAnimation();
     }
 
 
-    public void animateClickButton(View view, Float resize) {
+    public static void animateClickButton(View view, Float resize) {
         view.setOnTouchListener((v, event) -> {
             if (MotionEvent.ACTION_UP == event.getAction()) {
                 view.animate().scaleX(1.0f).scaleY(1.0f).setDuration(100).start();
@@ -1082,7 +1076,7 @@ public class TAPUtils {
         });
     }
 
-    public String getDeviceCountryCode(Context context) {
+    public static String getDeviceCountryCode(Context context) {
         String countryCode;
 
         // try to get country code from TelephonyManager service
@@ -1120,7 +1114,7 @@ public class TAPUtils {
     }
 
     @SuppressLint("PrivateApi")
-    private String getCDMACountryIso() {
+    private static String getCDMACountryIso() {
         try {
             // try to get country code from SystemProperties private class
             Class<?> systemProperties = Class.forName("android.os.SystemProperties");
@@ -1182,11 +1176,11 @@ public class TAPUtils {
         return null;
     }
 
-    public boolean listEqualsIgnoreOrder(List<TAPUserModel> list1, List<TAPUserModel> list2) {
+    public static boolean listEqualsIgnoreOrder(List<TAPUserModel> list1, List<TAPUserModel> list2) {
         return new HashSet<>(list1).equals(new HashSet<>(list2));
     }
 
-    public String getFirstWordOfString(String text) {
+    public static String getFirstWordOfString(String text) {
         if (text.contains(" ")) {
             return text.substring(0, text.indexOf(' '));
         } else {
@@ -1194,19 +1188,19 @@ public class TAPUtils {
         }
     }
 
-    public String removeNonAlphaNumeric(String s) {
+    public static String removeNonAlphaNumeric(String s) {
         return s.replaceAll("[^A-Za-z0-9]", "");
     }
 
     /**
      * @return key String to get file message Uri from TapDownloadManager
      */
-    public String getUriKeyFromMessage(TAPMessageModel message) {
+    public static String getUriKeyFromMessage(TAPMessageModel message) {
         if (null == message.getData()) {
             return "";
         }
         String fileUrl = (String) message.getData().get(FILE_URL);
         String fileID = (String) message.getData().get(FILE_ID);
-        return null != fileUrl ? TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
+        return null != fileUrl ? removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
     }
 }

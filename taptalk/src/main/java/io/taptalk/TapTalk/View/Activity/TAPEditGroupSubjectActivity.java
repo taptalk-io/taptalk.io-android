@@ -134,10 +134,10 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             switch (requestCode) {
                 case PERMISSION_CAMERA_CAMERA:
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA:
-                    vm.setRoomImageUri(TAPUtils.getInstance().takePicture(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));
+                    vm.setRoomImageUri(TAPUtils.takePicture(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_GALLERY:
-                    TAPUtils.getInstance().pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_GALLERY, false);
+                    TAPUtils.pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_GALLERY, false);
                     break;
             }
         }
@@ -248,7 +248,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             rvGroupMembers.setAdapter(adapter);
             rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,
-                    0, TAPUtils.getInstance().dpToPx(16), adapter.getItemCount(),
+                    0, TAPUtils.dpToPx(16), adapter.getItemCount(),
                     0, 0));
             OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 
@@ -294,9 +294,9 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
     private void loadGroupImage(String imageUrl) {
         if (null == imageUrl || imageUrl.isEmpty()) {
-            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this, vm.getGroupData().getRoomName())));
+            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getGroupData().getRoomName())));
             civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
-            tvGroupPictureLabel.setText(TAPUtils.getInstance().getInitials(vm.getGroupData().getRoomName(), 1));
+            tvGroupPictureLabel.setText(TAPUtils.getInitials(vm.getGroupData().getRoomName(), 1));
             tvGroupPictureLabel.setVisibility(View.VISIBLE);
         } else {
             Glide.with(this).load(imageUrl).into(civGroupImage);
@@ -307,8 +307,8 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     }
 
     private void showProfilePicturePickerBottomSheet() {
-        TAPUtils.getInstance().dismissKeyboard(this);
-        TAPUtils.getInstance().animateClickButton(llChangeGroupPicture, 0.95f);
+        TAPUtils.dismissKeyboard(this);
+        TAPUtils.animateClickButton(llChangeGroupPicture, 0.95f);
         new TAPAttachmentBottomSheet(true, profilePicturePickerListener).show(getSupportFragmentManager(), "");
     }
 
@@ -366,9 +366,9 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         vm.getGroupData().setRoomImage(null);
 
         if (vm.getGroupAction() == EDIT_GROUP) {
-            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(this, vm.getGroupData().getRoomName())));
+            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getGroupData().getRoomName())));
             civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
-            tvGroupPictureLabel.setText(TAPUtils.getInstance().getInitials(vm.getGroupData().getRoomName(), 1));
+            tvGroupPictureLabel.setText(TAPUtils.getInitials(vm.getGroupData().getRoomName(), 1));
             tvGroupPictureLabel.setVisibility(View.VISIBLE);
             checkEditButtonAvailable();
         } else {
@@ -386,7 +386,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             tvButtonCreateGroup.setVisibility(View.GONE);
             ivLoadingProgressCreateGroup.setVisibility(View.VISIBLE);
-            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivLoadingProgressCreateGroup);
+            TAPUtils.rotateAnimateInfinitely(this, ivLoadingProgressCreateGroup);
         });
     }
 
@@ -395,7 +395,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             tvButtonUpdateGroup.setVisibility(View.VISIBLE);
             ivLoadingProgressUpdateGroup.setVisibility(View.GONE);
-            TAPUtils.getInstance().stopViewAnimation(ivLoadingProgressUpdateGroup);
+            TAPUtils.stopViewAnimation(ivLoadingProgressUpdateGroup);
         });
     }
 
@@ -404,7 +404,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             tvButtonUpdateGroup.setVisibility(View.GONE);
             ivLoadingProgressUpdateGroup.setVisibility(View.VISIBLE);
-            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivLoadingProgressUpdateGroup);
+            TAPUtils.rotateAnimateInfinitely(this, ivLoadingProgressUpdateGroup);
         });
     }
 
@@ -413,7 +413,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             tvButtonCreateGroup.setVisibility(View.VISIBLE);
             ivLoadingProgressCreateGroup.setVisibility(View.GONE);
-            TAPUtils.getInstance().stopViewAnimation(ivLoadingProgressCreateGroup);
+            TAPUtils.stopViewAnimation(ivLoadingProgressCreateGroup);
         });
     }
 
@@ -427,7 +427,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     }
 
     private void openChatRoom() {
-        TAPUtils.getInstance().startChatActivity(this, vm.getGroupData());
+        TAPUtils.startChatActivity(this, vm.getGroupData());
         setResult(RESULT_OK);
         finish();
         overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
@@ -510,9 +510,9 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             if (y == 0) {
                 clActionBar.setElevation(0);
             } else if (y < x) {
-                clActionBar.setElevation(TAPUtils.getInstance().dpToPx(1));
+                clActionBar.setElevation(TAPUtils.dpToPx(1));
             } else {
-                clActionBar.setElevation(TAPUtils.getInstance().dpToPx(2));
+                clActionBar.setElevation(TAPUtils.dpToPx(2));
             }
         }
     };
@@ -520,12 +520,12 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     private TAPAttachmentListener profilePicturePickerListener = new TAPAttachmentListener() {
         @Override
         public void onCameraSelected() {
-            vm.setRoomImageUri(TAPUtils.getInstance().takePicture(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));
+            vm.setRoomImageUri(TAPUtils.takePicture(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));
         }
 
         @Override
         public void onGallerySelected() {
-            TAPUtils.getInstance().pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_GALLERY, false);
+            TAPUtils.pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_GALLERY, false);
         }
     };
 
