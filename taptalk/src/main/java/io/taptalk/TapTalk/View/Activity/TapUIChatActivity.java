@@ -281,7 +281,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             callApiGetUserByUserID();
         } else {
-            callApiGetGroupData();
+            getRoomDataFromApi();
         }
 
         if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
@@ -785,7 +785,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 if (!vm.isInitialAPICallFinished()) {
                     // Call Message List API
                     if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-                        callApiGetGroupData();
+                        getRoomDataFromApi();
                     } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
                         callApiGetUserByUserID();
                 } else if (vm.getMessageModels().size() > 0) {
@@ -1351,7 +1351,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         }).start();
     }
 
-    private void callApiGetGroupData() {
+    // Previously callApiGetGroupData
+    private void getRoomDataFromApi() {
         new Thread(() -> TAPDataManager.getInstance().getChatRoomData(vm.getRoom().getRoomID(), new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
@@ -1370,7 +1371,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
                 tvRoomName.setText(vm.getRoom().getRoomName());
 
-                if (null != vm.getRoom().getGroupParticipants()) {
+                if (vm.getRoom().getRoomType() == TYPE_GROUP && null != vm.getRoom().getGroupParticipants()) {
+                    // Show number of participants for group room
                     tvRoomStatus.setText(String.format(getString(R.string.tap_group_member_count), vm.getRoom().getGroupParticipants().size()));
                 }
             }
@@ -1473,7 +1475,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         ROOM_REMOVE_PARTICIPANT.equals(message.getAction())) &&
                 !TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
             // Another member removed from group
-            callApiGetGroupData();
+            getRoomDataFromApi();
         } else if ((ROOM_REMOVE_PARTICIPANT.equals(message.getAction()) &&
                 null != message.getTarget() &&
                 vm.getMyUserModel().getUserID().equals(message.getTarget().getTargetID())) ||
