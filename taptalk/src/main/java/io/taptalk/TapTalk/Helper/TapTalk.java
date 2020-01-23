@@ -1,6 +1,10 @@
 package io.taptalk.TapTalk.Helper;
 
 import android.app.Application;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
+import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -83,7 +87,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
-public class TapTalk {
+public class TapTalk implements LifecycleObserver {
     private static final String TAG = TapTalk.class.getSimpleName();
     public static TapTalk tapTalk;
     public static Context appContext;
@@ -144,6 +148,8 @@ public class TapTalk {
             String appBaseURL,
             TapTalkImplementationType type,
             @NonNull TapListener tapListener) {
+
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         TapTalk.appContext = appContext;
         TapTalk.clientAppIcon = clientAppIcon;
@@ -212,40 +218,40 @@ public class TapTalk {
         tapListeners.add(tapListener);
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
-        AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
-            @Override
-            public void onAppGotoForeground() {
-                isForeground = true;
-                TAPContactManager.getInstance().loadAllUserDataFromDatabase();
-                TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
-                TAPChatManager.getInstance().setFinishChatFlow(false);
-                TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
-                TAPChatManager.getInstance().triggerSaveNewMessage();
-                TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
-                TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
-                defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-                Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-
-                // Start service on first load
-                if (null == intent) {
-                    intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
-                    appContext.startService(intent);
-                }
-            }
-
-            @Override
-            public void onAppGotoBackground() {
-                isForeground = false;
-                TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
-                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
-                TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
-                TAPChatManager.getInstance().updateMessageWhenEnterBackground();
-                TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
-                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-                TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
-                TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
-            }
-        });
+//        AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
+//            @Override
+//            public void onAppGotoForeground() {
+//                isForeground = true;
+//                TAPContactManager.getInstance().loadAllUserDataFromDatabase();
+//                TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
+//                TAPChatManager.getInstance().setFinishChatFlow(false);
+//                TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
+//                TAPChatManager.getInstance().triggerSaveNewMessage();
+//                TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
+//                TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
+//                defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+//                Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+//
+//                // Start service on first load
+//                if (null == intent) {
+//                    intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
+//                    appContext.startService(intent);
+//                }
+//            }
+//
+//            @Override
+//            public void onAppGotoBackground() {
+//                isForeground = false;
+//                TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+//                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
+//                TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
+//                TAPChatManager.getInstance().updateMessageWhenEnterBackground();
+//                TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
+//                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+//                TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+//                TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+//            }
+//        });
 
         if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
                 TAPDataManager.getInstance().checkAccessTokenAvailable())
@@ -711,6 +717,41 @@ public class TapTalk {
                     TapTalk.updateApplicationBadgeCount();
                 }
             });
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrounded() {
+        Log.e(TAG, "onAppBackgrounded: ");
+        isForeground = false;
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+        TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
+        TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
+        TAPChatManager.getInstance().updateMessageWhenEnterBackground();
+        TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
+        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+        TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+        TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        Log.e(TAG, "onAppForegrounded: ");
+        isForeground = true;
+        TAPContactManager.getInstance().loadAllUserDataFromDatabase();
+        TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
+        TAPChatManager.getInstance().setFinishChatFlow(false);
+        TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
+        TAPChatManager.getInstance().triggerSaveNewMessage();
+        TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
+        TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
+        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+
+        // Start service on first load
+        if (null == intent) {
+            intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
+            appContext.startService(intent);
         }
     }
 }
