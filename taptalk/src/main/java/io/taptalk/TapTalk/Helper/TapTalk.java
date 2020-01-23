@@ -742,20 +742,22 @@ public class TapTalk implements LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onAppBackgrounded() {
         //App in background
+        if (null != tapTalk) {
+            isForeground = false;
+            TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+            TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
+            TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
+            TAPChatManager.getInstance().updateMessageWhenEnterBackground();
+            TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
+            TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+            TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+            TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onAppForegrounded() {
         // App in foreground
-        checkTapTalkInitialized();
-        isForeground = false;
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
-        TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
-        TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
-        TAPChatManager.getInstance().updateMessageWhenEnterBackground();
-        TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
-        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-        TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
-        TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+
     }
 }
