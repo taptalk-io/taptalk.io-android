@@ -602,7 +602,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void openChatRoom(TAPUserModel userModel) {
-        TAPUtils.getInstance().startChatActivity(this,
+        TAPUtils.startChatActivity(this,
                 TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(),
                         userModel.getUserID()),
                 userModel.getName(),
@@ -680,7 +680,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void startVideoDownload(TAPMessageModel message) {
-        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Request storage permission
             vm.setPendingDownloadMessage(message);
             ActivityCompat.requestPermissions(
@@ -722,7 +722,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
-                TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
+                TAPUtils.rotateAnimateInfinitely(this, ivSaving);
             }
             tvLoadingText.setText(message);
             flLoading.setVisibility(View.VISIBLE);
@@ -760,7 +760,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         private boolean isShowing;
         private int scrollRange = -1;
-        private int nameTranslationY = TAPUtils.getInstance().dpToPx(8);
+        private int nameTranslationY = TAPUtils.dpToPx(8);
         private int scrimHeight;
 
         private ValueAnimator transitionToCollapse, transitionToExpand;
@@ -941,7 +941,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             .show();
                 } else {
                     // Open video player
-                    TAPUtils.getInstance().openVideoPreview(TAPChatProfileActivity.this, videoUri, item);
+                    TAPUtils.openVideoPreview(TAPChatProfileActivity.this, videoUri, item);
                 }
             } else if (item.getType() == TYPE_VIDEO) {
                 // Download video

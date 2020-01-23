@@ -115,8 +115,7 @@ public class TapUIRoomListFragment extends Fragment {
     public TapUIRoomListFragment() {
 
     }
-
-
+    
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -344,7 +343,7 @@ public class TapUIRoomListFragment extends Fragment {
         vButtonMyAccount.setOnClickListener(v -> openMyAccountActivity());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         tvStartNewChat.setOnClickListener(v -> {
-            TAPUtils.getInstance().animateClickButton(tvStartNewChat, 0.95f);
+            TAPUtils.animateClickButton(tvStartNewChat, 0.95f);
             openNewChatActivity();
         });
         //ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
@@ -375,19 +374,19 @@ public class TapUIRoomListFragment extends Fragment {
 //                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
             if (null != getActivity()) {
                 getActivity().runOnUiThread(() -> {
-                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
+                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getRandomColor(getContext(), user.getName())));
                     if (null != getContext()) {
                         civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
                     }
                 });
             }
-            tvMyAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
+            tvMyAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
             tvMyAvatarLabel.setVisibility(View.VISIBLE);
         }
     }
 
     private void showSearchChat() {
-        TAPUtils.getInstance().animateClickButton(cvButtonSearch, 0.97f);
+        TAPUtils.animateClickButton(cvButtonSearch, 0.97f);
         TAPChatManager.getInstance().triggerSearchChatBarTapped(activity, mainRoomListFragment);
     }
 
@@ -582,7 +581,7 @@ public class TapUIRoomListFragment extends Fragment {
     private void hideSelectionActionBar() {
         vm.setSelecting(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            clButtonSearch.setElevation(TAPUtils.getInstance().dpToPx(2));
+            clButtonSearch.setElevation(TAPUtils.dpToPx(2));
         }
         clButtonSearch.setVisibility(View.VISIBLE);
         //clSelection.setVisibility(View.INVISIBLE);
@@ -598,7 +597,7 @@ public class TapUIRoomListFragment extends Fragment {
         if (!TapUI.getInstance().isNewChatButtonVisible() || ivButtonNewChat.getVisibility() == View.VISIBLE) {
             return;
         }
-        ivButtonNewChat.setTranslationY(TAPUtils.getInstance().dpToPx(120));
+        ivButtonNewChat.setTranslationY(TAPUtils.dpToPx(120));
         ivButtonNewChat.setVisibility(View.VISIBLE);
         ivButtonNewChat.animate()
                 .translationY(0)
@@ -611,7 +610,7 @@ public class TapUIRoomListFragment extends Fragment {
             return;
         }
         ivButtonNewChat.animate()
-                .translationY(TAPUtils.getInstance().dpToPx(120))
+                .translationY(TAPUtils.dpToPx(120))
                 .setInterpolator(new AccelerateInterpolator())
                 .withEndAction(() -> ivButtonNewChat.setVisibility(View.GONE))
                 .start();
@@ -649,7 +648,7 @@ public class TapUIRoomListFragment extends Fragment {
         ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconLoadingProgressPrimary));
         tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));
         tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
-        TAPUtils.getInstance().rotateAnimateInfinitely(activity, ivSetupChatLoading);
+        TAPUtils.rotateAnimateInfinitely(activity, ivSetupChatLoading);
 
         tvSetupChatDescription.setVisibility(View.VISIBLE);
         llRetrySetup.setVisibility(View.GONE);
@@ -691,7 +690,7 @@ public class TapUIRoomListFragment extends Fragment {
         llRetrySetup.setVisibility(View.VISIBLE);
 
         llRetrySetup.setOnClickListener(view -> {
-            TAPUtils.getInstance().animateClickButton(llRetrySetup, 0.95f);
+            TAPUtils.animateClickButton(llRetrySetup, 0.95f);
             if (null == TAPChatManager.getInstance().getActiveUser()) {
                 return;
             }
@@ -974,5 +973,4 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setLastBadgeCount(vm.getRoomBadgeCount());
         }
     }
-
 }

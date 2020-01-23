@@ -97,7 +97,7 @@ public class TapUISearchChatFragment extends Fragment {
         if (hidden) {
             etSearch.setText("");
         } else {
-            TAPUtils.getInstance().showKeyboard(getActivity(), etSearch);
+            TAPUtils.showKeyboard(getActivity(), etSearch);
         }
     }
 
@@ -124,7 +124,7 @@ public class TapUISearchChatFragment extends Fragment {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                TAPUtils.getInstance().dismissKeyboard(getActivity());
+                TAPUtils.dismissKeyboard(getActivity());
             }
         });
 
@@ -132,12 +132,12 @@ public class TapUISearchChatFragment extends Fragment {
             TapUIMainRoomListFragment fragment = (TapUIMainRoomListFragment) this.getParentFragment();
             if (null != fragment)
                 fragment.showRoomList();
-            TAPUtils.getInstance().dismissKeyboard(getActivity());
+            TAPUtils.dismissKeyboard(getActivity());
         });
         ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 
         etSearch.setOnEditorActionListener((textView, i, keyEvent) -> {
-            TAPUtils.getInstance().dismissKeyboard(getActivity());
+            TAPUtils.dismissKeyboard(getActivity());
             return false;
         });
     }
@@ -160,7 +160,7 @@ public class TapUISearchChatFragment extends Fragment {
                             entity.getRoomID(),
                             entity.getRoomName(),
                             entity.getRoomType(),
-                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                            TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
                             }, entity.getRoomImage()),
                             entity.getRoomColor());
                     recentItem.setRoom(roomModel);
@@ -239,7 +239,7 @@ public class TapUISearchChatFragment extends Fragment {
                                 entity.getRoomType(),
                                 // TODO: 18 October 2018 REMOVE CHECK
                                 /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                                TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                                TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
                                 }, entity.getRoomImage())
                                 /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
                                 entity.getRoomColor());

@@ -205,7 +205,7 @@ public class TapCoreMessageManager {
     }
 
     public void downloadMessageFile(TAPMessageModel message, TapCoreFileDownloadListener listener) {
-        if (!TAPUtils.getInstance().hasPermissions(TapTalk.appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(TapTalk.appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             listener.onError(ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE);
         } else {
             TAPFileDownloadManager.getInstance().downloadMessageFile(message);

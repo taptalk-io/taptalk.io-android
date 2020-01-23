@@ -315,13 +315,13 @@ public class TAPNotificationManager {
 
     public void saveNotificationMessageMapToPreference() {
         if (0 < getNotificationMessagesMap().size()) {
-            TAPDataManager.getInstance().saveNotificationMessageMap(TAPUtils.getInstance().toJsonString(getNotificationMessagesMap()));
+            TAPDataManager.getInstance().saveNotificationMessageMap(TAPUtils.toJsonString(getNotificationMessagesMap()));
         }
     }
 
     public void updateNotificationMessageMapWhenAppKilled() {
         if (TAPDataManager.getInstance().checkNotificationMap() && 0 == getNotificationMessagesMap().size()) {
-            Map<String, List<TAPMessageModel>> tempNotifMessage = TAPUtils.getInstance().fromJSON(
+            Map<String, List<TAPMessageModel>> tempNotifMessage = TAPUtils.fromJSON(
                     new TypeReference<Map<String, List<TAPMessageModel>>>() {
                     },
                     TAPDataManager.getInstance().getNotificationMessageMap());

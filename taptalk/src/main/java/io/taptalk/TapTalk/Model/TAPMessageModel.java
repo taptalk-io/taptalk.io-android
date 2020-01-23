@@ -133,16 +133,16 @@ public class TAPMessageModel implements Parcelable {
     }
 
     public static TAPMessageModel Builder(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data) {
-        String localID = TAPUtils.getInstance().generateRandomString(32);
+        String localID = TAPUtils.generateRandomString(32);
         return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, null, null, null, false, true, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel BuilderWithQuotedMessage(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, TAPMessageModel quotedMessage) {
-        String localID = TAPUtils.getInstance().generateRandomString(32);
+        String localID = TAPUtils.generateRandomString(32);
         String quoteTitle, quoteContent;
         if (quotedMessage.getType() == TYPE_FILE) {
-            quoteTitle = TAPUtils.getInstance().getFileDisplayName(quotedMessage);
-            quoteContent = TAPUtils.getInstance().getFileDisplayInfo(quotedMessage);
+            quoteTitle = TAPUtils.getFileDisplayName(quotedMessage);
+            quoteContent = TAPUtils.getFileDisplayInfo(quotedMessage);
         } else {
             quoteTitle = quotedMessage.getUser().getName();
             quoteContent = quotedMessage.getBody();
@@ -160,14 +160,14 @@ public class TAPMessageModel implements Parcelable {
     }
 
     public static TAPMessageModel BuilderWithQuote(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, String quoteTitle, String quoteContent, String quoteImageUrl) {
-        String localID = TAPUtils.getInstance().generateRandomString(32);
+        String localID = TAPUtils.generateRandomString(32);
 
         TAPQuoteModel quote = new TAPQuoteModel(quoteTitle, quoteContent, "", quoteImageUrl, (null == quoteImageUrl || quoteImageUrl.isEmpty()) ? "" : IMAGE);
         return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, null, null, false, true, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel BuilderForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, Long created, TAPUserModel user, String recipientID) {
-        String localID = TAPUtils.getInstance().generateRandomString(32);
+        String localID = TAPUtils.generateRandomString(32);
         TAPForwardFromModel forwardFrom;
         if (null == messageToForward.getForwardFrom() || null == messageToForward.getForwardFrom().getFullname() || messageToForward.getForwardFrom().getFullname().isEmpty()) {
             forwardFrom = new TAPForwardFromModel(messageToForward.getUser().getUserID(), messageToForward.getUser().getXcUserID(), messageToForward.getUser().getName(), messageToForward.getMessageID(), messageToForward.getLocalID());
@@ -178,7 +178,7 @@ public class TAPMessageModel implements Parcelable {
     }
 
     public static TAPMessageModel BuilderResendMessage(TAPMessageModel message, Long created) {
-        String localID = TAPUtils.getInstance().generateRandomString(32);
+        String localID = TAPUtils.generateRandomString(32);
         return new TAPMessageModel("0", localID, "", message.getBody(), message.getRoom(), message.getType(), created, message.getUser(), message.getRecipientID(), message.getData(), message.getQuote(), message.getReplyTo(), message.getForwardFrom(), false, true, false, false, false, false, created, null, null, null);
     }
 
