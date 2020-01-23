@@ -1,6 +1,10 @@
 package io.taptalk.TapTalk.Helper;
 
 import android.app.Application;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
+import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -82,7 +86,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
-public class TapTalk {
+public class TapTalk implements LifecycleObserver {
     private static final String TAG = TapTalk.class.getSimpleName();
     public static TapTalk tapTalk;
     public static Context appContext;
@@ -143,6 +147,8 @@ public class TapTalk {
             String appBaseURL,
             TapTalkImplementationType type,
             @NonNull TapListener tapListener) {
+
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         TapTalk.appContext = appContext;
         TapTalk.clientAppIcon = clientAppIcon;
@@ -234,15 +240,15 @@ public class TapTalk {
 
             @Override
             public void onAppGotoBackground() {
-                isForeground = false;
-                TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
-                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
-                TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
-                TAPChatManager.getInstance().updateMessageWhenEnterBackground();
-                TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
-                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-                TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
-                TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+//                isForeground = false;
+//                TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+//                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
+//                TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
+//                TAPChatManager.getInstance().updateMessageWhenEnterBackground();
+//                TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
+//                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+//                TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+//                TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
             }
         });
 
@@ -731,5 +737,25 @@ public class TapTalk {
 //            appContext.startService(intent);
 //        }
 //        TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrounded() {
+        //App in background
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        // App in foreground
+        checkTapTalkInitialized();
+        isForeground = false;
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+        TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
+        TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
+        TAPChatManager.getInstance().updateMessageWhenEnterBackground();
+        TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
+        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+        TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+        TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
     }
 }
