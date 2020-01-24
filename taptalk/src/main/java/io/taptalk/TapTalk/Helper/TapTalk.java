@@ -102,7 +102,6 @@ public class TapTalk implements LifecycleObserver {
 
     private static Thread.UncaughtExceptionHandler defaultUEH;
     private List<TapListener> tapListeners = new ArrayList<>();
-    private static boolean listenerInit = false;
 
     private static Map<String, String> coreConfigs;
     private static Map<String, String> projectConfigs;
