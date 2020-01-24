@@ -679,7 +679,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         // Hide chat composer if room is locked
         if (vm.getRoom().isLocked()) {
-            clChatComposer.setVisibility(View.GONE);
+            lockChatRoom();
         }
 
         // Initialize custom keyboard
@@ -1460,10 +1460,17 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void checkChatRoomLocked(TAPMessageModel message) {
         if (null != message && message.getRoom().isLocked()) {
-            clChatComposer.setVisibility(View.GONE);
+            lockChatRoom();
         } else {
             clChatComposer.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void lockChatRoom() {
+        etChat.setText("");
+        hideQuoteLayout();
+        hideKeyboards();
+        clChatComposer.setVisibility(View.GONE);
     }
 
     private void handleSystemMessageAction(TAPMessageModel message) {
