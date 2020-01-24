@@ -224,7 +224,7 @@ public class TapTalk implements LifecycleObserver {
 
         // TODO: 2020-01-24 Register Network if not registered
         if (!listenerInit)
-            onAppForegrounded();
+            handleAppToForeground();
     }
 
     private static void initListener() {
