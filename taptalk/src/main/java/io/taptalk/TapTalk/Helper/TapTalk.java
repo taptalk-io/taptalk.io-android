@@ -98,6 +98,7 @@ public class TapTalk implements LifecycleObserver {
     private static int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
     private static boolean isRefreshTokenExpired, isAutoConnectDisabled, isAutoContactSyncDisabled;
     private Intent intent;
+    private static boolean listenerInit = false;
 
     private static Thread.UncaughtExceptionHandler defaultUEH;
     private List<TapListener> tapListeners = new ArrayList<>();
@@ -222,7 +223,6 @@ public class TapTalk implements LifecycleObserver {
                 TAPDataManager.getInstance().checkAccessTokenAvailable())
             initListener();
 
-        // TODO: 2020-01-24 Register Network if not registered
         if (!listenerInit)
             handleAppToForeground();
     }
@@ -688,6 +688,7 @@ public class TapTalk implements LifecycleObserver {
             });
         }
     }
+
 
     public static void handleAppToForeground() {
         isForeground = true;

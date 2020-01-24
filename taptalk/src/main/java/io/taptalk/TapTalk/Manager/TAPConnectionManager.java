@@ -95,7 +95,6 @@ public class TAPConnectionManager {
         webSocketClient = new WebSocketClient(webSocketUri, header) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
-                Log.e("[[[[[", "onOpen: ");
                 connectionStatus = CONNECTED;
                 reconnectAttempt = 0;
                 List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
@@ -130,8 +129,6 @@ public class TAPConnectionManager {
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
-                Log.e("[[[[[", "onClose2: " + code);
-                Log.e("[[[[[", "onClose: " + reason);
                 if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
                     connectionStatus = DISCONNECTED;
                 }
@@ -147,7 +144,6 @@ public class TAPConnectionManager {
             @Override
             public void onError(Exception ex) {
                 ex.printStackTrace();
-                Log.e("[[[[[", "onError: ", ex);
                 if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
                     connectionStatus = DISCONNECTED;
                 }
@@ -241,7 +237,6 @@ public class TAPConnectionManager {
     }
 
     public void close(ConnectionStatus connectionStatus) {
-        Log.e("[[[[[", "close1: " + connectionStatus);
         if (CONNECTED == this.connectionStatus || CONNECTING == this.connectionStatus) {
             try {
                 this.connectionStatus = connectionStatus == NOT_CONNECTED ? connectionStatus : DISCONNECTED;
@@ -253,12 +248,10 @@ public class TAPConnectionManager {
     }
 
     public void close() {
-        Log.e("[[[[[", "close2");
         close(DISCONNECTED);
     }
 
     public void close(int code) {
-        Log.e("[[[[[", "close3 " + code);
         if (CONNECTED == connectionStatus ||
                 CONNECTING == connectionStatus) {
             try {
@@ -271,7 +264,6 @@ public class TAPConnectionManager {
     }
 
     public void reconnect() {
-        Log.e("[[[[[", "reconnect: ");
         if (reconnectAttempt < 120) reconnectAttempt++;
         long delay = RECONNECT_DELAY * (long) reconnectAttempt;
         new Timer().schedule(new TimerTask() {
