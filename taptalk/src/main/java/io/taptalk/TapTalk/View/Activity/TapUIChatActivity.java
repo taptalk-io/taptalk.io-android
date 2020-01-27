@@ -34,6 +34,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -674,11 +675,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         rvMessageList.setItemAnimator(null);
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
-        // Hide chat composer if room is locked
-        if (vm.getRoom().isLocked()) {
-            lockChatRoom();
-        }
-
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TAPChatManager.getInstance().getCustomKeyboardItems(vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel()));
         if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
@@ -731,6 +727,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 //            //vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
 //            getAllUnreadMessage();
 //        }
+
+        if (vm.getRoom().isLocked()) {
+            // Hide chat composer if room is locked
+            Log.d(TAG, "initView: lock chat room");
+            lockChatRoom();
+        }
 
         if (vm.getMessageModels().size() == 0) {
             getAllUnreadMessage();
@@ -1457,17 +1459,21 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void checkChatRoomLocked(TAPMessageModel message) {
         if (null != message && message.getRoom().isLocked()) {
+            Log.d(TAG, "checkChatRoomLocked: LOCKED");
             lockChatRoom();
         } else {
+            Log.d(TAG, "checkChatRoomLocked: OPEN");
             clChatComposer.setVisibility(View.VISIBLE);
         }
     }
 
     private void lockChatRoom() {
-        etChat.setText("");
-        hideQuoteLayout();
-        hideKeyboards();
-        clChatComposer.setVisibility(View.GONE);
+        runOnUiThread(() -> {
+            etChat.setText("");
+            hideQuoteLayout();
+            hideKeyboards();
+            clChatComposer.setVisibility(View.GONE);
+        });
     }
 
     private void handleSystemMessageAction(TAPMessageModel message) {
@@ -1487,7 +1493,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         vm.getMyUserModel().getUserID().equals(message.getUser().getUserID()))) {
             // Active user removed from group
             showChatAsHistory(getString(R.string.tap_not_a_participant));
-        } else if (ROOM_ADD_PARTICIPANT.equals(message.getAction())) {
+        } else if (ROOM_ADD_PARTICIPANT.equals(message.getAction())) { // TODO: 27 Jan 2020 CHECK TARGET ID?
             // New group participant added
             showDefaultChatEditText();
         } else if (DELETE_ROOM.equals(message.getAction())) {
