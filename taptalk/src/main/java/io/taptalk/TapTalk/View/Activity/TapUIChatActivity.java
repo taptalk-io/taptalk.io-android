@@ -27,9 +27,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.ImageViewCompat;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -671,11 +671,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_LEFT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_RIGHT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST, 0);
+        rvMessageList.setItemAnimator(null);
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
-        SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvMessageList.getItemAnimator();
-        if (null != messageAnimator) {
-            messageAnimator.setSupportsChangeAnimations(false);
-        }
 
         // Hide chat composer if room is locked
         if (vm.getRoom().isLocked()) {
@@ -2936,6 +2933,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
                 if (rvMessageList.getVisibility() != View.VISIBLE) {
                     rvMessageList.setVisibility(View.VISIBLE);
+                }
+                if (null == rvMessageList.getItemAnimator()) {
+                    // Set default item animator for recycler view
+                    new Handler().postDelayed(() ->
+                            rvMessageList.post(() ->
+                                    rvMessageList.setItemAnimator(
+                                            new DefaultItemAnimator())), 2000L);
                 }
                 if (state == STATE.DONE) {
                     updateMessageDecoration();
