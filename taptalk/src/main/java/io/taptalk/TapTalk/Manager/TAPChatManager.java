@@ -1617,6 +1617,11 @@ public class TAPChatManager {
     private void receiveMessageFromSocket(HashMap<String, Object> newMessageMap, String eventName) {
         TAPMessageModel newMessage = TAPEncryptorManager.getInstance().decryptMessage(newMessageMap);
 
+        // TODO: 28 Jan 2020 TEMPORARY SOCKET MESSAGE LOG
+        if (TapTalk.isLoggingEnabled) {
+            Log.d(TAG, "receiveMessageFromSocket: " + TAPUtils.toJsonString(newMessage));
+        }
+
         // Remove from waiting response hashmap
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
