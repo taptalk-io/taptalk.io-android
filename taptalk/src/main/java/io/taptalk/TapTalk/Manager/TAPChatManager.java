@@ -55,7 +55,6 @@ import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
-import io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
@@ -76,9 +75,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_CAPTION_LENGTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
@@ -315,13 +312,7 @@ public class TAPChatManager {
                 entity.getLocalID(),
                 entity.getFilterID(),
                 entity.getBody(),
-                new TAPRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType(),
-                        // TODO: 18 October 2018 REMOVE CHECK
-                        /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                        TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
-                        }, entity.getRoomImage())
-                        /* TEMPORARY CHECK FOR NULL IMAGE */ : null
-                        , entity.getRoomColor()),
+                TAPRoomModel.Builder(entity),
                 entity.getType(),
                 entity.getCreated(),
                 new TAPUserModel(entity.getUserID(), entity.getXcUserID(), entity.getUserFullName(),
@@ -365,9 +356,11 @@ public class TAPChatManager {
                 model.getUpdated(), model.getDeleted(),
                 model.getIsRead(), model.getDelivered(), model.getHidden(), model.getIsDeleted(),
                 model.getSending(), model.getFailedSend(), model.getRoom().getRoomID(),
-                model.getRoom().getRoomName(), model.getRoom().getRoomColor(),
-                model.getRoom().getRoomType(),
+                model.getRoom().getXcRoomID(), model.getRoom().getRoomName(),
+                model.getRoom().getRoomColor(), model.getRoom().getRoomType(),
                 TAPUtils.toJsonString(model.getRoom().getRoomImage()),
+                model.getRoom().isLocked(), model.getRoom().isRoomDeleted(),
+                model.getRoom().getLockedTimestamp(), model.getRoom().getDeletedTimestamp(),
                 model.getUser().getUserID(), model.getUser().getXcUserID(),
                 model.getUser().getName(), model.getUser().getUsername(),
                 TAPUtils.toJsonString(model.getUser().getAvatarURL()),
@@ -375,8 +368,8 @@ public class TAPChatManager {
                 TAPUtils.toJsonString(model.getUser().getUserRole()),
                 model.getUser().getLastLogin(), model.getUser().getLastActivity(),
                 model.getUser().getRequireChangePassword(),
-                model.getUser().getCreated(), model.getUser().getUpdated(), model.getUser().getDeleted(),
-                model.getAction(), model.getTarget()
+                model.getUser().getCreated(), model.getUser().getUpdated(),
+                model.getUser().getDeleted(), model.getAction(), model.getTarget()
         );
     }
 

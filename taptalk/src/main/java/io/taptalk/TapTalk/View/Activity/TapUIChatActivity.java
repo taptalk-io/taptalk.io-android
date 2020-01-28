@@ -730,7 +730,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         if (vm.getRoom().isLocked()) {
             // Hide chat composer if room is locked
-            Log.e(TAG, "initView: lock chat room");
             lockChatRoom();
         }
 
@@ -1638,7 +1637,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-            Log.e(TAG, "onReceiveMessageInActiveRoom checkChatRoomLocked: " + message.getType() + " " + message.getMessageID() + " " + message.getBody() + " " + message.getRoom().isLocked());
             checkChatRoomLocked(message);
             handleSystemMessageAction(message);
             updateMessage(message);
@@ -2333,7 +2331,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         }
                         flMessageList.setVisibility(View.VISIBLE);
                         showUnreadButton(vm.getUnreadIndicator());
-                        Log.e(TAG, "dbListener first load checkChatRoomLocked: " + models.get(0).getType() + " " + models.get(0).getMessageID() + " " + models.get(0).getBody() + " " + models.get(0).getRoom().isLocked());
                         checkChatRoomLocked(models.get(0));
                     }
                     rvMessageList.scrollToPosition(0);
@@ -2377,7 +2374,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         updateMessageDecoration();
                     }
                     if (!models.isEmpty()) {
-                        Log.e(TAG, "dbListener load more checkChatRoomLocked: " + models.get(0).getType() + " " + models.get(0).getMessageID() + " " + models.get(0).getBody() + " " + models.get(0).getRoom().isLocked());
                         checkChatRoomLocked(models.get(0));
                     }
                 });
@@ -2793,7 +2789,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 //showRoomIsUnavailableState();
                 showChatAsHistory(getString(R.string.tap_group_unavailable));
             } else {
-                Log.e(TAG, "messageAfterView checkChatRoomLocked: " + lastMessage.getType() + " " + lastMessage.getMessageID() + " " + lastMessage.getBody() + " " + lastMessage.getRoom().isLocked());
                 checkChatRoomLocked(lastMessage);
             }
         }
@@ -2950,7 +2945,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     new Handler().postDelayed(() ->
                             rvMessageList.post(() ->
                                     rvMessageList.setItemAnimator(
-                                            new DefaultItemAnimator())), 2000L);
+                                            new DefaultItemAnimator())), 200L);
                 }
                 if (state == STATE.DONE) {
                     updateMessageDecoration();
