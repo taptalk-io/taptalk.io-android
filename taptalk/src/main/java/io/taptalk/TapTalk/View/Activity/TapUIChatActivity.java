@@ -730,7 +730,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         if (vm.getRoom().isLocked()) {
             // Hide chat composer if room is locked
-            Log.d(TAG, "initView: lock chat room");
+            Log.e(TAG, "initView: lock chat room");
             lockChatRoom();
         }
 
@@ -1459,10 +1459,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
     private void checkChatRoomLocked(TAPMessageModel message) {
         if (null != message && message.getRoom().isLocked()) {
-            Log.d(TAG, "checkChatRoomLocked: LOCKED");
             lockChatRoom();
         } else {
-            Log.d(TAG, "checkChatRoomLocked: OPEN");
             clChatComposer.setVisibility(View.VISIBLE);
         }
     }
@@ -1640,6 +1638,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private TAPChatListener chatListener = new TAPChatListener() {
         @Override
         public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
+            Log.e(TAG, "onReceiveMessageInActiveRoom checkChatRoomLocked: " + message.getType() + " " + message.getMessageID() + " " + message.getBody() + " " + message.getRoom().isLocked());
             checkChatRoomLocked(message);
             handleSystemMessageAction(message);
             updateMessage(message);
@@ -2334,6 +2333,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         }
                         flMessageList.setVisibility(View.VISIBLE);
                         showUnreadButton(vm.getUnreadIndicator());
+                        Log.e(TAG, "dbListener first load checkChatRoomLocked: " + models.get(0).getType() + " " + models.get(0).getMessageID() + " " + models.get(0).getBody() + " " + models.get(0).getRoom().isLocked());
                         checkChatRoomLocked(models.get(0));
                     }
                     rvMessageList.scrollToPosition(0);
@@ -2377,6 +2377,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         updateMessageDecoration();
                     }
                     if (!models.isEmpty()) {
+                        Log.e(TAG, "dbListener load more checkChatRoomLocked: " + models.get(0).getType() + " " + models.get(0).getMessageID() + " " + models.get(0).getBody() + " " + models.get(0).getRoom().isLocked());
                         checkChatRoomLocked(models.get(0));
                     }
                 });
@@ -2739,9 +2740,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 if (state == STATE.DONE) {
                     updateMessageDecoration();
                 }
-                if (!messageAfterModels.isEmpty()) {
-                    checkChatRoomLocked(messageAfterModels.get(0));
-                }
             });
 
             if (0 < responseMessages.size()) {
@@ -2794,6 +2792,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 // Room was deleted
                 //showRoomIsUnavailableState();
                 showChatAsHistory(getString(R.string.tap_group_unavailable));
+            } else {
+                Log.e(TAG, "messageAfterView checkChatRoomLocked: " + lastMessage.getType() + " " + lastMessage.getMessageID() + " " + lastMessage.getBody() + " " + lastMessage.getRoom().isLocked());
+                checkChatRoomLocked(lastMessage);
             }
         }
     };
