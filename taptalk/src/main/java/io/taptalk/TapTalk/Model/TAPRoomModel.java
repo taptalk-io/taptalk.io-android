@@ -7,8 +7,14 @@ import android.support.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
+
+import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.TAPUtils;
+
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TAPRoomModel implements Parcelable {
 
@@ -45,6 +51,18 @@ public class TAPRoomModel implements Parcelable {
         this.unreadCount = unreadCount;
     }
 
+    public TAPRoomModel(TAPMessageEntity messageEntity) {
+        this.roomID = messageEntity.getRoomID();
+        this.roomName = messageEntity.getRoomName();
+        this.roomType = null == messageEntity.getRoomType() ? TYPE_PERSONAL : messageEntity.getRoomType();
+        this.roomImage = TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {}, messageEntity.getRoomImage());
+        this.roomColor = messageEntity.getRoomColor();
+        this.isLocked = null == messageEntity.getRoomLocked() ? false : messageEntity.getRoomLocked();
+        this.isRoomDeleted = null == messageEntity.getRoomDeleted() ? false : messageEntity.getRoomDeleted();
+        this.lockedTimestamp = null == messageEntity.getRoomLockedTimestamp() ? 0L : messageEntity.getRoomLockedTimestamp();
+        this.deletedTimestamp = null == messageEntity.getRoomDeletedTimestamp() ? 0L : messageEntity.getRoomDeletedTimestamp();
+    }
+
     public TAPRoomModel() {
     }
 
@@ -54,6 +72,10 @@ public class TAPRoomModel implements Parcelable {
 
     public static TAPRoomModel Builder(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor, int unreadCount) {
         return new TAPRoomModel(roomID, roomName, roomType, roomImage, roomColor, unreadCount);
+    }
+
+    public static TAPRoomModel Builder(TAPMessageEntity messageEntity) {
+        return new TAPRoomModel(messageEntity);
     }
 
     public String getRoomID() {

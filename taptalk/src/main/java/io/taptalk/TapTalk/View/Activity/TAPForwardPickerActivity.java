@@ -160,13 +160,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
                     for (TAPMessageEntity entity : entities) {
                         TAPSearchChatModel recentItem = new TAPSearchChatModel(ROOM_ITEM);
-                        TAPRoomModel roomModel = new TAPRoomModel(
-                                entity.getRoomID(),
-                                entity.getRoomName(),
-                                entity.getRoomType(),
-                                TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
-                                }, entity.getRoomImage()),
-                                entity.getRoomColor());
+                        TAPRoomModel roomModel = TAPRoomModel.Builder(entity);
                         recentItem.setRoom(roomModel);
                         vm.addRecentSearches(recentItem);
                     }
@@ -226,16 +220,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                 for (TAPMessageEntity entity : entities) {
                     TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                     // Convert message to room model
-                    TAPRoomModel room = new TAPRoomModel(
-                            entity.getRoomID(),
-                            entity.getRoomName(),
-                            entity.getRoomType(),
-                            // TODO: 18 October 2018 REMOVE CHECK
-                            /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                            TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
-                            }, entity.getRoomImage())
-                            /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
-                            entity.getRoomColor());
+                    TAPRoomModel room = TAPRoomModel.Builder(entity);
                     room.setUnreadCount(unreadMap.get(room.getRoomID()));
                     result.setRoom(room);
                     vm.addSearchResult(result);
