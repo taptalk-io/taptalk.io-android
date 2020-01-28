@@ -1515,10 +1515,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             vm.getRoom().setRoomName(message.getRoom().getRoomName());
             vm.getRoom().setRoomImage(message.getRoom().getRoomImage());
             TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getRoom());
-            tvRoomName.setText(vm.getRoom().getRoomName());
-            if (null != vm.getRoom().getRoomImage()) {
-                civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage, tvRoomImageLabel));
-            }
+            runOnUiThread(() -> {
+                tvRoomName.setText(vm.getRoom().getRoomName());
+                if (null != vm.getRoom().getRoomImage()) {
+                    civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getRoomImage().getThumbnail(), civRoomImage, tvRoomImageLabel));
+                }
+            });
         } else if (vm.getRoom().getRoomType() == TYPE_PERSONAL &&
                 UPDATE_USER.equals(message.getAction()) &&
                 message.getUser().getUserID().equals(vm.getOtherUserID())) {
@@ -1526,10 +1528,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             vm.getRoom().setRoomName(message.getUser().getName());
             vm.getRoom().setRoomImage(message.getUser().getAvatarURL());
             vm.setOtherUserModel(message.getUser());
-            tvRoomName.setText(vm.getOtherUserModel().getName());
-            if (null != vm.getRoom().getRoomImage()) {
-                civRoomImage.post(() -> loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
-            }
+            runOnUiThread(() -> {
+                tvRoomName.setText(vm.getOtherUserModel().getName());
+                if (null != vm.getRoom().getRoomImage()) {
+                    civRoomImage.post(() -> loadProfilePicture(vm.getOtherUserModel().getAvatarURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
+                }
+            });
         }
     }
 
