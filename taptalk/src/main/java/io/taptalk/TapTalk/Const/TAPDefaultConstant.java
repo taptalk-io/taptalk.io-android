@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
-        public static final int kDatabaseVersion = 6;
+        public static final int kDatabaseVersion = 7;
     }
 
     public static final class ConnectionEvent {
@@ -36,6 +36,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_PERSONAL = 1;
         public static final int TYPE_GROUP = 2;
         public static final int TYPE_CHANNEL = 3;
+        public static final int TYPE_TRANSACTION = 4;
     }
 
     public static final class MessageType {

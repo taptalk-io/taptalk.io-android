@@ -26,6 +26,9 @@ public abstract class TAPBaseAdapter<T, VH extends TAPBaseViewHolder<T>> extends
     }
 
     public T getItemAt(int position) {
+        if (items.isEmpty() || position >= items.size()) {
+            return null;
+        }
         return items.get(position);
     }
 

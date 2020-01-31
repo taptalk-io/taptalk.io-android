@@ -62,9 +62,9 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
     @Override
     public int getViewTypeHeight(RecyclerView recyclerView, @Nullable TAPBaseViewHolder<TAPCountryRecycleItem> viewHolder, int viewType) {
         if (COUNTRY_INITIAL == TAPCountryRecycleItem.RecyclerItemType.values()[viewType]) {
-            return TAPUtils.getInstance().dpToPx(TapTalk.appContext.getResources(), 52);
+            return TAPUtils.dpToPx(TapTalk.appContext.getResources(), 52);
         } else {
-            return TAPUtils.getInstance().dpToPx(TapTalk.appContext.getResources(), 44);
+            return TAPUtils.dpToPx(TapTalk.appContext.getResources(), 44);
         }
     }
 

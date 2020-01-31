@@ -10,6 +10,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPDeleteRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
@@ -131,6 +132,9 @@ public interface TAPTalkApiService {
 
     @POST("client/room/get")
     Observable<TAPBaseResponse<TAPCreateRoomResponse>> getChatRoomData(@Body TAPCommonRequest request);
+
+    @POST("client/room/get_by_xc_room_id")
+    Observable<TAPBaseResponse<TAPCreateRoomResponse>> getChatRoomByXcRoomID(@Body TAPGetRoomByXcRoomIDRequest request);
 
     @POST("client/room/update")
     Observable<TAPBaseResponse<TAPUpdateRoomResponse>> updateChatRoom(@Body TAPUpdateRoomRequest request);

@@ -28,7 +28,7 @@ public class TAPRoundedCornerImageView extends android.support.v7.widget.AppComp
     private AttributeSet attributeSet;
     private int w, h, oldW, oldH, imageWidth, imageHeight, minWidth, minHeight, maxWidth, maxHeight;
     private float dimensionRatio;
-    private final float DEFAULT_RADIUS = TAPUtils.getInstance().dpToPx(4);
+    private final float DEFAULT_RADIUS = TAPUtils.dpToPx(4);
 
     public float topLeftRad = DEFAULT_RADIUS;
     public float topRightRad = DEFAULT_RADIUS;

@@ -35,6 +35,7 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
 
 public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>> {
 
@@ -96,7 +97,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
             if (room.getRoomType() == TYPE_PERSONAL) {
                 user = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()));
-            } else if (room.getRoomType() == TYPE_GROUP) {
+            } else if (room.getRoomType() == TYPE_GROUP || room.getRoomType() == TYPE_TRANSACTION) {
                 group = TAPGroupManager.Companion.getGetInstance().getGroupData(room.getRoomID());
             }
 
@@ -123,7 +124,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 glide.clear(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(item.getDefaultAvatarBackgroundColor()));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                tvAvatarLabel.setText(TAPUtils.getInstance().getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
+                tvAvatarLabel.setText(TAPUtils.getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
@@ -235,7 +236,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 tvGroupSenderName.setVisibility(View.GONE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
-            } else if (item.getLastMessage().getRoom().getRoomType() == TYPE_GROUP) {
+            } else if (item.getLastMessage().getRoom().getRoomType() == TYPE_GROUP ||
+                    item.getLastMessage().getRoom().getRoomType() == TYPE_TRANSACTION) {
                 // Show group room with last message
                 tvLastMessage.setText(item.getLastMessage().getBody());
                 tvGroupSenderName.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) ? itemView.getContext().getString(R.string.tap_you) : item.getLastMessage().getUser().getName());
@@ -334,7 +336,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
             String myUserID = TAPChatManager.getInstance().getActiveUser().getUserID();
             if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
-                TAPUtils.getInstance().startChatActivity(itemView.getContext(), item.getLastMessage().getRoom(), item.getTypingUsers());
+                TAPUtils.startChatActivity(itemView.getContext(), item.getLastMessage().getRoom(), item.getTypingUsers());
             } else {
                 Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.tap_error_invalid_room), Toast.LENGTH_SHORT).show();
             }

@@ -42,7 +42,7 @@ public class SwipeBackActivity extends AppCompatActivity implements SwipeBackAct
 
     @Override
     public void scrollToFinishActivity() {
-        TAPUtils.getInstance().convertActivityToTranslucent(this);
+        TAPUtils.convertActivityToTranslucent(this);
         getSwipeBackLayout().scrollToFinishActivity();
     }
 }

@@ -103,7 +103,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 } else {
                     tvButtonOne.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_single_button));
                 }
-                rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(11), TAPUtils.getInstance().dpToPx(2), 0, 0);
+                rcivProductImage.setCornerRadius(TAPUtils.dpToPx(11), TAPUtils.dpToPx(2), 0, 0);
                 flContainer.setForeground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_rounded_8dp_1dp_8dp_8dp_stroke_eaeaea_1dp));
             } else {
                 // Other seller's products
@@ -120,14 +120,14 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                     tvButtonOne.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_left_button));
                     tvButtonTwo.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_product_list_right_button));
                 }
-                rcivProductImage.setCornerRadius(TAPUtils.getInstance().dpToPx(2), TAPUtils.getInstance().dpToPx(11), 0, 0);
+                rcivProductImage.setCornerRadius(TAPUtils.dpToPx(2), TAPUtils.dpToPx(11), 0, 0);
                 flContainer.setForeground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp));
             }
 
             Glide.with(itemView.getContext()).load(item.getImageURL()).into(rcivProductImage);
             tvProductName.setText(item.getName());
-//            tvPrice.setText(TAPUtils.getInstance().formatCurrencyRp(Long.parseLong(item.getPrice())));
-            tvPrice.setText(String.format("%s %s", item.getCurrency(), TAPUtils.getInstance().formatThousandSeperator(item.getPrice())));
+//            tvPrice.setText(TAPUtils.formatCurrencyRp(Long.parseLong(item.getPrice())));
+            tvPrice.setText(String.format("%s %s", item.getCurrency(), TAPUtils.formatThousandSeperator(item.getPrice())));
             if ("".equals(item.getDescription()))
                 tvProductDescription.setText(itemView.getResources().getString(R.string.tap_no_description));
             else {
