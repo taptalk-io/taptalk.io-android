@@ -25,7 +25,7 @@ public class TAPRecentSearchEntity {
         this.roomName = roomModel.getRoomName();
         this.roomColor = roomModel.getRoomColor();
         this.roomType = roomModel.getRoomType();
-        this.roomImage = TAPUtils.getInstance().toJsonString(roomModel.getRoomImage());
+        this.roomImage = TAPUtils.toJsonString(roomModel.getRoomImage());
         this.created = created;
     }
 
@@ -41,7 +41,7 @@ public class TAPRecentSearchEntity {
         model.setRoomName(room.getRoomName());
         model.setRoomColor(room.getRoomColor());
         model.setRoomType(room.getRoomType());
-        model.setRoomImage(TAPUtils.getInstance().toJsonString(room.getRoomImage()));
+        model.setRoomImage(TAPUtils.toJsonString(room.getRoomImage()));
         model.setCreated(System.currentTimeMillis());
         return model;
     }

@@ -68,7 +68,7 @@ class TAPPhoneLoginFragment : Fragment() {
             callCountryListFromAPI()
         } else if (isNeedResetData) {
             callCountryListFromAPI()
-            countryIsoCode = TAPUtils.getInstance().getDeviceCountryCode(context)
+            countryIsoCode = TAPUtils.getDeviceCountryCode(context)
             //countryHashMap = TAPDataManager.getInstance().countryList
             countryListitems = TAPDataManager.getInstance().countryList
             countryHashMap = countryListitems.associateBy({ it.iso2Code }, { it }).toMutableMap()
@@ -158,7 +158,7 @@ class TAPPhoneLoginFragment : Fragment() {
     private fun attemptLogin() {
         disableContinueButton()
         if (isVisible) {
-            TAPUtils.getInstance().dismissKeyboard(activity)
+            TAPUtils.dismissKeyboard(activity)
             showProgress()
             checkNumberAndCallAPI()
         }
@@ -209,7 +209,7 @@ class TAPPhoneLoginFragment : Fragment() {
         if (isVisible) {
             tv_btn_continue.visibility = View.GONE
             iv_loading_progress_request_otp.visibility = View.VISIBLE
-            TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_loading_progress_request_otp)
+            TAPUtils.rotateAnimateInfinitely(context, iv_loading_progress_request_otp)
         }
     }
 
@@ -250,7 +250,7 @@ class TAPPhoneLoginFragment : Fragment() {
                 et_phone_number.isEnabled = false
                 tv_country_code.visibility = View.GONE
                 iv_loading_progress_country.visibility = View.VISIBLE
-                TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_loading_progress_country)
+                TAPUtils.rotateAnimateInfinitely(context, iv_loading_progress_country)
             }
 
             @SuppressLint("SetTextI18n")

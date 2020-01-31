@@ -659,13 +659,13 @@ public class TAPDataManager {
         if (TYPE_IMAGE == message.getType()) {
             try {
                 // Delete image from cache
-                HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+                HashMap<String, Object> messageData = TAPUtils.toHashMap(message.getData());
                 TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache((String) messageData.get(FILE_ID));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (TYPE_VIDEO == message.getType() || TYPE_FILE == message.getType()) {
-            HashMap<String, Object> messageData = TAPUtils.getInstance().toHashMap(message.getData());
+            HashMap<String, Object> messageData = TAPUtils.toHashMap(message.getData());
             if (null == messageData) {
                 return;
             }
@@ -1108,6 +1108,10 @@ public class TAPDataManager {
 
     public void getChatRoomData(String roomID, TAPDefaultDataView<TAPCreateRoomResponse> view) {
         TAPApiManager.getInstance().getChatRoomData(roomID, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getChatRoomByXcRoomID(String xcRoomID, TAPDefaultDataView<TAPCreateRoomResponse> view) {
+        TAPApiManager.getInstance().getChatRoomByXcRoomID(xcRoomID, new TAPDefaultSubscriber<>(view));
     }
 
     public void updateChatRoom(String roomID, String roomName, TAPDefaultDataView<TAPUpdateRoomResponse> view) {

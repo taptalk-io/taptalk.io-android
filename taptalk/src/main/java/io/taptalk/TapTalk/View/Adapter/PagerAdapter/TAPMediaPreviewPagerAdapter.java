@@ -73,19 +73,19 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                 vSeparator.setVisibility(View.GONE);
                 clErrorMessage.setVisibility(View.GONE);
                 ivImagePreview.setOnClickListener(null);
-                TAPUtils.getInstance().rotateAnimateInfinitely(context, ivLoading);
+                TAPUtils.rotateAnimateInfinitely(context, ivLoading);
             } else {
                 ivVideoIcon.setVisibility(View.VISIBLE);
                 ivLoading.clearAnimation();
                 ivLoading.setVisibility(View.GONE);
-                ivImagePreview.setOnClickListener(v -> TAPUtils.getInstance().openVideoPreview(context, mediaPreview.getUri()));
+                ivImagePreview.setOnClickListener(v -> TAPUtils.openVideoPreview(context, mediaPreview.getUri()));
                 if (null != mediaPreview.isSizeExceedsLimit() && mediaPreview.isSizeExceedsLimit()) {
                     etCaption.setVisibility(View.GONE);
                     tvTypingIndicator.setVisibility(View.GONE);
                     vSeparator.setVisibility(View.GONE);
                     clErrorMessage.setVisibility(View.VISIBLE);
                     tvErrorTitle.setText(String.format(context.getString(R.string.tap_error_exceed_upload_limit),
-                            TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())));
+                            TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())));
                 } else {
                     etCaption.setVisibility(View.VISIBLE);
                     tvTypingIndicator.setVisibility(View.VISIBLE);

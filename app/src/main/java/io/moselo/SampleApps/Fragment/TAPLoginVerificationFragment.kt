@@ -93,11 +93,11 @@ class TAPLoginVerificationFragment : Fragment() {
         countryID = arguments?.getInt(kCountryID) ?: 0
         countryCallingCode = arguments?.getString(kCountryCallingCode, "") ?: ""
         countryFlagUrl = arguments?.getString(kCountryFlagUrl, "") ?: ""
-        TAPUtils.getInstance().animateClickButton(iv_back_button, 0.95f)
+        TAPUtils.animateClickButton(iv_back_button, 0.95f)
         iv_back_button.setOnClickListener { activity?.onBackPressed() }
         et_otp_code.addTextChangedListener(otpTextWatcher)
         et_otp_code.requestFocus()
-        TAPUtils.getInstance().showKeyboard(activity, et_otp_code)
+        TAPUtils.showKeyboard(activity, et_otp_code)
         clearOTPEditText()
 
         if (0L != (activity as TAPLoginActivity).vm.lastLoginTimestamp
@@ -444,7 +444,7 @@ class TAPLoginVerificationFragment : Fragment() {
         iv_progress_otp.clearAnimation()
         ll_loading_otp.visibility = View.VISIBLE
         tv_loading_otp.text = resources.getText(R.string.tap_requesting_otp)
-        TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_progress_otp)
+        TAPUtils.rotateAnimateInfinitely(context, iv_progress_otp)
     }
 
     private fun showVerifyingOTPLoading() {
@@ -453,6 +453,6 @@ class TAPLoginVerificationFragment : Fragment() {
         iv_progress_otp.clearAnimation()
         ll_loading_otp.visibility = View.VISIBLE
         tv_loading_otp.text = resources.getText(R.string.tap_verifying_otp)
-        TAPUtils.getInstance().rotateAnimateInfinitely(context, iv_progress_otp)
+        TAPUtils.rotateAnimateInfinitely(context, iv_progress_otp)
     }
 }

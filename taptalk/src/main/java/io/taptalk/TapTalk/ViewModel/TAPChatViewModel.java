@@ -49,7 +49,8 @@ public class TAPChatViewModel extends AndroidViewModel {
     private long lastTimestamp = 0;
     private int initialUnreadCount, numUsers, containerAnimationState, firstVisibleItemIndex;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
-            isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading, isScrollFromKeyboard;
+            isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading,
+            isScrollFromKeyboard, isAllUnreadMessagesHidden;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
@@ -114,7 +115,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public TAPOrderModel getOrderModel(TAPMessageModel message) {
-        return TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {
+        return TAPUtils.fromJSON(new TypeReference<TAPOrderModel>() {
         }, message.getBody());
     }
 
@@ -470,5 +471,13 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setScrollFromKeyboard(boolean scrollFromKeyboard) {
         isScrollFromKeyboard = scrollFromKeyboard;
+    }
+
+    public boolean isAllUnreadMessagesHidden() {
+        return isAllUnreadMessagesHidden;
+    }
+
+    public void setAllUnreadMessagesHidden(boolean allUnreadMessagesHidden) {
+        isAllUnreadMessagesHidden = allUnreadMessagesHidden;
     }
 }

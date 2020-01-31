@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,9 +75,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_CAPTION_LENGTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
@@ -89,6 +88,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
@@ -166,7 +166,7 @@ public class TAPChatManager {
                 case kSocketNewMessage:
                 case kSocketUpdateMessage:
                 case kSocketDeleteMessage:
-                    receiveMessageFromSocket(TAPUtils.getInstance().fromJSON(
+                    receiveMessageFromSocket(TAPUtils.fromJSON(
                             new TypeReference<TAPEmitModel<HashMap<String, Object>>>() {
                             },
                             emitData).getData(),
@@ -175,7 +175,7 @@ public class TAPChatManager {
                 case kSocketOpenMessage:
                     break;
                 case kSocketStartTyping:
-                    TAPEmitModel<TAPTypingModel> startTypingEmit = TAPUtils.getInstance()
+                    TAPEmitModel<TAPTypingModel> startTypingEmit = TAPUtils
                             .fromJSON(new TypeReference<TAPEmitModel<TAPTypingModel>>() {
                             }, emitData);
                     for (TAPChatListener listener : chatListenersCopy) {
@@ -183,7 +183,7 @@ public class TAPChatManager {
                     }
                     break;
                 case kSocketStopTyping:
-                    TAPEmitModel<TAPTypingModel> stopTypingEmit = TAPUtils.getInstance()
+                    TAPEmitModel<TAPTypingModel> stopTypingEmit = TAPUtils
                             .fromJSON(new TypeReference<TAPEmitModel<TAPTypingModel>>() {
                             }, emitData);
                     for (TAPChatListener listener : chatListenersCopy) {
@@ -193,7 +193,7 @@ public class TAPChatManager {
                 case kSocketAuthentication:
                     break;
                 case kSocketUserOnlineStatus:
-                    TAPEmitModel<TAPOnlineStatusModel> onlineStatusEmit = TAPUtils.getInstance()
+                    TAPEmitModel<TAPOnlineStatusModel> onlineStatusEmit = TAPUtils
                             .fromJSON(new TypeReference<TAPEmitModel<TAPOnlineStatusModel>>() {
                             }, emitData);
                     TAPOnlineStatusModel onlineStatus = onlineStatusEmit.getData();
@@ -312,30 +312,24 @@ public class TAPChatManager {
                 entity.getLocalID(),
                 entity.getFilterID(),
                 entity.getBody(),
-                new TAPRoomModel(entity.getRoomID(), entity.getRoomName(), entity.getRoomType(),
-                        // TODO: 18 October 2018 REMOVE CHECK
-                        /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                        TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
-                        }, entity.getRoomImage())
-                        /* TEMPORARY CHECK FOR NULL IMAGE */ : null
-                        , entity.getRoomColor()),
+                TAPRoomModel.Builder(entity),
                 entity.getType(),
                 entity.getCreated(),
                 new TAPUserModel(entity.getUserID(), entity.getXcUserID(), entity.getUserFullName(),
-                        TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                        TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
                         }, entity.getUserImage()),
                         entity.getUsername(), entity.getUserEmail(), entity.getUserPhone(),
-                        TAPUtils.getInstance().fromJSON(new TypeReference<TAPUserRoleModel>() {
+                        TAPUtils.fromJSON(new TypeReference<TAPUserRoleModel>() {
                         }, entity.getUserRole()),
                         entity.getLastLogin(), entity.getLastActivity(), entity.getRequireChangePassword(), entity.getUserCreated(),
                         entity.getUserUpdated(), entity.getUserDeleted()),
                 entity.getRecipientID(),
-                null == entity.getData() ? null : TAPUtils.getInstance().toHashMap(entity.getData()),
-                null == entity.getQuote() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPQuoteModel>() {
+                null == entity.getData() ? null : TAPUtils.toHashMap(entity.getData()),
+                null == entity.getQuote() ? null : TAPUtils.fromJSON(new TypeReference<TAPQuoteModel>() {
                 }, entity.getQuote()),
-                null == entity.getReplyTo() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPReplyToModel>() {
+                null == entity.getReplyTo() ? null : TAPUtils.fromJSON(new TypeReference<TAPReplyToModel>() {
                 }, entity.getReplyTo()),
-                null == entity.getForwardFrom() ? null : TAPUtils.getInstance().fromJSON(new TypeReference<TAPForwardFromModel>() {
+                null == entity.getForwardFrom() ? null : TAPUtils.fromJSON(new TypeReference<TAPForwardFromModel>() {
                 }, entity.getForwardFrom()),
                 entity.getIsDeleted(),
                 entity.getSending(),
@@ -355,25 +349,27 @@ public class TAPChatManager {
         return new TAPMessageEntity(
                 model.getMessageID(), model.getLocalID(), model.getFilterID(), model.getBody(),
                 model.getRecipientID(), model.getType(), model.getCreated(),
-                null == model.getData() ? null : TAPUtils.getInstance().toJsonString(model.getData()),
-                null == model.getQuote() ? null : TAPUtils.getInstance().toJsonString(model.getQuote()),
-                null == model.getReplyTo() ? null : TAPUtils.getInstance().toJsonString(model.getReplyTo()),
-                null == model.getForwardFrom() ? null : TAPUtils.getInstance().toJsonString(model.getForwardFrom()),
+                null == model.getData() ? null : TAPUtils.toJsonString(model.getData()),
+                null == model.getQuote() ? null : TAPUtils.toJsonString(model.getQuote()),
+                null == model.getReplyTo() ? null : TAPUtils.toJsonString(model.getReplyTo()),
+                null == model.getForwardFrom() ? null : TAPUtils.toJsonString(model.getForwardFrom()),
                 model.getUpdated(), model.getDeleted(),
                 model.getIsRead(), model.getDelivered(), model.getHidden(), model.getIsDeleted(),
                 model.getSending(), model.getFailedSend(), model.getRoom().getRoomID(),
-                model.getRoom().getRoomName(), model.getRoom().getRoomColor(),
-                model.getRoom().getRoomType(),
-                TAPUtils.getInstance().toJsonString(model.getRoom().getRoomImage()),
+                model.getRoom().getXcRoomID(), model.getRoom().getRoomName(),
+                model.getRoom().getRoomColor(), model.getRoom().getRoomType(),
+                TAPUtils.toJsonString(model.getRoom().getRoomImage()),
+                model.getRoom().isLocked(), model.getRoom().isRoomDeleted(),
+                model.getRoom().getLockedTimestamp(), model.getRoom().getDeletedTimestamp(),
                 model.getUser().getUserID(), model.getUser().getXcUserID(),
                 model.getUser().getName(), model.getUser().getUsername(),
-                TAPUtils.getInstance().toJsonString(model.getUser().getAvatarURL()),
+                TAPUtils.toJsonString(model.getUser().getAvatarURL()),
                 model.getUser().getEmail(), model.getUser().getPhoneNumber(),
-                TAPUtils.getInstance().toJsonString(model.getUser().getUserRole()),
+                TAPUtils.toJsonString(model.getUser().getUserRole()),
                 model.getUser().getLastLogin(), model.getUser().getLastActivity(),
                 model.getUser().getRequireChangePassword(),
-                model.getUser().getCreated(), model.getUser().getUpdated(), model.getUser().getDeleted(),
-                model.getAction(), model.getTarget()
+                model.getUser().getCreated(), model.getUser().getUpdated(),
+                model.getUser().getDeleted(), model.getAction(), model.getTarget()
         );
     }
 
@@ -425,7 +421,7 @@ public class TAPChatManager {
             List<TAPMessageEntity> messageEntities = new ArrayList<>();
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
-                String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 // Add entity to list
                 messageEntities.add(convertToEntity(messageModel));
@@ -452,7 +448,7 @@ public class TAPChatManager {
             //List<TAPMessageEntity> messageEntities = new ArrayList<>();
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
-                String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
 
                 sendMessageListeners.put(messageModel.getLocalID(), tapSendMessageInterface);
@@ -485,7 +481,7 @@ public class TAPChatManager {
             List<TAPMessageEntity> messageEntities = new ArrayList<>();
             Integer length = textMessage.length();
             for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
-                String substr = TAPUtils.getInstance().mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+                String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 // Add entity to list
                 messageEntities.add(convertToEntity(messageModel));
@@ -623,8 +619,8 @@ public class TAPChatManager {
     private TAPMessageModel createFileMessageModel(Context context, File file) {
         String fileName = file.getName();
         Number fileSize = file.length();
-        String fileMimeType = null != TAPUtils.getInstance().getFileMimeType(file) ?
-                TAPUtils.getInstance().getFileMimeType(file) : "application/octet-stream";
+        String fileMimeType = null != TAPUtils.getFileMimeType(file) ?
+                TAPUtils.getFileMimeType(file) : "application/octet-stream";
 
         // Build message model
         TAPMessageModel messageModel;
@@ -663,8 +659,8 @@ public class TAPChatManager {
     private TAPMessageModel createFileMessageModel(Context context, File file, TAPRoomModel roomModel) {
         String fileName = file.getName();
         Number fileSize = file.length();
-        String fileMimeType = null != TAPUtils.getInstance().getFileMimeType(file) ?
-                TAPUtils.getInstance().getFileMimeType(file) : "application/octet-stream";
+        String fileMimeType = null != TAPUtils.getFileMimeType(file) ?
+                TAPUtils.getFileMimeType(file) : "application/octet-stream";
 
         // Build message model
         TAPMessageModel messageModel;
@@ -1167,7 +1163,7 @@ public class TAPChatManager {
             imageData.setWidth(options.outWidth);
             imageData.setHeight(options.outHeight);
         }
-        imageMessage.putData(TAPUtils.getInstance().toHashMap(imageData));
+        imageMessage.putData(TAPUtils.toHashMap(imageData));
 
         // Trigger listener to show image preview in activity
         triggerSendMessageListener(imageMessage);
@@ -1182,7 +1178,7 @@ public class TAPChatManager {
         TAPDataImageModel imageData = new TAPDataImageModel(imageMessage.getData());
         imageData.setWidth(bitmap.getWidth());
         imageData.setHeight(bitmap.getHeight());
-        imageMessage.putData(TAPUtils.getInstance().toHashMap(imageData));
+        imageMessage.putData(TAPUtils.toHashMap(imageData));
 
         // Trigger listener to show image preview in activity
         triggerSendMessageListener(imageMessage);
@@ -1294,7 +1290,7 @@ public class TAPChatManager {
         }
         if ((messageToForward.getType() == TYPE_VIDEO || messageToForward.getType() == TYPE_FILE) && null != messageToForward.getData()) {
             // Copy file message Uri to destination room
-            String key = TAPUtils.getInstance().getUriKeyFromMessage(messageToForward);
+            String key = TAPUtils.getUriKeyFromMessage(messageToForward);
             TAPFileDownloadManager.getInstance().saveFileMessageUri(room.getRoomID(), key, TAPFileDownloadManager.getInstance().getFileMessageUri(messageToForward.getRoom().getRoomID(), key));
         }
         return TAPMessageModel.BuilderForwardedMessage(
@@ -1498,8 +1494,8 @@ public class TAPChatManager {
         try {
             TAPEmitModel<HashMap<String, Object>> TAPEmitModel;
             TAPEmitModel = new TAPEmitModel<>(eventName, TAPEncryptorManager.getInstance().encryptMessage(messageModel));
-            TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
-            Log.d(TAG, "sendEmit: " + TAPUtils.getInstance().toJsonString(messageModel));
+            TAPConnectionManager.getInstance().send(TAPUtils.toJsonString(TAPEmitModel));
+            Log.d(TAG, "sendEmit: " + TAPUtils.toJsonString(messageModel));
             if (sendMessageListeners.containsKey(messageModel.getLocalID())) {
                 sendMessageListeners.get(messageModel.getLocalID()).onSuccess(messageModel);
                 sendMessageListeners.remove(messageModel.getLocalID());
@@ -1518,7 +1514,7 @@ public class TAPChatManager {
     private void sendEmit(String eventName, TAPTypingModel typingModel) {
         TAPEmitModel<TAPTypingModel> TAPEmitModel;
         TAPEmitModel = new TAPEmitModel<>(eventName, typingModel);
-        TAPConnectionManager.getInstance().send(TAPUtils.getInstance().toJsonString(TAPEmitModel));
+        TAPConnectionManager.getInstance().send(TAPUtils.toJsonString(TAPEmitModel));
     }
 
     /**
@@ -1551,8 +1547,12 @@ public class TAPChatManager {
     }
 
     private void insertToList(Map<String, TAPMessageModel> hashMap) {
-        for (Map.Entry<String, TAPMessageModel> message : hashMap.entrySet()) {
-            saveMessages.add(convertToEntity(message.getValue()));
+        try {
+            for (Map.Entry<String, TAPMessageModel> message : hashMap.entrySet()) {
+                saveMessages.add(convertToEntity(message.getValue()));
+            }
+        } catch (ConcurrentModificationException e) { // FIXME: 20 Dec 2019
+            e.printStackTrace();
         }
     }
 
@@ -1610,13 +1610,19 @@ public class TAPChatManager {
     private void receiveMessageFromSocket(HashMap<String, Object> newMessageMap, String eventName) {
         TAPMessageModel newMessage = TAPEncryptorManager.getInstance().decryptMessage(newMessageMap);
 
+        // TODO: 28 Jan 2020 TEMPORARY SOCKET MESSAGE LOG
+        if (TapTalk.isLoggingEnabled) {
+            Log.d(TAG, "receiveMessageFromSocket: " + TAPUtils.toJsonString(newMessage));
+        }
+
         // Remove from waiting response hashmap
         if (kSocketNewMessage.equals(eventName))
             waitingResponses.remove(newMessage.getLocalID());
 
 
-        if (LEAVE_ROOM.equals(newMessage.getAction()) && getActiveUser().getUserID().equals(newMessage.getUser().getUserID())) {
-            // Remove all room messages if user leaves a chat room
+        if ((LEAVE_ROOM.equals(newMessage.getAction()) || DELETE_ROOM.equals(newMessage.getAction()))
+                && getActiveUser().getUserID().equals(newMessage.getUser().getUserID())) {
+            // Remove all room messages if user leaves/deletes a chat room
             new Thread(() -> {
                 for (Map.Entry<String, TAPMessageModel> entry : incomingMessages.entrySet()) {
                     if (entry.getValue().getUser().getUserID().equals(newMessage.getUser().getUserID())) {
@@ -1629,7 +1635,6 @@ public class TAPChatManager {
                     }
                 }
             }).start();
-
         } else {
             // Insert decrypted message to database
             incomingMessages.put(newMessage.getLocalID(), newMessage);
@@ -1880,6 +1885,10 @@ public class TAPChatManager {
 
     public void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
         TapUI.getInstance().triggerSearchChatBarTapped(activity, mainRoomListFragment);
+    }
+
+    public void triggerCloseRoomListButtonTapped(Activity activity) {
+        TapUI.getInstance().triggerCloseRoomListTapped(activity);
     }
 
     public void triggerTapTalkAccountButtonTapped(Activity activity) {

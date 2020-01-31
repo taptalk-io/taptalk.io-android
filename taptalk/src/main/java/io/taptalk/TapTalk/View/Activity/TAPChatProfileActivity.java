@@ -120,7 +120,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TapChatProfileAdapter adapter;
     private GridLayoutManager glm;
     private ViewTreeObserver.OnScrollChangedListener sharedMediaPagingScrollListener;
-    private boolean leaveRoom = false;
 
     private TAPProfileViewModel vm;
 
@@ -148,11 +147,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         if (vm.isApiCallOnProgress()) {
             return;
         }
-        if (leaveRoom) {
-            setResult(RESULT_OK);
-            TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
-        }
-        finish();
+        super.onBackPressed();
         overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
     }
 
@@ -607,7 +602,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void openChatRoom(TAPUserModel userModel) {
-        TAPUtils.getInstance().startChatActivity(this,
+        TAPUtils.startChatActivity(this,
                 TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(),
                         userModel.getUserID()),
                 userModel.getName(),
@@ -685,7 +680,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void startVideoDownload(TAPMessageModel message) {
-        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Request storage permission
             vm.setPendingDownloadMessage(message);
             ActivityCompat.requestPermissions(
@@ -727,7 +722,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
-                TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
+                TAPUtils.rotateAnimateInfinitely(this, ivSaving);
             }
             tvLoadingText.setText(message);
             flLoading.setVisibility(View.VISIBLE);
@@ -765,7 +760,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         private boolean isShowing;
         private int scrollRange = -1;
-        private int nameTranslationY = TAPUtils.getInstance().dpToPx(8);
+        private int nameTranslationY = TAPUtils.dpToPx(8);
         private int scrimHeight;
 
         private ValueAnimator transitionToCollapse, transitionToExpand;
@@ -946,7 +941,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             .show();
                 } else {
                     // Open video player
-                    TAPUtils.getInstance().openVideoPreview(TAPChatProfileActivity.this, videoUri, item);
+                    TAPUtils.openVideoPreview(TAPChatProfileActivity.this, videoUri, item);
                 }
             } else if (item.getType() == TYPE_VIDEO) {
                 // Download video
@@ -1004,10 +999,22 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         TAPDataManager.getInstance().deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                             @Override
                             public void onDeleteFinished() {
-                                hideLoadingPopup(vm.getLoadingEndText());
-                                leaveRoom = true;
-                                runOnUiThread(TAPChatProfileActivity.this::onBackPressed);
+                                //hideLoadingPopup(vm.getLoadingEndText());
                                 TAPGroupManager.Companion.getGetInstance().removeGroupData(vm.getRoom().getRoomID());
+                                TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
+                                runOnUiThread(() -> {
+                                    ivSaving.setImageDrawable(ContextCompat.getDrawable(TAPChatProfileActivity.this, R.drawable.tap_ic_checklist_pumpkin));
+                                    ivSaving.clearAnimation();
+                                    tvLoadingText.setText(vm.getLoadingEndText());
+                                    new Handler().postDelayed(() -> {
+                                        vm.setApiCallOnProgress(false);
+                                        flLoading.setVisibility(View.GONE);
+                                        setResult(RESULT_OK);
+                                        finish();
+                                        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
+                                    }, 1000L);
+                                });
+
                             }
                         });
                     }

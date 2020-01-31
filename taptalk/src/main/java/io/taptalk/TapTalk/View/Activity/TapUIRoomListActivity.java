@@ -35,7 +35,7 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
     private void redirectToChatActivityFromNotification() {
         TAPRoomModel roomModel = getIntent().getParcelableExtra(ROOM);
         if (null != roomModel) {
-            TAPUtils.getInstance().startChatActivity(this, roomModel);
+            TAPUtils.startChatActivity(this, roomModel);
         }
     }
 

@@ -100,7 +100,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             rvImageThumbnail.setAdapter(thumbnailAdapter);
             rvImageThumbnail.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvImageThumbnail.setHasFixedSize(false);
-            rvImageThumbnail.addItemDecoration(new TAPHorizontalDecoration(TAPUtils.getInstance().dpToPx(1), 0, TAPUtils.getInstance().dpToPx(16), 0, medias.size(), 0, 0));
+            rvImageThumbnail.addItemDecoration(new TAPHorizontalDecoration(TAPUtils.dpToPx(1), 0, TAPUtils.dpToPx(16), 0, medias.size(), 0, 0));
         }
         SimpleItemAnimator thumbnailItemAnimator = (SimpleItemAnimator) rvImageThumbnail.getItemAnimator();
         if (null != thumbnailItemAnimator) thumbnailItemAnimator.setSupportsChangeAnimations(false);
@@ -108,7 +108,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         checkMediasForErrors();
 
         tvCancelBtn.setOnClickListener(v -> onBackPressed());
-        ivAddMoreImage.setOnClickListener(v -> TAPUtils.getInstance().pickMediaFromGallery(TAPMediaPreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
+        ivAddMoreImage.setOnClickListener(v -> TAPUtils.pickMediaFromGallery(TAPMediaPreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
     }
 
     private ViewPager.OnPageChangeListener vpPreviewListener = new ViewPager.OnPageChangeListener() {
@@ -169,11 +169,11 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         ClipData clipData = data.getClipData();
         if (null != clipData) {
             // Multiple media selection
-            galleryMediaPreviews = TAPUtils.getInstance().getPreviewsFromClipData(this, clipData, false);
+            galleryMediaPreviews = TAPUtils.getPreviewsFromClipData(this, clipData, false);
         } else {
             // Single media selection
             Uri uri = data.getData();
-            galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getInstance().getMessageTypeFromFileUri(this, uri), false));
+            galleryMediaPreviews.add(TAPMediaPreviewModel.Builder(uri, TAPUtils.getMessageTypeFromFileUri(this, uri), false));
         }
         medias.addAll(galleryMediaPreviews);
         checkMediasForErrors();
@@ -294,7 +294,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                     .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                     .setTitle(getString(R.string.tap_warning_files_may_not_be_sent))
                     .setMessage(String.format(getString(R.string.tap_warning_video_size_exceeds_limit_wont_be_sent),
-                            TAPUtils.getInstance().getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())))
+                            TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())))
                     .setPrimaryButtonTitle(getString(R.string.tap_continue_s))
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                     .setPrimaryButtonListener(true, view -> sendMedias())

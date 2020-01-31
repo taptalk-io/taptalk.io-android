@@ -1,9 +1,12 @@
 package io.taptalk.TapTalk.Helper;
 
 import android.app.Application;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
+import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -83,7 +86,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
-public class TapTalk {
+public class TapTalk implements LifecycleObserver {
     private static final String TAG = TapTalk.class.getSimpleName();
     public static TapTalk tapTalk;
     public static Context appContext;
@@ -95,8 +98,9 @@ public class TapTalk {
     private static int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
     private static boolean isRefreshTokenExpired, isAutoConnectDisabled, isAutoContactSyncDisabled;
     private Intent intent;
+    private static boolean listenerInit = false;
 
-    private Thread.UncaughtExceptionHandler defaultUEH;
+    private static Thread.UncaughtExceptionHandler defaultUEH;
     private List<TapListener> tapListeners = new ArrayList<>();
 
     private static Map<String, String> coreConfigs;
@@ -123,7 +127,7 @@ public class TapTalk {
         TapTalkOrientationLandscape // FIXME: 6 February 2019 Activity loads portrait by default then changes to landscape after onCreate
     }
 
-    private Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
+    private static Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
         @Override
         public void uncaughtException(Thread thread, Throwable throwable) {
             TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
@@ -144,6 +148,8 @@ public class TapTalk {
             String appBaseURL,
             TapTalkImplementationType type,
             @NonNull TapListener tapListener) {
+
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         TapTalk.appContext = appContext;
         TapTalk.clientAppIcon = clientAppIcon;
@@ -201,7 +207,7 @@ public class TapTalk {
         TAPContactManager.getInstance().setContactSyncAllowedByUser(TAPDataManager.getInstance().isContactSyncAllowedByUser());
 
         // Init Stetho for debug build
-        if (TapTalk.isLoggingEnabled)
+        if (BuildConfig.DEBUG)
             Stetho.initialize(
                     Stetho.newInitializerBuilder(appContext)
                             .enableDumpapp(Stetho.defaultDumperPluginsProvider(appContext))
@@ -212,44 +218,12 @@ public class TapTalk {
         tapListeners.add(tapListener);
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
-        AppVisibilityDetector.init((Application) appContext, new AppVisibilityDetector.AppVisibilityCallback() {
-            @Override
-            public void onAppGotoForeground() {
-                isForeground = true;
-                TAPContactManager.getInstance().loadAllUserDataFromDatabase();
-                TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
-                TAPChatManager.getInstance().setFinishChatFlow(false);
-                TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
-                TAPChatManager.getInstance().triggerSaveNewMessage();
-                TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
-                TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
-                defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-                Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-
-                // Start service on first load
-                if (null == intent) {
-                    intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
-                    appContext.startService(intent);
-                }
-            }
-
-            @Override
-            public void onAppGotoBackground() {
-                isForeground = false;
-                TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
-                TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
-                TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
-                TAPChatManager.getInstance().updateMessageWhenEnterBackground();
-                TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
-                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
-                TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
-                TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
-            }
-        });
-
         if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
                 TAPDataManager.getInstance().checkAccessTokenAvailable())
             initListener();
+
+        if (!listenerInit)
+            handleAppToForeground();
     }
 
     private static void initListener() {
@@ -635,10 +609,10 @@ public class TapTalk {
 
     public static void handleTapTalkPushNotification(RemoteMessage remoteMessage) {
         TAPNotificationManager.getInstance().updateNotificationMessageMapWhenAppKilled();
-        HashMap<String, Object> notificationMap = TAPUtils.getInstance().fromJSON(new TypeReference<HashMap<String, Object>>() {
+        HashMap<String, Object> notificationMap = TAPUtils.fromJSON(new TypeReference<HashMap<String, Object>>() {
         }, remoteMessage.getData().get("body"));
         try {
-            //Log.e(TAG, "onMessageReceived: " + TAPUtils.getInstance().toJsonString(remoteMessage));
+            //Log.e(TAG, "onMessageReceived: " + TAPUtils.toJsonString(remoteMessage));
             TAPNotificationManager.getInstance().createAndShowBackgroundNotification(appContext, TapTalk.getClientAppIcon(),
                     TapUIChatActivity.class,
                     TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
@@ -711,6 +685,52 @@ public class TapTalk {
                     TapTalk.updateApplicationBadgeCount();
                 }
             });
+        }
+    }
+
+
+    public static void handleAppToForeground() {
+        isForeground = true;
+        TAPContactManager.getInstance().loadAllUserDataFromDatabase();
+        TAPGroupManager.Companion.getGetInstance().loadAllRoomDataFromPreference();
+        TAPChatManager.getInstance().setFinishChatFlow(false);
+        TAPNetworkStateManager.getInstance().registerCallback(TapTalk.appContext);
+        TAPChatManager.getInstance().triggerSaveNewMessage();
+        TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
+        TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
+        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+
+//         Start service on first load
+//        if (null == intent) {
+//            intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
+//            appContext.startService(intent);
+//        }
+    }
+
+    public static void handleAppToBackground() {
+        isForeground = false;
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+        TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
+        TAPNetworkStateManager.getInstance().unregisterCallback(TapTalk.appContext);
+        TAPChatManager.getInstance().updateMessageWhenEnterBackground();
+        TAPMessageStatusManager.getInstance().updateMessageStatusWhenAppToBackground();
+        TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+        TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+        TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrounded() {
+        if (null != tapTalk) {
+            handleAppToBackground();
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        if (null != tapTalk) {
+            handleAppToForeground();
         }
     }
 }

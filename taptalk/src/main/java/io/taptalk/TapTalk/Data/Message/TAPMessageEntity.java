@@ -33,10 +33,15 @@ public class TAPMessageEntity {
     @Nullable @ColumnInfo(name = "isSending") private Boolean isSending;
     @Nullable @ColumnInfo(name = "isFailedSend") private Boolean isFailedSend;
     @ColumnInfo(name = "roomID") private String roomID;
+    @Nullable @ColumnInfo(name = "xcRoomID") private String xcRoomID;
     @Nullable @ColumnInfo(name = "roomName") private String roomName;
     @Nullable @ColumnInfo(name = "roomColor") private String roomColor;
     @Nullable @ColumnInfo(name = "roomImage") private String roomImage;
     @Nullable @ColumnInfo(name = "roomType") private Integer roomType;
+    @Nullable @ColumnInfo(name = "isRoomLocked") private Boolean isRoomLocked;
+    @Nullable @ColumnInfo(name = "isRoomDeleted") private Boolean isRoomDeleted;
+    @Nullable @ColumnInfo(name = "roomLockedTimestamp") private Long roomLockedTimestamp;
+    @Nullable @ColumnInfo(name = "roomDeletedTimestamp") private Long roomDeletedTimestamp;
     @ColumnInfo(name = "userID") private String userID;
     @ColumnInfo(name = "xcUserID") private String xcUserID;
     @ColumnInfo(name = "userFullName") private String userFullName;
@@ -54,15 +59,18 @@ public class TAPMessageEntity {
     @Nullable @ColumnInfo(name = "action") private String action;
     @Nullable @Embedded private TAPMessageTargetModel target;
 
-    public TAPMessageEntity(@Nullable String messageID, @NonNull String localID, @Nullable String filterID, String body,
-                            String recipientID, Integer type, Long created,
+    public TAPMessageEntity(@Nullable String messageID, @NonNull String localID, @Nullable String filterID,
+                            String body, String recipientID, Integer type, Long created,
                             @Nullable String data, @Nullable String quote, @Nullable String replyTo,
                             @Nullable String forwardFrom, @Nullable Long updated, @Nullable Long deleted,
                             @Nullable Boolean isRead, @Nullable Boolean isDelivered,
                             @Nullable Boolean isHidden, @Nullable Boolean isDeleted,
                             @Nullable Boolean isSending, @Nullable Boolean isFailedSend, String roomID,
-                            @Nullable String roomName, @Nullable String roomColor, @Nullable Integer roomType,
-                            @Nullable String roomImage, String userID, String xcUserID, String userFullName,
+                            @Nullable String xcRoomID, @Nullable String roomName, @Nullable String roomColor,
+                            @Nullable Integer roomType, @Nullable String roomImage,
+                            @Nullable Boolean isRoomLocked, @Nullable Boolean isRoomDeleted,
+                            @Nullable Long roomLockedTimestamp, @Nullable Long roomDeletedTimestamp,
+                            String userID, String xcUserID, String userFullName,
                             @Nullable String username, String userImage, @Nullable String userEmail,
                             @Nullable String userPhone, @Nullable String userRole, @Nullable Long lastLogin,
                             @Nullable Long lastActivity, @Nullable Boolean requireChangePassword,
@@ -88,10 +96,15 @@ public class TAPMessageEntity {
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
         this.roomID = roomID;
+        this.xcRoomID = xcRoomID;
         this.roomName = roomName;
         this.roomColor = roomColor;
         this.roomType = roomType;
         this.roomImage = roomImage;
+        this.isRoomLocked = isRoomLocked;
+        this.isRoomDeleted = isRoomDeleted;
+        this.roomLockedTimestamp = roomLockedTimestamp;
+        this.roomDeletedTimestamp = roomDeletedTimestamp;
         this.userID = userID;
         this.xcUserID = xcUserID;
         this.userFullName = userFullName;
@@ -110,15 +123,6 @@ public class TAPMessageEntity {
         this.target = target;
     }
 
-    @Nullable
-    public String getMessageID() {
-        return messageID;
-    }
-
-    public void setMessageID(@Nullable String messageID) {
-        this.messageID = messageID;
-    }
-
     @NonNull
     public String getLocalID() {
         return localID;
@@ -126,6 +130,15 @@ public class TAPMessageEntity {
 
     public void setLocalID(@NonNull String localID) {
         this.localID = localID;
+    }
+
+    @Nullable
+    public String getMessageID() {
+        return messageID;
+    }
+
+    public void setMessageID(@Nullable String messageID) {
+        this.messageID = messageID;
     }
 
     @Nullable
@@ -220,34 +233,7 @@ public class TAPMessageEntity {
     }
 
     public void setDeleted(@Nullable Long deleted) {
-        this.deleted = deleted;
-    }
-
-    @Nullable
-    public Boolean getIsRead() {
-        return isRead;
-    }
-
-    public void setIsRead(@Nullable Boolean read) {
-        isRead = read;
-    }
-
-    @Nullable
-    public Boolean getDelivered() {
-        return isDelivered;
-    }
-
-    public void setDelivered(@Nullable Boolean delivered) {
-        isDelivered = delivered;
-    }
-
-    @Nullable
-    public Boolean getHidden() {
-        return isHidden;
-    }
-
-    public void setHidden(@Nullable Boolean hidden) {
-        isHidden = hidden;
+        deleted = deleted;
     }
 
     @Nullable
@@ -255,8 +241,8 @@ public class TAPMessageEntity {
         return isDeleted;
     }
 
-    public void setIsDeleted(@Nullable Boolean deleted) {
-        isDeleted = deleted;
+    public void setIsDeleted(@Nullable Boolean isDeleted) {
+        isDeleted = isDeleted;
     }
 
     @Nullable
@@ -286,6 +272,15 @@ public class TAPMessageEntity {
     }
 
     @Nullable
+    public String getXcRoomID() {
+        return xcRoomID;
+    }
+
+    public void setXcRoomID(@Nullable String xcRoomID) {
+        this.xcRoomID = xcRoomID;
+    }
+
+    @Nullable
     public String getRoomName() {
         return roomName;
     }
@@ -304,6 +299,15 @@ public class TAPMessageEntity {
     }
 
     @Nullable
+    public String getRoomImage() {
+        return roomImage;
+    }
+
+    public void setRoomImage(@Nullable String roomImage) {
+        this.roomImage = roomImage;
+    }
+
+    @Nullable
     public Integer getRoomType() {
         return roomType;
     }
@@ -313,12 +317,39 @@ public class TAPMessageEntity {
     }
 
     @Nullable
-    public String getRoomImage() {
-        return roomImage;
+    public Boolean getRoomLocked() {
+        return isRoomLocked;
     }
 
-    public void setRoomImage(@Nullable String roomImage) {
-        this.roomImage = roomImage;
+    public void setRoomLocked(@Nullable Boolean roomLocked) {
+        isRoomLocked = roomLocked;
+    }
+
+    @Nullable
+    public Boolean getRoomDeleted() {
+        return isRoomDeleted;
+    }
+
+    public void setRoomDeleted(@Nullable Boolean roomDeleted) {
+        isRoomDeleted = roomDeleted;
+    }
+
+    @Nullable
+    public Long getRoomDeletedTimestamp() {
+        return roomDeletedTimestamp;
+    }
+
+    public void setRoomDeletedTimestamp(@Nullable Long roomDeletedTimestamp) {
+        this.roomDeletedTimestamp = roomDeletedTimestamp;
+    }
+
+    @Nullable
+    public Long getRoomLockedTimestamp() {
+        return roomLockedTimestamp;
+    }
+
+    public void setRoomLockedTimestamp(@Nullable Long roomLockedTimestamp) {
+        this.roomLockedTimestamp = roomLockedTimestamp;
     }
 
     public String getUserID() {
@@ -459,5 +490,32 @@ public class TAPMessageEntity {
 
     public void setTarget(@Nullable TAPMessageTargetModel target) {
         this.target = target;
+    }
+
+    @Nullable
+    public Boolean getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(@Nullable Boolean isRead) {
+        this.isRead = isRead;
+    }
+
+    @Nullable
+    public Boolean getDelivered() {
+        return isDelivered;
+    }
+
+    public void setDelivered(@Nullable Boolean delivered) {
+        isDelivered = delivered;
+    }
+
+    @Nullable
+    public Boolean getHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(@Nullable Boolean hidden) {
+        isHidden = hidden;
     }
 }

@@ -15,6 +15,7 @@ import io.taptalk.TapTalk.API.Service.TAPTalkDownloadApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkMultipartApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkRefreshTokenService;
 import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -50,7 +51,7 @@ public class TAPApiConnection {
     }
 
     private TAPApiConnection() {
-        this.objectMapper = createObjectMapper();
+        this.objectMapper = TAPUtils.createObjectMapper();
         OkHttpClient httpHpClientAccessToken = buildHttpTapClient(NOT_USE_REFRESH_TOKEN);
         OkHttpClient httpHpClientRefreshToken = buildHttpTapClient(USE_REFRESH_TOKEN);
 
@@ -85,16 +86,6 @@ public class TAPApiConnection {
         OkHttpClient httpHpClientDownload = buildHttpTapDownloadClient(NOT_USE_REFRESH_TOKEN, timeOutDuration);
         Retrofit tapDownloadAdapter = buildApiAdapter(httpHpClientDownload, TAPApiManager.getBaseUrlApi());
         return tapDownloadAdapter.create(TAPTalkDownloadApiService.class);
-    }
-
-    public ObjectMapper createObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
-        objectMapper.configure(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS, true);
-        return objectMapper;
     }
 
     private OkHttpClient buildHttpTapClient(int headerAuth) {

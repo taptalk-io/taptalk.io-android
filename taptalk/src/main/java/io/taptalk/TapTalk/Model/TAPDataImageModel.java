@@ -71,13 +71,13 @@ public class TAPDataImageModel implements Parcelable {
     }
 
     public HashMap<String, Object> toHashMapWithoutFileUri() {
-        HashMap<String, Object> dataMap = TAPUtils.getInstance().toHashMap(this);
+        HashMap<String, Object> dataMap = TAPUtils.toHashMap(this);
         dataMap.remove(FILE_URI);
         return dataMap;
     }
 
     public HashMap<String, Object> toHashMap() {
-        return TAPUtils.getInstance().toHashMap(this);
+        return TAPUtils.toHashMap(this);
     }
 
     @Nullable

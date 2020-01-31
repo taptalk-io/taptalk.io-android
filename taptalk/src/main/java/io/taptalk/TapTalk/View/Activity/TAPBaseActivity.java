@@ -24,6 +24,6 @@ public abstract class TAPBaseActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        TAPUtils.getInstance().dismissKeyboard(this);
+        TAPUtils.dismissKeyboard(this);
     }
 }
