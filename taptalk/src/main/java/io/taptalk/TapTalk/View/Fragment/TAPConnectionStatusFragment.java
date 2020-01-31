@@ -66,7 +66,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     public void onResume() {
         super.onResume();
         // TODO: 28 November 2019 CONNECTION STATUS SHOWN ONLY IF LOGGING IS ENABLED
-        if (TapTalk.isLoggingEnabled) {
+        if (BuildConfig.DEBUG) {
             initConnectionStatus();
         }
     }
