@@ -207,7 +207,7 @@ public class TapTalk implements LifecycleObserver {
         TAPContactManager.getInstance().setContactSyncAllowedByUser(TAPDataManager.getInstance().isContactSyncAllowedByUser());
 
         // Init Stetho for debug build
-        if (TapTalk.isLoggingEnabled)
+        if (BuildConfig.DEBUG)
             Stetho.initialize(
                     Stetho.newInitializerBuilder(appContext)
                             .enableDumpapp(Stetho.defaultDumperPluginsProvider(appContext))
