@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Model;
 
+import com.google.android.libraries.places.api.Places;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,38 +76,39 @@ public class TAPAttachmentModel {
     }
 
     public static List<TAPAttachmentModel> createAttachMenu() {
-        // TODO: 31 January 2019 TEMPORARILY DISABLED FEATURE, REMOVED MENU FROM ATTACHMENT
-        int[] imageResIds = {
-                R.drawable.tap_ic_documents_white,
-                R.drawable.tap_ic_camera_pumpkin_orange,
-                R.drawable.tap_ic_gallery_pumpkin_orange,
-//                R.drawable.tap_ic_audio_pumpkin_orange,
-                R.drawable.tap_ic_location_pumpkin_orange,
-//                R.drawable.tap_ic_contact_pumpkin_orange
-        };
+        List<Integer> imageResIds = new ArrayList<>(), titleResIds = new ArrayList<>(), ids = new ArrayList<>();
+        // TODO: 31 January 2019 TEMPORARILY DISABLED AUDIO AND CONTACT FROM ATTACHMENT
 
-        int[] titleResIds = {
-                R.string.tap_document,
-                R.string.tap_camera,
-                R.string.tap_gallery,
-//                R.string.audio,
-                R.string.tap_location,
-//                R.string.contact
-        };
+        imageResIds.add(R.drawable.tap_ic_documents_white);
+        titleResIds.add(R.string.tap_document);
+        ids.add(ATTACH_DOCUMENT);
 
-        int[] ids = {
-                ATTACH_DOCUMENT,
-                ATTACH_CAMERA,
-                ATTACH_GALLERY,
-//                ATTACH_AUDIO,
-                ATTACH_LOCATION,
-//                ATTACH_CONTACT
-        };
+        imageResIds.add(R.drawable.tap_ic_camera_pumpkin_orange);
+        titleResIds.add(R.string.tap_camera);
+        ids.add(ATTACH_CAMERA);
+
+        imageResIds.add(R.drawable.tap_ic_gallery_pumpkin_orange);
+        titleResIds.add(R.string.tap_gallery);
+        ids.add(ATTACH_GALLERY);
+
+//        imageResIds.add(R.drawable.tap_ic_audio_pumpkin_orange);
+//        titleResIds.add(R.string.audio);
+//        ids.add(ATTACH_AUDIO);
+
+        if (Places.isInitialized()) {
+            imageResIds.add(R.drawable.tap_ic_location_pumpkin_orange);
+            titleResIds.add(R.string.tap_location);
+            ids.add(ATTACH_LOCATION);
+        }
+
+//        imageResIds.add(R.drawable.tap_ic_contact_pumpkin_orange);
+//        titleResIds.add(R.string.contact);
+//        ids.add(ATTACH_CONTACT);
 
         List<TAPAttachmentModel> attachMenus = new ArrayList<>();
-        int size = imageResIds.length;
+        int size = imageResIds.size();
         for (int index = 0; index < size; index++) {
-            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+            attachMenus.add(new TAPAttachmentModel(imageResIds.get(index), titleResIds.get(index), ids.get(index)));
         }
 
         return attachMenus;
@@ -162,24 +165,20 @@ public class TAPAttachmentModel {
         List<Integer> imageResIds = new ArrayList<>(), titleResIds = new ArrayList<>(), ids = new ArrayList<>();
 
         imageResIds.add(R.drawable.tap_ic_reply_pumpkin_orange);
+        titleResIds.add(R.string.tap_reply);
+        ids.add(LONG_PRESS_REPLY);
+
         if (messageModel.getRoom().getRoomType() != TYPE_TRANSACTION) {
             imageResIds.add(R.drawable.tap_ic_forward_pumpkin_orange);
-        }
-        imageResIds.add(R.drawable.tap_ic_copy_pumpkin_orange);
-
-        titleResIds.add(R.string.tap_reply);
-        if (messageModel.getRoom().getRoomType() != TYPE_TRANSACTION) {
             titleResIds.add(R.string.tap_forward);
-        }
-        titleResIds.add(R.string.tap_copy);
-
-        ids.add(LONG_PRESS_REPLY);
-        if (messageModel.getRoom().getRoomType() != TYPE_TRANSACTION) {
             ids.add(LONG_PRESS_FORWARD);
         }
+
+        imageResIds.add(R.drawable.tap_ic_copy_pumpkin_orange);
+        titleResIds.add(R.string.tap_copy);
         ids.add(LONG_PRESS_COPY);
 
-        if (null != messageModel && null != TAPChatManager.getInstance().getActiveUser() &&
+        if (null != TAPChatManager.getInstance().getActiveUser() &&
                 messageModel.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) &&
                 null != messageModel.getSending() && !messageModel.getSending()) {
             imageResIds.add(R.drawable.tap_ic_trash_watermelon_red);
