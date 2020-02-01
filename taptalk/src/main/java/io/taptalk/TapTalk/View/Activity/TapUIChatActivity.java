@@ -30,6 +30,7 @@ import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -232,6 +233,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private TAPMessageAdapter messageAdapter;
     private TAPCustomKeyboardAdapter customKeyboardAdapter;
     private LinearLayoutManager messageLayoutManager;
+    private SimpleItemAnimator messageAnimator;
 
     // RoomDatabase
     private TAPChatViewModel vm;
@@ -672,6 +674,10 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_LEFT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_RIGHT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_PRODUCT_LIST, 0);
+        messageAnimator = (SimpleItemAnimator) rvMessageList.getItemAnimator();
+        if (null != messageAnimator) {
+            messageAnimator.setSupportsChangeAnimations(false);
+        }
         rvMessageList.setItemAnimator(null);
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
@@ -2944,8 +2950,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     // Set default item animator for recycler view
                     new Handler().postDelayed(() ->
                             rvMessageList.post(() ->
-                                    rvMessageList.setItemAnimator(
-                                            new DefaultItemAnimator())), 200L);
+                                    rvMessageList.setItemAnimator(messageAnimator)), 200L);
                 }
                 if (state == STATE.DONE) {
                     updateMessageDecoration();
