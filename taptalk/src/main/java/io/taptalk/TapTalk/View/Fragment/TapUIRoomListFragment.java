@@ -825,9 +825,11 @@ public class TapUIRoomListFragment extends Fragment {
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 TAPDataManager.getInstance().getUnreadCountPerRoom(entity.getRoomID(), dbListener);
+                vm.getRoomList().add(roomModel);
+                activity.runOnUiThread(() -> adapter.notifyItemInserted(adapter.getItemCount() - 1));
             }
 
-            vm.setRoomList(messageModels);
+//            vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
             calculateBadgeCount();
         }
