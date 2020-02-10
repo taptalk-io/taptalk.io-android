@@ -346,7 +346,9 @@ public class TAPUtils {
         }
         new Thread(() -> {
             for (TapContactListModel contact : separatedContacts) {
-                Log.e(TAG, "generateContactListForRecycler: " + contact.getUser().getName() + " " + contact.getUser().getIsContact());
+                if (null != contact.getUser()) {
+                    Log.e(TAG, "generateContactListForRecycler: " + contact.getUser().getName() + " " + contact.getUser().getIsContact());
+                }
             }
         }).start();
         return separatedContacts;

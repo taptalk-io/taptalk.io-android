@@ -29,6 +29,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
@@ -111,6 +112,19 @@ public class TapUISearchChatFragment extends Fragment {
         etSearch = view.findViewById(R.id.et_search);
         ivButtonClearText = view.findViewById(R.id.iv_button_clear_text);
         recyclerView = view.findViewById(R.id.recyclerView);
+
+        boolean isContactAvailable = TapUI.getInstance().isNewContactMenuButtonVisible() || TapUI.getInstance().isScanQRMenuButtonVisible();
+        boolean isGroupChatAvailable = TapUI.getInstance().isNewGroupMenuButtonVisible();
+
+        if (isContactAvailable && isGroupChatAvailable) {
+            etSearch.setHint(getString(R.string.tap_search_chat_placeholder));
+        } else if (isContactAvailable) {
+            etSearch.setHint(getString(R.string.tap_search_chat_placeholder_chats_contacts));
+        } else if (isGroupChatAvailable) {
+            etSearch.setHint(getString(R.string.tap_search_chat_placeholder_chats_group));
+        } else {
+            etSearch.setHint(getString(R.string.tap_search_chat_placeholder_chats_only));
+        }
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
