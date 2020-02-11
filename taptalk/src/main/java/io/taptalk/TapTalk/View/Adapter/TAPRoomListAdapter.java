@@ -97,6 +97,11 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
         @Override
         protected void onBind(TAPRoomListModel item, int position) {
+            TAPUserModel activeUser = TAPChatManager.getInstance().getActiveUser();
+            if (null == activeUser) {
+                return;
+            }
+
             TAPRoomModel room = item.getLastMessage().getRoom();
             TAPUserModel user = null;
             TAPRoomModel group = null;
@@ -238,8 +243,8 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 if (null == ivGroupRoomTypingIndicator.getDrawable()) {
                     glide.load(R.raw.gif_typing_indicator).into(ivGroupRoomTypingIndicator);
                 }
-            } else if (null != TAPChatManager.getInstance().getActiveUser() && null != item.getLastMessage().getUser() &&
-                    TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) &&
+            } else if (null != item.getLastMessage().getUser() &&
+                    activeUser.getUserID().equals(item.getLastMessage().getUser().getUserID()) &&
                     null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
                 // Show last message deleted
                 tvLastMessage.setText(itemView.getResources().getString(R.string.tap_you_deleted_this_message));
@@ -262,7 +267,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                     item.getLastMessage().getRoom().getRoomType() == TYPE_TRANSACTION) {
                 // Show group room with last message
                 tvLastMessage.setText(item.getLastMessage().getBody());
-                tvGroupSenderName.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(item.getLastMessage().getUser().getUserID()) ? itemView.getContext().getString(R.string.tap_you) : item.getLastMessage().getUser().getName());
+                tvGroupSenderName.setText(activeUser.getUserID().equals(item.getLastMessage().getUser().getUserID()) ? itemView.getContext().getString(R.string.tap_you) : item.getLastMessage().getUser().getName());
                 tvGroupSenderName.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.tapGroupRoomListSenderNameColor));
                 tvGroupSenderName.setVisibility(View.VISIBLE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
@@ -290,7 +295,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
             // Change Status Message Icon
             // Message sender is not the active user / last message is system message / room draft exists
-            if (null != item.getLastMessage() && (!item.getLastMessage().getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID()) ||
+            if (null != item.getLastMessage() && (!item.getLastMessage().getUser().getUserID().equals(activeUser.getUserID()) ||
                     TYPE_SYSTEM_MESSAGE == item.getLastMessage().getType()) || (null != draft && !draft.isEmpty())) {
                 ivMessageStatus.setImageDrawable(null);
             }
