@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +32,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -364,14 +369,34 @@ public class TapUIRoomListFragment extends Fragment {
                 && !user.getAvatarURL().getThumbnail().isEmpty()) {
             if (null != getActivity()) {
                 getActivity().runOnUiThread(() -> {
-                    Glide.with(this).load(user.getAvatarURL().getThumbnail()).into(civMyAvatarImage);
+                    Glide.with(this).load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            // Show initial
+                            if (null != getActivity()) {
+                                getActivity().runOnUiThread(() -> {
+                                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getRandomColor(getContext(), user.getName())));
+                                    if (null != getContext()) {
+                                        civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
+                                    }
+                                });
+                            }
+                            tvMyAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
+                            tvMyAvatarLabel.setVisibility(View.VISIBLE);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    }).into(civMyAvatarImage);
                     ImageViewCompat.setImageTintList(civMyAvatarImage, null);
                     tvMyAvatarLabel.setVisibility(View.GONE);
                 });
             }
         } else if (null != user) {
-//            Glide.with(activity).load(activity.getDrawable(R.drawable.tap_img_default_avatar))
-//                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
+            // Show initial
             if (null != getActivity()) {
                 getActivity().runOnUiThread(() -> {
                     ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getRandomColor(getContext(), user.getName())));
