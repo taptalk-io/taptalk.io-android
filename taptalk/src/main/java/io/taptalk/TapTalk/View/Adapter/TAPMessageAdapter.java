@@ -1645,7 +1645,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     glide.load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            showInitial(vh, item, civAvatar, tvAvatarLabel);
+                            if (vh.itemView.getContext() instanceof Activity) {
+                                ((Activity) vh.itemView.getContext()).runOnUiThread(() -> showInitial(vh, item, civAvatar, tvAvatarLabel));
+                            }
                             return false;
                         }
 
@@ -1661,7 +1663,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     glide.load(item.getUser().getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            showInitial(vh, item, civAvatar, tvAvatarLabel);
+                            if (vh.itemView.getContext() instanceof Activity) {
+                                ((Activity) vh.itemView.getContext()).runOnUiThread(() -> showInitial(vh, item, civAvatar, tvAvatarLabel));
+                            }
                             return false;
                         }
 

@@ -304,7 +304,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            showDefaultAvatar();
+                            runOnUiThread(() -> showDefaultAvatar());
                             return false;
                         }
 
@@ -323,7 +323,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            showDefaultAvatar();
+                            runOnUiThread(() -> showDefaultAvatar());
                             return false;
                         }
 
@@ -340,7 +340,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            showDefaultAvatar();
+                            runOnUiThread(() -> showDefaultAvatar());
                             return false;
                         }
 
@@ -359,7 +359,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            showDefaultAvatar();
+                            runOnUiThread(() -> showDefaultAvatar());
                             return false;
                         }
 

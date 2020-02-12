@@ -279,8 +279,10 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         Glide.with(this).load(vm.getGroupData().getRoomImage().getThumbnail()).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                civGroupImage.setImageDrawable(ContextCompat.getDrawable(TAPEditGroupSubjectActivity.this, R.drawable.tap_bg_circle_9b9b9b));
-                Toast.makeText(TAPEditGroupSubjectActivity.this, R.string.tap_failed_to_load_image, Toast.LENGTH_SHORT).show();
+                runOnUiThread(() -> {
+                    civGroupImage.setImageDrawable(ContextCompat.getDrawable(TAPEditGroupSubjectActivity.this, R.drawable.tap_bg_circle_9b9b9b));
+                    Toast.makeText(TAPEditGroupSubjectActivity.this, R.string.tap_failed_to_load_image, Toast.LENGTH_SHORT).show();
+                });
                 return false;
             }
 
