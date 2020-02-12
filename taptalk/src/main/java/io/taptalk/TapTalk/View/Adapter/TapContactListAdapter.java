@@ -116,7 +116,6 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                                 // Show initial
                                 if (itemView.getContext() instanceof Activity) {
                                     ((Activity) itemView.getContext()).runOnUiThread(() -> {
-                                        Glide.with(itemView.getContext()).clear(civAvatar);
                                         ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), user.getName())));
                                         civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
                                         tvAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));

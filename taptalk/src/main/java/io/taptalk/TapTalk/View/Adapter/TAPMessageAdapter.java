@@ -1701,7 +1701,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private void showInitial(TAPBaseChatViewHolder vh, TAPMessageModel item,
                              CircleImageView civAvatar, TextView tvAvatarLabel) {
         // Show initial
-        glide.clear(civAvatar);
         ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(vh.itemView.getContext(), item.getUser().getName())));
         civAvatar.setImageDrawable(ContextCompat.getDrawable(vh.itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
         tvAvatarLabel.setText(TAPUtils.getInitials(item.getUser().getName(), 2));
