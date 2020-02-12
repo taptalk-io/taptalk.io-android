@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter
 
+import android.app.Activity
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
@@ -101,10 +102,14 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
                         .load(item?.avatarURL?.thumbnail)
                         .listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, item?.name)))
-                                civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
-                                tvAvatarLabel.text = TAPUtils.getInitials(item?.name, 2)
-                                tvAvatarLabel.visibility = View.VISIBLE
+                                if (itemView.context is Activity) {
+                                    (itemView.context as Activity).runOnUiThread {
+                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, item?.name)))
+                                        civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
+                                        tvAvatarLabel.text = TAPUtils.getInitials(item?.name, 2)
+                                        tvAvatarLabel.visibility = View.VISIBLE
+                                    }
+                                }
                                 return false
                             }
 

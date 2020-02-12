@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -82,11 +83,15 @@ public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactList
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                 // Show initial
-                                Glide.with(itemView.getContext()).clear(civAvatar);
-                                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), user.getName())));
-                                civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                                tvAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
-                                tvAvatarLabel.setVisibility(View.VISIBLE);
+                                if (itemView.getContext() instanceof Activity) {
+                                    ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                                        Glide.with(itemView.getContext()).clear(civAvatar);
+                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), user.getName())));
+                                        civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
+                                        tvAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
+                                        tvAvatarLabel.setVisibility(View.VISIBLE);
+                                    });
+                                }
                                 return false;
                             }
 

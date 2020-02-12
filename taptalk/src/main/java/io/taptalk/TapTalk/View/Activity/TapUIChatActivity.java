@@ -856,7 +856,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         glide.load(image).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                loadInitialsToProfilePicture(imageView, tvAvatarLabel);
+                runOnUiThread(() -> loadInitialsToProfilePicture(imageView, tvAvatarLabel));
                 return false;
             }
 
