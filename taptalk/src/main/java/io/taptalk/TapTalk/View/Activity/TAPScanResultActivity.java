@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,6 +21,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.CircleImageView;
@@ -251,10 +256,28 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
     private void loadProfilePicture(CircleImageView imageView, TextView avatarLabel, TAPUserModel userModel) {
         if (null != userModel.getAvatarURL() && !userModel.getAvatarURL().getThumbnail().isEmpty()) {
-            glide.load(userModel.getAvatarURL().getThumbnail()).into(imageView);
+            glide.load(userModel.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    // Show initial
+                    glide.clear(imageView);
+                    ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPScanResultActivity.this, userModel.getName())));
+                    imageView.setImageDrawable(ContextCompat.getDrawable(TAPScanResultActivity.this, R.drawable.tap_bg_circle_9b9b9b));
+                    avatarLabel.setText(TAPUtils.getInitials(userModel.getName(), 2));
+                    avatarLabel.setVisibility(View.VISIBLE);
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    return false;
+                }
+            }).into(imageView);
             ImageViewCompat.setImageTintList(imageView, null);
             avatarLabel.setVisibility(View.GONE);
         } else {
+            // Show initial
+            glide.clear(imageView);
             ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getRandomColor(this, userModel.getName())));
             imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             avatarLabel.setText(TAPUtils.getInitials(userModel.getName(), 2));

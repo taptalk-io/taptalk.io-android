@@ -308,6 +308,7 @@ public class TAPUtils {
     }
 
     public static List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type, @Nullable Map<String, TapContactListModel> contactListPointer) {
+        Log.e(TAG, "generateContactListForRecycler: " + TAPUtils.toJsonString(contacts));
         List<TapContactListModel> separatedContacts = new ArrayList<>();
         List<TapContactListModel> nonAlphabeticContacts = new ArrayList<>();
         List<TapContactListModel> filteredContacts = new ArrayList<>();
@@ -343,6 +344,13 @@ public class TAPUtils {
             separatedContacts.add(new TapContactListModel("#"));
             separatedContacts.addAll(nonAlphabeticContacts);
         }
+        new Thread(() -> {
+            for (TapContactListModel contact : separatedContacts) {
+                if (null != contact.getUser()) {
+                    Log.e(TAG, "generateContactListForRecycler: " + contact.getUser().getName() + " " + contact.getUser().getIsContact());
+                }
+            }
+        }).start();
         return separatedContacts;
     }
 
@@ -445,8 +453,10 @@ public class TAPUtils {
     public static void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
         if (TYPE_PERSONAL == roomModel.getRoomType() && TAPChatManager.getInstance().getActiveUser().getUserID().equals(
                 TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
+            // Disable opening active user's own room
             return;
         }
+        Log.e(TAG, "startChatActivity: " + TAPUtils.toJsonString(roomModel));
 
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TapUIChatActivity.class);

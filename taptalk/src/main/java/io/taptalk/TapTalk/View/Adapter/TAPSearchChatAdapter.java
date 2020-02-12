@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.ImageViewCompat;
@@ -16,6 +18,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
@@ -270,7 +276,23 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
                     null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
                 // Load user avatar
-                glide.load(user.getAvatarURL().getThumbnail()).into(civAvatar);
+                glide.load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        // Show initial
+                        glide.clear(civAvatar);
+                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), room.getRoomName())));
+                        civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
+                        tvAvatarLabel.setText(TAPUtils.getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
+                        tvAvatarLabel.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                }).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else if (null != group && !group.isRoomDeleted() && null != group.getRoomImage() &&
@@ -284,6 +306,8 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
+                // Show initial
+                glide.clear(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), room.getRoomName())));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
                 tvAvatarLabel.setText(TAPUtils.getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
