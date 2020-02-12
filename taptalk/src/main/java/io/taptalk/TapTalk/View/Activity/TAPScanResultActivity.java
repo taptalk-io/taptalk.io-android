@@ -260,11 +260,13 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     // Show initial
-                    glide.clear(imageView);
-                    ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPScanResultActivity.this, userModel.getName())));
-                    imageView.setImageDrawable(ContextCompat.getDrawable(TAPScanResultActivity.this, R.drawable.tap_bg_circle_9b9b9b));
-                    avatarLabel.setText(TAPUtils.getInitials(userModel.getName(), 2));
-                    avatarLabel.setVisibility(View.VISIBLE);
+                    runOnUiThread(() -> {
+                        glide.clear(imageView);
+                        ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPScanResultActivity.this, userModel.getName())));
+                        imageView.setImageDrawable(ContextCompat.getDrawable(TAPScanResultActivity.this, R.drawable.tap_bg_circle_9b9b9b));
+                        avatarLabel.setText(TAPUtils.getInitials(userModel.getName(), 2));
+                        avatarLabel.setVisibility(View.VISIBLE);
+                    });
                     return false;
                 }
 
