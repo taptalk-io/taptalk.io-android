@@ -64,6 +64,9 @@ public class DiskLruImageCache {
     }
 
     public void put(String key, BitmapDrawable data) {
+        if (null == key || null == data) {
+            return;
+        }
         DiskLruCache.Editor editor = null;
         try {
             editor = diskCache.edit(key);
@@ -97,6 +100,9 @@ public class DiskLruImageCache {
     }
 
     public BitmapDrawable getBitmapDrawable(Context context, String key) {
+        if (null == key) {
+            return null;
+        }
         BitmapDrawable bitmapDrawable = null;
         try (DiskLruCache.Snapshot snapshot = diskCache.get(key)) {
             if (snapshot == null) {
@@ -120,6 +126,9 @@ public class DiskLruImageCache {
     }
 
     public void remove(String key) {
+        if (null == key) {
+            return;
+        }
         try {
             diskCache.remove(key);
         } catch (IOException e) {
@@ -128,6 +137,9 @@ public class DiskLruImageCache {
     }
 
     public boolean containsKey(String key) {
+        if (null == key) {
+            return false;
+        }
         boolean contained = false;
         DiskLruCache.Snapshot snapshot = null;
         try {

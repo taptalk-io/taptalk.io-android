@@ -27,13 +27,23 @@ public class TAPRoomListDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldRoomList.get(oldItemPosition).getLastMessage().getRoom().getRoomID()
-                .equals(newRoomList.get(newItemPosition).getLastMessage().getRoom().getRoomID());
+        TAPRoomListModel oldRoom = oldRoomList.get(oldItemPosition);
+        TAPRoomListModel newRoom = newRoomList.get(newItemPosition);
+        if (null != oldRoom && null != newRoom) {
+            return oldRoom.getLastMessage().getRoom().getRoomID()
+                    .equals(newRoom.getLastMessage().getRoom().getRoomID());
+        }
+        return false;
     }
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        return oldRoomList.get(oldItemPosition).getLastMessage().getLocalID()
-                .equals(newRoomList.get(newItemPosition).getLastMessage().getLocalID());
+        TAPRoomListModel oldRoom = oldRoomList.get(oldItemPosition);
+        TAPRoomListModel newRoom = newRoomList.get(newItemPosition);
+        if (null != oldRoom && null != newRoom) {
+            return oldRoom.getLastMessage().getLocalID()
+                    .equals(newRoom.getLastMessage().getLocalID());
+        }
+        return false;
     }
 }

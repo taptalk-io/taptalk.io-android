@@ -604,7 +604,10 @@ public class TapTalk implements LifecycleObserver {
      */
 
     public static boolean isTapTalkNotification(RemoteMessage remoteMessage) {
-        return remoteMessage.getData().get("identifier").equals("io.taptalk.TapTalk");
+        return null != remoteMessage &&
+                null != remoteMessage.getData() &&
+                null != remoteMessage.getData().get("identifier") &&
+                remoteMessage.getData().get("identifier").equals("io.taptalk.TapTalk");
     }
 
     public static void handleTapTalkPushNotification(RemoteMessage remoteMessage) {

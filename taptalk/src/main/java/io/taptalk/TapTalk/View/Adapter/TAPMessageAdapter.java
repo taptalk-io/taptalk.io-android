@@ -31,9 +31,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.MapView;
@@ -1638,22 +1642,39 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Load avatar and name for other room types
                 TAPUserModel user = TAPContactManager.getInstance().getUserData(item.getUser().getUserID());
                 if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
-                    glide.load(user.getAvatarURL().getThumbnail()).into(civAvatar);
+                    glide.load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            showInitial(vh, item, civAvatar, tvAvatarLabel);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    }).into(civAvatar);
                     ImageViewCompat.setImageTintList(civAvatar, null);
                     civAvatar.setVisibility(View.VISIBLE);
                     tvAvatarLabel.setVisibility(View.GONE);
                 } else if (null != civAvatar && null != tvAvatarLabel && null != item.getUser().getAvatarURL() && !item.getUser().getAvatarURL().getThumbnail().isEmpty()) {
-                    glide.load(item.getUser().getAvatarURL().getThumbnail()).into(civAvatar);
+                    glide.load(item.getUser().getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            showInitial(vh, item, civAvatar, tvAvatarLabel);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    }).into(civAvatar);
                     ImageViewCompat.setImageTintList(civAvatar, null);
                     civAvatar.setVisibility(View.VISIBLE);
                     tvAvatarLabel.setVisibility(View.GONE);
                 } else if (null != civAvatar && null != tvAvatarLabel) {
-//                    civAvatar.setImageDrawable(vh.itemView.getContext().getDrawable(R.drawable.tap_img_default_avatar));
-                    ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(vh.itemView.getContext(), item.getUser().getName())));
-                    civAvatar.setImageDrawable(ContextCompat.getDrawable(vh.itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                    tvAvatarLabel.setText(TAPUtils.getInitials(item.getUser().getName(), 2));
-                    civAvatar.setVisibility(View.VISIBLE);
-                    tvAvatarLabel.setVisibility(View.VISIBLE);
+                    showInitial(vh, item, civAvatar, tvAvatarLabel);
                 }
                 if (null != tvUserName) {
                     tvUserName.setText(item.getUser().getName());
@@ -1672,6 +1693,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             chatListener.onMessageRead(item);
         }
+    }
+
+    private void showInitial(TAPBaseChatViewHolder vh, TAPMessageModel item,
+                             CircleImageView civAvatar, TextView tvAvatarLabel) {
+        // Show initial
+        glide.clear(civAvatar);
+        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(vh.itemView.getContext(), item.getUser().getName())));
+        civAvatar.setImageDrawable(ContextCompat.getDrawable(vh.itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
+        tvAvatarLabel.setText(TAPUtils.getInitials(item.getUser().getName(), 2));
+        civAvatar.setVisibility(View.VISIBLE);
+        tvAvatarLabel.setVisibility(View.VISIBLE);
     }
 
     private void expandOrShrinkBubble(TAPMessageModel item, View itemView, FrameLayout flBubble,

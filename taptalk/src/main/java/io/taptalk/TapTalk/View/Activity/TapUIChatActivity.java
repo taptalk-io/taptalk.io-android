@@ -576,9 +576,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
         }
 
-        if (TYPE_GROUP == vm.getRoom().getRoomType() && TAPGroupManager.Companion
+        // Updated 2020/02/10
+        if (TYPE_PERSONAL != vm.getRoom().getRoomType() && TAPGroupManager.Companion
                 .getGetInstance().checkIsRoomDataAvailable(vm.getRoom().getRoomID())) {
-            vm.setRoom(TAPGroupManager.Companion.getGetInstance().getGroupData(vm.getRoom().getRoomID()));
+            TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().getGroupData(vm.getRoom().getRoomID());
+            if (null != room && null != room.getRoomName() && !room.getRoomName().isEmpty()) {
+                vm.setRoom(room);
+            }
         }
 
         if (null != getIntent().getStringExtra(JUMP_TO_MESSAGE) && !vm.isInitialAPICallFinished()) {
@@ -2016,6 +2020,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             TAPDataManager.getInstance().getUnreadCountPerRoom(vm.getRoom().getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
                 @Override
                 public void onCountedUnreadCount(String roomID, int unreadCount) {
+                    Log.e(TAG, "getInitialUnreadCount: " + roomID + ": " + unreadCount);
                     if (!roomID.equals(vm.getRoom().getRoomID())) {
                         vm.setInitialUnreadCount(0);
                         hideUnreadButton();
@@ -2024,6 +2029,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     vm.setInitialUnreadCount(unreadCount);
                     if (vm.isUnreadButtonShown() && clUnreadButton.getVisibility() == View.GONE) {
                         vm.setUnreadButtonShown(false);
+                        Log.e(TAG, "getInitialUnreadCount: showUnreadButton " + vm.getInitialUnreadCount());
                         showUnreadButton(vm.getUnreadIndicator());
                     }
                 }
@@ -2039,6 +2045,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         rvMessageList.post(() -> runOnUiThread(() -> {
             if (vm.isAllUnreadMessagesHidden()) {
                 // All unread messages are hidden
+                Log.e(TAG, "showUnreadButton: All unread messages are hidden");
                 return;
             }
             if (null != unreadIndicator) {
@@ -2048,6 +2055,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     view.getLocationOnScreen(location);
                     if (location[1] < TAPUtils.getScreenHeight()) {
                         // Do not show button if unread indicator is visible on screen
+                        Log.e(TAG, "showUnreadButton: indicator is visible on screen");
                         return;
                     }
                 }
@@ -2058,6 +2066,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             ivUnreadButtonImage.clearAnimation();
             clUnreadButton.setVisibility(View.VISIBLE);
             clUnreadButton.setOnClickListener(v -> scrollToMessage(UNREAD_INDICATOR_LOCAL_ID));
+            Log.e(TAG, "showUnreadButton InitialUnreadCount: show " + vm.getInitialUnreadCount());
         }));
     }
 
@@ -2336,6 +2345,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                             clEmptyChat.setVisibility(View.GONE);
                         }
                         flMessageList.setVisibility(View.VISIBLE);
+                        Log.e(TAG, "dbListener: showUnreadButton " + vm.getInitialUnreadCount());
                         showUnreadButton(vm.getUnreadIndicator());
                         checkChatRoomLocked(models.get(0));
                     }
@@ -2442,6 +2452,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
                     new Thread(() -> {
                         vm.setMessageModels(messageAdapter.getItems());
+                        Log.e(TAG, "dbListenerPaging: showUnreadButton " + vm.getInitialUnreadCount());
                         showUnreadButton(vm.getUnreadIndicator());
                         if (null != vm.getTappedMessageLocalID()) {
                             scrollToMessage(vm.getTappedMessageLocalID());
@@ -2650,6 +2661,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         vm.addMessagePointer(message);
                         if ((null == message.getIsRead() || !message.getIsRead()) &&
                                 (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
+                                // Updated 2020/02/10
+                                (null == message.getHidden() || !message.getHidden()) &&
+                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
+                                //(null == message.getIsDeleted() || !message.getIsDeleted()) &&
+                                //(null == messageFromPointer || null == messageFromPointer.getIsDeleted() || !messageFromPointer.getIsDeleted()) &&
                                 !TAPMessageStatusManager.getInstance().getReadMessageQueue().contains(message.getMessageID()) &&
                                 !TAPMessageStatusManager.getInstance().getMessagesMarkedAsRead().contains(message.getMessageID())) {
                             // Add message ID to pending list if new message has not been read or not in mark read queue
@@ -2730,6 +2746,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 messageAdapter.addMessage(0, messageAfterModels, false);
                 // Sort adapter items according to timestamp
                 mergeSort(messageAdapter.getItems(), ASCENDING);
+                Log.e(TAG, "dbListenerPaging: messageAfterView " + vm.getInitialUnreadCount());
                 showUnreadButton(vm.getUnreadIndicator());
 
                 if (vm.isOnBottom() && 0 < messageAfterModels.size()) {
