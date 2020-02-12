@@ -219,7 +219,6 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     // Show initial
                     runOnUiThread(() -> {
-                        glide.clear(civAvatar);
                         ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPNewContactActivity.this, vm.getSearchResult().getName())));
                         civAvatar.setImageDrawable(ContextCompat.getDrawable(TAPNewContactActivity.this, R.drawable.tap_bg_circle_9b9b9b));
                         tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getName(), 2));
@@ -292,7 +291,6 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     // Show initial
                     runOnUiThread(() -> {
-                        glide.clear(civAvatar);
                         ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPNewContactActivity.this, vm.getSearchResult().getName())));
                         civAvatar.setImageDrawable(ContextCompat.getDrawable(TAPNewContactActivity.this, R.drawable.tap_bg_circle_9b9b9b));
                         tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getName(), 2));
