@@ -485,7 +485,7 @@ public class TapUIRoomListFragment extends Fragment {
                 } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
                     // Show room list on first open and animate
                     adapter.addRoomList(vm.getRoomList());
-                    rvContactList.scrollToPosition(0);
+                    //rvContactList.scrollToPosition(0);
                     llRoomEmpty.setVisibility(View.GONE);
                 } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
                     // Update room list without animating
@@ -843,6 +843,7 @@ public class TapUIRoomListFragment extends Fragment {
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             vm.getRoomPointer().clear();
+            int count = 0; // FIXME Count to load room list every 10 items
             // Convert entity to model
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
@@ -850,11 +851,13 @@ public class TapUIRoomListFragment extends Fragment {
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 TAPDataManager.getInstance().getUnreadCountPerRoom(entity.getRoomID(), dbListener);
-                vm.getRoomList().add(roomModel);
-                activity.runOnUiThread(() -> adapter.notifyItemInserted(adapter.getItemCount() - 1));
+                if (++count % 10 == 0) {
+                    vm.setRoomList(messageModels);
+                    activity.runOnUiThread(() -> adapter.setItems(vm.getRoomList()));
+                }
             }
 
-//            vm.setRoomList(messageModels);
+            vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
             calculateBadgeCount();
         }
