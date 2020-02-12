@@ -261,7 +261,6 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     // Show initial
                     runOnUiThread(() -> {
-                        glide.clear(imageView);
                         ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPScanResultActivity.this, userModel.getName())));
                         imageView.setImageDrawable(ContextCompat.getDrawable(TAPScanResultActivity.this, R.drawable.tap_bg_circle_9b9b9b));
                         avatarLabel.setText(TAPUtils.getInitials(userModel.getName(), 2));

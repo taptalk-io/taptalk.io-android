@@ -25,7 +25,11 @@ import android.view.ViewTreeObserver
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
@@ -177,6 +181,22 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         } else {
             glide.load(vm.currentProfilePicture)
                     .apply(RequestOptions().placeholder(R.drawable.tap_bg_circle_9b9b9b))
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                            runOnUiThread {
+                                ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
+                                civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
+                                tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.name, 2)
+                                tv_profile_picture_label.visibility = View.VISIBLE
+                            }
+                            return false
+                        }
+
+                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                            return false
+                        }
+
+                    })
                     .into(civ_profile_picture)
             ImageViewCompat.setImageTintList(civ_profile_picture, null)
             tv_profile_picture_label.visibility = View.GONE
