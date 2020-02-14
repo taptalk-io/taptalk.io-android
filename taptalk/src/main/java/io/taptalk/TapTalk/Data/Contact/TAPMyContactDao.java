@@ -32,13 +32,13 @@ public interface TAPMyContactDao {
     @Update
     void update(TAPUserModel userModel);
 
-    @Query("select * from MyContact where isContact = 1 and deleted is null or deleted = 0 order by name, userID collate nocase asc")
+    @Query("select * from MyContact where isContact = 1 and deleted is null or deleted = 0 order by name collate nocase asc, userID")
     List<TAPUserModel> getAllMyContact();
 
-    @Query("select * from MyContact where isContact = 0 and deleted is null or deleted = 0 order by name, userID collate nocase asc")
+    @Query("select * from MyContact where isContact = 0 and deleted is null or deleted = 0 order by name collate nocase asc, userID")
     List<TAPUserModel> getNonContactUsers();
 
-    @Query("select * from MyContact where isContact = 1 and deleted is null or deleted = 0 order by name, userID collate nocase asc")
+    @Query("select * from MyContact where isContact = 1 and deleted is null or deleted = 0 order by name collate nocase asc, userID")
     LiveData<List<TAPUserModel>> getAllMyContactLive();
 
     @Query("select * from MyContact where name like :keyword escape '\\' and isContact = 1 and deleted is null or deleted = 0 order by name, userID asc")
