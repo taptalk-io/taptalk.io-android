@@ -117,7 +117,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 public class TAPUtils {
 
     private static final String TAG = TAPUtils.class.getSimpleName();
-    
+
     public static ObjectMapper createObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -308,13 +308,13 @@ public class TAPUtils {
     }
 
     public static List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type, @Nullable Map<String, TapContactListModel> contactListPointer) {
-        Log.e(TAG, "generateContactListForRecycler: " + TAPUtils.toJsonString(contacts));
+        Log.e("[[[[[[", "called function generateContactListForRecycler");
         List<TapContactListModel> separatedContacts = new ArrayList<>();
         List<TapContactListModel> nonAlphabeticContacts = new ArrayList<>();
         List<TapContactListModel> filteredContacts = new ArrayList<>();
         for (TAPUserModel contact : contacts) {
-            if (null != contact.getUsername() && !contact.getUsername().isEmpty() &&
-                    null != contact.getName() && !contact.getName().isEmpty()) {
+            // check username is not null and check name is not null
+            if (null != contact.getName() && !contact.getName().isEmpty()) {
                 TapContactListModel filteredContact = new TapContactListModel(contact, type);
                 filteredContacts.add(filteredContact);
             }
@@ -328,7 +328,7 @@ public class TAPUtils {
                 List<TapContactListModel> contactSubList = filteredContacts.subList(previousInitialIndexStart, i);
                 char initial = contactSubList.get(0).getUser().getName().toLowerCase().charAt(0);
                 if ((initial >= 'a' && initial <= 'z') || (initial >= 'A' && initial <= 'Z')) { // Character.isAlphabetic not available below API 19
-                //if (Character.isAlphabetic(contactSubList.get(0).getUser().getName().toLowerCase().charAt(0))) {
+                    //if (Character.isAlphabetic(contactSubList.get(0).getUser().getName().toLowerCase().charAt(0))) {
                     separatedContacts.add(new TapContactListModel(filteredContacts.get(i - 1).getUser().getName().substring(0, 1)));
                     separatedContacts.addAll(contactSubList);
                 } else {
@@ -336,7 +336,9 @@ public class TAPUtils {
                 }
                 previousInitialIndexStart = i;
             }
-            if (null != contactListPointer) {
+            if (null != contactListPointer
+                    && null != filteredContacts.get(i - 1).getUser().getUsername()
+                    && !"".equals(filteredContacts.get(i - 1).getUser().getUsername())) {
                 contactListPointer.put(filteredContacts.get(i - 1).getUser().getUsername(), filteredContacts.get(i - 1));
             }
         }
@@ -347,7 +349,7 @@ public class TAPUtils {
         new Thread(() -> {
             for (TapContactListModel contact : separatedContacts) {
                 if (null != contact.getUser()) {
-                    Log.e(TAG, "generateContactListForRecycler: " + contact.getUser().getName() + " " + contact.getUser().getIsContact());
+                    Log.e("[[[[[", "generateContactListForRecycler: " + contact.getUser().getName() + " " + contact.getUser().getIsContact());
                 }
             }
         }).start();
