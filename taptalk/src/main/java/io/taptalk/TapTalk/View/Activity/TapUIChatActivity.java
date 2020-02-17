@@ -576,9 +576,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             vm.setOtherUserModel(TAPContactManager.getInstance().getUserData(vm.getOtherUserID()));
         }
 
-        if (TYPE_GROUP == vm.getRoom().getRoomType() && TAPGroupManager.Companion
+        // Updated 2020/02/10
+        if (TYPE_PERSONAL != vm.getRoom().getRoomType() && TAPGroupManager.Companion
                 .getGetInstance().checkIsRoomDataAvailable(vm.getRoom().getRoomID())) {
-            vm.setRoom(TAPGroupManager.Companion.getGetInstance().getGroupData(vm.getRoom().getRoomID()));
+            TAPRoomModel room = TAPGroupManager.Companion.getGetInstance().getGroupData(vm.getRoom().getRoomID());
+            if (null != room && null != room.getRoomName() && !room.getRoomName().isEmpty()) {
+                vm.setRoom(room);
+            }
         }
 
         if (null != getIntent().getStringExtra(JUMP_TO_MESSAGE) && !vm.isInitialAPICallFinished()) {
@@ -852,7 +856,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         glide.load(image).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                loadInitialsToProfilePicture(imageView, tvAvatarLabel);
+                runOnUiThread(() -> loadInitialsToProfilePicture(imageView, tvAvatarLabel));
                 return false;
             }
 
@@ -2650,6 +2654,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         vm.addMessagePointer(message);
                         if ((null == message.getIsRead() || !message.getIsRead()) &&
                                 (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
+                                // Updated 2020/02/10
+                                (null == message.getHidden() || !message.getHidden()) &&
+                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
+                                //(null == message.getIsDeleted() || !message.getIsDeleted()) &&
+                                //(null == messageFromPointer || null == messageFromPointer.getIsDeleted() || !messageFromPointer.getIsDeleted()) &&
                                 !TAPMessageStatusManager.getInstance().getReadMessageQueue().contains(message.getMessageID()) &&
                                 !TAPMessageStatusManager.getInstance().getMessagesMarkedAsRead().contains(message.getMessageID())) {
                             // Add message ID to pending list if new message has not been read or not in mark read queue
