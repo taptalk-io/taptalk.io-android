@@ -90,6 +90,8 @@ public class TapCoreContactManager {
         TAPDataManager.getInstance().addContactApi(userID, new TAPDefaultDataView<TAPAddContactResponse>() {
             @Override
             public void onSuccess(TAPAddContactResponse response) {
+                TAPUserModel newContact = response.getUser().setUserAsContact();
+                TAPContactManager.getInstance().updateUserData(newContact);
                 listener.onSuccess(response.getUser());
             }
 
@@ -111,6 +113,15 @@ public class TapCoreContactManager {
         TAPDataManager.getInstance().addContactByPhone(phoneNumberList, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
             @Override
             public void onSuccess(TAPAddContactByPhoneResponse response) {
+                List<TAPUserModel> users = new ArrayList<>();
+                for (TAPUserModel contact : response.getUsers()) {
+                    if (!contact.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                        contact.setUserAsContact();
+                        users.add(contact);
+                    }
+                }
+                TAPDataManager.getInstance().insertMyContactToDatabase(users);
+                TAPContactManager.getInstance().updateUserData(users);
                 listener.onSuccess(response.getUsers().get(0));
             }
 

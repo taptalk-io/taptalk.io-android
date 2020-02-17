@@ -1,7 +1,10 @@
 package io.taptalk.TapTalk.View.Adapter;
 
+import android.app.Activity;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.view.View;
@@ -10,7 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
 
@@ -72,10 +79,32 @@ public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactList
                 Glide.with(itemView.getContext())
                         .load(user.getAvatarURL().getThumbnail())
                         .apply(new RequestOptions().centerCrop())
+                        .listener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                // Show initial
+                                if (itemView.getContext() instanceof Activity) {
+                                    ((Activity) itemView.getContext()).runOnUiThread(() -> {
+                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), user.getName())));
+                                        civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
+                                        tvAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
+                                        tvAvatarLabel.setVisibility(View.VISIBLE);
+                                    });
+                                }
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                return false;
+                            }
+                        })
                         .into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
+                // Show initial
+                Glide.with(itemView.getContext()).clear(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), user.getName())));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
                 tvAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));

@@ -117,7 +117,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 public class TAPUtils {
 
     private static final String TAG = TAPUtils.class.getSimpleName();
-    
+
     public static ObjectMapper createObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -312,8 +312,8 @@ public class TAPUtils {
         List<TapContactListModel> nonAlphabeticContacts = new ArrayList<>();
         List<TapContactListModel> filteredContacts = new ArrayList<>();
         for (TAPUserModel contact : contacts) {
-            if (null != contact.getUsername() && !contact.getUsername().isEmpty() &&
-                    null != contact.getName() && !contact.getName().isEmpty()) {
+            // Check name is not null
+            if (null != contact.getName() && !contact.getName().isEmpty()) {
                 TapContactListModel filteredContact = new TapContactListModel(contact, type);
                 filteredContacts.add(filteredContact);
             }
@@ -326,8 +326,8 @@ public class TAPUtils {
                             filteredContacts.get(i - 1).getUser().getName().toLowerCase().charAt(0)) {
                 List<TapContactListModel> contactSubList = filteredContacts.subList(previousInitialIndexStart, i);
                 char initial = contactSubList.get(0).getUser().getName().toLowerCase().charAt(0);
-                if ((initial >= 'a' && initial <= 'z') || (initial >= 'A' && initial <= 'Z')) { // Character.isAlphabetic not available below API 19
                 //if (Character.isAlphabetic(contactSubList.get(0).getUser().getName().toLowerCase().charAt(0))) {
+                if ((initial >= 'a' && initial <= 'z') || (initial >= 'A' && initial <= 'Z')) { // Character.isAlphabetic not available below API 19
                     separatedContacts.add(new TapContactListModel(filteredContacts.get(i - 1).getUser().getName().substring(0, 1)));
                     separatedContacts.addAll(contactSubList);
                 } else {
@@ -336,7 +336,7 @@ public class TAPUtils {
                 previousInitialIndexStart = i;
             }
             if (null != contactListPointer) {
-                contactListPointer.put(filteredContacts.get(i - 1).getUser().getUsername(), filteredContacts.get(i - 1));
+                contactListPointer.put(filteredContacts.get(i - 1).getUser().getUserID(), filteredContacts.get(i - 1));
             }
         }
         if (!nonAlphabeticContacts.isEmpty()) {
@@ -445,6 +445,7 @@ public class TAPUtils {
     public static void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
         if (TYPE_PERSONAL == roomModel.getRoomType() && TAPChatManager.getInstance().getActiveUser().getUserID().equals(
                 TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
+            // Disable opening active user's own room
             return;
         }
 

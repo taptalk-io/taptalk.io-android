@@ -1,6 +1,8 @@
 package io.taptalk.TapTalk.View.Adapter
 
+import android.app.Activity
 import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.ImageViewCompat
 import android.support.v7.util.DiffUtil
@@ -10,6 +12,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import io.taptalk.TapTalk.DiffCallback.TAPGroupMemberDiffCallback
 import io.taptalk.TapTalk.Helper.CircleImageView
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder
@@ -94,6 +100,24 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
             } else {
                 Glide.with(itemView.context)
                         .load(item?.avatarURL?.thumbnail)
+                        .listener(object : RequestListener<Drawable> {
+                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                                if (itemView.context is Activity) {
+                                    (itemView.context as Activity).runOnUiThread {
+                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, item?.name)))
+                                        civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
+                                        tvAvatarLabel.text = TAPUtils.getInitials(item?.name, 2)
+                                        tvAvatarLabel.visibility = View.VISIBLE
+                                    }
+                                }
+                                return false
+                            }
+
+                            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                                return false
+                            }
+
+                        })
                         .into(civAvatar)
                 ImageViewCompat.setImageTintList(civAvatar, null)
                 tvAvatarLabel.visibility = View.GONE
