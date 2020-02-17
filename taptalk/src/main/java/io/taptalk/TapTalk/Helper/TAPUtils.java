@@ -308,12 +308,11 @@ public class TAPUtils {
     }
 
     public static List<TapContactListModel> generateContactListForRecycler(List<TAPUserModel> contacts, int type, @Nullable Map<String, TapContactListModel> contactListPointer) {
-        Log.e("[[[[[[", "called function generateContactListForRecycler");
         List<TapContactListModel> separatedContacts = new ArrayList<>();
         List<TapContactListModel> nonAlphabeticContacts = new ArrayList<>();
         List<TapContactListModel> filteredContacts = new ArrayList<>();
         for (TAPUserModel contact : contacts) {
-            // check username is not null and check name is not null
+            // Check name is not null
             if (null != contact.getName() && !contact.getName().isEmpty()) {
                 TapContactListModel filteredContact = new TapContactListModel(contact, type);
                 filteredContacts.add(filteredContact);
@@ -327,8 +326,8 @@ public class TAPUtils {
                             filteredContacts.get(i - 1).getUser().getName().toLowerCase().charAt(0)) {
                 List<TapContactListModel> contactSubList = filteredContacts.subList(previousInitialIndexStart, i);
                 char initial = contactSubList.get(0).getUser().getName().toLowerCase().charAt(0);
+                //if (Character.isAlphabetic(contactSubList.get(0).getUser().getName().toLowerCase().charAt(0))) {
                 if ((initial >= 'a' && initial <= 'z') || (initial >= 'A' && initial <= 'Z')) { // Character.isAlphabetic not available below API 19
-                    //if (Character.isAlphabetic(contactSubList.get(0).getUser().getName().toLowerCase().charAt(0))) {
                     separatedContacts.add(new TapContactListModel(filteredContacts.get(i - 1).getUser().getName().substring(0, 1)));
                     separatedContacts.addAll(contactSubList);
                 } else {
@@ -336,23 +335,14 @@ public class TAPUtils {
                 }
                 previousInitialIndexStart = i;
             }
-            if (null != contactListPointer
-                    && null != filteredContacts.get(i - 1).getUser().getUsername()
-                    && !"".equals(filteredContacts.get(i - 1).getUser().getUsername())) {
-                contactListPointer.put(filteredContacts.get(i - 1).getUser().getUsername(), filteredContacts.get(i - 1));
+            if (null != contactListPointer) {
+                contactListPointer.put(filteredContacts.get(i - 1).getUser().getUserID(), filteredContacts.get(i - 1));
             }
         }
         if (!nonAlphabeticContacts.isEmpty()) {
             separatedContacts.add(new TapContactListModel("#"));
             separatedContacts.addAll(nonAlphabeticContacts);
         }
-        new Thread(() -> {
-            for (TapContactListModel contact : separatedContacts) {
-                if (null != contact.getUser()) {
-                    Log.e("[[[[[", "generateContactListForRecycler: " + contact.getUser().getName() + " " + contact.getUser().getIsContact());
-                }
-            }
-        }).start();
         return separatedContacts;
     }
 
@@ -458,7 +448,6 @@ public class TAPUtils {
             // Disable opening active user's own room
             return;
         }
-        Log.e(TAG, "startChatActivity: " + TAPUtils.toJsonString(roomModel));
 
         TAPChatManager.getInstance().saveUnsentMessage();
         Intent intent = new Intent(context, TapUIChatActivity.class);
