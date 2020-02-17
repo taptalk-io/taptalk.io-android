@@ -2020,7 +2020,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             TAPDataManager.getInstance().getUnreadCountPerRoom(vm.getRoom().getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
                 @Override
                 public void onCountedUnreadCount(String roomID, int unreadCount) {
-                    Log.e(TAG, "getInitialUnreadCount: " + roomID + ": " + unreadCount);
                     if (!roomID.equals(vm.getRoom().getRoomID())) {
                         vm.setInitialUnreadCount(0);
                         hideUnreadButton();
@@ -2029,7 +2028,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     vm.setInitialUnreadCount(unreadCount);
                     if (vm.isUnreadButtonShown() && clUnreadButton.getVisibility() == View.GONE) {
                         vm.setUnreadButtonShown(false);
-                        Log.e(TAG, "getInitialUnreadCount: showUnreadButton " + vm.getInitialUnreadCount());
                         showUnreadButton(vm.getUnreadIndicator());
                     }
                 }
@@ -2045,7 +2043,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         rvMessageList.post(() -> runOnUiThread(() -> {
             if (vm.isAllUnreadMessagesHidden()) {
                 // All unread messages are hidden
-                Log.e(TAG, "showUnreadButton: All unread messages are hidden");
                 return;
             }
             if (null != unreadIndicator) {
@@ -2055,7 +2052,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     view.getLocationOnScreen(location);
                     if (location[1] < TAPUtils.getScreenHeight()) {
                         // Do not show button if unread indicator is visible on screen
-                        Log.e(TAG, "showUnreadButton: indicator is visible on screen");
                         return;
                     }
                 }
@@ -2066,7 +2062,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             ivUnreadButtonImage.clearAnimation();
             clUnreadButton.setVisibility(View.VISIBLE);
             clUnreadButton.setOnClickListener(v -> scrollToMessage(UNREAD_INDICATOR_LOCAL_ID));
-            Log.e(TAG, "showUnreadButton InitialUnreadCount: show " + vm.getInitialUnreadCount());
         }));
     }
 
@@ -2345,7 +2340,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                             clEmptyChat.setVisibility(View.GONE);
                         }
                         flMessageList.setVisibility(View.VISIBLE);
-                        Log.e(TAG, "dbListener: showUnreadButton " + vm.getInitialUnreadCount());
                         showUnreadButton(vm.getUnreadIndicator());
                         checkChatRoomLocked(models.get(0));
                     }
@@ -2452,7 +2446,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
                     new Thread(() -> {
                         vm.setMessageModels(messageAdapter.getItems());
-                        Log.e(TAG, "dbListenerPaging: showUnreadButton " + vm.getInitialUnreadCount());
                         showUnreadButton(vm.getUnreadIndicator());
                         if (null != vm.getTappedMessageLocalID()) {
                             scrollToMessage(vm.getTappedMessageLocalID());
@@ -2746,7 +2739,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 messageAdapter.addMessage(0, messageAfterModels, false);
                 // Sort adapter items according to timestamp
                 mergeSort(messageAdapter.getItems(), ASCENDING);
-                Log.e(TAG, "dbListenerPaging: messageAfterView " + vm.getInitialUnreadCount());
                 showUnreadButton(vm.getUnreadIndicator());
 
                 if (vm.isOnBottom() && 0 < messageAfterModels.size()) {
