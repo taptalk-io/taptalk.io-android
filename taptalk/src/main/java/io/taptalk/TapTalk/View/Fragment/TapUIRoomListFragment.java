@@ -671,60 +671,66 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void showChatRoomSettingUp() {
-        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
-        ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSettingUp));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconLoadingProgressPrimary));
-        tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));
-        tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
-        TAPUtils.rotateAnimateInfinitely(activity, ivSetupChatLoading);
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSettingUp));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconLoadingProgressPrimary));
+            tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));
+            tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
+            TAPUtils.rotateAnimateInfinitely(activity, ivSetupChatLoading);
 
-        tvSetupChatDescription.setVisibility(View.VISIBLE);
-        llRetrySetup.setVisibility(View.GONE);
-        flSetupContainer.setVisibility(View.VISIBLE);
+            tvSetupChatDescription.setVisibility(View.VISIBLE);
+            llRetrySetup.setVisibility(View.GONE);
+            flSetupContainer.setVisibility(View.VISIBLE);
 
-        llRetrySetup.setOnClickListener(null);
+            llRetrySetup.setOnClickListener(null);
 
-        hideNewChatButton();
+            hideNewChatButton();
+        });
     }
 
     private void showChatRoomSetupSuccess() {
-        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
-        ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
-        ivSetupChatLoading.clearAnimation();
-        tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
-        tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
+            ivSetupChatLoading.clearAnimation();
+            tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
+            tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
 
-        tvSetupChatDescription.setVisibility(View.VISIBLE);
-        llRetrySetup.setVisibility(View.GONE);
+            tvSetupChatDescription.setVisibility(View.VISIBLE);
+            llRetrySetup.setVisibility(View.GONE);
 
-        llRetrySetup.setOnClickListener(null);
+            llRetrySetup.setOnClickListener(null);
 
-        showNewChatButton();
+            showNewChatButton();
 
-        new Handler().postDelayed(() -> flSetupContainer.setVisibility(View.GONE), 2000L);
+            new Handler().postDelayed(() -> flSetupContainer.setVisibility(View.GONE), 2000L);
+        });
     }
 
     private void showChatRoomSetupFailed() {
-        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
-        ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
-        ivSetupChatLoading.clearAnimation();
-        tvSetupChat.setText(getString(R.string.tap_chat_room_setup_failed));
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
+            ivSetupChatLoading.clearAnimation();
+            tvSetupChat.setText(getString(R.string.tap_chat_room_setup_failed));
 
-        tvSetupChatDescription.setVisibility(View.GONE);
-        llRetrySetup.setVisibility(View.VISIBLE);
+            tvSetupChatDescription.setVisibility(View.GONE);
+            llRetrySetup.setVisibility(View.VISIBLE);
 
-        llRetrySetup.setOnClickListener(view -> {
-            TAPUtils.animateClickButton(llRetrySetup, 0.95f);
-            if (null == TAPChatManager.getInstance().getActiveUser()) {
-                return;
-            }
-            TAPDataManager.getInstance().getMessageRoomListAndUnread(
-                    TAPChatManager.getInstance().getActiveUser().getUserID(), roomListView);
+            llRetrySetup.setOnClickListener(view -> {
+                TAPUtils.animateClickButton(llRetrySetup, 0.95f);
+                if (null == TAPChatManager.getInstance().getActiveUser()) {
+                    return;
+                }
+                TAPDataManager.getInstance().getMessageRoomListAndUnread(
+                        TAPChatManager.getInstance().getActiveUser().getUserID(), roomListView);
+            });
         });
     }
 
