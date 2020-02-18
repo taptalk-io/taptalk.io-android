@@ -806,13 +806,13 @@ public class TapUIRoomListFragment extends Fragment {
                 });
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
+                if (!vm.isDoneFirstApiSetup()) {
+                    vm.setDoneFirstApiSetup(true);
+                    TAPDataManager.getInstance().setRoomListSetupFinished();
+                    showChatRoomSetupSuccess();
+                }
             }
 
-            if (!vm.isDoneFirstApiSetup()) {
-                vm.setDoneFirstApiSetup(true);
-                TAPDataManager.getInstance().setRoomListSetupFinished();
-                showChatRoomSetupSuccess();
-            }
             calculateBadgeCount();
         }
 
@@ -916,6 +916,11 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(true);
             calculateBadgeCount();
+            if (!vm.isDoneFirstApiSetup()) {
+                vm.setDoneFirstApiSetup(true);
+                TAPDataManager.getInstance().setRoomListSetupFinished();
+                showChatRoomSetupSuccess();
+            }
         }
     };
 
