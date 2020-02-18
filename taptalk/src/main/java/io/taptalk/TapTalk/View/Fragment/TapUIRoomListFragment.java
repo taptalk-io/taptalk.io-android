@@ -148,6 +148,8 @@ public class TapUIRoomListFragment extends Fragment {
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
         TAPNotificationManager.getInstance().setRoomListAppear(true);
         new Thread(() -> TAPChatManager.getInstance().saveMessageToDatabase()).start();
+        Log.e(TAG, "onResume: updateQueryRoomListFromBackground");
+        // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
         updateQueryRoomListFromBackground();
         addNetworkListener();
         TAPBroadcastManager.register(activity, refreshTokenReceiver, REFRESH_TOKEN_RENEWED);
@@ -429,6 +431,8 @@ public class TapUIRoomListFragment extends Fragment {
             TAPDataManager.getInstance().getRoomList(true, dbListener);
         } else if (null != TAPChatManager.getInstance().getActiveUser()) {
             // Run full cycle if app is on background or on first open
+            // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
+            Log.e(TAG, "viewLoadedSequence: runFullRefreshSequence");
             runFullRefreshSequence();
         } else if (TapTalk.isAuthenticated()) {
             TapTalk.clearAllTapTalkData();
@@ -667,60 +671,66 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void showChatRoomSettingUp() {
-        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
-        ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSettingUp));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconLoadingProgressPrimary));
-        tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));
-        tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
-        TAPUtils.rotateAnimateInfinitely(activity, ivSetupChatLoading);
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSettingUp));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconLoadingProgressPrimary));
+            tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));
+            tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
+            TAPUtils.rotateAnimateInfinitely(activity, ivSetupChatLoading);
 
-        tvSetupChatDescription.setVisibility(View.VISIBLE);
-        llRetrySetup.setVisibility(View.GONE);
-        flSetupContainer.setVisibility(View.VISIBLE);
+            tvSetupChatDescription.setVisibility(View.VISIBLE);
+            llRetrySetup.setVisibility(View.GONE);
+            flSetupContainer.setVisibility(View.VISIBLE);
 
-        llRetrySetup.setOnClickListener(null);
+            llRetrySetup.setOnClickListener(null);
 
-        hideNewChatButton();
+            hideNewChatButton();
+        });
     }
 
     private void showChatRoomSetupSuccess() {
-        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
-        ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
-        ivSetupChatLoading.clearAnimation();
-        tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
-        tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
+            ivSetupChatLoading.clearAnimation();
+            tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
+            tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
 
-        tvSetupChatDescription.setVisibility(View.VISIBLE);
-        llRetrySetup.setVisibility(View.GONE);
+            tvSetupChatDescription.setVisibility(View.VISIBLE);
+            llRetrySetup.setVisibility(View.GONE);
 
-        llRetrySetup.setOnClickListener(null);
+            llRetrySetup.setOnClickListener(null);
 
-        showNewChatButton();
+            showNewChatButton();
 
-        new Handler().postDelayed(() -> flSetupContainer.setVisibility(View.GONE), 2000L);
+            new Handler().postDelayed(() -> flSetupContainer.setVisibility(View.GONE), 2000L);
+        });
     }
 
     private void showChatRoomSetupFailed() {
-        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
-        ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
-        ivSetupChatLoading.clearAnimation();
-        tvSetupChat.setText(getString(R.string.tap_chat_room_setup_failed));
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
+            ivSetupChatLoading.clearAnimation();
+            tvSetupChat.setText(getString(R.string.tap_chat_room_setup_failed));
 
-        tvSetupChatDescription.setVisibility(View.GONE);
-        llRetrySetup.setVisibility(View.VISIBLE);
+            tvSetupChatDescription.setVisibility(View.GONE);
+            llRetrySetup.setVisibility(View.VISIBLE);
 
-        llRetrySetup.setOnClickListener(view -> {
-            TAPUtils.animateClickButton(llRetrySetup, 0.95f);
-            if (null == TAPChatManager.getInstance().getActiveUser()) {
-                return;
-            }
-            TAPDataManager.getInstance().getMessageRoomListAndUnread(
-                    TAPChatManager.getInstance().getActiveUser().getUserID(), roomListView);
+            llRetrySetup.setOnClickListener(view -> {
+                TAPUtils.animateClickButton(llRetrySetup, 0.95f);
+                if (null == TAPChatManager.getInstance().getActiveUser()) {
+                    return;
+                }
+                TAPDataManager.getInstance().getMessageRoomListAndUnread(
+                        TAPChatManager.getInstance().getActiveUser().getUserID(), roomListView);
+            });
         });
     }
 
@@ -802,13 +812,13 @@ public class TapUIRoomListFragment extends Fragment {
                 });
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
+                if (!vm.isDoneFirstApiSetup()) {
+                    vm.setDoneFirstApiSetup(true);
+                    TAPDataManager.getInstance().setRoomListSetupFinished();
+                    showChatRoomSetupSuccess();
+                }
             }
 
-            if (!vm.isDoneFirstApiSetup()) {
-                vm.setDoneFirstApiSetup(true);
-                TAPDataManager.getInstance().setRoomListSetupFinished();
-                showChatRoomSetupSuccess();
-            }
             calculateBadgeCount();
         }
 
@@ -844,6 +854,7 @@ public class TapUIRoomListFragment extends Fragment {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             vm.getRoomPointer().clear();
             int count = 0; // FIXME Count to load room list every 10 items
+            int limit = 10;
             // Convert entity to model
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
@@ -851,9 +862,10 @@ public class TapUIRoomListFragment extends Fragment {
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 TAPDataManager.getInstance().getUnreadCountPerRoom(entity.getRoomID(), dbListener);
-                if (++count % 10 == 0) {
+                if (++count % limit == 0) {
                     vm.setRoomList(messageModels);
                     activity.runOnUiThread(() -> adapter.setItems(vm.getRoomList()));
+                    limit = limit * 2;
                 }
             }
 
@@ -910,6 +922,11 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(true);
             calculateBadgeCount();
+            if (!vm.isDoneFirstApiSetup()) {
+                vm.setDoneFirstApiSetup(true);
+                TAPDataManager.getInstance().setRoomListSetupFinished();
+                showChatRoomSetupSuccess();
+            }
         }
     };
 
