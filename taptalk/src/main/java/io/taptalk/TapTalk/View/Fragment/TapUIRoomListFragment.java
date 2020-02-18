@@ -148,6 +148,8 @@ public class TapUIRoomListFragment extends Fragment {
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
         TAPNotificationManager.getInstance().setRoomListAppear(true);
         new Thread(() -> TAPChatManager.getInstance().saveMessageToDatabase()).start();
+        Log.e(TAG, "onResume: updateQueryRoomListFromBackground");
+        // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
         updateQueryRoomListFromBackground();
         addNetworkListener();
         TAPBroadcastManager.register(activity, refreshTokenReceiver, REFRESH_TOKEN_RENEWED);
@@ -429,6 +431,8 @@ public class TapUIRoomListFragment extends Fragment {
             TAPDataManager.getInstance().getRoomList(true, dbListener);
         } else if (null != TAPChatManager.getInstance().getActiveUser()) {
             // Run full cycle if app is on background or on first open
+            // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
+            Log.e(TAG, "viewLoadedSequence: runFullRefreshSequence");
             runFullRefreshSequence();
         } else if (TapTalk.isAuthenticated()) {
             TapTalk.clearAllTapTalkData();
@@ -844,6 +848,7 @@ public class TapUIRoomListFragment extends Fragment {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             vm.getRoomPointer().clear();
             int count = 0; // FIXME Count to load room list every 10 items
+            int limit = 10;
             // Convert entity to model
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
@@ -851,9 +856,10 @@ public class TapUIRoomListFragment extends Fragment {
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 TAPDataManager.getInstance().getUnreadCountPerRoom(entity.getRoomID(), dbListener);
-                if (++count % 10 == 0) {
+                if (++count % limit == 0) {
                     vm.setRoomList(messageModels);
                     activity.runOnUiThread(() -> adapter.setItems(vm.getRoomList()));
+                    limit = limit * 2;
                 }
             }
 
