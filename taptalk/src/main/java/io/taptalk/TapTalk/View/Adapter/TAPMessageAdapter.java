@@ -1893,7 +1893,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
             }
-            clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
+            vQuoteBackground.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
         } else {
             // Hide quote
             clQuote.setVisibility(View.GONE);

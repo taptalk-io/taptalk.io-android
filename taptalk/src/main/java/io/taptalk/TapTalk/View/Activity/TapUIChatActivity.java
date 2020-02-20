@@ -277,9 +277,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
-//        if (0 < etChat.getText().length() && etChat.getText().length() >= vm.getPreviousEditTextSelectionIndex()) {
-//            etChat.setSelection(vm.getPreviousEditTextSelectionIndex());
-//        }
 
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             callApiGetUserByUserID();
@@ -287,10 +284,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             getRoomDataFromApi();
         }
 
-        if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
-            // TODO: 17 Dec 2019 API ALREADY CALLED ON SOCKET CONNECT?
-            callApiAfter();
-        } else if (vm.isInitialAPICallFinished() && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
+        if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() == 0 && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
     }
@@ -301,7 +295,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
-//        vm.setPreviousEditTextSelectionIndex(etChat.getSelectionEnd());
     }
 
     @Override
