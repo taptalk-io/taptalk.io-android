@@ -66,6 +66,7 @@ public class TapUI {
     private boolean isScanQRMenuButtonHidden;
     private boolean isNewGroupMenuButtonHidden;
     private boolean isLogoutButtonVisible;
+    private boolean isReadStatusHidden;
 
     public static TapUI getInstance() {
         return null == instance ? instance = new TapUI() : instance;
@@ -348,6 +349,14 @@ public class TapUI {
 
     public void setLogoutButtonVisible(boolean isVisible) {
         isLogoutButtonVisible = isVisible;
+    }
+
+    public boolean isReadStatusHidden() {
+        return isReadStatusHidden;
+    }
+
+    public void setReadStatusHidden(boolean isReadStatusHidden) {
+        this.isReadStatusHidden = isReadStatusHidden;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
