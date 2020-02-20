@@ -400,11 +400,13 @@ public class TAPChatManager {
         triggerListenerAndSendMessage(productMessage, true);
     }
 
-    public void sendLocationMessage(String address, Double latitude, Double longitude) {
+    public void sendLocationMessage(TAPRoomModel room, String address, Double latitude, Double longitude) {
+        checkAndSendForwardedMessage(room);
         triggerListenerAndSendMessage(createLocationMessageModel(address, latitude, longitude), true);
     }
 
     public void sendLocationMessage(String address, Double latitude, Double longitude, TAPRoomModel room, TapSendMessageInterface tapsendMessageInterface) {
+        checkAndSendForwardedMessage(room);
         TAPMessageModel messageModel = createLocationMessageModel(address, latitude, longitude, room, tapsendMessageInterface);
         sendMessageListeners.put(messageModel.getLocalID(), tapsendMessageInterface);
         tapsendMessageInterface.onStart(messageModel);
@@ -699,7 +701,9 @@ public class TAPChatManager {
     /**
      * Create file message model and call upload api
      */
-    private void createFileMessageModelAndAddToUploadQueue(Context context, String roomID, File file) {
+    private void createFileMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, File file) {
+        checkAndSendForwardedMessage(roomModel);
+
         TAPMessageModel messageModel = createFileMessageModel(context, file);
 
         // Set Start Point for Progress
@@ -708,10 +712,12 @@ public class TAPChatManager {
         addUploadingMessageToHashMap(messageModel);
         triggerSendMessageListener(messageModel);
 
-        TAPFileUploadManager.getInstance().addUploadQueue(context, roomID, messageModel);
+        TAPFileUploadManager.getInstance().addUploadQueue(context, roomModel.getRoomID(), messageModel);
     }
 
     private void createFileMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
+        checkAndSendForwardedMessage(roomModel);
+
         TAPMessageModel messageModel = createFileMessageModel(context, file, roomModel);
 
         // Check if file size exceeds limit
@@ -733,16 +739,12 @@ public class TAPChatManager {
         TAPFileUploadManager.getInstance().addUploadQueue(context, roomModel.getRoomID(), messageModel, listener);
     }
 
-    public void sendFileMessage(Context context, String roomID, File file) {
-        new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, roomID, file)).start();
-    }
-
     public void sendFileMessage(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
         new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, roomModel, file, listener)).start();
     }
 
-    public void sendFileMessage(Context context, File file) {
-        new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, getOpenRoom(), file)).start();
+    public void sendFileMessage(Context context, TAPRoomModel roomModel, File file) {
+        new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, roomModel, file)).start();
     }
 
     public void sendFileMessage(Context context, TAPMessageModel fileModel) {
@@ -753,8 +755,7 @@ public class TAPChatManager {
     }
 
     private String generateFileMessageBody(String fileName) {
-        return TapTalk.appContext.getString(R.string.tap_emoji_file) + " " +
-                (fileName.isEmpty() ? TapTalk.appContext.getString(R.string.tap_file) : fileName);
+        return TapTalk.appContext.getString(R.string.tap_emoji_file) + " " + (fileName.isEmpty() ? TapTalk.appContext.getString(R.string.tap_file) : fileName);
     }
 
     /**

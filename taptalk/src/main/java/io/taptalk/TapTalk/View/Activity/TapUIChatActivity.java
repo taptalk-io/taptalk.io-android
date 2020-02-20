@@ -401,13 +401,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     String address = intent.getStringExtra(LOCATION_NAME) == null ? "" : intent.getStringExtra(LOCATION_NAME);
                     Double latitude = intent.getDoubleExtra(LATITUDE, 0.0);
                     Double longitude = intent.getDoubleExtra(LONGITUDE, 0.0);
-                    TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
+                    TAPChatManager.getInstance().sendLocationMessage(vm.getRoom(), address, latitude, longitude);
                     break;
                 case SEND_FILE:
                     File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
                     if (null != tempFile) {
                         if (TAPFileUploadManager.getInstance().isSizeAllowedForUpload(tempFile.length()))
-                            TAPChatManager.getInstance().sendFileMessage(TapUIChatActivity.this, tempFile);
+                            TAPChatManager.getInstance().sendFileMessage(TapUIChatActivity.this, vm.getRoom(), tempFile);
                         else {
                             new TapTalkDialog.Builder(TapUIChatActivity.this)
                                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
