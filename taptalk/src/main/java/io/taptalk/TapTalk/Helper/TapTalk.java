@@ -645,23 +645,23 @@ public class TapTalk implements LifecycleObserver {
         return tapTalk.tapListeners;
     }
 
-    private static void addTapTalkListener(TapListener listener) {
+    public static void addTapTalkListener(TapListener listener) {
         checkTapTalkInitialized();
         tapTalk.tapListeners.add(listener);
     }
 
-    private static void setTapTalkScreenOrientation(TapTalkScreenOrientation orientation) {
+    public static void setTapTalkScreenOrientation(TapTalkScreenOrientation orientation) {
         checkTapTalkInitialized();
         TapTalk.screenOrientation = orientation;
     }
 
-    private static TapTalkScreenOrientation getTapTalkScreenOrientation() {
+    public static TapTalkScreenOrientation getTapTalkScreenOrientation() {
         checkTapTalkInitialized();
         return TapTalk.screenOrientation;
     }
 
     // Enable/disable in-app notification after chat fragment goes inactive or to background
-    private static void setInAppNotificationEnabled(boolean enabled) {
+    public static void setInAppNotificationEnabled(boolean enabled) {
         checkTapTalkInitialized();
         TAPNotificationManager.getInstance().setRoomListAppear(!enabled);
     }
@@ -670,7 +670,7 @@ public class TapTalk implements LifecycleObserver {
 //        isOpenDefaultProfileEnabled = enabled;
 //    }
 
-    private void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
+    public void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
         checkTapTalkInitialized();
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
