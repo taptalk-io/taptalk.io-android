@@ -79,7 +79,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
             if (BuildConfig.DEBUG || TapTalk.isLoggingEnabled) {
-                Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.getInstance().toJsonString(message));
+                Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.toJsonString(message));
             }
             return true;
         });
@@ -96,7 +96,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                         return false;
                     } else if (null != url) {
                         //For Url
-                        TAPUtils.getInstance().openCustomTabLayout((Activity) itemView.getContext(), url);
+                        TAPUtils.openCustomTabLayout((Activity) itemView.getContext(), url);
                         return true;
                     }
                     return false;

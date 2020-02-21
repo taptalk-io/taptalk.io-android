@@ -29,6 +29,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
@@ -97,7 +98,7 @@ public class TapUISearchChatFragment extends Fragment {
         if (hidden) {
             etSearch.setText("");
         } else {
-            TAPUtils.getInstance().showKeyboard(getActivity(), etSearch);
+            TAPUtils.showKeyboard(getActivity(), etSearch);
         }
     }
 
@@ -112,6 +113,19 @@ public class TapUISearchChatFragment extends Fragment {
         ivButtonClearText = view.findViewById(R.id.iv_button_clear_text);
         recyclerView = view.findViewById(R.id.recyclerView);
 
+        boolean isContactAvailable = TapUI.getInstance().isNewContactMenuButtonVisible() || TapUI.getInstance().isScanQRMenuButtonVisible();
+        boolean isGroupChatAvailable = TapUI.getInstance().isNewGroupMenuButtonVisible();
+
+        if (isContactAvailable && isGroupChatAvailable) {
+            etSearch.setHint(getString(R.string.tap_search_chat_placeholder));
+        } else if (isContactAvailable) {
+            etSearch.setHint(getString(R.string.tap_search_chat_placeholder_chats_contacts));
+        } else if (isGroupChatAvailable) {
+            etSearch.setHint(getString(R.string.tap_search_chat_placeholder_chats_group));
+        } else {
+            etSearch.setHint(getString(R.string.tap_search_chat_placeholder_chats_only));
+        }
+
         etSearch.addTextChangedListener(searchTextWatcher);
 
         adapter = new TAPSearchChatAdapter(vm.getSearchResults(), Glide.with(this));
@@ -124,7 +138,7 @@ public class TapUISearchChatFragment extends Fragment {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                TAPUtils.getInstance().dismissKeyboard(getActivity());
+                TAPUtils.dismissKeyboard(getActivity());
             }
         });
 
@@ -132,12 +146,12 @@ public class TapUISearchChatFragment extends Fragment {
             TapUIMainRoomListFragment fragment = (TapUIMainRoomListFragment) this.getParentFragment();
             if (null != fragment)
                 fragment.showRoomList();
-            TAPUtils.getInstance().dismissKeyboard(getActivity());
+            TAPUtils.dismissKeyboard(getActivity());
         });
         ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 
         etSearch.setOnEditorActionListener((textView, i, keyEvent) -> {
-            TAPUtils.getInstance().dismissKeyboard(getActivity());
+            TAPUtils.dismissKeyboard(getActivity());
             return false;
         });
     }
@@ -160,7 +174,7 @@ public class TapUISearchChatFragment extends Fragment {
                             entity.getRoomID(),
                             entity.getRoomName(),
                             entity.getRoomType(),
-                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                            TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
                             }, entity.getRoomImage()),
                             entity.getRoomColor());
                     recentItem.setRoom(roomModel);
@@ -233,16 +247,7 @@ public class TapUISearchChatFragment extends Fragment {
                     if (!entity.getRoomID().equals(TAPChatManager.getInstance().arrangeRoomId(myId, myId))) {
                         TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                         // Convert message to room model
-                        TAPRoomModel room = new TAPRoomModel(
-                                entity.getRoomID(),
-                                entity.getRoomName(),
-                                entity.getRoomType(),
-                                // TODO: 18 October 2018 REMOVE CHECK
-                                /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                                TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
-                                }, entity.getRoomImage())
-                                /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
-                                entity.getRoomColor());
+                        TAPRoomModel room = TAPRoomModel.Builder(entity);
                         room.setUnreadCount(unreadMap.get(room.getRoomID()));
                         result.setRoom(room);
                         vm.addSearchResult(result);

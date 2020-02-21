@@ -69,7 +69,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 
     public TapChatProfileAdapter(List<TapChatProfileItemModel> items, TAPChatProfileActivity.ChatProfileInterface chatProfileInterface, RequestManager glide) {
         setItems(items, true);
-        gridWidth = TAPUtils.getInstance().getScreenWidth() / 3;
+        gridWidth = TAPUtils.getScreenWidth() / 3;
         this.chatProfileInterface = chatProfileInterface;
         this.glide = glide;
     }
@@ -227,7 +227,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             DrawableCompat.setTintList(DrawableCompat.wrap(swMenuSwitch.getThumbDrawable()),
                     ColorStateList.valueOf(color));
             DrawableCompat.setTintList(DrawableCompat.wrap(swMenuSwitch.getTrackDrawable()),
-                    ColorStateList.valueOf(TAPUtils.getInstance().adjustAlpha(color, 0.3f)));
+                    ColorStateList.valueOf(TAPUtils.adjustAlpha(color, 0.3f)));
         }
     }
 
@@ -306,7 +306,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                 if (message.getType() == TYPE_VIDEO && null != message.getData()) {
                     Number duration = (Number) message.getData().get(DURATION);
                     if (null != duration) {
-                        tvMediaInfo.setText(TAPUtils.getInstance().getMediaDurationString(duration.intValue(), duration.intValue()));
+                        tvMediaInfo.setText(TAPUtils.getMediaDurationString(duration.intValue(), duration.intValue()));
                         tvMediaInfo.setVisibility(View.VISIBLE);
                         vThumbnailOverlay.setVisibility(View.VISIBLE);
                     } else {
@@ -368,7 +368,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             } else {
                 // Show small thumbnail
                 Number size = (Number) message.getData().get(SIZE);
-                String videoSize = null == size ? "" : TAPUtils.getInstance().getStringSizeLengthFile(size.longValue());
+                String videoSize = null == size ? "" : TAPUtils.getStringSizeLengthFile(size.longValue());
                 ivThumbnail.setImageDrawable(thumbnail);
                 if (null == downloadProgressValue) {
                     // Show media requires download
@@ -386,7 +386,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                     clContainer.setOnClickListener(v -> chatProfileInterface.onCancelDownloadClicked(message));
                     //Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(item.getLocalID());
                     //if (null != downloadProgressBytes) {
-                    //    tvMediaInfo.setText(TAPUtils.getInstance().getFileDisplayProgress(item, downloadProgressBytes));
+                    //    tvMediaInfo.setText(TAPUtils.getFileDisplayProgress(item, downloadProgressBytes));
                     //}
                     tvMediaInfo.setText(videoSize);
                     ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
@@ -414,7 +414,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
         @Override
         protected void onBind(TapChatProfileItemModel item, int position) {
             if (null == ivLoading.getAnimation()) {
-                TAPUtils.getInstance().rotateAnimateInfinitely(itemView.getContext(), ivLoading);
+                TAPUtils.rotateAnimateInfinitely(itemView.getContext(), ivLoading);
             }
 
             // TODO: 15 October 2019 SHOW RELOAD SHARED MEDIA ON API FAILURE

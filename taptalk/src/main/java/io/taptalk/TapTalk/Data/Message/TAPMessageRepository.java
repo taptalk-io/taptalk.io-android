@@ -219,7 +219,7 @@ public class TAPMessageRepository {
             if (null != room && null != room.getRoomName() && !room.getRoomName().isEmpty()) {
                 // Get room model from saved message
                 listener.onSelectFinished(new TAPRoomModel(roomID, room.getRoomName(), room.getRoomType(),
-                        TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
+                        TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
                         }, room.getRoomImage()), room.getRoomColor()));
             } else {
                 // Create new room model from user data
@@ -300,7 +300,24 @@ public class TAPMessageRepository {
         if (messageIDs.size() == 1) {
             updateMessageAsRead(messageIDs.get(0));
         } else {
-            new Thread(() -> messageDao.updateMessagesAsRead(messageIDs)).start();
+            new Thread(() -> {
+                // Updated 2020/02/10
+                // Split operation if there are more than 500 unread messages
+                int unreadCount = messageIDs.size();
+                int maxSize = 500;
+                if (unreadCount > maxSize) {
+                    int separatedCount = 0;
+                    while (separatedCount < unreadCount) {
+                        int remainingUnreadCount = unreadCount - separatedCount;
+                        int endIndex = (remainingUnreadCount > maxSize ? maxSize : remainingUnreadCount) + separatedCount;
+                        List<String> separatedMessageIDs = messageIDs.subList(separatedCount, endIndex);
+                        messageDao.updateMessagesAsRead(separatedMessageIDs);
+                        separatedCount += separatedMessageIDs.size();
+                    }
+                } else {
+                    messageDao.updateMessagesAsRead(messageIDs);
+                }
+            }).start();
         }
     }
 

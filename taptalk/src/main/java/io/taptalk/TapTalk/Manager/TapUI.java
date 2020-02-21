@@ -33,6 +33,7 @@ import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
+import io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
@@ -42,11 +43,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
 
 public class TapUI {
 
@@ -57,12 +58,15 @@ public class TapUI {
     private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
 
     private boolean isSearchChatBarHidden;
+    private boolean isCloseRoomListButtonVisible;
     private boolean isMyAccountButtonHidden;
     private boolean isNewChatButtonHidden;
+    private boolean isProfileButtonHidden;
     private boolean isNewContactMenuButtonHidden;
     private boolean isScanQRMenuButtonHidden;
     private boolean isNewGroupMenuButtonHidden;
     private boolean isLogoutButtonVisible;
+    private boolean isReadStatusHidden;
 
     public static TapUI getInstance() {
         return null == instance ? instance = new TapUI() : instance;
@@ -130,15 +134,15 @@ public class TapUI {
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel) {
-        TAPUtils.getInstance().startChatActivity(context, roomModel, null, null);
+        TAPUtils.startChatActivity(context, roomModel, null, null);
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel, String scrollToMessageWithLocalID) {
-        TAPUtils.getInstance().startChatActivity(context, roomModel, null, scrollToMessageWithLocalID);
+        TAPUtils.startChatActivity(context, roomModel, null, scrollToMessageWithLocalID);
     }
 
     public void openChatRoom(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        TAPUtils.getInstance().startChatActivity(
+        TAPUtils.startChatActivity(
                 context,
                 roomID,
                 roomName,
@@ -216,7 +220,7 @@ public class TapUI {
             @Nullable String customQuoteImageURL,
             @Nullable HashMap<String, Object> userInfo,
             TapCommonListener listener) {
-        TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+        TAPUtils.getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel user) {
                 String roomID = TAPChatManager.getInstance().arrangeRoomId(
@@ -283,6 +287,14 @@ public class TapUI {
         isSearchChatBarHidden = !isVisible;
     }
 
+    public boolean isCloseRoomListButtonVisible() {
+        return isCloseRoomListButtonVisible;
+    }
+
+    public void setCloseButtonInRoomListVisible(boolean isVisible) {
+        isCloseRoomListButtonVisible = isVisible;
+    }
+
     public boolean isMyAccountButtonVisible() {
         return !isMyAccountButtonHidden;
     }
@@ -297,6 +309,14 @@ public class TapUI {
 
     public void setNewChatButtonInRoomListVisible(boolean isVisible) {
         isNewChatButtonHidden = !isVisible;
+    }
+
+    public boolean isProfileButtonVisible() {
+        return !isProfileButtonHidden;
+    }
+
+    public void setProfileButtonInChatRoomVisible(boolean isVisible) {
+        isProfileButtonHidden = !isVisible;
     }
 
     public boolean isNewContactMenuButtonVisible() {
@@ -323,12 +343,20 @@ public class TapUI {
         isNewGroupMenuButtonHidden = !isVisible;
     }
 
+    public boolean isLogoutButtonVisible() {
+        return isLogoutButtonVisible;
+    }
+
     public void setLogoutButtonVisible(boolean isVisible) {
         isLogoutButtonVisible = isVisible;
     }
 
-    public boolean isLogoutButtonVisible() {
-        return isLogoutButtonVisible;
+    public boolean isReadStatusHidden() {
+        return isReadStatusHidden;
+    }
+
+    public void setReadStatusHidden(boolean isReadStatusHidden) {
+        this.isReadStatusHidden = isReadStatusHidden;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
@@ -341,6 +369,16 @@ public class TapUI {
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
                 listener.onSearchChatBarTapped(activity, mainRoomListFragment);
+            }
+        }
+    }
+
+    void triggerCloseRoomListTapped(Activity activity) {
+        if (getRoomListListeners().isEmpty() && null != activity) {
+            activity.onBackPressed();
+        } else {
+            for (TapUIRoomListListener listener : getRoomListListeners()) {
+                listener.onCloseRoomListTapped(activity);
             }
         }
     }
@@ -372,6 +410,9 @@ public class TapUI {
     }
 
     void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
+        if (room.getRoomType() == TYPE_TRANSACTION) {
+            return;
+        }
         if (getChatRoomListeners().isEmpty()) {
             WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
             Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);

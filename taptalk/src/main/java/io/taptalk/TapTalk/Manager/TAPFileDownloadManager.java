@@ -299,7 +299,7 @@ public class TAPFileDownloadManager {
                 Uri fileProviderUri = FileProvider.getUriForFile(appContext, FILEPROVIDER_AUTHORITY, file);
                 //Log.e("TapFileDownloadManager", "Download Success: " + message.getLocalID() + " " + fileProviderUri + " " + urlString);
                 TAPFileDownloadManager.getInstance().addFileProviderPath(fileProviderUri, file.getAbsolutePath());
-                TAPFileDownloadManager.getInstance().scanFile(appContext, file, TAPUtils.getInstance().getFileMimeType(file));
+                TAPFileDownloadManager.getInstance().scanFile(appContext, file, TAPUtils.getFileMimeType(file));
 
                 Intent intent = new Intent(DownloadFinish);
                 intent.putExtra(DownloadLocalID, message.getLocalID());
@@ -309,7 +309,7 @@ public class TAPFileDownloadManager {
                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                 TAPFileDownloadManager.getInstance().saveFileMessageUri(
                         message.getRoom().getRoomID(),
-                        TAPUtils.getInstance().removeNonAlphaNumeric(urlString).toLowerCase(),
+                        TAPUtils.removeNonAlphaNumeric(urlString).toLowerCase(),
                         fileProviderUri); }
     }
 
@@ -437,7 +437,7 @@ public class TAPFileDownloadManager {
             Uri fileProviderUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
             String fileID = (String) message.getData().get(FILE_ID);
             addFileProviderPath(fileProviderUri, file.getAbsolutePath());
-            scanFile(context, file, TAPUtils.getInstance().getFileMimeType(file));
+            scanFile(context, file, TAPUtils.getFileMimeType(file));
             Intent intent = new Intent(DownloadFinish);
             intent.putExtra(DownloadLocalID, localID);
             intent.putExtra(DownloadedFile, file);
@@ -471,7 +471,7 @@ public class TAPFileDownloadManager {
                 bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
                 out.flush();
                 out.close();
-                scanFile(context, file, TAPUtils.getInstance().getFileMimeType(file));
+                scanFile(context, file, TAPUtils.getFileMimeType(file));
                 listener.onSuccess("Successfully saved " + filename);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -497,7 +497,7 @@ public class TAPFileDownloadManager {
                     File sourceFile = new File(getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID))));
                     if (sourceFile.exists()) {
                         copyFile(sourceFile, targetFile);
-                        scanFile(context, targetFile, TAPUtils.getInstance().getFileMimeType(targetFile));
+                        scanFile(context, targetFile, TAPUtils.getFileMimeType(targetFile));
                         listener.onSuccess("Successfully saved " + filename);
                     } else {
                         listener.onError(context.getString(R.string.tap_error_could_not_find_file));
@@ -660,7 +660,7 @@ public class TAPFileDownloadManager {
         String fileId = (String) message.getData().get(FILE_ID);
         String fileUrl = (String) message.getData().get(FILE_URL);
         if (null != fileUrl) {
-            fileUrl = TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase();
+            fileUrl = TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase();
         }
 
         return (

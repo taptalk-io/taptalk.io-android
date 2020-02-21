@@ -2,21 +2,19 @@ package io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui;
 
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Pattern;
@@ -45,7 +43,9 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
     public static final String RESULT_FILE_PATH = "tap_result_file_path";
     private static final int HANDLE_CLICK_DELAY = 150;
 
-    private Toolbar mToolbar;
+    private ConstraintLayout clActionBar;
+    private ImageView ivButtonClose;
+    private TextView tvTitle;
     private String mStartPath = Environment.getExternalStorageDirectory().getAbsolutePath();
     private String mCurrentPath = mStartPath;
     private CharSequence mTitle;
@@ -61,7 +61,6 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
 
         initArguments(savedInstanceState);
         initViews();
-        initToolbar();
         initBackStackState();
         initFragment();
     }
@@ -114,39 +113,20 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
         }
     }
 
-    private void initToolbar() {
-        setSupportActionBar(mToolbar);
+    private void initViews() {
+        getWindow().setBackgroundDrawable(null);
 
-        // Show back button
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.tap_ic_chevron_left_white);
-        }
-
-        // Truncate start of path
-        try {
-            Field f;
-            if (TextUtils.isEmpty(mTitle)) {
-                f = mToolbar.getClass().getDeclaredField("mTitleTextView");
-            } else {
-                f = mToolbar.getClass().getDeclaredField("mSubtitleTextView");
-            }
-
-            f.setAccessible(true);
-            TextView textView = (TextView) f.get(mToolbar);
-            textView.setTextColor(Color.WHITE);
-            textView.setEllipsize(TextUtils.TruncateAt.START);
-        } catch (Exception ignored) {
-        }
+        clActionBar = findViewById(R.id.cl_action_bar);
+        ivButtonClose = findViewById(R.id.iv_button_close);
+        tvTitle = findViewById(R.id.tv_title);
 
         if (!TextUtils.isEmpty(mTitle)) {
             setTitle(mTitle);
         }
-        updateTitle();
-    }
 
-    private void initViews() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        updateTitle();
+
+        ivButtonClose.setOnClickListener(v -> onBackPressed());
     }
 
     private void initFragment() {
@@ -174,40 +154,21 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
     }
 
     private void updateTitle() {
-        if (getSupportActionBar() != null) {
-            String titlePath = mCurrentPath.isEmpty() ? "/" : mCurrentPath;
-            if (TextUtils.isEmpty(mTitle)) {
-                getSupportActionBar().setTitle(titlePath);
-            } else {
-                getSupportActionBar().setSubtitle(titlePath);
-            }
+        String titlePath = mCurrentPath.isEmpty() ? "Documents" : mCurrentPath.replace("/storage/emulated/0", "Documents");
+        tvTitle.setText(titlePath);
+        if (mCurrentPath.equals(mStartPath)) {
+            ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
+        } else {
+            ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
         }
     }
 
     private void addFragmentToBackStack(String path) {
         getFragmentManager().beginTransaction()
-                .setCustomAnimations(R.animator.tap_slide_left_fragment, R.animator.tap_fade_out_fragment, R.animator.tap_fade_in_fragment, R.animator.tap_slide_right_fragment)
-                .replace(R.id.container, DirectoryFragment.getInstance(
-                        path, mFilter))
+//                .setCustomAnimations(R.animator.tap_slide_left_fragment, R.animator.tap_fade_out_fragment, R.animator.tap_fade_in_fragment, R.animator.tap_slide_right_fragment)
+                .replace(R.id.container, DirectoryFragment.getInstance(path, mFilter))
                 .addToBackStack(null)
                 .commit();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.tap_cfp_menu, menu);
-        menu.findItem(R.id.action_close).setVisible(mCloseable);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == android.R.id.home) {
-            onBackPressed();
-        } else if (menuItem.getItemId() == R.id.action_close) {
-            finish();
-        }
-        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override
@@ -220,7 +181,7 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
             updateTitle();
         } else {
             setResult(RESULT_CANCELED);
-            finish();
+            finishWithAnimation();
         }
     }
 
@@ -241,8 +202,9 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
             mCurrentPath = clickedFile.getPath();
             // If the user wanna go to the emulated directory, he will be taken to the
             // corresponding user emulated folder.
-            if (mCurrentPath.equals("/storage/emulated"))
+            if (mCurrentPath.equals("/storage/emulated")) {
                 mCurrentPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            }
             addFragmentToBackStack(mCurrentPath);
             updateTitle();
         } else {
@@ -254,6 +216,11 @@ public class FilePickerActivity extends AppCompatActivity implements DirectoryFr
         Intent data = new Intent();
         data.putExtra(RESULT_FILE_PATH, filePath);
         setResult(RESULT_OK, data);
+        finishWithAnimation();
+    }
+
+    private void finishWithAnimation() {
         finish();
+        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
     }
 }

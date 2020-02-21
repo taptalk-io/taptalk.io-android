@@ -46,11 +46,12 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
         Request request = original
                 .newBuilder()
                 .addHeader("Content-Type", contentType)
+                .addHeader("App-Identifier", TapTalk.appContext.getPackageName())
                 .addHeader("App-Key", appKey)
                 .addHeader("Device-Identifier", deviceID)
                 .addHeader("Device-Model", android.os.Build.MODEL)
-                .addHeader("Device-Platform", "android")
                 .addHeader("Device-OS-Version", deviceOsVersion)
+                .addHeader("Device-Platform", "android")
                 .addHeader("SDK-Version", BuildConfig.VERSION_NAME)
                 .addHeader("User-Agent", userAgent)
                 .method(original.method(), original.body())

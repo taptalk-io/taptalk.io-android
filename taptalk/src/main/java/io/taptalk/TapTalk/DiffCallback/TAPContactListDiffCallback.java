@@ -34,6 +34,6 @@ public class TAPContactListDiffCallback extends DiffUtil.Callback {
 
     @Override
     public boolean areContentsTheSame(int i, int i1) {
-        return TAPUtils.getInstance().listEqualsIgnoreOrder(oldContactList.get(i), newContactList.get(i1));
+        return TAPUtils.listEqualsIgnoreOrder(oldContactList.get(i), newContactList.get(i1));
     }
 }

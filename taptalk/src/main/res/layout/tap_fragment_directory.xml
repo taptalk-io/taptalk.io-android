@@ -18,19 +18,20 @@
         android:visibility="gone">
 
         <ImageView
-            android:layout_width="110dp"
-            android:layout_height="110dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_gravity="center"
-            android:src="@drawable/tap_cfp_ic_file_grey_9b" />
+            android:src="@drawable/tap_cfp_ic_file_grey_9b"
+            android:tint="@color/tapColorTextMedium" />
 
         <TextView
+            style="@style/tapInfoLabelBodyStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:fontFamily="sans-serif-medium"
-            android:text="@string/tap_cfp_empty_directory_hint"
-            android:textColor="@color/tapBlack44"
-            android:textSize="24sp" />
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/tapColorTextMedium"
+            android:text="@string/tap_cfp_empty_directory_hint" />
 
     </LinearLayout>
 
