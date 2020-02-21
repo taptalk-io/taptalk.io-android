@@ -88,8 +88,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         centerOfMap = googleMap?.cameraPosition?.target
         latitude = centerOfMap?.latitude ?: 0.0
         longitude = centerOfMap?.longitude ?: 0.0
-
-        ll_set_location.visibility = View.GONE
+        disableSendButton()
         iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
         iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
 
@@ -122,15 +121,6 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 } else {
                     moveToCurrentLocation()
                 }
-            }
-            R.id.ll_set_location -> {
-                val intent = Intent()
-                intent.putExtra(TAPDefaultConstant.Location.LATITUDE, latitude)
-                intent.putExtra(TAPDefaultConstant.Location.LONGITUDE, longitude)
-                intent.putExtra(TAPDefaultConstant.Location.LOCATION_NAME, currentAddress)
-                intent.putExtra(TAPDefaultConstant.Location.POSTAL_CODE, postalCode)
-                setResult(Activity.RESULT_OK, intent)
-                finish()
             }
             R.id.tv_clear -> {
                 et_keyword.setText("")
@@ -250,7 +240,6 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
 
         iv_button_back.setOnClickListener(this)
         iv_current_location.setOnClickListener(this)
-        ll_set_location.setOnClickListener(this)
         tv_clear.setOnClickListener(this)
 
         et_keyword.addTextChangedListener(textWatcher)
@@ -363,15 +352,15 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 currentAddress = address.getAddressLine(0)
                 postalCode = address.postalCode
                 tv_location.text = currentAddress
-                ll_set_location.visibility = View.VISIBLE
+                enableSendButton()
             } catch (e: Exception) {
                 e.printStackTrace()
                 tv_location.text = resources.getText(R.string.tap_location_not_found)
-                ll_set_location.visibility = View.GONE
+                disableSendButton()
             }
         } else {
             tv_location.text = resources.getText(R.string.tap_location_not_found)
-            ll_set_location.visibility = View.GONE
+            disableSendButton()
         }
     }
 
@@ -459,5 +448,34 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         centerOfMap = LatLng(currentLatitude, currentLongitude)
         val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
         googleMap?.animateCamera(locations)
+    }
+
+
+    private fun disableSendButton() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ll_button_send_location.background = getDrawable(R.drawable.tap_bg_button_inactive)
+        } else {
+            ll_button_send_location.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+        }
+        ll_button_send_location.setOnClickListener(null)
+    }
+
+    private fun enableSendButton() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ll_button_send_location.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
+        } else {
+            ll_button_send_location.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active)
+        }
+        ll_button_send_location.setOnClickListener { sendLocation() }
+    }
+
+    private fun sendLocation(){
+        val intent = Intent()
+        intent.putExtra(TAPDefaultConstant.Location.LATITUDE, latitude)
+        intent.putExtra(TAPDefaultConstant.Location.LONGITUDE, longitude)
+        intent.putExtra(TAPDefaultConstant.Location.LOCATION_NAME, currentAddress)
+        intent.putExtra(TAPDefaultConstant.Location.POSTAL_CODE, postalCode)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 }

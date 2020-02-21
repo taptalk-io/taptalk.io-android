@@ -64,6 +64,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPForwardFromModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
@@ -1560,6 +1561,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private void receiveReadEmit(TAPMessageModel item, View itemView, FrameLayout flBubble,
                                  TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
                                  @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
+        if (TapUI.getInstance().isReadStatusHidden()) {
+            receiveDeliveredEmit(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            return;
+        }
+
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
             ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
@@ -1758,7 +1764,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ImageViewCompat.setImageTintList(ivMessageStatus, null);
                     tvMessageStatus.setVisibility(View.VISIBLE);
                 } else if (null != item.getSending() && !item.getSending()) {
-                    if (null != item.getIsRead() && item.getIsRead()) {
+                    if (null != item.getIsRead() && item.getIsRead() && !TapUI.getInstance().isReadStatusHidden()) {
                         // Message has been read
                         ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
                         ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
@@ -1887,7 +1893,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivQuoteImage.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(2);
             }
-            clQuote.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
+            vQuoteBackground.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
         } else {
             // Hide quote
             clQuote.setVisibility(View.GONE);
