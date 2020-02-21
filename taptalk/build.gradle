@@ -25,19 +25,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         staging {
-            minifyEnabled false
+            minifyEnabled true
             debuggable true
         }
         stagingUpload {
-            minifyEnabled false
+            minifyEnabled true
             debuggable false
         }
         dev {
-            minifyEnabled false
+            minifyEnabled true
             debuggable true
         }
         devUpload {
-            minifyEnabled false
+            minifyEnabled true
             debuggable false
         }
     }
