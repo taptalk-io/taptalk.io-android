@@ -277,9 +277,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         TAPChatManager.getInstance().setActiveRoom(vm.getRoom());
         etChat.setText(TAPChatManager.getInstance().getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
-//        if (0 < etChat.getText().length() && etChat.getText().length() >= vm.getPreviousEditTextSelectionIndex()) {
-//            etChat.setSelection(vm.getPreviousEditTextSelectionIndex());
-//        }
 
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             callApiGetUserByUserID();
@@ -287,10 +284,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             getRoomDataFromApi();
         }
 
-        if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() > 0 && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
-            // TODO: 17 Dec 2019 API ALREADY CALLED ON SOCKET CONNECT?
-            callApiAfter();
-        } else if (vm.isInitialAPICallFinished() && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
+        if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() == 0 && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
             fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
     }
@@ -301,7 +295,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance().deleteActiveRoom();
-//        vm.setPreviousEditTextSelectionIndex(etChat.getSelectionEnd());
     }
 
     @Override
@@ -408,13 +401,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     String address = intent.getStringExtra(LOCATION_NAME) == null ? "" : intent.getStringExtra(LOCATION_NAME);
                     Double latitude = intent.getDoubleExtra(LATITUDE, 0.0);
                     Double longitude = intent.getDoubleExtra(LONGITUDE, 0.0);
-                    TAPChatManager.getInstance().sendLocationMessage(address, latitude, longitude);
+                    TAPChatManager.getInstance().sendLocationMessage(vm.getRoom(), address, latitude, longitude);
                     break;
                 case SEND_FILE:
                     File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
                     if (null != tempFile) {
                         if (TAPFileUploadManager.getInstance().isSizeAllowedForUpload(tempFile.length()))
-                            TAPChatManager.getInstance().sendFileMessage(TapUIChatActivity.this, tempFile);
+                            TAPChatManager.getInstance().sendFileMessage(TapUIChatActivity.this, vm.getRoom(), tempFile);
                         else {
                             new TapTalkDialog.Builder(TapUIChatActivity.this)
                                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
