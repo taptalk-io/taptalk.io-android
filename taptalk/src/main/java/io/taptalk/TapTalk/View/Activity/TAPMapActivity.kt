@@ -17,7 +17,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -145,15 +144,8 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     }
 
     override fun onLocationChanged(location: Location?) {
-        count = 0
-        if (3 >= count) {
-            currentLatitude = location?.latitude ?: currentLatitude
-            currentLongitude = location?.longitude ?: currentLongitude
-            count++
-            if (count == 3) {
-                locationManager?.removeUpdates(this)
-            }
-        }
+        currentLatitude = location?.latitude ?: currentLatitude
+        currentLongitude = location?.longitude ?: currentLongitude
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
@@ -280,11 +272,11 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         if (null != locationManager) {
             locationManager?.removeUpdates(this)
             locationManager = null
         }
+        super.onDestroy()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -469,7 +461,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         ll_button_send_location.setOnClickListener { sendLocation() }
     }
 
-    private fun sendLocation(){
+    private fun sendLocation() {
         val intent = Intent()
         intent.putExtra(TAPDefaultConstant.Location.LATITUDE, latitude)
         intent.putExtra(TAPDefaultConstant.Location.LONGITUDE, longitude)
