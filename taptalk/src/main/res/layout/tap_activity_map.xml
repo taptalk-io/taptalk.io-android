@@ -69,35 +69,17 @@
             android:layout_height="match_parent"
             tools:context=".activity.MapAddressActivity" />
 
-        <View
-            android:id="@+id/v_center"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:orientation="vertical"
+        <ImageView
+            android:layout_width="53dp"
+            android:layout_height="62dp"
+            android:layout_marginBottom="31dp"
+            android:src="@drawable/tap_ic_location_pumpkin_orange"
+            android:tint="@color/tapIconLocationPickerMarker"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:background="@color/tapWhite" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:translationY="13dp"
-            app:layout_constraintBottom_toBottomOf="@id/v_center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <ImageView
-                android:layout_width="53dp"
-                android:layout_height="62dp"
-                android:layout_marginTop="-12dp"
-                android:src="@drawable/tap_ic_location_pumpkin_orange"
-                android:tint="@color/tapIconLocationPickerMarker" />
-
-        </LinearLayout>
 
         <ImageView
             android:id="@+id/iv_current_location"
