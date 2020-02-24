@@ -184,6 +184,7 @@ public class TapUIRoomListFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         TAPChatManager.getInstance().removeChatListener(chatListener);
+        TapTalk.putGlobalChatListener();
     }
 
     private void initViewModel() {
