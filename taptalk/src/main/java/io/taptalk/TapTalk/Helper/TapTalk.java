@@ -407,9 +407,6 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static boolean isAuthenticated() {
-        if (!checkTapTalkInitialized()) {
-            return false;
-        }
         return TAPDataManager.getInstance().checkAccessTokenAvailable();
     }
 
@@ -459,7 +456,8 @@ public class TapTalk implements LifecycleObserver {
         if (!checkTapTalkInitialized()) {
             return;
 
-        }        if (isAuthenticated()) {
+        }
+        if (isAuthenticated()) {
             TAPConnectionManager.getInstance().connect(listener);
         } else {
             listener.onError(ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE, ERROR_MESSAGE_ACCESS_TOKEN_UNAVAILABLE);
@@ -519,10 +517,10 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void updateApplicationBadgeCount() {
-        if (!checkTapTalkInitialized()) {
+        if (!isAuthenticated()) {
             return;
-
-        }        if (isAuthenticated()) TAPNotificationManager.getInstance().updateUnreadCount();
+        }
+        TAPNotificationManager.getInstance().updateUnreadCount();
     }
 
     // TODO: 22 August 2019 CORE MODEL
@@ -746,7 +744,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void fetchNewMessageandUpdatedBadgeCount() {
-        if (TapTalk.isAuthenticated()) {
+        if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated()) {
             TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
                 @Override
                 public void onSuccess(String s) {
