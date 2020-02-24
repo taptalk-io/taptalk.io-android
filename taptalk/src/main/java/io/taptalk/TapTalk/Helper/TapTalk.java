@@ -215,7 +215,9 @@ public class TapTalk implements LifecycleObserver {
                             .build()
             );
 
-        tapListeners.add(tapListener);
+        if (!tapListeners.contains(tapListener)) {
+            tapListeners.add(tapListener);
+        }
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
         if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
@@ -264,6 +266,10 @@ public class TapTalk implements LifecycleObserver {
                 updateApplicationBadgeCount();
             }
         };
+        TAPChatManager.getInstance().addChatListener(chatListener);
+    }
+
+    public static void putGlobalChatListener() {
         TAPChatManager.getInstance().addChatListener(chatListener);
     }
 
@@ -647,7 +653,9 @@ public class TapTalk implements LifecycleObserver {
 
     public static void addTapTalkListener(TapListener listener) {
         checkTapTalkInitialized();
-        tapTalk.tapListeners.add(listener);
+        if (!tapTalk.tapListeners.contains(listener)) {
+            tapTalk.tapListeners.add(listener);
+        }
     }
 
     public static void setTapTalkScreenOrientation(TapTalkScreenOrientation orientation) {
