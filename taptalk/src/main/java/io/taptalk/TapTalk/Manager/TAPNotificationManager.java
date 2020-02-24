@@ -334,8 +334,10 @@ public class TAPNotificationManager {
         new Thread(() -> TAPDataManager.getInstance().getUnreadCount(new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onCountedUnreadCount(int unreadCount) {
-                for (TapListener listener : getTapTalkListeners()) {
-                    listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
+                if (null != getTapTalkListeners() && !getTapTalkListeners().isEmpty()) {
+                    for (TapListener listener : getTapTalkListeners()) {
+                        listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
+                    }
                 }
             }
         })).start();
