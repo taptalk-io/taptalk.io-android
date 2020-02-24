@@ -10,6 +10,7 @@ import android.location.*
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityCompat.requestPermissions
 import android.support.v4.content.ContextCompat
@@ -17,7 +18,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -41,6 +41,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
+import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.TAPLocationItem
 import io.taptalk.TapTalk.View.Adapter.TAPSearchLocationAdapter
@@ -51,6 +52,8 @@ import java.util.*
 class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener, View.OnClickListener,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
+    private var isFirstTriggered = true
 
     override fun onMapReady(map: GoogleMap?) {
         googleMap = map
@@ -88,8 +91,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         centerOfMap = googleMap?.cameraPosition?.target
         latitude = centerOfMap?.latitude ?: 0.0
         longitude = centerOfMap?.longitude ?: 0.0
-
-        ll_set_location.visibility = View.GONE
+        disableSendButton()
         iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
         iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
 
@@ -97,7 +99,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         tv_location.text = ""
 
         cv_search_result.visibility = View.GONE
-        TAPUtils.getInstance().dismissKeyboard(this)
+        TAPUtils.dismissKeyboard(this)
     }
 
     override fun onCameraIdle() {
@@ -123,15 +125,6 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                     moveToCurrentLocation()
                 }
             }
-            R.id.ll_set_location -> {
-                val intent = Intent()
-                intent.putExtra(TAPDefaultConstant.Location.LATITUDE, latitude)
-                intent.putExtra(TAPDefaultConstant.Location.LONGITUDE, longitude)
-                intent.putExtra(TAPDefaultConstant.Location.LOCATION_NAME, currentAddress)
-                intent.putExtra(TAPDefaultConstant.Location.POSTAL_CODE, postalCode)
-                setResult(Activity.RESULT_OK, intent)
-                finish()
-            }
             R.id.tv_clear -> {
                 et_keyword.setText("")
                 tv_clear.visibility = View.GONE
@@ -155,14 +148,11 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     }
 
     override fun onLocationChanged(location: Location?) {
-        count = 0
-        if (3 >= count) {
-            currentLatitude = location?.latitude ?: currentLatitude
-            currentLongitude = location?.longitude ?: currentLongitude
-            count++
-            if (count == 3) {
-                locationManager?.removeUpdates(this)
-            }
+        currentLatitude = location?.latitude ?: currentLatitude
+        currentLongitude = location?.longitude ?: currentLongitude
+        if (isFirstTriggered) {
+            moveToCurrentLocation()
+            isFirstTriggered = false;
         }
     }
 
@@ -180,7 +170,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
 
     private val generalListener = object : TAPGeneralListener<TAPLocationItem>() {
         override fun onClick(position: Int, item: TAPLocationItem?) {
-            TAPUtils.getInstance().dismissKeyboard(this@TAPMapActivity)
+            TAPUtils.dismissKeyboard(this@TAPMapActivity)
             if (item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString().equals(et_keyword.text.toString()))
                 isSameKeyword = true
             et_keyword.setText(item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString())
@@ -250,14 +240,13 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
 
         iv_button_back.setOnClickListener(this)
         iv_current_location.setOnClickListener(this)
-        ll_set_location.setOnClickListener(this)
         tv_clear.setOnClickListener(this)
 
         et_keyword.addTextChangedListener(textWatcher)
         et_keyword.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_active)
-                if (!TAPUtils.getInstance().isListEmpty(locationList) && et_keyword.text.isNotEmpty())
+                if (!TAPUtils.isListEmpty(locationList) && et_keyword.text.isNotEmpty())
                     cv_search_result.visibility = View.VISIBLE
             } else {
                 rl_search.background = ContextCompat.getDrawable(TapTalk.appContext, R.drawable.tap_bg_location_text_field_inactive)
@@ -266,7 +255,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         et_keyword.setOnEditorActionListener(object : TextView.OnEditorActionListener {
             override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    TAPUtils.getInstance().dismissKeyboard(this@TAPMapActivity)
+                    TAPUtils.dismissKeyboard(this@TAPMapActivity)
                     return true
                 }
                 return false
@@ -276,7 +265,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         adapter = TAPSearchLocationAdapter(locationList, generalListener)
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = adapter
-        if (TAPUtils.getInstance().hasPermissions(this, PERMISSIONS[0])) {
+        if (TAPUtils.hasPermissions(this, PERMISSIONS[0])) {
             getLocation()
         }
 
@@ -291,11 +280,11 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         if (null != locationManager) {
             locationManager?.removeUpdates(this)
             locationManager = null
         }
+        super.onDestroy()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -357,21 +346,21 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
             e.printStackTrace()
         }
 
-        if (!TAPUtils.getInstance().isListEmpty(addresses)) {
+        if (!TAPUtils.isListEmpty(addresses)) {
             val address: Address = addresses[0]
             try {
                 currentAddress = address.getAddressLine(0)
                 postalCode = address.postalCode
                 tv_location.text = currentAddress
-                ll_set_location.visibility = View.VISIBLE
+                enableSendButton()
             } catch (e: Exception) {
                 e.printStackTrace()
                 tv_location.text = resources.getText(R.string.tap_location_not_found)
-                ll_set_location.visibility = View.GONE
+                disableSendButton()
             }
         } else {
             tv_location.text = resources.getText(R.string.tap_location_not_found)
-            ll_set_location.visibility = View.GONE
+            disableSendButton()
         }
     }
 
@@ -390,7 +379,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                 .build()
                         try {
                             placesClient.findAutocompletePredictions(request).addOnSuccessListener { p0 ->
-                                if (!TAPUtils.getInstance().isListEmpty(locationList))
+                                if (!TAPUtils.isListEmpty(locationList))
                                     locationList.clear()
 
                                 p0?.autocompletePredictions?.forEach { prediction ->
@@ -400,11 +389,11 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                                     locationList.add(item)
                                 }
 
-                                if (!TAPUtils.getInstance().isListEmpty(locationList) && 1 == locationList.size) {
+                                if (!TAPUtils.isListEmpty(locationList) && 1 == locationList.size) {
                                     locationList[0].myReturnType = TAPLocationItem.MyReturnType.ONLY_ONE
                                     adapter?.items = locationList
                                     cv_search_result.visibility = if (isSearch) View.VISIBLE else View.GONE
-                                } else if (!TAPUtils.getInstance().isListEmpty(locationList)) {
+                                } else if (!TAPUtils.isListEmpty(locationList)) {
                                     locationList[0].myReturnType = TAPLocationItem.MyReturnType.FIRST
                                     locationList[locationList.size - 1].myReturnType = TAPLocationItem.MyReturnType.LAST
 
@@ -446,7 +435,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
 
     override fun onBackPressed() {
         if (et_keyword.isFocused) {
-            TAPUtils.getInstance().dismissKeyboard(this)
+            TAPUtils.dismissKeyboard(this)
             et_keyword.clearFocus()
         } else {
             super.onBackPressed()
@@ -454,10 +443,52 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     }
 
     private fun moveToCurrentLocation() {
-        latitude = currentLatitude
-        longitude = currentLongitude
-        centerOfMap = LatLng(currentLatitude, currentLongitude)
-        val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
-        googleMap?.animateCamera(locations)
+        if (!locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!) {
+            TapTalkDialog.Builder(this)
+                    .setTitle("Location Disabled")
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setMessage("Please allow Location Services to Continue")
+                    .setPrimaryButtonTitle("Go to Settings")
+                    .setPrimaryButtonListener { v: View? ->
+                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                    }
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setSecondaryButtonListener { view: View? -> }
+                    .show()
+        } else {
+            latitude = currentLatitude
+            longitude = currentLongitude
+            centerOfMap = LatLng(currentLatitude, currentLongitude)
+            val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
+            googleMap?.animateCamera(locations)
+        }
+    }
+
+    private fun disableSendButton() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ll_button_send_location.background = getDrawable(R.drawable.tap_bg_button_inactive)
+        } else {
+            ll_button_send_location.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
+        }
+        ll_button_send_location.setOnClickListener(null)
+    }
+
+    private fun enableSendButton() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ll_button_send_location.background = getDrawable(R.drawable.tap_bg_button_active_ripple)
+        } else {
+            ll_button_send_location.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active)
+        }
+        ll_button_send_location.setOnClickListener { sendLocation() }
+    }
+
+    private fun sendLocation() {
+        val intent = Intent()
+        intent.putExtra(TAPDefaultConstant.Location.LATITUDE, latitude)
+        intent.putExtra(TAPDefaultConstant.Location.LONGITUDE, longitude)
+        intent.putExtra(TAPDefaultConstant.Location.LOCATION_NAME, currentAddress)
+        intent.putExtra(TAPDefaultConstant.Location.POSTAL_CODE, postalCode)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 }

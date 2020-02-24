@@ -104,10 +104,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {
                 PERMISSION_CAMERA_CAMERA, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA -> {
-                    vm.profilePictureUri = TAPUtils.getInstance().takePicture(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
+                    vm.profilePictureUri = TAPUtils.takePicture(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
                 }
                 PERMISSION_READ_EXTERNAL_STORAGE_GALLERY -> {
-                    TAPUtils.getInstance().pickImageFromGallery(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_GALLERY, false)
+                    TAPUtils.pickImageFromGallery(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_GALLERY, false)
                 }
             }
         }
@@ -186,7 +186,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             vm.formCheck[indexMobileNumber] = stateValid
         }
 
-        TAPUtils.getInstance().showKeyboard(this, et_full_name)
+        TAPUtils.showKeyboard(this, et_full_name)
 
         fl_container.setOnClickListener { clearAllFocus() }
         cl_form_container.setOnClickListener { clearAllFocus() }
@@ -221,7 +221,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun showProfilePicturePickerBottomSheet() {
-        TAPUtils.getInstance().dismissKeyboard(this@TAPRegisterActivity)
+        TAPUtils.dismissKeyboard(this@TAPRegisterActivity)
         TAPAttachmentBottomSheet(true, profilePicturePickerListener).show(supportFragmentManager, "")
     }
 
@@ -415,7 +415,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun clearAllFocus() {
-        TAPUtils.getInstance().dismissKeyboard(this)
+        TAPUtils.dismissKeyboard(this)
         fl_container.clearFocus()
     }
 
@@ -465,7 +465,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         fl_button_continue.setOnClickListener(null)
 
         iv_button_back.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
-        TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_button_back)
+        TAPUtils.rotateAnimateInfinitely(this, iv_button_back)
 
         et_full_name.isEnabled = false
         et_username.isEnabled = false
@@ -481,7 +481,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
         tv_button_continue.visibility = View.GONE
         iv_register_progress.visibility = View.VISIBLE
-        TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_register_progress)
+        TAPUtils.rotateAnimateInfinitely(this, iv_register_progress)
     }
 
     private fun enableEditing() {
@@ -526,18 +526,18 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val profilePicturePickerListener = object : TAPAttachmentListener() {
 
         override fun onCameraSelected() {
-            vm.profilePictureUri = TAPUtils.getInstance().takePicture(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
+            vm.profilePictureUri = TAPUtils.takePicture(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
         }
 
         override fun onGallerySelected() {
-            TAPUtils.getInstance().pickImageFromGallery(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_GALLERY, false)
+            TAPUtils.pickImageFromGallery(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_GALLERY, false)
         }
     }
 
     private val fullNameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
+                view.elevation = TAPUtils.dpToPx(4).toFloat()
             }
             if (vm.formCheck[indexFullName] != stateInvalid) {
                 view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
@@ -555,7 +555,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val usernameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
+                view.elevation = TAPUtils.dpToPx(4).toFloat()
             }
             if (vm.formCheck[indexUsername] != stateInvalid) {
                 view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
@@ -573,7 +573,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val emailAddressFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
+                view.elevation = TAPUtils.dpToPx(4).toFloat()
             }
             if (vm.formCheck[indexEmail] != stateInvalid) {
                 view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
@@ -591,7 +591,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val passwordFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cl_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
+                cl_password.elevation = TAPUtils.dpToPx(4).toFloat()
             }
             if (vm.formCheck[indexPassword] != stateInvalid) {
                 cl_password.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
@@ -610,7 +610,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val passwordRetypeFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                cl_retype_password.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
+                cl_retype_password.elevation = TAPUtils.dpToPx(4).toFloat()
             }
             if (vm.formCheck[indexPasswordRetype] != stateInvalid) {
                 cl_retype_password.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
@@ -769,7 +769,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                 0 ->
                     fl_action_bar.elevation = 0f
                 else ->
-                    fl_action_bar.elevation = TAPUtils.getInstance().dpToPx(2).toFloat()
+                    fl_action_bar.elevation = TAPUtils.dpToPx(2).toFloat()
             }
         }
     }

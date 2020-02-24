@@ -279,7 +279,7 @@ public class TapCoreMessageManager {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        if (!TAPUtils.getInstance().hasPermissions(TapTalk.appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(TapTalk.appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE);
             }

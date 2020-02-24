@@ -25,7 +25,11 @@ import android.view.ViewTreeObserver
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
@@ -119,10 +123,10 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {
                 PERMISSION_CAMERA_CAMERA, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA -> {
-                    vm.profilePictureUri = TAPUtils.getInstance().takePicture(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
+                    vm.profilePictureUri = TAPUtils.takePicture(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
                 }
                 PERMISSION_READ_EXTERNAL_STORAGE_GALLERY -> {
-                    TAPUtils.getInstance().pickImageFromGallery(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_GALLERY, false)
+                    TAPUtils.pickImageFromGallery(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_GALLERY, false)
                 }
             }
         }
@@ -170,13 +174,29 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
 
         if (vm.currentProfilePicture.isEmpty()) {
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name)))
+            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
             civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
-            tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
+            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.name, 2)
             tv_profile_picture_label.visibility = View.VISIBLE
         } else {
             glide.load(vm.currentProfilePicture)
                     .apply(RequestOptions().placeholder(R.drawable.tap_bg_circle_9b9b9b))
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                            runOnUiThread {
+                                ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
+                                civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
+                                tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.name, 2)
+                                tv_profile_picture_label.visibility = View.VISIBLE
+                            }
+                            return false
+                        }
+
+                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                            return false
+                        }
+
+                    })
                     .into(civ_profile_picture)
             ImageViewCompat.setImageTintList(civ_profile_picture, null)
             tv_profile_picture_label.visibility = View.GONE
@@ -242,7 +262,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun showProfilePicturePickerBottomSheet() {
-        TAPUtils.getInstance().dismissKeyboard(this@TAPMyAccountActivity)
+        TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
         TAPAttachmentBottomSheet(true, profilePicturePickerListener).show(supportFragmentManager, "")
     }
 
@@ -255,9 +275,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (null == imageUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
 
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name)))
+            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
             civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
-            tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
+            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.name, 2)
             tv_profile_picture_label.visibility = View.VISIBLE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.GONE
@@ -284,9 +304,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (null == imageUrl) {
             vm.formCheck[indexProfilePicture] = stateEmpty
 
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(vm.myUserModel.name)))
+            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
             glide.load(R.drawable.tap_bg_circle_9b9b9b).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
-            tv_profile_picture_label.text = TAPUtils.getInstance().getInitials(vm.myUserModel.name, 2)
+            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.name, 2)
             tv_profile_picture_label.visibility = View.VISIBLE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.GONE
@@ -399,7 +419,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun clearAllFocus() {
-        TAPUtils.getInstance().dismissKeyboard(this)
+        TAPUtils.dismissKeyboard(this)
         fl_container.clearFocus()
     }
 
@@ -462,7 +482,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         fl_button_update.setOnClickListener(null)
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_white))
-        TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
+        TAPUtils.rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
 
         // TODO temporarily disable editing
 //        et_full_name.isEnabled = false
@@ -473,7 +493,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 //
 //        tv_button_update.visibility = View.GONE
 //        iv_update_progress.visibility = View.VISIBLE
-//        TAPUtils.getInstance().rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_update_progress)
+//        TAPUtils.rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_update_progress)
     }
 
     private fun enableEditing() {
@@ -514,7 +534,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         ll_change_profile_picture.setOnClickListener(null)
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
-        TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_button_close)
+        TAPUtils.rotateAnimateInfinitely(this, iv_button_close)
 
         tv_label_change_profile_picture.text = getString(R.string.tap_uploading)
         tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
@@ -526,18 +546,18 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private val profilePicturePickerListener = object : TAPAttachmentListener() {
         override fun onCameraSelected() {
-            vm.profilePictureUri = TAPUtils.getInstance().takePicture(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
+            vm.profilePictureUri = TAPUtils.takePicture(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
         }
 
         override fun onGallerySelected() {
-            TAPUtils.getInstance().pickImageFromGallery(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_GALLERY, false)
+            TAPUtils.pickImageFromGallery(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_GALLERY, false)
         }
     }
 
     private val fullNameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
+                view.elevation = TAPUtils.dpToPx(4).toFloat()
             }
             if (vm.formCheck[indexFullName] != stateInvalid) {
                 view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
@@ -555,7 +575,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private val emailAddressFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = TAPUtils.getInstance().dpToPx(4).toFloat()
+                view.elevation = TAPUtils.dpToPx(4).toFloat()
             }
             if (vm.formCheck[indexEmail] != stateInvalid) {
                 view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
@@ -574,7 +594,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         runOnUiThread {
             iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
             if (null == iv_loading_image.animation)
-                TAPUtils.getInstance().rotateAnimateInfinitely(this, iv_loading_image)
+                TAPUtils.rotateAnimateInfinitely(this, iv_loading_image)
             tv_loading_text.text = message
             fl_loading.visibility = View.VISIBLE
         }
@@ -657,9 +677,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 y == 0 ->
                     cl_action_bar.elevation = 0f
                 y < h ->
-                    cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(1).toFloat()
+                    cl_action_bar.elevation = TAPUtils.dpToPx(1).toFloat()
                 else ->
-                    cl_action_bar.elevation = TAPUtils.getInstance().dpToPx(2).toFloat()
+                    cl_action_bar.elevation = TAPUtils.dpToPx(2).toFloat()
             }
         }
     }

@@ -133,7 +133,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             if (null != userModels) {
                 vm.getContactList().clear();
                 vm.getContactList().addAll(userModels);
-                vm.setSeparatedContactList(TAPUtils.getInstance().generateContactListForRecycler(vm.getContactList(), TYPE_DEFAULT_CONTACT_LIST));
+                vm.setSeparatedContactList(TAPUtils.generateContactListForRecycler(vm.getContactList(), TYPE_DEFAULT_CONTACT_LIST));
                 startSearch();
             }
         });
@@ -173,7 +173,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         llButtonSync.setOnClickListener(v -> permissionCheckAndGetContactListWhenSyncButtonClicked());
 
         etSearch.setOnEditorActionListener((textView, i, keyEvent) -> {
-            TAPUtils.getInstance().dismissKeyboard(TAPNewChatActivity.this);
+            TAPUtils.dismissKeyboard(TAPNewChatActivity.this);
             return false;
         });
 
@@ -181,7 +181,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                TAPUtils.getInstance().dismissKeyboard(TAPNewChatActivity.this);
+                TAPUtils.dismissKeyboard(TAPNewChatActivity.this);
             }
         });
 
@@ -215,7 +215,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void showToolbar() {
-        TAPUtils.getInstance().dismissKeyboard(this);
+        TAPUtils.dismissKeyboard(this);
         ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
         tvTitle.setVisibility(View.VISIBLE);
         etSearch.setVisibility(View.GONE);
@@ -229,7 +229,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         tvTitle.setVisibility(View.GONE);
         etSearch.setVisibility(View.VISIBLE);
         ivButtonSearch.setVisibility(View.GONE);
-        TAPUtils.getInstance().showKeyboard(this, etSearch);
+        TAPUtils.showKeyboard(this, etSearch);
         ((TransitionDrawable) clActionBar.getBackground()).startTransition(SHORT_ANIMATION_TIME);
     }
 
@@ -321,11 +321,11 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             return;
         }
         if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
-                !TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
+                !TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             showSyncContactPermissionDialog();
             TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
             TAPContactManager.getInstance().setAndSaveContactSyncAllowedByUser(false);
-        } else if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS) ||
+        } else if (!TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS) ||
                 !TAPContactManager.getInstance().isContactSyncAllowedByUser()) {
             runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
         } else if (TAPContactManager.getInstance().isContactSyncAllowedByUser()){
@@ -334,7 +334,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void permissionCheckAndGetContactListWhenSyncButtonClicked() {
-        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
+        if (!TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             showSyncContactPermissionDialog();
         } else {
             syncContactList(true);
@@ -354,7 +354,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void openQRScanner() {
-        if (TAPUtils.getInstance().hasPermissions(TAPNewChatActivity.this, Manifest.permission.CAMERA)) {
+        if (TAPUtils.hasPermissions(TAPNewChatActivity.this, Manifest.permission.CAMERA)) {
             Intent intent = new Intent(TAPNewChatActivity.this, TAPBarcodeScannerActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
@@ -513,13 +513,13 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void showSyncLoadingStatus() {
-        int padding = TAPUtils.getInstance().dpToPx(2);
+        int padding = TAPUtils.dpToPx(2);
         runOnUiThread(() -> {
             llConnectionStatus.setBackground(ContextCompat.getDrawable(this, R.drawable.tap_bg_status_connecting));
             tvConnectionStatus.setText(getString(R.string.tap_syncing_contacts));
             ivConnectionStatus.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             ivConnectionStatus.setPadding(padding, padding, padding, padding);
-            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivConnectionStatus);
+            TAPUtils.rotateAnimateInfinitely(this, ivConnectionStatus);
             llConnectionStatus.setVisibility(View.VISIBLE);
             flSyncStatus.setVisibility(View.VISIBLE);
         });
@@ -581,13 +581,13 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             }
             if (!TAPChatManager.getInstance().getActiveUser().getUserID().equals(user.getUserID())) {
                 // TODO: 25 October 2018 SET ROOM COLOR
-                TAPUtils.getInstance().startChatActivity(
+                TAPUtils.startChatActivity(
                         TAPNewChatActivity.this,
                         TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), user.getUserID()),
                         user.getName(),
                         user.getAvatarURL(),
                         TYPE_PERSONAL,
-                        /* TEMPORARY ROOM COLOR */TAPUtils.getInstance().getRandomColor(user.getName()) + "");
+                        /* TEMPORARY ROOM COLOR */TAPUtils.getRandomColor(TAPNewChatActivity.this, user.getName()) + "");
             }
         }
 

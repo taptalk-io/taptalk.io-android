@@ -37,6 +37,9 @@
     <string name="tap_chat_room_setup_success_description">You are all set and ready to go!</string>
     <string name="tap_chat_room_setup_failed_description">Retry Setup</string>
     <string name="tap_search_chat_placeholder">Chats, groups, and contacts</string>
+    <string name="tap_search_chat_placeholder_chats_contacts">Chats and contacts</string>
+    <string name="tap_search_chat_placeholder_chats_group">Chats and groups</string>
+    <string name="tap_search_chat_placeholder_chats_only">Search for chats</string>
     <string name="tap_search_forward_placeholder">Search for chats or contacts</string>
 
     <!--Contacts-->

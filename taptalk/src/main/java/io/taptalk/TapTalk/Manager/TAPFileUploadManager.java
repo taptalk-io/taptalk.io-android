@@ -219,10 +219,10 @@ public class TAPFileUploadManager {
     public void uploadRoomPicture(Context context, Uri imageUri, String roomID,
                                   TAPDefaultDataView<TAPUpdateRoomResponse> uploadProfilePictureView) {
         createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap -> {
-            String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
+            String mimeType = TAPUtils.getImageMimeType(context, imageUri);
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-            File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+            File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
 
             TAPDataManager.getInstance().uploadRoomPicture(imageFile, mimeType, roomID, uploadProfilePictureView);
         });
@@ -277,10 +277,10 @@ public class TAPFileUploadManager {
                 }
             };
 
-            String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
+            String mimeType = TAPUtils.getImageMimeType(context, imageUri);
             MimeTypeMap mime = MimeTypeMap.getSingleton();
             String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-            File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+            File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
             TAPDataManager.getInstance().uploadProfilePicture(imageFile, mimeType, uploadCallbacks, uploadProfilePictureView);
         });
     }
@@ -333,7 +333,7 @@ public class TAPFileUploadManager {
             TAPDataImageModel videoData = new TAPDataImageModel(messageModel.getData());
             Uri videoUri = Uri.parse(videoData.getFileUri());
             File videoFile = new File(videoUri.toString());
-            String mimeType = TAPUtils.getInstance().getFileMimeType(videoFile);
+            String mimeType = TAPUtils.getFileMimeType(videoFile);
 
             if (videoFile.length() == 0 && null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
                 // Get video file from file Uri if map is empty
@@ -425,10 +425,10 @@ public class TAPFileUploadManager {
             triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_IMAGE_UNAVAILABLE, ERROR_MESSAGE_IMAGE_UNAVAILABLE);
             return;
         }
-        String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
+        String mimeType = TAPUtils.getImageMimeType(context, imageUri);
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
-        File imageFile = TAPUtils.getInstance().createTempFile(mimeTypeExtension, bitmap);
+        File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
 
         // Update message data
         imageData.setHeight(bitmap.getHeight());
@@ -473,7 +473,7 @@ public class TAPFileUploadManager {
         TAPDataImageModel videoData = new TAPDataImageModel(messageModel.getData());
         Uri videoUri = Uri.parse(videoData.getFileUri());
         File videoFile = new File(videoUri.toString());
-        String mimeType = TAPUtils.getInstance().getFileMimeType(videoFile);
+        String mimeType = TAPUtils.getFileMimeType(videoFile);
 
         if (videoFile.length() == 0 && null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
             // Get video file from file Uri if map is empty
@@ -813,7 +813,7 @@ public class TAPFileUploadManager {
      * Modify image before uploading
      */
     public void createAndResizeImageFile(Context context, Uri imageUri, int imageMaxSize, BitmapInterface bitmapInterface) {
-        final String mimeType = TAPUtils.getInstance().getImageMimeType(context, imageUri);
+        final String mimeType = TAPUtils.getImageMimeType(context, imageUri);
         new Thread(() -> {
             Bitmap bitmap;
 //        final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -954,7 +954,7 @@ public class TAPFileUploadManager {
      * @param cancelledMessageModel
      */
     public void cancelUpload(Context context, TAPMessageModel cancelledMessageModel, String roomID) {
-        int position = TAPUtils.getInstance().searchMessagePositionByLocalID(getUploadQueue(roomID), cancelledMessageModel.getLocalID());
+        int position = TAPUtils.searchMessagePositionByLocalID(getUploadQueue(roomID), cancelledMessageModel.getLocalID());
         removeUploadProgressMap(cancelledMessageModel.getLocalID());
         getBitmapQueue().remove(cancelledMessageModel.getLocalID());
         if (-1 != position && 0 == position && !isUploadQueueEmpty(roomID)) {
@@ -1053,7 +1053,7 @@ public class TAPFileUploadManager {
         }
         // Update message data with media type and file URL, remove file Uri
         String fileUri = (String) messageData.get(FILE_URI);
-        String mimeType = TAPUtils.getInstance().getMimeTypeFromUrl(fileUrl);
+        String mimeType = TAPUtils.getMimeTypeFromUrl(fileUrl);
         messageData.put(MEDIA_TYPE, mimeType);
         messageData.put(FILE_URL, fileUrl);
         messageData.remove(FILE_URI);
@@ -1069,7 +1069,7 @@ public class TAPFileUploadManager {
         } else {
             messageModel.setData(messageData);
         }
-        //Log.e(TAG, "onFileUploadFromExternalServerFinished messageModel.getData: " + TAPUtils.getInstance().toJsonString(messageModel.getData()));
+        //Log.e(TAG, "onFileUploadFromExternalServerFinished messageModel.getData: " + TAPUtils.toJsonString(messageModel.getData()));
 
         if (messageModel.getType() == TYPE_IMAGE) {
             //Log.e(TAG, "onFileUploadFromExternalServerFinished: send image");
@@ -1090,7 +1090,7 @@ public class TAPFileUploadManager {
             // Save Uri map with file URL as key
             TAPFileDownloadManager.getInstance().saveFileMessageUri(
                     messageModel.getRoom().getRoomID(),
-                    TAPUtils.getInstance().removeNonAlphaNumeric(fileUrl).toLowerCase(), fileUri);
+                    TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase(), fileUri);
 
             // Send video/file message to server
             new Thread(() -> TAPChatManager.getInstance().sendFileMessageToServer(messageModel)).start();

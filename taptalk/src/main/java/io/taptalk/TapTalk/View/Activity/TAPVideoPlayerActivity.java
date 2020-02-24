@@ -168,7 +168,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
 
             // Fix videoView layout params
             float videoRatio = (float) width / (float) height;
-            float screenRatio = (float) TAPUtils.getInstance().getScreenWidth() / (float) TAPUtils.getInstance().getScreenHeight();
+            float screenRatio = (float) TAPUtils.getScreenWidth() / (float) TAPUtils.getScreenHeight();
             if (screenRatio > videoRatio) {
                 videoView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
                 videoView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -318,7 +318,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         if (null == vm.getMessage()) {
             return;
         }
-        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Request storage permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
         } else {
@@ -330,7 +330,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
     private void showLoading() {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
-            TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
+            TAPUtils.rotateAnimateInfinitely(this, ivSaving);
             tvLoadingText.setText(getString(R.string.tap_saving));
             ivButtonSave.setOnClickListener(null);
             flLoading.setVisibility(View.VISIBLE);
@@ -368,11 +368,11 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
                 TAPVideoPlayerActivity.this.startProgressTimer();
                 vm.setMediaVolume(TAPDataManager.getInstance().getMediaVolumePreference());
                 ivButtonMute.setImageDrawable(vm.getMediaVolume() > 0f ? ContextCompat.getDrawable(TAPVideoPlayerActivity.this, R.drawable.tap_ic_volume_on) : ContextCompat.getDrawable(TAPVideoPlayerActivity.this, R.drawable.tap_ic_volume_off));
-                tvDuration.setText(TAPUtils.getInstance().getMediaDurationString(vm.getDuration(), vm.getDuration()));
+                tvDuration.setText(TAPUtils.getMediaDurationString(vm.getDuration(), vm.getDuration()));
                 vm.setFirstLoadFinished(true);
             }
-            tvCurrentTimeDummy.setText(TAPUtils.getInstance().getMediaDurationStringDummy(vm.getDuration()));
-            tvDurationDummy.setText(TAPUtils.getInstance().getMediaDurationStringDummy(vm.getDuration()));
+            tvCurrentTimeDummy.setText(TAPUtils.getMediaDurationStringDummy(vm.getDuration()));
+            tvDurationDummy.setText(TAPUtils.getMediaDurationStringDummy(vm.getDuration()));
             mediaPlayer.seekTo(vm.getPausedPosition());
             mediaPlayer.setVolume(vm.getMediaVolume(), vm.getMediaVolume());
             mediaPlayer.setOnSeekCompleteListener(onSeekListener);
@@ -384,7 +384,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         @Override
         public void onSeekComplete(MediaPlayer mediaPlayer) {
             try {
-                tvCurrentTime.setText(TAPUtils.getInstance().getMediaDurationString(mediaPlayer.getCurrentPosition(), vm.getDuration()));
+                tvCurrentTime.setText(TAPUtils.getMediaDurationString(mediaPlayer.getCurrentPosition(), vm.getDuration()));
             } catch (Exception e) {
                 Log.e(TAG, "onProgressChanged: " + e.getMessage());
             }
@@ -413,7 +413,7 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             try {
-                tvCurrentTime.setText(TAPUtils.getInstance().getMediaDurationString(vm.getMediaPlayer().getCurrentPosition(), vm.getDuration()));
+                tvCurrentTime.setText(TAPUtils.getMediaDurationString(vm.getMediaPlayer().getCurrentPosition(), vm.getDuration()));
             } catch (Exception e) {
                 Log.e(TAG, "onProgressChanged: " + e.getMessage());
             }

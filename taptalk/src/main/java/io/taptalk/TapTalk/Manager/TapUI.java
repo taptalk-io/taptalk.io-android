@@ -66,6 +66,7 @@ public class TapUI {
     private boolean isScanQRMenuButtonHidden;
     private boolean isNewGroupMenuButtonHidden;
     private boolean isLogoutButtonVisible;
+    private boolean isReadStatusHidden;
 
     public static TapUI getInstance() {
         return null == instance ? instance = new TapUI() : instance;
@@ -169,21 +170,21 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TAPUtils.getInstance().startChatActivity(context, roomModel, null, null);
+        TAPUtils.startChatActivity(context, roomModel, null, null);
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel, String scrollToMessageWithLocalID) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TAPUtils.getInstance().startChatActivity(context, roomModel, null, scrollToMessageWithLocalID);
+        TAPUtils.startChatActivity(context, roomModel, null, scrollToMessageWithLocalID);
     }
 
     public void openChatRoom(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TAPUtils.getInstance().startChatActivity(
+        TAPUtils.startChatActivity(
                 context,
                 roomID,
                 roomName,
@@ -274,7 +275,7 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TAPUtils.getInstance().getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+        TAPUtils.getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel user) {
                 String roomID = TAPChatManager.getInstance().arrangeRoomId(
@@ -467,6 +468,14 @@ public class TapUI {
             return;
         }
         isLogoutButtonVisible = isVisible;
+    }
+
+    public boolean isReadStatusHidden() {
+        return isReadStatusHidden;
+    }
+
+    public void setReadStatusHidden(boolean isReadStatusHidden) {
+        this.isReadStatusHidden = isReadStatusHidden;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {

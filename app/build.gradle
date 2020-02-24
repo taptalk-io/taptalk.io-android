@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
-apply from: "${rootProject.rootDir}/env.properties"
+apply from: "${rootProject.rootDir}/environment.properties"
 
 android {
     def globalConfig = rootProject.extensions.getByName("ext")
@@ -11,8 +11,8 @@ android {
         applicationId "io.taptalk.TapTalkSample"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 30
-        versionName "1.0.20"
+        versionCode 33
+        versionName "1.1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }

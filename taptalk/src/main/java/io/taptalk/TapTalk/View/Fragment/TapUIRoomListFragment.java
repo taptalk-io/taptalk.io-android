@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +32,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -115,8 +120,7 @@ public class TapUIRoomListFragment extends Fragment {
     public TapUIRoomListFragment() {
 
     }
-
-
+    
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -144,6 +148,8 @@ public class TapUIRoomListFragment extends Fragment {
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
         TAPNotificationManager.getInstance().setRoomListAppear(true);
         new Thread(() -> TAPChatManager.getInstance().saveMessageToDatabase()).start();
+        Log.e(TAG, "onResume: updateQueryRoomListFromBackground");
+        // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
         updateQueryRoomListFromBackground();
         addNetworkListener();
         TAPBroadcastManager.register(activity, refreshTokenReceiver, REFRESH_TOKEN_RENEWED);
@@ -178,6 +184,7 @@ public class TapUIRoomListFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         TAPChatManager.getInstance().removeChatListener(chatListener);
+        TapTalk.putGlobalChatListener();
     }
 
     private void initViewModel() {
@@ -344,7 +351,7 @@ public class TapUIRoomListFragment extends Fragment {
         vButtonMyAccount.setOnClickListener(v -> openMyAccountActivity());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
         tvStartNewChat.setOnClickListener(v -> {
-            TAPUtils.getInstance().animateClickButton(tvStartNewChat, 0.95f);
+            TAPUtils.animateClickButton(tvStartNewChat, 0.95f);
             openNewChatActivity();
         });
         //ivButtonCancelSelection.setOnClickListener(v -> cancelSelection());
@@ -365,29 +372,49 @@ public class TapUIRoomListFragment extends Fragment {
                 && !user.getAvatarURL().getThumbnail().isEmpty()) {
             if (null != getActivity()) {
                 getActivity().runOnUiThread(() -> {
-                    Glide.with(this).load(user.getAvatarURL().getThumbnail()).into(civMyAvatarImage);
+                    Glide.with(this).load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            // Show initial
+                            if (null != getActivity()) {
+                                getActivity().runOnUiThread(() -> {
+                                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getRandomColor(getContext(), user.getName())));
+                                    if (null != getContext()) {
+                                        civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
+                                    }
+                                });
+                            }
+                            tvMyAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
+                            tvMyAvatarLabel.setVisibility(View.VISIBLE);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    }).into(civMyAvatarImage);
                     ImageViewCompat.setImageTintList(civMyAvatarImage, null);
                     tvMyAvatarLabel.setVisibility(View.GONE);
                 });
             }
         } else if (null != user) {
-//            Glide.with(activity).load(activity.getDrawable(R.drawable.tap_img_default_avatar))
-//                    .apply(new RequestOptions().centerCrop()).into(civMyAvatarImage);
+            // Show initial
             if (null != getActivity()) {
                 getActivity().runOnUiThread(() -> {
-                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getInstance().getRandomColor(user.getName())));
+                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getRandomColor(getContext(), user.getName())));
                     if (null != getContext()) {
                         civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
                     }
                 });
             }
-            tvMyAvatarLabel.setText(TAPUtils.getInstance().getInitials(user.getName(), 2));
+            tvMyAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
             tvMyAvatarLabel.setVisibility(View.VISIBLE);
         }
     }
 
     private void showSearchChat() {
-        TAPUtils.getInstance().animateClickButton(cvButtonSearch, 0.97f);
+        TAPUtils.animateClickButton(cvButtonSearch, 0.97f);
         TAPChatManager.getInstance().triggerSearchChatBarTapped(activity, mainRoomListFragment);
     }
 
@@ -405,6 +432,8 @@ public class TapUIRoomListFragment extends Fragment {
             TAPDataManager.getInstance().getRoomList(true, dbListener);
         } else if (null != TAPChatManager.getInstance().getActiveUser()) {
             // Run full cycle if app is on background or on first open
+            // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
+            Log.e(TAG, "viewLoadedSequence: runFullRefreshSequence");
             runFullRefreshSequence();
         } else if (TapTalk.isAuthenticated()) {
             TapTalk.clearAllTapTalkData();
@@ -461,7 +490,7 @@ public class TapUIRoomListFragment extends Fragment {
                 } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
                     // Show room list on first open and animate
                     adapter.addRoomList(vm.getRoomList());
-                    rvContactList.scrollToPosition(0);
+                    //rvContactList.scrollToPosition(0);
                     llRoomEmpty.setVisibility(View.GONE);
                 } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
                     // Update room list without animating
@@ -582,7 +611,7 @@ public class TapUIRoomListFragment extends Fragment {
     private void hideSelectionActionBar() {
         vm.setSelecting(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            clButtonSearch.setElevation(TAPUtils.getInstance().dpToPx(2));
+            clButtonSearch.setElevation(TAPUtils.dpToPx(2));
         }
         clButtonSearch.setVisibility(View.VISIBLE);
         //clSelection.setVisibility(View.INVISIBLE);
@@ -598,7 +627,7 @@ public class TapUIRoomListFragment extends Fragment {
         if (!TapUI.getInstance().isNewChatButtonVisible() || ivButtonNewChat.getVisibility() == View.VISIBLE) {
             return;
         }
-        ivButtonNewChat.setTranslationY(TAPUtils.getInstance().dpToPx(120));
+        ivButtonNewChat.setTranslationY(TAPUtils.dpToPx(120));
         ivButtonNewChat.setVisibility(View.VISIBLE);
         ivButtonNewChat.animate()
                 .translationY(0)
@@ -611,7 +640,7 @@ public class TapUIRoomListFragment extends Fragment {
             return;
         }
         ivButtonNewChat.animate()
-                .translationY(TAPUtils.getInstance().dpToPx(120))
+                .translationY(TAPUtils.dpToPx(120))
                 .setInterpolator(new AccelerateInterpolator())
                 .withEndAction(() -> ivButtonNewChat.setVisibility(View.GONE))
                 .start();
@@ -643,60 +672,66 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void showChatRoomSettingUp() {
-        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
-        ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSettingUp));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconLoadingProgressPrimary));
-        tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));
-        tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
-        TAPUtils.getInstance().rotateAnimateInfinitely(activity, ivSetupChatLoading);
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSettingUp));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconLoadingProgressPrimary));
+            tvSetupChat.setText(getString(R.string.tap_chat_room_setting_up));
+            tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setting_up_description));
+            TAPUtils.rotateAnimateInfinitely(activity, ivSetupChatLoading);
 
-        tvSetupChatDescription.setVisibility(View.VISIBLE);
-        llRetrySetup.setVisibility(View.GONE);
-        flSetupContainer.setVisibility(View.VISIBLE);
+            tvSetupChatDescription.setVisibility(View.VISIBLE);
+            llRetrySetup.setVisibility(View.GONE);
+            flSetupContainer.setVisibility(View.VISIBLE);
 
-        llRetrySetup.setOnClickListener(null);
+            llRetrySetup.setOnClickListener(null);
 
-        hideNewChatButton();
+            hideNewChatButton();
+        });
     }
 
     private void showChatRoomSetupSuccess() {
-        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
-        ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
-        ivSetupChatLoading.clearAnimation();
-        tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
-        tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupSuccess));
+            ivSetupChatLoading.clearAnimation();
+            tvSetupChat.setText(getString(R.string.tap_chat_room_setup_success));
+            tvSetupChatDescription.setText(getString(R.string.tap_chat_room_setup_success_description));
 
-        tvSetupChatDescription.setVisibility(View.VISIBLE);
-        llRetrySetup.setVisibility(View.GONE);
+            tvSetupChatDescription.setVisibility(View.VISIBLE);
+            llRetrySetup.setVisibility(View.GONE);
 
-        llRetrySetup.setOnClickListener(null);
+            llRetrySetup.setOnClickListener(null);
 
-        showNewChatButton();
+            showNewChatButton();
 
-        new Handler().postDelayed(() -> flSetupContainer.setVisibility(View.GONE), 2000L);
+            new Handler().postDelayed(() -> flSetupContainer.setVisibility(View.GONE), 2000L);
+        });
     }
 
     private void showChatRoomSetupFailed() {
-        ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
-        ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
-        ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
-        ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
-        ivSetupChatLoading.clearAnimation();
-        tvSetupChat.setText(getString(R.string.tap_chat_room_setup_failed));
+        activity.runOnUiThread(() -> {
+            ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
+            ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
+            ivSetupChat.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
+            ivSetupChatLoading.setColorFilter(ContextCompat.getColor(activity, R.color.tapIconRoomListSetupFailure));
+            ivSetupChatLoading.clearAnimation();
+            tvSetupChat.setText(getString(R.string.tap_chat_room_setup_failed));
 
-        tvSetupChatDescription.setVisibility(View.GONE);
-        llRetrySetup.setVisibility(View.VISIBLE);
+            tvSetupChatDescription.setVisibility(View.GONE);
+            llRetrySetup.setVisibility(View.VISIBLE);
 
-        llRetrySetup.setOnClickListener(view -> {
-            TAPUtils.getInstance().animateClickButton(llRetrySetup, 0.95f);
-            if (null == TAPChatManager.getInstance().getActiveUser()) {
-                return;
-            }
-            TAPDataManager.getInstance().getMessageRoomListAndUnread(
-                    TAPChatManager.getInstance().getActiveUser().getUserID(), roomListView);
+            llRetrySetup.setOnClickListener(view -> {
+                TAPUtils.animateClickButton(llRetrySetup, 0.95f);
+                if (null == TAPChatManager.getInstance().getActiveUser()) {
+                    return;
+                }
+                TAPDataManager.getInstance().getMessageRoomListAndUnread(
+                        TAPChatManager.getInstance().getActiveUser().getUserID(), roomListView);
+            });
         });
     }
 
@@ -778,13 +813,13 @@ public class TapUIRoomListFragment extends Fragment {
                 });
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
+                if (!vm.isDoneFirstApiSetup()) {
+                    vm.setDoneFirstApiSetup(true);
+                    TAPDataManager.getInstance().setRoomListSetupFinished();
+                    showChatRoomSetupSuccess();
+                }
             }
 
-            if (!vm.isDoneFirstApiSetup()) {
-                vm.setDoneFirstApiSetup(true);
-                TAPDataManager.getInstance().setRoomListSetupFinished();
-                showChatRoomSetupSuccess();
-            }
             calculateBadgeCount();
         }
 
@@ -819,6 +854,8 @@ public class TapUIRoomListFragment extends Fragment {
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             vm.getRoomPointer().clear();
+            int count = 0; // FIXME Count to load room list every 10 items
+            int limit = 10;
             // Convert entity to model
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
@@ -826,6 +863,11 @@ public class TapUIRoomListFragment extends Fragment {
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 TAPDataManager.getInstance().getUnreadCountPerRoom(entity.getRoomID(), dbListener);
+                if (++count % limit == 0) {
+                    vm.setRoomList(messageModels);
+                    activity.runOnUiThread(() -> adapter.setItems(vm.getRoomList()));
+                    limit = limit * 2;
+                }
             }
 
             vm.setRoomList(messageModels);
@@ -881,6 +923,11 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(true);
             calculateBadgeCount();
+            if (!vm.isDoneFirstApiSetup()) {
+                vm.setDoneFirstApiSetup(true);
+                TAPDataManager.getInstance().setRoomListSetupFinished();
+                showChatRoomSetupSuccess();
+            }
         }
     };
 
@@ -974,5 +1021,4 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setLastBadgeCount(vm.getRoomBadgeCount());
         }
     }
-
 }

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -36,7 +37,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -296,6 +301,18 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             // Load image from contact manager
             glide.load(vm.getUserDataFromManager().getAvatarURL().getFullsize())
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            runOnUiThread(() -> showDefaultAvatar());
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    })
                     .into(ivProfile);
         } else if (null != vm.getGroupDataFromManager() &&
                 null != vm.getGroupDataFromManager().getRoomImage() &&
@@ -303,11 +320,35 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             // Load image from group manager
             glide.load(vm.getGroupDataFromManager().getRoomImage().getFullsize())
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            runOnUiThread(() -> showDefaultAvatar());
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    })
                     .into(ivProfile);
         } else if (vm.isGroupMemberProfile() && null != vm.getGroupMemberUser().getAvatarURL()) {
             // Load member image from intent
             glide.load(vm.getGroupMemberUser().getAvatarURL().getFullsize())
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            runOnUiThread(() -> showDefaultAvatar());
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    })
                     .into(ivProfile);
         } else if (!vm.isGroupMemberProfile() &&
                 null != vm.getRoom().getRoomImage() &&
@@ -315,13 +356,21 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             // Load room image from intent
             glide.load(vm.getRoom().getRoomImage().getFullsize())
                     .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            runOnUiThread(() -> showDefaultAvatar());
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    })
                     .into(ivProfile);
-        } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-            // Show default group avatar
-            ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_group_avatar));
         } else {
-            // Show default user avatar
-            ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_avatar));
+            showDefaultAvatar();
         }
 
         // Update room name
@@ -362,7 +411,16 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             adapter.setItems(vm.getAdapterItems());
             adapter.notifyDataSetChanged();
         }
+    }
 
+    private void showDefaultAvatar() {
+        if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
+            // Show default group avatar
+            ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_group_avatar));
+        } else {
+            // Show default user avatar
+            ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_avatar));
+        }
     }
 
     private List<TapChatProfileItemModel> generateChatProfileMenu() {
@@ -602,7 +660,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void openChatRoom(TAPUserModel userModel) {
-        TAPUtils.getInstance().startChatActivity(this,
+        TAPUtils.startChatActivity(this,
                 TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(),
                         userModel.getUserID()),
                 userModel.getName(),
@@ -680,7 +738,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void startVideoDownload(TAPMessageModel message) {
-        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Request storage permission
             vm.setPendingDownloadMessage(message);
             ActivityCompat.requestPermissions(
@@ -722,7 +780,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
-                TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
+                TAPUtils.rotateAnimateInfinitely(this, ivSaving);
             }
             tvLoadingText.setText(message);
             flLoading.setVisibility(View.VISIBLE);
@@ -760,7 +818,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         private boolean isShowing;
         private int scrollRange = -1;
-        private int nameTranslationY = TAPUtils.getInstance().dpToPx(8);
+        private int nameTranslationY = TAPUtils.dpToPx(8);
         private int scrimHeight;
 
         private ValueAnimator transitionToCollapse, transitionToExpand;
@@ -941,7 +999,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             .show();
                 } else {
                     // Open video player
-                    TAPUtils.getInstance().openVideoPreview(TAPChatProfileActivity.this, videoUri, item);
+                    TAPUtils.openVideoPreview(TAPChatProfileActivity.this, videoUri, item);
                 }
             } else if (item.getType() == TYPE_VIDEO) {
                 // Download video

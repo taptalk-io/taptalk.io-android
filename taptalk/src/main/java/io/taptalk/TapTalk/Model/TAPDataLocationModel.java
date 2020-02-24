@@ -30,7 +30,7 @@ public class TAPDataLocationModel implements Parcelable {
     }
 
     public HashMap<String, Object> toHashMap() {
-        return TAPUtils.getInstance().toHashMap(this);
+        return TAPUtils.toHashMap(this);
     }
 
     @Nullable

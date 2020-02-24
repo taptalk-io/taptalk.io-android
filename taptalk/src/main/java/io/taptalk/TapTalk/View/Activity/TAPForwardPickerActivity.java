@@ -106,13 +106,13 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                TAPUtils.getInstance().dismissKeyboard(TAPForwardPickerActivity.this);
+                TAPUtils.dismissKeyboard(TAPForwardPickerActivity.this);
             }
         });
     }
 
     private void showToolbar() {
-        TAPUtils.getInstance().dismissKeyboard(this);
+        TAPUtils.dismissKeyboard(this);
         ivButtonClose.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
         tvTitle.setVisibility(View.VISIBLE);
         etSearch.setVisibility(View.GONE);
@@ -126,7 +126,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         tvTitle.setVisibility(View.GONE);
         etSearch.setVisibility(View.VISIBLE);
         ivButtonSearch.setVisibility(View.GONE);
-        TAPUtils.getInstance().showKeyboard(this, etSearch);
+        TAPUtils.showKeyboard(this, etSearch);
         ((TransitionDrawable) clActionBar.getBackground()).startTransition(SHORT_ANIMATION_TIME);
     }
 
@@ -160,13 +160,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
                     for (TAPMessageEntity entity : entities) {
                         TAPSearchChatModel recentItem = new TAPSearchChatModel(ROOM_ITEM);
-                        TAPRoomModel roomModel = new TAPRoomModel(
-                                entity.getRoomID(),
-                                entity.getRoomName(),
-                                entity.getRoomType(),
-                                TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
-                                }, entity.getRoomImage()),
-                                entity.getRoomColor());
+                        TAPRoomModel roomModel = TAPRoomModel.Builder(entity);
                         recentItem.setRoom(roomModel);
                         vm.addRecentSearches(recentItem);
                     }
@@ -226,16 +220,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                 for (TAPMessageEntity entity : entities) {
                     TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                     // Convert message to room model
-                    TAPRoomModel room = new TAPRoomModel(
-                            entity.getRoomID(),
-                            entity.getRoomName(),
-                            entity.getRoomType(),
-                            // TODO: 18 October 2018 REMOVE CHECK
-                            /* TEMPORARY CHECK FOR NULL IMAGE */null != entity.getRoomImage() ?
-                            TAPUtils.getInstance().fromJSON(new TypeReference<TAPImageURL>() {
-                            }, entity.getRoomImage())
-                            /* TEMPORARY CHECK FOR NULL IMAGE */ : null,
-                            entity.getRoomColor());
+                    TAPRoomModel room = TAPRoomModel.Builder(entity);
                     room.setUnreadCount(unreadMap.get(room.getRoomID()));
                     result.setRoom(room);
                     vm.addSearchResult(result);

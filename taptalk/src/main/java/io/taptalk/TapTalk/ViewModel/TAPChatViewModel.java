@@ -115,7 +115,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public TAPOrderModel getOrderModel(TAPMessageModel message) {
-        return TAPUtils.getInstance().fromJSON(new TypeReference<TAPOrderModel>() {
+        return TAPUtils.fromJSON(new TypeReference<TAPOrderModel>() {
         }, message.getBody());
     }
 

@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
-        public static final int kDatabaseVersion = 6;
+        public static final int kDatabaseVersion = 7;
     }
 
     public static final class ConnectionEvent {

@@ -83,7 +83,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
             holder.ivFileImage.setAlpha(1.0f);
         }
         if (FileTypeUtils.FileType.DIRECTORY != fileType) {
-            String stringBld = TAPUtils.getInstance().getStringSizeLengthFile(currentFile.length()) +
+            String stringBld = TAPUtils.getStringSizeLengthFile(currentFile.length()) +
                     " - " +
                     fileType;
             holder.tvFileSubtitle.setText(stringBld);

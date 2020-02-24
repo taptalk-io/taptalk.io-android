@@ -125,6 +125,8 @@ public class TapCoreContactManager {
                 if (null != listener) {
                     listener.onSuccess(response.getUser());
                 }
+                TAPUserModel newContact = response.getUser().setUserAsContact();
+                TAPContactManager.getInstance().updateUserData(newContact);
             }
 
             @Override
@@ -155,6 +157,15 @@ public class TapCoreContactManager {
                 if (null != listener) {
                     listener.onSuccess(response.getUsers().get(0));
                 }
+                List<TAPUserModel> users = new ArrayList<>();
+                for (TAPUserModel contact : response.getUsers()) {
+                    if (!contact.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                        contact.setUserAsContact();
+                        users.add(contact);
+                    }
+                }
+                TAPDataManager.getInstance().insertMyContactToDatabase(users);
+                TAPContactManager.getInstance().updateUserData(users);
             }
 
             @Override

@@ -187,7 +187,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
         if (null == image) {
             return;
         }
-        if (!TAPUtils.getInstance().hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             // Request storage permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
         } else {
@@ -200,7 +200,7 @@ public class TAPImageDetailPreviewActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             ivSaving.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
             if (null == ivSaving.getAnimation()) {
-                TAPUtils.getInstance().rotateAnimateInfinitely(this, ivSaving);
+                TAPUtils.rotateAnimateInfinitely(this, ivSaving);
             }
             tvLoadingText.setText(getString(R.string.tap_saving));
             ivButtonSave.setOnClickListener(null);
