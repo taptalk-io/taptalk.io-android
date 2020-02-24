@@ -71,7 +71,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GRO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE_GALLERY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
 
 public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
@@ -244,7 +243,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             etGroupName.addTextChangedListener(createGroupNameWatcher);
 
             adapter = new TapSelectedGroupMemberAdapter(vm.getAdapterItems());
-            tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), adapter.getItemCount(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
+            tvMemberCount.setText(String.format(getString(R.string.tap_format_dd_selected_member_count), adapter.getItemCount(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
             rvGroupMembers.setAdapter(adapter);
             rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,

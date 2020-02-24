@@ -12,6 +12,12 @@ public class TAPDefaultConstant {
         public static final int kDatabaseVersion = 7;
     }
 
+    public static final class DatabaseType {
+        public static final String MESSAGE_DB = "kTAPMessageDB";
+        public static final String SEARCH_DB = "kTAPSearchDB";
+        public static final String MY_CONTACT_DB = "kTAPMyContactDB";
+    }
+
     public static final class ConnectionEvent {
         public static final String kEventOpenRoom = "chat/openRoom";
         public static final String kSocketCloseRoom = "chat/closeRoom";
@@ -24,12 +30,6 @@ public class TAPDefaultConstant {
         public static final String kSocketAuthentication = "user/authentication";
         public static final String kSocketUserOnlineStatus = "user/status";
         public static final String kSocketUserUpdated = "user/updated";
-    }
-
-    public static final class DatabaseType {
-        public static final String MESSAGE_DB = "kTAPMessageDB";
-        public static final String SEARCH_DB = "kTAPSearchDB";
-        public static final String MY_CONTACT_DB = "kTAPMyContactDB";
     }
 
     public static final class RoomType {
@@ -104,6 +104,16 @@ public class TAPDefaultConstant {
         public static final String FILE = "file";
         public static final String IMAGE = "image";
         public static final String VIDEO = "video";
+    }
+
+    public static final class IntentType {
+    public static final String INTENT_TYPE_ALL = "*/*";
+    public static final String INTENT_TYPE_IMAGE = "image/*";
+    public static final String INTENT_TYPE_VIDEO = "video/*";
+    public static final String GALLERY = "Gallery";
+    public static final String SELECT_PICTURE = "Select Picture";
+    public static final String OPEN_FILE = "Open File";
+
     }
 
     public static final class Extras {

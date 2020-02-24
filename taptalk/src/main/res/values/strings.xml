@@ -23,6 +23,7 @@
     <string name="tap_register">Register</string>
     <string name="tap_search_chat">Search Chat</string>
     <string name="tap_search_results">Search Results</string>
+    <string name="tap_send_message">Send Message</string>
     <string name="tap_shared_media">Shared Media</string>
     <string name="tap_scan_qr_code">Scan QR Code</string>
     <string name="tap_show_qr_code">Show QR Code</string>
@@ -36,60 +37,39 @@
     <string name="tap_chat_room_setting_up_description">Make sure you have a stable connection</string>
     <string name="tap_chat_room_setup_success_description">You are all set and ready to go!</string>
     <string name="tap_chat_room_setup_failed_description">Retry Setup</string>
+    <string name="tap_start_a_new_chat">Start a New Chat</string>
     <string name="tap_search_chat_placeholder">Chats, groups, and contacts</string>
     <string name="tap_search_chat_placeholder_chats_contacts">Chats and contacts</string>
     <string name="tap_search_chat_placeholder_chats_group">Chats and groups</string>
     <string name="tap_search_chat_placeholder_chats_only">Search for chats</string>
     <string name="tap_search_forward_placeholder">Search for chats or contacts</string>
+    <string name="tap_clear_history">Clear history</string>
+    <string name="tap_format_ss_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
 
-    <!--Contacts-->
-    <string name="tap_contacts">Contacts</string>
-    <string name="tap_search_for_contacts">Search for contacts</string>
-    <string name="tap_global_search">Global Search</string>
-    <string name="tap_cant_find_contact">Can’t find the contact you were looking for?</string>
-    <string name="tap_cant_find_person">Can’t find who you are looking for?</string>
-    <string name="tap_view_blocked_contacts">View Blocked Contacts</string>
-    <string name="tap_search_by_username">Search by username</string>
-    <string name="tap_no_result_found_for">No results found for \"%s\"</string>
-    <string name="tap_try_different_search">Try a different search</string>
-    <string name="tap_contact_list_empty">Your contact list seems empty…</string>
-    <string name="tap_add_new_contact">Add New Contact</string>
-    <string name="tap_this_is_you">This is you</string>
-    <string name="you_have_added_to_your_contacts"><![CDATA[You have added <b>%s</b> to your contacts]]></string>
-    <string name="tap_is_already_in_your_contacts">is already in your contacts</string>
-    <string name="tap_contact_access">Contact Access</string>
-    <string name="tap_sync_contact_description">We need your permission to access your contact, we will sync your contact to our server and automatically find your friend so it is easier for you to find your friends.</string>
-    <string name="tap_all_contacts_synced">All contacts synced</string>
-    <string name="tap_synced_d_contacts">Synced %d Contacts</string>
-    <string name="tap_syncing_contacts">Syncing Contacts</string>
-
-    <!--Connection Status-->
-    <string name="tap_connected">Connected</string>
-    <string name="tap_connecting">Connecting</string>
-    <string name="tap_offline">Offline</string>
-    <string name="tap_network_error">Network Error</string>
-    <string name="tap_waiting_for_network">Waiting for Network</string>
-    <string name="tap_active_now">Active now</string>
-    <string name="tap_yesterday">Yesterday</string>
-    <string name="tap_active_recently">Active recently</string>
-    <string name="tap_sent_yesterday_at">Sent yesterday at %s</string>
-    <string name="tap_minute_ago">Active %d minute ago</string>
-    <string name="tap_minutes_ago">Active %d minutes ago</string>
-    <string name="tap_hour_ago">Active %d hour ago</string>
-    <string name="tap_hours_ago">Active %d hours ago</string>
-    <string name="tap_active_yesterday_at">Active yesterday at %s</string>
-    <string name="tap_active_yesterday">Active yesterday</string>
-    <string name="tap_day_ago">Active %d day ago</string>
-    <string name="tap_days_ago">Active %d days ago</string>
-    <string name="tap_active_a_week_ago">Active a week ago</string>
-    <string name="tap_last_active">Last active %s</string>
-    <string name="tap_loading_new_messages">Loading New Messages</string>
-    <string name="tap_loading_older_messages">Loading Older Messages</string>
+    <!--Chat Room-->
+    <string name="tap_send_a_message">Send a message…</string>
+    <string name="tap_sending">Sending…</string>
+    <string name="tap_sent_at">Sent at</string>
+    <string name="tap_delivered_at">Delivered at</string>
+    <string name="tap_forwarded">Forwarded</string>
+    <string name="tap_from">From:</string>
+    <string name="tap_no_chats_to_show">No chats to show</string>
+    <string name="tap_delete_chat">Delete Chat</string>
+    <string name="tap_this_deleted_message">This message was deleted.</string>
+    <string name="tap_this_is_a_chat_history">This is a chat history</string>
+    <string name="tap_this_user_is_no_longer_available">This user is no longer available</string>
+    <string name="tap_typing">typing</string>
+    <string name="tap_format_s_unread_messages">%s unread messages</string>
+    <string name="tap_format_s_typing_single">%s is typing</string>
+    <string name="tap_format_d_people_typing">%d people are typing</string>
+    <string name="tap_unread_messages">Unread Messages</string>
+    <string name="tap_you_deleted_this_message">You deleted this message.</string>
+    <string name="tap_group_unavailable">Sorry, this group is unavailable.</string>
 
     <!--Group Chat-->
     <string name="tap_add_members">Add Members</string>
-    <string name="tap_selected_member_count">Group Members (%d/%d)</string>
-    <string name="tap_group_member_count">%d Members</string>
+    <string name="tap_format_dd_selected_member_count">Group Members (%d/%d)</string>
+    <string name="tap_format_d_group_member_count">%d Members</string>
     <string name="tap_group_name">Group Name</string>
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>
@@ -125,18 +105,65 @@
     <string name="tap_search_for_users">Search for users</string>
     <string name="tap_not_a_participant">You are no longer a participant in this group</string>
 
-    <!--Guides-->
+    <!--Contacts-->
+    <string name="tap_contacts">Contacts</string>
+    <string name="tap_search_for_contacts">Search for contacts</string>
+    <string name="tap_add_to_contacts">Add to Contacts</string>
+    <string name="tap_chat_now">Chat Now</string>
+    <string name="tap_global_search">Global Search</string>
+    <string name="tap_cant_find_contact">Can’t find the contact you were looking for?</string>
+    <string name="tap_cant_find_person">Can’t find who you are looking for?</string>
+    <string name="tap_view_blocked_contacts">View Blocked Contacts</string>
+    <string name="tap_search_by_username">Search by username</string>
+    <string name="tap_format_s_no_result_found_for">No results found for \"%s\"</string>
+    <string name="tap_try_different_search">Try a different search</string>
+    <string name="tap_contact_list_empty">Your contact list seems empty…</string>
+    <string name="tap_add_new_contact">Add New Contact</string>
+    <string name="tap_this_is_you">This is you</string>
+    <string name="tap_format_s_you_have_added_to_your_contacts"><![CDATA[You have added <b>%s</b> to your contacts]]></string>
+    <string name="tap_is_already_in_your_contacts">is already in your contacts</string>
+    <string name="tap_contact_access">Contact Access</string>
+    <string name="tap_sync_contact_description">We need your permission to access your contact, we will sync your contact to our server and automatically find your friend so it is easier for you to find your friends.</string>
+    <string name="tap_sync_contacts_now">Sync Contacts Now</string>
+    <string name="tap_all_contacts_synced">All contacts synced</string>
+    <string name="tap_format_d_synced_contacts">Synced %d Contacts</string>
+    <string name="tap_syncing_contacts">Syncing Contacts</string>
+
+    <!--Connection Status-->
+    <string name="tap_connected">Connected</string>
+    <string name="tap_connecting">Connecting</string>
+    <string name="tap_offline">Offline</string>
+    <string name="tap_network_error">Network Error</string>
+    <string name="tap_waiting_for_network">Waiting for Network</string>
+    <string name="tap_active_now">Active now</string>
+    <string name="tap_yesterday">Yesterday</string>
+    <string name="tap_active_recently">Active recently</string>
+    <string name="tap_format_s_sent_yesterday_at">Sent yesterday at %s</string>
+    <string name="tap_format_d_minute_ago">Active %d minute ago</string>
+    <string name="tap_format_d_minutes_ago">Active %d minutes ago</string>
+    <string name="tap_format_d_hour_ago">Active %d hour ago</string>
+    <string name="tap_format_d_hours_ago">Active %d hours ago</string>
+    <string name="tap_format_s_active_yesterday_at">Active yesterday at %s</string>
+    <string name="tap_active_yesterday">Active yesterday</string>
+    <string name="tap_format_d_day_ago">Active %d day ago</string>
+    <string name="tap_format_d_days_ago">Active %d days ago</string>
+    <string name="tap_active_a_week_ago">Active a week ago</string>
+    <string name="tap_format_s_last_active">Last active %s</string>
+    <string name="tap_loading_new_messages">Loading New Messages</string>
+    <string name="tap_loading_older_messages">Loading Older Messages</string>
+
+    <!--Info-->
     <string name="tap_scan_qr_code_guide">To scan other\'s QR code, please tap the button below</string>
     <string name="tap_guide_show_qr_code">Show your QR code by tapping the button below</string>
     <string name="tap_search_username_welcome_message">Usernames are <b>not case sensitive</b>, but make sure you input the <b>exact characters</b></string>
     <string name="tap_change_group_image_guide">Tap icon to change group profile image</string>
-    <string name="tap_personal_chat_room_empty_guide_title"><![CDATA[Start a conversation with <b>%s</b>]]></string>
-    <string name="tap_group_chat_room_empty_guide_title"><![CDATA[It seems to be quiet in <b>%s</b>]]></string>
-    <string name="tap_personal_chat_room_empty_guide_content">Say hi to %s and start a conversation</string>
+    <string name="tap_format_s_personal_chat_room_empty_guide_title"><![CDATA[Start a conversation with <b>%s</b>]]></string>
+    <string name="tap_format_s_group_chat_room_empty_guide_title"><![CDATA[It seems to be quiet in <b>%s</b>]]></string>
+    <string name="tap_format_s_personal_chat_room_empty_guide_content">Say hi to %s and start a conversation</string>
     <string name="tap_group_chat_room_empty_guide_content">Say hi to the group and start the conversation</string>
     <string name="tap_write_storage_permission">TapTalk requires storage permission to save chat images to storage.</string>
     <string name="tap_warning_files_may_not_be_sent">Some files may not be sent</string>
-    <string name="tap_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
+    <string name="tap_format_s_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
     <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
     <string name="tap_guide_enter_otp">Enter the 6 digit OTP we’ve sent to</string>
     <string name="tap_didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
@@ -167,7 +194,7 @@
     <string name="tap_error_message_uri_not_found">File upload failed: file Uri not found in Chat Manager.</string>
     <string name="tap_error_load_image_detail">Could not load image, message data is null.</string>
     <string name="tap_error_no_app_to_open_file">No suitable app to open this file.</string>
-    <string name="tap_error_exceed_upload_limit">Exceeded %s upload limit</string>
+    <string name="tap_format_s_error_exceed_upload_limit">Exceeded %s upload limit</string>
     <string name="tap_error_media_will_not_be_sent">This media will not be sent</string>
     <string name="tap_error_could_not_find_file">Could not find file</string>
     <string name="tap_error_redownload_file">We could not find this file in your storage, would you like to download it?</string>
@@ -210,50 +237,26 @@
     <string name="tap_send_sms">Send SMS</string>
     <string name="tap_delete">Delete Message</string>
 
-    <!--Product/Order-->
+    <!--Products-->
     <string name="tap_price">Price</string>
     <string name="tap_rating">Rating</string>
-    <string name="tap_view_details">View Details</string>
-    <string name="tap_order_date">Due Date</string>
-    <string name="tap_order_time">Due Time</string>
-    <string name="tap_recipient">Recipient</string>
-    <string name="tap_courier">Courier</string>
-    <string name="tap_notes">Notes</string>
-    <string name="tap_additional_cost">Additional Cost</string>
-    <string name="tap_discount">Discount</string>
-    <string name="tap_total_price">Total Price</string>
     <string name="tap_order_now">Order Now</string>
     <string name="tap_no_review_yet">No review yet</string>
+    <string name="tap_no_description">No Description</string>
 
     <!--Media-->
-    <string name="tap_file_info_progress_dummy">9999.99 MB / %s</string>
+    <string name="tap_add_a_caption">Add a caption</string>
     <string name="tap_save_to_gallery">Save to Gallery</string>
     <string name="tap_save_to_download">Save to Downloads</string>
-    <string name="tap_media_count">%d of %d</string>
+    <string name="tap_image_saved">Image Saved</string>
+    <string name="tap_uploading">Uploading</string>
+    <string name="tap_video_saved">Video Saved</string>
     <string name="tap_unable_to_load_shared_media">Unable to load shared media</string>
     <string name="tap_try_again">Try Again?</string>
-
-    <!--Hints-->
-    <string name="tap_hint_username">e.g user_1234</string>
-    <string name="tap_hint_calling_code">+62</string>
-    <string name="tap_hint_phone_number">82212345678</string>
-    <string name="tap_hint_email_address">e.g example@work.com</string>
-    <string name="tap_hint_insert_password">Insert Password</string>
-    <string name="tap_hint_insert_name">Insert Name</string>
-
-    <!--Intent-->
-    <string name="tap_intent_type_all">*/*</string>
-    <string name="tap_intent_type_image">image/*</string>
-    <string name="tap_intent_type_video">video/*</string>
-    <string name="tap_intent_title_gallery">Gallery</string>
-    <string name="tap_intent_title_select_picture">Select Picture</string>
-    <string name="tap_intent_title_open_file">Open File</string>
     <string name="tap_transition_view_image">tap_view_image</string>
-
-    <!--Base Url-->
-    <string name="tap_base_url_api">https://%s/api/v1/</string>
-    <string name="tap_base_url_socket">https://%s/</string>
-    <string name="tap_base_wss">wss://%s/connect</string>
+    <string name="tap_format_dd_media_count">%d of %d</string>
+    <string name="tap_format_dd_letter_count">%d/%d</string>
+    <string name="tap_format_s_file_info_progress_dummy">9999.99 MB / %s</string>
 
     <!--Location-->
     <string name="tap_pin_coordinates">Pin Coordinates</string>
@@ -264,8 +267,6 @@
     <string name="tap_location_not_found">Location not found</string>
 
     <!--Custom Material File Picker-->
-    <string name="tap_cfp_file_picker_app_name" translatable="false">MaterialFilePicker</string>
-    <string name="tap_cfp_action_close">Close</string>
     <string name="tap_cfp_empty_directory_hint">Empty directory</string>
     <string name="tap_cfp_type_archive">Archive</string>
     <string name="tap_cfp_type_certificate">Certificate</string>
@@ -281,89 +282,54 @@
     <string name="tap_cfp_type_word">Document</string>
     <string name="tap_cfp_type_apk">APK</string>
 
-    <!--Sample Custom Keyboard-->
-    <string name="tap_see_price_list">See price list</string>
-    <string name="tap_see_price_list_icon">👀</string>
-    <string name="tap_read_expert_notes">Read expert’s notes</string>
-    <string name="tap_read_expert_notes_icon">🔍</string>
-    <string name="tap_send_services">Send services</string>
-    <string name="tap_send_services_icon">💌</string>
-    <string name="tap_create_order_card">Create order card</string>
-    <string name="tap_create_order_card_icon">✏️</string>
-
-    <!--General-->
-    <string name="tap_add_a_caption">Add a caption</string>
-    <string name="tap_add_to_contacts">Add to Contacts</string>
-    <string name="tap_allow">Allow</string>
-    <string name="tap_cancel">Cancel</string>
-    <string name="tap_change">Change</string>
-    <string name="tap_logout">Logout</string>
-    <string name="tap_chat_now">Chat Now</string>
-    <string name="tap_clear">Clear</string>
-    <string name="tap_clear_history">Clear history</string>
-    <string name="tap_continue_s">Continue</string>
-    <string name="tap_s_unread_messages">%s unread messages</string>
-    <string name="tap_delete_chat">Delete Chat</string>
-    <string name="tap_deleted_message">Deleted Message</string>
-    <string name="tap_delivered_at">Delivered at</string>
-    <string name="tap_details">Details</string>
-    <string name="tap_edit">Edit</string>
+    <!--Account-->
     <string name="tap_email_address">Email Address</string>
     <string name="tap_full_name">Full Name</string>
-    <string name="tap_forwarded">Forwarded</string>
-    <string name="tap_from">From:</string>
-    <string name="tap_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
-    <string name="tap_image_saved">Image Saved</string>
-    <string name="tap_letter_count">%d/%d</string>
-    <string name="tap_loading">Loading</string>
-    <string name="tap_finished">Finished</string>
+    <string name="tap_mobile_number">Mobile Number</string>
+    <string name="tap_username">Username</string>
+    <string name="tap_password">Password</string>
     <string name="tap_log_out">Log Out</string>
     <string name="tap_logging_out">Logging Out…</string>
     <string name="tap_log_out_confirmation">Are you sure you want to log out?</string>
+    <string name="tap_otp_successfully_sent">OTP Successfully Sent</string>
+    <string name="tap_verifying_otp">Verifying OTP</string>
+    <string name="tap_profile_picture">Profile Picture</string>
+    <string name="tap_request_again">Request again</string>
+    <string name="tap_requesting_otp">Requesting OTP</string>
+    <string name="tap_retype_password">Retype Password</string>
+    <string name="tap_search_for_country">Search for country</string>
+    <string name="tap_select_country">Select Country</string>
+    <string name="tap_hint_username">e.g user_1234</string>
+    <string name="tap_hint_calling_code">+62</string>
+    <string name="tap_hint_phone_number">82212345678</string>
+    <string name="tap_hint_email_address">e.g example@work.com</string>
+    <string name="tap_hint_insert_password">Insert Password</string>
+    <string name="tap_hint_insert_name">Insert Name</string>
+
+    <!--General-->
+    <string name="tap_allow">Allow</string>
+    <string name="tap_cancel">Cancel</string>
+    <string name="tap_change">Change</string>
+    <string name="tap_clear">Clear</string>
+    <string name="tap_close">Close</string>
+    <string name="tap_continue">Continue</string>
+    <string name="tap_details">Details</string>
+    <string name="tap_edit">Edit</string>
+    <string name="tap_loading">Loading</string>
+    <string name="tap_finished">Finished</string>
     <string name="tap_messages">Messages</string>
-    <string name="tap_mobile_number">Mobile Number</string>
-    <string name="tap_no_chats_to_show">No chats to show</string>
-    <string name="tap_no_description">No Description</string>
     <string name="tap_ok">OK</string>
     <string name="tap_oops">Oops…</string>
     <string name="tap_optional">Optional</string>
-    <string name="tap_otp_successfully_sent">OTP Successfully Sent</string>
-    <string name="tap_password">Password</string>
-    <string name="tap_permission_request">Permission Request</string>
-    <string name="tap_profile_picture">Profile Picture</string>
     <string name="tap_reply">Reply</string>
-    <string name="tap_request_again">Request again</string>
-    <string name="tap_requesting_otp">Requesting OTP</string>
     <string name="tap_retry">Retry</string>
-    <string name="tap_retype_password">Retype Password</string>
     <string name="tap_saving">Saving…</string>
     <string name="tap_search">Search</string>
     <string name="tap_syncing">Syncing…</string>
-    <string name="tap_search_for_country">Search for country</string>
     <string name="tap_send">Send</string>
-    <string name="tap_sending">Sending…</string>
-    <string name="tap_send_a_message">Send a message…</string>
-    <string name="tap_send_message">Send Message</string>
-    <string name="tap_sent_at">Sent at</string>
-    <string name="tap_select_country">Select Country</string>
     <string name="tap_skip">Skip</string>
-    <string name="tap_start_a_new_chat">Start a New Chat</string>
-    <string name="tap_sync_contacts_now">Sync Contacts Now</string>
-    <string name="tap_this_deleted_message">This message was deleted.</string>
-    <string name="tap_this_is_a_chat_history">This is a chat history</string>
-    <string name="tap_this_user_is_no_longer_available">This user is no longer available</string>
-    <string name="tap_typing">typing</string>
-    <string name="tap_typing_single">%s is typing</string>
-    <string name="tap_people_typing">%d people are typing</string>
-    <string name="tap_unread_messages">Unread Messages</string>
     <string name="tap_update">Update</string>
-    <string name="tap_uploading">Uploading</string>
-    <string name="tap_username">Username</string>
-    <string name="tap_verifying_otp">Verifying OTP</string>
-    <string name="tap_video_saved">Video Saved</string>
     <string name="tap_you">You</string>
-    <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="tap_over_99">99+</string>
-    <string name="tap_group_unavailable">Sorry, this group is unavailable.</string>
 
 </resources>
