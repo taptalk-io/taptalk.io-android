@@ -218,6 +218,8 @@ public class TapTalk implements LifecycleObserver {
         if (!tapListeners.contains(tapListener)) {
             tapListeners.add(tapListener);
         }
+        updateApplicationBadgeCount();
+
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
         if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
@@ -656,6 +658,11 @@ public class TapTalk implements LifecycleObserver {
         if (!tapTalk.tapListeners.contains(listener)) {
             tapTalk.tapListeners.add(listener);
         }
+    }
+
+    public static void removeTapTalkListener(TapListener listener) {
+        checkTapTalkInitialized();
+        tapTalk.tapListeners.remove(listener);
     }
 
     public static void setTapTalkScreenOrientation(TapTalkScreenOrientation orientation) {
