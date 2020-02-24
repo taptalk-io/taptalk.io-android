@@ -8,7 +8,6 @@
     <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_chat">Clear Chat</string>
     <string name="tap_conversation_color">Conversation Color</string>
-    <string name="tap_exit_group">Exit Group</string>
     <string name="tap_leave_group">Leave Group</string>
     <string name="tap_delete_group">Delete Group</string>
     <string name="tap_forward">Forward</string>
@@ -31,7 +30,7 @@
     <string name="tap_welcome">Welcome</string>
 
     <!--Chat Room List-->
-    <string name="tap_chat_room_setting_up">Setting up your chatroom</string>
+    <string name="tap_chat_room_setting_up">Setting up your chat room</string>
     <string name="tap_chat_room_setup_success">Setup successful</string>
     <string name="tap_chat_room_setup_failed">Setup failed</string>
     <string name="tap_chat_room_setting_up_description">Make sure you have a stable connection</string>
@@ -102,7 +101,6 @@
     <string name="tap_left_group">Left Group</string>
     <string name="tap_group_deleted">Group Deleted</string>
     <string name="tap_search_for_group_members">Search for members</string>
-    <string name="tap_search_for_users">Search for users</string>
     <string name="tap_not_a_participant">You are no longer a participant in this group</string>
 
     <!--Contacts-->
@@ -161,7 +159,6 @@
     <string name="tap_format_s_group_chat_room_empty_guide_title"><![CDATA[It seems to be quiet in <b>%s</b>]]></string>
     <string name="tap_format_s_personal_chat_room_empty_guide_content">Say hi to %s and start a conversation</string>
     <string name="tap_group_chat_room_empty_guide_content">Say hi to the group and start the conversation</string>
-    <string name="tap_write_storage_permission">TapTalk requires storage permission to save chat images to storage.</string>
     <string name="tap_warning_files_may_not_be_sent">Some files may not be sent</string>
     <string name="tap_format_s_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
     <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
@@ -182,12 +179,11 @@
     <string name="tap_internet_connection_lost">Internet Connection Lost</string>
     <string name="tap_please_check_your_connection">Please check your connection</string>
     <string name="tap_no_internet_show_error">Oops! It seems like you are offline, please check your connection.</string>
-    <string name="tap_api_call_return_error">Oops! there is an error, please try again later.</string>
+    <string name="tap_api_call_return_error">Oops! There is an error, please try again later.</string>
     <string name="tap_init_taptalk">Please initialize TapTalk library, read documentation for detailed information.</string>
     <string name="tap_error_open_room_failed">Unable to fetch user data, please check your connection and try again.</string>
     <string name="tap_error_invalid_room">Invalid room.</string>
     <string name="tap_error_room_not_found">Could not find room.</string>
-    <string name="tap_error_my_user_not_found">Could not find your user data.</string>
     <string name="tap_error_other_user_not_found">Could not find other user\'s data.</string>
     <string name="tap_error_message_data_empty">File upload failed: data is required in MessageModel.</string>
     <string name="tap_error_message_uri_empty">File upload failed: Uri is required in MessageModel data.</string>
@@ -248,8 +244,8 @@
     <string name="tap_add_a_caption">Add a caption</string>
     <string name="tap_save_to_gallery">Save to Gallery</string>
     <string name="tap_save_to_download">Save to Downloads</string>
-    <string name="tap_image_saved">Image Saved</string>
     <string name="tap_uploading">Uploading</string>
+    <string name="tap_image_saved">Image Saved</string>
     <string name="tap_video_saved">Video Saved</string>
     <string name="tap_unable_to_load_shared_media">Unable to load shared media</string>
     <string name="tap_try_again">Try Again?</string>
