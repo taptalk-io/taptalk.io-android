@@ -197,7 +197,9 @@ public class TAPFileUploadManager {
     }
 
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, TapSendMessageInterface listener) {
-        getSendMessageListeners().put(messageModel.getLocalID(), listener);
+        if (null != listener) {
+            getSendMessageListeners().put(messageModel.getLocalID(), listener);
+        }
         addUploadQueue(context, roomID, messageModel);
     }
 
@@ -208,7 +210,9 @@ public class TAPFileUploadManager {
 
     public void addUploadQueue(Context context, String roomID, TAPMessageModel messageModel, Bitmap bitmap, TapSendMessageInterface listener) {
         getBitmapQueue().put(messageModel.getLocalID(), bitmap);
-        getSendMessageListeners().put(messageModel.getLocalID(), listener);
+        if (null != listener) {
+            getSendMessageListeners().put(messageModel.getLocalID(), listener);
+        }
         addUploadQueue(context, roomID, messageModel);
     }
 

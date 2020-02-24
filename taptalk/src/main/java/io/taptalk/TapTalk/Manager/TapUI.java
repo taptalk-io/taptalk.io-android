@@ -13,10 +13,11 @@ import java.util.List;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.TAPBaseCustomBubble;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
-import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
 import io.taptalk.TapTalk.Listener.TapUIChatRoomListener;
+import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
 import io.taptalk.TapTalk.Listener.TapUIRoomListListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
@@ -33,7 +34,6 @@ import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
-import io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
@@ -77,10 +77,16 @@ public class TapUI {
     }
 
     public void addRoomListListener(TapUIRoomListListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         getRoomListListeners().add(listener);
     }
 
     public void removeRoomListListener(TapUIRoomListListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         getRoomListListeners().remove(listener);
     }
 
@@ -89,10 +95,16 @@ public class TapUI {
     }
 
     public void addChatRoomListener(TapUIChatRoomListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         getChatRoomListeners().add(listener);
     }
 
     public void removeChatRoomListener(TapUIChatRoomListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         getChatRoomListeners().remove(listener);
     }
 
@@ -101,47 +113,77 @@ public class TapUI {
     }
 
     public void addCustomKeyboardListener(TapUICustomKeyboardListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         getCustomKeyboardListeners().add(listener);
     }
 
     public void removeCustomKeyboardListener(TapUICustomKeyboardListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         getCustomKeyboardListeners().remove(listener);
     }
 
     public TapUIMainRoomListFragment getRoomListFragment() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return null;
+        }
         return TapUIMainRoomListFragment.newInstance();
     }
 
     public void openRoomList(Context context) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         Intent intent = new Intent(context, TapUIRoomListActivity.class);
         context.startActivity(intent);
     }
 
     public void openGroupChatCreator(Context context) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
         intent.putExtra(GROUP_ACTION, CREATE_GROUP);
         context.startActivity(intent);
     }
 
     public void openNewChat(Context context) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         Intent intent = new Intent(context, TAPNewChatActivity.class);
         context.startActivity(intent);
     }
 
     public void openBarcodeScanner(Context context) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         Intent intent = new Intent(context, TAPBarcodeScannerActivity.class);
         context.startActivity(intent);
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         TAPUtils.startChatActivity(context, roomModel, null, null);
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel, String scrollToMessageWithLocalID) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         TAPUtils.startChatActivity(context, roomModel, null, scrollToMessageWithLocalID);
     }
 
     public void openChatRoom(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         TAPUtils.startChatActivity(
                 context,
                 roomID,
@@ -160,6 +202,9 @@ public class TapUI {
             @Nullable String customQuoteImageURL,
             @Nullable HashMap<String, Object> userInfo,
             TapCommonListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         String roomID = TAPChatManager.getInstance().arrangeRoomId(
                 TAPChatManager.getInstance().getActiveUser().getUserID(),
                 userID);
@@ -178,7 +223,6 @@ public class TapUI {
             TAPDataManager.getInstance().getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
                 @Override
                 public void onSuccess(TAPGetUserResponse response) {
-
                     openChatRoom(
                             context,
                             roomID,
@@ -186,17 +230,23 @@ public class TapUI {
                             response.getUser().getAvatarURL(),
                             TYPE_PERSONAL,
                             "");
-                    listener.onSuccess(SUCCESS_MESSAGE_OPEN_ROOM);
+                    if (null != listener) {
+                        listener.onSuccess(SUCCESS_MESSAGE_OPEN_ROOM);
+                    }
                 }
 
                 @Override
                 public void onError(TAPErrorModel error) {
-                    listener.onError(error.getCode(), error.getMessage());
+                    if (null != listener) {
+                        listener.onError(error.getCode(), error.getMessage());
+                    }
                 }
 
                 @Override
                 public void onError(String errorMessage) {
-                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                    if (null != listener) {
+                        listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                    }
                 }
             });
         } else {
@@ -207,7 +257,9 @@ public class TapUI {
                     user.getAvatarURL(),
                     TYPE_PERSONAL,
                     "");
-            listener.onSuccess(SUCCESS_MESSAGE_OPEN_ROOM);
+            if (null != listener) {
+                listener.onSuccess(SUCCESS_MESSAGE_OPEN_ROOM);
+            }
         }
     }
 
@@ -220,6 +272,9 @@ public class TapUI {
             @Nullable String customQuoteImageURL,
             @Nullable HashMap<String, Object> userInfo,
             TapCommonListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         TAPUtils.getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel user) {
@@ -242,17 +297,24 @@ public class TapUI {
                         user.getAvatarURL(),
                         TYPE_PERSONAL,
                         "");
-                listener.onSuccess(SUCCESS_MESSAGE_OPEN_ROOM);
+                if (null != listener) {
+                    listener.onSuccess(SUCCESS_MESSAGE_OPEN_ROOM);
+                }
             }
 
             @Override
             public void onSelectFailed(String errorMessage) {
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }
 
     public void openChatRoomWithOtherUser(Context context, TAPUserModel otherUser) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         openChatRoom(
                 context,
                 TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), otherUser.getUserID()),
@@ -270,6 +332,9 @@ public class TapUI {
             @Nullable String customQuoteContent,
             @Nullable String customQuoteImageURL,
             @Nullable HashMap<String, Object> userInfo) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         if (null != customQuoteTitle) {
             TAPChatManager.getInstance().setQuotedMessage(roomModel.getRoomID(), customQuoteTitle, customQuoteContent, customQuoteImageURL);
             if (null != userInfo) {
@@ -280,74 +345,128 @@ public class TapUI {
     }
 
     public boolean isSearchChatBarVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return !isSearchChatBarHidden;
     }
 
     public void setSearchChatBarInRoomListVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         isSearchChatBarHidden = !isVisible;
     }
 
     public boolean isCloseRoomListButtonVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return isCloseRoomListButtonVisible;
     }
 
     public void setCloseButtonInRoomListVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         isCloseRoomListButtonVisible = isVisible;
     }
 
     public boolean isMyAccountButtonVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return !isMyAccountButtonHidden;
     }
 
     public void setMyAccountButtonInRoomListVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         isMyAccountButtonHidden = !isVisible;
     }
 
     public boolean isNewChatButtonVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return !isNewChatButtonHidden;
     }
 
     public void setNewChatButtonInRoomListVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         isNewChatButtonHidden = !isVisible;
     }
 
     public boolean isProfileButtonVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return !isProfileButtonHidden;
     }
 
     public void setProfileButtonInChatRoomVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         isProfileButtonHidden = !isVisible;
     }
 
     public boolean isNewContactMenuButtonVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return !isNewContactMenuButtonHidden;
     }
 
     public void setNewContactMenuButtonVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         isNewContactMenuButtonHidden = !isVisible;
     }
 
     public boolean isScanQRMenuButtonVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return !isScanQRMenuButtonHidden;
     }
 
     public void setScanQRMenuButtonVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         isScanQRMenuButtonHidden = !isVisible;
     }
 
     public boolean isNewGroupMenuButtonVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return !isNewGroupMenuButtonHidden;
     }
 
     public void setNewGroupMenuButtonVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         isNewGroupMenuButtonHidden = !isVisible;
     }
 
     public boolean isLogoutButtonVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return isLogoutButtonVisible;
     }
 
     public void setLogoutButtonVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         isLogoutButtonVisible = isVisible;
     }
 
@@ -360,6 +479,9 @@ public class TapUI {
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
     }
 
@@ -368,7 +490,9 @@ public class TapUI {
             mainRoomListFragment.showSearchChat();
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
-                listener.onSearchChatBarTapped(activity, mainRoomListFragment);
+                if (null != listener) {
+                    listener.onSearchChatBarTapped(activity, mainRoomListFragment);
+                }
             }
         }
     }
@@ -378,7 +502,9 @@ public class TapUI {
             activity.onBackPressed();
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
-                listener.onCloseRoomListTapped(activity);
+                if (null != listener) {
+                    listener.onCloseRoomListTapped(activity);
+                }
             }
         }
     }
@@ -391,7 +517,9 @@ public class TapUI {
             contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
-                listener.onTapTalkAccountButtonTapped(activity);
+                if (null != listener) {
+                    listener.onTapTalkAccountButtonTapped(activity);
+                }
             }
         }
     }
@@ -404,7 +532,9 @@ public class TapUI {
             contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
-                listener.onNewChatButtonTapped(activity);
+                if (null != listener) {
+                    listener.onNewChatButtonTapped(activity);
+                }
             }
         }
     }
@@ -429,11 +559,17 @@ public class TapUI {
         } else {
             for (TapUIChatRoomListener listener : getChatRoomListeners()) {
                 if (room.getRoomType() == TYPE_PERSONAL) {
-                    listener.onTapTalkUserProfileButtonTapped(activity, room, user);
+                    if (null != listener) {
+                        listener.onTapTalkUserProfileButtonTapped(activity, room, user);
+                    }
                 } else if (room.getRoomType() == TYPE_GROUP && null != user) {
-                    listener.onTapTalkGroupMemberAvatarTapped(activity, room, user);
+                    if (null != listener) {
+                        listener.onTapTalkGroupMemberAvatarTapped(activity, room, user);
+                    }
                 } else if (room.getRoomType() == TYPE_GROUP) {
-                    listener.onTapTalkGroupChatProfileButtonTapped(activity, room);
+                    if (null != listener) {
+                        listener.onTapTalkGroupChatProfileButtonTapped(activity, room);
+                    }
                 }
             }
         }
@@ -445,19 +581,25 @@ public class TapUI {
             if (null != messageModel.getData() && null != messageModel.getData().get(USER_INFO)) {
                 userInfo = (HashMap<String, Object>) messageModel.getData().get(USER_INFO);
             }
-            listener.onTapTalkMessageQuoteTapped(activity, messageModel, userInfo);
+            if (null != listener) {
+                listener.onTapTalkMessageQuoteTapped(activity, messageModel, userInfo);
+            }
         }
     }
 
     void triggerProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-            listener.onTapTalkProductListBubbleLeftOrSingleButtonTapped(activity, product, room, recipient, isSingleOption);
+            if (null != listener) {
+                listener.onTapTalkProductListBubbleLeftOrSingleButtonTapped(activity, product, room, recipient, isSingleOption);
+            }
         }
     }
 
     void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-            listener.onTapTalkProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
+            if (null != listener) {
+                listener.onTapTalkProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
+            }
         }
     }
 
@@ -473,7 +615,9 @@ public class TapUI {
 
     void triggerCustomKeyboardItemTapped(Activity activity, TAPCustomKeyboardItemModel customKeyboardItemModel, TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
         for (TapUICustomKeyboardListener listener : getCustomKeyboardListeners()) {
-            listener.onCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, recipientUser);
+            if (null != listener) {
+                listener.onCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, recipientUser);
+            }
         }
     }
 }
