@@ -100,7 +100,7 @@ public class TapTalk implements LifecycleObserver {
     private Intent intent;
     private static boolean listenerInit = false;
 
-    private static Thread.UncaughtExceptionHandler defaultUEH;
+//    private static Thread.UncaughtExceptionHandler defaultUEH;
     private List<TapListener> tapListeners = new ArrayList<>();
 
     private static Map<String, String> coreConfigs;
@@ -127,16 +127,16 @@ public class TapTalk implements LifecycleObserver {
         TapTalkOrientationLandscape // FIXME: 6 February 2019 Activity loads portrait by default then changes to landscape after onCreate
     }
 
-    private static Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
-        @Override
-        public void uncaughtException(Thread thread, Throwable throwable) {
-            TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
-            TAPContactManager.getInstance().saveUserDataMapToDatabase();
-            TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
-            TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
-            defaultUEH.uncaughtException(thread, throwable);
-        }
-    };
+//    private static Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
+//        @Override
+//        public void uncaughtException(Thread thread, Throwable throwable) {
+//            TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
+//            TAPContactManager.getInstance().saveUserDataMapToDatabase();
+//            TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+//            TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+//            defaultUEH.uncaughtException(thread, throwable);
+//        }
+//    };
 
     public TapTalk(
             @NonNull final Context appContext,
@@ -769,8 +769,8 @@ public class TapTalk implements LifecycleObserver {
         TAPChatManager.getInstance().triggerSaveNewMessage();
         TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
         TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
-        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+//        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+//        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
 
 //         Start service on first load
 //        if (null == intent) {
