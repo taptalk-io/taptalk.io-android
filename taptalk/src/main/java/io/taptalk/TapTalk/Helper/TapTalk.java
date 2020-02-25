@@ -215,7 +215,11 @@ public class TapTalk implements LifecycleObserver {
                             .build()
             );
 
-        tapListeners.add(tapListener);
+        if (!tapListeners.contains(tapListener)) {
+            tapListeners.add(tapListener);
+        }
+        updateApplicationBadgeCount();
+
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
         if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
@@ -267,6 +271,10 @@ public class TapTalk implements LifecycleObserver {
         TAPChatManager.getInstance().addChatListener(chatListener);
     }
 
+    public static void putGlobalChatListener() {
+        TAPChatManager.getInstance().addChatListener(chatListener);
+    }
+
     public static void removeGlobalChatListener() {
         TAPChatManager.getInstance().removeChatListener(chatListener);
     }
@@ -286,14 +294,18 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void initializeGooglePlacesApiKey(String apiKey) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         Places.initialize(appContext, apiKey);
     }
 
-    private static void checkTapTalkInitialized() {
+    public static boolean checkTapTalkInitialized() {
         if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
+            Log.e(getClientAppName(), appContext.getString(R.string.tap_init_taptalk));
+            return false;
         }
+        return true;
     }
 
     public static void setLoggingEnabled(boolean enabled) {
@@ -319,7 +331,9 @@ public class TapTalk implements LifecycleObserver {
      */
 
     public static void authenticateWithAuthTicket(String authTicket, boolean connectOnSuccess, TapCommonListener listener) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         if (null == authTicket || "".equals(authTicket)) {
             listener.onError(ERROR_CODE_INVALID_AUTH_TICKET, ERROR_MESSAGE_INVALID_AUTH_TICKET);
         } else {
@@ -393,12 +407,13 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static boolean isAuthenticated() {
-        checkTapTalkInitialized();
         return TAPDataManager.getInstance().checkAccessTokenAvailable();
     }
 
     public static void logoutAndClearAllTapTalkData(TapCommonListener listener) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TAPDataManager.getInstance().logout(new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
@@ -419,7 +434,9 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void clearAllTapTalkData() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TAPDataManager.getInstance().deleteAllPreference();
         TAPDataManager.getInstance().deleteAllFromDatabase();
         TAPDataManager.getInstance().deleteAllManagerData();
@@ -436,7 +453,10 @@ public class TapTalk implements LifecycleObserver {
      */
 
     public static void connect(TapCommonListener listener) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+
+        }
         if (isAuthenticated()) {
             TAPConnectionManager.getInstance().connect(listener);
         } else {
@@ -445,22 +465,30 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void disconnect() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TAPConnectionManager.getInstance().close(NOT_CONNECTED);
     }
 
     public static boolean isConnected() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return false;
+        }
         return TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED;
     }
 
     public static void setAutoConnectEnabled(boolean enabled) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         isAutoConnectDisabled = !enabled;
     }
 
     public static boolean isAutoConnectEnabled() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return false;
+        }
         return !isAutoConnectDisabled;
     }
 
@@ -471,38 +499,49 @@ public class TapTalk implements LifecycleObserver {
      */
 
     public static int getClientAppIcon() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return -1;
+        }
         return clientAppIcon;
     }
 
     public static String getClientAppName() {
-        checkTapTalkInitialized();
         return clientAppName;
     }
 
     public static TapTalkImplementationType getTapTalkImplementationType() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return implementationType;
     }
 
     public static void updateApplicationBadgeCount() {
-        checkTapTalkInitialized();
-        if (isAuthenticated()) TAPNotificationManager.getInstance().updateUnreadCount();
+        if (!isAuthenticated()) {
+            return;
+        }
+        TAPNotificationManager.getInstance().updateUnreadCount();
     }
 
     // TODO: 22 August 2019 CORE MODEL
     public static Map<String, String> getCoreConfigs() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return new HashMap<>(coreConfigs);
     }
 
     public static Map<String, String> getProjectConfigs() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return new HashMap<>(projectConfigs);
     }
 
     public static Map<String, String> getCustomConfigs() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return new HashMap<>(customConfigs);
     }
 
@@ -550,12 +589,16 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void setAutoContactSyncEnabled(boolean enabled) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         isAutoContactSyncDisabled = !enabled;
     }
 
     public static boolean isAutoContactSyncEnabled() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return false;
+        }
         return !isAutoContactSyncDisabled;
     }
 
@@ -566,12 +609,16 @@ public class TapTalk implements LifecycleObserver {
      */
 
     public static TAPUserModel getTaptalkActiveUser() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return TAPChatManager.getInstance().getActiveUser();
     }
 
     public static void refreshActiveUser(TapCommonListener listener) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         new Thread(() -> {
             if (null != TAPChatManager.getInstance().getActiveUser()) {
                 TAPDataManager.getInstance().getUserByIdFromApi(TAPChatManager.getInstance().getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
@@ -641,28 +688,47 @@ public class TapTalk implements LifecycleObserver {
      */
 
     public static List<TapListener> getTapTalkListeners() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return tapTalk.tapListeners;
     }
 
-    private static void addTapTalkListener(TapListener listener) {
-        checkTapTalkInitialized();
-        tapTalk.tapListeners.add(listener);
+    public static void addTapTalkListener(TapListener listener) {
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
+        if (!tapTalk.tapListeners.contains(listener)) {
+            tapTalk.tapListeners.add(listener);
+        }
+    }
+
+    public static void removeTapTalkListener(TapListener listener) {
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
+        tapTalk.tapListeners.remove(listener);
     }
 
     private static void setTapTalkScreenOrientation(TapTalkScreenOrientation orientation) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TapTalk.screenOrientation = orientation;
     }
 
     private static TapTalkScreenOrientation getTapTalkScreenOrientation() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return TapTalk.screenOrientation;
     }
 
     // Enable/disable in-app notification after chat fragment goes inactive or to background
     private static void setInAppNotificationEnabled(boolean enabled) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TAPNotificationManager.getInstance().setRoomListAppear(!enabled);
     }
 
@@ -671,12 +737,14 @@ public class TapTalk implements LifecycleObserver {
 //    }
 
     private void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
 
     public static void fetchNewMessageandUpdatedBadgeCount() {
-        if (TapTalk.isAuthenticated()) {
+        if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated()) {
             TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
                 @Override
                 public void onSuccess(String s) {
