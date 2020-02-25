@@ -10,6 +10,7 @@ import android.location.*
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.ActivityCompat.requestPermissions
 import android.support.v4.content.ContextCompat
@@ -17,7 +18,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
@@ -41,6 +41,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
+import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.TAPLocationItem
 import io.taptalk.TapTalk.View.Adapter.TAPSearchLocationAdapter
@@ -51,6 +52,8 @@ import java.util.*
 class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
         GoogleMap.OnCameraIdleListener, View.OnClickListener,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
+    private var isFirstTriggered = true
 
     override fun onMapReady(map: GoogleMap?) {
         googleMap = map
@@ -145,14 +148,11 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     }
 
     override fun onLocationChanged(location: Location?) {
-        count = 0
-        if (3 >= count) {
-            currentLatitude = location?.latitude ?: currentLatitude
-            currentLongitude = location?.longitude ?: currentLongitude
-            count++
-            if (count == 3) {
-                locationManager?.removeUpdates(this)
-            }
+        currentLatitude = location?.latitude ?: currentLatitude
+        currentLongitude = location?.longitude ?: currentLongitude
+        if (isFirstTriggered) {
+            moveToCurrentLocation()
+            isFirstTriggered = false;
         }
     }
 
@@ -280,11 +280,11 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         if (null != locationManager) {
             locationManager?.removeUpdates(this)
             locationManager = null
         }
+        super.onDestroy()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -443,13 +443,26 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     }
 
     private fun moveToCurrentLocation() {
-        latitude = currentLatitude
-        longitude = currentLongitude
-        centerOfMap = LatLng(currentLatitude, currentLongitude)
-        val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
-        googleMap?.animateCamera(locations)
+        if (!locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!) {
+            TapTalkDialog.Builder(this)
+                    .setTitle("Location Disabled")
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setMessage("Please allow Location Services to Continue")
+                    .setPrimaryButtonTitle("Go to Settings")
+                    .setPrimaryButtonListener { v: View? ->
+                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                    }
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setSecondaryButtonListener { view: View? -> }
+                    .show()
+        } else {
+            latitude = currentLatitude
+            longitude = currentLongitude
+            centerOfMap = LatLng(currentLatitude, currentLongitude)
+            val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
+            googleMap?.animateCamera(locations)
+        }
     }
-
 
     private fun disableSendButton() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -469,7 +482,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         ll_button_send_location.setOnClickListener { sendLocation() }
     }
 
-    private fun sendLocation(){
+    private fun sendLocation() {
         val intent = Intent()
         intent.putExtra(TAPDefaultConstant.Location.LATITUDE, latitude)
         intent.putExtra(TAPDefaultConstant.Location.LONGITUDE, longitude)

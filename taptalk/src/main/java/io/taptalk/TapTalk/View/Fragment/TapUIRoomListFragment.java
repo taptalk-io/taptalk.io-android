@@ -184,6 +184,7 @@ public class TapUIRoomListFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         TAPChatManager.getInstance().removeChatListener(chatListener);
+        TapTalk.putGlobalChatListener();
     }
 
     private void initViewModel() {
@@ -434,7 +435,7 @@ public class TapUIRoomListFragment extends Fragment {
             // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
             Log.e(TAG, "viewLoadedSequence: runFullRefreshSequence");
             runFullRefreshSequence();
-        } else if (TapTalk.isAuthenticated()) {
+        } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated()) {
             TapTalk.clearAllTapTalkData();
             for (TapListener listener : TapTalk.getTapTalkListeners()) {
                 listener.onTapTalkRefreshTokenExpired();

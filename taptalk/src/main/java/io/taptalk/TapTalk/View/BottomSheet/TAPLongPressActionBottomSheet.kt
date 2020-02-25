@@ -75,9 +75,10 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         when (longPressType) {
             LongPressType.CHAT_BUBBLE_TYPE -> {
                 if (message?.failedSend == true) {
-                    longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createFailedMessageBubbleLongPressMenu(),
-                            message, bottomSheetListener, onClickListener)
-                } else {
+//                    longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createFailedMessageBubbleLongPressMenu(),
+//                            message, bottomSheetListener, onClickListener)
+                    dismiss()
+                } else if (!message?.sending!!) {
                     when (message?.type) {
                         TYPE_IMAGE -> {
                             longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createImageBubbleLongPressMenu(message),
@@ -103,6 +104,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                             dismiss()
                         }
                     }
+                } else {
+                    dismiss()
                 }
             }
             LongPressType.EMAIL_TYPE -> {
