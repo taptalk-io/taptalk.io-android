@@ -105,7 +105,7 @@
 
     <!--Contacts-->
     <string name="tap_contacts">Kontak</string>
-    <string name="tap_search_for_contacts">Search for contacts</string>
+    <string name="tap_search_for_contacts">Cari kontak</string>
     <string name="tap_add_to_contacts">Tambahkan ke Kontak</string>
     <string name="tap_chat_now">Chat Sekarang</string>
     <string name="tap_global_search">Pencarian Global</string>
@@ -152,7 +152,7 @@
 
     <!--Info-->
     <string name="tap_scan_qr_code_guide">Klik tombol di bawah untuk memindai kode QR</string>
-    <string name="tap_guide_show_qr_code">Klik tombol di bawah untuk menunjukkan kode QR Anda</string>
+    <string name="tap_guide_show_qr_code">Klik tombol di bawah untuk menunjukkan kode QR</string>
     <string name="tap_search_username_welcome_message">Usernames <b>tidak case sensitive</b>, tapi pastikan Anda memasukkan <b>karakter yang tepat</b></string>
     <string name="tap_change_group_image_guide">Klik ikon untuk mengganti foto grup</string>
     <string name="tap_format_s_personal_chat_room_empty_guide_title"><![CDATA[Mulai percakapan dengan <b>%s</b>]]></string>
@@ -241,7 +241,7 @@
     <string name="tap_no_description">Tidak Ada Deskripsi</string>
 
     <!--Media-->
-    <string name="tap_add_a_caption">Tambahkan keterangin</string>
+    <string name="tap_add_a_caption">Tambahkan keterangan</string>
     <string name="tap_save_to_gallery">Simpan to Galeri</string>
     <string name="tap_save_to_download">Simpan to Downloads</string>
     <string name="tap_uploading">Mengunggah</string>
@@ -316,7 +316,7 @@
     <string name="tap_messages">Pesan</string>
     <string name="tap_ok">OK</string>
     <string name="tap_oops">Oops…</string>
-    <string name="tap_optional">Optional</string>
+    <string name="tap_optional">Tidak Wajib</string>
     <string name="tap_reply">Balas</string>
     <string name="tap_retry">Coba lagi</string>
     <string name="tap_saving">Menyimpan…</string>
