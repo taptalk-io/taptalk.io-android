@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Manager;
 import android.support.annotation.Keep;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
@@ -19,20 +20,29 @@ public class TapCoreProjectConfigsManager {
     }
 
     public void getProjectConfigs(TapCoreProjectConfigsListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         TAPDataManager.getInstance().getProjectConfig(new TAPDefaultDataView<TapConfigs>() {
             @Override
             public void onSuccess(TapConfigs response) {
-                listener.onSuccess(response);
+                if (null != listener) {
+                    listener.onSuccess(response);
+                }
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                listener.onError(error.getCode(), error.getMessage());
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
             }
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
             }
         });
     }
