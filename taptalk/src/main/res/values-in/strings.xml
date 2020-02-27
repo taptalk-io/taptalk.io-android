@@ -122,7 +122,7 @@
     <string name="tap_is_already_in_your_contacts">telah ada di kontak Anda</string>
     <string name="tap_contact_access">Akses Kontak</string>
     <string name="tap_sync_contact_description">Kami memerlukan izin untuk mengakses kontak Anda, kami akan menghubungkan kontak Anda ke server kami dan secara otomatis menemukan teman Anda sehingga lebih mudah untuk menemukan teman-teman.</string>
-    <string name="tap_sync_contacts_now">Hubungkan Kontak Sekarang</string>
+    <string name="tap_sync_contacts_now">Hubungkan Kontak</string>
     <string name="tap_all_contacts_synced">Semua kontak dihubungkan</string>
     <string name="tap_format_d_synced_contacts">%d Kontak Terhubung</string>
     <string name="tap_syncing_contacts">Menghubungkan kontak</string>

@@ -37,54 +37,9 @@ import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.LocaleList
-import org.json.JSONObject
 import java.util.*
 
-class TapLocaleManager private constructor(private val store: LocaleStore) {
-
-    interface LocaleStore {
-        fun getLocale(): Locale
-        fun persistLocale(locale: Locale)
-    }
-
-    internal class PreferenceLocaleStore @JvmOverloads constructor(
-            context: Context,
-            private val defaultLocale: Locale = Locale.getDefault(),
-            preferenceName: String = DEFAULT_PREFERENCE_NAME) : LocaleStore {
-
-        private val prefs = context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE)
-
-        override fun getLocale(): Locale {
-            // there is no predefined way to serialize/deserialize Locale object
-            return if (!prefs.getString(LANGUAGE_KEY, null).isNullOrBlank()) {
-                val json = JSONObject(prefs.getString(LANGUAGE_KEY, null)!!)
-                val language = json.getString(LANGUAGE_JSON_KEY)
-                val country = json.getString(COUNTRY_JSON_KEY)
-                val variant = json.getString(VARIANT_JSON_KEY)
-                Locale(language, country, variant)
-            } else {
-                defaultLocale
-            }
-        }
-
-        override fun persistLocale(locale: Locale) {
-            val json = JSONObject().apply {
-                put(LANGUAGE_JSON_KEY, locale.language)
-                put(COUNTRY_JSON_KEY, locale.country)
-                put(VARIANT_JSON_KEY, locale.variant)
-            }
-            prefs.edit().putString(LANGUAGE_KEY, json.toString()).apply()
-        }
-
-        companion object {
-            private const val LANGUAGE_KEY = "language_key"
-            private const val DEFAULT_PREFERENCE_NAME = "lingver_preference"
-            private const val LANGUAGE_JSON_KEY = "language"
-            private const val COUNTRY_JSON_KEY = "country"
-            private const val VARIANT_JSON_KEY = "variant"
-        }
-    }
-
+class TapLocaleManager private constructor() {
     /**
      * Creates and sets a [Locale] using language, country and variant information.
      *
@@ -100,7 +55,6 @@ class TapLocaleManager private constructor(private val store: LocaleStore) {
      * Sets a [locale] which will be used to localize all data coming from [Resources] class.
      */
     fun setLocale(context: Context, locale: Locale) {
-        store.persistLocale(locale)
         update(context, locale)
     }
 
@@ -108,7 +62,7 @@ class TapLocaleManager private constructor(private val store: LocaleStore) {
      * Returns the active [Locale].
      */
     fun getLocale(): Locale {
-        return store.getLocale()
+        return locale
     }
 
     /**
@@ -167,7 +121,7 @@ class TapLocaleManager private constructor(private val store: LocaleStore) {
     }
 
     internal fun setLocaleInternal(context: Context) {
-        update(context, store.getLocale())
+        update(context, locale)
     }
 
     private fun update(context: Context, locale: Locale) {
@@ -233,6 +187,7 @@ class TapLocaleManager private constructor(private val store: LocaleStore) {
     companion object {
 
         private lateinit var instance: TapLocaleManager
+        private lateinit var locale: Locale
 
         /**
          * Returns the global instance of [TapLocaleManager] created via init method.
@@ -241,7 +196,7 @@ class TapLocaleManager private constructor(private val store: LocaleStore) {
          */
         @JvmStatic
         fun getInstance(): TapLocaleManager {
-            check(::instance.isInitialized) { "_root_ide_package_.io.taptalk.TapTalk.Manager.TapLocaleManager should be initialized first" }
+            check(::instance.isInitialized) { "TapLocaleManager should be initialized first" }
             return instance
         }
 
@@ -249,17 +204,13 @@ class TapLocaleManager private constructor(private val store: LocaleStore) {
          * Creates and sets up the global instance using a provided language and the default store.
          */
         @JvmStatic
-        fun init(application: Application, defaultLanguage: String): TapLocaleManager {
-            return init(application, Locale(defaultLanguage))
-        }
-
-        /**
-         * Creates and sets up the global instance using a provided locale and the default store.
-         */
-        @JvmStatic
-        @JvmOverloads
-        fun init(application: Application, defaultLocale: Locale = Locale.getDefault()): TapLocaleManager {
-            return init(application, PreferenceLocaleStore(application, defaultLocale))
+        fun setLocale(application: Application, defaultLanguage: String) {
+            locale = Locale(defaultLanguage)
+            if (::instance.isInitialized) {
+                instance.setLocale(application, locale)
+            } else {
+                init(application, locale)
+            }
         }
 
         /**
@@ -268,11 +219,11 @@ class TapLocaleManager private constructor(private val store: LocaleStore) {
          * This method must be called before any calls to [TapLocaleManager] and may only be called once.
          */
         @JvmStatic
-        fun init(application: Application, store: LocaleStore): TapLocaleManager {
+        fun init(application: Application, locale: Locale): TapLocaleManager {
             check(!::instance.isInitialized) { "Already initialized" }
-            val localeManager = TapLocaleManager(store)
+            val localeManager = TapLocaleManager()
             localeManager.setUp(application)
-            localeManager.setLocale(application, store.getLocale())
+            localeManager.setLocale(application, locale)
             instance = localeManager
             return localeManager
         }
