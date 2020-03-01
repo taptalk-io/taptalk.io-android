@@ -5,6 +5,6 @@
         android:id="@+id/action_close"
         android:icon="@drawable/tap_ic_close_grey"
         android:iconTint="@color/tapWhite"
-        android:title="@string/tap_cfp_action_close"
+        android:title="@string/tap_close"
         app:showAsAction="always" />
 </menu>

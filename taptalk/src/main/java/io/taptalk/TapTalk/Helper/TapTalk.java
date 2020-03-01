@@ -44,6 +44,7 @@ import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager;
 import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
+import io.taptalk.TapTalk.Manager.TapLocaleManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
@@ -223,11 +224,13 @@ public class TapTalk implements LifecycleObserver {
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
         if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
-                TAPDataManager.getInstance().checkAccessTokenAvailable())
+                TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             initListener();
+        }
 
-        if (!listenerInit)
+        if (!listenerInit) {
             handleAppToForeground();
+        }
     }
 
     private static void initListener() {
@@ -679,6 +682,29 @@ public class TapTalk implements LifecycleObserver {
                 .setNeedReply(false)
                 .setOnClickAction(TapUIChatActivity.class)
                 .show();
+    }
+
+    /**
+     * =============================================================================================
+     * LANGUAGE
+     * =============================================================================================
+     */
+
+    public enum Language {ENGLISH, INDONESIAN}
+
+    public static void setDefaultLanguage(Language language) {
+        String defaultLanguage;
+        switch (language) {
+            case INDONESIAN:
+                defaultLanguage = "in";
+                break;
+            default:
+                defaultLanguage = "en";
+                break;
+        }
+        TapLocaleManager.setLocale((Application) appContext, defaultLanguage);
+
+        // TODO: 27 Feb 2020 RESTART OPEN ACTIVITIES TO APPLY CHANGED RESOURCES
     }
 
     /**
