@@ -313,7 +313,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     private String generateSocketBaseURL(String baseURL) {
-        return baseURL + "/connect/";
+        return baseURL + "/";
     }
 
     private String generateWSSBaseURL(String baseURL) {
