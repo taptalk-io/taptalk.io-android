@@ -27,7 +27,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -35,7 +34,6 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -698,14 +696,14 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         }
 
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
-            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_personal_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
-            tvProfileDescription.setText(String.format(getString(R.string.tap_personal_chat_room_empty_guide_content), vm.getRoom().getRoomName()));
+            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_personal_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
+            tvProfileDescription.setText(String.format(getString(R.string.tap_format_s_personal_chat_room_empty_guide_content), vm.getRoom().getRoomName()));
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType() && null != vm.getRoom().getGroupParticipants()) {
-            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
+            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
             tvRoomStatus.setText(String.format("%d Members", vm.getRoom().getGroupParticipants().size()));
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
+            tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
         }
 
@@ -1300,11 +1298,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 tvRoomTypingStatus.setText(getString(R.string.tap_typing));
             } else if (1 < vm.getGroupTypingSize()) {
                 glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
-                tvRoomTypingStatus.setText(String.format(getString(R.string.tap_people_typing), vm.getGroupTypingSize()));
+                tvRoomTypingStatus.setText(String.format(getString(R.string.tap_format_d_people_typing), vm.getGroupTypingSize()));
             } else {
                 glide.load(R.raw.gif_typing_indicator).into(ivRoomTypingIndicator);
                 //tvRoomTypingStatus.setText(getString(R.string.tap_typing));
-                tvRoomTypingStatus.setText(String.format(getString(R.string.tap_typing_single), vm.getFirstTypingUserName()));
+                tvRoomTypingStatus.setText(String.format(getString(R.string.tap_format_s_typing_single), vm.getFirstTypingUserName()));
             }
         });
     }
@@ -1374,7 +1372,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
                 if (vm.getRoom().getRoomType() == TYPE_GROUP && null != vm.getRoom().getGroupParticipants()) {
                     // Show number of participants for group room
-                    tvRoomStatus.setText(String.format(getString(R.string.tap_group_member_count), vm.getRoom().getGroupParticipants().size()));
+                    tvRoomStatus.setText(String.format(getString(R.string.tap_format_d_group_member_count), vm.getRoom().getGroupParticipants().size()));
                 }
             }
         })).start();
@@ -2049,7 +2047,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     }
                 }
             }
-            tvUnreadButtonCount.setText(String.format(getString(R.string.tap_s_unread_messages),
+            tvUnreadButtonCount.setText(String.format(getString(R.string.tap_format_s_unread_messages),
                     vm.getInitialUnreadCount() > 99 ? getString(R.string.tap_over_99) : vm.getInitialUnreadCount()));
             ivUnreadButtonImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_up_circle_orange));
             ivUnreadButtonImage.clearAnimation();

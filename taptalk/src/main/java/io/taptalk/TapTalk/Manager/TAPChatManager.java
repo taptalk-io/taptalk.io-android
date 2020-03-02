@@ -1878,6 +1878,7 @@ public class TAPChatManager {
     public String formattingSystemMessage(TAPMessageModel message) {
         String systemMessageBody;
 
+        // TODO: 26 Feb 2020 REPLACE 'YOU' ACCORDING TO LANGUAGE
         if (null == message.getTarget()) {
             systemMessageBody = message.getBody()
                     .replace("{", "")

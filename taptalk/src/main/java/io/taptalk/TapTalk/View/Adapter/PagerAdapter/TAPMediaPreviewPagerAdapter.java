@@ -84,7 +84,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                     tvTypingIndicator.setVisibility(View.GONE);
                     vSeparator.setVisibility(View.GONE);
                     clErrorMessage.setVisibility(View.VISIBLE);
-                    tvErrorTitle.setText(String.format(context.getString(R.string.tap_error_exceed_upload_limit),
+                    tvErrorTitle.setText(String.format(context.getString(R.string.tap_format_s_error_exceed_upload_limit),
                             TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())));
                 } else {
                     etCaption.setVisibility(View.VISIBLE);
@@ -108,7 +108,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
             etCaption.setText(caption);
             etCaption.setSelection(caption.length());
             tvTypingIndicator.setVisibility(View.VISIBLE);
-            tvTypingIndicator.setText(String.format(context.getString(R.string.tap_letter_count), caption.length(), MAX_CAPTION_LENGTH));
+            tvTypingIndicator.setText(String.format(context.getString(R.string.tap_format_dd_letter_count), caption.length(), MAX_CAPTION_LENGTH));
         }
 
         etCaption.addTextChangedListener(new TextWatcher() {
@@ -119,7 +119,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tvTypingIndicator.setText(String.format(context.getString(R.string.tap_letter_count), s.length(), MAX_CAPTION_LENGTH));
+                tvTypingIndicator.setText(String.format(context.getString(R.string.tap_format_dd_letter_count), s.length(), MAX_CAPTION_LENGTH));
             }
 
             @Override
