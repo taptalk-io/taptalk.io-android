@@ -11,7 +11,7 @@
 /.idea/workspace.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
+/app/HomingPigeon.jks
 /build
 /captures
 .externalNativeBuild
-env.properties

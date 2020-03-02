@@ -94,7 +94,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
 
         if (1 < medias.size()) {
             tvMultipleImageIndicator.setVisibility(View.VISIBLE);
-            tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_media_count), 1, medias.size()));
+            tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_format_dd_media_count), 1, medias.size()));
 
             rvImageThumbnail.setVisibility(View.VISIBLE);
             rvImageThumbnail.setAdapter(thumbnailAdapter);
@@ -120,7 +120,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         @Override
         public void onPageSelected(int i) {
             if (View.VISIBLE == tvMultipleImageIndicator.getVisibility())
-                tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_media_count), i + 1, medias.size()));
+                tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_format_dd_media_count), i + 1, medias.size()));
 
             new Thread(() -> {
                 for (TAPMediaPreviewModel recyclerItem : thumbnailAdapter.getItems()) {
@@ -180,7 +180,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             
         pagerAdapter.notifyDataSetChanged();
         if (1 < medias.size()) {
-            tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_media_count), lastIndex + 1, medias.size()));
+            tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_format_dd_media_count), lastIndex + 1, medias.size()));
             tvMultipleImageIndicator.setVisibility(View.VISIBLE);
             rvImageThumbnail.setVisibility(View.VISIBLE);
             rvImageThumbnail.setAdapter(thumbnailAdapter);
@@ -203,7 +203,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         }
         pagerAdapter.notifyDataSetChanged();
         thumbnailAdapter.notifyDataSetChanged();
-        tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_media_count), tempPosition + 1, medias.size()));
+        tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_format_dd_media_count), tempPosition + 1, medias.size()));
 
         if (1 == medias.size()) {
             rvImageThumbnail.setVisibility(View.GONE);
@@ -293,9 +293,9 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
             new TapTalkDialog.Builder(TAPMediaPreviewActivity.this)
                     .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                     .setTitle(getString(R.string.tap_warning_files_may_not_be_sent))
-                    .setMessage(String.format(getString(R.string.tap_warning_video_size_exceeds_limit_wont_be_sent),
+                    .setMessage(String.format(getString(R.string.tap_format_s_warning_video_size_exceeds_limit_wont_be_sent),
                             TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())))
-                    .setPrimaryButtonTitle(getString(R.string.tap_continue_s))
+                    .setPrimaryButtonTitle(getString(R.string.tap_continue))
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                     .setPrimaryButtonListener(true, view -> sendMedias())
                     .show();

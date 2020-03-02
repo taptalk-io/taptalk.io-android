@@ -79,7 +79,7 @@ public class TAPTimeFormatter {
         } else if (midnightTimeGap > timeGap) {
             return String.format("%s %s", sentAt, formatClock(timestamp));
         } else if ((TAPTimeFormatter.times.get(3)) + midnightTimeGap > timeGap) {
-            return String.format(context.getString(R.string.tap_sent_yesterday_at), formatClock(timestamp));
+            return String.format(context.getString(R.string.tap_format_s_sent_yesterday_at), formatClock(timestamp));
         } else {
             return String.format("%s %s %s", sentAt, formatDate(timestamp), formatClock(timestamp));
         }
@@ -106,16 +106,16 @@ public class TAPTimeFormatter {
             return context.getString(R.string.tap_active_recently);
         } else if (midnightTimeGap > timeGap && timeGap < times.get(4) && timeGap < TimeUnit.MINUTES.toMillis(2)) {
             long numberOfMinutes = timeGap / times.get(5);
-            return String.format(Locale.getDefault(), context.getString(R.string.tap_minute_ago), numberOfMinutes);
+            return String.format(Locale.getDefault(), context.getString(R.string.tap_format_d_minute_ago), numberOfMinutes);
         } else if (midnightTimeGap > timeGap && timeGap < times.get(4)) {
             long numberOfMinutes = timeGap / times.get(5);
-            return String.format(Locale.getDefault(), context.getString(R.string.tap_minutes_ago), numberOfMinutes);
+            return String.format(Locale.getDefault(), context.getString(R.string.tap_format_d_minutes_ago), numberOfMinutes);
         } else if (midnightTimeGap > timeGap && timeGap < TimeUnit.HOURS.toMillis(2)) {
             long numberOfHour = timeGap / times.get(4);
-            return String.format(Locale.getDefault(), context.getString(R.string.tap_hour_ago), numberOfHour);
+            return String.format(Locale.getDefault(), context.getString(R.string.tap_format_d_hour_ago), numberOfHour);
         } else if (midnightTimeGap > timeGap) {
             long numberOfHour = timeGap / times.get(4);
-            return String.format(Locale.getDefault(), context.getString(R.string.tap_hours_ago), numberOfHour);
+            return String.format(Locale.getDefault(), context.getString(R.string.tap_format_d_hours_ago), numberOfHour);
         } else if ((times.get(3)) + midnightTimeGap > timeGap) {
 //            Date yesterdayTime = new Date(timestamp);
 //            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -123,17 +123,17 @@ public class TAPTimeFormatter {
             return context.getString(R.string.tap_active_yesterday);
         } else if ((TAPTimeFormatter.times.get(3) * 6) + midnightTimeGap >= timeGap && timeGap < TimeUnit.DAYS.toMillis(2)) {
             long numberOfDays = timeGap / times.get(3);
-            return String.format(Locale.getDefault(), context.getString(R.string.tap_day_ago), numberOfDays);
+            return String.format(Locale.getDefault(), context.getString(R.string.tap_format_d_day_ago), numberOfDays);
         } else if ((TAPTimeFormatter.times.get(3) * 6) + midnightTimeGap >= timeGap) {
             long numberOfDays = timeGap / times.get(3);
-            return String.format(Locale.getDefault(), context.getString(R.string.tap_days_ago), numberOfDays);
+            return String.format(Locale.getDefault(), context.getString(R.string.tap_format_d_days_ago), numberOfDays);
         } else if (timeGap <= times.get(2)) {
             return context.getString(R.string.tap_active_a_week_ago);
         } else {
             Date date = new Date(timestamp);
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
             String dateString = sdf.format(date);
-            return String.format(context.getString(R.string.tap_last_active), dateString);
+            return String.format(context.getString(R.string.tap_format_s_last_active), dateString);
         }
     }
 

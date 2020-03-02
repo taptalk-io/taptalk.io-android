@@ -97,6 +97,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE_ALL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.OPEN_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.SELECT_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
@@ -513,9 +519,9 @@ public class TAPUtils {
             } else {
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
             }
-            intent.setType(activity.getString(R.string.tap_intent_type_image));
+            intent.setType(INTENT_TYPE_IMAGE);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_title_select_picture)), requestCode);
+                activity.startActivityForResult(Intent.createChooser(intent, SELECT_PICTURE), requestCode);
             }
         }
     }
@@ -531,16 +537,16 @@ public class TAPUtils {
             // Permission granted
             Intent intent;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                String[] mimeTypes = {activity.getString(R.string.tap_intent_type_image), activity.getString(R.string.tap_intent_type_video)};
+                String[] mimeTypes = {INTENT_TYPE_IMAGE, INTENT_TYPE_VIDEO};
                 intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images and videos
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
             } else {
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
             }
-            intent.setType(activity.getString(R.string.tap_intent_type_all));
+            intent.setType(INTENT_TYPE_ALL);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                activity.startActivityForResult(Intent.createChooser(intent, activity.getString(R.string.tap_intent_title_gallery)), requestCode);
+                activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
             }
         }
     }
@@ -595,7 +601,7 @@ public class TAPUtils {
                 .setDataAndType(uri, mimeType)
                 .addFlags(FLAG_GRANT_READ_URI_PERMISSION);
         try {
-            context.startActivity(Intent.createChooser(intent, context.getString(R.string.tap_intent_title_open_file)));
+            context.startActivity(Intent.createChooser(intent, OPEN_FILE));
             return true;
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
@@ -722,7 +728,7 @@ public class TAPUtils {
         Number size = (Number) data.get(SIZE);
 
         if (null != size) {
-            String dummyProgress = String.format(context.getString(R.string.tap_file_info_progress_dummy), getStringSizeLengthFile(size.longValue()));
+            String dummyProgress = String.format(context.getString(R.string.tap_format_s_file_info_progress_dummy), getStringSizeLengthFile(size.longValue()));
             if (dummyProgress.length() > fileDisplayInfo.length()) {
                 return dummyProgress;
             }
