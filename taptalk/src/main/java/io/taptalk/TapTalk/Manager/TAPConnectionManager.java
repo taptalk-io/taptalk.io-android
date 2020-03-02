@@ -157,11 +157,9 @@ public class TAPConnectionManager {
     }
 
     private void initNetworkListener() {
-        Log.e("[[[[[", "initNetworkListener");
         TapTalkNetworkInterface networkListener = () -> {
             if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
                 TAPDataManager.getInstance().validateAccessToken(validateAccessView);
-                Log.e("[[[[[", "STATUSSSS" + connectionStatus);
                 if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
                     reconnect();
                 } else if (TapTalk.isAutoConnectEnabled() && NOT_CONNECTED == connectionStatus) {
