@@ -156,12 +156,7 @@ public class TapTalk implements LifecycleObserver {
         TapTalk.clientAppIcon = clientAppIcon;
         TapTalk.clientAppName = clientAppName;
 
-        //clientAppName = appContext.getResources().getString(R.string.tap_app_name);
-
         // Init Base URL
-//        TAPApiManager.setBaseUrlApi(String.format(appContext.getString(R.string.tap_base_url_api), appBaseURL));
-//        TAPApiManager.setBaseUrlSocket(String.format(appContext.getString(R.string.tap_base_url_socket), appBaseURL));
-//        TAPConnectionManager.getInstance().setWebSocketEndpoint(String.format(appContext.getString(R.string.tap_base_wss), appBaseURL));
         TAPApiManager.setBaseUrlApi(generateApiBaseURL(appBaseURL));
         TAPApiManager.setBaseUrlSocket(generateSocketBaseURL(appBaseURL));
         TAPConnectionManager.getInstance().setWebSocketEndpoint(generateWSSBaseURL(appBaseURL));
@@ -191,8 +186,7 @@ public class TapTalk implements LifecycleObserver {
 
         // Init configs
         presetConfigs();
-        refreshRemoteConfigs(new TapCommonListener() {
-        });
+        refreshRemoteConfigs(new TapCommonListener() {});
 
         if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             //TAPConnectionManager.getInstance().connect();
@@ -208,18 +202,18 @@ public class TapTalk implements LifecycleObserver {
         TAPContactManager.getInstance().setContactSyncAllowedByUser(TAPDataManager.getInstance().isContactSyncAllowedByUser());
 
         // Init Stetho for debug build
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG) {
             Stetho.initialize(
                     Stetho.newInitializerBuilder(appContext)
                             .enableDumpapp(Stetho.defaultDumperPluginsProvider(appContext))
                             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(appContext))
                             .build()
             );
+        }
 
         if (!tapListeners.contains(tapListener)) {
             tapListeners.add(tapListener);
         }
-        updateApplicationBadgeCount();
 
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
@@ -237,37 +231,37 @@ public class TapTalk implements LifecycleObserver {
         chatListener = new TAPChatListener() {
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                Log.e(TAG, "onReceiveMessageInOtherRoom: from TapTalk");
+                Log.d(TAG, "onReceiveMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                Log.e(TAG, "onReceiveMessageInActiveRoom: from TapTalk");
+                Log.d(TAG, "onReceiveMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
-                Log.e(TAG, "onUpdateMessageInOtherRoom: from TapTalk");
+                Log.d(TAG, "onUpdateMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-                Log.e(TAG, "onUpdateMessageInActiveRoom: from TapTalk");
+                Log.d(TAG, "onUpdateMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
-                Log.e(TAG, "onDeleteMessageInOtherRoom: from TapTalk");
+                Log.d(TAG, "onDeleteMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
-                Log.e(TAG, "onDeleteMessageInActiveRoom: from TapTalk");
+                Log.d(TAG, "onDeleteMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
         };
