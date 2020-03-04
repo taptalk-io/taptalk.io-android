@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
+import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
@@ -241,6 +242,7 @@ public class TAPApiManager {
                         updateSession(response);
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
                     } else if (UNAUTHORIZED == response.getStatus()) {
+                        AnalyticsManager.getInstance().trackErrorEvent("Refresh Token Failed", response.getError().getCode(), response.getError().getMessage());
                         TapTalk.clearAllTapTalkData();
                         for (TapListener listener : TapTalk.getTapTalkListeners()) {
                             listener.onTapTalkRefreshTokenExpired();
