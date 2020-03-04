@@ -123,4 +123,6 @@ dependencies {
 
     GoogleServicesPlugin.config.disableVersionCheck = true
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.mixpanel.android:mixpanel-android:5.7.0'
+
 }

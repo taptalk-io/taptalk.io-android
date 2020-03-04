@@ -3,8 +3,10 @@ package io.moselo.SampleApps.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
+import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TaptalkSample.R;
@@ -21,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             intent = new Intent(MainActivity.this, TAPLoginActivity.class);
         }
+        AnalyticsManager.getInstance().trackActiveUser();
         startActivity(intent);
         finish();
     }

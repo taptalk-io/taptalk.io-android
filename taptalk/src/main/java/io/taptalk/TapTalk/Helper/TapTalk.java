@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.android.libraries.places.api.Places;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.RemoteMessage;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
@@ -30,6 +31,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
 import io.taptalk.TapTalk.Listener.TapListener;
+import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -109,6 +111,8 @@ public class TapTalk implements LifecycleObserver {
     private static Map<String, String> customConfigs;
     public static TapTalkImplementationType implementationType;
     private static TAPChatListener chatListener;
+
+    private static MixpanelAPI mixpanel;
 
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
@@ -231,6 +235,9 @@ public class TapTalk implements LifecycleObserver {
         if (!listenerInit) {
             handleAppToForeground();
         }
+
+        mixpanel = MixpanelAPI.getInstance(appContext, "84f4d93bf3c34abe56fac7b2faaaa8b1");
+        AnalyticsManager.getInstance().identifyUser();
     }
 
     private static void initListener() {

@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.moselo.SampleApps.Activity.TAPLoginActivity
+import io.moselo.SampleApps.Activity.TAPRegisterActivity
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
@@ -22,14 +23,13 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
 import io.taptalk.TapTalk.Listener.TapCommonListener
+import io.taptalk.TapTalk.Manager.AnalyticsManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
-import io.moselo.SampleApps.Activity.TAPRegisterActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TaptalkSample.R
-
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
 class TAPLoginVerificationFragment : Fragment() {
@@ -110,11 +110,19 @@ class TAPLoginVerificationFragment : Fragment() {
             TAPDataManager.getInstance().requestOTPLogin(countryID, phoneNumber, object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
                     super.onSuccess(response)
+                    val additional = HashMap<String, String>()
+                    additional.put("phoneNumber", phoneNumber)
+                    additional.put("countryCode", countryID.toString())
+                    AnalyticsManager.getInstance().trackEvent("Resend OTP Success", additional)
                     requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess)
                 }
 
                 override fun onError(error: TAPErrorModel) {
                     super.onError(error)
+                    val additional = HashMap<String, String>()
+                    additional.put("phoneNumber", phoneNumber)
+                    additional.put("countryCode", countryID.toString())
+                    AnalyticsManager.getInstance().trackEvent("Resend OTP Failed", additional)
                     requestOTPInterface.onRequestFailed(error.message, error.code)
                 }
 
@@ -211,21 +219,28 @@ class TAPLoginVerificationFragment : Fragment() {
         TAPDataManager.getInstance().verifyOTPLogin(otpID, otpKey, et_otp_code.text.toString(), object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
             override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
                 if (response.isRegistered) {
+                    AnalyticsManager.getInstance().identifyUser()
+                    AnalyticsManager.getInstance().trackEvent("Login Success")
                     TapTalk.authenticateWithAuthTicket(response.ticket, true, object : TapCommonListener() {
                         override fun onSuccess(successMessage: String) {
+                            AnalyticsManager.getInstance().identifyUser()
+                            AnalyticsManager.getInstance().trackEvent("Authenticate TapTalk.io Success")
                             verifyOTPInterface.verifyOTPSuccessToLogin()
                         }
 
                         override fun onError(errorCode: String, errorMessage: String) {
+                            AnalyticsManager.getInstance().trackErrorEvent("Authenticate TapTalk.io Failed", errorCode, errorMessage)
                             verifyOTPInterface.verifyOTPFailed(errorCode, errorMessage)
                         }
                     })
                 } else {
+                    AnalyticsManager.getInstance().trackEvent("Login Success and Continue Register")
                     verifyOTPInterface.verifyOTPSuccessToRegister()
                 }
             }
 
             override fun onError(error: TAPErrorModel) {
+                AnalyticsManager.getInstance().trackErrorEvent("Login Failed", error.code, error.message)
                 verifyOTPInterface.verifyOTPFailed(error.message, error.code)
             }
 
