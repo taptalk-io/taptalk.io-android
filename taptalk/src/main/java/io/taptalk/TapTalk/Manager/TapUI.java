@@ -471,10 +471,16 @@ public class TapUI {
     }
 
     public boolean isReadStatusHidden() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return isReadStatusHidden;
     }
 
     public void setReadStatusHidden(boolean isReadStatusHidden) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         this.isReadStatusHidden = isReadStatusHidden;
     }
 

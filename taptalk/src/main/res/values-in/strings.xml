@@ -121,11 +121,11 @@
     <string name="tap_format_s_you_have_added_to_your_contacts"><![CDATA[Anda telah menambahkan <b>%s</b> ke kontak]]></string>
     <string name="tap_is_already_in_your_contacts">telah ada di kontak Anda</string>
     <string name="tap_contact_access">Akses Kontak</string>
-    <string name="tap_sync_contact_description">Kami memerlukan izin untuk mengakses kontak Anda, kami akan menghubungkan kontak Anda ke server kami dan secara otomatis menemukan teman Anda sehingga lebih mudah untuk menemukan teman-teman.</string>
-    <string name="tap_sync_contacts_now">Hubungkan Kontak</string>
-    <string name="tap_all_contacts_synced">Semua kontak dihubungkan</string>
-    <string name="tap_format_d_synced_contacts">%d Kontak Terhubung</string>
-    <string name="tap_syncing_contacts">Menghubungkan kontak</string>
+    <string name="tap_sync_contact_description">Kami memerlukan izin untuk menyinkronkan kontak Anda, kami akan menghubungkan kontak Anda ke server kami dan secara otomatis menemukan teman Anda sehingga lebih mudah untuk menemukan teman-teman.</string>
+    <string name="tap_sync_contacts_now">Sinkronkan Kontak</string>
+    <string name="tap_all_contacts_synced">Semua kontak tersinkron</string>
+    <string name="tap_format_d_synced_contacts">%d Kontak Tersinkron</string>
+    <string name="tap_syncing_contacts">Menyinkronkan kontak</string>
 
     <!--Connection Status-->
     <string name="tap_connected">Terhubung</string>
@@ -153,7 +153,7 @@
     <!--Info-->
     <string name="tap_scan_qr_code_guide">Klik tombol di bawah untuk memindai kode QR</string>
     <string name="tap_guide_show_qr_code">Klik tombol di bawah untuk menunjukkan kode QR</string>
-    <string name="tap_search_username_welcome_message">Usernames <b>tidak case sensitive</b>, tapi pastikan Anda memasukkan <b>karakter yang tepat</b></string>
+    <string name="tap_search_username_welcome_message">Username <b>tidak case sensitive</b>, tapi pastikan Anda memasukkan <b>karakter yang tepat</b></string>
     <string name="tap_change_group_image_guide">Klik ikon untuk mengganti foto grup</string>
     <string name="tap_format_s_personal_chat_room_empty_guide_title"><![CDATA[Mulai percakapan dengan <b>%s</b>]]></string>
     <string name="tap_format_s_group_chat_room_empty_guide_title"><![CDATA[<b>%s</b> tampaknya sepi]]></string>
@@ -321,7 +321,7 @@
     <string name="tap_retry">Coba lagi</string>
     <string name="tap_saving">Menyimpan…</string>
     <string name="tap_search">Cari</string>
-    <string name="tap_syncing">Menghubungkan…</string>
+    <string name="tap_syncing">Menyinkronkan…</string>
     <string name="tap_send">Kirim</string>
     <string name="tap_skip">Lewati</string>
     <string name="tap_update">Simpan</string>
