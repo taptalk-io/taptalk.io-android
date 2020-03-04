@@ -299,7 +299,7 @@ public class TapTalk implements LifecycleObserver {
 
     public static boolean checkTapTalkInitialized() {
         if (null == tapTalk) {
-            Log.e(getClientAppName(), appContext.getString(R.string.tap_init_taptalk));
+            Log.e(TAG, "Please initialize TapTalk library, read documentation for detailed information.");
             return false;
         }
         return true;
