@@ -447,7 +447,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
 
         hideLoading()
-
+        AnalyticsManager.getInstance().identifyUser()
         for (listener in TapTalk.getTapTalkListeners()) {
             listener.onUserLogout()
         }

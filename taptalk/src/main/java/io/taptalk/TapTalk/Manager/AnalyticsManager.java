@@ -1,7 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.util.Log;
-
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import org.json.JSONException;
@@ -13,6 +11,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.Taptalk.BuildConfig;
 
 public class AnalyticsManager {
 
@@ -25,8 +24,7 @@ public class AnalyticsManager {
 
     public void identifyUser() {
         if (null != TAPChatManager.getInstance().getActiveUser()) {
-            Log.e("]]]]", "User Identified");
-            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, "84f4d93bf3c34abe56fac7b2faaaa8b1");
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
             mixpanel.identify(TAPChatManager.getInstance().getActiveUser().getUserID());
             mixpanel.getPeople().identify(TAPChatManager.getInstance().getActiveUser().getUserID());
             mixpanel.getPeople().set("UserID", TAPChatManager.getInstance().getActiveUser().getUserID());
@@ -36,19 +34,19 @@ public class AnalyticsManager {
     }
 
     public void trackActiveUser() {
-        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, "84f4d93bf3c34abe56fac7b2faaaa8b1");
+        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
         JSONObject metadata = generateDefaultData();
         mixpanel.track("Daily Active Users (DAU)", metadata);
     }
 
     public void trackEvent(String keyEvent) {
-        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, "84f4d93bf3c34abe56fac7b2faaaa8b1");
+        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
         JSONObject metadata = generateDefaultData();
         mixpanel.track(keyEvent, metadata);
     }
 
     public void trackEvent(String keyEvent, @Nullable HashMap<String, String> additional) {
-        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, "84f4d93bf3c34abe56fac7b2faaaa8b1");
+        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
         JSONObject metadata = generateDefaultData();
         if (null != additional) {
             for (Map.Entry<String, String> add : additional.entrySet()) {
@@ -63,7 +61,7 @@ public class AnalyticsManager {
     }
 
     public void trackErrorEvent(String keyEvent, String errorCode, String errorMessage) {
-        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, "84f4d93bf3c34abe56fac7b2faaaa8b1");
+        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
         JSONObject metadata = generateDefaultData();
         try {
             metadata.put("errorCode", errorCode);
@@ -75,7 +73,7 @@ public class AnalyticsManager {
     }
 
     public void trackErrorEvent(String keyEvent, String errorCode, String errorMessage, @Nullable HashMap<String, String> additional) {
-        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, "84f4d93bf3c34abe56fac7b2faaaa8b1");
+        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
         JSONObject metadata = generateDefaultData();
         try {
             metadata.put("errorCode", errorCode);

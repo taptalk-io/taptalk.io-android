@@ -3,6 +3,7 @@ import com.google.gms.googleservices.GoogleServicesPlugin
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply from: "${rootProject.rootDir}/environment.properties"
 
 android {
     compileSdkVersion 28
@@ -23,22 +24,27 @@ android {
             debuggable false
             consumerProguardFiles 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "MIXPANEL_TOKEN", "\"${RELEASE_MIXPANEL_TOKEN}\"")
         }
         staging {
             minifyEnabled true
             debuggable true
+            buildConfigField("String", "MIXPANEL_TOKEN", "\"${STAGING_MIXPANEL_TOKEN}\"")
         }
         stagingUpload {
             minifyEnabled true
             debuggable false
+            buildConfigField("String", "MIXPANEL_TOKEN", "\"${STAGING_MIXPANEL_TOKEN}\"")
         }
         dev {
             minifyEnabled true
             debuggable true
+            buildConfigField("String", "MIXPANEL_TOKEN", "\"$DEV_MIXPANEL_TOKEN\"")
         }
         devUpload {
             minifyEnabled true
             debuggable false
+            buildConfigField("String", "MIXPANEL_TOKEN", "\"${DEV_MIXPANEL_TOKEN}\"")
         }
     }
 
@@ -123,6 +129,7 @@ dependencies {
 
     GoogleServicesPlugin.config.disableVersionCheck = true
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
     implementation 'com.mixpanel.android:mixpanel-android:5.7.0'
 
 }

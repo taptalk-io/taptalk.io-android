@@ -794,6 +794,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             TapTalk.authenticateWithAuthTicket(response?.ticket ?: "", true,
                     object : TapCommonListener() {
                         override fun onSuccess(successMessage: String?) {
+                            AnalyticsManager.getInstance().identifyUser()
                             TAPDataManager.getInstance().saveMyCountryCode(vm.countryCallingCode)
                             TAPDataManager.getInstance().saveMyCountryFlagUrl(vm.countryFlagUrl)
                             if (null != vm.profilePictureUri) {

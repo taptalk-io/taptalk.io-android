@@ -230,7 +230,7 @@ public class TapTalk implements LifecycleObserver {
             handleAppToForeground();
         }
 
-        mixpanel = MixpanelAPI.getInstance(appContext, "84f4d93bf3c34abe56fac7b2faaaa8b1");
+        mixpanel = MixpanelAPI.getInstance(appContext, BuildConfig.MIXPANEL_TOKEN);
         AnalyticsManager.getInstance().identifyUser();
     }
 
