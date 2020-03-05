@@ -126,6 +126,7 @@
     <string name="tap_all_contacts_synced">All contacts synced</string>
     <string name="tap_format_d_synced_contacts">Synced %d Contacts</string>
     <string name="tap_syncing_contacts">Syncing Contacts</string>
+    <string name="tap_unblock_user">Unblock User</string>
 
     <!--Connection Status-->
     <string name="tap_connected">Connected</string>
