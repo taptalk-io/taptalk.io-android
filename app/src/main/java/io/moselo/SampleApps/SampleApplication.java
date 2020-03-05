@@ -15,6 +15,11 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TaptalkSample.BuildConfig;
 import io.taptalk.TaptalkSample.R;
 
+import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkImplementationType.TapTalkImplementationTypeCombine;
+import static io.taptalk.TaptalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_ID;
+import static io.taptalk.TaptalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_SECRET;
+import static io.taptalk.TaptalkSample.BuildConfig.TAPTALK_SDK_BASE_URL;
+
 public class SampleApplication extends MultiDexApplication {
 
     private static final String TAG = "SampleApplication";
@@ -56,10 +61,14 @@ public class SampleApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         TapTalk.setLoggingEnabled(true);
-        TapTalk.init(this, BuildConfig.TAPTALK_SDK_APP_KEY_ID,
-                BuildConfig.TAPTALK_SDK_APP_KEY_SECRET,
-                R.drawable.ic_taptalk_logo, "TapTalk Dev Sample App", BuildConfig.TAPTALK_SDK_BASE_URL,
-                TapTalk.TapTalkImplementationType.TapTalkImplementationTypeCombine,
+        TapTalk.init(
+                this,
+                TAPTALK_SDK_APP_KEY_ID,
+                TAPTALK_SDK_APP_KEY_SECRET,
+                R.drawable.ic_taptalk_logo,
+                getString(R.string.app_name),
+                TAPTALK_SDK_BASE_URL,
+                TapTalkImplementationTypeCombine,
                 tapListener);
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
