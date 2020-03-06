@@ -59,7 +59,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         googleMap = map
         var latLng: LatLng?
         if (0.0 == longitude && 0.0 == latitude && 0.0 == currentLongitude && 0.0 == currentLatitude) {
-            // Location of Monumen Nasional,` Indonesia
+            // Location of Monumen Nasional Indonesia
             longitude = 106.827114
             latitude = -6.175403
             latLng = LatLng(latitude, longitude)
@@ -445,15 +445,15 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     private fun moveToCurrentLocation() {
         if (!locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!) {
             TapTalkDialog.Builder(this)
-                    .setTitle("Location Disabled")
+                    .setTitle(getString(R.string.tap_location_disabled))
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setMessage("Please allow Location Services to Continue")
-                    .setPrimaryButtonTitle("Go to Settings")
-                    .setPrimaryButtonListener { v: View? ->
+                    .setMessage(getString(R.string.tap_allow_location_services))
+                    .setPrimaryButtonTitle(getString(R.string.tap_go_to_settings))
+                    .setPrimaryButtonListener {
                         startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                     }
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                    .setSecondaryButtonListener { view: View? -> }
+                    .setSecondaryButtonListener { }
                     .show()
         } else {
             latitude = currentLatitude

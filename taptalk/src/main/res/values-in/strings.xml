@@ -43,6 +43,7 @@
     <string name="tap_search_chat_placeholder_chats_only">Cari chat</string>
     <string name="tap_search_forward_placeholder">Cari chat dan kontak</string>
     <string name="tap_clear_history">Hapus riwayat</string>
+    <string name="tap_format_s_draft">Draft: %s</string>
     <string name="tap_format_ss_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
 
     <!--Chat Room-->
@@ -248,11 +249,13 @@
     <string name="tap_uploading">Mengunggah</string>
     <string name="tap_image_saved">Gambar Tersimpan</string>
     <string name="tap_video_saved">Video Tersimpan</string>
+    <string name="tap_format_s_successfully_saved">Berhasil menyimpan %s</string>
     <string name="tap_unable_to_load_shared_media">Tidak dapat memuat media</string>
     <string name="tap_try_again">Coba Lagi?</string>
     <string name="tap_transition_view_image">tap_view_image</string>
     <string name="tap_format_dd_media_count">%d dari %d</string>
     <string name="tap_format_dd_letter_count">%d/%d</string>
+    <string name="tap_format_s_maximum_file_size">Ukuran file maksimum %s.</string>
     <string name="tap_format_s_file_info_progress_dummy">9999.99 MB / %s</string>
 
     <!--Location-->
@@ -262,6 +265,9 @@
     <string name="tap_search_address">Cari Alamat</string>
     <string name="tap_searching_for_address">Mencari alamat</string>
     <string name="tap_location_not_found">Lokasi tidak ditemukan</string>
+    <string name="tap_location_disabled">Fitur Lokasi Tidak Aktif</string>
+    <string name="tap_allow_location_services">Mohon aktifkan izin lokasi untuk melanjutkan</string>
+    <string name="tap_go_to_settings">Buka Pengaturan</string>
 
     <!--Custom Material File Picker-->
     <string name="tap_cfp_empty_directory_hint">Direktori kosong</string>
@@ -325,6 +331,7 @@
     <string name="tap_syncing">Menyinkronkan…</string>
     <string name="tap_send">Kirim</string>
     <string name="tap_skip">Lewati</string>
+    <string name="tap_sorry">Maaf</string>
     <string name="tap_update">Simpan</string>
     <string name="tap_you">Anda</string>
     <string name="tap_over_99">99+</string>

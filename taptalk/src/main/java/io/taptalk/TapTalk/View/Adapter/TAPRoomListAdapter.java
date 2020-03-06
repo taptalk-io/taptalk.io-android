@@ -208,7 +208,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             String draft = TAPChatManager.getInstance().getMessageFromDraft(item.getLastMessage().getRoom().getRoomID());
             if (null != draft && !draft.isEmpty()) {
                 // Show draft
-                tvLastMessage.setText(String.format("Draft: %s", draft));
+                tvLastMessage.setText(String.format(itemView.getContext().getString(R.string.tap_format_s_draft), draft));
                 tvGroupSenderName.setVisibility(View.GONE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
