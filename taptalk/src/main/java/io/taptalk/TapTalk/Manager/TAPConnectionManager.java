@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.Manager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Base64;
-import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -157,11 +156,6 @@ public class TAPConnectionManager {
         TapTalkNetworkInterface networkListener = () -> {
             if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
                 TAPDataManager.getInstance().validateAccessToken(validateAccessView);
-                if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
-                    reconnect();
-                } else if (TapTalk.isAutoConnectEnabled() && NOT_CONNECTED == connectionStatus) {
-                    connect();
-                }
             }
         };
         TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
@@ -271,8 +265,7 @@ public class TAPConnectionManager {
                             for (TapTalkSocketInterface listener : socketListenersCopy)
                                 listener.onSocketConnecting();
                         }
-                        TAPDataManager.getInstance().validateAccessToken(new TAPDefaultDataView<TAPErrorModel>() {
-                        });
+                        TAPDataManager.getInstance().validateAccessToken(validateAccessView);
                         close(CLOSE_FOR_RECONNECT_CODE);
                         connect();
                     } catch (IllegalStateException e) {
@@ -313,5 +306,13 @@ public class TAPConnectionManager {
     }
 
     private TAPDefaultDataView<TAPErrorModel> validateAccessView = new TAPDefaultDataView<TAPErrorModel>() {
+        @Override
+        public void onSuccess(TAPErrorModel response) {
+            if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
+                reconnect();
+            } else if (TapTalk.isAutoConnectEnabled() && NOT_CONNECTED == connectionStatus) {
+                connect();
+            }
+        }
     };
 }

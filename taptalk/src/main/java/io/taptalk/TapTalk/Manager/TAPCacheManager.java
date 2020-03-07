@@ -14,10 +14,10 @@ public class TAPCacheManager {
     private static TAPCacheManager instance;
     private Context context;
 
-    //atribut untuk Memory Cache
+    // Memory Cache Attributes
     private LruCache<String, BitmapDrawable> memoryCache;
 
-    //atribut untuk Disk Cache
+    // Disk Cache Attributes
     private DiskLruImageCache diskLruCache;
     private final Object diskCacheLock = new Object();
     private static final int DISK_CACHE_SIZE = 1024 * 1024 * 100; // 100MB
@@ -34,7 +34,7 @@ public class TAPCacheManager {
         return null == instance ? instance = new TAPCacheManager(context) : instance;
     }
 
-    //untuk Memory Cache
+    // Memory Cache
     private LruCache<String, BitmapDrawable> getMemoryCache() {
         return null == memoryCache ? initMemoryCache() : memoryCache;
     }
@@ -74,7 +74,7 @@ public class TAPCacheManager {
         return getMemoryCache().get(key);
     }
 
-    //untuk Disk Cache
+    // Disk Cache
     private void initDiskCacheTask(Context context, AddDiskCacheListener listener) {
         new Thread(() -> {
             try {
@@ -106,7 +106,7 @@ public class TAPCacheManager {
         }).start();
     }
 
-    //harus background thread
+    // Requires Background Thread
     public void addBitmapDrawableToCache(String key, BitmapDrawable bitmapDrawable) {
         if (null == key) {
             return;
@@ -122,12 +122,12 @@ public class TAPCacheManager {
     }
 
     private void addBitmapDrawableToDiskCache(String key, BitmapDrawable bitmapDrawable) {
-        if (null == key) {
+        if (null == key || null == diskLruCache) {
             return;
         }
         // Also add to disk cache
         new Thread(() -> {
-            if (diskLruCache != null && diskLruCache.getBitmapDrawable(context, key) == null) {
+            if (diskLruCache.getBitmapDrawable(context, key) == null) {
                 diskLruCache.put(key, bitmapDrawable);
             }
         }).start();
@@ -158,7 +158,7 @@ public class TAPCacheManager {
     }
 
     public boolean containsCache(String key) {
-        if (null == key) {
+        if (null == key || null == diskLruCache) {
             return false;
         }
         return null != getMemoryCache().get(key) || diskLruCache.containsKey(key);

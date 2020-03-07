@@ -19,7 +19,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -501,7 +500,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             if (0 == contactSynced) {
                 tvConnectionStatus.setText(getString(R.string.tap_all_contacts_synced));
             } else {
-                tvConnectionStatus.setText(String.format(getString(R.string.tap_synced_d_contacts), contactSynced));
+                tvConnectionStatus.setText(String.format(getString(R.string.tap_format_d_synced_contacts), contactSynced));
             }
             ivConnectionStatus.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_checklist_pumpkin));
             ivConnectionStatus.setPadding(0, 0, 0, 0);

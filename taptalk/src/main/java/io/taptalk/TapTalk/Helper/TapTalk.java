@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.android.libraries.places.api.Places;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.RemoteMessage;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
@@ -30,6 +31,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
 import io.taptalk.TapTalk.Listener.TapListener;
+import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -44,6 +46,7 @@ import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager;
 import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
+import io.taptalk.TapTalk.Manager.TapLocaleManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
@@ -109,6 +112,8 @@ public class TapTalk implements LifecycleObserver {
     public static TapTalkImplementationType implementationType;
     private static TAPChatListener chatListener;
 
+    private static MixpanelAPI mixpanel;
+
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
         TapTalkEnvironmentStaging,
@@ -155,12 +160,7 @@ public class TapTalk implements LifecycleObserver {
         TapTalk.clientAppIcon = clientAppIcon;
         TapTalk.clientAppName = clientAppName;
 
-        //clientAppName = appContext.getResources().getString(R.string.tap_app_name);
-
         // Init Base URL
-//        TAPApiManager.setBaseUrlApi(String.format(appContext.getString(R.string.tap_base_url_api), appBaseURL));
-//        TAPApiManager.setBaseUrlSocket(String.format(appContext.getString(R.string.tap_base_url_socket), appBaseURL));
-//        TAPConnectionManager.getInstance().setWebSocketEndpoint(String.format(appContext.getString(R.string.tap_base_wss), appBaseURL));
         TAPApiManager.setBaseUrlApi(generateApiBaseURL(appBaseURL));
         TAPApiManager.setBaseUrlSocket(generateSocketBaseURL(appBaseURL));
         TAPConnectionManager.getInstance().setWebSocketEndpoint(generateWSSBaseURL(appBaseURL));
@@ -190,8 +190,7 @@ public class TapTalk implements LifecycleObserver {
 
         // Init configs
         presetConfigs();
-        refreshRemoteConfigs(new TapCommonListener() {
-        });
+        refreshRemoteConfigs(new TapCommonListener() {});
 
         if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             //TAPConnectionManager.getInstance().connect();
@@ -207,63 +206,76 @@ public class TapTalk implements LifecycleObserver {
         TAPContactManager.getInstance().setContactSyncAllowedByUser(TAPDataManager.getInstance().isContactSyncAllowedByUser());
 
         // Init Stetho for debug build
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG) {
             Stetho.initialize(
                     Stetho.newInitializerBuilder(appContext)
                             .enableDumpapp(Stetho.defaultDumperPluginsProvider(appContext))
                             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(appContext))
                             .build()
             );
+        }
 
-        tapListeners.add(tapListener);
+        if (!tapListeners.contains(tapListener)) {
+            tapListeners.add(tapListener);
+        }
+
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
         if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
-                TAPDataManager.getInstance().checkAccessTokenAvailable())
+                TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             initListener();
+        }
 
-        if (!listenerInit)
+        if (!listenerInit) {
             handleAppToForeground();
+        }
+
+        mixpanel = MixpanelAPI.getInstance(appContext, BuildConfig.MIXPANEL_TOKEN);
+        AnalyticsManager.getInstance().identifyUser();
     }
 
     private static void initListener() {
         chatListener = new TAPChatListener() {
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                Log.e(TAG, "onReceiveMessageInOtherRoom: from TapTalk");
+                Log.d(TAG, "onReceiveMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                Log.e(TAG, "onReceiveMessageInActiveRoom: from TapTalk");
+                Log.d(TAG, "onReceiveMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
-                Log.e(TAG, "onUpdateMessageInOtherRoom: from TapTalk");
+                Log.d(TAG, "onUpdateMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-                Log.e(TAG, "onUpdateMessageInActiveRoom: from TapTalk");
+                Log.d(TAG, "onUpdateMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
-                Log.e(TAG, "onDeleteMessageInOtherRoom: from TapTalk");
+                Log.d(TAG, "onDeleteMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
-                Log.e(TAG, "onDeleteMessageInActiveRoom: from TapTalk");
+                Log.d(TAG, "onDeleteMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
         };
+        TAPChatManager.getInstance().addChatListener(chatListener);
+    }
+
+    public static void putGlobalChatListener() {
         TAPChatManager.getInstance().addChatListener(chatListener);
     }
 
@@ -286,14 +298,18 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void initializeGooglePlacesApiKey(String apiKey) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         Places.initialize(appContext, apiKey);
     }
 
-    private static void checkTapTalkInitialized() {
+    public static boolean checkTapTalkInitialized() {
         if (null == tapTalk) {
-            throw new IllegalStateException(appContext.getString(R.string.tap_init_taptalk));
+            Log.e(TAG, "Please initialize TapTalk library, read documentation for detailed information.");
+            return false;
         }
+        return true;
     }
 
     public static void setLoggingEnabled(boolean enabled) {
@@ -301,7 +317,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     private String generateSocketBaseURL(String baseURL) {
-        return baseURL + "/connect/";
+        return baseURL + "/";
     }
 
     private String generateWSSBaseURL(String baseURL) {
@@ -319,7 +335,9 @@ public class TapTalk implements LifecycleObserver {
      */
 
     public static void authenticateWithAuthTicket(String authTicket, boolean connectOnSuccess, TapCommonListener listener) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         if (null == authTicket || "".equals(authTicket)) {
             listener.onError(ERROR_CODE_INVALID_AUTH_TICKET, ERROR_MESSAGE_INVALID_AUTH_TICKET);
         } else {
@@ -393,12 +411,13 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static boolean isAuthenticated() {
-        checkTapTalkInitialized();
         return TAPDataManager.getInstance().checkAccessTokenAvailable();
     }
 
     public static void logoutAndClearAllTapTalkData(TapCommonListener listener) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TAPDataManager.getInstance().logout(new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
@@ -419,7 +438,9 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void clearAllTapTalkData() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TAPDataManager.getInstance().deleteAllPreference();
         TAPDataManager.getInstance().deleteAllFromDatabase();
         TAPDataManager.getInstance().deleteAllManagerData();
@@ -436,7 +457,10 @@ public class TapTalk implements LifecycleObserver {
      */
 
     public static void connect(TapCommonListener listener) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+
+        }
         if (isAuthenticated()) {
             TAPConnectionManager.getInstance().connect(listener);
         } else {
@@ -445,22 +469,30 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void disconnect() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TAPConnectionManager.getInstance().close(NOT_CONNECTED);
     }
 
     public static boolean isConnected() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return false;
+        }
         return TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED;
     }
 
     public static void setAutoConnectEnabled(boolean enabled) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         isAutoConnectDisabled = !enabled;
     }
 
     public static boolean isAutoConnectEnabled() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return false;
+        }
         return !isAutoConnectDisabled;
     }
 
@@ -471,38 +503,49 @@ public class TapTalk implements LifecycleObserver {
      */
 
     public static int getClientAppIcon() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return -1;
+        }
         return clientAppIcon;
     }
 
     public static String getClientAppName() {
-        checkTapTalkInitialized();
         return clientAppName;
     }
 
     public static TapTalkImplementationType getTapTalkImplementationType() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return implementationType;
     }
 
     public static void updateApplicationBadgeCount() {
-        checkTapTalkInitialized();
-        if (isAuthenticated()) TAPNotificationManager.getInstance().updateUnreadCount();
+        if (!isAuthenticated()) {
+            return;
+        }
+        TAPNotificationManager.getInstance().updateUnreadCount();
     }
 
     // TODO: 22 August 2019 CORE MODEL
     public static Map<String, String> getCoreConfigs() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return new HashMap<>(coreConfigs);
     }
 
     public static Map<String, String> getProjectConfigs() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return new HashMap<>(projectConfigs);
     }
 
     public static Map<String, String> getCustomConfigs() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return new HashMap<>(customConfigs);
     }
 
@@ -550,12 +593,16 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void setAutoContactSyncEnabled(boolean enabled) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         isAutoContactSyncDisabled = !enabled;
     }
 
     public static boolean isAutoContactSyncEnabled() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return false;
+        }
         return !isAutoContactSyncDisabled;
     }
 
@@ -566,12 +613,16 @@ public class TapTalk implements LifecycleObserver {
      */
 
     public static TAPUserModel getTaptalkActiveUser() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return TAPChatManager.getInstance().getActiveUser();
     }
 
     public static void refreshActiveUser(TapCommonListener listener) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         new Thread(() -> {
             if (null != TAPChatManager.getInstance().getActiveUser()) {
                 TAPDataManager.getInstance().getUserByIdFromApi(TAPChatManager.getInstance().getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
@@ -636,33 +687,75 @@ public class TapTalk implements LifecycleObserver {
 
     /**
      * =============================================================================================
+     * LANGUAGE
+     * =============================================================================================
+     */
+
+    public enum Language {ENGLISH, INDONESIAN}
+
+    public static void setDefaultLanguage(Language language) {
+        String defaultLanguage;
+        switch (language) {
+            case INDONESIAN:
+                defaultLanguage = "in";
+                break;
+            default:
+                defaultLanguage = "en";
+                break;
+        }
+        TapLocaleManager.setLocale((Application) appContext, defaultLanguage);
+
+        // TODO: 27 Feb 2020 RESTART OPEN ACTIVITIES TO APPLY CHANGED RESOURCES
+    }
+
+    /**
+     * =============================================================================================
      * TEMP
      * =============================================================================================
      */
 
     public static List<TapListener> getTapTalkListeners() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return tapTalk.tapListeners;
     }
 
-    private static void addTapTalkListener(TapListener listener) {
-        checkTapTalkInitialized();
-        tapTalk.tapListeners.add(listener);
+    public static void addTapTalkListener(TapListener listener) {
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
+        if (!tapTalk.tapListeners.contains(listener)) {
+            tapTalk.tapListeners.add(listener);
+        }
+    }
+
+    public static void removeTapTalkListener(TapListener listener) {
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
+        tapTalk.tapListeners.remove(listener);
     }
 
     private static void setTapTalkScreenOrientation(TapTalkScreenOrientation orientation) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TapTalk.screenOrientation = orientation;
     }
 
     private static TapTalkScreenOrientation getTapTalkScreenOrientation() {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return null;
+        }
         return TapTalk.screenOrientation;
     }
 
     // Enable/disable in-app notification after chat fragment goes inactive or to background
     private static void setInAppNotificationEnabled(boolean enabled) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TAPNotificationManager.getInstance().setRoomListAppear(!enabled);
     }
 
@@ -671,12 +764,14 @@ public class TapTalk implements LifecycleObserver {
 //    }
 
     private void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
-        checkTapTalkInitialized();
+        if (!checkTapTalkInitialized()) {
+            return;
+        }
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
 
     public static void fetchNewMessageandUpdatedBadgeCount() {
-        if (TapTalk.isAuthenticated()) {
+        if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated()) {
             TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
                 @Override
                 public void onSuccess(String s) {

@@ -596,7 +596,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="@string/tap_continue_s" />
+                    android:text="@string/tap_continue" />
 
                 <ImageView
                     android:id="@+id/iv_register_progress"

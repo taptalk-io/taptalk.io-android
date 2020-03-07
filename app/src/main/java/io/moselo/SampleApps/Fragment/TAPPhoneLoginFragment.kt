@@ -23,6 +23,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
+import io.taptalk.TapTalk.Manager.AnalyticsManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
@@ -188,12 +189,20 @@ class TAPPhoneLoginFragment : Fragment() {
         } else {
             TAPDataManager.getInstance().requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
+                    val additional = HashMap<String, String>()
+                    additional.put("phoneNumber", checkAndEditPhoneNumber())
+                    additional.put("countryCode", defaultCountryID.toString())
+                    AnalyticsManager.getInstance().trackEvent("Request OTP Success", additional)
                     super.onSuccess(response)
                     requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess)
                 }
 
                 override fun onError(error: TAPErrorModel) {
                     super.onError(error)
+                    val additional = HashMap<String, String>()
+                    additional.put("phoneNumber", checkAndEditPhoneNumber())
+                    additional.put("countryCode", defaultCountryID.toString())
+                    AnalyticsManager.getInstance().trackErrorEvent("Request OTP Failed", error.code, error.message, additional)
                     requestOTPInterface.onRequestFailed(error.message, error.code)
                 }
 
