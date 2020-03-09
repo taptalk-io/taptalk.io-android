@@ -56,6 +56,7 @@ import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapListener;
+import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -120,7 +121,7 @@ public class TapUIRoomListFragment extends Fragment {
     public TapUIRoomListFragment() {
 
     }
-    
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -358,7 +359,8 @@ public class TapUIRoomListFragment extends Fragment {
         //ivButtonMute.setOnClickListener(v -> {});
         //ivButtonDelete.setOnClickListener(v -> {});
         //ivButtonMore.setOnClickListener(v -> {});
-        flSetupContainer.setOnClickListener(v -> {});
+        flSetupContainer.setOnClickListener(v -> {
+        });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != getContext()) {
             ivButtonNewChat.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_start_new_chat_button_ripple));
@@ -436,6 +438,7 @@ public class TapUIRoomListFragment extends Fragment {
             Log.e(TAG, "viewLoadedSequence: runFullRefreshSequence");
             runFullRefreshSequence();
         } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated()) {
+            AnalyticsManager.getInstance().trackEvent("View Loaded Sequence Failed");
             TapTalk.clearAllTapTalkData();
             for (TapListener listener : TapTalk.getTapTalkListeners()) {
                 listener.onTapTalkRefreshTokenExpired();
@@ -490,7 +493,7 @@ public class TapUIRoomListFragment extends Fragment {
                 } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
                     // Show room list on first open and animate
                     adapter.addRoomList(vm.getRoomList());
-                    //rvContactList.scrollToPosition(0);
+                    rvContactList.scrollToPosition(0);
                     llRoomEmpty.setVisibility(View.GONE);
                 } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
                     // Update room list without animating

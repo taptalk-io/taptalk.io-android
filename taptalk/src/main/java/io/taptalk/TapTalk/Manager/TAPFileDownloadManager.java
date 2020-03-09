@@ -472,7 +472,7 @@ public class TAPFileDownloadManager {
                 out.flush();
                 out.close();
                 scanFile(context, file, TAPUtils.getFileMimeType(file));
-                listener.onSuccess("Successfully saved " + filename);
+                listener.onSuccess(String.format(context.getString(R.string.tap_format_s_successfully_saved), filename));
             } catch (Exception e) {
                 e.printStackTrace();
                 listener.onError(e.getMessage());
@@ -498,7 +498,7 @@ public class TAPFileDownloadManager {
                     if (sourceFile.exists()) {
                         copyFile(sourceFile, targetFile);
                         scanFile(context, targetFile, TAPUtils.getFileMimeType(targetFile));
-                        listener.onSuccess("Successfully saved " + filename);
+                        listener.onSuccess(String.format(context.getString(R.string.tap_format_s_successfully_saved), filename));
                     } else {
                         listener.onError(context.getString(R.string.tap_error_could_not_find_file));
                     }
