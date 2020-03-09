@@ -2946,12 +2946,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 if (rvMessageList.getVisibility() != View.VISIBLE) {
                     rvMessageList.setVisibility(View.VISIBLE);
                 }
-                if (null == rvMessageList.getItemAnimator()) {
-                    // Set default item animator for recycler view
-                    new Handler().postDelayed(() ->
-                            rvMessageList.post(() ->
-                                    rvMessageList.setItemAnimator(messageAnimator)), 200L);
-                }
+
+                setRecyclerViewAnimator();
+
                 if (state == STATE.DONE) {
                     updateMessageDecoration();
                 }
@@ -2969,12 +2966,21 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            super.onError(error);
+            setRecyclerViewAnimator();
         }
 
         @Override
         public void onError(Throwable throwable) {
-            super.onError(throwable);
+            setRecyclerViewAnimator();
+        }
+
+        private void setRecyclerViewAnimator() {
+            if (null == rvMessageList.getItemAnimator()) {
+                // Set default item animator for recycler view
+                new Handler().postDelayed(() ->
+                        rvMessageList.post(() ->
+                                rvMessageList.setItemAnimator(messageAnimator)), 200L);
+            }
         }
     };
 
