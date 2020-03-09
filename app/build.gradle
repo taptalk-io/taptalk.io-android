@@ -10,8 +10,8 @@ android {
         applicationId "io.taptalk.TapTalkSample"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 35
-        versionName "1.1.4"
+        versionCode 36
+        versionName "1.1.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
