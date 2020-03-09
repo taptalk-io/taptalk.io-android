@@ -43,6 +43,7 @@
     <string name="tap_search_chat_placeholder_chats_only">Search for chats</string>
     <string name="tap_search_forward_placeholder">Search for chats or contacts</string>
     <string name="tap_clear_history">Clear history</string>
+    <string name="tap_format_s_draft">Draft: %s</string>
     <string name="tap_format_ss_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
 
     <!--Chat Room-->
@@ -126,6 +127,7 @@
     <string name="tap_all_contacts_synced">All contacts synced</string>
     <string name="tap_format_d_synced_contacts">Synced %d Contacts</string>
     <string name="tap_syncing_contacts">Syncing Contacts</string>
+    <string name="tap_unblock_user">Unblock User</string>
 
     <!--Connection Status-->
     <string name="tap_connected">Connected</string>
@@ -247,11 +249,13 @@
     <string name="tap_uploading">Uploading</string>
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_video_saved">Video Saved</string>
+    <string name="tap_format_s_successfully_saved">Successfully saved %s</string>
     <string name="tap_unable_to_load_shared_media">Unable to load shared media</string>
     <string name="tap_try_again">Try Again?</string>
     <string name="tap_transition_view_image">tap_view_image</string>
     <string name="tap_format_dd_media_count">%d of %d</string>
     <string name="tap_format_dd_letter_count">%d/%d</string>
+    <string name="tap_format_s_maximum_file_size">Maximum file size is %s.</string>
     <string name="tap_format_s_file_info_progress_dummy">9999.99 MB / %s</string>
 
     <!--Location-->
@@ -261,6 +265,9 @@
     <string name="tap_search_address">Search Address</string>
     <string name="tap_searching_for_address">Searching for address</string>
     <string name="tap_location_not_found">Location not found</string>
+    <string name="tap_location_disabled">Location Disabled</string>
+    <string name="tap_allow_location_services">Please allow location services to continue</string>
+    <string name="tap_go_to_settings">Go to Settings</string>
 
     <!--Custom Material File Picker-->
     <string name="tap_cfp_empty_directory_hint">Empty directory</string>
@@ -324,6 +331,7 @@
     <string name="tap_syncing">Syncing…</string>
     <string name="tap_send">Send</string>
     <string name="tap_skip">Skip</string>
+    <string name="tap_sorry">Sorry</string>
     <string name="tap_update">Update</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>

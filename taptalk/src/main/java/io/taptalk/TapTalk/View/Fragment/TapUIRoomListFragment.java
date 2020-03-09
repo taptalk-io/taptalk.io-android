@@ -493,7 +493,7 @@ public class TapUIRoomListFragment extends Fragment {
                 } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
                     // Show room list on first open and animate
                     adapter.addRoomList(vm.getRoomList());
-                    //rvContactList.scrollToPosition(0);
+                    rvContactList.scrollToPosition(0);
                     llRoomEmpty.setVisibility(View.GONE);
                 } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
                     // Update room list without animating
