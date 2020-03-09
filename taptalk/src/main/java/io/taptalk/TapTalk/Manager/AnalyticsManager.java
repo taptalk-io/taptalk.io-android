@@ -23,7 +23,7 @@ public class AnalyticsManager {
     }
 
     public void identifyUser() {
-        if (null != TAPChatManager.getInstance().getActiveUser()) {
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && null != TAPChatManager.getInstance().getActiveUser()) {
             mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
             mixpanel.identify(TAPChatManager.getInstance().getActiveUser().getUserID());
             mixpanel.getPeople().identify(TAPChatManager.getInstance().getActiveUser().getUserID());
@@ -34,63 +34,74 @@ public class AnalyticsManager {
     }
 
     public void trackActiveUser() {
-        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
-        JSONObject metadata = generateDefaultData();
-        mixpanel.track("Daily Active Users (DAU)", metadata);
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample")) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
+            JSONObject metadata = generateDefaultData();
+            mixpanel.track("Daily Active Users (DAU)", metadata);
+        }
     }
 
     public void trackEvent(String keyEvent) {
-        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
-        JSONObject metadata = generateDefaultData();
-        mixpanel.track(keyEvent, metadata);
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample")) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
+            JSONObject metadata = generateDefaultData();
+            mixpanel.track(keyEvent, metadata);
+        }
     }
 
     public void trackEvent(String keyEvent, @Nullable HashMap<String, String> additional) {
-        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
-        JSONObject metadata = generateDefaultData();
-        if (null != additional) {
-            for (Map.Entry<String, String> add : additional.entrySet()) {
-                try {
-                    metadata.put(add.getKey(), add.getValue());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample")) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
+            JSONObject metadata = generateDefaultData();
+            if (null != additional) {
+                for (Map.Entry<String, String> add : additional.entrySet()) {
+                    try {
+                        metadata.put(add.getKey(), add.getValue());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+            mixpanel.track(keyEvent, metadata);
         }
-        mixpanel.track(keyEvent, metadata);
     }
 
     public void trackErrorEvent(String keyEvent, String errorCode, String errorMessage) {
-        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
-        JSONObject metadata = generateDefaultData();
-        try {
-            metadata.put("errorCode", errorCode);
-            metadata.put("errorMessage", errorMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample")) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
+            JSONObject metadata = generateDefaultData();
+            try {
+                metadata.put("errorCode", errorCode);
+                metadata.put("errorMessage", errorMessage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mixpanel.track(keyEvent, metadata);
         }
-        mixpanel.track(keyEvent, metadata);
     }
 
     public void trackErrorEvent(String keyEvent, String errorCode, String errorMessage, @Nullable HashMap<String, String> additional) {
-        mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
-        JSONObject metadata = generateDefaultData();
-        try {
-            metadata.put("errorCode", errorCode);
-            metadata.put("errorMessage", errorMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (null != additional) {
-            for (Map.Entry<String, String> add : additional.entrySet()) {
-                try {
-                    metadata.put(add.getKey(), add.getValue());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample")) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, BuildConfig.MIXPANEL_TOKEN);
+            JSONObject metadata = generateDefaultData();
+            try {
+                metadata.put("errorCode", errorCode);
+                metadata.put("errorMessage", errorMessage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (null != additional) {
+                for (Map.Entry<String, String> add : additional.entrySet()) {
+                    try {
+                        metadata.put(add.getKey(), add.getValue());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+            mixpanel.track(keyEvent, metadata);
         }
-        mixpanel.track(keyEvent, metadata);
     }
 
     private JSONObject generateDefaultData() {
