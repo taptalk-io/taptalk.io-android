@@ -61,6 +61,13 @@ public class SampleApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         TapTalk.setLoggingEnabled(true);
+        if (BuildConfig.BUILD_TYPE.equals("release")) {
+            TapTalk.initializeAnalyticsForSampleApps("b476744eb06c9b3285d19dca3d7781c7");
+        } else if (BuildConfig.BUILD_TYPE.equals("staging")) {
+            TapTalk.initializeAnalyticsForSampleApps("1b400091d6ab3e08584cadffd57a7a40");
+        } else {
+            TapTalk.initializeAnalyticsForSampleApps("84f4d93bf3c34abe56fac7b2faaaa8b1");
+        }
         TapTalk.init(
                 this,
                 TAPTALK_SDK_APP_KEY_ID,

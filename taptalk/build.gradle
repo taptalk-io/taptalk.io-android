@@ -24,27 +24,22 @@ android {
             debuggable false
             consumerProguardFiles 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField("String", "MIXPANEL_TOKEN", "\"${RELEASE_MIXPANEL_TOKEN}\"")
         }
         staging {
             minifyEnabled true
             debuggable true
-            buildConfigField("String", "MIXPANEL_TOKEN", "\"${STAGING_MIXPANEL_TOKEN}\"")
         }
         stagingUpload {
             minifyEnabled true
             debuggable false
-            buildConfigField("String", "MIXPANEL_TOKEN", "\"${STAGING_MIXPANEL_TOKEN}\"")
         }
         dev {
             minifyEnabled true
             debuggable true
-            buildConfigField("String", "MIXPANEL_TOKEN", "\"$DEV_MIXPANEL_TOKEN\"")
         }
         devUpload {
             minifyEnabled true
             debuggable false
-            buildConfigField("String", "MIXPANEL_TOKEN", "\"${DEV_MIXPANEL_TOKEN}\"")
         }
     }
 
