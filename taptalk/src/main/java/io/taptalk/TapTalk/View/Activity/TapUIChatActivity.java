@@ -3093,7 +3093,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onFinish() {
-            Log.e(TAG, "typingIndicatorTimeoutTimer onFinish: ");
             hideTypingIndicator();
         }
     };

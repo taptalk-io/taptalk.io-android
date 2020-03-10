@@ -272,11 +272,6 @@ public class TAPChatManager {
         this.activeUser = user;
     }
 
-    public void saveActiveUser(TAPUserModel user) {
-        this.activeUser = user;
-        TAPDataManager.getInstance().saveActiveUser(user);
-    }
-
     public Map<String, TAPMessageModel> getMessageQueueInActiveRoom() {
         Map<String, TAPMessageModel> roomQueue = new LinkedHashMap<>();
         for (Map.Entry<String, TAPMessageModel> entry : pendingMessages.entrySet()) {
