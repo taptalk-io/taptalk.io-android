@@ -1,0 +1,339 @@
+<resources>
+    <string name="tap_app_name">TapTalk.io</string>
+
+    <!--Title/Menu-->
+    <string name="tap_block_user">Blokir Pengguna</string>
+    <string name="tap_blocked_list">Daftar Blokir</string>
+    <string name="tap_change_password">Ganti Password</string>
+    <string name="tap_chats_and_contacts">Chat dan Kontak</string>
+    <string name="tap_clear_chat">Hapus Chat</string>
+    <string name="tap_conversation_color">Warna Chat</string>
+    <string name="tap_leave_group">Keluar dari Grup</string>
+    <string name="tap_delete_group">Hapus Grup</string>
+    <string name="tap_forward">Teruskan</string>
+    <string name="tap_group_subject">Subjek Grup</string>
+    <string name="tap_my_account">Akun Saya</string>
+    <string name="tap_new_chat">Chat Baru</string>
+    <string name="tap_new_contact">Kontak Baru</string>
+    <string name="tap_new_group">Grup Baru</string>
+    <string name="tap_notifications">Notifikasi</string>
+    <string name="tap_recent">Riwayat</string>
+    <string name="tap_recent_chats">Riwayat Chat</string>
+    <string name="tap_register">Daftar</string>
+    <string name="tap_search_chat">Cari Chat</string>
+    <string name="tap_search_results">Hasil Pencarian</string>
+    <string name="tap_send_message">Kirim Pesan</string>
+    <string name="tap_shared_media">Media Bersama</string>
+    <string name="tap_scan_qr_code">Pindai Kode QR</string>
+    <string name="tap_show_qr_code">Tampilkan Kode QR</string>
+    <string name="tap_view_members">Lihat Anggota Grup</string>
+    <string name="tap_welcome">Selamat Datang</string>
+
+    <!--Chat Room List-->
+    <string name="tap_chat_room_setting_up">Pengaturan chat dalam proses</string>
+    <string name="tap_chat_room_setup_success">Pengaturan sukses</string>
+    <string name="tap_chat_room_setup_failed">Pengaturan gagal</string>
+    <string name="tap_chat_room_setting_up_description">Pastikan Anda memiliki koneksi yang stabil</string>
+    <string name="tap_chat_room_setup_success_description">Pengaturan chat room sukses</string>
+    <string name="tap_chat_room_setup_failed_description">Coba Lagi</string>
+    <string name="tap_start_a_new_chat">Mulai Chat Baru</string>
+    <string name="tap_search_chat_placeholder">Chat, grup, dan kontak</string>
+    <string name="tap_search_chat_placeholder_chats_contacts">Chat dan kontak</string>
+    <string name="tap_search_chat_placeholder_chats_group">Chat dan grup</string>
+    <string name="tap_search_chat_placeholder_chats_only">Cari chat</string>
+    <string name="tap_search_forward_placeholder">Cari chat dan kontak</string>
+    <string name="tap_clear_history">Hapus riwayat</string>
+    <string name="tap_format_s_draft">Draft: %s</string>
+    <string name="tap_format_ss_highlighted_string"><![CDATA[<font color=\'#%s\'>%s</font>]]></string>
+
+    <!--Chat Room-->
+    <string name="tap_send_a_message">Kirim pesan…</string>
+    <string name="tap_sending">Mengirim…</string>
+    <string name="tap_sent_at">Dikirim</string>
+    <string name="tap_delivered_at">Terkirim</string>
+    <string name="tap_forwarded">Diteruskan</string>
+    <string name="tap_from">Dari:</string>
+    <string name="tap_no_chats_to_show">Tidak ada chat</string>
+    <string name="tap_delete_chat">Hapus Chat</string>
+    <string name="tap_this_deleted_message">Pesan ini telah dihapus.</string>
+    <string name="tap_this_is_a_chat_history">Chat ini sudah ditutup</string>
+    <string name="tap_this_user_is_no_longer_available">Pengguna ini tidak lagi dapat dihubungi</string>
+    <string name="tap_typing">mengetik</string>
+    <string name="tap_format_s_unread_messages">%s pesan belum dibaca</string>
+    <string name="tap_format_s_typing_single">%s sedang mengetik</string>
+    <string name="tap_format_d_people_typing">%d pengguna sedang mengetik</string>
+    <string name="tap_unread_messages">Pesan Belum Dibaca</string>
+    <string name="tap_you_deleted_this_message">Anda menghapus pesan ini.</string>
+    <string name="tap_group_unavailable">Maaf, grup ini tidak tersedia.</string>
+
+    <!--Group Chat-->
+    <string name="tap_add_members">Tambah Anggota</string>
+    <string name="tap_format_dd_selected_member_count">Anggota Grup (%d/%d)</string>
+    <string name="tap_format_d_group_member_count">%d Anggota</string>
+    <string name="tap_group_name">Nama Grup</string>
+    <string name="tap_group_picture">Foto Grup</string>
+    <string name="tap_create_group">Buat Grup</string>
+    <string name="tap_edit_group">Ubah Grup</string>
+    <string name="tap_group_members">Anggota Grup</string>
+    <string name="tap_remove_group_member">Keluarkan Anggota</string>
+    <string name="tap_clear_and_exit_chat">Keluar dan Hapus Chat</string>
+    <string name="tap_delete_chat_room">Hapus Chat</string>
+    <string name="tap_type_group_name">Masukkan nama grup</string>
+    <string name="tap_cannot_add_more_people">Tidak bisa menambah anggota</string>
+    <string name="tap_admin">Admin</string>
+    <string name="tap_promote_admin">Jadikan Admin</string>
+    <string name="tap_demote_admin">Turunkan Admin</string>
+    <string name="tap_group_limit_reached">Batas anggota grup sudah tercapai</string>
+    <string name="tap_loading_members">Memuat Anggota</string>
+    <string name="tap_promote_admin_confirmation">Apa Anda yakin ingin mengangkat anggota ini sebagai admin?</string>
+    <string name="tap_demote_admin_confirmation">Apa Anda yakin ingin menurunkan admin ini?</string>
+    <string name="tap_remove_member_confirmation">Apa Anda yakin ingin mengeluarkan anggota ini?</string>
+    <string name="tap_remove_multiple_members_confirmation">Apa Anda yakin ingin mengeluarkan anggota yang dipilih?</string>
+    <string name="tap_leave_group_confirmation">Semua pesan dan media dari grup ini tidak dapat diakses lagi setelah keluar, apa Anda yakin ingin keluar dari grup?</string>
+    <string name="tap_delete_group_confirmation">Semua pesan dan media dari grup ini tidak dapat diakses lagi setelah dihapus, apa Anda yakin ingin menghapus grup ini?</string>
+    <string name="tap_adding">Menambah…</string>
+    <string name="tap_removing">Menghapus…</string>
+    <string name="tap_updating">Memperbarui…</string>
+    <string name="tap_changes_saved">Perubahan Tersimpan</string>
+    <string name="tap_added_contact">Ditambahkan ke Kontak</string>
+    <string name="tap_removed_member">Anggota Dikeluarkan</string>
+    <string name="tap_promoted_admin">Admin Dinaikkan</string>
+    <string name="tap_demoted_admin">Admin Diturunkan</string>
+    <string name="tap_left_group">Keluar Grup</string>
+    <string name="tap_group_deleted">Grup Dihapus</string>
+    <string name="tap_search_for_group_members">Cari anggota</string>
+    <string name="tap_not_a_participant">Anda tidak lagi menjadi partisipan grup ini</string>
+
+    <!--Contacts-->
+    <string name="tap_contacts">Kontak</string>
+    <string name="tap_search_for_contacts">Cari kontak</string>
+    <string name="tap_add_to_contacts">Tambahkan ke Kontak</string>
+    <string name="tap_chat_now">Chat Sekarang</string>
+    <string name="tap_global_search">Pencarian Global</string>
+    <string name="tap_cant_find_contact">Tidak menemukan kontak yang dicari?</string>
+    <string name="tap_cant_find_person">Tidak menemukan orang yang dicari?</string>
+    <string name="tap_view_blocked_contacts">Lihat Daftar Blokir</string>
+    <string name="tap_search_by_username">Cari dengan username</string>
+    <string name="tap_format_s_no_result_found_for">Tidak ditemukan hasil untuk \"%s\"</string>
+    <string name="tap_try_different_search">Coba pencarian lain</string>
+    <string name="tap_contact_list_empty">Daftar kontak Anda kosong…</string>
+    <string name="tap_add_new_contact">Tambahkan Kontak Baru</string>
+    <string name="tap_this_is_you">Ini adalah Anda</string>
+    <string name="tap_format_s_you_have_added_to_your_contacts"><![CDATA[Anda telah menambahkan <b>%s</b> ke kontak]]></string>
+    <string name="tap_is_already_in_your_contacts">telah ada di kontak Anda</string>
+    <string name="tap_contact_access">Akses Kontak</string>
+    <string name="tap_sync_contact_description">Kami memerlukan izin untuk menyinkronkan kontak Anda, kami akan menghubungkan kontak Anda ke server kami dan secara otomatis menemukan teman.</string>
+    <string name="tap_sync_contacts_now">Sinkronkan Kontak</string>
+    <string name="tap_all_contacts_synced">Semua kontak tersinkron</string>
+    <string name="tap_format_d_synced_contacts">%d Kontak Tersinkron</string>
+    <string name="tap_syncing_contacts">Menyinkronkan kontak</string>
+
+    <!--Connection Status-->
+    <string name="tap_connected">Terhubung</string>
+    <string name="tap_connecting">Menghubungkan</string>
+    <string name="tap_offline">Offline</string>
+    <string name="tap_network_error">Terjadi Kesalahan Jaringan</string>
+    <string name="tap_waiting_for_network">Menunggu Jaringan</string>
+    <string name="tap_active_now">Sedang Aktif</string>
+    <string name="tap_yesterday">Kemarin</string>
+    <string name="tap_active_recently">Baru saja aktif</string>
+    <string name="tap_format_s_sent_yesterday_at">Terkirim kemarin pada %s</string>
+    <string name="tap_format_d_minute_ago">Aktif %d menit yang lalu</string>
+    <string name="tap_format_d_minutes_ago">Aktif %d menit yang lalu</string>
+    <string name="tap_format_d_hour_ago">Aktif %d jam yang lalu</string>
+    <string name="tap_format_d_hours_ago">Aktif %d jam yang lalu</string>
+    <string name="tap_format_s_active_yesterday_at">Aktif kemarin pada %s</string>
+    <string name="tap_active_yesterday">Aktif kemarin</string>
+    <string name="tap_format_d_day_ago">Aktif %d hari yang lalu</string>
+    <string name="tap_format_d_days_ago">Aktif %d hari yang lalu</string>
+    <string name="tap_active_a_week_ago">Aktif minggu lalu</string>
+    <string name="tap_format_s_last_active">Terakhir aktif %s</string>
+    <string name="tap_loading_new_messages">Memuat Pesan Baru</string>
+    <string name="tap_loading_older_messages">Memuat Pesan Lama</string>
+    <string name="tap_unblock_user">Buka Blokir Pengguna</string>
+
+    <!--Info-->
+    <string name="tap_scan_qr_code_guide">Klik tombol di bawah untuk memindai kode QR</string>
+    <string name="tap_guide_show_qr_code">Klik tombol di bawah untuk menampilkan kode QR</string>
+    <string name="tap_search_username_welcome_message">Username <b>tidak case sensitive</b>, tapi pastikan Anda memasukkan <b>karakter yang tepat</b></string>
+    <string name="tap_change_group_image_guide">Klik ikon untuk mengganti foto grup</string>
+    <string name="tap_format_s_personal_chat_room_empty_guide_title"><![CDATA[Mulai percakapan dengan <b>%s</b>]]></string>
+    <string name="tap_format_s_group_chat_room_empty_guide_title"><![CDATA[<b>%s</b> terlihat sepi]]></string>
+    <string name="tap_format_s_personal_chat_room_empty_guide_content">Sapa %s dan mulai percakapan</string>
+    <string name="tap_group_chat_room_empty_guide_content">Sapa grup dan mulai percakapan</string>
+    <string name="tap_warning_files_may_not_be_sent">Beberapa file mungkin tidak terkirim</string>
+    <string name="tap_format_s_warning_video_size_exceeds_limit_wont_be_sent">Thumbnail video yang ditandai ikon ‘ ! ‘ telah melampaui batas unggah %s dan tidak akan dikirim.</string>
+    <string name="tap_enter_your_mobile_number_to_continue">Masukkan nomor telepon untuk melanjutkan</string>
+    <string name="tap_guide_enter_otp">Masukkan 6 digit OTP yang telah dikirim ke</string>
+    <string name="tap_didnt_receive_the_6_digit_otp">Tidak menerima 6 digit OTP?</string>
+    <string name="tap_guide_username">Username diperlukan.\nHarus antara 4–32 karakter.\nHanya dapat memuat a–z, 0–9, garis bawah, dan titik.\nTidak dapat berawal dengan angka atau garis bawah atau titik.\nTidak dapat berakhir dengan garis bawah atau titik.\nTidak dapat berisi garis bawah berurutan, titik berurutan, garis bawah diikuti dengan titik, dan sebaliknya.</string>
+    <string name="tap_guide_password">Kata sandi harus memuat setidaknya satu huruf kecil, huruf besar, karakter khusus, dan angka</string>
+    <string name="tap_room_list_empty">Sepertinya Anda tidak memiliki obrolan untuk ditampilkan, tetapi jangan khawatir! Daftar obrolan Anda akan bertambah setelah Anda</string>
+
+    <!--Success/Error Message-->
+    <string name="tap_error">Error</string>
+    <string name="tap_error_message_general">Terjadi kesalahan, silakan coba lagi.</string>
+    <string name="tap_could_not_find_any_results">Tidak dapat menemukan hasil</string>
+    <string name="tap_failed_to_load_image">Gagal memuat gambar.</string>
+    <string name="tap_failed">Gagal</string>
+    <string name="tap_message_send_failed">Gagal mengirim pesan, klik untuk mencoba lagi</string>
+    <string name="tap_error_message_group_name_empty">Mohon isi nama grup.</string>
+    <string name="tap_internet_connection_lost">Koneksi Internet Terputus</string>
+    <string name="tap_please_check_your_connection">Silakan periksa koneksi Anda</string>
+    <string name="tap_no_internet_show_error">Oops! Sepertinya Anda sedang offline, silakan periksa koneksi Anda.</string>
+    <string name="tap_api_call_return_error">Oops! Terjadi kesalahan, silakan coba lagi nanti.</string>
+    <string name="tap_init_taptalk">Please initialize TapTalk library, read documentation for detailed information.</string>
+    <string name="tap_error_open_room_failed">Gagal mengambil data pengguna, silakan periksa koneksi Anda dan coba lagi.</string>
+    <string name="tap_error_invalid_room">Chat room tidak valid.</string>
+    <string name="tap_error_room_not_found">Tidak dapat menemukan chat room.</string>
+    <string name="tap_error_other_user_not_found">Tidak dapat menemukan data pengguna.</string>
+    <string name="tap_error_message_data_empty">File upload failed: data is required in MessageModel.</string>
+    <string name="tap_error_message_uri_empty">File upload failed: Uri is required in MessageModel data.</string>
+    <string name="tap_error_message_uri_not_found">File upload failed: file Uri not found in Chat Manager.</string>
+    <string name="tap_error_load_image_detail">Could not load image, message data is null.</string>
+    <string name="tap_error_no_app_to_open_file">Tidak ada aplikasi yang cocok untuk membuka file ini.</string>
+    <string name="tap_format_s_error_exceed_upload_limit">Melebihi batas unggahan %s</string>
+    <string name="tap_error_media_will_not_be_sent">Media ini tidak akan dikirim</string>
+    <string name="tap_error_could_not_find_file">Tidak dapat menemukan file</string>
+    <string name="tap_error_redownload_file">Kami tidak dapat menemukan file ini di penyimpanan Anda, apakah Anda ingin mengunduhnya?</string>
+    <string name="tap_error_invalid_otp">OTP tidak valid, silakan coba lagi</string>
+    <string name="tap_error_invalid_full_name">Nama lengkap tidak valid</string>
+    <string name="tap_error_invalid_username">Username tidak valid</string>
+    <string name="tap_error_username_length">Panjang username harus 4–32 karakter</string>
+    <string name="tap_error_username_exists">Username sudah terdaftar</string>
+    <string name="tap_error_unable_to_verify_username">Tidak dapat verifikasi username, silakan periksa koneksi Anda dan coba lagi</string>
+    <string name="tap_error_not_a_valid_mobile_number">Nomor telepon tidak valid</string>
+    <string name="tap_error_invalid_email_address">Alamat email tidak valid</string>
+    <string name="tap_error_invalid_password">Kata sandi tidak valid</string>
+    <string name="tap_error_password_does_not_match">Kata sandi tidak cocok</string>
+    <string name="tap_error_unable_to_upload">Tidak dapat mengunggah</string>
+    <string name="tap_error_upload_profile_picture">Terjadi kesalahan saat mengunggah foto profil, apakah Anda ingin mencoba lagi?</string>
+    <string name="tap_error_could_not_find_message">Tidak dapat menemukan pesan.</string>
+    <string name="tap_error_assign_another_admin">Harap tetapkan admin lain sebelum keluar.</string>
+    <string name="tap_error_active_user_is_null">Could not find active user data. Please make sure the client app is authenticated.</string>
+
+    <!--Attachment-->
+    <string name="tap_photo">Photo</string>
+    <string name="tap_video">Video</string>
+    <string name="tap_file">File</string>
+    <string name="tap_document">Dokumen</string>
+    <string name="tap_camera">Kamera</string>
+    <string name="tap_gallery">Galeri</string>
+    <string name="tap_audio">Audio</string>
+    <string name="tap_location">Lokasi</string>
+    <string name="tap_contact">Kontak</string>
+    <string name="tap_emoji_photo">🖼</string>
+    <string name="tap_emoji_video">🎥</string>
+    <string name="tap_emoji_file">📎</string>
+    <string name="tap_location_body">📍 Lokasi</string>
+
+    <!--Long Press-->
+    <string name="tap_copy">Salin</string>
+    <string name="tap_open">Buka</string>
+    <string name="tap_compose">Tulis</string>
+    <string name="tap_call">Telepon</string>
+    <string name="tap_send_sms">SMS</string>
+    <string name="tap_delete">Hapus Pesan</string>
+
+    <!--Products-->
+    <string name="tap_price">Harga</string>
+    <string name="tap_rating">Rating</string>
+    <string name="tap_order_now">Pesan Sekarang</string>
+    <string name="tap_no_review_yet">Belum ada review</string>
+    <string name="tap_no_description">Tidak Ada Deskripsi</string>
+
+    <!--Media-->
+    <string name="tap_add_a_caption">Tambahkan keterangan</string>
+    <string name="tap_save_to_gallery">Simpan to Galeri</string>
+    <string name="tap_save_to_download">Simpan to Downloads</string>
+    <string name="tap_uploading">Mengunggah</string>
+    <string name="tap_image_saved">Gambar Tersimpan</string>
+    <string name="tap_video_saved">Video Tersimpan</string>
+    <string name="tap_format_s_successfully_saved">Berhasil menyimpan %s</string>
+    <string name="tap_unable_to_load_shared_media">Tidak dapat memuat media</string>
+    <string name="tap_try_again">Coba Lagi?</string>
+    <string name="tap_transition_view_image">tap_view_image</string>
+    <string name="tap_format_dd_media_count">%d dari %d</string>
+    <string name="tap_format_dd_letter_count">%d/%d</string>
+    <string name="tap_format_s_maximum_file_size">Ukuran file maksimum %s.</string>
+    <string name="tap_format_s_file_info_progress_dummy">9999.99 MB / %s</string>
+
+    <!--Location-->
+    <string name="tap_pin_coordinates">Pin Koordinat</string>
+    <string name="tap_send_location">Kirim Lokasi</string>
+    <string name="tap_set_location">Set Lokasi</string>
+    <string name="tap_search_address">Cari Alamat</string>
+    <string name="tap_searching_for_address">Mencari alamat</string>
+    <string name="tap_location_not_found">Lokasi tidak ditemukan</string>
+    <string name="tap_location_disabled">Fitur Lokasi Tidak Aktif</string>
+    <string name="tap_allow_location_services">Mohon aktifkan izin lokasi untuk melanjutkan</string>
+    <string name="tap_go_to_settings">Buka Pengaturan</string>
+
+    <!--Custom Material File Picker-->
+    <string name="tap_cfp_empty_directory_hint">Direktori kosong</string>
+    <string name="tap_cfp_type_archive">Arsip</string>
+    <string name="tap_cfp_type_certificate">Sertifikat</string>
+    <string name="tap_cfp_type_directory">Direktori</string>
+    <string name="tap_cfp_type_document">File</string>
+    <string name="tap_cfp_type_drawing">Gambar</string>
+    <string name="tap_cfp_type_excel">Spreadsheet</string>
+    <string name="tap_cfp_type_image">Gambar</string>
+    <string name="tap_cfp_type_music">Musik</string>
+    <string name="tap_cfp_type_video">Video</string>
+    <string name="tap_cfp_type_pdf">Dokumen PDF</string>
+    <string name="tap_cfp_type_power_point">Presentasi</string>
+    <string name="tap_cfp_type_word">Dokumen</string>
+    <string name="tap_cfp_type_apk">APK</string>
+
+    <!--Account-->
+    <string name="tap_email_address">Alamat Email</string>
+    <string name="tap_full_name">Nama Lengkap</string>
+    <string name="tap_mobile_number">Nomor Telepon</string>
+    <string name="tap_username">Username</string>
+    <string name="tap_password">Kata Sandi</string>
+    <string name="tap_log_out">Keluar</string>
+    <string name="tap_logging_out">Keluar…</string>
+    <string name="tap_log_out_confirmation">Apa Anda yakin ingin keluar?</string>
+    <string name="tap_otp_successfully_sent">OTP Berhasil Dikirim</string>
+    <string name="tap_verifying_otp">Memverifikasi OTP</string>
+    <string name="tap_profile_picture">Gambar Profil</string>
+    <string name="tap_request_again">Kirim ulang</string>
+    <string name="tap_requesting_otp">Meminta OTP</string>
+    <string name="tap_retype_password">Ketik Ulang Sandi</string>
+    <string name="tap_search_for_country">Cari negara</string>
+    <string name="tap_select_country">Pilih negara</string>
+    <string name="tap_hint_username">misal user_1234</string>
+    <string name="tap_hint_calling_code">+62</string>
+    <string name="tap_hint_phone_number">82212345678</string>
+    <string name="tap_hint_email_address">misal example@work.com</string>
+    <string name="tap_hint_insert_password">Masukkan Kata Sandi</string>
+    <string name="tap_hint_insert_name">Masukkan Nama</string>
+
+    <!--General-->
+    <string name="tap_allow">Izinkan</string>
+    <string name="tap_cancel">Batal</string>
+    <string name="tap_change">Ganti</string>
+    <string name="tap_clear">Hapus</string>
+    <string name="tap_close">Tutup</string>
+    <string name="tap_continue">Lanjut</string>
+    <string name="tap_details">Detail</string>
+    <string name="tap_edit">Ubah</string>
+    <string name="tap_loading">Memuat</string>
+    <string name="tap_finished">Selesai</string>
+    <string name="tap_messages">Pesan</string>
+    <string name="tap_ok">OK</string>
+    <string name="tap_oops">Oops…</string>
+    <string name="tap_optional">Tidak Wajib</string>
+    <string name="tap_reply">Balas</string>
+    <string name="tap_retry">Coba lagi</string>
+    <string name="tap_saving">Menyimpan…</string>
+    <string name="tap_search">Cari</string>
+    <string name="tap_syncing">Menyinkronkan…</string>
+    <string name="tap_send">Kirim</string>
+    <string name="tap_skip">Lewati</string>
+    <string name="tap_sorry">Maaf</string>
+    <string name="tap_update">Simpan</string>
+    <string name="tap_you">Anda</string>
+    <string name="tap_over_99">99+</string>
+
+</resources>

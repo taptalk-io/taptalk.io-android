@@ -192,7 +192,7 @@
                     android:alpha="0"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="@string/tap_file_info_progress_dummy"
+                    android:text="@string/tap_format_s_file_info_progress_dummy"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

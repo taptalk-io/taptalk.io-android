@@ -223,7 +223,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContactList().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
+                tvMemberCount.setText(String.format(getString(R.string.tap_format_dd_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContactList().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
                 return true;
             }
 
@@ -241,7 +241,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContactList().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
+                tvMemberCount.setText(String.format(getString(R.string.tap_format_dd_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContactList().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
             }
         };
 
@@ -296,7 +296,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
             ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
                     getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavBarBackButton)));
-            tvButtonText.setText(getString(R.string.tap_continue_s));
+            tvButtonText.setText(getString(R.string.tap_continue));
             flButtonContinue.setOnClickListener(v -> openGroupSubjectActivity());
         } else if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
             tvTitle.setText(getString(R.string.tap_add_members));
@@ -619,7 +619,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             // User not found
             if (vm.getAdapterItems().isEmpty()) {
                 runOnUiThread(() -> {
-                    tvInfoEmptyContact.setText(String.format(getString(R.string.tap_no_result_found_for), etSearch.getText().toString()));
+                    tvInfoEmptyContact.setText(String.format(getString(R.string.tap_format_s_no_result_found_for), etSearch.getText().toString()));
                     tvButtonEmptyContact.setText(getString(R.string.tap_try_different_search));
                     llEmptyContact.setOnClickListener(v -> {
                         TAPUtils.showKeyboard(TAPAddGroupMemberActivity.this, etSearch);

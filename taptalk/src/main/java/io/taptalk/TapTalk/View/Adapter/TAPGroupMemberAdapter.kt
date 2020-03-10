@@ -187,7 +187,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
         private val tvMemberCount: TextView = itemView.findViewById(R.id.tv_member_count)
 
         override fun onBind(item: TAPUserModel?, position: Int) {
-            tvMemberCount.text = String.format(itemView.context.getString(R.string.tap_group_member_count), position)
+            tvMemberCount.text = String.format(itemView.context.getString(R.string.tap_format_d_group_member_count), position)
         }
     }
 }

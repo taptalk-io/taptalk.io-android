@@ -144,7 +144,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="@string/tap_continue_s" />
+            android:text="@string/tap_continue" />
 
         <ImageView
             android:id="@+id/iv_loading_progress_request_otp"

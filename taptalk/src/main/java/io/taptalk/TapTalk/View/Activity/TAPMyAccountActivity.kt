@@ -41,10 +41,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
-import io.taptalk.TapTalk.Manager.TAPChatManager
-import io.taptalk.TapTalk.Manager.TAPDataManager
-import io.taptalk.TapTalk.Manager.TAPFileUploadManager
-import io.taptalk.TapTalk.Manager.TapUI
+import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPUserModel
@@ -441,6 +438,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun logout() {
+        AnalyticsManager.getInstance().trackEvent("Logout")
         TAPDataManager.getInstance().deleteAllPreference()
         TAPDataManager.getInstance().deleteAllFromDatabase()
         TAPDataManager.getInstance().deleteAllManagerData()
@@ -449,7 +447,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
 
         hideLoading()
-
+        AnalyticsManager.getInstance().identifyUser()
         for (listener in TapTalk.getTapTalkListeners()) {
             listener.onUserLogout()
         }
@@ -695,12 +693,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         override fun onError(error: TAPErrorModel?) {
             hideLoading()
-            showErrorDialog(error!!.message)
+            logout()
         }
 
         override fun onError(errorMessage: String?) {
             hideLoading()
-            showErrorDialog(getString(R.string.tap_error_message_general))
+            logout()
         }
     }
 

@@ -370,7 +370,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
     public void animateAddSuccess(TAPUserModel contactModel) {
         runOnUiThread(() -> {
-            tvAddSuccess.setText(Html.fromHtml(String.format(getString(R.string.you_have_added_to_your_contacts), contactModel.getName())));
+            tvAddSuccess.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_you_have_added_to_your_contacts), contactModel.getName())));
             loadProfilePicture(civMyUserAvatar, tvMyAvatarLabel, vm.getMyUserModel());
             civMyUserAvatar.setTranslationX(TAPUtils.dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);

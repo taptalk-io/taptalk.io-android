@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -168,17 +166,17 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             String highlightedText;
             try {
                 highlightedText = message.getBody().replaceAll("(?i)([" + searchKeyword + "])",
-                        String.format(itemView.getContext().getString(R.string.tap_highlighted_string),
+                        String.format(itemView.getContext().getString(R.string.tap_format_ss_highlighted_string),
                                 colorCode, "$1"));
             } catch (PatternSyntaxException e) {
                 // Replace regex special characters with Pattern.quote()
                 highlightedText = message.getBody().replaceAll("(?i)(" + Pattern.quote(searchKeyword) + ")",
-                        String.format(itemView.getContext().getString(R.string.tap_highlighted_string),
+                        String.format(itemView.getContext().getString(R.string.tap_format_ss_highlighted_string),
                                 colorCode, "$1"));
             } catch (Exception e) {
                 highlightedText = message.getBody().replaceAll(
                         "(?i)(" + searchKeyword.replaceAll("[^A-Za-z0-9 ]", "") + ")",
-                        String.format(itemView.getContext().getString(R.string.tap_highlighted_string), colorCode, "$1"));
+                        String.format(itemView.getContext().getString(R.string.tap_format_ss_highlighted_string), colorCode, "$1"));
             }
 
             if (null != item.getMessage() && null != item.getMessage().getRoomType() && item.getMessage().getRoomType() == TAPDefaultConstant.RoomType.TYPE_GROUP) {
@@ -336,7 +334,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
             String highlightedText = roomName.replaceAll(
                     "(?i)(" + searchKeyword + ")",
-                    String.format(itemView.getContext().getString(R.string.tap_highlighted_string), colorCode, "$1"));
+                    String.format(itemView.getContext().getString(R.string.tap_format_ss_highlighted_string), colorCode, "$1"));
             tvRoomName.setText(Html.fromHtml(highlightedText));
 
             // Set avatar icon

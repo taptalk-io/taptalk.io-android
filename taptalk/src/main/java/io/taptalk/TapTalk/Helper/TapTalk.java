@@ -30,6 +30,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
 import io.taptalk.TapTalk.Listener.TapListener;
+import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -44,6 +45,7 @@ import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
 import io.taptalk.TapTalk.Manager.TapCoreProjectConfigsManager;
 import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
+import io.taptalk.TapTalk.Manager.TapLocaleManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetAccessTokenResponse;
@@ -100,7 +102,7 @@ public class TapTalk implements LifecycleObserver {
     private Intent intent;
     private static boolean listenerInit = false;
 
-    private static Thread.UncaughtExceptionHandler defaultUEH;
+    //    private static Thread.UncaughtExceptionHandler defaultUEH;
     private List<TapListener> tapListeners = new ArrayList<>();
 
     private static Map<String, String> coreConfigs;
@@ -109,10 +111,12 @@ public class TapTalk implements LifecycleObserver {
     public static TapTalkImplementationType implementationType;
     private static TAPChatListener chatListener;
 
+    public static String mixpanelToken = "";
+
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
         TapTalkEnvironmentStaging,
-        TapTalkEnvironmentDevelopment
+        TapTalkEnvironmentDevelopment;
     }
 
     public enum TapTalkImplementationType {
@@ -127,16 +131,16 @@ public class TapTalk implements LifecycleObserver {
         TapTalkOrientationLandscape // FIXME: 6 February 2019 Activity loads portrait by default then changes to landscape after onCreate
     }
 
-    private static Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
-        @Override
-        public void uncaughtException(Thread thread, Throwable throwable) {
-            TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
-            TAPContactManager.getInstance().saveUserDataMapToDatabase();
-            TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
-            TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
-            defaultUEH.uncaughtException(thread, throwable);
-        }
-    };
+//    private static Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
+//        @Override
+//        public void uncaughtException(Thread thread, Throwable throwable) {
+//            TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
+//            TAPContactManager.getInstance().saveUserDataMapToDatabase();
+//            TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+//            TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+//            defaultUEH.uncaughtException(thread, throwable);
+//        }
+//    };
 
     public TapTalk(
             @NonNull final Context appContext,
@@ -155,12 +159,7 @@ public class TapTalk implements LifecycleObserver {
         TapTalk.clientAppIcon = clientAppIcon;
         TapTalk.clientAppName = clientAppName;
 
-        //clientAppName = appContext.getResources().getString(R.string.tap_app_name);
-
         // Init Base URL
-//        TAPApiManager.setBaseUrlApi(String.format(appContext.getString(R.string.tap_base_url_api), appBaseURL));
-//        TAPApiManager.setBaseUrlSocket(String.format(appContext.getString(R.string.tap_base_url_socket), appBaseURL));
-//        TAPConnectionManager.getInstance().setWebSocketEndpoint(String.format(appContext.getString(R.string.tap_base_wss), appBaseURL));
         TAPApiManager.setBaseUrlApi(generateApiBaseURL(appBaseURL));
         TAPApiManager.setBaseUrlSocket(generateSocketBaseURL(appBaseURL));
         TAPConnectionManager.getInstance().setWebSocketEndpoint(generateWSSBaseURL(appBaseURL));
@@ -207,64 +206,64 @@ public class TapTalk implements LifecycleObserver {
         TAPContactManager.getInstance().setContactSyncAllowedByUser(TAPDataManager.getInstance().isContactSyncAllowedByUser());
 
         // Init Stetho for debug build
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG) {
             Stetho.initialize(
                     Stetho.newInitializerBuilder(appContext)
                             .enableDumpapp(Stetho.defaultDumperPluginsProvider(appContext))
                             .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(appContext))
                             .build()
             );
+        }
 
         if (!tapListeners.contains(tapListener)) {
             tapListeners.add(tapListener);
         }
-        updateApplicationBadgeCount();
 
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
         if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
-                TAPDataManager.getInstance().checkAccessTokenAvailable())
+                TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             initListener();
+        }
 
-        if (!listenerInit)
+        if (!listenerInit) {
             handleAppToForeground();
+        }
+    }
+
+    public static void initializeAnalyticsForSampleApps(String analyticsKey) {
+        mixpanelToken = analyticsKey;
     }
 
     private static void initListener() {
         chatListener = new TAPChatListener() {
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                Log.e(TAG, "onReceiveMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                Log.e(TAG, "onReceiveMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
-                Log.e(TAG, "onUpdateMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-                Log.e(TAG, "onUpdateMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
-                Log.e(TAG, "onDeleteMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
-                Log.e(TAG, "onDeleteMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
         };
@@ -302,7 +301,7 @@ public class TapTalk implements LifecycleObserver {
 
     public static boolean checkTapTalkInitialized() {
         if (null == tapTalk) {
-            Log.e(getClientAppName(), appContext.getString(R.string.tap_init_taptalk));
+            Log.e(TAG, "Please initialize TapTalk library, read documentation for detailed information.");
             return false;
         }
         return true;
@@ -313,7 +312,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     private String generateSocketBaseURL(String baseURL) {
-        return baseURL + "/connect/";
+        return baseURL + "/";
     }
 
     private String generateWSSBaseURL(String baseURL) {
@@ -683,6 +682,29 @@ public class TapTalk implements LifecycleObserver {
 
     /**
      * =============================================================================================
+     * LANGUAGE
+     * =============================================================================================
+     */
+
+    public enum Language {ENGLISH, INDONESIAN}
+
+    public static void setDefaultLanguage(Language language) {
+        String defaultLanguage;
+        switch (language) {
+            case INDONESIAN:
+                defaultLanguage = "in";
+                break;
+            default:
+                defaultLanguage = "en";
+                break;
+        }
+        TapLocaleManager.setLocale((Application) appContext, defaultLanguage);
+
+        // TODO: 27 Feb 2020 RESTART OPEN ACTIVITIES TO APPLY CHANGED RESOURCES
+    }
+
+    /**
+     * =============================================================================================
      * TEMP
      * =============================================================================================
      */
@@ -769,8 +791,8 @@ public class TapTalk implements LifecycleObserver {
         TAPChatManager.getInstance().triggerSaveNewMessage();
         TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
         TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
-        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+//        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+//        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
 
 //         Start service on first load
 //        if (null == intent) {

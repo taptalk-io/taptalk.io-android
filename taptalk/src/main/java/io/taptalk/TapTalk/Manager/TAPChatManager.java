@@ -90,6 +90,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.THUMB_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.DISCONNECTED;
 
@@ -269,11 +270,6 @@ public class TAPChatManager {
 
     public void setActiveUser(TAPUserModel user) {
         this.activeUser = user;
-    }
-
-    public void saveActiveUser(TAPUserModel user) {
-        this.activeUser = user;
-        TAPDataManager.getInstance().saveActiveUser(user);
     }
 
     public Map<String, TAPMessageModel> getMessageQueueInActiveRoom() {
@@ -1735,7 +1731,10 @@ public class TAPChatManager {
         }
 
         // Save user data to contact manager
-        TAPContactManager.getInstance().updateUserData(newMessage.getUser());
+        if (newMessage.getUser() != TAPChatManager.getInstance().activeUser ||
+                UPDATE_USER.equals(newMessage.getAction())) {
+            TAPContactManager.getInstance().updateUserData(newMessage.getUser());
+        }
     }
 
     public void deleteMessageFromIncomingMessages(String localID) {
@@ -1878,6 +1877,7 @@ public class TAPChatManager {
     public String formattingSystemMessage(TAPMessageModel message) {
         String systemMessageBody;
 
+        // TODO: 26 Feb 2020 REPLACE 'YOU' ACCORDING TO LANGUAGE
         if (null == message.getTarget()) {
             systemMessageBody = message.getBody()
                     .replace("{", "")
