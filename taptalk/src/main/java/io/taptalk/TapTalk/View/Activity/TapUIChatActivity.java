@@ -34,6 +34,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1310,12 +1311,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private void hideTypingIndicator() {
         typingIndicatorTimeoutTimer.cancel();
         runOnUiThread(() -> {
-            if (0 < vm.getGroupTypingSize()) {
-                showTypingIndicator();
-            } else {
-                clRoomTypingStatus.setVisibility(View.GONE);
-                clRoomOnlineStatus.setVisibility(View.VISIBLE);
-            }
+            vm.getGroupTyping().clear();
+            clRoomTypingStatus.setVisibility(View.GONE);
+            clRoomOnlineStatus.setVisibility(View.VISIBLE);
         });
     }
 
@@ -1773,7 +1771,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onReceiveStopTyping(TAPTypingModel typingModel) {
             if (typingModel.getRoomID().equals(vm.getRoom().getRoomID())) {
                 vm.removeGroupTyping(typingModel.getUser().getUserID());
-                hideTypingIndicator();
+                if (0 < vm.getGroupTypingSize()) {
+                    showTypingIndicator();
+                } else {
+                    hideTypingIndicator();
+                }
             }
         }
     };
@@ -3091,6 +3093,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onFinish() {
+            Log.e(TAG, "typingIndicatorTimeoutTimer onFinish: ");
             hideTypingIndicator();
         }
     };
