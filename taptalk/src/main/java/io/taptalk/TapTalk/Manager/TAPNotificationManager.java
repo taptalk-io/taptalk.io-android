@@ -43,6 +43,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.NOTIFICAT
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.TAP_NOTIFICATION_CHANNEL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
 import static io.taptalk.TapTalk.Helper.TapTalk.getTapTalkListeners;
 
 public class TAPNotificationManager {
@@ -285,7 +286,10 @@ public class TAPNotificationManager {
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
         TAPContactManager.getInstance().saveUserDataToDatabase(newMessageModel.getUser());
         TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(newMessageModel);
-        TAPContactManager.getInstance().updateUserData(newMessageModel.getUser());
+        if (newMessageModel.getUser() != TAPChatManager.getInstance().getActiveUser() ||
+                UPDATE_USER.equals(newMessageModel.getAction())) {
+            TAPContactManager.getInstance().updateUserData(newMessageModel.getUser());
+        }
         if (TapTalk.implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
             if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()
                     && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {

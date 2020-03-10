@@ -9,6 +9,7 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -87,6 +88,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
 
 public class TapUIRoomListFragment extends Fragment {
 
@@ -109,6 +111,7 @@ public class TapUIRoomListFragment extends Fragment {
     private TAPRoomListAdapter adapter;
     private TapTalkRoomListInterface tapTalkRoomListInterface;
     private TAPRoomListViewModel vm;
+    private HashMap<String, CountDownTimer> typingIndicatorTimeoutTimers;
 
     private TAPChatListener chatListener;
 
@@ -237,15 +240,17 @@ public class TapUIRoomListFragment extends Fragment {
 
             @Override
             public void onReceiveStartTyping(TAPTypingModel typingModel) {
-                showTyping(typingModel, true);
+                showTypingIndicator(typingModel, true);
             }
 
             @Override
             public void onReceiveStopTyping(TAPTypingModel typingModel) {
-                showTyping(typingModel, false);
+                showTypingIndicator(typingModel, false);
             }
         };
         TAPChatManager.getInstance().addChatListener(chatListener);
+
+        typingIndicatorTimeoutTimers = new HashMap<>();
 
         tapTalkRoomListInterface = roomModel -> {
             if (vm.getSelectedCount() > 0) {
@@ -653,9 +658,9 @@ public class TapUIRoomListFragment extends Fragment {
         return vm.isSelecting();
     }
 
-    private void showTyping(TAPTypingModel typingModel, boolean isTyping) {
+    private void showTypingIndicator(TAPTypingModel typingModel, boolean isTyping) {
         String roomID = typingModel.getRoomID();
-        if (!vm.getRoomPointer().containsKey(roomID) || null == typingModel.getUser()) {
+        if (null == activity || !vm.getRoomPointer().containsKey(roomID) || null == typingModel.getUser()) {
             return;
         }
         TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
@@ -663,15 +668,37 @@ public class TapUIRoomListFragment extends Fragment {
             return;
         }
 
-        if (isTyping) {
-            roomListModel.addTypingUsers(typingModel.getUser());
-        } else {
-            roomListModel.removeTypingUser(typingModel.getUser().getUserID());
-        }
+        activity.runOnUiThread(() -> {
+            if (isTyping) {
+                roomListModel.addTypingUsers(typingModel.getUser());
+                CountDownTimer roomTimer = typingIndicatorTimeoutTimers.get(roomID);
+                if (null != roomTimer) {
+                    roomTimer.cancel();
+                } else {
+                    roomTimer = new CountDownTimer(TYPING_INDICATOR_TIMEOUT, 1000L) {
+                        @Override
+                        public void onTick(long l) {
 
-        if (null != activity) {
-            activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel)));
-        }
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            // Hide typing status on countdown finish
+                            roomListModel.getTypingUsers().clear();
+                            typingIndicatorTimeoutTimers.remove(roomID);
+                            adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel));
+                        }
+                    };
+                    typingIndicatorTimeoutTimers.put(roomID, roomTimer);
+                }
+                // Restart typing timeout timer
+                roomTimer.start();
+            } else {
+                roomListModel.removeTypingUser(typingModel.getUser().getUserID());
+            }
+
+            adapter.notifyItemChanged(vm.getRoomList().indexOf(roomListModel));
+        });
     }
 
     private void showChatRoomSettingUp() {

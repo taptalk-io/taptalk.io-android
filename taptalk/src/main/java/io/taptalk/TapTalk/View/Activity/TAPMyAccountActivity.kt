@@ -693,12 +693,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         override fun onError(error: TAPErrorModel?) {
             hideLoading()
-            showErrorDialog(error!!.message)
+            logout()
         }
 
         override fun onError(errorMessage: String?) {
             hideLoading()
-            showErrorDialog(getString(R.string.tap_error_message_general))
+            logout()
         }
     }
 

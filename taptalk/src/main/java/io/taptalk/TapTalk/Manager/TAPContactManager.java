@@ -57,13 +57,14 @@ public class TAPContactManager {
             // Update user data in map
             existingUser.updateValue(user);
             saveUserDataToDatabase(user);
-        } else if (incomingUserId.equals(myUserId) &&
-                null != TAPChatManager.getInstance().getActiveUser().getUpdated() &&
-                null != user.getUpdated() &&
-                TAPChatManager.getInstance().getActiveUser().getUpdated() <= user.getUpdated()) {
-            // Update active user
-            TAPChatManager.getInstance().saveActiveUser(user);
         }
+        //else if (incomingUserId.equals(myUserId) &&
+        //        null != TAPChatManager.getInstance().getActiveUser().getUpdated() &&
+        //        null != user.getUpdated() &&
+        //        TAPChatManager.getInstance().getActiveUser().getUpdated() <= user.getUpdated()) {
+        //    // Update active user
+        //    TAPDataManager.getInstance().saveActiveUser(user);
+        //}
     }
 
     public void updateUserData(List<TAPUserModel> users) {
