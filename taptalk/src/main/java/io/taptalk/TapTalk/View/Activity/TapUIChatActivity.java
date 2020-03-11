@@ -2098,15 +2098,21 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void hideLoadingOlderMessagesIndicator() {
-        if (!messageAdapter.getItems().contains(vm.getLoadingIndicator(false))) {
-            return;
-        }
-        vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID);
         rvMessageList.post(() -> runOnUiThread(() -> {
+            if (!messageAdapter.getItems().contains(vm.getLoadingIndicator(false))) {
+                return;
+            }
             int index = messageAdapter.getItems().indexOf(vm.getLoadingIndicator(false));
-            messageAdapter.removeMessage(vm.getLoadingIndicator(false));
-            messageAdapter.notifyItemRemoved(index);
-            updateMessageDecoration();
+            vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID);
+            if (index >= 0) {
+                messageAdapter.removeMessage(vm.getLoadingIndicator(false));
+                if (null != messageAdapter.getItemAt(index)) {
+                    messageAdapter.notifyItemChanged(index);
+                } else {
+                    messageAdapter.notifyItemRemoved(index);
+                }
+                updateMessageDecoration();
+            }
         }));
     }
 
