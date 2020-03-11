@@ -16,7 +16,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.android.libraries.places.api.Places;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.RemoteMessage;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
 
@@ -103,7 +102,7 @@ public class TapTalk implements LifecycleObserver {
     private Intent intent;
     private static boolean listenerInit = false;
 
-    private static Thread.UncaughtExceptionHandler defaultUEH;
+    //    private static Thread.UncaughtExceptionHandler defaultUEH;
     private List<TapListener> tapListeners = new ArrayList<>();
 
     private static Map<String, String> coreConfigs;
@@ -112,12 +111,12 @@ public class TapTalk implements LifecycleObserver {
     public static TapTalkImplementationType implementationType;
     private static TAPChatListener chatListener;
 
-    private static MixpanelAPI mixpanel;
+    public static String mixpanelToken = "";
 
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
         TapTalkEnvironmentStaging,
-        TapTalkEnvironmentDevelopment
+        TapTalkEnvironmentDevelopment;
     }
 
     public enum TapTalkImplementationType {
@@ -132,16 +131,16 @@ public class TapTalk implements LifecycleObserver {
         TapTalkOrientationLandscape // FIXME: 6 February 2019 Activity loads portrait by default then changes to landscape after onCreate
     }
 
-    private static Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
-        @Override
-        public void uncaughtException(Thread thread, Throwable throwable) {
-            TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
-            TAPContactManager.getInstance().saveUserDataMapToDatabase();
-            TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
-            TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
-            defaultUEH.uncaughtException(thread, throwable);
-        }
-    };
+//    private static Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
+//        @Override
+//        public void uncaughtException(Thread thread, Throwable throwable) {
+//            TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
+//            TAPContactManager.getInstance().saveUserDataMapToDatabase();
+//            TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+//            TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+//            defaultUEH.uncaughtException(thread, throwable);
+//        }
+//    };
 
     public TapTalk(
             @NonNull final Context appContext,
@@ -190,7 +189,8 @@ public class TapTalk implements LifecycleObserver {
 
         // Init configs
         presetConfigs();
-        refreshRemoteConfigs(new TapCommonListener() {});
+        refreshRemoteConfigs(new TapCommonListener() {
+        });
 
         if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             //TAPConnectionManager.getInstance().connect();
@@ -229,46 +229,41 @@ public class TapTalk implements LifecycleObserver {
         if (!listenerInit) {
             handleAppToForeground();
         }
+    }
 
-        mixpanel = MixpanelAPI.getInstance(appContext, BuildConfig.MIXPANEL_TOKEN);
-        AnalyticsManager.getInstance().identifyUser();
+    public static void initializeAnalyticsForSampleApps(String analyticsKey) {
+        mixpanelToken = analyticsKey;
     }
 
     private static void initListener() {
         chatListener = new TAPChatListener() {
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                Log.d(TAG, "onReceiveMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                Log.d(TAG, "onReceiveMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
-                Log.d(TAG, "onUpdateMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-                Log.d(TAG, "onUpdateMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
-                Log.d(TAG, "onDeleteMessageInOtherRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
 
             @Override
             public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
-                Log.d(TAG, "onDeleteMessageInActiveRoom: from TapTalk");
                 updateApplicationBadgeCount();
             }
         };
@@ -796,8 +791,8 @@ public class TapTalk implements LifecycleObserver {
         TAPChatManager.getInstance().triggerSaveNewMessage();
         TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
         TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
-        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
+//        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+//        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
 
 //         Start service on first load
 //        if (null == intent) {

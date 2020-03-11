@@ -12,8 +12,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 35
-        versionName "1.1.4"
+        versionCode 36
+        versionName "1.1.9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -24,27 +24,22 @@ android {
             debuggable false
             consumerProguardFiles 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField("String", "MIXPANEL_TOKEN", "\"${RELEASE_MIXPANEL_TOKEN}\"")
         }
         staging {
             minifyEnabled true
             debuggable true
-            buildConfigField("String", "MIXPANEL_TOKEN", "\"${STAGING_MIXPANEL_TOKEN}\"")
         }
         stagingUpload {
             minifyEnabled true
             debuggable false
-            buildConfigField("String", "MIXPANEL_TOKEN", "\"${STAGING_MIXPANEL_TOKEN}\"")
         }
         dev {
             minifyEnabled true
             debuggable true
-            buildConfigField("String", "MIXPANEL_TOKEN", "\"$DEV_MIXPANEL_TOKEN\"")
         }
         devUpload {
             minifyEnabled true
             debuggable false
-            buildConfigField("String", "MIXPANEL_TOKEN", "\"${DEV_MIXPANEL_TOKEN}\"")
         }
     }
 

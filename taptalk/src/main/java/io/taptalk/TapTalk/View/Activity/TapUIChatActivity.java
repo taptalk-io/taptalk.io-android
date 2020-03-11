@@ -34,6 +34,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -409,8 +410,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         else {
                             new TapTalkDialog.Builder(TapUIChatActivity.this)
                                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                                    .setTitle("Sorry")
-                                    .setMessage("Maximum file size is " + TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize()) + ".")
+                                    .setTitle(getString(R.string.tap_sorry))
+                                    .setMessage(String.format(getString(R.string.tap_format_s_maximum_file_size), TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())))
                                     .setPrimaryButtonTitle(getString(R.string.tap_ok))
                                     .show();
                         }
@@ -1310,12 +1311,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     private void hideTypingIndicator() {
         typingIndicatorTimeoutTimer.cancel();
         runOnUiThread(() -> {
-            if (0 < vm.getGroupTypingSize()) {
-                showTypingIndicator();
-            } else {
-                clRoomTypingStatus.setVisibility(View.GONE);
-                clRoomOnlineStatus.setVisibility(View.VISIBLE);
-            }
+            vm.getGroupTyping().clear();
+            clRoomTypingStatus.setVisibility(View.GONE);
+            clRoomOnlineStatus.setVisibility(View.VISIBLE);
         });
     }
 
@@ -1773,7 +1771,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onReceiveStopTyping(TAPTypingModel typingModel) {
             if (typingModel.getRoomID().equals(vm.getRoom().getRoomID())) {
                 vm.removeGroupTyping(typingModel.getUser().getUserID());
-                hideTypingIndicator();
+                if (0 < vm.getGroupTypingSize()) {
+                    showTypingIndicator();
+                } else {
+                    hideTypingIndicator();
+                }
             }
         }
     };
@@ -2096,15 +2098,21 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void hideLoadingOlderMessagesIndicator() {
-        if (!messageAdapter.getItems().contains(vm.getLoadingIndicator(false))) {
-            return;
-        }
-        vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID);
         rvMessageList.post(() -> runOnUiThread(() -> {
+            if (!messageAdapter.getItems().contains(vm.getLoadingIndicator(false))) {
+                return;
+            }
             int index = messageAdapter.getItems().indexOf(vm.getLoadingIndicator(false));
-            messageAdapter.removeMessage(vm.getLoadingIndicator(false));
-            messageAdapter.notifyItemRemoved(index);
-            updateMessageDecoration();
+            vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID);
+            if (index >= 0) {
+                messageAdapter.removeMessage(vm.getLoadingIndicator(false));
+                if (null != messageAdapter.getItemAt(index)) {
+                    messageAdapter.notifyItemChanged(index);
+                } else {
+                    messageAdapter.notifyItemRemoved(index);
+                }
+                updateMessageDecoration();
+            }
         }));
     }
 
@@ -2946,12 +2954,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 if (rvMessageList.getVisibility() != View.VISIBLE) {
                     rvMessageList.setVisibility(View.VISIBLE);
                 }
-                if (null == rvMessageList.getItemAnimator()) {
-                    // Set default item animator for recycler view
-                    new Handler().postDelayed(() ->
-                            rvMessageList.post(() ->
-                                    rvMessageList.setItemAnimator(messageAnimator)), 200L);
-                }
+
+                setRecyclerViewAnimator();
+
                 if (state == STATE.DONE) {
                     updateMessageDecoration();
                 }
@@ -2969,12 +2974,21 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            super.onError(error);
+            setRecyclerViewAnimator();
         }
 
         @Override
         public void onError(Throwable throwable) {
-            super.onError(throwable);
+            setRecyclerViewAnimator();
+        }
+
+        private void setRecyclerViewAnimator() {
+            if (null == rvMessageList.getItemAnimator()) {
+                // Set default item animator for recycler view
+                new Handler().postDelayed(() ->
+                        rvMessageList.post(() ->
+                                rvMessageList.setItemAnimator(messageAnimator)), 200L);
+            }
         }
     };
 
