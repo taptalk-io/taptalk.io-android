@@ -69,7 +69,11 @@ public class TAPConnectionManager {
         try {
 //            webSocketUri = new URI(webSocketEndpoint);
 //            initWebSocketClient(webSocketUri);
-            initNetworkListener();
+            try {
+                initNetworkListener();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             socketListeners = new ArrayList<>();
             reconnectAttempt = 0;
         } catch (Exception e) {
@@ -156,6 +160,11 @@ public class TAPConnectionManager {
         TapTalkNetworkInterface networkListener = () -> {
             if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
                 TAPDataManager.getInstance().validateAccessToken(validateAccessView);
+                if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
+                    reconnect();
+                } else if (TapTalk.isAutoConnectEnabled() && NOT_CONNECTED == connectionStatus) {
+                    connect();
+                }
             }
         };
         TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
