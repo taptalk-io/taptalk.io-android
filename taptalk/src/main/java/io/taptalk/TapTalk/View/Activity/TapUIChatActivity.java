@@ -926,7 +926,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             // Message is added after transition finishes in containerTransitionListener
             runOnUiThread(() -> {
                 // Remove empty chat layout if still shown
-                if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getHidden() || !newMessage.getHidden())) {
                     clEmptyChat.setVisibility(View.GONE);
                     flMessageList.setVisibility(View.VISIBLE);
                 }
@@ -981,7 +981,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             // Message is added after transition finishes in containerTransitionListener
             runOnUiThread(() -> {
                 // Remove empty chat layout if still shown
-                if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getHidden() || !newMessage.getHidden())) {
                     clEmptyChat.setVisibility(View.GONE);
                     flMessageList.setVisibility(View.VISIBLE);
                 }
@@ -2098,15 +2098,21 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void hideLoadingOlderMessagesIndicator() {
-        if (!messageAdapter.getItems().contains(vm.getLoadingIndicator(false))) {
-            return;
-        }
-        vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID);
         rvMessageList.post(() -> runOnUiThread(() -> {
+            if (!messageAdapter.getItems().contains(vm.getLoadingIndicator(false))) {
+                return;
+            }
             int index = messageAdapter.getItems().indexOf(vm.getLoadingIndicator(false));
-            messageAdapter.removeMessage(vm.getLoadingIndicator(false));
-            messageAdapter.notifyItemRemoved(index);
-            updateMessageDecoration();
+            vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID);
+            if (index >= 0) {
+                messageAdapter.removeMessage(vm.getLoadingIndicator(false));
+                if (null != messageAdapter.getItemAt(index)) {
+                    messageAdapter.notifyItemChanged(index);
+                } else {
+                    messageAdapter.notifyItemRemoved(index);
+                }
+                updateMessageDecoration();
+            }
         }));
     }
 
@@ -2274,10 +2280,14 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         @Override
         public void onSelectFinished(List<TAPMessageEntity> entities) {
             final List<TAPMessageModel> models = new ArrayList<>();
+            boolean allMessagesHidden = true;
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPChatManager.getInstance().convertToModel(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
+                if (allMessagesHidden && (null == model.getHidden() || !model.getHidden())) {
+                    allMessagesHidden = false;
+                }
             }
 
             if (0 < models.size()) {
@@ -2292,11 +2302,12 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 models.add(models.indexOf(vm.getMessagePointer().get(vm.getLastUnreadMessageLocalID())) + 1, unreadIndicator);
             }
 
+            boolean finalAllMessagesHidden = allMessagesHidden;
             if (null != messageAdapter && 0 == messageAdapter.getItems().size()) {
                 runOnUiThread(() -> {
                     // First load
                     messageAdapter.setMessages(models);
-                    if (models.size() == 0) {
+                    if (models.size() == 0 || finalAllMessagesHidden) {
                         // Chat is empty
                         // TODO: 24 September 2018 CHECK ROOM TYPE
                         clEmptyChat.setVisibility(View.VISIBLE);
@@ -2329,7 +2340,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         // Message exists
                         vm.setMessageModels(models);
                         state = STATE.LOADED;
-                        if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                        if (clEmptyChat.getVisibility() == View.VISIBLE && !finalAllMessagesHidden) {
                             clEmptyChat.setVisibility(View.GONE);
                         }
                         flMessageList.setVisibility(View.VISIBLE);
@@ -2359,7 +2370,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 });
             } else if (null != messageAdapter) {
                 runOnUiThread(() -> {
-                    if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                    if (clEmptyChat.getVisibility() == View.VISIBLE && !finalAllMessagesHidden) {
                         clEmptyChat.setVisibility(View.GONE);
                     }
                     flMessageList.setVisibility(View.VISIBLE);
@@ -2626,6 +2637,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
 
             vm.setAllUnreadMessagesHidden(false); // Set initial value for unread identifier/button flag
             int allUnreadsHidden = -1; // Flag to check hidden unread when looping
+            boolean allMessagesHidden = true; // Flag to check whether empty chat layout should be removed
 
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
@@ -2669,6 +2681,10 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                             } else if (null != message.getHidden() && message.getHidden() && allUnreadsHidden != 0) {
                                 allUnreadsHidden = 1;
                             }
+                        }
+
+                        if (allMessagesHidden && (null == message.getHidden() || !message.getHidden())) {
+                            allMessagesHidden = false;
                         }
 
                         if (message.getType() == TYPE_SYSTEM_MESSAGE &&
@@ -2722,8 +2738,9 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 TAPMessageStatusManager.getInstance().updateMessageStatusToDelivered(messageAfterModels);
             }
 
+            boolean finalAllMessagesHidden = allMessagesHidden;
             runOnUiThread(() -> {
-                if (clEmptyChat.getVisibility() == View.VISIBLE) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE && !finalAllMessagesHidden) {
                     clEmptyChat.setVisibility(View.GONE);
                 }
                 flMessageList.setVisibility(View.VISIBLE);
@@ -2902,11 +2919,15 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
             List<TAPMessageEntity> responseMessages = new ArrayList<>();  // Entities to be saved to database
             List<TAPMessageModel> messageBeforeModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
+            boolean allMessagesHidden = true; // Flag to check whether empty chat layout should be removed
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     messageBeforeModels.addAll(addBeforeTextMessage(message));
                     responseMessages.add(TAPChatManager.getInstance().convertToEntity(message));
+                    if (allMessagesHidden && (null == message.getHidden() || !message.getHidden())) {
+                        allMessagesHidden = false;
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -2916,8 +2937,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             mergeSort(messageBeforeModels, ASCENDING);
 
             List<TAPMessageModel> finalMessageBeforeModels = messageBeforeModels;
+            boolean finalAllMessagesHidden = allMessagesHidden;
             runOnUiThread(() -> {
-                if (clEmptyChat.getVisibility() == View.VISIBLE && 0 < finalMessageBeforeModels.size()) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE &&
+                        0 < finalMessageBeforeModels.size() &&
+                        !finalAllMessagesHidden) {
                     clEmptyChat.setVisibility(View.GONE);
                 }
 

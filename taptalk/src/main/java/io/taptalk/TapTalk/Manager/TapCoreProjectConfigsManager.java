@@ -20,9 +20,6 @@ public class TapCoreProjectConfigsManager {
     }
 
     public void getProjectConfigs(TapCoreProjectConfigsListener listener) {
-        if (!TapTalk.checkTapTalkInitialized()) {
-            return;
-        }
         TAPDataManager.getInstance().getProjectConfig(new TAPDefaultDataView<TapConfigs>() {
             @Override
             public void onSuccess(TapConfigs response) {
