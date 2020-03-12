@@ -607,7 +607,7 @@ public class TapTalk implements LifecycleObserver {
      * =============================================================================================
      */
 
-    public static TAPUserModel getTaptalkActiveUser() {
+    public static TAPUserModel getTapTalkActiveUser() {
         if (!checkTapTalkInitialized()) {
             return null;
         }
@@ -765,7 +765,7 @@ public class TapTalk implements LifecycleObserver {
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
 
-    public static void fetchNewMessageandUpdatedBadgeCount() {
+    public static void fetchNewMessageAndUpdatedBadgeCount() {
         if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated()) {
             TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
                 @Override
