@@ -27,10 +27,12 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ADMIN_REQUIRED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_GROUP_DELETED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ADMIN_REQUIRED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_GROUP_DELETED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_DELETE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_LEAVE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
@@ -103,6 +105,7 @@ public class TapCoreChatRoomManager {
 
     public void getPersonalChatRoom(TAPUserModel recipientUser, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         if (null == TAPChatManager.getInstance().getActiveUser()) {
@@ -131,6 +134,7 @@ public class TapCoreChatRoomManager {
 
     public void getPersonalChatRoom(String recipientUserID, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         if (null == TAPChatManager.getInstance().getActiveUser()) {
@@ -167,6 +171,7 @@ public class TapCoreChatRoomManager {
 
     public void createGroupChatRoom(String groupName, List<String> participantUserIDs, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().createGroupChatRoom(groupName, participantUserIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
@@ -196,6 +201,7 @@ public class TapCoreChatRoomManager {
 
     public void createGroupChatRoomWithPicture(String groupName, List<String> participantUserIDs, Uri groupPictureUri, TapCoreCreateGroupWithPictureListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().createGroupChatRoom(groupName, participantUserIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
@@ -252,6 +258,7 @@ public class TapCoreChatRoomManager {
 
     public void updateGroupPicture(String groupRoomID, Uri groupPictureUri, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPFileUploadManager.getInstance().uploadRoomPicture(TapTalk.appContext,
@@ -282,6 +289,7 @@ public class TapCoreChatRoomManager {
 
     public void updateGroupChatRoom(String groupRoomID, String groupName, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().updateChatRoom(groupRoomID, groupName,
@@ -312,6 +320,7 @@ public class TapCoreChatRoomManager {
 
     public void getGroupChatRoom(String groupRoomID, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPRoomModel roomModel = TAPGroupManager.Companion.getGetInstance().getGroupData(groupRoomID);
@@ -348,6 +357,7 @@ public class TapCoreChatRoomManager {
 
     public void getChatRoomByXcRoomID(String xcRoomID, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPRoomModel roomModel = TAPGroupManager.Companion.getGetInstance().getGroupData(xcRoomID);
@@ -384,6 +394,7 @@ public class TapCoreChatRoomManager {
 
     public void deleteGroupChatRoom(TAPRoomModel groupChatRoomModel, TapCommonListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().deleteChatRoom(groupChatRoomModel, new TAPDefaultDataView<TAPCommonResponse>() {
@@ -429,6 +440,7 @@ public class TapCoreChatRoomManager {
 
     public void leaveGroupChatRoom(String groupRoomID, TapCommonListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().leaveChatRoom(groupRoomID, new TAPDefaultDataView<TAPCommonResponse>() {
@@ -474,6 +486,7 @@ public class TapCoreChatRoomManager {
 
     public void addGroupChatMembers(String groupRoomID, List<String> userIDs, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().addRoomParticipant(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
@@ -503,6 +516,7 @@ public class TapCoreChatRoomManager {
 
     public void removeGroupChatMembers(String groupRoomID, List<String> userIDs, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().removeRoomParticipant(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
@@ -532,6 +546,7 @@ public class TapCoreChatRoomManager {
 
     public void promoteGroupAdmins(String groupRoomID, List<String> userIDs, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().promoteGroupAdmins(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
@@ -561,6 +576,7 @@ public class TapCoreChatRoomManager {
 
     public void demoteGroupAdmins(String groupRoomID, List<String> userIDs, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().demoteGroupAdmins(groupRoomID, userIDs, new TAPDefaultDataView<TAPCreateRoomResponse>() {
