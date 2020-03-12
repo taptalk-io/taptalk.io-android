@@ -61,11 +61,15 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INVALID_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_NOT_AUTHENTICATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACCESS_TOKEN_UNAVAILABLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INVALID_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_NOT_AUTHENTICATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_AUTHENTICATE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_REFRESH_ACTIVE_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_REFRESH_CONFIG;
@@ -302,7 +306,7 @@ public class TapTalk implements LifecycleObserver {
 
     public static boolean checkTapTalkInitialized() {
         if (null == tapTalk) {
-            Log.e(TAG, "Please initialize TapTalk library, read documentation for detailed information.");
+            Log.e(TAG, ERROR_MESSAGE_INIT_TAPTALK);
             return false;
         }
         return true;
@@ -332,6 +336,7 @@ public class TapTalk implements LifecycleObserver {
 
     public static void authenticateWithAuthTicket(String authTicket, boolean connectOnSuccess, TapCommonListener listener) {
         if (!checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         if (null == authTicket || "".equals(authTicket)) {
@@ -410,25 +415,24 @@ public class TapTalk implements LifecycleObserver {
         return TAPDataManager.getInstance().checkAccessTokenAvailable();
     }
 
-    public static void logoutAndClearAllTapTalkData(TapCommonListener listener) {
-        if (!checkTapTalkInitialized()) {
+    public static void logoutAndClearAllTapTalkData() {
+        if (!checkTapTalkInitialized() || !isAuthenticated()) {
             return;
         }
         TAPDataManager.getInstance().logout(new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
                 clearAllTapTalkData();
-                listener.onSuccess(response.getMessage());
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                listener.onError(error.getCode(), error.getMessage());
+                clearAllTapTalkData();
             }
 
             @Override
             public void onError(String errorMessage) {
-                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                clearAllTapTalkData();
             }
         });
     }
@@ -454,8 +458,8 @@ public class TapTalk implements LifecycleObserver {
 
     public static void connect(TapCommonListener listener) {
         if (!checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
-
         }
         if (isAuthenticated()) {
             TAPConnectionManager.getInstance().connect(listener);
@@ -608,7 +612,7 @@ public class TapTalk implements LifecycleObserver {
      * =============================================================================================
      */
 
-    public static TAPUserModel getTaptalkActiveUser() {
+    public static TAPUserModel getTapTalkActiveUser() {
         if (!checkTapTalkInitialized()) {
             return null;
         }
@@ -617,6 +621,7 @@ public class TapTalk implements LifecycleObserver {
 
     public static void refreshActiveUser(TapCommonListener listener) {
         if (!checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         new Thread(() -> {
@@ -766,7 +771,7 @@ public class TapTalk implements LifecycleObserver {
         TAPNotificationManager.getInstance().createAndShowBackgroundNotification(context, notificationIcon, destinationClass, newMessageModel);
     }
 
-    public static void fetchNewMessageandUpdatedBadgeCount() {
+    public static void fetchNewMessageAndUpdatedBadgeCount() {
         if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated()) {
             TapCoreRoomListManager.getInstance().fetchNewMessageToDatabase(new TapCommonListener() {
                 @Override
