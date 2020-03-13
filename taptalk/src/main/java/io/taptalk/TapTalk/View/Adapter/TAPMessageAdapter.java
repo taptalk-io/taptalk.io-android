@@ -1434,7 +1434,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public class LoadingVH extends TAPBaseChatViewHolder {
 
-        ImageView ivLoadingProgress;
+        private ImageView ivLoadingProgress;
 
         LoadingVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -1478,12 +1478,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public class DeletedVH extends TAPBaseChatViewHolder {
 
-        CircleImageView civAvatar;
-        TextView tvAvatarLabel, tvUserName;
+        private ConstraintLayout clContainer;
+        private CircleImageView civAvatar;
+        private TextView tvAvatarLabel, tvUserName;
 
-        protected DeletedVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
+        DeletedVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
             if (bubbleType == TYPE_BUBBLE_DELETED_LEFT) {
+                clContainer = itemView.findViewById(R.id.cl_container);
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
                 tvUserName = itemView.findViewById(R.id.tv_user_name);
@@ -1495,6 +1497,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (!item.isAnimating()) {
                 checkAndUpdateMessageStatus(this, item, null, null, civAvatar, tvAvatarLabel, tvUserName);
             }
+            markMessageAsRead(item, myUserModel);
+            enableLongPress(itemView.getContext(), clContainer, item);
         }
     }
 
