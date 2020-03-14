@@ -1498,7 +1498,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 checkAndUpdateMessageStatus(this, item, null, null, civAvatar, tvAvatarLabel, tvUserName);
             }
             markMessageAsRead(item, myUserModel);
-            enableLongPress(itemView.getContext(), clContainer, item);
+//            enableLongPress(itemView.getContext(), clContainer, item);
         }
     }
 

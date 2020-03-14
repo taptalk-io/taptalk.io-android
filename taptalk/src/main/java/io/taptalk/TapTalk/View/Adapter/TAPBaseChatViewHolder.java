@@ -73,16 +73,18 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
     }
 
     protected void enableLongPress(Context context, View view, TAPMessageModel message) {
-        view.setOnLongClickListener(v -> {
-            Intent intent = new Intent(LongPressChatBubble);
-            intent.putExtra(MESSAGE, message);
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-            if (BuildConfig.DEBUG || TapTalk.isLoggingEnabled) {
-                Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.toJsonString(message));
-            }
-            return true;
-        });
+        if (null != view) {
+            view.setOnLongClickListener(v -> {
+                Intent intent = new Intent(LongPressChatBubble);
+                intent.putExtra(MESSAGE, message);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                if (BuildConfig.DEBUG || TapTalk.isLoggingEnabled) {
+                    Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.toJsonString(message));
+                }
+                return true;
+            });
+        }
     }
 
     protected void setLinkDetection(Context context, TextView tvMessageBody) {
