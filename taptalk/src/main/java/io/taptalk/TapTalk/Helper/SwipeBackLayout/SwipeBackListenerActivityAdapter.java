@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Helper.SwipeBackLayout;
 
 import android.app.Activity;
+
 import androidx.annotation.NonNull;
 
 import java.lang.ref.WeakReference;

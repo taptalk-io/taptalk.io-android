@@ -3,15 +3,15 @@ package io.taptalk.TapTalk.View.Fragment;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import io.taptalk.TapTalk.Helper.QRCode.BarcodeFormat;
 import io.taptalk.TapTalk.Helper.QRCode.BitMatrix;
@@ -58,7 +58,7 @@ public class TAPShowQRFragment extends Fragment {
         btnScanQRCode = view.findViewById(R.id.btn_scan_qr_code);
 
         try {
-            bitmap = encodeAsBitmap("id:"+TAPChatManager.getInstance().getActiveUser().getUserID());
+            bitmap = encodeAsBitmap("id:" + TAPChatManager.getInstance().getActiveUser().getUserID());
             ivQRCode.setImageBitmap(bitmap);
         } catch (Exception e) {
             e.printStackTrace();

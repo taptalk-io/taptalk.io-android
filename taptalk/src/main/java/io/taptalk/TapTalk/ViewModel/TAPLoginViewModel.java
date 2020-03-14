@@ -1,8 +1,9 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
+
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 
 public class TAPLoginViewModel extends AndroidViewModel {
 

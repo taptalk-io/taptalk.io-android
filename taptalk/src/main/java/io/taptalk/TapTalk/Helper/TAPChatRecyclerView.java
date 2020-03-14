@@ -1,8 +1,9 @@
 package io.taptalk.TapTalk.Helper;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public class TAPChatRecyclerView extends RecyclerView {
     private int oldHeight;

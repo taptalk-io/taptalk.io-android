@@ -1,10 +1,11 @@
 package io.taptalk.TapTalk.View.Activity;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.widget.ImageView;
+
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.widget.ImageView;
 
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;

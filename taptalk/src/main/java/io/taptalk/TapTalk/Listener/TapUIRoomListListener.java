@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Listener;
 
 import android.app.Activity;
 import android.content.Intent;
+
 import androidx.annotation.Keep;
 
 import java.lang.ref.WeakReference;

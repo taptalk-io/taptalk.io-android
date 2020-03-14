@@ -1,11 +1,12 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
+
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -358,7 +359,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public LinkedHashMap<String, TAPUserModel> getGroupTyping() {
-        return null == groupTyping? groupTyping = new LinkedHashMap<>() : groupTyping;
+        return null == groupTyping ? groupTyping = new LinkedHashMap<>() : groupTyping;
     }
 
     public void setGroupTyping(LinkedHashMap<String, TAPUserModel> groupTyping) {

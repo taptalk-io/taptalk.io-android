@@ -1,21 +1,18 @@
 package io.taptalk.TapTalk.View.Activity
 
 import android.app.Activity
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProviders
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
@@ -109,7 +106,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                             .setPrimaryButtonListener {
                                 groupViewModel?.loadingStartText = getString(R.string.tap_removing)
                                 groupViewModel?.loadingEndText = getString(R.string.tap_removed_member)
-                                TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID ?: "",
+                                TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID
+                                        ?: "",
                                         groupViewModel?.selectedMembers?.keys?.toList(), userActionView)
                             }
                             .setSecondaryButtonTitle(getString(R.string.tap_cancel))
@@ -124,7 +122,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                             .setPrimaryButtonListener {
                                 groupViewModel?.loadingStartText = getString(R.string.tap_removing)
                                 groupViewModel?.loadingEndText = getString(R.string.tap_removed_member)
-                                TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID ?: "",
+                                TAPDataManager.getInstance().removeRoomParticipant(groupViewModel?.groupData?.roomID
+                                        ?: "",
                                         groupViewModel?.selectedMembers?.keys?.toList(), userActionView)
                             }
                             .setSecondaryButtonTitle(getString(R.string.tap_cancel))
@@ -138,7 +137,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     TAPGroupMemberViewModel.AdminButtonShowed.PROMOTE -> {
                         groupViewModel?.loadingStartText = getString(R.string.tap_updating)
                         groupViewModel?.loadingEndText = getString(R.string.tap_promoted_admin)
-                        TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.groupData?.roomID ?: "",
+                        TAPDataManager.getInstance().promoteGroupAdmins(groupViewModel?.groupData?.roomID
+                                ?: "",
                                 groupViewModel?.getSelectedUserIDs(), userActionView)
                     }
 
@@ -151,7 +151,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                                 .setPrimaryButtonListener {
                                     groupViewModel?.loadingStartText = getString(R.string.tap_updating)
                                     groupViewModel?.loadingEndText = getString(R.string.tap_demoted_admin)
-                                    TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.groupData?.roomID ?: "",
+                                    TAPDataManager.getInstance().demoteGroupAdmins(groupViewModel?.groupData?.roomID
+                                            ?: "",
                                             groupViewModel?.getSelectedUserIDs(), userActionView)
                                 }
                                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))

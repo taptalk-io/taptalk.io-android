@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Model.ResponseModel;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
 import io.taptalk.TapTalk.Model.TAPMessageModel;

@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.Model.RequestModel;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import androidx.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,7 +9,8 @@ public class TAPUpdateRoomRequest implements Parcelable {
     @JsonProperty("roomID") private String roomID;
     @JsonProperty("name") private String roomName;
 
-    public TAPUpdateRoomRequest() {}
+    public TAPUpdateRoomRequest() {
+    }
 
     public TAPUpdateRoomRequest(String roomID, String roomName) {
         this.roomID = roomID;

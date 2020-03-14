@@ -17,7 +17,8 @@ public class TAPPairIdNameModel {
         this.name = name;
     }
 
-    public TAPPairIdNameModel() {}
+    public TAPPairIdNameModel() {
+    }
 
     public String getId() {
         return id;

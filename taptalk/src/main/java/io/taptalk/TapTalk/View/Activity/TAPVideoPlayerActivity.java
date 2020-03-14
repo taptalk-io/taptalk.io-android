@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
@@ -10,11 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +18,13 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProviders;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -355,7 +356,8 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener saveButtonListener = v -> saveVideo();
-    private View.OnClickListener emptyListener = v -> {};
+    private View.OnClickListener emptyListener = v -> {
+    };
 
     private MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
         @Override

@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Data.RecentSearch;
 
 import android.app.Application;
+
 import androidx.lifecycle.LiveData;
 
 import java.util.List;

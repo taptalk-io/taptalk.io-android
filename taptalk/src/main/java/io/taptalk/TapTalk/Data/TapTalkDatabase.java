@@ -1,12 +1,13 @@
 package io.taptalk.TapTalk.Data;
 
-import androidx.sqlite.db.SupportSQLiteDatabase;
+import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
-import android.content.Context;
-import androidx.annotation.NonNull;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import io.taptalk.TapTalk.Data.Contact.TAPMyContactDao;
 import io.taptalk.TapTalk.Data.Message.TAPMessageDao;
@@ -18,13 +19,13 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomDatabase.kDatabaseVersion;
 
 @Database(entities = {TAPMessageEntity.class, TAPRecentSearchEntity.class, TAPUserModel.class}, version = kDatabaseVersion, exportSchema = false)
-public abstract class TapTalkDatabase extends RoomDatabase{
+public abstract class TapTalkDatabase extends RoomDatabase {
 
     private static TapTalkDatabase database;
 
     // TODO: 16/10/18 kalau udah di deploy jangan lupa di encrypt
-    public static TapTalkDatabase getDatabase(Context context){
-        if (null == database){
+    public static TapTalkDatabase getDatabase(Context context) {
+        if (null == database) {
 //            SafeHelperFactory factory = SafeHelperFactory.fromUser(
 //                    Editable.Factory.getInstance().newEditable(DB_ENCRYPT_PASS));
             database = Room.databaseBuilder(context,
@@ -97,6 +98,8 @@ public abstract class TapTalkDatabase extends RoomDatabase{
     };
 
     public abstract TAPMessageDao messageDao();
+
     public abstract TAPRecentSearchDao recentSearchDao();
+
     public abstract TAPMyContactDao myContactDao();
 }

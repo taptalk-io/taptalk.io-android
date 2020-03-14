@@ -1,8 +1,9 @@
 package io.taptalk.TapTalk.Model;
 
-import androidx.room.Ignore;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.room.Ignore;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

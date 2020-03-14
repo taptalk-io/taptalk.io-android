@@ -117,7 +117,7 @@
         android:paddingStart="1dp"
         android:paddingEnd="0dp"
         android:paddingRight="0dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <include layout="@layout/tap_layout_popup_loading_screen" />
 

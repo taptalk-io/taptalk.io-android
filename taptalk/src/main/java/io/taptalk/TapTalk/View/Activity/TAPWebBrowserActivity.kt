@@ -3,13 +3,13 @@ package io.taptalk.TapTalk.View.Activity
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.appcompat.app.AppCompatActivity
 import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_web_browser.*
 

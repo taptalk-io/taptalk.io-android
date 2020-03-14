@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Manager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+
 import androidx.annotation.Nullable;
 
 import java.lang.ref.WeakReference;

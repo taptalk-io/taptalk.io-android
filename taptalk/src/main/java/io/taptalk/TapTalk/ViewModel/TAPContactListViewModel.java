@@ -1,10 +1,11 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
+import android.net.Uri;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import android.net.Uri;
-import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;

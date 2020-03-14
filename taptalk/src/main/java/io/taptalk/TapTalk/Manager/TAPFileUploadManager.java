@@ -9,9 +9,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -1078,7 +1079,7 @@ public class TAPFileUploadManager {
 
             // Notify message sent
             Intent intent = new Intent(UploadProgressFinish);
-            intent.putExtra(UploadLocalID,localID);
+            intent.putExtra(UploadLocalID, localID);
             intent.putExtra(UploadImageData, messageModel.getData());
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
 

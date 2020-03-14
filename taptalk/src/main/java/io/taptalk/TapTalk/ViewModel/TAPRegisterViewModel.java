@@ -1,9 +1,10 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;

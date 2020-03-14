@@ -1,8 +1,9 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
+
 import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -55,7 +56,7 @@ public class TAPRoomListViewModel extends AndroidViewModel {
         this.roomPointer = roomPointer;
     }
 
-    public void addRoomPointer(TAPRoomListModel roomModel){
+    public void addRoomPointer(TAPRoomListModel roomModel) {
         getRoomPointer().put(roomModel.getLastMessage().getRoom().getRoomID(), roomModel);
     }
 

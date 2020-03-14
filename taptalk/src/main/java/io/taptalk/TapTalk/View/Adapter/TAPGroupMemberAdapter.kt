@@ -3,14 +3,14 @@ package io.taptalk.TapTalk.View.Adapter
 import android.app.Activity
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat
-import androidx.core.widget.ImageViewCompat
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.DiffUtil.DiffResult
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DiffUtil.DiffResult
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -79,7 +79,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
         private val vSeparator: View = itemView.findViewById(R.id.v_separator)
         private val ivSelection: ImageView = itemView.findViewById(R.id.iv_selection)
         private val groupAdapter = adapter
-        private var isAdmin : Boolean = false
+        private var isAdmin: Boolean = false
 
         override fun onBind(item: TAPUserModel?, position: Int) {
             if (groupAdapter.adminList.isNotEmpty() && groupAdapter.adminList.contains(item?.userID

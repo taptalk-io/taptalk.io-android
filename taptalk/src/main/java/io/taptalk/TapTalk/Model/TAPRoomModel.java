@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -18,7 +19,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 
 public class TAPRoomModel implements Parcelable {
 
-    @JsonProperty("roomID") @JsonAlias("id") private String roomID;
+    @JsonProperty("roomID")
+    @JsonAlias("id")
+    private String roomID;
     @JsonProperty("xcRoomID") private String xcRoomID;
     @JsonProperty("name") private String roomName;
     @JsonProperty("color") private String roomColor;
@@ -28,10 +31,19 @@ public class TAPRoomModel implements Parcelable {
     @JsonProperty("deleted") private long deletedTimestamp;
     @JsonProperty("isLocked") private boolean isLocked;
     @JsonProperty("isDeleted") private boolean isRoomDeleted;
-    @Nullable @JsonProperty("imageURL") private TAPImageURL roomImage;
-    @Nullable @JsonIgnore private List<TAPUserModel> groupParticipants;
-    @Nullable @JsonIgnore private Integer numOfParticipants;
-    @Nullable @JsonIgnore @JsonProperty("admins") private List<String> admins;
+    @Nullable
+    @JsonProperty("imageURL")
+    private TAPImageURL roomImage;
+    @Nullable
+    @JsonIgnore
+    private List<TAPUserModel> groupParticipants;
+    @Nullable
+    @JsonIgnore
+    private Integer numOfParticipants;
+    @Nullable
+    @JsonIgnore
+    @JsonProperty("admins")
+    private List<String> admins;
     @JsonIgnore private boolean isMuted;
 
     public TAPRoomModel(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor) {
@@ -55,7 +67,8 @@ public class TAPRoomModel implements Parcelable {
         this.roomID = messageEntity.getRoomID();
         this.roomName = messageEntity.getRoomName();
         this.roomType = null == messageEntity.getRoomType() ? TYPE_PERSONAL : messageEntity.getRoomType();
-        this.roomImage = TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {}, messageEntity.getRoomImage());
+        this.roomImage = TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
+        }, messageEntity.getRoomImage());
         this.roomColor = messageEntity.getRoomColor();
         this.isLocked = null == messageEntity.getRoomLocked() ? false : messageEntity.getRoomLocked();
         this.isRoomDeleted = null == messageEntity.getRoomDeleted() ? false : messageEntity.getRoomDeleted();

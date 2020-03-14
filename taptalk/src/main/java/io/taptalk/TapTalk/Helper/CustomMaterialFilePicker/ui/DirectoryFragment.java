@@ -3,11 +3,12 @@ package io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.io.File;
 
