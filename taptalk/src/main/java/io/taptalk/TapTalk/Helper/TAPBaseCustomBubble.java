@@ -1,6 +1,6 @@
 package io.taptalk.TapTalk.Helper;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.ViewGroup;
 
 import io.taptalk.TapTalk.Interface.TapTalkBaseCustomInterface;

@@ -11,10 +11,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.Settings
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.ActivityCompat.requestPermissions
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.LinearLayoutManager
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.style.StyleSpan
@@ -263,7 +263,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         })
 
         adapter = TAPSearchLocationAdapter(locationList, generalListener)
-        recycler_view.layoutManager = LinearLayoutManager(this)
+        recycler_view.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         recycler_view.adapter = adapter
         if (TAPUtils.hasPermissions(this, PERMISSIONS[0])) {
             getLocation()

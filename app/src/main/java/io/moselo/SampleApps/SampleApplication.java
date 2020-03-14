@@ -2,7 +2,7 @@ package io.moselo.SampleApps;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.multidex.MultiDexApplication;
+import androidx.multidex.MultiDexApplication;
 
 import com.facebook.stetho.Stetho;
 

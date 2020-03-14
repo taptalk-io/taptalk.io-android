@@ -1,8 +1,8 @@
 package io.taptalk.TapTalk.View.BottomSheet
 
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialogFragment
-import android.support.v7.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -124,7 +124,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
         rv_long_press.adapter = longPressAdapter
-        rv_long_press.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        rv_long_press.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, false)
         rv_long_press.setHasFixedSize(true)
     }
 }

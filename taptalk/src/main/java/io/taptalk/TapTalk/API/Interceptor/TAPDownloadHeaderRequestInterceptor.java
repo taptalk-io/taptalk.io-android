@@ -3,7 +3,7 @@ package io.taptalk.TapTalk.API.Interceptor;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Base64;
 
 import java.io.IOException;

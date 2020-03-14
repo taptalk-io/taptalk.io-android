@@ -1,9 +1,9 @@
 package io.moselo.SampleApps.Activity;
 
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.widget.FrameLayout;
 
 import io.moselo.SampleApps.Fragment.TAPLoginVerificationFragment;

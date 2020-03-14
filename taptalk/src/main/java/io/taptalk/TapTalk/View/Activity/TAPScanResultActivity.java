@@ -1,15 +1,15 @@
 package io.taptalk.TapTalk.View.Activity;
 
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.widget.CardView;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
+import androidx.cardview.widget.CardView;
 import android.text.Html;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;

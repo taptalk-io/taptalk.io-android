@@ -1,7 +1,7 @@
 package io.taptalk.TapTalk.ViewModel
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
+import androidx.lifecycle.AndroidViewModel
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel

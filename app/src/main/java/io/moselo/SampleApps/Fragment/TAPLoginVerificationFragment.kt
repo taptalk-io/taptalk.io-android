@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -32,7 +32,7 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TaptalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
-class TAPLoginVerificationFragment : Fragment() {
+class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
             ?: ""
     var otpTimer: CountDownTimer? = null

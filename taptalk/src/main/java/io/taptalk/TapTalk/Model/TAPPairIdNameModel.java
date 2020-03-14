@@ -1,6 +1,6 @@
 package io.taptalk.TapTalk.Model;
 
-import android.arch.persistence.room.Ignore;
+import androidx.room.Ignore;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

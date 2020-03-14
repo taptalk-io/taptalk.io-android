@@ -1,7 +1,7 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import io.taptalk.TapTalk.Helper.SwipeBackLayout.SwipeBackActivity;
 import io.taptalk.TapTalk.Helper.TAPUtils;

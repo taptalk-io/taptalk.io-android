@@ -1,10 +1,10 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
+import androidx.lifecycle.AndroidViewModel;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.Timer;
 

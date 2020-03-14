@@ -1,8 +1,8 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;

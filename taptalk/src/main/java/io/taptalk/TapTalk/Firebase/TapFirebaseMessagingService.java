@@ -1,6 +1,6 @@
 package io.taptalk.TapTalk.Firebase;
 
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;

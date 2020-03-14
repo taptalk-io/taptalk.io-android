@@ -2,7 +2,7 @@ package io.taptalk.TapTalk.View.Activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,9 +14,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.ImageViewCompat
-import android.support.v4.content.LocalBroadcastManager
+import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
@@ -718,7 +718,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                         enableEditing()
                         reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
                     }
-                    LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))
+                    androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))
                 }
                 UploadFailed -> {
                     val userID = intent.getStringExtra(K_USER_ID)

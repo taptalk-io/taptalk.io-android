@@ -6,9 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 
 import io.taptalk.Taptalk.R;
 
@@ -21,7 +20,7 @@ import io.taptalk.Taptalk.R;
  *    app:dimensionRatio to to limit the view's ratio
  **** corner radius value might be inaccurate (less than the set value)
  */
-public class TAPRoundedCornerImageView extends android.support.v7.widget.AppCompatImageView {
+public class TAPRoundedCornerImageView extends androidx.appcompat.widget.AppCompatImageView {
 
     private Path path;
     private RectF rounded;

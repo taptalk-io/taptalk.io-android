@@ -2,7 +2,7 @@ package io.moselo.SampleApps.Activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,9 +11,9 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v4.widget.ImageViewCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.widget.ImageViewCompat
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher

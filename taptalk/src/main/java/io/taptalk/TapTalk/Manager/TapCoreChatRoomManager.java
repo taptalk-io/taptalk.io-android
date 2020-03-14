@@ -1,7 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.net.Uri;
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 
 import java.util.ArrayList;
 import java.util.List;
