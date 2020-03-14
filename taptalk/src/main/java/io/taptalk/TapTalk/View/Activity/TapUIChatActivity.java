@@ -2636,7 +2636,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             long smallestUnreadCreated = 0L;
 
             vm.setAllUnreadMessagesHidden(false); // Set initial value for unread identifier/button flag
-            int allUnreadsHidden = -1; // Flag to check hidden unread when looping
+            boolean allUnreadHidden = true; // Flag to check hidden unread when looping
             boolean allMessagesHidden = true; // Flag to check whether empty chat layout should be removed
 
             for (HashMap<String, Object> messageMap : response.getMessages()) {
@@ -2645,8 +2645,8 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                     String newID = message.getLocalID();
                     if (vm.getMessagePointer().containsKey(newID)) {
                         // Update existing message
+                        vm.updateMessagePointer(message);
                         runOnUiThread(() -> {
-                            vm.updateMessagePointer(message);
                             messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
                         });
                     } else if (!vm.getMessagePointer().containsKey(newID)) {
@@ -2674,12 +2674,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                                 && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
                                 && (null != message.getIsRead() && !message.getIsRead())
                                 && null == vm.getUnreadIndicator()) {
+                            // Update first unread message index
                             unreadMessageIndex = messageAfterModels.indexOf(message);
                             smallestUnreadCreated = message.getCreated();
-                            if (null != message.getHidden() && !message.getHidden()) {
-                                allUnreadsHidden = 0;
-                            } else if (null != message.getHidden() && message.getHidden() && allUnreadsHidden != 0) {
-                                allUnreadsHidden = 1;
+                            if (allUnreadHidden && (null == message.getHidden() || !message.getHidden())) {
+                                allUnreadHidden = false;
                             }
                         }
 
@@ -2721,7 +2720,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                 vm.setInitialUnreadCount(vm.getInitialUnreadCount() + unreadMessageIds.size());
             }
 
-            if (allUnreadsHidden == 1) {
+            if (allUnreadHidden) {
                 // All unread messages are hidden
                 vm.setAllUnreadMessagesHidden(true);
             }
@@ -2863,15 +2862,13 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
                         if (0 < entities.size()) {
                             vm.setLastUnreadMessageLocalID(entities.get(0).getLocalID());
                             new Thread(() -> {
-                                int allUnreadsHidden = -1; // Flag to check hidden unread when looping
+                                boolean allUnreadHidden = true; // Flag to check hidden unread when looping
                                 for (TAPMessageEntity entity : entities) {
-                                    if (null != entity.getHidden() && !entity.getHidden()) {
-                                        allUnreadsHidden = 0;
-                                    } else if (null != entity.getHidden() && entity.getHidden() && allUnreadsHidden != 0) {
-                                        allUnreadsHidden = 1;
+                                    if (allUnreadHidden && (null == entity.getHidden() || !entity.getHidden())) {
+                                        allUnreadHidden = false;
                                     }
                                 }
-                                if (allUnreadsHidden == 1) {
+                                if (allUnreadHidden) {
                                     vm.setAllUnreadMessagesHidden(true);
                                 }
                             }).start();
