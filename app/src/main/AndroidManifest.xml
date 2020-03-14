@@ -16,15 +16,16 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
 
-        <receiver android:name="io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver"
-            android:enabled="true"/>
+        <receiver
+            android:name="io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver"
+            android:enabled="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAQ-N8TC8jsA6ACHdincnIAkyiiNJditJg" />
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -39,7 +40,8 @@
             </intent-filter>
         </service>
 
-        <activity android:name="io.moselo.SampleApps.Activity.MainActivity"
+        <activity
+            android:name="io.moselo.SampleApps.Activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,10 +51,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="io.moselo.SampleApps.Activity.TAPLoginActivity"
+        <activity
+            android:name="io.moselo.SampleApps.Activity.TAPLoginActivity"
             android:screenOrientation="portrait" />
 
-        <activity android:name="io.moselo.SampleApps.Activity.TAPRegisterActivity"
+        <activity
+            android:name="io.moselo.SampleApps.Activity.TAPRegisterActivity"
             android:screenOrientation="portrait" />
     </application>
 

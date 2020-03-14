@@ -128,7 +128,8 @@
     <color name="tapIconMediaPreviewAdd">@color/tapColorWhiteIcon</color>
     <color name="tapIconMediaPreviewWarning">@color/tapColorWhiteIcon</color>
     <color name="tapIconMediaPreviewThumbnailWarning">@color/tapColorWhiteIcon</color>
-    <color name="tapIconMediaPreviewThumbnailWarningBackground">@color/tapColorDestructiveIcon</color>
+    <color name="tapIconMediaPreviewThumbnailWarningBackground">@color/tapColorDestructiveIcon
+    </color>
     <color name="tapIconSaveImage">@color/tapColorWhiteIcon</color>
     <color name="tapIconMediaListVideo">@color/tapColorWhiteIcon</color>
 

@@ -25,8 +25,9 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.support.annotation.Keep;
 import android.text.TextUtils;
+
+import androidx.annotation.Keep;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 

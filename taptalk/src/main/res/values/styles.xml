@@ -378,7 +378,9 @@
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapRightBubbleMessageBodyColor</item>
         <item name="android:textColorLink">@color/tapRightBubbleMessageBodyURLColor</item>
-        <item name="android:textColorHighlight">@color/tapRightBubbleMessageBodyURLHighlightedColor</item>
+        <item name="android:textColorHighlight">
+            @color/tapRightBubbleMessageBodyURLHighlightedColor
+        </item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -386,7 +388,8 @@
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapLeftBubbleMessageBodyColor</item>
         <item name="android:textColorLink">@color/tapLeftBubbleMessageBodyURLColor</item>
-        <item name="android:textColorHighlight">@color/tapLeftBubbleMessageBodyURLHighlightedColor</item>
+        <item name="android:textColorHighlight">@color/tapLeftBubbleMessageBodyURLHighlightedColor
+        </item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -534,7 +537,7 @@
     </style>
 
     <!--<style name="tapLocationPickerAddressPlaceholderStyle" parent="tapLocationPickerAddressStyle">-->
-        <!--<item name="android:textColor">@color/tapLocationPickerAddressPlaceholderColor</item>-->
+    <!--<item name="android:textColor">@color/tapLocationPickerAddressPlaceholderColor</item>-->
     <!--</style>-->
 
     <style name="tapLocationPickerSendLocationLabelButtonStyle" parent="tapFontFamilyBold">

@@ -1,8 +1,9 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.util.Base64;
+
+import androidx.annotation.NonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

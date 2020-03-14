@@ -10,7 +10,8 @@ public class TAPErrorModel {
     @JsonProperty("message") private String message;
     @JsonProperty("field") private String field;
 
-    public TAPErrorModel() {}
+    public TAPErrorModel() {
+    }
 
     public TAPErrorModel(String code, String message, String field) {
         this.code = code;

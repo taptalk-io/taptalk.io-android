@@ -45,7 +45,7 @@ public class TAPNetworkStateManager {
     public void registerCallback(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != networkCallback) {
             getConnectivityManager(context).registerNetworkCallback(networkRequest, networkCallback);
-        } else  {
+        } else {
             // Broadcast receiver will not receive callback right away, trigger connectivity change manually to update connection status
             triggerConnectivityChange();
         }

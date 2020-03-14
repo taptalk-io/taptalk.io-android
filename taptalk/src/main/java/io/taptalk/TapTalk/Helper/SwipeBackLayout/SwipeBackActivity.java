@@ -1,8 +1,9 @@
 package io.taptalk.TapTalk.Helper.SwipeBackLayout;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 

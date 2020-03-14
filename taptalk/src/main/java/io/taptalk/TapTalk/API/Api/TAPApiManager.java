@@ -1,7 +1,8 @@
 package io.taptalk.TapTalk.API.Api;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.util.List;

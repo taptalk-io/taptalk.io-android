@@ -3,5 +3,5 @@
     android:shape="rectangle">
     <stroke
         android:width="2dp"
-        android:color="@color/tapSelectedMediaPreviewThumbnailBorderColor"/>
+        android:color="@color/tapSelectedMediaPreviewThumbnailBorderColor" />
 </shape>

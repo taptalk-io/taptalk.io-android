@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <application
         android:largeHeap="true"
         android:theme="@style/AppTheme">
@@ -25,40 +26,54 @@
         <service
             android:name="io.taptalk.TapTalk.Helper.CustomTabLayout.TAPKeepAliveService"
             android:exported="true" />
+
         <receiver
             android:name="io.taptalk.TapTalk.Manager.TAPNetworkStateManager$TapNetworkBroadcastReceiver"
             android:label="NetworkChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-<!--                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />-->
+                <!--                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />-->
             </intent-filter>
         </receiver>
 
-        <activity android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPNewChatActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPNewContactActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPBlockedListActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPForwardPickerActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPForwardPickerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPMapActivity"
@@ -84,7 +99,8 @@
             android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
-        <activity android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity"
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="sensor" />
     </application>

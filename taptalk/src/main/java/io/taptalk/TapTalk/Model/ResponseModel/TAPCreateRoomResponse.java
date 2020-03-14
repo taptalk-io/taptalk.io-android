@@ -2,7 +2,8 @@ package io.taptalk.TapTalk.Model.ResponseModel;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,9 +14,15 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPCreateRoomResponse implements Parcelable {
-    @Nullable @JsonProperty("room") private TAPRoomModel room;
-    @Nullable @JsonProperty("participants") private List<TAPUserModel> participants;
-    @Nullable @JsonProperty("adminUserIDs") @JsonAlias("admins")
+    @Nullable
+    @JsonProperty("room")
+    private TAPRoomModel room;
+    @Nullable
+    @JsonProperty("participants")
+    private List<TAPUserModel> participants;
+    @Nullable
+    @JsonProperty("adminUserIDs")
+    @JsonAlias("admins")
     private List<String> admins;
 
     public TAPCreateRoomResponse(@Nullable TAPRoomModel room, @Nullable List<TAPUserModel> participants, @Nullable List<String> admins) {
@@ -24,7 +31,8 @@ public class TAPCreateRoomResponse implements Parcelable {
         this.admins = admins;
     }
 
-    public TAPCreateRoomResponse() {}
+    public TAPCreateRoomResponse() {
+    }
 
     @Nullable
     public TAPRoomModel getRoom() {

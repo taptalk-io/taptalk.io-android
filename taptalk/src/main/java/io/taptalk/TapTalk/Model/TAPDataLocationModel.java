@@ -12,9 +12,15 @@ import javax.annotation.Nullable;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPDataLocationModel implements Parcelable {
-    @Nullable @JsonProperty("address") private String address;
-    @Nullable @JsonProperty("latitude") private Double latitude;
-    @Nullable @JsonProperty("longitude") private Double longitude;
+    @Nullable
+    @JsonProperty("address")
+    private String address;
+    @Nullable
+    @JsonProperty("latitude")
+    private Double latitude;
+    @Nullable
+    @JsonProperty("longitude")
+    private Double longitude;
 
     public TAPDataLocationModel(@Nullable String address, @Nullable Double latitude, @Nullable Double longitude) {
         this.address = address;
