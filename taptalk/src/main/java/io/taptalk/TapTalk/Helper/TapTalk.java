@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Helper;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -719,6 +720,10 @@ public class TapTalk implements LifecycleObserver {
             return null;
         }
         return tapTalk.tapListeners;
+    }
+
+    public static String getDeviceId() {
+        return Settings.Secure.getString(TapTalk.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     public static void addTapTalkListener(TapListener listener) {
