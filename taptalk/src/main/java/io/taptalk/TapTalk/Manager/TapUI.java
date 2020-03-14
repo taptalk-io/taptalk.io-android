@@ -36,7 +36,9 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
@@ -203,6 +205,7 @@ public class TapUI {
             @Nullable HashMap<String, Object> userInfo,
             TapCommonListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         String roomID = TAPChatManager.getInstance().arrangeRoomId(
@@ -273,6 +276,7 @@ public class TapUI {
             @Nullable HashMap<String, Object> userInfo,
             TapCommonListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPUtils.getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {

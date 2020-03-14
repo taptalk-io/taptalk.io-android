@@ -231,11 +231,13 @@ public class TAPDefaultConstant {
     }
 
     public static final class ClientErrorCodes {
+        public static final String ERROR_CODE_INIT_TAPTALK = "90000";
         public static final String ERROR_CODE_ACTIVE_USER_NOT_FOUND = "90001";
         public static final String ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE = "90002";
         public static final String ERROR_CODE_ALREADY_CONNECTED = "90003";
         public static final String ERROR_CODE_NO_INTERNET = "90004";
         public static final String ERROR_CODE_INVALID_AUTH_TICKET = "90005";
+        public static final String ERROR_CODE_NOT_AUTHENTICATED = "90006";
         public static final String ERROR_CODE_GROUP_DELETED = "90101";
         public static final String ERROR_CODE_ADMIN_REQUIRED = "90102";
         public static final String ERROR_CODE_URI_NOT_FOUND = "90301";
@@ -249,11 +251,13 @@ public class TAPDefaultConstant {
     }
 
     public static final class ClientErrorMessages {
+        public static final String ERROR_MESSAGE_INIT_TAPTALK = "Please initialize TapTalk library, read documentation for detailed information.";
         public static final String ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND = "Active user not found";
         public static final String ERROR_MESSAGE_ACCESS_TOKEN_UNAVAILABLE = "Access token is not available, call authenticate() before connecting";
         public static final String ERROR_MESSAGE_ALREADY_CONNECTED = "Already connected";
         public static final String ERROR_MESSAGE_NO_INTERNET = "No internet connection";
         public static final String ERROR_MESSAGE_INVALID_AUTH_TICKET = "Invalid auth ticket";
+        public static final String ERROR_MESSAGE_NOT_AUTHENTICATED = "User is not authenticated";
         public static final String ERROR_MESSAGE_GROUP_DELETED = "The group has already been deleted";
         public static final String ERROR_MESSAGE_ADMIN_REQUIRED = "Please assign another admin before leaving";
         public static final String ERROR_MESSAGE_URI_NOT_FOUND = "Uri is required in message data";
@@ -440,8 +444,8 @@ public class TAPDefaultConstant {
     public static final int THUMB_MAX_DIMENSION = 20;
     public static final int IMAGE_COMPRESSION_QUALITY = 50;
 
-    public static final long TYPING_EMIT_DELAY = 10000L;
-    public static final long TYPING_INDICATOR_TIMEOUT = 15000L;
+    public static final long TYPING_EMIT_DELAY = 7000L;
+    public static final long TYPING_INDICATOR_TIMEOUT = 10000L;
 
     public static final String SCAN_RESULT = "kTAPScanResult";
     public static final String ADDED_CONTACT = "kTAPAddedContact";
