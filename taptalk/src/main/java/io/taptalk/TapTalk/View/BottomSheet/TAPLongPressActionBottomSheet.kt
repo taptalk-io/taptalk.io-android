@@ -78,6 +78,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 //                    longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createFailedMessageBubbleLongPressMenu(),
 //                            message, bottomSheetListener, onClickListener)
                     dismiss()
+                } else if (message?.isDeleted == true) {
+                    dismiss()
                 } else if (!message?.sending!!) {
                     when (message?.type) {
                         TYPE_IMAGE -> {

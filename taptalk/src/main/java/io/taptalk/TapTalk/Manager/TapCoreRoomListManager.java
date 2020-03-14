@@ -20,8 +20,10 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 
 @Keep
 public class TapCoreRoomListManager {
@@ -34,6 +36,7 @@ public class TapCoreRoomListManager {
 
     public void fetchNewMessageToDatabase(TapCommonListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
@@ -117,6 +120,7 @@ public class TapCoreRoomListManager {
 
     private void fetchNewMessage(TapCoreGetMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
@@ -200,6 +204,7 @@ public class TapCoreRoomListManager {
 
     public void getRoomListFromCache(TapCoreGetRoomListListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
@@ -226,6 +231,7 @@ public class TapCoreRoomListManager {
 
     public void getUpdatedRoomList(TapCoreGetRoomListListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
+            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
         if (null == TAPChatManager.getInstance().getActiveUser()) {
