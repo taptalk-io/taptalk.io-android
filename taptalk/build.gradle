@@ -4,12 +4,10 @@ apply plugin: 'kotlin-android-extensions'
 apply from: "${rootProject.rootDir}/environment.properties"
 
 android {
-    compileSdkVersion 28
-
-
+    compileSdkVersion 29
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 38
         versionName "1.1.11"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -71,7 +69,6 @@ dependencies {
 
     // Lifecycle components
     api 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.2.0'
 
     //cwac safe room
     implementation "com.commonsware.cwac:saferoom:0.4.4"
@@ -119,4 +116,10 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.mixpanel.android:mixpanel-android:5.7.0'
+
+    devImplementation 'com.readystatesoftware.chuck:library:1.1.0'
+    devUploadImplementation 'com.readystatesoftware.chuck:library:1.1.0'
+    stagingImplementation 'com.readystatesoftware.chuck:library:1.1.0'
+    stagingUploadImplementation 'com.readystatesoftware.chuck:library:1.1.0'
+    releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 }

@@ -104,6 +104,7 @@ public class TapTalk implements LifecycleObserver {
     private static boolean isRefreshTokenExpired, isAutoConnectDisabled, isAutoContactSyncDisabled;
     private Intent intent;
     private static boolean listenerInit = false;
+    public static String taptalkUserAgent = "android";
 
     //    private static Thread.UncaughtExceptionHandler defaultUEH;
     private List<TapListener> tapListeners = new ArrayList<>();
@@ -314,6 +315,10 @@ public class TapTalk implements LifecycleObserver {
 
     public static void setLoggingEnabled(boolean enabled) {
         isLoggingEnabled = enabled;
+    }
+
+    public static void setTapTalkCustomUserAgent(String userAgent) {
+        taptalkUserAgent = userAgent;
     }
 
     private String generateSocketBaseURL(String baseURL) {

@@ -91,7 +91,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                 val intent = Intent(this, TAPAddGroupMemberActivity::class.java)
                 intent.putExtra(GROUP_ACTION, GROUP_ADD_MEMBER)
                 intent.putExtra(ROOM_ID, groupViewModel?.groupData?.roomID)
-                intent.putParcelableArrayListExtra(GROUP_MEMBERS, ArrayList(groupViewModel?.groupData?.groupParticipants))
+                intent.putParcelableArrayListExtra(GROUP_MEMBERS, groupViewModel?.groupData?.groupParticipants?.let { ArrayList(it) })
                 startActivityForResult(intent, GROUP_ADD_MEMBER)
                 overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
             }
