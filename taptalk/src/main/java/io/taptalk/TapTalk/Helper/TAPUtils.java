@@ -52,7 +52,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
@@ -1137,7 +1136,10 @@ public class TAPUtils {
                     "ro.cdma.home.operator.numeric"));
 
             // first 3 chars (MCC) from homeOperator represents the country code
-            int mcc = Integer.parseInt(homeOperator.substring(0, 3));
+            int mcc = 0;
+            if (homeOperator != null && homeOperator.length() > 3) {
+                mcc = Integer.parseInt(homeOperator.substring(0, 3));
+            }
 
             // mapping just countries that actually use CDMA networks
             switch (mcc) {
@@ -1177,15 +1179,12 @@ public class TAPUtils {
                     return "LV";
                 case 255:
                     return "UA";
+                default:
+                    return null;
             }
-        } catch (ClassNotFoundException ignored) {
-        } catch (NoSuchMethodException ignored) {
-        } catch (IllegalAccessException ignored) {
-        } catch (InvocationTargetException ignored) {
-        } catch (NullPointerException ignored) {
+        } catch (Exception e) {
+            return null;
         }
-
-        return null;
     }
 
     public static boolean listEqualsIgnoreOrder(List<TAPUserModel> list1, List<TAPUserModel> list2) {
