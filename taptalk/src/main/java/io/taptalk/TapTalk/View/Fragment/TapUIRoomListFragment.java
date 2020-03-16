@@ -496,17 +496,23 @@ public class TapUIRoomListFragment extends Fragment {
                 if (null != adapter && 0 == vm.getRoomList().size()) {
                     // Room list is empty
                     llRoomEmpty.setVisibility(View.VISIBLE);
+                    flSetupContainer.setVisibility(View.GONE);
                 } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance().isRoomListAppear()) {
                     // Show room list on first open and animate
                     adapter.addRoomList(vm.getRoomList());
                     rvContactList.scrollToPosition(0);
                     llRoomEmpty.setVisibility(View.GONE);
+                    if (!vm.isDoneFirstApiSetup()) {
+                        vm.setDoneFirstApiSetup(true);
+                        TAPDataManager.getInstance().setRoomListSetupFinished();
+                        showChatRoomSetupSuccess();
+                    }
                 } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
                     // Update room list without animating
                     adapter.setItems(vm.getRoomList(), false);
                     llRoomEmpty.setVisibility(View.GONE);
+                    flSetupContainer.setVisibility(View.GONE);
                 }
-                flSetupContainer.setVisibility(View.GONE);
                 showNewChatButton();
 
                 if (!TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
@@ -954,11 +960,6 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(true);
             calculateBadgeCount();
-            if (!vm.isDoneFirstApiSetup()) {
-                vm.setDoneFirstApiSetup(true);
-                TAPDataManager.getInstance().setRoomListSetupFinished();
-                showChatRoomSetupSuccess();
-            }
         }
     };
 
