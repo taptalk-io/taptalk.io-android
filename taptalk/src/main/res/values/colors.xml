@@ -62,6 +62,7 @@
     <color name="tapUnreadIdentifierBackgroundColor">@color/tapPumpkinOrange10</color>
     <color name="tapFileProgressBackgroundColor">@color/tapWhite</color>
     <color name="tapDeletedChatRoomInfoBackgroundColor">@color/tapParchment</color>
+    <color name="tapChatRoomBackgroundColor">@color/tapDefaultBackgroundColor</color> <!--*-->
 
     <color name="tapSelectedMediaPreviewThumbnailBorderColor">@color/tapColorPrimary</color>
     <color name="tapMediaPreviewWarningBackgroundColor">@color/tapColorError</color>
@@ -77,7 +78,6 @@
     <color name="tapIconCircleSelectionActive">@color/tapColorPrimaryIcon</color>
     <color name="tapIconCircleSelectionInactive">@color/tapColorGrayIcon</color>
     <color name="tapIconLoadingPopupSuccess">@color/tapColorPrimaryIcon</color>
-    <color name="tapIconAddMember">@color/tapColorPrimaryIcon</color> <!--Unused-->
     <color name="tapIconSearchConnectionLost">@color/tapColorTextDark</color>
     <color name="tapIconMessageSending">@color/tapColorGrayIcon</color>
     <color name="tapIconMessageFailed">@color/tapColorGrayIcon</color>
@@ -94,7 +94,7 @@
     <color name="tapIconSelectPictureGallery">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChangePicture">@color/tapColorPrimaryIcon</color>
 
-    <color name="tapIconNavBarBackButton">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconNavigationBarBackButton">@color/tapColorPrimaryIcon</color>
     <color name="tapIconTransparentBackgroundBackButton">@color/tapColorWhiteIcon</color>
     <color name="tapIconNavBarCloseButton">@color/tapColorPrimaryIcon</color>
     <color name="tapIconNavBarMagnifier">@color/tapColorPrimaryIcon</color>
@@ -128,8 +128,7 @@
     <color name="tapIconMediaPreviewAdd">@color/tapColorWhiteIcon</color>
     <color name="tapIconMediaPreviewWarning">@color/tapColorWhiteIcon</color>
     <color name="tapIconMediaPreviewThumbnailWarning">@color/tapColorWhiteIcon</color>
-    <color name="tapIconMediaPreviewThumbnailWarningBackground">@color/tapColorDestructiveIcon
-    </color>
+    <color name="tapIconMediaPreviewThumbnailWarningBackground">@color/tapColorDestructiveIcon</color>
     <color name="tapIconSaveImage">@color/tapColorWhiteIcon</color>
     <color name="tapIconMediaListVideo">@color/tapColorWhiteIcon</color>
 

@@ -852,9 +852,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     getTransitionToCollapse().start();
                 } else {
                     ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
-                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton)));
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavigationBarBackButton)));
                     ImageViewCompat.setImageTintList(ivButtonEdit, ColorStateList.valueOf(ContextCompat.
-                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton)));
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavigationBarBackButton)));
                 }
             } else if (Math.abs(verticalOffset) < scrollRange && isShowing) {
                 // Hide Toolbar
@@ -886,7 +886,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             if (null == transitionToCollapse) {
                 transitionToCollapse = ValueAnimator.ofArgb(
                         ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton),
-                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton));
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavigationBarBackButton));
                 transitionToCollapse.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToCollapse.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -900,7 +900,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         private ValueAnimator getTransitionToExpand() {
             if (null == transitionToExpand) {
                 transitionToExpand = ValueAnimator.ofArgb(
-                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton),
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavigationBarBackButton),
                         ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton));
                 transitionToExpand.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToExpand.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(

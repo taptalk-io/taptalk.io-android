@@ -296,7 +296,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             tvTitle.setText(getString(R.string.tap_new_group));
             ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
             ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
-                    getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavBarBackButton)));
+                    getColor(TAPAddGroupMemberActivity.this, R.color.tapIconNavigationBarBackButton)));
             tvButtonText.setText(getString(R.string.tap_continue));
             flButtonContinue.setOnClickListener(v -> openGroupSubjectActivity());
         } else if (vm.getGroupAction() == GROUP_ADD_MEMBER) {
