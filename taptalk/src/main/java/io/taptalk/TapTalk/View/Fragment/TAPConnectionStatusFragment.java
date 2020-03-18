@@ -100,7 +100,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
         tvConnectionStatus = view.findViewById(R.id.tv_connection_status);
 
         // TODO: 28 November 2019 CONNECTION STATUS SHOWN ONLY IF LOGGING IS ENABLED
-        if (TapTalk.isLoggingEnabled) {
+        if (TapTalk.getTapTalkInstance("").isLoggingEnabled) {
             llConnectionStatus.setVisibility(View.GONE);
         }
     }

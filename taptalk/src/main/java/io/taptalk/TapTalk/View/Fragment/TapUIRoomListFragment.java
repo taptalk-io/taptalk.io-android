@@ -189,7 +189,7 @@ public class TapUIRoomListFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         TAPChatManager.getInstance().removeChatListener(chatListener);
-        TapTalk.putGlobalChatListener();
+        TapTalk.getTapTalkInstance("").putGlobalChatListener();
     }
 
     private void initViewModel() {
@@ -197,7 +197,7 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void initListener() {
-        TapTalk.removeGlobalChatListener();
+        TapTalk.getTapTalkInstance("").removeGlobalChatListener();
         chatListener = new TAPChatListener() {
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {

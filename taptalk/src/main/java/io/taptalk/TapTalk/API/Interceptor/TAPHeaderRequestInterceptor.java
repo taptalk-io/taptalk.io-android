@@ -17,10 +17,13 @@ import okhttp3.Response;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.MULTIPART_CONTENT_TYPE;
 
 public class TAPHeaderRequestInterceptor implements Interceptor {
+
     public static final String TAG = TAPHeaderRequestInterceptor.class.getSimpleName();
+    private String instanceKey;
     private int headerAuth;
 
-    public TAPHeaderRequestInterceptor(int headerAuth) {
+    public TAPHeaderRequestInterceptor(String instanceKey, int headerAuth) {
+        this.instanceKey = instanceKey;
         this.headerAuth = headerAuth;
     }
 
@@ -29,7 +32,7 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
         Request original = chain.request();
         String APP_KEY_ID = TAPDataManager.getInstance().getApplicationID();
         String APP_KEY_SECRET = TAPDataManager.getInstance().getApplicationSecret();
-        String userAgent = TapTalk.taptalkUserAgent;
+        String userAgent = TapTalk.getTapTalkInstance(instanceKey).tapTalkUserAgent;
 
         String appKey = Base64.encodeToString((APP_KEY_ID + ":" + APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
 

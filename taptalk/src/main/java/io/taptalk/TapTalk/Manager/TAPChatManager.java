@@ -99,6 +99,7 @@ public class TAPChatManager {
 
     private final String TAG = TAPChatManager.class.getSimpleName();
     private static TAPChatManager instance;
+    private String instanceKey = "";
     private Map<String, TAPMessageModel> pendingMessages, waitingUploadProgress, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, Integer> quotedActions;
     private Map<String, String> messageDrafts;
@@ -1630,7 +1631,7 @@ public class TAPChatManager {
         TAPMessageModel newMessage = TAPEncryptorManager.getInstance().decryptMessage(newMessageMap);
 
         // TODO: 28 Jan 2020 TEMPORARY SOCKET MESSAGE LOG
-        if (TapTalk.isLoggingEnabled) {
+        if (TapTalk.getTapTalkInstance(instanceKey).isLoggingEnabled) {
             Log.d(TAG, "receiveMessageFromSocket: " + TAPUtils.toJsonString(newMessage));
         }
 

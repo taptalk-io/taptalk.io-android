@@ -15,6 +15,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class AnalyticsManager {
 
     private static AnalyticsManager instance;
+    private String instanceKey;
     private MixpanelAPI mixpanel;
 
     public static AnalyticsManager getInstance() {
@@ -22,8 +23,8 @@ public class AnalyticsManager {
     }
 
     public void identifyUser() {
-        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.mixpanelToken.equals("") && null != TAPChatManager.getInstance().getActiveUser()) {
-            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.mixpanelToken);
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.getTapTalkInstance(instanceKey).mixPanelToken.equals("") && null != TAPChatManager.getInstance().getActiveUser()) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.getTapTalkInstance(instanceKey).mixPanelToken);
             mixpanel.identify(TAPChatManager.getInstance().getActiveUser().getUserID());
             mixpanel.getPeople().identify(TAPChatManager.getInstance().getActiveUser().getUserID());
             mixpanel.getPeople().set("UserID", TAPChatManager.getInstance().getActiveUser().getUserID());
@@ -33,24 +34,24 @@ public class AnalyticsManager {
     }
 
     public void trackActiveUser() {
-        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.mixpanelToken.equals("")) {
-            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.mixpanelToken);
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.getTapTalkInstance(instanceKey).mixPanelToken.equals("")) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.getTapTalkInstance(instanceKey).mixPanelToken);
             JSONObject metadata = generateDefaultData();
             mixpanel.track("Daily Active Users (DAU)", metadata);
         }
     }
 
     public void trackEvent(String keyEvent) {
-        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.mixpanelToken.equals("")) {
-            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.mixpanelToken);
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.getTapTalkInstance(instanceKey).mixPanelToken.equals("")) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.getTapTalkInstance(instanceKey).mixPanelToken);
             JSONObject metadata = generateDefaultData();
             mixpanel.track(keyEvent, metadata);
         }
     }
 
     public void trackEvent(String keyEvent, @Nullable HashMap<String, String> additional) {
-        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.mixpanelToken.equals("")) {
-            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.mixpanelToken);
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.getTapTalkInstance(instanceKey).mixPanelToken.equals("")) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.getTapTalkInstance(instanceKey).mixPanelToken);
             JSONObject metadata = generateDefaultData();
             if (null != additional) {
                 for (Map.Entry<String, String> add : additional.entrySet()) {
@@ -67,8 +68,8 @@ public class AnalyticsManager {
 
     public void trackErrorEvent(String keyEvent, String errorCode, String errorMessage) {
 
-        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.mixpanelToken.equals("")) {
-            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.mixpanelToken);
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.getTapTalkInstance(instanceKey).mixPanelToken.equals("")) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.getTapTalkInstance(instanceKey).mixPanelToken);
             JSONObject metadata = generateDefaultData();
             try {
                 metadata.put("errorCode", errorCode);
@@ -81,8 +82,8 @@ public class AnalyticsManager {
     }
 
     public void trackErrorEvent(String keyEvent, String errorCode, String errorMessage, @Nullable HashMap<String, String> additional) {
-        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.mixpanelToken.equals("")) {
-            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.mixpanelToken);
+        if (TapTalk.appContext.getPackageName().toLowerCase().startsWith("io.taptalk.taptalksample") && !TapTalk.getTapTalkInstance(instanceKey).mixPanelToken.equals("")) {
+            mixpanel = MixpanelAPI.getInstance(TapTalk.appContext, TapTalk.getTapTalkInstance(instanceKey).mixPanelToken);
             JSONObject metadata = generateDefaultData();
             try {
                 metadata.put("errorCode", errorCode);

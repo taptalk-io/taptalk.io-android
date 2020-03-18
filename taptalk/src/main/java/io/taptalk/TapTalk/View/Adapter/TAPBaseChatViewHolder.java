@@ -80,7 +80,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                 intent.putExtra(MESSAGE, message);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                if (BuildConfig.DEBUG || TapTalk.isLoggingEnabled) {
+                if (BuildConfig.DEBUG || TapTalk.getTapTalkInstance("").isLoggingEnabled) {
                     Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.toJsonString(message));
                 }
                 return true;

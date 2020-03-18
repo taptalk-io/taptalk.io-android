@@ -113,10 +113,10 @@ public class TAPDefaultConstant {
         public static final String GALLERY = "Gallery";
         public static final String SELECT_PICTURE = "Select Picture";
         public static final String OPEN_FILE = "Open File";
-
     }
 
     public static final class Extras {
+        public static final String INSTANCE_KEY = "kTAPExtraInstanceKey";
         public static final String MESSAGE = "kTAPExtraMessage";
         public static final String ROOM = "kTAPExtraRoom";
         public static final String ROOM_ID = "kTAPExtraRoomID";

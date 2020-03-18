@@ -51,6 +51,7 @@ public class TAPNotificationManager {
     private static final String TAG = TAPNotificationManager.class.getSimpleName();
     private static TAPNotificationManager instance;
     private static Map<String, List<TAPMessageModel>> notificationMessagesMap;
+    private String instanceKey = "";
     private boolean isRoomListAppear;
 
     public static TAPNotificationManager getInstance() {
@@ -267,7 +268,7 @@ public class TAPNotificationManager {
     }
 
     public void createAndShowInAppNotification(Context context, TAPMessageModel newMessageModel) {
-        if (TapTalk.implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
+        if (TapTalk.getTapTalkInstance(instanceKey).implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
             if (TapTalk.isForeground) {
                 new NotificationBuilder(context)
                         .setNotificationMessage(newMessageModel)
@@ -291,7 +292,7 @@ public class TAPNotificationManager {
                 UPDATE_USER.equals(newMessageModel.getAction())) {
             TAPContactManager.getInstance().updateUserData(newMessageModel.getUser());
         }
-        if (TapTalk.implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
+        if (TapTalk.getTapTalkInstance(instanceKey).implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
             if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()
                     && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
                 new NotificationBuilder(context)

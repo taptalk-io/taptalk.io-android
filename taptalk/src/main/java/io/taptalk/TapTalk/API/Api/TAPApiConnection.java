@@ -30,6 +30,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.USE_R
 public class TAPApiConnection {
 
     private static final String TAG = TAPApiConnection.class.getSimpleName();
+    private static final String instanceKey = "";
     private static final int KB = 1024;
     private static final int MB = 1024 * KB;
     private static final int MAX_HEAP_SIZE = (int) Runtime.getRuntime().maxMemory();
@@ -90,7 +91,7 @@ public class TAPApiConnection {
 
     private OkHttpClient buildHttpTapClient(int headerAuth) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        loggingInterceptor.setLevel(TapTalk.getTapTalkInstance(instanceKey).isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(1, TimeUnit.MINUTES)
@@ -99,13 +100,14 @@ public class TAPApiConnection {
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(new ChuckInterceptor(TapTalk.appContext))
-                .addInterceptor(new TAPHeaderRequestInterceptor(headerAuth))
+                .addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth))
                 .build();
     }
 
     private OkHttpClient buildHttpTapUploadClient(int headerAuth, long timeOutDuration) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        loggingInterceptor.setLevel(TapTalk.getTapTalkInstance(instanceKey).isLoggingEnabled ?
+                HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
@@ -114,13 +116,14 @@ public class TAPApiConnection {
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(new ChuckInterceptor(TapTalk.appContext))
-                .addInterceptor(new TAPHeaderRequestInterceptor(headerAuth))
+                .addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth))
                 .build();
     }
 
     private OkHttpClient buildHttpTapDownloadClient(int headerAuth, long timeOutDuration) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        loggingInterceptor.setLevel(TapTalk.getTapTalkInstance(instanceKey).isLoggingEnabled ?
+                HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
