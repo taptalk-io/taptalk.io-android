@@ -12,15 +12,18 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 public class TAPContactManager {
 
     private static final String TAG = TAPContactManager.class.getSimpleName();
-    private static TAPContactManager instance;
+    private static HashMap<String, TAPContactManager> instances;
+
+    private String instanceKey = "";
     private HashMap<String, TAPUserModel> userDataMap;
     private HashMap<String, TAPUserModel> userMapByPhoneNumber;
     private String myCountryCode;
     private boolean isContactSyncPermissionAsked, isContactSyncAllowedByUser;
 
-    private TAPContactManager() {
+    private TAPContactManager(String instanceKey) {
+        this.instanceKey = instanceKey;
         //loadAllUserDataFromDatabase();
-        TAPConnectionManager.getInstance().addSocketListener(new TAPSocketListener() {
+        TAPConnectionManager.getInstance(instanceKey).addSocketListener(new TAPSocketListener() {
 //            @Override
 //            public void onSocketConnected() {
 //                //loadAllUserDataFromDatabase();
@@ -33,8 +36,21 @@ public class TAPContactManager {
         });
     }
 
+    // TODO: 018, 18 Mar 2020 REMOVE
     public static TAPContactManager getInstance() {
-        return null == instance ? instance = new TAPContactManager() : instance;
+        return getInstance("");
+    }
+
+    public static TAPContactManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPContactManager instance = new TAPContactManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPContactManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
     }
 
     public TAPUserModel getUserData(String userID) {
@@ -42,7 +58,7 @@ public class TAPContactManager {
     }
 
     public void updateUserData(TAPUserModel user) {
-        String myUserId = TAPChatManager.getInstance().getActiveUser().getUserID();
+        String myUserId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
         String incomingUserId = user.getUserID();
         TAPUserModel existingUser = getUserDataMap().get(incomingUserId);
         if (!incomingUserId.equals(myUserId) && null == existingUser) {
@@ -58,13 +74,6 @@ public class TAPContactManager {
             existingUser.updateValue(user);
             saveUserDataToDatabase(user);
         }
-        //else if (incomingUserId.equals(myUserId) &&
-        //        null != TAPChatManager.getInstance().getActiveUser().getUpdated() &&
-        //        null != user.getUpdated() &&
-        //        TAPChatManager.getInstance().getActiveUser().getUpdated() <= user.getUpdated()) {
-        //    // Update active user
-        //    TAPDataManager.getInstance().saveActiveUser(user);
-        //}
     }
 
     public void updateUserData(List<TAPUserModel> users) {
@@ -75,21 +84,21 @@ public class TAPContactManager {
 
     public void removeFromContacts(String userID) {
         getUserData(userID).setIsContact(0);
-        TAPDataManager.getInstance().insertMyContactToDatabase(getUserData(userID));
+        TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(getUserData(userID));
     }
 
     public void saveUserDataToDatabase(TAPUserModel userModel) {
-        if (!userModel.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
-            TAPDataManager.getInstance().checkContactAndInsertToDatabase(userModel);
+        if (!userModel.getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+            TAPDataManager.getInstance(instanceKey).checkContactAndInsertToDatabase(userModel);
         }
     }
 
     public void loadAllUserDataFromDatabase() {
-        TAPDataManager.getInstance().getAllUserData(getAllUserDataListener);
+        TAPDataManager.getInstance(instanceKey).getAllUserData(getAllUserDataListener);
     }
 
     public void saveUserDataMapToDatabase() {
-        TAPDataManager.getInstance().insertMyContactToDatabase(convertUserDataToList(getUserDataMap()));
+        TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(convertUserDataToList(getUserDataMap()));
     }
 
     private HashMap<String, TAPUserModel> getUserDataMap() {
@@ -177,7 +186,7 @@ public class TAPContactManager {
     }
 
     public void setAndSaveContactSyncPermissionAsked(boolean contactSyncPermissionAsked) {
-        TAPDataManager.getInstance().saveContactSyncPermissionAsked(contactSyncPermissionAsked);
+        TAPDataManager.getInstance(instanceKey).saveContactSyncPermissionAsked(contactSyncPermissionAsked);
         isContactSyncPermissionAsked = contactSyncPermissionAsked;
     }
 
@@ -194,7 +203,7 @@ public class TAPContactManager {
     }
 
     public void setAndSaveContactSyncAllowedByUser(boolean contactSyncAllowedByUser) {
-        TAPDataManager.getInstance().saveContactSyncAllowedByUser(contactSyncAllowedByUser);
+        TAPDataManager.getInstance(instanceKey).saveContactSyncAllowedByUser(contactSyncAllowedByUser);
         isContactSyncAllowedByUser = contactSyncAllowedByUser;
     }
 

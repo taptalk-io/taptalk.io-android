@@ -425,7 +425,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPDataManager.getInstance().deleteAllPreference()
         TAPDataManager.getInstance().deleteAllFromDatabase()
         TAPDataManager.getInstance().deleteAllManagerData()
-        TAPApiManager.getInstance().isLogout = true
+        TAPApiManager.getInstance().isLoggedOut = true
         TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
         TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
 

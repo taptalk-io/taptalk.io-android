@@ -251,7 +251,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
     private val verifyOTPInterface = object : TAPVerifyOTPInterface {
         override fun verifyOTPSuccessToLogin() {
-            TAPApiManager.getInstance().isLogout = false
+            TAPApiManager.getInstance().isLoggedOut = false
             activity?.runOnUiThread {
                 TAPDataManager.getInstance().saveMyCountryCode(countryCallingCode)
                 TAPDataManager.getInstance().saveMyCountryFlagUrl(countryFlagUrl)

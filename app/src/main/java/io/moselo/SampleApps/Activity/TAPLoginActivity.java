@@ -43,7 +43,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REGISTER:
-                    TAPApiManager.getInstance().setLogout(false);
+                    TAPApiManager.getInstance().setLoggedOut(false);
                     Intent intent = new Intent(TAPLoginActivity.this, TapUIRoomListActivity.class);
                     startActivity(intent);
                     finish();

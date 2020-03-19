@@ -371,7 +371,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             onRoomSelected(item, position);
         } else {
             // Open chat room on click
-            if (TAPApiManager.getInstance().isLogout()) {
+            if (TAPApiManager.getInstance().isLoggedOut()) {
                 // Return if logged out (active user is null)
                 return;
             }

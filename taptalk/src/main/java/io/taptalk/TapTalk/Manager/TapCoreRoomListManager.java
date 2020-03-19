@@ -27,11 +27,29 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 
 @Keep
 public class TapCoreRoomListManager {
+    
+    private static HashMap<String, TapCoreRoomListManager> instances;
 
-    private static TapCoreRoomListManager instance;
+    private String instanceKey = "";
+
+    public TapCoreRoomListManager(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
 
     public static TapCoreRoomListManager getInstance() {
-        return null == instance ? instance = new TapCoreRoomListManager() : instance;
+        return getInstance("");
+    }
+
+    public static TapCoreRoomListManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TapCoreRoomListManager instance = new TapCoreRoomListManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TapCoreRoomListManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
     }
 
     public void fetchNewMessageToDatabase(TapCommonListener listener) {
@@ -39,7 +57,7 @@ public class TapCoreRoomListManager {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        TAPDataManager.getInstance().getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
+        TAPDataManager.getInstance(instanceKey).getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
             @Override
             public void onSuccess(TAPGetRoomListResponse response) {
                 if (response.getMessages().size() > 0) {
@@ -48,16 +66,16 @@ public class TapCoreRoomListManager {
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                            TAPMessageEntity entity = TAPChatManager.getInstance().convertToEntity(message);
+                            TAPMessageEntity entity = TAPChatManager.getInstance(instanceKey).convertToEntity(message);
                             tempMessage.add(entity);
 
-                            if (message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
-                                userIds.add(TAPChatManager.getInstance().getOtherUserIdFromRoom(message.getRoom().getRoomID()));
+                            if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+                                userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                             } else {
-                                TAPContactManager.getInstance().updateUserData(message.getUser());
+                                TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
                             }
                             if (null != message.getIsDeleted() && message.getIsDeleted()) {
-                                TAPDataManager.getInstance().deletePhysicalFile(entity);
+                                TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
                             }
                         } catch (Exception e) {
                             if (null != listener) {
@@ -66,17 +84,17 @@ public class TapCoreRoomListManager {
                         }
                     }
                     if (userIds.size() > 0) {
-                        TAPDataManager.getInstance().getMultipleUsersByIdFromApi(userIds, new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
+                        TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
                             @Override
                             public void onSuccess(TAPGetMultipleUserResponse response) {
                                 if (null == response || response.getUsers().isEmpty()) {
                                     return;
                                 }
-                                new Thread(() -> TAPContactManager.getInstance().updateUserData(response.getUsers())).start();
+                                new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers())).start();
                             }
                         });
                     }
-                    TAPDataManager.getInstance().insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
+                    TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                         @Override
                         public void onInsertFinished() {
                             List<TAPMessageModel> messages = new ArrayList<>();
@@ -123,7 +141,7 @@ public class TapCoreRoomListManager {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        TAPDataManager.getInstance().getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
+        TAPDataManager.getInstance(instanceKey).getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
             @Override
             public void onSuccess(TAPGetRoomListResponse response) {
                 if (response.getMessages().size() > 0) {
@@ -132,16 +150,16 @@ public class TapCoreRoomListManager {
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                            TAPMessageEntity entity = TAPChatManager.getInstance().convertToEntity(message);
+                            TAPMessageEntity entity = TAPChatManager.getInstance(instanceKey).convertToEntity(message);
                             tempMessage.add(entity);
 
-                            if (message.getUser().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
-                                userIds.add(TAPChatManager.getInstance().getOtherUserIdFromRoom(message.getRoom().getRoomID()));
+                            if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+                                userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                             } else {
-                                TAPContactManager.getInstance().updateUserData(message.getUser());
+                                TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
                             }
                             if (null != message.getIsDeleted() && message.getIsDeleted()) {
-                                TAPDataManager.getInstance().deletePhysicalFile(entity);
+                                TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
                             }
                         } catch (Exception e) {
                             if (null != listener) {
@@ -150,17 +168,17 @@ public class TapCoreRoomListManager {
                         }
                     }
                     if (userIds.size() > 0) {
-                        TAPDataManager.getInstance().getMultipleUsersByIdFromApi(userIds, new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
+                        TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
                             @Override
                             public void onSuccess(TAPGetMultipleUserResponse response) {
                                 if (null == response || response.getUsers().isEmpty()) {
                                     return;
                                 }
-                                new Thread(() -> TAPContactManager.getInstance().updateUserData(response.getUsers())).start();
+                                new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers())).start();
                             }
                         });
                     }
-                    TAPDataManager.getInstance().insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
+                    TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                         @Override
                         public void onInsertFinished() {
                             List<TAPMessageModel> messages = new ArrayList<>();
@@ -207,13 +225,13 @@ public class TapCoreRoomListManager {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
+        TAPDataManager.getInstance(instanceKey).getRoomList(TAPChatManager.getInstance(instanceKey).getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
                 super.onSelectFinished(entities);
                 List<TAPRoomListModel> roomListModel = new ArrayList<>();
                 for (TAPMessageEntity e : entities) {
-                    roomListModel.add(TAPRoomListModel.buildWithLastMessage(TAPChatManager.getInstance().convertToModel(e)));
+                    roomListModel.add(TAPRoomListModel.buildWithLastMessage(TAPChatManager.getInstance(instanceKey).convertToModel(e)));
                 }
                 if (null != listener) {
                     listener.onSuccess(roomListModel);
@@ -234,13 +252,13 @@ public class TapCoreRoomListManager {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        if (null == TAPChatManager.getInstance().getActiveUser()) {
+        if (null == TAPChatManager.getInstance(instanceKey).getActiveUser()) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_ACTIVE_USER_NOT_FOUND, ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND);
             }
             return;
         }
-        TAPDataManager.getInstance().getRoomList(TAPChatManager.getInstance().getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
+        TAPDataManager.getInstance(instanceKey).getRoomList(TAPChatManager.getInstance(instanceKey).getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
                 if (entities.size() > 0) {
@@ -272,13 +290,13 @@ public class TapCoreRoomListManager {
                         }
                     });
                 } else {
-                    TAPDataManager.getInstance().getMessageRoomListAndUnread(TAPChatManager.getInstance().getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetRoomListResponse>() {
+                    TAPDataManager.getInstance(instanceKey).getMessageRoomListAndUnread(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetRoomListResponse>() {
                         @Override
                         public void onSuccess(TAPGetRoomListResponse response) {
                             super.onSuccess(response);
                             List<TAPRoomListModel> roomListModel = new ArrayList<>();
                             for (TAPMessageEntity e : entities) {
-                                roomListModel.add(TAPRoomListModel.buildWithLastMessage(TAPChatManager.getInstance().convertToModel(e)));
+                                roomListModel.add(TAPRoomListModel.buildWithLastMessage(TAPChatManager.getInstance(instanceKey).convertToModel(e)));
                             }
                             if (null != listener) {
                                 listener.onSuccess(roomListModel);

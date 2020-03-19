@@ -44,12 +44,12 @@ import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.D
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
 public class TAPConnectionManager {
+    private static final String TAG = TAPConnectionManager.class.getSimpleName();
+    private static HashMap<String, TAPConnectionManager> instances;
 
-    private String TAG = TAPConnectionManager.class.getSimpleName();
-    private static TAPConnectionManager instance;
+    private String instanceKey = "";
     private WebSocketClient webSocketClient;
     @NonNull private String webSocketEndpoint = "wss://engine.taptalk.io/connect";
-    //private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;
     private List<TapTalkSocketInterface> socketListeners;
@@ -62,12 +62,26 @@ public class TAPConnectionManager {
         CONNECTING, CONNECTED, DISCONNECTED, NOT_CONNECTED
     }
 
+    // TODO: 018, 18 Mar 2020 REMOVE
     public static TAPConnectionManager getInstance() {
-        return instance == null ? (instance = new TAPConnectionManager()) : instance;
+        return getInstance("");
     }
 
-    public TAPConnectionManager() {
+    public static TAPConnectionManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPConnectionManager instance = new TAPConnectionManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPConnectionManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public TAPConnectionManager(String instanceKey) {
         try {
+            this.instanceKey = instanceKey;
 //            webSocketUri = new URI(webSocketEndpoint);
 //            initWebSocketClient(webSocketUri);
             initNetworkListener();

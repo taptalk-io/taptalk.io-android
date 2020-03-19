@@ -15,7 +15,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class AnalyticsManager {
 
     private static AnalyticsManager instance;
-    private String instanceKey;
+    private String instanceKey = "";
     private MixpanelAPI mixpanel;
 
     public static AnalyticsManager getInstance() {

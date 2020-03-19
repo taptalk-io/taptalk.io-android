@@ -19,7 +19,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TokenHeaderConst.MULTI
 public class TAPHeaderRequestInterceptor implements Interceptor {
 
     public static final String TAG = TAPHeaderRequestInterceptor.class.getSimpleName();
-    private String instanceKey;
+    private String instanceKey = "";
     private int headerAuth;
 
     public TAPHeaderRequestInterceptor(String instanceKey, int headerAuth) {

@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -87,24 +88,40 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode
 public class TAPApiManager {
     private static final String TAG = TAPApiManager.class.getSimpleName();
 
-    //ini url buat api disimpen sesuai environment
-    @NonNull private static String BaseUrlApi = "";
-    @NonNull private static String BaseUrlSocket = "";
+//    @NonNull private static String BaseUrlApi = "";
+//    @NonNull private static String BaseUrlSocket = "";
 
+    private static HashMap<String, TAPApiManager> instances;
+    private static HashMap<String, String> apiBaseUrlMap = new HashMap<>();
+    private static HashMap<String, String> socketBaseUrlMap = new HashMap<>();
+
+    private String instanceKey = "";
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
-    private static TAPApiManager instance;
     private int isShouldRefreshToken = 0;
-    //ini flagging jadi kalau logout (refresh token expired) dy ga akan ngulang2 manggil api krna 401
-    private boolean isLogout = false;
+    private boolean isLoggedOut = false; // Flag to prevent unauthorized API call due to refresh token expired
 
+    // TODO: 018, 18 Mar 2020 REMOVE
     public static TAPApiManager getInstance() {
-        return instance == null ? instance = new TAPApiManager() : instance;
+        return getInstance("");
     }
 
-    private TAPApiManager() {
-        TAPApiConnection connection = TAPApiConnection.getInstance();
+    public static TAPApiManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPApiManager instance = new TAPApiManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPApiManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    private TAPApiManager(String instanceKey) {
+        TAPApiConnection connection = TAPApiConnection.getInstance(instanceKey);
+        this.instanceKey = instanceKey;
         this.homingPigeon = connection.getHomingPigeon();
         this.hpSocket = connection.getHpValidate();
         this.hpRefresh = connection.getHpRefresh();
@@ -114,30 +131,28 @@ public class TAPApiManager {
         return fileSize / 10 + 60000;
     }
 
-    public boolean isLogout() {
-        return isLogout;
+    public boolean isLoggedOut() {
+        return isLoggedOut;
     }
 
-    public void setLogout(boolean logout) {
-        isLogout = logout;
+    public void setLoggedOut(boolean loggedOut) {
+        isLoggedOut = loggedOut;
     }
 
-    @NonNull
-    public static String getBaseUrlApi() {
-        return BaseUrlApi;
+    public static String getApiBaseUrl(String instanceKey) {
+        return apiBaseUrlMap.get(instanceKey);
     }
 
-    public static void setBaseUrlApi(@NonNull String baseUrlApi) {
-        BaseUrlApi = baseUrlApi;
+    public static void setBaseUrlApi(String instanceKey, @NonNull String apiBaseUrl) {
+        apiBaseUrlMap.put(instanceKey, apiBaseUrl);
     }
 
-    @NonNull
-    public static String getBaseUrlSocket() {
-        return BaseUrlSocket;
+    public static String getSocketBaseUrl(String instanceKey) {
+        return socketBaseUrlMap.get(instanceKey);
     }
 
-    public static void setBaseUrlSocket(@NonNull String baseUrlSocket) {
-        BaseUrlSocket = baseUrlSocket;
+    public static void setBaseUrlSocket(String instanceKey, @NonNull String socketBaseUrl) {
+        socketBaseUrlMap.put(instanceKey, socketBaseUrl);
     }
 
     private Observable.Transformer ioToMainThreadSchedulerTransformer
@@ -175,9 +190,9 @@ public class TAPApiManager {
 
         if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
             Log.d(TAG, "validateResponse: √√ NO ERROR √√");
-        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken && !isLogout) {
+        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken && !isLoggedOut) {
             return raiseApiRefreshTokenRunningException();
-        } else if (code == UNAUTHORIZED && !isLogout) {
+        } else if (code == UNAUTHORIZED && !isLoggedOut) {
             isShouldRefreshToken++;
             return raiseApiSessionExpiredException(br);
         }
@@ -187,8 +202,8 @@ public class TAPApiManager {
 
     private Observable validateException(Throwable t) {
         Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
-        return (t instanceof TAPApiSessionExpiredException && 1 == isShouldRefreshToken && !isLogout) ? refreshToken() :
-                ((t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && 1 < isShouldRefreshToken)) && !isLogout) ?
+        return (t instanceof TAPApiSessionExpiredException && 1 == isShouldRefreshToken && !isLoggedOut) ? refreshToken() :
+                ((t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && 1 < isShouldRefreshToken)) && !isLoggedOut) ?
                         Observable.just(Boolean.TRUE) : Observable.error(t);
     }
 

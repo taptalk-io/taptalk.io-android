@@ -98,8 +98,8 @@ import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.D
 public class TAPChatManager {
 
     private final String TAG = TAPChatManager.class.getSimpleName();
-    private static TAPChatManager instance;
-    private String instanceKey = "";
+    private static HashMap<String, TAPChatManager> instances;
+    private String instanceKey = ""; // TODO: 18 Mar 2020
     private Map<String, TAPMessageModel> pendingMessages, waitingUploadProgress, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, Integer> quotedActions;
     private Map<String, String> messageDrafts;
@@ -208,11 +208,25 @@ public class TAPChatManager {
         }
     };
 
+    // TODO: 018, 18 Mar 2020 REMOVE
     public static TAPChatManager getInstance() {
-        return instance == null ? (instance = new TAPChatManager()) : instance;
+        return getInstance("");
     }
 
-    public TAPChatManager() {
+    public static TAPChatManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPChatManager instance = new TAPChatManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPChatManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public TAPChatManager(String instanceKey) {
+        this.instanceKey = instanceKey;
         TAPConnectionManager.getInstance().addSocketListener(socketListener);
         TAPConnectionManager.getInstance().setSocketMessageListener(socketMessageListener);
         setActiveUser(TAPDataManager.getInstance().getActiveUser());

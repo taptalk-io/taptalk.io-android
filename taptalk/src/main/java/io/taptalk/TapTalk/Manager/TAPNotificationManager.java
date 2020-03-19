@@ -17,6 +17,7 @@ import androidx.core.app.RemoteInput;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,13 +50,30 @@ import static io.taptalk.TapTalk.Helper.TapTalk.getTapTalkListeners;
 
 public class TAPNotificationManager {
     private static final String TAG = TAPNotificationManager.class.getSimpleName();
-    private static TAPNotificationManager instance;
+    private static HashMap<String, TAPNotificationManager> instances;
     private static Map<String, List<TAPMessageModel>> notificationMessagesMap;
-    private String instanceKey = "";
+    private String instanceKey = ""; // TODO: 18 Mar 2020
     private boolean isRoomListAppear;
 
+    public TAPNotificationManager(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
+
+    // TODO: 018, 18 Mar 2020 REMOVE
     public static TAPNotificationManager getInstance() {
-        return null == instance ? (instance = new TAPNotificationManager()) : instance;
+        return getInstance("");
+    }
+
+    public static TAPNotificationManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPNotificationManager instance = new TAPNotificationManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPNotificationManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
     }
 
     public Map<String, List<TAPMessageModel>> getNotificationMessagesMap() {
