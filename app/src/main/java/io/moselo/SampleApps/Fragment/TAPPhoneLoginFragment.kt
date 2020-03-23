@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -264,82 +263,75 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun callCountryListFromAPI() {
+        TAPDataManager.getInstance().getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
+            override fun startLoading() {
+                et_phone_number.isEnabled = false
+                tv_country_code.visibility = View.GONE
+                iv_loading_progress_country.visibility = View.VISIBLE
+                TAPUtils.rotateAnimateInfinitely(context, iv_loading_progress_country)
+            }
 
-        if (TAPDataManager.getInstance().getCountryList().size > 0) {
-            countryListitems.clear()
-            countryListitems = TAPDataManager.getInstance().getCountryList()
-
-        } else {
-            TAPDataManager.getInstance().getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
-                override fun startLoading() {
-                    et_phone_number.isEnabled = false
-                    tv_country_code.visibility = View.GONE
-                    iv_loading_progress_country.visibility = View.VISIBLE
-                    TAPUtils.rotateAnimateInfinitely(context, iv_loading_progress_country)
-                }
-
-                @SuppressLint("SetTextI18n")
-                override fun onSuccess(response: TAPCountryListResponse?) {
-                    et_phone_number.isEnabled = true
-                    countryListitems.clear()
-                    TAPDataManager.getInstance().saveLastCallCountryTimestamp(System.currentTimeMillis())
-                    setCountry(0, "", "")
-                    Thread {
-                        var defaultCountry: TAPCountryListItem? = null
-                        response?.countries?.forEach {
-                            countryListitems.add(it)
-                            countryHashMap.put(it.iso2Code, it)
-                            if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase() && it.iso2Code.toLowerCase() == "id") {
-                                defaultCountry = it
-                                activity?.runOnUiThread {
-                                    setCountry(it.countryID, it.callingCode, it.flagIconUrl)
-                                }
-                            } else if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase()) {
-                                activity?.runOnUiThread {
-                                    setCountry(it.countryID, it.callingCode, it.flagIconUrl)
-                                }
-                            } else if (it.iso2Code.toLowerCase() == "id") {
-                                defaultCountry = it
-                            }
-                        }
-
-                        if ("" == tv_country_code.text) {
-                            val callingCode: String = defaultCountry?.callingCode ?: ""
+            @SuppressLint("SetTextI18n")
+            override fun onSuccess(response: TAPCountryListResponse?) {
+                et_phone_number.isEnabled = true
+                countryListitems.clear()
+                TAPDataManager.getInstance().saveLastCallCountryTimestamp(System.currentTimeMillis())
+                setCountry(0, "", "")
+                Thread {
+                    var defaultCountry: TAPCountryListItem? = null
+                    response?.countries?.forEach {
+                        countryListitems.add(it)
+                        countryHashMap.put(it.iso2Code, it)
+                        if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase() && it.iso2Code.toLowerCase() == "id") {
+                            defaultCountry = it
                             activity?.runOnUiThread {
-                                setCountry(defaultCountry?.countryID
-                                        ?: 0, callingCode, defaultCountry?.flagIconUrl ?: "")
+                                setCountry(it.countryID, it.callingCode, it.flagIconUrl)
                             }
+                        } else if (countryIsoCode.toLowerCase() == it.iso2Code.toLowerCase()) {
+                            activity?.runOnUiThread {
+                                setCountry(it.countryID, it.callingCode, it.flagIconUrl)
+                            }
+                        } else if (it.iso2Code.toLowerCase() == "id") {
+                            defaultCountry = it
                         }
+                    }
 
-                        TAPDataManager.getInstance().saveCountryList(countryListitems)
-
+                    if ("" == tv_country_code.text) {
+                        val callingCode: String = defaultCountry?.callingCode ?: ""
                         activity?.runOnUiThread {
-                            iv_loading_progress_country.visibility = View.GONE
-                            iv_loading_progress_country.clearAnimation()
-                            tv_country_code.visibility = View.VISIBLE
+                            setCountry(defaultCountry?.countryID
+                                    ?: 0, callingCode, defaultCountry?.flagIconUrl ?: "")
                         }
-                    }.start()
-                }
+                    }
 
-                override fun onError(error: TAPErrorModel?) {
-                    super.onError(error)
-                    iv_loading_progress_country.visibility = View.GONE
-                    iv_loading_progress_country.clearAnimation()
-                    tv_country_code.visibility = View.VISIBLE
-                    setCountry(0, "", "")
-                    showDialog("ERROR", error?.message ?: generalErrorMessage)
-                }
+                    TAPDataManager.getInstance().saveCountryList(countryListitems)
 
-                override fun onError(errorMessage: String?) {
-                    super.onError(errorMessage)
-                    iv_loading_progress_country.visibility = View.GONE
-                    iv_loading_progress_country.clearAnimation()
-                    tv_country_code.visibility = View.VISIBLE
-                    setCountry(0, "", "")
-                    showDialog("ERROR", errorMessage ?: generalErrorMessage)
-                }
-            })
-        }
+                    activity?.runOnUiThread {
+                        iv_loading_progress_country.visibility = View.GONE
+                        iv_loading_progress_country.clearAnimation()
+                        tv_country_code.visibility = View.VISIBLE
+                    }
+                }.start()
+            }
+
+            override fun onError(error: TAPErrorModel?) {
+                super.onError(error)
+                iv_loading_progress_country.visibility = View.GONE
+                iv_loading_progress_country.clearAnimation()
+                tv_country_code.visibility = View.VISIBLE
+                setCountry(0, "", "")
+                showDialog("ERROR", error?.message ?: generalErrorMessage)
+            }
+
+            override fun onError(errorMessage: String?) {
+                super.onError(errorMessage)
+                iv_loading_progress_country.visibility = View.GONE
+                iv_loading_progress_country.clearAnimation()
+                tv_country_code.visibility = View.VISIBLE
+                setCountry(0, "", "")
+                showDialog("ERROR", errorMessage ?: generalErrorMessage)
+            }
+        })
     }
 
     private fun showDialog(title: String, message: String) {
