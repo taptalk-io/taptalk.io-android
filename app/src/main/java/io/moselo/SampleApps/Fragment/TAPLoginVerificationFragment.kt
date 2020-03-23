@@ -4,13 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.moselo.SampleApps.Activity.TAPRegisterActivity
 import io.taptalk.TapTalk.API.Api.TAPApiManager
@@ -32,7 +31,7 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TaptalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
-class TAPLoginVerificationFragment : Fragment() {
+class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
             ?: ""
     var otpTimer: CountDownTimer? = null
@@ -80,6 +79,11 @@ class TAPLoginVerificationFragment : Fragment() {
         initViewListener()
     }
 
+    override fun onResume() {
+        super.onResume()
+        setupTimer()
+    }
+
     override fun onStop() {
         super.onStop()
         cancelTimer()
@@ -100,11 +104,8 @@ class TAPLoginVerificationFragment : Fragment() {
         TAPUtils.showKeyboard(activity, et_otp_code)
         clearOTPEditText()
 
-        if (0L != (activity as TAPLoginActivity).vm.lastLoginTimestamp
-                && (System.currentTimeMillis() - (activity as TAPLoginActivity).vm.lastLoginTimestamp) < waitTime) {
-            setAndStartTimer(waitTime - (System.currentTimeMillis() - (activity as TAPLoginActivity).vm.lastLoginTimestamp))
-        } else setAndStartTimer(waitTime)
-        //setAndStartTimer(waitTime)
+        setupTimer()
+
         tv_request_otp_again.setOnClickListener {
             showRequestingOTPLoading()
             TAPDataManager.getInstance().requestOTPLogin(countryID, phoneNumber, object : TAPDefaultDataView<TAPLoginOTPResponse>() {
@@ -156,6 +157,20 @@ class TAPLoginVerificationFragment : Fragment() {
         ll_loading_otp.visibility = View.GONE
         ll_otp_sent.visibility = View.VISIBLE
         iv_progress_otp.clearAnimation()
+    }
+
+    private fun setupTimer() {
+        val lastLoginTimestamp = (activity as TAPLoginActivity).vm.lastLoginTimestamp
+        if (0L != lastLoginTimestamp && (System.currentTimeMillis() - lastLoginTimestamp) < waitTime) {
+            // Resume timer with remaining time
+            setAndStartTimer(waitTime - (System.currentTimeMillis() - lastLoginTimestamp))
+        } else if (null != otpTimer) {
+            // Finish timer
+            otpTimer!!.onFinish()
+        } else {
+            // Start timer from beginning
+            setAndStartTimer(waitTime)
+        }
     }
 
     private fun setAndStartTimer(waitTime: Long) {

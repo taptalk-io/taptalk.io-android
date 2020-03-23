@@ -95,6 +95,7 @@ public abstract class OverScrollBounceEffectDecoratorBase implements IOverScroll
 
         /**
          * Handle a transition onto this state, as it becomes 'current' state.
+         *
          * @param fromState
          */
         void handleEntryTransition(IDecoratorState fromState);
@@ -136,7 +137,7 @@ public abstract class OverScrollBounceEffectDecoratorBase implements IOverScroll
 
             // Has over-scrolling officially started?
             if ((mViewAdapter.isInAbsoluteStart() && mMoveAttr.mDir) ||
-                (mViewAdapter.isInAbsoluteEnd() && !mMoveAttr.mDir)) {
+                    (mViewAdapter.isInAbsoluteEnd() && !mMoveAttr.mDir)) {
 
                 // Save initial over-scroll attributes for future reference.
                 mStartAttr.mPointerId = event.getPointerId(0);
@@ -164,7 +165,7 @@ public abstract class OverScrollBounceEffectDecoratorBase implements IOverScroll
     /**
      * Handles the actual over-scrolling: thus translating the view according to configuration
      * and user interactions, dynamically.
-     *
+     * <p>
      * <br/><br/>The state is exited - thus completing over-scroll handling, in one of two cases:
      * <br/>When user lets go of the view, it transitions control to the bounce-back state.
      * <br/>When user moves the view back onto a potential 'under-scroll' state, it abruptly
@@ -215,8 +216,8 @@ public abstract class OverScrollBounceEffectDecoratorBase implements IOverScroll
             // If moved in counter direction onto a potential under-scroll state -- don't. Instead, abort
             // over-scrolling abruptly, thus returning control to which-ever touch handlers there
             // are waiting (e.g. regular scroller handlers).
-            if ( (mStartAttr.mDir && !mMoveAttr.mDir && (newOffset <= mStartAttr.mAbsOffset)) ||
-                 (!mStartAttr.mDir && mMoveAttr.mDir && (newOffset >= mStartAttr.mAbsOffset)) ) {
+            if ((mStartAttr.mDir && !mMoveAttr.mDir && (newOffset <= mStartAttr.mAbsOffset)) ||
+                    (!mStartAttr.mDir && mMoveAttr.mDir && (newOffset >= mStartAttr.mAbsOffset))) {
                 translateViewAndEvent(view, mStartAttr.mAbsOffset, event);
                 mUpdateListener.onOverScrollUpdate(OverScrollBounceEffectDecoratorBase.this, mCurrDragState, 0);
 
@@ -312,11 +313,16 @@ public abstract class OverScrollBounceEffectDecoratorBase implements IOverScroll
         }
 
         @Override
-        public void onAnimationStart(Animator animation) {}
+        public void onAnimationStart(Animator animation) {
+        }
+
         @Override
-        public void onAnimationCancel(Animator animation) {}
+        public void onAnimationCancel(Animator animation) {
+        }
+
         @Override
-        public void onAnimationRepeat(Animator animation) {}
+        public void onAnimationRepeat(Animator animation) {
+        }
 
         protected Animator createAnimator() {
 
@@ -441,7 +447,10 @@ public abstract class OverScrollBounceEffectDecoratorBase implements IOverScroll
     }
 
     protected abstract MotionAttributes createMotionAttributes();
+
     protected abstract AnimationAttributes createAnimationAttributes();
+
     protected abstract void translateView(View view, float offset);
+
     protected abstract void translateViewAndEvent(View view, float offset, MotionEvent event);
 }

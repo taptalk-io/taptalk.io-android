@@ -11,7 +11,8 @@ public class TAPDeleteRoomRequest {
         this.checksum = checksum;
     }
 
-    public TAPDeleteRoomRequest() {}
+    public TAPDeleteRoomRequest() {
+    }
 
     public String getRoomID() {
         return roomID;

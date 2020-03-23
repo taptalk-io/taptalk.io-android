@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,18 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -35,6 +22,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
@@ -42,6 +41,8 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,9 +76,9 @@ import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_ADD_TO_CONTACTS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_BLOCK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_CLEAR_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_DELETE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_DEMOTE_ADMIN;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_CLEAR_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EXIT_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_PROMOTE_ADMIN;
@@ -91,9 +92,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
@@ -851,9 +852,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     getTransitionToCollapse().start();
                 } else {
                     ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
-                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton)));
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavigationBarBackButton)));
                     ImageViewCompat.setImageTintList(ivButtonEdit, ColorStateList.valueOf(ContextCompat.
-                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton)));
+                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavigationBarBackButton)));
                 }
             } else if (Math.abs(verticalOffset) < scrollRange && isShowing) {
                 // Hide Toolbar
@@ -885,7 +886,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             if (null == transitionToCollapse) {
                 transitionToCollapse = ValueAnimator.ofArgb(
                         ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton),
-                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton));
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavigationBarBackButton));
                 transitionToCollapse.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToCollapse.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
                         (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
@@ -899,7 +900,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         private ValueAnimator getTransitionToExpand() {
             if (null == transitionToExpand) {
                 transitionToExpand = ValueAnimator.ofArgb(
-                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton),
+                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavigationBarBackButton),
                         ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton));
                 transitionToExpand.setDuration(DEFAULT_ANIMATION_TIME);
                 transitionToExpand.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(

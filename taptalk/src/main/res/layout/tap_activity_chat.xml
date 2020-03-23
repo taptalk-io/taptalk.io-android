@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tapDefaultBackgroundColor"
+    android:background="@color/tapChatRoomBackgroundColor"
     tools:context="io.taptalk.TapTalk.View.Activity.TapUIChatActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -24,7 +24,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            android:tint="@color/tapIconNavBarBackButton"
+            android:tint="@color/tapIconNavigationBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_room_name"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +50,7 @@
             app:layout_goneMarginStart="?attr/actionBarSize"
             tools:text="Room Name" />
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_room_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
             app:layout_constraintStart_toStartOf="@id/tv_room_name"
             app:layout_constraintTop_toBottomOf="@id/tv_room_name">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_room_online_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,9 +96,9 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Active Now" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_room_typing_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -132,10 +132,10 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Typing" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <io.taptalk.TapTalk.Helper.CircleImageView
             android:id="@+id/civ_room_image"
@@ -187,9 +187,9 @@
             app:layout_constraintBottom_toBottomOf="@id/civ_room_image"
             app:layout_constraintEnd_toEndOf="@id/civ_room_image" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_contact_action"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -245,9 +245,9 @@
             app:layout_constraintStart_toEndOf="@id/tv_button_add_to_contacts"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_empty_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -255,7 +255,7 @@
         app:layout_constraintBottom_toTopOf="@id/fl_chat_composer_and_history"
         app:layout_constraintTop_toBottomOf="@id/cl_contact_action">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -346,9 +346,9 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_chat_empty_guide"
                 tools:text="@string/tap_format_s_personal_chat_room_empty_guide_content" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/fl_message_list"
@@ -398,7 +398,7 @@
 
     </FrameLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_unread_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -440,7 +440,7 @@
             app:layout_constraintStart_toEndOf="@id/tv_unread_button_count"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/fl_chat_composer_and_history"
@@ -449,7 +449,7 @@
         android:animateLayoutChanges="true"
         app:layout_constraintBottom_toTopOf="@id/rv_custom_keyboard">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_chat_composer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -460,7 +460,7 @@
             android:focusableInTouchMode="true"
             android:visibility="visible">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_quote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -545,7 +545,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_quote_title"
                     tools:text="In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
                 android:id="@+id/iv_chat_menu_area"
@@ -640,9 +640,9 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_chat_history"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -725,11 +725,11 @@
 
             </LinearLayout>
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_custom_keyboard"
         android:layout_width="match_parent"
         android:layout_height="216dp"
@@ -775,4 +775,4 @@
         app:layout_constraintTop_toTopOf="@+id/iv_to_bottom"
         tools:text="1" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

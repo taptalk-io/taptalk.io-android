@@ -1,8 +1,9 @@
 package io.taptalk.TapTalk.Listener;
 
 import android.app.Activity;
-import android.support.annotation.Keep;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package io.taptalk.TapTalk.ViewModel
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
+import androidx.lifecycle.AndroidViewModel
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
@@ -9,15 +9,15 @@ import io.taptalk.TapTalk.Model.TAPUserModel
 class TAPGroupMemberViewModel(application: Application) : AndroidViewModel(application) {
     var isSearchActive: Boolean = false
     var isSelectionMode: Boolean = false
-    var isUpdateMember : Boolean = false
-    var isActiveUserIsAdmin : Boolean = false
-    var participantsList : MutableList<TAPUserModel>? = mutableListOf()
-    var groupData : TAPRoomModel? = null
-    var selectedMembers : LinkedHashMap<String?, TAPUserModel?> = linkedMapOf()
-    var adminButtonStatus : AdminButtonShowed = AdminButtonShowed.NOT_SHOWED
-    var memberCountModel : TAPUserModel? = TAPUserModel("", "")
-    var loadingStartText : String = ""
-    var loadingEndText : String = ""
+    var isUpdateMember: Boolean = false
+    var isActiveUserIsAdmin: Boolean = false
+    var participantsList: MutableList<TAPUserModel>? = mutableListOf()
+    var groupData: TAPRoomModel? = null
+    var selectedMembers: LinkedHashMap<String?, TAPUserModel?> = linkedMapOf()
+    var adminButtonStatus: AdminButtonShowed = AdminButtonShowed.NOT_SHOWED
+    var memberCountModel: TAPUserModel? = TAPUserModel("", "")
+    var loadingStartText: String = ""
+    var loadingEndText: String = ""
 
     enum class AdminButtonShowed {
         PROMOTE, DEMOTE, NOT_SHOWED
@@ -38,11 +38,11 @@ class TAPGroupMemberViewModel(application: Application) : AndroidViewModel(appli
         selectedMembers.remove(memberID)
     }
 
-    fun isSelectedMembersEmpty() : Boolean {
+    fun isSelectedMembersEmpty(): Boolean {
         return selectedMembers.size == 0
     }
 
-    fun getSelectedUserIDs() : List<String?> {
+    fun getSelectedUserIDs(): List<String?> {
         return selectedMembers.keys.toList()
     }
 }

@@ -2,15 +2,24 @@ package io.taptalk.TapTalk.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TAPMessageTargetModel implements Parcelable {
-    @Nullable @JsonProperty("targetType") private String targetType;
-    @Nullable @JsonProperty("targetID") private String targetID;
-    @Nullable @JsonProperty("targetXCID") private String targetXCID;
-    @Nullable @JsonProperty("targetName") private String targetName;
+    @Nullable
+    @JsonProperty("targetType")
+    private String targetType;
+    @Nullable
+    @JsonProperty("targetID")
+    private String targetID;
+    @Nullable
+    @JsonProperty("targetXCID")
+    private String targetXCID;
+    @Nullable
+    @JsonProperty("targetName")
+    private String targetName;
 
     @Nullable
     public String getTargetType() {

@@ -3,13 +3,14 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.regex.Pattern;
 
@@ -73,16 +74,18 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
     }
 
     protected void enableLongPress(Context context, View view, TAPMessageModel message) {
-        view.setOnLongClickListener(v -> {
-            Intent intent = new Intent(LongPressChatBubble);
-            intent.putExtra(MESSAGE, message);
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-            if (BuildConfig.DEBUG || TapTalk.isLoggingEnabled) {
-                Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.toJsonString(message));
-            }
-            return true;
-        });
+        if (null != view) {
+            view.setOnLongClickListener(v -> {
+                Intent intent = new Intent(LongPressChatBubble);
+                intent.putExtra(MESSAGE, message);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                if (BuildConfig.DEBUG || TapTalk.isLoggingEnabled) {
+                    Log.d(this.getClass().getSimpleName(), "Message model: " + TAPUtils.toJsonString(message));
+                }
+                return true;
+            });
+        }
     }
 
     protected void setLinkDetection(Context context, TextView tvMessageBody) {

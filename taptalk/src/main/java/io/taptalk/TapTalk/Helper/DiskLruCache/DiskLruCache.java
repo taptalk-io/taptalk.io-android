@@ -187,7 +187,7 @@ public final class DiskLruCache implements Closeable {
      * @throws IOException if reading or writing the cache directory fails
      */
     public static DiskLruCache open(File directory, int appVersion, int valueCount, long maxSize) {
-            //throws IOException {
+        //throws IOException {
         if (maxSize <= 0) {
             //throw new IllegalArgumentException("maxUploadSize <= 0");
             Log.e(TAG, "open: maxUploadSize <= 0");
@@ -215,9 +215,9 @@ public final class DiskLruCache implements Closeable {
         DiskLruCache cache = new DiskLruCache(directory, appVersion, valueCount, maxSize);
         if (cache.journalFile.exists()) {
 //            try {
-                cache.readJournal();
-                cache.processJournal();
-                return cache;
+            cache.readJournal();
+            cache.processJournal();
+            return cache;
 //            }
 //            catch (IOException journalIsCorrupt) {
 //                System.out
@@ -854,7 +854,7 @@ public final class DiskLruCache implements Closeable {
          * Returns the last committed value as a string, or null if no value
          * has been committed.
          */
-        public String getString(int index)  { //throws IOException {
+        public String getString(int index) { //throws IOException {
             InputStream in = newInputStream(index);
             return in != null ? inputStreamToString(in) : null;
         }

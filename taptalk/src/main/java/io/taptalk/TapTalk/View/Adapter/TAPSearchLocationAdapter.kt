@@ -34,7 +34,7 @@ class TAPSearchLocationAdapter : TAPBaseAdapter<TAPLocationItem, TAPBaseViewHold
 
     class BasicViewHolder : TAPBaseViewHolder<TAPLocationItem>, View.OnClickListener {
         var tvLocation: TextView? = null
-        var generalListener :TAPGeneralListener<TAPLocationItem>? = null
+        var generalListener: TAPGeneralListener<TAPLocationItem>? = null
 
         constructor(parent: ViewGroup?, itemLayoutId: Int, generalListener: TAPGeneralListener<TAPLocationItem>?) : super(parent, itemLayoutId) {
             tvLocation = itemView.findViewById(R.id.tv_location)

@@ -107,12 +107,12 @@ public class TAPDefaultConstant {
     }
 
     public static final class IntentType {
-    public static final String INTENT_TYPE_ALL = "*/*";
-    public static final String INTENT_TYPE_IMAGE = "image/*";
-    public static final String INTENT_TYPE_VIDEO = "video/*";
-    public static final String GALLERY = "Gallery";
-    public static final String SELECT_PICTURE = "Select Picture";
-    public static final String OPEN_FILE = "Open File";
+        public static final String INTENT_TYPE_ALL = "*/*";
+        public static final String INTENT_TYPE_IMAGE = "image/*";
+        public static final String INTENT_TYPE_VIDEO = "video/*";
+        public static final String GALLERY = "Gallery";
+        public static final String SELECT_PICTURE = "Select Picture";
+        public static final String OPEN_FILE = "Open File";
 
     }
 

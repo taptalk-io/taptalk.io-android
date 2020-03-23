@@ -62,12 +62,13 @@ public class HorizontalOverScrollBounceEffectDecorator extends OverScrollBounceE
 
     /**
      * C'tor, creating the effect with explicit arguments.
-     * @param viewAdapter The view's encapsulation.
+     *
+     * @param viewAdapter       The view's encapsulation.
      * @param touchDragRatioFwd Ratio of touch distance to actual drag distance when in 'forward' direction.
      * @param touchDragRatioBck Ratio of touch distance to actual drag distance when in 'backward'
      *                          direction (opposite to initial one).
-     * @param decelerateFactor Deceleration factor used when decelerating the motion to create the
-     *                         bounce-back effect.
+     * @param decelerateFactor  Deceleration factor used when decelerating the motion to create the
+     *                          bounce-back effect.
      */
     public HorizontalOverScrollBounceEffectDecorator(IOverScrollDecoratorAdapter viewAdapter,
                                                      float touchDragRatioFwd, float touchDragRatioBck, float decelerateFactor) {

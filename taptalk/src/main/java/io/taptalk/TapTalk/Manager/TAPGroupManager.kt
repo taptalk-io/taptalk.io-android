@@ -12,26 +12,26 @@ class TAPGroupManager {
 
     var refreshRoomList = false
 
-    private var groupDataMap : HashMap<String, TAPRoomModel>? = null
+    private var groupDataMap: HashMap<String, TAPRoomModel>? = null
 
     companion object {
-        private var instance : TAPGroupManager? = null
+        private var instance: TAPGroupManager? = null
 
-        val getInstance : TAPGroupManager
-        get() {
-            if (null == instance) {
-                instance = TAPGroupManager()
+        val getInstance: TAPGroupManager
+            get() {
+                if (null == instance) {
+                    instance = TAPGroupManager()
+                }
+                return instance!!
             }
-            return instance!!
-        }
     }
 
     init {
-      TAPConnectionManager.getInstance().addSocketListener(object : TAPSocketListener() {
-          override fun onSocketDisconnected() {
-              saveRoomDataMapToPreference()
-          }
-      })
+        TAPConnectionManager.getInstance().addSocketListener(object : TAPSocketListener() {
+            override fun onSocketDisconnected() {
+                saveRoomDataMapToPreference()
+            }
+        })
     }
 
     fun getGroupMaxParticipants(): Int {
@@ -39,7 +39,7 @@ class TAPGroupManager {
         return maxParticipants?.toInt() ?: DEFAULT_GROUP_MAX_PARTICIPANTS.toInt()
     }
 
-    private fun getGroupDataMap() : HashMap<String, TAPRoomModel> {
+    private fun getGroupDataMap(): HashMap<String, TAPRoomModel> {
         if (null == groupDataMap) groupDataMap = linkedMapOf()
         return groupDataMap!!
     }
@@ -48,7 +48,7 @@ class TAPGroupManager {
         getGroupDataMap()[roomModel.roomID] = roomModel
     }
 
-    fun getGroupData(roomID: String) : TAPRoomModel? {
+    fun getGroupData(roomID: String): TAPRoomModel? {
         return if (!getGroupDataMap().containsKey(roomID)) null
         else {
             getGroupDataMap()[roomID]
@@ -59,7 +59,7 @@ class TAPGroupManager {
         getGroupDataMap().remove(roomID)
     }
 
-    fun checkIsRoomDataAvailable(roomID: String) : Boolean {
+    fun checkIsRoomDataAvailable(roomID: String): Boolean {
         return getGroupDataMap().containsKey(roomID) && null != getGroupData(roomID)
     }
 

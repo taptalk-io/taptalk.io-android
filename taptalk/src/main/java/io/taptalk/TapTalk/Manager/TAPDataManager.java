@@ -1,12 +1,13 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.app.Application;
-import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import androidx.lifecycle.LiveData;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.orhanobut.hawk.Hawk;
 

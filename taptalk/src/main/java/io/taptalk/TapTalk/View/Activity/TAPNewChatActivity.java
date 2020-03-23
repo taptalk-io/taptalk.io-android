@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,12 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -25,6 +18,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -327,7 +328,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         } else if (!TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS) ||
                 !TAPContactManager.getInstance().isContactSyncAllowedByUser()) {
             runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
-        } else if (TAPContactManager.getInstance().isContactSyncAllowedByUser()){
+        } else if (TAPContactManager.getInstance().isContactSyncAllowedByUser()) {
             syncContactList(false);
         }
     }

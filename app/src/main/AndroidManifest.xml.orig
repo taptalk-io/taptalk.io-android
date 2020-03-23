@@ -21,7 +21,11 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
+<<<<<<< .merge_file_XbcVgS
             android:value="YOUR_GOOGLE_API_KEY" />
+=======
+            android:value="AIzaSyBBowJXwSCAM9Q-ZyR4iSlfDKuKjawZb0s" />
+>>>>>>> .merge_file_NDe5rV
 
         <provider
             android:name="androidx.core.content.FileProvider"
