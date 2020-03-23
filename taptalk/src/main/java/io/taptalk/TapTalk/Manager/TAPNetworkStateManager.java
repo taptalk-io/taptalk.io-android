@@ -11,6 +11,7 @@ import android.net.NetworkRequest;
 import android.os.Build;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -19,17 +20,33 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
 public class TAPNetworkStateManager {
     private static final String TAG = TAPNetworkStateManager.class.getSimpleName();
-    private static TAPNetworkStateManager instance;
+    private static HashMap<String, TAPNetworkStateManager> instances;
+
+    private String instanceKey = "";
     private List<TapTalkNetworkInterface> listeners;
 
     private TapNetworkCallback networkCallback;
     private NetworkRequest networkRequest;
 
+    // TODO: 018, 18 Mar 2020 REMOVE
     public static TAPNetworkStateManager getInstance() {
-        return instance == null ? (instance = new TAPNetworkStateManager()) : instance;
+        return getInstance("");
     }
 
-    public TAPNetworkStateManager() {
+    public static TAPNetworkStateManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPNetworkStateManager instance = new TAPNetworkStateManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPNetworkStateManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public TAPNetworkStateManager(String instanceKey) {
+        this.instanceKey = instanceKey;
         listeners = new ArrayList<>();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

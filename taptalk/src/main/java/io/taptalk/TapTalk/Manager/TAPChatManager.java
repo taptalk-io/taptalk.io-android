@@ -99,7 +99,7 @@ public class TAPChatManager {
 
     private final String TAG = TAPChatManager.class.getSimpleName();
     private static HashMap<String, TAPChatManager> instances;
-    private String instanceKey = ""; // TODO: 18 Mar 2020
+    private String instanceKey = "";
     private Map<String, TAPMessageModel> pendingMessages, waitingUploadProgress, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, Integer> quotedActions;
     private Map<String, String> messageDrafts;
@@ -122,6 +122,38 @@ public class TAPChatManager {
     private int pendingRetryInterval = 60 * 1000;
     private final int maxImageSize = 2000;
     private final Integer CHARACTER_LIMIT = 4000;
+
+    // TODO: 018, 18 Mar 2020 REMOVE
+    public static TAPChatManager getInstance() {
+        return getInstance("");
+    }
+
+    public static TAPChatManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPChatManager instance = new TAPChatManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPChatManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public TAPChatManager(String instanceKey) {
+        this.instanceKey = instanceKey;
+        TAPConnectionManager.getInstance().addSocketListener(socketListener);
+        TAPConnectionManager.getInstance().setSocketMessageListener(socketMessageListener);
+        setActiveUser(TAPDataManager.getInstance().getActiveUser());
+        chatListeners = new ArrayList<>();
+        sendMessageListeners = new HashMap<>();
+        saveMessages = new ArrayList<>();
+        pendingMessages = new LinkedHashMap<>();
+        waitingResponses = new LinkedHashMap<>();
+        incomingMessages = new LinkedHashMap<>();
+        waitingUploadProgress = new LinkedHashMap<>();
+        messageDrafts = new HashMap<>();
+    }
 
     private TapTalkSocketInterface socketListener = new TapTalkSocketInterface() {
         @Override
@@ -207,38 +239,6 @@ public class TAPChatManager {
             }
         }
     };
-
-    // TODO: 018, 18 Mar 2020 REMOVE
-    public static TAPChatManager getInstance() {
-        return getInstance("");
-    }
-
-    public static TAPChatManager getInstance(String instanceKey) {
-        if (!getInstances().containsKey(instanceKey)) {
-            TAPChatManager instance = new TAPChatManager(instanceKey);
-            getInstances().put(instanceKey, instance);
-        }
-        return getInstances().get(instanceKey);
-    }
-
-    private static HashMap<String, TAPChatManager> getInstances() {
-        return null == instances ? instances = new HashMap<>() : instances;
-    }
-
-    public TAPChatManager(String instanceKey) {
-        this.instanceKey = instanceKey;
-        TAPConnectionManager.getInstance().addSocketListener(socketListener);
-        TAPConnectionManager.getInstance().setSocketMessageListener(socketMessageListener);
-        setActiveUser(TAPDataManager.getInstance().getActiveUser());
-        chatListeners = new ArrayList<>();
-        sendMessageListeners = new HashMap<>();
-        saveMessages = new ArrayList<>();
-        pendingMessages = new LinkedHashMap<>();
-        waitingResponses = new LinkedHashMap<>();
-        incomingMessages = new LinkedHashMap<>();
-        waitingUploadProgress = new LinkedHashMap<>();
-        messageDrafts = new HashMap<>();
-    }
 
     public void addChatListener(TAPChatListener chatListener) {
         chatListeners.add(chatListener);

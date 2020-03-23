@@ -63,15 +63,32 @@ import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 @Keep
 public class TapCoreMessageManager {
 
-    private static TapCoreMessageManager instance;
+    private static HashMap<String, TapCoreMessageManager> instances;
 
     private List<TapCoreMessageListener> coreMessageListeners;
     private TAPChatListener chatListener;
 
+    private String instanceKey = "";
     private boolean isUploadMessageFileToExternalServerEnabled;
 
+    public TapCoreMessageManager(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
+
     public static TapCoreMessageManager getInstance() {
-        return null == instance ? instance = new TapCoreMessageManager() : instance;
+        return getInstance("");
+    }
+
+    public static TapCoreMessageManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TapCoreMessageManager instance = new TapCoreMessageManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TapCoreMessageManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
     }
 
     private List<TapCoreMessageListener> getCoreMessageListeners() {

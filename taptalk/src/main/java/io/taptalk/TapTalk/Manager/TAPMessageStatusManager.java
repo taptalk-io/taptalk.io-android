@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,9 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPMessageStatusManager {
     private static final String TAG = TAPMessageStatusManager.class.getSimpleName();
-    private static TAPMessageStatusManager instance;
+    private static HashMap<String, TAPMessageStatusManager> instances;
+
+    private String instanceKey = "";
     private List<String> readMessageQueue;
     private List<String> messagesMarkedAsRead; // Message IDs already processed as read by API
     private List<TAPMessageModel> deliveredMessageQueue;
@@ -24,8 +27,25 @@ public class TAPMessageStatusManager {
     private Map<Integer, List<TAPMessageModel>> apiDeliveredRequestMap;
     private Map<String, Integer> unreadList;
 
+    // TODO: 018, 18 Mar 2020 REMOVE
     public static TAPMessageStatusManager getInstance() {
-        return null == instance ? instance = new TAPMessageStatusManager() : instance;
+        return getInstance("");
+    }
+
+    public static TAPMessageStatusManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPMessageStatusManager instance = new TAPMessageStatusManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPMessageStatusManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public TAPMessageStatusManager(String instanceKey) {
+        this.instanceKey = instanceKey;
     }
 
     public List<String> getReadMessageQueue() {

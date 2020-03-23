@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Manager;
 import androidx.annotation.Keep;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
@@ -25,10 +26,28 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 @Keep
 public class TapCoreContactManager {
 
-    private static TapCoreContactManager instance;
+    private static HashMap<String, TapCoreContactManager> instances;
+
+    private String instanceKey = "";
+
+    public TapCoreContactManager(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
 
     public static TapCoreContactManager getInstance() {
-        return null == instance ? instance = new TapCoreContactManager() : instance;
+        return getInstance("");
+    }
+
+    public static TapCoreContactManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TapCoreContactManager instance = new TapCoreContactManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TapCoreContactManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
     }
 
     public void getAllUserContacts(TapCoreGetMultipleContactListener listener) {

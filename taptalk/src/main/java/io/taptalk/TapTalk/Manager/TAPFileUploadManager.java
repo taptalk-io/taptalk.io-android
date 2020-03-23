@@ -79,15 +79,34 @@ import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 public class TAPFileUploadManager {
 
     private final String TAG = TAPFileUploadManager.class.getSimpleName();
-    private static TAPFileUploadManager instance;
+    private static HashMap<String, TAPFileUploadManager> instances;
+
+    private String instanceKey = "";
     private HashMap<String, List<TAPMessageModel>> uploadQueuePerRoom;
     private HashMap<String, Bitmap> bitmapQueue; // Used for sending images with bitmap
     private HashMap<String, Integer> uploadProgressMapPercent;
     private HashMap<String, Long> uploadProgressMapBytes;
     private HashMap<String, TapSendMessageInterface> sendMessageListeners;
 
+    // TODO: 018, 18 Mar 2020 REMOVE
     public static TAPFileUploadManager getInstance() {
-        return null == instance ? instance = new TAPFileUploadManager() : instance;
+        return getInstance("");
+    }
+
+    public static TAPFileUploadManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPFileUploadManager instance = new TAPFileUploadManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPFileUploadManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public TAPFileUploadManager(String instanceKey) {
+        this.instanceKey = instanceKey;
     }
 
     public Long getMaxFileUploadSize() {

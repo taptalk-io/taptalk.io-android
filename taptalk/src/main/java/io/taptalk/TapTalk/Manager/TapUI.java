@@ -54,7 +54,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACT
 
 public class TapUI {
 
-    private static TapUI instance;
+    private static HashMap<String, TapUI> instances;
+
+    private String instanceKey = "";
 
     private List<TapUIRoomListListener> tapUIRoomListListeners;
     private List<TapUIChatRoomListener> tapUIChatRoomListeners;
@@ -71,8 +73,24 @@ public class TapUI {
     private boolean isLogoutButtonVisible;
     private boolean isReadStatusHidden;
 
+    public TapUI(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
+
     public static TapUI getInstance() {
-        return null == instance ? instance = new TapUI() : instance;
+        return getInstance("");
+    }
+
+    public static TapUI getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TapUI instance = new TapUI(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TapUI> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
     }
 
     private List<TapUIRoomListListener> getRoomListListeners() {

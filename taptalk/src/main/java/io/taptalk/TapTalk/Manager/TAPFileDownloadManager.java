@@ -66,7 +66,9 @@ import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 public class TAPFileDownloadManager {
 
     private final String TAG = TAPFileDownloadManager.class.getSimpleName();
-    private static TAPFileDownloadManager instance;
+    private static HashMap<String, TAPFileDownloadManager> instances;
+
+    private String instanceKey = "";
     private HashMap<String, Integer> downloadProgressMapPercent;
     private HashMap<String, Long> downloadProgressMapBytes;
     private HashMap<String, String> fileProviderPathMap; // Contains FileProvider Uri as key and file pathname as value
@@ -74,8 +76,25 @@ public class TAPFileDownloadManager {
     private HashMap<String, DownloadFromUrlTask> downloadTaskMap;
     private ArrayList<String> failedDownloads;
 
+    // TODO: 018, 18 Mar 2020 REMOVE
     public static TAPFileDownloadManager getInstance() {
-        return null == instance ? instance = new TAPFileDownloadManager() : instance;
+        return getInstance("");
+    }
+
+    public static TAPFileDownloadManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPFileDownloadManager instance = new TAPFileDownloadManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPFileDownloadManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public TAPFileDownloadManager(String instanceKey) {
+        this.instanceKey = instanceKey;
     }
 
     private HashMap<String, Integer> getDownloadProgressMapPercent() {

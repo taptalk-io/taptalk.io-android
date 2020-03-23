@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Manager;
 
 import android.util.Log;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
@@ -13,10 +14,29 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 
 public class TAPOldDataManager {
     private static final String TAG = TAPOldDataManager.class.getSimpleName();
-    private static TAPOldDataManager instance;
+    private static HashMap<String, TAPOldDataManager> instances;
 
+    private String instanceKey = "";
+
+    // TODO: 018, 18 Mar 2020 REMOVE
     public static TAPOldDataManager getInstance() {
-        return null == instance ? instance = new TAPOldDataManager() : instance;
+        return getInstance("");
+    }
+
+    public static TAPOldDataManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPOldDataManager instance = new TAPOldDataManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPOldDataManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public TAPOldDataManager(String instanceKey) {
+        this.instanceKey = instanceKey;
     }
 
     public void startAutoCleanProcess() {

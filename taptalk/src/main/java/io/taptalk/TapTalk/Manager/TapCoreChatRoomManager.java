@@ -5,6 +5,7 @@ import android.net.Uri;
 import androidx.annotation.Keep;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
@@ -41,13 +42,30 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 @Keep
 public class TapCoreChatRoomManager {
 
-    private static TapCoreChatRoomManager instance;
+    private static HashMap<String, TapCoreChatRoomManager> instances;
 
+    private String instanceKey = "";
     private List<TapCoreChatRoomListener> coreChatRoomListeners;
     private TAPChatListener chatListener;
 
+    public TapCoreChatRoomManager(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
+
     public static TapCoreChatRoomManager getInstance() {
-        return null == instance ? instance = new TapCoreChatRoomManager() : instance;
+        return getInstance("");
+    }
+
+    public static TapCoreChatRoomManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TapCoreChatRoomManager instance = new TapCoreChatRoomManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TapCoreChatRoomManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
     }
 
     private List<TapCoreChatRoomListener> getCoreChatRoomListeners() {

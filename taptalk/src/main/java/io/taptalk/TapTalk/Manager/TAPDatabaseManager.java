@@ -4,6 +4,7 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.Data.Contact.TAPMyContactRepository;
@@ -19,21 +20,37 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MY_CONTAC
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
 
 public class TAPDatabaseManager {
-    private static TAPDatabaseManager instance;
 
-    //for message Table
+    private static HashMap<String, TAPDatabaseManager> instances;
+
+    private String instanceKey = "";
+
     private TAPMessageRepository messageRepository;
-
-    //for Recent Search Table
+    private TAPMyContactRepository myContactRepository;
     private TAPRecentSearchRepository searchRepository;
 
-    //for MyContact Table
-    private TAPMyContactRepository myContactRepository;
-
-    public static TAPDatabaseManager getInstance() {
-        return (null == instance) ? (instance = new TAPDatabaseManager()) : instance;
+    public TAPDatabaseManager(String instanceKey) {
+        this.instanceKey = instanceKey;
     }
 
+    // TODO: 023, 23 Mar 2020 REMOVE
+    public static TAPDatabaseManager getInstance() {
+        return getInstance("");
+    }
+
+    public static TAPDatabaseManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPDatabaseManager instance = new TAPDatabaseManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPDatabaseManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    // TODO: 023, 23 Mar 2020
     public void setRepository(String databaseType, Application application) {
         switch (databaseType) {
             case MESSAGE_DB:
