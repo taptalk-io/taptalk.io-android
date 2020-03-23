@@ -947,7 +947,6 @@ public class TapTalk implements LifecycleObserver {
 
     public static void handleAppToForeground() {
         isForeground = true;
-
         for (Map.Entry<String, TapTalk> entry : getTapTalkInstances().entrySet()) {
 //            TAPContactManager.getInstance(entry.getValue().instanceKey).loadAllUserDataFromDatabase();
 //            TAPGroupManager.Companion.getGetInstance(entry.getValue().instanceKey).loadAllRoomDataFromPreference();
@@ -963,15 +962,15 @@ public class TapTalk implements LifecycleObserver {
             TAPChatManager.getInstance().triggerSaveNewMessage();
             TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
             TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
+            Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+                Log.e(TAG, "App Crashing");
+                TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
+                TAPContactManager.getInstance().saveUserDataMapToDatabase();
+                TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+                TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+                System.exit(0);
+            });
         }
-//        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-//        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-
-//         Start service on first load
-//        if (null == intent) {
-//            intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
-//            appContext.startService(intent);
-//        }
     }
 
     public static void handleAppToBackground() {

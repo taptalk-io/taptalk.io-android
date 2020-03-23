@@ -137,20 +137,17 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
             }
         }
 
-        ll_country_code.setOnClickListener {
-            val intent = Intent(context, TAPCountryListActivity::class.java)
-            intent.putExtra(COUNTRY_LIST, countryListitems)
-            intent.putExtra(COUNTRY_ID, defaultCountryID)
-            startActivityForResult(intent, COUNTRY_PICK)
-        }
+        enableCountryPicker()
     }
 
     private fun enableContinueButton() {
+        enableCountryPicker()
         fl_continue_btn.setOnClickListener { attemptLogin() }
         fl_continue_btn.isClickable = true
     }
 
     private fun disableContinueButton() {
+        disableCountryPicker()
         fl_continue_btn.setOnClickListener(null)
         fl_continue_btn.isClickable = false
     }
@@ -162,6 +159,19 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
             showProgress()
             checkNumberAndCallAPI()
         }
+    }
+
+    private fun enableCountryPicker() {
+        ll_country_code.setOnClickListener {
+            val intent = Intent(context, TAPCountryListActivity::class.java)
+            intent.putExtra(COUNTRY_LIST, countryListitems)
+            intent.putExtra(COUNTRY_ID, defaultCountryID)
+            startActivityForResult(intent, COUNTRY_PICK)
+        }
+    }
+
+    private fun disableCountryPicker() {
+        ll_country_code.setOnClickListener(null)
     }
 
     private fun checkAndEditPhoneNumber(): String {
