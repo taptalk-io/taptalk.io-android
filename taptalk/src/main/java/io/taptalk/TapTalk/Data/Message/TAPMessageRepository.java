@@ -30,8 +30,8 @@ public class TAPMessageRepository {
     private LiveData<List<TAPMessageEntity>> allMessages;
     private List<TAPMessageEntity> allMessageList = new ArrayList<>();
 
-    public TAPMessageRepository(Application application) {
-        TapTalkDatabase db = TapTalkDatabase.getDatabase(application);
+    public TAPMessageRepository(String instanceKey, Application application) {
+        TapTalkDatabase db = TapTalkDatabase.getDatabase(instanceKey, application);
         messageDao = db.messageDao();
         allMessages = messageDao.getAllMessageLiveData();
     }

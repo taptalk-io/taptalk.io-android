@@ -14,8 +14,8 @@ public class TAPMyContactRepository {
     private TAPMyContactDao myContactDao;
     private LiveData<List<TAPUserModel>> myContactListLive;
 
-    public TAPMyContactRepository(Application application) {
-        TapTalkDatabase db = TapTalkDatabase.getDatabase(application);
+    public TAPMyContactRepository(String instanceKey, Application application) {
+        TapTalkDatabase db = TapTalkDatabase.getDatabase(instanceKey, application);
         myContactDao = db.myContactDao();
         myContactListLive = myContactDao.getAllMyContactLive();
     }

@@ -54,13 +54,13 @@ public class TAPDatabaseManager {
     public void setRepository(String databaseType, Application application) {
         switch (databaseType) {
             case MESSAGE_DB:
-                messageRepository = new TAPMessageRepository(application);
+                messageRepository = new TAPMessageRepository(instanceKey, application);
                 break;
             case SEARCH_DB:
-                searchRepository = new TAPRecentSearchRepository(application);
+                searchRepository = new TAPRecentSearchRepository(instanceKey, application);
                 break;
             case MY_CONTACT_DB:
-                myContactRepository = new TAPMyContactRepository(application);
+                myContactRepository = new TAPMyContactRepository(instanceKey, application);
         }
     }
 

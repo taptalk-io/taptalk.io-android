@@ -10,6 +10,7 @@ public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
         public static final int kDatabaseVersion = 7;
+        public static final String DATABASE_NAME = "message_database";
     }
 
     public static final class DatabaseType {
