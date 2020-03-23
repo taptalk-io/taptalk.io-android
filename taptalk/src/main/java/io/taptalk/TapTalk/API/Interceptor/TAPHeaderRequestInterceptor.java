@@ -29,12 +29,12 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
         Request original = chain.request();
         String APP_KEY_ID = TAPDataManager.getInstance().getApplicationID();
         String APP_KEY_SECRET = TAPDataManager.getInstance().getApplicationSecret();
-        String userAgent = TAPDataManager.getInstance().getUserAgent();
+        String userAgent = TapTalk.taptalkUserAgent;
 
         String appKey = Base64.encodeToString((APP_KEY_ID + ":" + APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
 
         Context context = TapTalk.appContext;
-        
+
         String contentType = "application/json";
 
         if (MULTIPART_CONTENT_TYPE == headerAuth) {

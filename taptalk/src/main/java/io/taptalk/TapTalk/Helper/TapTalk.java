@@ -1,15 +1,17 @@
 package io.taptalk.TapTalk.Helper;
 
 import android.app.Application;
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleObserver;
-import android.arch.lifecycle.OnLifecycleEvent;
-import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
+import android.provider.Settings;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.facebook.stetho.Stetho;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -63,13 +65,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INVALID_AUTH_TICKET;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_NOT_AUTHENTICATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACCESS_TOKEN_UNAVAILABLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INVALID_AUTH_TICKET;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_NOT_AUTHENTICATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_AUTHENTICATE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_REFRESH_ACTIVE_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_REFRESH_CONFIG;
@@ -104,6 +104,7 @@ public class TapTalk implements LifecycleObserver {
     private static boolean isRefreshTokenExpired, isAutoConnectDisabled, isAutoContactSyncDisabled;
     private Intent intent;
     private static boolean listenerInit = false;
+    public static String taptalkUserAgent = "android";
 
     //    private static Thread.UncaughtExceptionHandler defaultUEH;
     private List<TapListener> tapListeners = new ArrayList<>();
@@ -314,6 +315,10 @@ public class TapTalk implements LifecycleObserver {
 
     public static void setLoggingEnabled(boolean enabled) {
         isLoggingEnabled = enabled;
+    }
+
+    public static void setTapTalkCustomUserAgent(String userAgent) {
+        taptalkUserAgent = userAgent;
     }
 
     private String generateSocketBaseURL(String baseURL) {
@@ -722,6 +727,10 @@ public class TapTalk implements LifecycleObserver {
         return tapTalk.tapListeners;
     }
 
+    public static String getDeviceId() {
+        return Settings.Secure.getString(TapTalk.appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
     public static void addTapTalkListener(TapListener listener) {
         if (!checkTapTalkInitialized()) {
             return;
@@ -797,14 +806,14 @@ public class TapTalk implements LifecycleObserver {
         TAPChatManager.getInstance().triggerSaveNewMessage();
         TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
         TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
-//        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-//        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-
-//         Start service on first load
-//        if (null == intent) {
-//            intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
-//            appContext.startService(intent);
-//        }
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            Log.e("]]]]]", "App Crashing");
+            TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
+            TAPContactManager.getInstance().saveUserDataMapToDatabase();
+            TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+            TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+            System.exit(0);
+        });
     }
 
     public static void handleAppToBackground() {

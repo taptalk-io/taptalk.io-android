@@ -3,15 +3,16 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ImageViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;

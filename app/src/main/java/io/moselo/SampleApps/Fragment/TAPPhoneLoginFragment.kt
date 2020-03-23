@@ -5,13 +5,12 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import io.moselo.SampleApps.Activity.TAPLoginActivity
@@ -33,7 +32,7 @@ import io.taptalk.TapTalk.View.Activity.TAPCountryListActivity
 import io.taptalk.TaptalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
 
-class TAPPhoneLoginFragment : Fragment() {
+class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
     val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
             ?: ""
@@ -138,20 +137,17 @@ class TAPPhoneLoginFragment : Fragment() {
             }
         }
 
-        ll_country_code.setOnClickListener {
-            val intent = Intent(context, TAPCountryListActivity::class.java)
-            intent.putExtra(COUNTRY_LIST, countryListitems)
-            intent.putExtra(COUNTRY_ID, defaultCountryID)
-            startActivityForResult(intent, COUNTRY_PICK)
-        }
+        enableCountryPicker()
     }
 
     private fun enableContinueButton() {
+        enableCountryPicker()
         fl_continue_btn.setOnClickListener { attemptLogin() }
         fl_continue_btn.isClickable = true
     }
 
     private fun disableContinueButton() {
+        disableCountryPicker()
         fl_continue_btn.setOnClickListener(null)
         fl_continue_btn.isClickable = false
     }
@@ -163,6 +159,19 @@ class TAPPhoneLoginFragment : Fragment() {
             showProgress()
             checkNumberAndCallAPI()
         }
+    }
+
+    private fun enableCountryPicker() {
+        ll_country_code.setOnClickListener {
+            val intent = Intent(context, TAPCountryListActivity::class.java)
+            intent.putExtra(COUNTRY_LIST, countryListitems)
+            intent.putExtra(COUNTRY_ID, defaultCountryID)
+            startActivityForResult(intent, COUNTRY_PICK)
+        }
+    }
+
+    private fun disableCountryPicker() {
+        ll_country_code.setOnClickListener(null)
     }
 
     private fun checkAndEditPhoneNumber(): String {

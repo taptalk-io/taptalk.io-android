@@ -147,6 +147,7 @@ public class DiskLruImageCache {
         }
         diskCache.delete();
     }
+
     public void closeCache() throws IOException {
         diskCache.close();
     }

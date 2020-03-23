@@ -10,7 +10,7 @@
     android:focusableInTouchMode="true"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -41,7 +41,7 @@
             app:layout_constraintDimensionRatio="H, 1:1"
             app:layout_constraintEnd_toEndOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
         android:id="@+id/sv_profile"
@@ -50,7 +50,7 @@
         android:layout_marginTop="?attr/actionBarSize"
         android:overScrollMode="never">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_form_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -382,7 +382,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_label_email_address_error" />
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -434,9 +434,9 @@
                     app:layout_constraintStart_toStartOf="@id/iv_change_password"
                     app:layout_constraintTop_toTopOf="@id/iv_change_password" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_logout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -489,7 +489,7 @@
                     app:layout_constraintStart_toStartOf="@id/iv_logout"
                     app:layout_constraintTop_toTopOf="@id/iv_logout" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <FrameLayout
                 android:id="@+id/fl_button_update"
@@ -528,7 +528,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/fl_button_update" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 

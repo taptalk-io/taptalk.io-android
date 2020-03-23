@@ -4,14 +4,15 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
+import androidx.viewpager.widget.ViewPager;
 
 import java.io.File;
 import java.io.InputStream;
@@ -177,7 +178,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         }
         medias.addAll(galleryMediaPreviews);
         checkMediasForErrors();
-            
+
         pagerAdapter.notifyDataSetChanged();
         if (1 < medias.size()) {
             tvMultipleImageIndicator.setText(String.format(getString(R.string.tap_format_dd_media_count), lastIndex + 1, medias.size()));

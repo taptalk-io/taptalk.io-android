@@ -19,7 +19,8 @@ public class TAPUploadFileResponse {
         this.caption = caption;
     }
 
-    public TAPUploadFileResponse() {}
+    public TAPUploadFileResponse() {
+    }
 
     public String getId() {
         return id;
