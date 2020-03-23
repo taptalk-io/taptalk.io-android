@@ -806,14 +806,14 @@ public class TapTalk implements LifecycleObserver {
         TAPChatManager.getInstance().triggerSaveNewMessage();
         TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
         TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
-//        defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-//        Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler);
-
-//         Start service on first load
-//        if (null == intent) {
-//            intent = new Intent(TapTalk.appContext, TapTalkEndAppService.class);
-//            appContext.startService(intent);
-//        }
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            Log.e("]]]]]", "App Crashing");
+            TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
+            TAPContactManager.getInstance().saveUserDataMapToDatabase();
+            TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();
+            TAPFileDownloadManager.getInstance().saveFileMessageUriToPreference();
+            System.exit(0);
+        });
     }
 
     public static void handleAppToBackground() {
