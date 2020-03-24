@@ -28,7 +28,7 @@ import java.io.IOException;
 import io.taptalk.TapTalk.Helper.TAPQRDetection;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPScanResultActivity;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SCAN_RESULT;

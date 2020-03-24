@@ -13,7 +13,7 @@ import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel;
-import io.taptalk.TaptalkSample.R;
+import io.taptalk.TapTalkSample.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.REGISTER;
 

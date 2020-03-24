@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 

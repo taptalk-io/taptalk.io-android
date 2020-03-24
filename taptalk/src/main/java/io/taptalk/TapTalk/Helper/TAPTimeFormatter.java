@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 public class TAPTimeFormatter {
 

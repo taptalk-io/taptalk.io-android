@@ -14,7 +14,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkDownloadProgressInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
-import io.taptalk.Taptalk.BuildConfig;
+import io.taptalk.TapTalk.BuildConfig;
 import okhttp3.Interceptor;
 import okhttp3.MultipartBody;
 import okhttp3.Request;

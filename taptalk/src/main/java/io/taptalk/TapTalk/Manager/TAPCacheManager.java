@@ -6,7 +6,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.LruCache;
 
 import io.taptalk.TapTalk.Helper.DiskLruCache.DiskLruImageCache;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 
 public class TAPCacheManager {

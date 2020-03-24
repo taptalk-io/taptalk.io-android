@@ -25,7 +25,7 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBaseViewHolder<TAPProductModel>> {
 

@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TAPBaseViewHolder
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Model.TAPLocationItem
 import io.taptalk.TapTalk.Model.TAPLocationItem.MyReturnType.*
-import io.taptalk.Taptalk.R
+import io.taptalk.TapTalk.R
 
 class TAPSearchLocationAdapter : TAPBaseAdapter<TAPLocationItem, TAPBaseViewHolder<TAPLocationItem>> {
     var generalListener: TAPGeneralListener<TAPLocationItem>? = null
