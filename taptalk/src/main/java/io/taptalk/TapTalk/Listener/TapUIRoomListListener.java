@@ -11,7 +11,7 @@ import io.taptalk.TapTalk.Interface.TapUIRoomListInterface;
 import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 @Keep
 public abstract class TapUIRoomListListener implements TapUIRoomListInterface {

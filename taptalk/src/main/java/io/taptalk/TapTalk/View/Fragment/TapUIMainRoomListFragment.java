@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 public class TapUIMainRoomListFragment extends Fragment {
     private static final String TAG = TapUIMainRoomListFragment.class.getSimpleName();

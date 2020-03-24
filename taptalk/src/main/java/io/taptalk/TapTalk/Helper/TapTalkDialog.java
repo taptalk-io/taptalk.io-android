@@ -16,7 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.UiThread;
 
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 public class TapTalkDialog extends Dialog {
 

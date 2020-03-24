@@ -17,7 +17,7 @@ import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecycle
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
 import io.taptalk.TapTalk.View.Adapter.TAPCountryListAdapter;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST;
