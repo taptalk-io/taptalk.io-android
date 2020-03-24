@@ -116,10 +116,4 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.mixpanel.android:mixpanel-android:5.7.0'
-
-    devImplementation 'com.readystatesoftware.chuck:library:1.1.0'
-    devUploadImplementation 'com.readystatesoftware.chuck:library:1.1.0'
-    stagingImplementation 'com.readystatesoftware.chuck:library:1.1.0'
-    stagingUploadImplementation 'com.readystatesoftware.chuck:library:1.1.0'
-    releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
 }
