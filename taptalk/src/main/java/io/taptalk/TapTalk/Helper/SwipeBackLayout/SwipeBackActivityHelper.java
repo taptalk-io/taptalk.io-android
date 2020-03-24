@@ -6,7 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 public class SwipeBackActivityHelper {
     private Activity mActivity;

@@ -28,7 +28,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
-import io.taptalk.TaptalkSample.R
+import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
 class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {

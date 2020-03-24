@@ -29,7 +29,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPCountryListActivity
-import io.taptalk.TaptalkSample.R
+import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
 
 class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
