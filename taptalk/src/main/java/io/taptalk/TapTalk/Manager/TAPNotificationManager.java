@@ -29,9 +29,9 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
-import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
@@ -402,9 +402,16 @@ public class TAPNotificationManager {
         }
 
         public Notification build() {
+            int messageSize = 0;
+            for (Map.Entry<String, List<TAPMessageModel>> item : notificationMessagesMap.entrySet()) {
+                if (notificationMessage.getRoom().getRoomID().equals(item.getKey())) {
+                    messageSize = item.getValue().size();
+                }
+            }
             this.notificationBuilder = TAPNotificationManager.getInstance().createNotificationBubble(this);
             addReply();
             if (null != roomModel && null != aClass) addPendingIntentWhenClicked();
+            this.notificationBuilder.setNumber(messageSize);
             return this.notificationBuilder.build();
         }
 
