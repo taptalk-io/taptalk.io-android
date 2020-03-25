@@ -35,7 +35,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
             ?: ""
     var otpTimer: CountDownTimer? = null
-    val waitTime = 30L * 1000
+    var waitTime = 120L * 1000
     var phoneNumber = "0"
     var otpID = 0L
     var otpKey = ""
