@@ -50,6 +50,7 @@ public class TapUISearchChatFragment extends Fragment {
 
     private static final String TAG = TapUISearchChatFragment.class.getSimpleName();
 
+    private TapUIMainRoomListFragment mainRoomListFragment;
     private ConstraintLayout clActionBar;
     private ImageView ivButtonBack;
     private EditText etSearch;
@@ -76,6 +77,7 @@ public class TapUISearchChatFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mainRoomListFragment = (TapUIMainRoomListFragment) this.getParentFragment();
         return inflater.inflate(R.layout.tap_fragment_search_chat, container, false);
     }
 
@@ -129,7 +131,7 @@ public class TapUISearchChatFragment extends Fragment {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        adapter = new TAPSearchChatAdapter(vm.getSearchResults(), Glide.with(this));
+        adapter = new TAPSearchChatAdapter(mainRoomListFragment.getInstanceKey(), vm.getSearchResults(), Glide.with(this));
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
@@ -159,7 +161,7 @@ public class TapUISearchChatFragment extends Fragment {
 
     private void setRecentSearchItemsFromDatabase() {
         // Observe database with live data
-        vm.getRecentSearchList().observe(this, hpRecentSearchEntities -> {
+        vm.getRecentSearchList().observe(getViewLifecycleOwner(), hpRecentSearchEntities -> {
             vm.clearRecentSearches();
 
             if (null != hpRecentSearchEntities && hpRecentSearchEntities.size() > 0) {

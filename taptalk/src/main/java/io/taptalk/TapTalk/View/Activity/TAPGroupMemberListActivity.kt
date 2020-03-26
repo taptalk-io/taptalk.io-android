@@ -16,8 +16,7 @@ import androidx.lifecycle.ViewModelProviders
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_ADD_MEMBER
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_OPEN_MEMBER_PROFILE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -28,6 +27,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPGroupManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
+import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
 import io.taptalk.TapTalk.ViewModel.TAPGroupMemberViewModel
@@ -40,6 +40,20 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
     var groupViewModel: TAPGroupMemberViewModel? = null
     var adapter: TAPGroupMemberAdapter? = null
+
+    companion object {
+        fun start(
+                context: Activity,
+                instanceKey: String,
+                room: TAPRoomModel
+        ) {
+            val intent = Intent(context, TAPGroupMemberListActivity::class.java)
+            intent.putExtra(INSTANCE_KEY, instanceKey)
+            intent.putExtra(ROOM, room)
+            context.startActivityForResult(intent, GROUP_UPDATE_DATA)
+            context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,12 +102,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
             }
 
             R.id.ll_add_button -> {
-                val intent = Intent(this, TAPAddGroupMemberActivity::class.java)
-                intent.putExtra(GROUP_ACTION, GROUP_ADD_MEMBER)
-                intent.putExtra(ROOM_ID, groupViewModel?.groupData?.roomID)
-                intent.putParcelableArrayListExtra(GROUP_MEMBERS, groupViewModel?.groupData?.groupParticipants?.let { ArrayList(it) })
-                startActivityForResult(intent, GROUP_ADD_MEMBER)
-                overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
+                TAPAddGroupMemberActivity.start(
+                        this,
+                        instanceKey,
+                        groupViewModel?.groupData?.roomID,
+                        groupViewModel?.groupData?.groupParticipants?.let { ArrayList(it) })
             }
 
             R.id.ll_remove_button -> {
@@ -167,6 +180,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 GROUP_ADD_MEMBER -> {

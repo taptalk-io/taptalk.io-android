@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -11,7 +12,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 
 public abstract class TAPBaseChatActivity extends SwipeBackActivity {
 
-    String instanceKey = "";
+    public String instanceKey = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

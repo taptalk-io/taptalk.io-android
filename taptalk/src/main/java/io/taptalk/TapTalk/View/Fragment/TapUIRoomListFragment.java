@@ -94,9 +94,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEO
 public class TapUIRoomListFragment extends Fragment {
 
     private String TAG = TapUIRoomListFragment.class.getSimpleName();
-    private TapUIMainRoomListFragment mainRoomListFragment;
 
     private Activity activity;
+    private TapUIMainRoomListFragment mainRoomListFragment;
 
     private ConstraintLayout clActionBar, clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
@@ -335,7 +335,7 @@ public class TapUIRoomListFragment extends Fragment {
         }
         vm.setDoneFirstApiSetup(TAPDataManager.getInstance().isRoomListSetupFinished());
 
-        adapter = new TAPRoomListAdapter(vm, Glide.with(this), tapTalkRoomListInterface);
+        adapter = new TAPRoomListAdapter(mainRoomListFragment.getInstanceKey(), vm, Glide.with(this), tapTalkRoomListInterface);
         llm = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false) {
             @Override
             public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {

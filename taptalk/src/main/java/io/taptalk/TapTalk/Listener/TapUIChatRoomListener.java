@@ -60,6 +60,7 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
         if (null == activity) {
             return;
         }
+        //TAPChatProfileActivity.start(activity, instanceKey, room, user); // TODO
         WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
         Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
         intent.putExtra(ROOM, room);

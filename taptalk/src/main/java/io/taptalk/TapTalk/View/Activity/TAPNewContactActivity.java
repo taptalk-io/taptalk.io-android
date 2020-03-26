@@ -1,6 +1,8 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -50,7 +52,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.ViewModel.TAPNewContactViewModel;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ADDED_CONTACT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 
 public class TAPNewContactActivity extends TAPBaseActivity {
 
@@ -67,6 +69,18 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     private TAPNewContactViewModel vm;
 
     private RequestManager glide;
+
+    public static void start(
+            Context context,
+            String instanceKey
+    ) {
+        Intent intent = new Intent(context, TAPNewContactActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -365,8 +379,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
     private void openChatRoom() {
         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
-        TAPUtils.startChatActivity(
+        TapUIChatActivity.start(
                 this,
+                instanceKey,
                 TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
                 vm.getSearchResult().getName(),
                 vm.getSearchResult().getAvatarURL(),
@@ -532,12 +547,9 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, newContact);
             TAPContactManager.getInstance().updateUserData(newContact);
 
-            // Change To Animation Page
-            Intent intent = new Intent(TAPNewContactActivity.this, TAPScanResultActivity.class);
-            intent.putExtra(ADDED_CONTACT, newContact);
-            startActivity(intent);
+            // Show result page
+            TAPScanResultActivity.start(TAPNewContactActivity.this, instanceKey, newContact);
             finish();
-            overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
         }
 
         @Override

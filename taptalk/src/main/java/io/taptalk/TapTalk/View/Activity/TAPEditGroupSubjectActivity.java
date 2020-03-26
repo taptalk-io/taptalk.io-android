@@ -1,9 +1,11 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -43,6 +45,7 @@ import io.taptalk.TapTalk.Helper.TAPHorizontalDecoration;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Manager.TAPGroupManager;
@@ -51,6 +54,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TapSelectedGroupMemberAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
@@ -62,7 +66,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBER_IDS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
@@ -70,6 +74,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_UPDATE_DATA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_GROUP_IMAGE_GALLERY;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SELECTED_GROUP_MEMBER;
@@ -88,6 +93,41 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
     private TapSelectedGroupMemberAdapter adapter;
     private TAPGroupViewModel vm;
+
+    // Create new group
+    public static void start(
+            Activity context,
+            String instanceKey,
+            ArrayList<TAPUserModel> groupMembers,
+            ArrayList<String> groupMemberIDs,
+            String groupName,
+            TAPImageURL groupImage,
+            Uri groupImageUri
+    ) {
+        Intent intent = new Intent(context, TAPEditGroupSubjectActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putParcelableArrayListExtra(GROUP_MEMBERS, groupMembers);
+        intent.putStringArrayListExtra(GROUP_MEMBER_IDS, groupMemberIDs);
+        intent.putExtra(GROUP_NAME, groupName);
+        intent.putExtra(GROUP_IMAGE, groupImage);
+        intent.putExtra(URI, groupImageUri);
+        context.startActivityForResult(intent, CREATE_GROUP);
+        context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+    }
+
+    // Edit group
+    public static void start(
+            Activity context,
+            String instanceKey,
+            TAPRoomModel room
+    ) {
+        Intent intent = new Intent(context, TAPEditGroupSubjectActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(GROUP_ACTION, EDIT_GROUP);
+        intent.putExtra(ROOM, room);
+        context.startActivityForResult(intent, GROUP_UPDATE_DATA);
+        context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,14 +224,16 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             vm.getGroupData().setRoomName(getIntent().getStringExtra(GROUP_NAME));
             vm.getGroupData().setRoomImage(getIntent().getParcelableExtra(GROUP_IMAGE));
             vm.setRoomImageUri(getIntent().getParcelableExtra(URI));
-            vm.setMyID(getIntent().getStringExtra(MY_ID));
+            vm.setMyID(TAPChatManager.getInstance().getActiveUser().getUserID());
             vm.setParticipantsIDs(getIntent().getStringArrayListExtra(GROUP_MEMBER_IDS));
             vm.setGroupPictureStartsEmpty(true);
             List<TAPUserModel> groupParticipants = getIntent().getParcelableArrayListExtra(GROUP_MEMBERS);
             vm.getGroupData().setGroupParticipants(groupParticipants);
             List<TapContactListModel> contactListModels = new ArrayList<>();
-            for (TAPUserModel user : groupParticipants) {
-                contactListModels.add(new TapContactListModel(user, TYPE_SELECTED_GROUP_MEMBER));
+            if (null != groupParticipants) {
+                for (TAPUserModel user : groupParticipants) {
+                    contactListModels.add(new TapContactListModel(user, TYPE_SELECTED_GROUP_MEMBER));
+                }
             }
             vm.setAdapterItems(contactListModels);
         }
@@ -420,16 +462,11 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     }
 
     private void openChatGroupProfile() {
-        Intent intent = new Intent(this, TAPChatProfileActivity.class);
-        intent.putExtra(ROOM, vm.getGroupData());
-        startActivity(intent);
-        setResult(RESULT_OK);
-        finish();
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPChatProfileActivity.start(this, instanceKey, vm.getGroupData(), null);
     }
 
     private void openChatRoom() {
-        TAPUtils.startChatActivity(this, vm.getGroupData());
+        TapUIChatActivity.start(this, instanceKey, vm.getGroupData());
         setResult(RESULT_OK);
         finish();
         overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);

@@ -1,6 +1,9 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
@@ -20,7 +23,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -33,14 +36,16 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.ViewModel.TAPVideoPlayerViewModel;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO;
 
-public class TAPVideoPlayerActivity extends AppCompatActivity {
+public class TAPVideoPlayerActivity extends TAPBaseActivity {
 
     private final String TAG = TAPVideoPlayerActivity.class.getSimpleName();
 
@@ -52,6 +57,33 @@ public class TAPVideoPlayerActivity extends AppCompatActivity {
     private SeekBar seekBar; // TODO: 21 November 2019 STYLE SEEK BAR FOR API BELOW 21
 
     private TAPVideoPlayerViewModel vm;
+
+    public static void start(
+            Context context,
+            String instanceKey,
+            Uri uri
+    ) {
+        start(context, instanceKey, uri, null);
+    }
+
+    public static void start(
+            Context context,
+            String instanceKey,
+            Uri uri,
+            @Nullable TAPMessageModel message
+    ) {
+        Intent intent = new Intent(context, TAPVideoPlayerActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(URI, uri.toString());
+        if (null != message) {
+            intent.putExtra(MESSAGE, message);
+        }
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

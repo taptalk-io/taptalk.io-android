@@ -45,6 +45,8 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
@@ -53,16 +55,21 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACT
 
 public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAPBaseViewHolder<TAPSearchChatModel>> {
 
+    private String instanceKey;
     private String searchKeyword;
     private RequestManager glide;
     private TapTalkRoomListInterface roomListInterface;
 
-    public TAPSearchChatAdapter(List<TAPSearchChatModel> items, RequestManager glide) {
+    // Search chat constructor
+    public TAPSearchChatAdapter(String instanceKey, List<TAPSearchChatModel> items, RequestManager glide) {
+        this.instanceKey = instanceKey;
         setItems(items, true);
         this.glide = glide;
     }
 
-    public TAPSearchChatAdapter(List<TAPSearchChatModel> items, RequestManager glide, TapTalkRoomListInterface roomListInterface) {
+    // Forward picker constructor
+    public TAPSearchChatAdapter(String instanceKey, List<TAPSearchChatModel> items, RequestManager glide, TapTalkRoomListInterface roomListInterface) {
+        this.instanceKey = instanceKey;
         setItems(items, true);
         this.glide = glide;
         this.roomListInterface = roomListInterface;
@@ -218,7 +225,9 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSending)));
             }
 
-            clContainer.setOnClickListener(v -> TAPUtils.startChatActivity(itemView.getContext(),
+            clContainer.setOnClickListener(v -> TapUIChatActivity.start(
+                    itemView.getContext(),
+                    ((TAPBaseActivity) itemView.getContext()).instanceKey,
                     message.getRoomID(),
                     message.getRoomName(),
                     // TODO: 18 October 2018 REMOVE CHECK
@@ -370,7 +379,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             clContainer.setOnClickListener(v -> {
                 if (null == roomListInterface) {
                     // Open chat room
-                    TAPUtils.startChatActivity(itemView.getContext(), room);
+                    TapUIChatActivity.start(itemView.getContext(), ((TAPBaseActivity) itemView.getContext()).instanceKey, room);
                     TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
                     TAPDataManager.getInstance().insertToDatabase(recentItem);
                 } else {

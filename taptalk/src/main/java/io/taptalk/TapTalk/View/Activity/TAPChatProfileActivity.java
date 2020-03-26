@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.ViewModelProviders;
@@ -69,6 +69,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
@@ -93,9 +94,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
@@ -103,8 +103,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_UPDATE_DATA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel.TYPE_LOADING_LAYOUT;
@@ -130,6 +131,26 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TAPProfileViewModel vm;
 
     private RequestManager glide;
+
+    public static void start(
+            Activity context,
+            String instanceKey,
+            TAPRoomModel room,
+            @Nullable TAPUserModel user
+    ) {
+        Intent intent = new Intent(context, TAPChatProfileActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(ROOM, room);
+        if (room.getRoomType() == TYPE_PERSONAL) {
+            context.startActivity(intent);
+        } else if (room.getRoomType() == TYPE_GROUP && null != user) {
+            intent.putExtra(K_USER, user);
+            context.startActivityForResult(intent, OPEN_MEMBER_PROFILE);
+        } else if (room.getRoomType() == TYPE_GROUP) {
+            context.startActivityForResult(intent, OPEN_GROUP_PROFILE);
+        }
+        context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,6 +191,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case GROUP_UPDATE_DATA:
@@ -609,11 +631,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void openEditGroup() {
-        Intent intent = new Intent(TAPChatProfileActivity.this, TAPEditGroupSubjectActivity.class);
-        intent.putExtra(GROUP_ACTION, EDIT_GROUP);
-        intent.putExtra(ROOM, vm.getRoom());
-        startActivityForResult(intent, GROUP_UPDATE_DATA);
-        overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        TAPEditGroupSubjectActivity.start(this, instanceKey, vm.getRoom());
     }
 
     private void searchChat() {
@@ -629,10 +647,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void viewMembers() {
-        Intent intent = new Intent(TAPChatProfileActivity.this, TAPGroupMemberListActivity.class);
-        intent.putExtra(ROOM, vm.getRoom());
-        startActivityForResult(intent, GROUP_UPDATE_DATA);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPGroupMemberListActivity.Companion.start(TAPChatProfileActivity.this, instanceKey, vm.getRoom());
     }
 
     private void showExitChatDialog() {
@@ -661,8 +676,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void openChatRoom(TAPUserModel userModel) {
-        TAPUtils.startChatActivity(this,
-                TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(),
+        TapUIChatActivity.start(
+                this,
+                instanceKey,
+                TAPChatManager.getInstance().arrangeRoomId(
+                        TAPChatManager.getInstance().getActiveUser().getUserID(),
                         userModel.getUserID()),
                 userModel.getName(),
                 userModel.getAvatarURL(),
@@ -972,13 +990,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         public void onMediaClicked(TAPMessageModel item, ImageView ivThumbnail, boolean isMediaReady) {
             if (item.getType() == TYPE_IMAGE && isMediaReady) {
                 // Preview image detail
-                Intent intent = new Intent(TAPChatProfileActivity.this, TAPImageDetailPreviewActivity.class);
-                intent.putExtra(MESSAGE, item);
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        TAPChatProfileActivity.this,
-                        ivThumbnail,
-                        getString(R.string.tap_transition_view_image));
-                startActivity(intent, options.toBundle());
+                TAPImageDetailPreviewActivity.start(TAPChatProfileActivity.this, "", item, ivThumbnail); // TODO: 023, 23 Mar 2020 INSTANCE KEY
             } else if (item.getType() == TYPE_IMAGE) {
                 // Download image
                 TAPFileDownloadManager.getInstance().downloadImage(TAPChatProfileActivity.this, item);
@@ -1000,7 +1012,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             .show();
                 } else {
                     // Open video player
-                    TAPUtils.openVideoPreview(TAPChatProfileActivity.this, videoUri, item);
+                    TAPVideoPlayerActivity.start(TAPChatProfileActivity.this, instanceKey, videoUri, item);
                 }
             } else if (item.getType() == TYPE_VIDEO) {
                 // Download video

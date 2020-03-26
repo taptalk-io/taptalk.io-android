@@ -1,5 +1,7 @@
 package io.moselo.SampleApps.Activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.FrameLayout;
@@ -15,6 +17,7 @@ import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel;
 import io.taptalk.TaptalkSample.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.REGISTER;
 
 public class TAPLoginActivity extends TAPBaseActivity {
@@ -22,6 +25,15 @@ public class TAPLoginActivity extends TAPBaseActivity {
     private static final String TAG = TAPLoginActivity.class.getSimpleName();
     private FrameLayout flContainer;
     private TAPLoginViewModel vm;
+
+    public static void start(
+            Context context,
+            String instanceKey) {
+        Intent intent = new Intent(context, TAPLoginActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +56,7 @@ public class TAPLoginActivity extends TAPBaseActivity {
             switch (requestCode) {
                 case REGISTER:
                     TAPApiManager.getInstance().setLoggedOut(false);
-                    Intent intent = new Intent(TAPLoginActivity.this, TapUIRoomListActivity.class);
-                    startActivity(intent);
+                    TapUIRoomListActivity.start(TAPLoginActivity.this, instanceKey);
                     finish();
                     break;
             }

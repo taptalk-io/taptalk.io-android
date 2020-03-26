@@ -35,7 +35,9 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
@@ -51,151 +53,12 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         GoogleMap.OnCameraIdleListener, View.OnClickListener,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    private var isFirstTriggered = true
-
-    override fun onMapReady(map: GoogleMap?) {
-        googleMap = map
-        var latLng: LatLng?
-        if (0.0 == longitude && 0.0 == latitude && 0.0 == currentLongitude && 0.0 == currentLatitude) {
-            // Location of Monumen Nasional Indonesia
-            longitude = 106.827114
-            latitude = -6.175403
-            latLng = LatLng(latitude, longitude)
-            googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
-        } else if (0.0 == longitude && 0.0 == latitude) {
-            latLng = LatLng(currentLatitude, currentLongitude)
-            googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
-        } else {
-            latLng = LatLng(latitude, longitude)
-            googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
-        }
-
-        try {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return
-            }
-            googleMap?.isMyLocationEnabled = true
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        googleMap?.uiSettings?.isMyLocationButtonEnabled = false
-        googleMap?.setOnCameraMoveListener(this)
-        googleMap?.setOnCameraIdleListener(this)
-    }
-
-    override fun onCameraMove() {
-        centerOfMap = googleMap?.cameraPosition?.target
-        latitude = centerOfMap?.latitude ?: 0.0
-        longitude = centerOfMap?.longitude ?: 0.0
-        disableSendButton()
-        iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
-        iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
-
-        tv_location.setHint(R.string.tap_searching_for_address)
-        tv_location.text = ""
-
-        cv_search_result.visibility = View.GONE
-        TAPUtils.dismissKeyboard(this)
-    }
-
-    override fun onCameraIdle() {
-        getGeoCoderAddress()
-
-        iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
-        iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
-
-        cv_search_result.visibility = View.GONE
-        isSearch = !isSameKeyword
-    }
-
-    override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.iv_button_back -> {
-                onBackPressed()
-            }
-            R.id.iv_current_location -> {
-                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(this, PERMISSIONS, PERMISSION_LOCATION)
-                } else {
-                    moveToCurrentLocation()
-                }
-            }
-            R.id.tv_clear -> {
-                et_keyword.setText("")
-                tv_clear.visibility = View.GONE
-                cv_search_result.visibility = View.GONE
-                locationList.clear()
-            }
-        }
-    }
-
-    override fun onConnectionFailed(p0: ConnectionResult) {
-        if (!isFinishing) {
-            TapTalkDialog.Builder(this)
-                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                    .setTitle(getString(R.string.tap_error))
-                    .setMessage(if (TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
-                        getString(R.string.tap_error_message_general) else getString(R.string.tap_no_internet_show_error))
-                    .setMessage(getString(R.string.tap_error_message_general))
-                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                    .show()
-        }
-    }
-
-    override fun onLocationChanged(location: Location?) {
-        currentLatitude = location?.latitude ?: currentLatitude
-        currentLongitude = location?.longitude ?: currentLongitude
-        if (isFirstTriggered) {
-            moveToCurrentLocation()
-            isFirstTriggered = false;
-        }
-    }
-
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-
-    }
-
-    override fun onProviderEnabled(provider: String?) {
-
-    }
-
-    override fun onProviderDisabled(provider: String?) {
-
-    }
-
-    private val generalListener = object : TAPGeneralListener<TAPLocationItem>() {
-        override fun onClick(position: Int, item: TAPLocationItem?) {
-            TAPUtils.dismissKeyboard(this@TAPMapActivity)
-            if (item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString().equals(et_keyword.text.toString()))
-                isSameKeyword = true
-            et_keyword.setText(item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString())
-            val placeID: String = item?.prediction?.placeId ?: "0"
-            val placeFields: MutableList<Place.Field> = Arrays.asList(Place.Field.LAT_LNG)
-            val request: FetchPlaceRequest = FetchPlaceRequest.builder(placeID, placeFields).build()
-            placesClient.fetchPlace(request).addOnSuccessListener(this@TAPMapActivity) { p0 ->
-                val place = p0?.place
-                latitude = place?.latLng?.latitude ?: 0.0
-                longitude = place?.latLng?.longitude ?: 0.0
-                centerOfMap = place?.latLng
-                val curr: LatLng = LatLng(latitude, longitude)
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
-                getGeoCoderAddress()
-                iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
-                iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
-                cv_search_result.visibility = View.GONE
-                if (et_keyword.isFocused)
-                    et_keyword.clearFocus()
-            }
-        }
-    }
-
     private lateinit var placesClient: PlacesClient
+
     private var longitude: Double = 0.0
     private var latitude: Double = 0.0
     private var count: Int = 0
+    private var isFirstTriggered = true
     private var isSearch: Boolean = true
     private var isSameKeyword: Boolean = false
     private var currentLongitude: Double = 0.0
@@ -216,6 +79,16 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     companion object {
         private val JAKARTA: LatLng = LatLng(-6.175403, 106.827114)
         private val WORLD: LatLngBounds = LatLngBounds(LatLng(-90.0, 90.0), LatLng(-180.0, 180.0))
+
+        fun start(
+                context: Activity,
+                instanceKey: String
+        ) {
+            val intent = Intent(context, TAPMapActivity::class.java)
+            intent.putExtra(INSTANCE_KEY, instanceKey)
+            context.startActivityForResult(intent, PICK_LOCATION)
+            context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -310,6 +183,145 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                         e.printStackTrace()
                     }
                 }
+            }
+        }
+    }
+
+    override fun onMapReady(map: GoogleMap?) {
+        googleMap = map
+        var latLng: LatLng?
+        if (0.0 == longitude && 0.0 == latitude && 0.0 == currentLongitude && 0.0 == currentLatitude) {
+            // Location of Monumen Nasional Indonesia
+            longitude = 106.827114
+            latitude = -6.175403
+            latLng = LatLng(latitude, longitude)
+            googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
+        } else if (0.0 == longitude && 0.0 == latitude) {
+            latLng = LatLng(currentLatitude, currentLongitude)
+            googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
+        } else {
+            latLng = LatLng(latitude, longitude)
+            googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.toFloat()))
+        }
+
+        try {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return
+            }
+            googleMap?.isMyLocationEnabled = true
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        googleMap?.uiSettings?.isMyLocationButtonEnabled = false
+        googleMap?.setOnCameraMoveListener(this)
+        googleMap?.setOnCameraIdleListener(this)
+    }
+
+    override fun onCameraMove() {
+        centerOfMap = googleMap?.cameraPosition?.target
+        latitude = centerOfMap?.latitude ?: 0.0
+        longitude = centerOfMap?.longitude ?: 0.0
+        disableSendButton()
+        iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
+        iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
+
+        tv_location.setHint(R.string.tap_searching_for_address)
+        tv_location.text = ""
+
+        cv_search_result.visibility = View.GONE
+        TAPUtils.dismissKeyboard(this)
+    }
+
+    override fun onCameraIdle() {
+        getGeoCoderAddress()
+
+        iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
+        iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
+
+        cv_search_result.visibility = View.GONE
+        isSearch = !isSameKeyword
+    }
+
+    override fun onConnectionFailed(p0: ConnectionResult) {
+        if (!isFinishing) {
+            TapTalkDialog.Builder(this)
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(if (TAPNetworkStateManager.getInstance().hasNetworkConnection(this))
+                        getString(R.string.tap_error_message_general) else getString(R.string.tap_no_internet_show_error))
+                    .setMessage(getString(R.string.tap_error_message_general))
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                    .show()
+        }
+    }
+
+    override fun onLocationChanged(location: Location?) {
+        currentLatitude = location?.latitude ?: currentLatitude
+        currentLongitude = location?.longitude ?: currentLongitude
+        if (isFirstTriggered) {
+            moveToCurrentLocation()
+            isFirstTriggered = false;
+        }
+    }
+
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+
+    }
+
+    override fun onProviderEnabled(provider: String?) {
+
+    }
+
+    override fun onProviderDisabled(provider: String?) {
+
+    }
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.iv_button_back -> {
+                onBackPressed()
+            }
+            R.id.iv_current_location -> {
+                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(this, PERMISSIONS, PERMISSION_LOCATION)
+                } else {
+                    moveToCurrentLocation()
+                }
+            }
+            R.id.tv_clear -> {
+                et_keyword.setText("")
+                tv_clear.visibility = View.GONE
+                cv_search_result.visibility = View.GONE
+                locationList.clear()
+            }
+        }
+    }
+
+    private val generalListener = object : TAPGeneralListener<TAPLocationItem>() {
+        override fun onClick(position: Int, item: TAPLocationItem?) {
+            TAPUtils.dismissKeyboard(this@TAPMapActivity)
+            if (item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString().equals(et_keyword.text.toString()))
+                isSameKeyword = true
+            et_keyword.setText(item?.prediction?.getPrimaryText(StyleSpan(Typeface.NORMAL)).toString())
+            val placeID: String = item?.prediction?.placeId ?: "0"
+            val placeFields: MutableList<Place.Field> = Arrays.asList(Place.Field.LAT_LNG)
+            val request: FetchPlaceRequest = FetchPlaceRequest.builder(placeID, placeFields).build()
+            placesClient.fetchPlace(request).addOnSuccessListener(this@TAPMapActivity) { p0 ->
+                val place = p0?.place
+                latitude = place?.latLng?.latitude ?: 0.0
+                longitude = place?.latLng?.longitude ?: 0.0
+                centerOfMap = place?.latLng
+                val curr: LatLng = LatLng(latitude, longitude)
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
+                getGeoCoderAddress()
+                iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
+                iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
+                cv_search_result.visibility = View.GONE
+                if (et_keyword.isFocused)
+                    et_keyword.clearFocus()
             }
         }
     }

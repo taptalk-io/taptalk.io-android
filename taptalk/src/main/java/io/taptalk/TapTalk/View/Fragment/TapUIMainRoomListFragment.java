@@ -12,7 +12,10 @@ import androidx.fragment.app.Fragment;
 import io.taptalk.Taptalk.R;
 
 public class TapUIMainRoomListFragment extends Fragment {
+
     private static final String TAG = TapUIMainRoomListFragment.class.getSimpleName();
+
+    private String instanceKey = "";
 
     private enum RoomListState {
         STATE_SEARCH_CHAT, STATE_ROOM_LIST
@@ -26,8 +29,20 @@ public class TapUIMainRoomListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static TapUIMainRoomListFragment newInstance() {
-        return new TapUIMainRoomListFragment();
+    private TapUIMainRoomListFragment(String instanceKey) {
+        setInstanceKey(instanceKey);
+    }
+
+    public static TapUIMainRoomListFragment newInstance(String instanceKey) {
+        return new TapUIMainRoomListFragment(instanceKey);
+    }
+
+    public String getInstanceKey() {
+        return instanceKey;
+    }
+
+    public void setInstanceKey(String instanceKey) {
+        this.instanceKey = instanceKey;
     }
 
     @Override

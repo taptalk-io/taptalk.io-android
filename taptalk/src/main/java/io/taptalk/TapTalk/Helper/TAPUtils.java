@@ -434,54 +434,7 @@ public class TAPUtils {
         }
     }
 
-    public static void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, null);
-    }
-
-    public static void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
-    }
-
-    // Open chat room from notification
-    public static void startChatActivity(Context context, TAPRoomModel roomModel) {
-        startChatActivity(context, roomModel, null, null);
-    }
-
-    // Open chat room from notification
-    public static void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser) {
-        startChatActivity(context, roomModel, typingUser, null);
-    }
-
-    public static void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
-        if (TYPE_PERSONAL == roomModel.getRoomType() && TAPChatManager.getInstance().getActiveUser().getUserID().equals(
-                TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
-            // Disable opening active user's own room
-            return;
-        }
-
-        TAPChatManager.getInstance().saveUnsentMessage();
-        Intent intent = new Intent(context, TapUIChatActivity.class);
-        intent.putExtra(ROOM, roomModel);
-
-        if (null != typingUser) {
-            Gson gson = new Gson();
-            String list = gson.toJson(typingUser);
-            intent.putExtra(GROUP_TYPING_MAP, list);
-        }
-        if (null != jumpToMessageLocalID) {
-            intent.putExtra(JUMP_TO_MESSAGE, jumpToMessageLocalID);
-        }
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-        context.startActivity(intent);
-        if (context instanceof Activity) {
-            Activity activity = (Activity) context;
-            activity.runOnUiThread(() -> dismissKeyboard(activity));
-            activity.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-        }
-    }
-
+    @Deprecated
     public static void openProfileActivity(Context context, TAPRoomModel room) {
         Intent intent = new Intent(context, TAPChatProfileActivity.class);
         intent.putExtra(ROOM, room);
@@ -494,12 +447,11 @@ public class TAPUtils {
         }
     }
 
-    public static void openLocationPicker(Activity activity) {
+    public static void openLocationPicker(Activity activity, String instanceKey) {
         if (!hasPermissions(activity, Manifest.permission.ACCESS_FINE_LOCATION)) {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
         } else {
-            Intent intent = new Intent(activity, TAPMapActivity.class);
-            activity.startActivityForResult(intent, PICK_LOCATION);
+            TAPMapActivity.Companion.start(activity, instanceKey);
         }
     }
 
@@ -607,23 +559,6 @@ public class TAPUtils {
             e.printStackTrace();
             Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
             return true;
-        }
-    }
-
-    public static void openVideoPreview(Context context, Uri uri) {
-        openVideoPreview(context, uri, null);
-    }
-
-    public static void openVideoPreview(Context context, Uri uri, @Nullable TAPMessageModel message) {
-        Intent intent = new Intent(context, TAPVideoPlayerActivity.class);
-        intent.putExtra(URI, uri.toString());
-        if (null != message) {
-            intent.putExtra(MESSAGE, message);
-        }
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        context.startActivity(intent);
-        if (context instanceof Activity) {
-            ((Activity) context).overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
         }
     }
 

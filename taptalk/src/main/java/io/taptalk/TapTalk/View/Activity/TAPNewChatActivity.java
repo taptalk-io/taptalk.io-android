@@ -1,7 +1,9 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -50,10 +52,9 @@ import io.taptalk.TapTalk.View.Adapter.TapContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
 import io.taptalk.Taptalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_ADD_NEW_CONTACT;
@@ -76,6 +77,18 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private TapContactListAdapter adapter;
     private TAPContactListViewModel vm;
+
+    public static void start(
+            Context context,
+            String instanceKey
+    ) {
+        Intent intent = new Intent(context, TAPNewChatActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -355,25 +368,18 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void openQRScanner() {
         if (TAPUtils.hasPermissions(TAPNewChatActivity.this, Manifest.permission.CAMERA)) {
-            Intent intent = new Intent(TAPNewChatActivity.this, TAPBarcodeScannerActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+            TAPBarcodeScannerActivity.start(TAPNewChatActivity.this, instanceKey);
         } else {
             ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
         }
     }
 
     private void addNewContact() {
-        Intent intent = new Intent(TAPNewChatActivity.this, TAPNewContactActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPNewContactActivity.start(this, instanceKey);
     }
 
     private void createNewGroup() {
-        Intent intent = new Intent(this, TAPAddGroupMemberActivity.class);
-        intent.putExtra(GROUP_ACTION, CREATE_GROUP);
-        startActivity(intent);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPAddGroupMemberActivity.start(this, instanceKey);
     }
 
     private void viewBlockedContacts() {
@@ -581,8 +587,9 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             }
             if (!TAPChatManager.getInstance().getActiveUser().getUserID().equals(user.getUserID())) {
                 // TODO: 25 October 2018 SET ROOM COLOR
-                TAPUtils.startChatActivity(
+                TapUIChatActivity.start(
                         TAPNewChatActivity.this,
+                        instanceKey,
                         TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), user.getUserID()),
                         user.getName(),
                         user.getAvatarURL(),

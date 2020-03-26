@@ -70,6 +70,20 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private lateinit var glide: RequestManager
 
+    companion object {
+        fun start(
+                context: Context,
+                instanceKey: String
+        ) {
+            val intent = Intent(context, TAPMyAccountActivity::class.java)
+            intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
+            context.startActivity(intent)
+            if (context is Activity) {
+                context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_my_account)
@@ -113,6 +127,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
         when (resultCode) {
             Activity.RESULT_OK -> {
                 when (requestCode) {

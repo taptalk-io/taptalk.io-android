@@ -69,6 +69,25 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private lateinit var glide: RequestManager
 
+    companion object {
+        fun start(
+                context: Activity,
+                instanceKey: String,
+                countryID: Int,
+                countryCallingCode: String,
+                countryFlagUrl: String,
+                phoneNumber: String
+        ) {
+            val intent = Intent(context, TAPRegisterActivity::class.java)
+            intent.putExtra(INSTANCE_KEY, instanceKey)
+            intent.putExtra(COUNTRY_ID, countryID)
+            intent.putExtra(COUNTRY_CALLING_CODE, countryCallingCode)
+            intent.putExtra(COUNTRY_FLAG_URL, countryFlagUrl)
+            intent.putExtra(MOBILE_NUMBER, phoneNumber)
+            context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.REGISTER)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_register)
@@ -115,6 +134,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
         when (resultCode) {
             Activity.RESULT_OK -> {
                 when (requestCode) {

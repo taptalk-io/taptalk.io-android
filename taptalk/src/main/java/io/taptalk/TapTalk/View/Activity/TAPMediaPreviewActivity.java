@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
@@ -28,14 +29,17 @@ import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TAPMediaPreviewPagerAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMediaPreviewRecyclerAdapter;
 import io.taptalk.Taptalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_PREVIEW;
 
 public class TAPMediaPreviewActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPMediaPreviewActivity.class.getSimpleName();
-    //View
+
+    // View
     private ViewPager vpImagePreview;
     private TextView tvCancelBtn, tvMultipleImageIndicator, tvSendBtn;
     private RecyclerView rvImageThumbnail;
@@ -43,26 +47,23 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
     private TAPMediaPreviewRecyclerAdapter thumbnailAdapter;
     private TAPMediaPreviewPagerAdapter pagerAdapter;
 
-    //Intent
+    // Intent
     private ArrayList<TAPMediaPreviewModel> medias, errorMedias;
 
-    //ImagePreview RecyclerView Data
+    // ImagePreview RecyclerView Data
     private int lastIndex = 0, checkCount = 0;
 
-    public interface ImageThumbnailPreviewInterface {
-        void onThumbnailTapped(int position, TAPMediaPreviewModel model);
+    public static void start(
+            Activity context,
+            String instanceKey,
+            ArrayList<TAPMediaPreviewModel> mediaPreviews
+    ) {
+        Intent intent = new Intent(context, TAPMediaPreviewActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(MEDIA_PREVIEWS, mediaPreviews);
+        context.startActivityForResult(intent, SEND_MEDIA_FROM_PREVIEW);
+        context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
     }
-
-    ImageThumbnailPreviewInterface thumbInterface = new ImageThumbnailPreviewInterface() {
-        @Override
-        public void onThumbnailTapped(int position, TAPMediaPreviewModel model) {
-            if (!model.isSelected()) {
-                vpImagePreview.setCurrentItem(position, true);
-            } else {
-                removeMediaFromAdapter(position);
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +112,21 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         tvCancelBtn.setOnClickListener(v -> onBackPressed());
         ivAddMoreImage.setOnClickListener(v -> TAPUtils.pickMediaFromGallery(TAPMediaPreviewActivity.this, SEND_MEDIA_FROM_GALLERY, true));
     }
+
+    public interface ImageThumbnailPreviewInterface {
+        void onThumbnailTapped(int position, TAPMediaPreviewModel model);
+    }
+
+    private ImageThumbnailPreviewInterface thumbInterface = new ImageThumbnailPreviewInterface() {
+        @Override
+        public void onThumbnailTapped(int position, TAPMediaPreviewModel model) {
+            if (!model.isSelected()) {
+                vpImagePreview.setCurrentItem(position, true);
+            } else {
+                removeMediaFromAdapter(position);
+            }
+        }
+    };
 
     private ViewPager.OnPageChangeListener vpPreviewListener = new ViewPager.OnPageChangeListener() {
         @Override

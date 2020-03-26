@@ -51,7 +51,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private int initialUnreadCount, numUsers, containerAnimationState, firstVisibleItemIndex;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
             isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading,
-            isScrollFromKeyboard, isAllUnreadMessagesHidden;
+            isScrollFromKeyboard, isAllUnreadMessagesHidden, deleteGroup;
 
     public final int IDLE = 0;
     public final int ANIMATING = 1;
@@ -480,5 +480,13 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setAllUnreadMessagesHidden(boolean allUnreadMessagesHidden) {
         isAllUnreadMessagesHidden = allUnreadMessagesHidden;
+    }
+
+    public boolean isDeleteGroup() {
+        return deleteGroup;
+    }
+
+    public void setDeleteGroup(boolean deleteGroup) {
+        this.deleteGroup = deleteGroup;
     }
 }

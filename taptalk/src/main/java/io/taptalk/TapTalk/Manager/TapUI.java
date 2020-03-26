@@ -33,6 +33,7 @@ import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.Taptalk.R;
@@ -151,62 +152,58 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return null;
         }
-        return TapUIMainRoomListFragment.newInstance();
+        return TapUIMainRoomListFragment.newInstance(instanceKey);
     }
 
     public void openRoomList(Context context) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        Intent intent = new Intent(context, TapUIRoomListActivity.class);
-        context.startActivity(intent);
+        TapUIRoomListActivity.start(context, instanceKey);
     }
 
     public void openGroupChatCreator(Context context) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
-        intent.putExtra(GROUP_ACTION, CREATE_GROUP);
-        context.startActivity(intent);
+        TAPAddGroupMemberActivity.start(context, instanceKey);
     }
 
     public void openNewChat(Context context) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        Intent intent = new Intent(context, TAPNewChatActivity.class);
-        context.startActivity(intent);
+        TAPNewChatActivity.start(context, instanceKey);
     }
 
     public void openBarcodeScanner(Context context) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        Intent intent = new Intent(context, TAPBarcodeScannerActivity.class);
-        context.startActivity(intent);
+        TAPBarcodeScannerActivity.start(context, instanceKey);
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TAPUtils.startChatActivity(context, roomModel, null, null);
+        TapUIChatActivity.start(context, instanceKey, roomModel, null, null);
     }
 
     public void openChatRoomWithRoomModel(Context context, TAPRoomModel roomModel, String scrollToMessageWithLocalID) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TAPUtils.startChatActivity(context, roomModel, null, scrollToMessageWithLocalID);
+        TapUIChatActivity.start(context, instanceKey, roomModel, null, scrollToMessageWithLocalID);
     }
 
     public void openChatRoom(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TAPUtils.startChatActivity(
+        TapUIChatActivity.start(
                 context,
+                instanceKey,
                 roomID,
                 roomName,
                 roomImage,
@@ -555,10 +552,7 @@ public class TapUI {
 
     void triggerNewChatButtonTapped(Activity activity) {
         if (getRoomListListeners().isEmpty()) {
-            WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
-            Intent intent = new Intent(contextWeakReference.get(), TAPNewChatActivity.class);
-            contextWeakReference.get().startActivity(intent);
-            contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+            TAPNewChatActivity.start(activity, instanceKey);
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
                 if (null != listener) {
@@ -573,18 +567,7 @@ public class TapUI {
             return;
         }
         if (getChatRoomListeners().isEmpty()) {
-            WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
-            Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
-            intent.putExtra(ROOM, room);
-            if (room.getRoomType() == TYPE_PERSONAL) {
-                contextWeakReference.get().startActivity(intent);
-            } else if (room.getRoomType() == TYPE_GROUP && null != user) {
-                intent.putExtra(K_USER, user);
-                contextWeakReference.get().startActivityForResult(intent, OPEN_MEMBER_PROFILE);
-            } else if (room.getRoomType() == TYPE_GROUP) {
-                contextWeakReference.get().startActivityForResult(intent, OPEN_GROUP_PROFILE);
-            }
-            contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+            TAPChatProfileActivity.start(activity, instanceKey, room, user);
         } else {
             for (TapUIChatRoomListener listener : getChatRoomListeners()) {
                 if (room.getRoomType() == TYPE_PERSONAL) {

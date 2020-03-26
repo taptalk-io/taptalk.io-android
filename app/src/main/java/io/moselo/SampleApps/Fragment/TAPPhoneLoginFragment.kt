@@ -1,6 +1,7 @@
 package io.moselo.SampleApps.Fragment
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Build
@@ -28,7 +29,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
-import io.taptalk.TapTalk.View.Activity.TAPCountryListActivity
+import io.moselo.SampleApps.Activity.TAPCountryListActivity
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TaptalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
 
@@ -163,10 +165,8 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
     private fun enableCountryPicker() {
         ll_country_code.setOnClickListener {
-            val intent = Intent(context, TAPCountryListActivity::class.java)
-            intent.putExtra(COUNTRY_LIST, countryListitems)
-            intent.putExtra(COUNTRY_ID, defaultCountryID)
-            startActivityForResult(intent, COUNTRY_PICK)
+            val activity = context as TAPBaseActivity
+            TAPCountryListActivity.start(activity, activity.instanceKey, countryListitems, defaultCountryID)
         }
     }
 

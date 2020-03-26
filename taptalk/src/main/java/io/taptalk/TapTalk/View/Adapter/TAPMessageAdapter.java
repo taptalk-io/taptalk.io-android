@@ -72,6 +72,8 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPQuoteModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
+import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DELETED_LEFT;
@@ -432,13 +434,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openImageDetailPreview(TAPMessageModel message) {
-            Intent intent = new Intent(itemView.getContext(), TAPImageDetailPreviewActivity.class);
-            intent.putExtra(MESSAGE, message);
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    ((Activity) itemView.getContext()),
-                    rcivImageBody,
-                    itemView.getContext().getString(R.string.tap_transition_view_image));
-            itemView.getContext().startActivity(intent, options.toBundle());
+            TAPImageDetailPreviewActivity.start(itemView.getContext(), "", message, rcivImageBody); // TODO: 023, 23 Mar 2020 INSTANCE KEY
         }
 
         private void setProgress(TAPMessageModel item) {
@@ -963,7 +959,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         .show();
             } else {
                 // Open video
-                TAPUtils.openVideoPreview(itemView.getContext(), videoUri, message);
+                TAPVideoPlayerActivity.start(itemView.getContext(), ((TapUIChatActivity) itemView.getContext()).instanceKey, videoUri, message);
             }
         }
 

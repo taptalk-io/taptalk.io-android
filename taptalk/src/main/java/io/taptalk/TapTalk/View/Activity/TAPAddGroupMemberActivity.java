@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.TransitionDrawable;
@@ -56,9 +58,8 @@ import io.taptalk.Taptalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBER_IDS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
@@ -80,6 +81,36 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     private TapSelectedGroupMemberAdapter selectedMembersAdapter;
     private TapContactListListener listener;
     private TAPContactListViewModel vm;
+
+    // Create new group
+    public static void start(
+            Context context,
+            String instanceKey
+    ) {
+        Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(GROUP_ACTION, CREATE_GROUP);
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        }
+    }
+
+    // Add group member
+    public static void start(
+            Activity context,
+            String instanceKey,
+            String roomID,
+            ArrayList<TAPUserModel> groupMembers
+    ) {
+        Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(GROUP_ACTION, GROUP_ADD_MEMBER);
+        intent.putExtra(ROOM_ID, roomID);
+        intent.putParcelableArrayListExtra(GROUP_MEMBERS, groupMembers);
+        context.startActivityForResult(intent, GROUP_ADD_MEMBER);
+        context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -347,21 +378,14 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     }
 
     private void openGroupSubjectActivity() {
-        Intent intent = new Intent(this, TAPEditGroupSubjectActivity.class);
-        intent.putExtra(MY_ID, TAPChatManager.getInstance().getActiveUser().getUserID());
-        intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
-        intent.putStringArrayListExtra(GROUP_MEMBER_IDS, new ArrayList<>(vm.getSelectedContactsIds()));
-        if (null != vm.getGroupName()) {
-            intent.putExtra(GROUP_NAME, vm.getGroupName());
-        }
-        if (null != vm.getGroupImage()) {
-            intent.putExtra(GROUP_IMAGE, vm.getGroupImage());
-        }
-        if (null != vm.getGroupImageUri()) {
-            intent.putExtra(URI, vm.getGroupImageUri());
-        }
-        startActivityForResult(intent, CREATE_GROUP);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPEditGroupSubjectActivity.start(
+                this,
+                instanceKey,
+                new ArrayList<>(vm.getSelectedContacts()),
+                new ArrayList<>(vm.getSelectedContactsIds()),
+                vm.getGroupName(),
+                vm.getGroupImage(),
+                vm.getGroupImageUri());
     }
 
     private void startAddMemberProcess() {
@@ -491,9 +515,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     }
 
     private void openNewContactActivity() {
-        Intent intent = new Intent(this, TAPNewContactActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPNewContactActivity.start(this, instanceKey);
     }
 
     private void showGlobalSearchLoading() {

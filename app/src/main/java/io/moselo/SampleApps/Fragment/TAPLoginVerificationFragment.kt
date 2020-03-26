@@ -27,6 +27,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TaptalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
@@ -279,12 +280,13 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
         override fun verifyOTPSuccessToRegister() {
             activity?.runOnUiThread {
-                val intent = Intent(context, TAPRegisterActivity::class.java)
-                intent.putExtra(COUNTRY_ID, countryID)
-                intent.putExtra(COUNTRY_CALLING_CODE, countryCallingCode)
-                intent.putExtra(COUNTRY_FLAG_URL, countryFlagUrl)
-                intent.putExtra(MOBILE_NUMBER, phoneNumber)
-                activity?.startActivityForResult(intent, REGISTER)
+                TAPRegisterActivity.start(
+                        activity!!,
+                        (activity as TAPLoginActivity).instanceKey,
+                        countryID,
+                        countryCallingCode,
+                        countryFlagUrl,
+                        phoneNumber)
                 (activity as TAPLoginActivity).initFirstPage()
             }
         }
