@@ -45,7 +45,7 @@ import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.TAPLocationItem
 import io.taptalk.TapTalk.View.Adapter.TAPSearchLocationAdapter
-import io.taptalk.Taptalk.R
+import io.taptalk.TapTalk.R
 import kotlinx.android.synthetic.main.tap_activity_map.*
 import java.util.*
 

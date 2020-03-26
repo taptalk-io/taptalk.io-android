@@ -8,7 +8,7 @@ import java.util.List;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.Taptalk.BuildConfig;
+import io.taptalk.TapTalk.BuildConfig;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 

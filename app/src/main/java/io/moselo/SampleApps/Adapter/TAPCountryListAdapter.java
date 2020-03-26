@@ -21,7 +21,7 @@ import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecycle
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
 import io.taptalk.TapTalk.View.Adapter.TAPBaseAdapter;
 import io.moselo.SampleApps.Activity.TAPCountryListActivity;
-import io.taptalk.TaptalkSample.R;
+import io.taptalk.TapTalkSample.R;
 
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
 

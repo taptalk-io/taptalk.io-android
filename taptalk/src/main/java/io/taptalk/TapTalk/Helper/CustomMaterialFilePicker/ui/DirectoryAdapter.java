@@ -21,7 +21,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.utils.FileTypeUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 /**
  * Created by Dimorinny on 24.10.15.

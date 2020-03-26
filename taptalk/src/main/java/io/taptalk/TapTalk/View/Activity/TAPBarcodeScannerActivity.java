@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import io.taptalk.TapTalk.View.Fragment.TAPBarcodeScannerFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPShowQRFragment;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 public class SwipeBackLayout extends ConstraintLayout {
     /**

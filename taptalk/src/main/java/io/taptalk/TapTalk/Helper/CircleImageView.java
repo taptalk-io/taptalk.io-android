@@ -43,7 +43,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.RequiresApi;
 
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 public class CircleImageView extends androidx.appcompat.widget.AppCompatImageView {
 

@@ -48,7 +48,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
-import io.taptalk.TaptalkSample.R
+import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_activity_register.*
 
 class TAPRegisterActivity : TAPBaseActivity() {

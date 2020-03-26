@@ -48,7 +48,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel
-import io.taptalk.Taptalk.R
+import io.taptalk.TapTalk.R
 import kotlinx.android.synthetic.main.tap_activity_my_account.*
 import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 

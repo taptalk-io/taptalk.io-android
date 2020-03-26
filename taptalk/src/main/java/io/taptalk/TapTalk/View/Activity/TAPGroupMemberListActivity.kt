@@ -31,7 +31,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
 import io.taptalk.TapTalk.ViewModel.TAPGroupMemberViewModel
-import io.taptalk.Taptalk.R
+import io.taptalk.TapTalk.R
 import kotlinx.android.synthetic.main.tap_activity_group_members.*
 import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 

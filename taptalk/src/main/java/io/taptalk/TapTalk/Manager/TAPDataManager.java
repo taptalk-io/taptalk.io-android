@@ -57,7 +57,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
-import io.taptalk.Taptalk.BuildConfig;
+import io.taptalk.TapTalk.BuildConfig;
 import okhttp3.ResponseBody;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;

@@ -13,13 +13,13 @@ import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
-import io.taptalk.TaptalkSample.BuildConfig;
-import io.taptalk.TaptalkSample.R;
+import io.taptalk.TapTalkSample.BuildConfig;
+import io.taptalk.TapTalkSample.R;
 
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkImplementationType.TapTalkImplementationTypeCombine;
-import static io.taptalk.TaptalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_ID;
-import static io.taptalk.TaptalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_SECRET;
-import static io.taptalk.TaptalkSample.BuildConfig.TAPTALK_SDK_BASE_URL;
+import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_ID;
+import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_SECRET;
+import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_BASE_URL;
 
 public class SampleApplication extends MultiDexApplication {
 

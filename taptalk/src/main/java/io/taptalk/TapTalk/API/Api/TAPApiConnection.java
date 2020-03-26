@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.API.Api;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.readystatesoftware.chuck.ChuckInterceptor;
 
 import java.util.HashMap;
 import java.util.concurrent.Executor;
@@ -115,7 +114,6 @@ public class TAPApiConnection {
                 .writeTimeout(1, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
-                .addInterceptor(new ChuckInterceptor(TapTalk.appContext))
                 .addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth))
                 .build();
     }
@@ -131,7 +129,6 @@ public class TAPApiConnection {
                 .writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
-                .addInterceptor(new ChuckInterceptor(TapTalk.appContext))
                 .addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth))
                 .build();
     }
@@ -146,7 +143,6 @@ public class TAPApiConnection {
                 .readTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
-                .addInterceptor(new ChuckInterceptor(TapTalk.appContext))
                 .addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(headerAuth))
                 .build();
     }

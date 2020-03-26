@@ -24,7 +24,7 @@ import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.CompositeFilter
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.HiddenFilter;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.PatternFilter;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.utils.FileUtils;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 /**
  * Created by Dimorinny on 24.10.15.

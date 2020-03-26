@@ -1,7 +1,6 @@
 package io.moselo.SampleApps.Fragment
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Build
@@ -14,11 +13,10 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import io.moselo.SampleApps.Activity.TAPCountryListActivity
 import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
@@ -29,9 +27,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
-import io.moselo.SampleApps.Activity.TAPCountryListActivity
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
-import io.taptalk.TaptalkSample.R
+import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
 
 class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
@@ -47,7 +44,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     private val oneDayAgoTimestamp: Long = 24 * 60 * 60 * 1000
     private var countryHashMap = mutableMapOf<String, TAPCountryListItem>()
     private var countryListitems = arrayListOf<TAPCountryListItem>()
-    private val maxTime = 30L
+    private val maxTime = 120L * 1000
     private var countryFlagUrl = ""
 
     companion object {
@@ -155,12 +152,21 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun attemptLogin() {
-        disableContinueButton()
-        if (isVisible) {
-            TAPUtils.dismissKeyboard(activity)
-            showProgress()
-            checkNumberAndCallAPI()
-        }
+        TapTalkDialog.Builder(context)
+                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                .setTitle("Send OTP SMS")
+                .setMessage("Are you sure you want to send OTP SMS to " + defaultCallingCode + checkAndEditPhoneNumber() + "?")
+                .setPrimaryButtonTitle("Yes")
+                .setPrimaryButtonListener(true) {
+                    disableContinueButton()
+                    if (isVisible) {
+                        TAPUtils.dismissKeyboard(activity)
+                        showProgress()
+                        checkNumberAndCallAPI()
+                    }
+                }
+                .setSecondaryButtonTitle("No")
+                .show()
     }
 
     private fun enableCountryPicker() {
@@ -193,7 +199,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
         val currentOTPTimestampLength = System.currentTimeMillis() - loginViewModel.lastLoginTimestamp
         if (defaultCountryID == loginViewModel.countryID
                 && checkAndEditPhoneNumber() == loginViewModel.phoneNumber
-                && currentOTPTimestampLength <= maxTime * 1000) {
+                && currentOTPTimestampLength <= maxTime) {
             requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true)
         } else {
             TAPDataManager.getInstance().requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), object : TAPDefaultDataView<TAPLoginOTPResponse>() {

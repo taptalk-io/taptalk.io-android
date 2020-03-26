@@ -14,8 +14,6 @@ import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.moselo.SampleApps.Activity.TAPRegisterActivity
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.REGISTER
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
@@ -27,16 +25,15 @@ import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
-import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
-import io.taptalk.TaptalkSample.R
+import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
 class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
             ?: ""
     var otpTimer: CountDownTimer? = null
-    val waitTime = 30L * 1000
+    var waitTime = 120L * 1000
     var phoneNumber = "0"
     var otpID = 0L
     var otpKey = ""

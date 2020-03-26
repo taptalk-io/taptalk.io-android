@@ -24,7 +24,7 @@ import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPGroupMemberListListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Model.TAPUserModel
-import io.taptalk.Taptalk.R
+import io.taptalk.TapTalk.R
 
 class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminList: List<String>, groupInterface: TAPGroupMemberListListener) : TAPBaseAdapter<TAPUserModel, TAPBaseViewHolder<TAPUserModel>>() {
 

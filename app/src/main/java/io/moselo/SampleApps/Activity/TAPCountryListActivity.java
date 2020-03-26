@@ -1,7 +1,6 @@
 package io.moselo.SampleApps.Activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,7 +18,7 @@ import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecycle
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
 import io.moselo.SampleApps.Adapter.TAPCountryListAdapter;
-import io.taptalk.TaptalkSample.R;
+import io.taptalk.TapTalkSample.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST;
