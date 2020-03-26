@@ -556,7 +556,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         }
     };
 
-    private TAPAttachmentListener profilePicturePickerListener = new TAPAttachmentListener() {
+    private TAPAttachmentListener profilePicturePickerListener = new TAPAttachmentListener(instanceKey) {
         @Override
         public void onCameraSelected() {
             vm.setRoomImageUri(TAPUtils.takePicture(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));

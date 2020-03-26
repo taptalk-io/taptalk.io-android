@@ -540,7 +540,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         pb_profile_picture_progress.progress = 0
     }
 
-    private val profilePicturePickerListener = object : TAPAttachmentListener() {
+    private val profilePicturePickerListener = object : TAPAttachmentListener(instanceKey) {
         override fun onCameraSelected() {
             vm.profilePictureUri = TAPUtils.takePicture(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
         }

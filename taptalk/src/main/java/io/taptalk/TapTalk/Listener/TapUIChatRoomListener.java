@@ -26,6 +26,16 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 
 @Keep
 public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
+
+    private String instanceKey = "";
+
+    public TapUIChatRoomListener() {
+    }
+
+    public TapUIChatRoomListener(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
+
     @Override
     public void onTapTalkUserProfileButtonTapped(Activity activity, TAPRoomModel room, TAPUserModel user) {
         openTapTalkChatProfile(activity, room, null);
@@ -60,18 +70,6 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
         if (null == activity) {
             return;
         }
-        //TAPChatProfileActivity.start(activity, instanceKey, room, user); // TODO
-        WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
-        Intent intent = new Intent(contextWeakReference.get(), TAPChatProfileActivity.class);
-        intent.putExtra(ROOM, room);
-        if (room.getRoomType() == TYPE_PERSONAL) {
-            contextWeakReference.get().startActivity(intent);
-        } else if (room.getRoomType() == TYPE_GROUP && null != user) {
-            intent.putExtra(K_USER, user);
-            contextWeakReference.get().startActivityForResult(intent, OPEN_MEMBER_PROFILE);
-        } else if (room.getRoomType() == TYPE_GROUP) {
-            contextWeakReference.get().startActivityForResult(intent, OPEN_GROUP_PROFILE);
-        }
-        contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPChatProfileActivity.start(activity, instanceKey, room, user);
     }
 }

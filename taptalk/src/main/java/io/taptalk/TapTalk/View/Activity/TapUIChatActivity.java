@@ -1320,7 +1320,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 
-    private TAPAttachmentListener attachmentListener = new TAPAttachmentListener() {
+    private TAPAttachmentListener attachmentListener = new TAPAttachmentListener(instanceKey) {
         @Override
         public void onCameraSelected() {
             if (TAPConnectionManager.getInstance().getConnectionStatus() == CONNECTED)
