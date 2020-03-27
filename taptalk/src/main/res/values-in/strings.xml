@@ -308,6 +308,8 @@
     <string name="tap_hint_email_address">misal example@work.com</string>
     <string name="tap_hint_insert_password">Masukkan Kata Sandi</string>
     <string name="tap_hint_insert_name">Masukkan Nama</string>
+    <string name="tap_login_confirmation">Sistem kami akan mengirimkan SMS verifikasi ke nomor %s. SMS tersebut berisi 6 digit kode untuk masuk ke aplikasi TapTalk.io.</string>
+    <string name="tap_login_confirmation_title">Kirim SMS Verifikasi?</string>
 
     <!--General-->
     <string name="tap_allow">Izinkan</string>

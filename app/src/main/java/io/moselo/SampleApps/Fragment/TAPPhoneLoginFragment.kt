@@ -155,9 +155,9 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     private fun attemptLogin() {
         TapTalkDialog.Builder(context)
                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
-                .setTitle("Send OTP SMS")
-                .setMessage("Are you sure you want to send OTP SMS to " + defaultCallingCode + checkAndEditPhoneNumber() + "?")
-                .setPrimaryButtonTitle("Yes")
+                .setTitle(getString(R.string.tap_login_confirmation_title))
+                .setMessage(getString(R.string.tap_login_confirmation, defaultCallingCode + checkAndEditPhoneNumber()))
+                .setPrimaryButtonTitle(getString(R.string.tap_send))
                 .setPrimaryButtonListener(true) {
                     disableContinueButton()
                     if (isVisible) {
@@ -166,7 +166,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                         checkNumberAndCallAPI()
                     }
                 }
-                .setSecondaryButtonTitle("No")
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .show()
     }
 
