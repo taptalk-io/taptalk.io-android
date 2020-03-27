@@ -32,6 +32,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
 import io.taptalk.TapTalk.Listener.TapListener;
+import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -205,6 +206,7 @@ public class TapTalk implements LifecycleObserver {
             TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
             TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
             TAPOldDataManager.getInstance().startAutoCleanProcess();
+            AnalyticsManager.getInstance().identifyUser();
         }
 
         TAPDataManager.getInstance().updateSendingMessageToFailed();
@@ -227,8 +229,7 @@ public class TapTalk implements LifecycleObserver {
 
         TAPContactManager.getInstance().loadAllUserDataFromDatabase();
 
-        if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() &&
-                TAPDataManager.getInstance().checkAccessTokenAvailable()) {
+        if (null != TAPDataManager.getInstance().checkAccessTokenAvailable() && TAPDataManager.getInstance().checkAccessTokenAvailable()) {
             initListener();
         }
 
