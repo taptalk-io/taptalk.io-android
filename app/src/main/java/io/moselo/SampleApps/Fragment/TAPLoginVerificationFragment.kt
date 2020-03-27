@@ -235,7 +235,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 if (response.isRegistered) {
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success")
-                    TapTalk.authenticateWithAuthTicket(response.ticket, true, object : TapCommonListener() {
+                    TapTalk.authenticateWithAuthTicket((activity as TAPBaseActivity).instanceKey, response.ticket, true, object : TapCommonListener() {
                         override fun onSuccess(successMessage: String) {
                             AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
                             AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Authenticate TapTalk.io Success")
@@ -270,8 +270,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             activity?.runOnUiThread {
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveMyCountryCode(countryCallingCode)
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveMyCountryFlagUrl(countryFlagUrl)
-                val intent = Intent(context, TapUIRoomListActivity::class.java)
-                startActivity(intent)
+                TapUIRoomListActivity.start(context, (activity as TAPBaseActivity).instanceKey)
                 activity?.finish()
             }
         }

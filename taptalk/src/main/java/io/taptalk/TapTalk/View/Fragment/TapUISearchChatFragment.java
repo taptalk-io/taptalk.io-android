@@ -84,9 +84,11 @@ public class TapUISearchChatFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initViewModel();
-        initView(view);
-        setRecentSearchItemsFromDatabase();
+        if (null != mainRoomListFragment.getInstanceKey()) {
+            initViewModel();
+            initView(view);
+            setRecentSearchItemsFromDatabase();
+        }
     }
 
     @Override

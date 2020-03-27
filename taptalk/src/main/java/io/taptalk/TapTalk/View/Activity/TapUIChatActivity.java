@@ -416,7 +416,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             new Thread(() -> TAPChatManager.getInstance(instanceKey).putUnsentMessageToList()).start();
             if (isTaskRoot()) {
                 // Trigger listener callback if no other activity is open
-                for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
                     listener.onTaskRootChatRoomClosed(this);
                 }
             }
@@ -3266,7 +3266,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         public void onSwipeToFinishActivity() {
             if (isTaskRoot()) {
                 // Trigger listener callback if no other activity is open
-                for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
                     listener.onTaskRootChatRoomClosed(TapUIChatActivity.this);
                 }
             }

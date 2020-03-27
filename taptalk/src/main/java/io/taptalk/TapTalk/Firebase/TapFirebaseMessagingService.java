@@ -16,9 +16,11 @@ public class TapFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        // TODO: 27 Mar 2020 IDENTIFY OWNER INSTANCE
         if (TapTalk.isTapTalkNotification(remoteMessage)) {
-            TapTalk.handleTapTalkPushNotification(remoteMessage);
+            // TODO: 27 Mar 2020 IDENTIFY OWNER INSTANCE, REMOVE LOOP
+            for (String instanceKey : TapTalk.getInstanceKeys()) {
+                TapTalk.handleTapTalkPushNotification(instanceKey, remoteMessage);
+            }
         }
     }
 

@@ -39,7 +39,7 @@ class TAPGroupManager(private var instanceKey: String) {
     }
 
     fun getGroupMaxParticipants(): Int {
-        val maxParticipants = TapTalk.getCoreConfigs()[GROUP_MAX_PARTICIPANTS]
+        val maxParticipants = TapTalk.getCoreConfigs(instanceKey)[GROUP_MAX_PARTICIPANTS]
         return maxParticipants?.toInt() ?: DEFAULT_GROUP_MAX_PARTICIPANTS.toInt()
     }
 

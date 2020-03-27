@@ -143,8 +143,8 @@ public class TAPNotificationManager {
         String summaryContent = messageSize + " messages from " + chatSize + " chats";
 
         return new NotificationCompat.Builder(context, TAP_NOTIFICATION_CHANNEL)
-                .setSmallIcon(TapTalk.getClientAppIcon())
-                .setContentTitle(TapTalk.getClientAppName())
+                .setSmallIcon(TapTalk.getClientAppIcon(instanceKey))
+                .setContentTitle(TapTalk.getClientAppName(instanceKey))
                 .setContentText(summaryContent)
                 .setStyle(new NotificationCompat.InboxStyle()/*.setSummaryText(summaryContent)*/)
                 .setGroup(NOTIFICATION_GROUP_DEFAULT)
@@ -285,13 +285,13 @@ public class TAPNotificationManager {
             if (TapTalk.isForeground) {
                 new NotificationBuilder(context, instanceKey)
                         .setNotificationMessage(newMessageModel)
-                        .setSmallIcon(TapTalk.getClientAppIcon())
+                        .setSmallIcon(TapTalk.getClientAppIcon(instanceKey))
                         .setNeedReply(false)
                         .setOnClickAction(TapUIChatActivity.class)
                         .show();
             }
         } else {
-            for (TapListener listener : getTapTalkListeners()) {
+            for (TapListener listener : getTapTalkListeners(instanceKey)) {
                 listener.onNotificationReceived(newMessageModel);
             }
         }
@@ -310,13 +310,13 @@ public class TAPNotificationManager {
                     && !TAPChatManager.getInstance(instanceKey).getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
                 new NotificationBuilder(context, instanceKey)
                         .setNotificationMessage(newMessageModel)
-                        .setSmallIcon(TapTalk.getClientAppIcon())
+                        .setSmallIcon(TapTalk.getClientAppIcon(instanceKey))
                         .setNeedReply(false)
                         .setOnClickAction(destinationClass)
                         .show();
             }
         } else {
-            for (TapListener listener : getTapTalkListeners()) {
+            for (TapListener listener : getTapTalkListeners(instanceKey)) {
                 listener.onNotificationReceived(newMessageModel);
             }
         }
@@ -353,8 +353,8 @@ public class TAPNotificationManager {
         new Thread(() -> TAPDataManager.getInstance(instanceKey).getUnreadCount(new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onCountedUnreadCount(int unreadCount) {
-                if (null != getTapTalkListeners() && !getTapTalkListeners().isEmpty()) {
-                    for (TapListener listener : getTapTalkListeners()) {
+                if (null != getTapTalkListeners(instanceKey) && !getTapTalkListeners(instanceKey).isEmpty()) {
+                    for (TapListener listener : getTapTalkListeners(instanceKey)) {
                         listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
                     }
                 }

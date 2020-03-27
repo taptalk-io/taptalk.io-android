@@ -19,10 +19,6 @@ public class AnalyticsManager {
 
     private String instanceKey = "";
 
-    public static AnalyticsManager getInstance() {
-        return getInstance("");
-    }
-
     public static AnalyticsManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
             AnalyticsManager instance = new AnalyticsManager(instanceKey);

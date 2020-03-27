@@ -684,12 +684,16 @@ public class TAPDataManager {
             if (null == messageData) {
                 return;
             }
-            Uri fileMessageUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID));
-            if (null != fileMessageUri && "content".equals(fileMessageUri.getScheme()) && null != fileMessageUri.getPath() && fileMessageUri.getPath().contains(TapTalk.getClientAppName())) {
+            Uri fileMessageUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(
+                    message.getRoomID(), (String) messageData.get(FILE_ID));
+            if (null != fileMessageUri && "content".equals(fileMessageUri.getScheme()) &&
+                    null != fileMessageUri.getPath() &&
+                    fileMessageUri.getPath().contains(TapTalk.getClientAppName(instanceKey))) {
                 try {
                     // Delete file from TapTalk folder
                     TapTalk.appContext.getContentResolver().delete(fileMessageUri, null, null);
-                    TAPFileDownloadManager.getInstance(instanceKey).removeFileMessageUri(message.getRoomID(), (String) messageData.get(FILE_ID));
+                    TAPFileDownloadManager.getInstance(instanceKey).removeFileMessageUri(
+                            message.getRoomID(), (String) messageData.get(FILE_ID));
                 } catch (IllegalArgumentException e) {
                     if (BuildConfig.DEBUG) {
                         Log.e(TAG, "deletePhysicalFile: " + e.getMessage());

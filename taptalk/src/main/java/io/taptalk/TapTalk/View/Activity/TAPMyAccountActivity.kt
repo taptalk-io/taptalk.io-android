@@ -448,7 +448,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         hideLoading()
         AnalyticsManager.getInstance(instanceKey).identifyUser()
-        for (listener in TapTalk.getTapTalkListeners()) {
+        for (listener in TapTalk.getTapTalkListeners(instanceKey)) {
             listener.onUserLogout()
         }
     }

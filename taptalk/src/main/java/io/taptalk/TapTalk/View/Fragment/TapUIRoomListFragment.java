@@ -126,6 +126,10 @@ public class TapUIRoomListFragment extends Fragment {
 
     }
 
+    public static TapUIRoomListFragment newInstance() {
+        return new TapUIRoomListFragment();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -136,12 +140,15 @@ public class TapUIRoomListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initViewModel();
-        initListener();
-        initView(view);
-        viewLoadedSequence();
-        TAPBroadcastManager.register(activity, reloadRoomListReceiver, RELOAD_ROOM_LIST, CLEAR_ROOM_LIST_BADGE);
-        TAPBroadcastManager.register(activity, reloadProfilePictureReceiver, RELOAD_PROFILE_PICTURE);
+        if (null != mainRoomListFragment.getInstanceKey()) {
+            Log.e(TAG, "onViewCreated: initRoomList " + mainRoomListFragment.getInstanceKey());
+            initViewModel();
+            initListener();
+            initView(view);
+            viewLoadedSequence();
+            TAPBroadcastManager.register(activity, reloadRoomListReceiver, RELOAD_ROOM_LIST, CLEAR_ROOM_LIST_BADGE);
+            TAPBroadcastManager.register(activity, reloadProfilePictureReceiver, RELOAD_PROFILE_PICTURE);
+        }
     }
 
     @Override
@@ -202,6 +209,7 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void initListener() {
+        Log.e(TAG, "initListener: " + mainRoomListFragment.getInstanceKey());
         TapTalk.getTapTalkInstance(mainRoomListFragment.getInstanceKey()).removeGlobalChatListener();
         chatListener = new TAPChatListener() {
             @Override
@@ -446,10 +454,10 @@ public class TapUIRoomListFragment extends Fragment {
             // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
             Log.e(TAG, "viewLoadedSequence: runFullRefreshSequence");
             runFullRefreshSequence();
-        } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated()) {
+        } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated(mainRoomListFragment.getInstanceKey())) {
             AnalyticsManager.getInstance(mainRoomListFragment.getInstanceKey()).trackEvent("View Loaded Sequence Failed");
-            TapTalk.clearAllTapTalkData();
-            for (TapListener listener : TapTalk.getTapTalkListeners()) {
+            TapTalk.clearAllTapTalkData(mainRoomListFragment.getInstanceKey());
+            for (TapListener listener : TapTalk.getTapTalkListeners(mainRoomListFragment.getInstanceKey())) {
                 listener.onTapTalkRefreshTokenExpired();
             }
         } else if (null == TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser()) {
@@ -1052,7 +1060,7 @@ public class TapUIRoomListFragment extends Fragment {
             e.printStackTrace();
         }
         if (vm.getLastBadgeCount() != vm.getRoomBadgeCount()) {
-            for (TapListener listener : TapTalk.getTapTalkListeners()) {
+            for (TapListener listener : TapTalk.getTapTalkListeners(mainRoomListFragment.getInstanceKey())) {
                 listener.onTapTalkUnreadChatRoomBadgeCountUpdated(vm.getRoomBadgeCount());
             }
             vm.setLastBadgeCount(vm.getRoomBadgeCount());

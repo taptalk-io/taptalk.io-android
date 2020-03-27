@@ -333,7 +333,7 @@ public class TAPFileDownloadManager {
     private void downloadFileFromUrl(TAPMessageModel message, String fileUrl) {
         String filename = getFileNameFromMessage(message);
         String dirString = TYPE_VIDEO == message.getType() ?
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName() :
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey) :
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "";
 
         File dir = new File(dirString);
@@ -423,8 +423,8 @@ public class TAPFileDownloadManager {
         String localID = message.getLocalID();
         String filename = getFileNameFromMessage(message);
 
-        File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.getClientAppName() + (message.getType() == TYPE_VIDEO ? "/" + TapTalk.getClientAppName() + " Videos" :
-                "/" + TapTalk.getClientAppName() + " Files"));
+        File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.getClientAppName(instanceKey) + (message.getType() == TYPE_VIDEO ? "/" + TapTalk.getClientAppName(instanceKey) + " Videos" :
+                "/" + TapTalk.getClientAppName(instanceKey) + " Files"));
         dir.mkdirs();
 
         File noMediaFile = new File(dir, ".nomedia");
@@ -475,7 +475,7 @@ public class TAPFileDownloadManager {
         new Thread(() -> {
             String imageFormat = mimeType.equals(IMAGE_PNG) ? ".png" : ".jpeg";
             String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
-            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName());
+            File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey));
             dir.mkdirs();
 
             File file = new File(dir, filename);
@@ -502,7 +502,7 @@ public class TAPFileDownloadManager {
             try {
                 String filename = getFileNameFromMessage(message);
 
-                File dir = new File(TYPE_VIDEO == message.getType() ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName()
+                File dir = new File(TYPE_VIDEO == message.getType() ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey)
                         : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "");
                 dir.mkdirs();
 

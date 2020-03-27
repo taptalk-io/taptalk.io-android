@@ -17,12 +17,12 @@ public class TAPAutoStartPermission {
         return null == instance ? instance = new TAPAutoStartPermission() : instance;
     }
 
-    public void showPermissionRequest(Context context) {
+    public void showPermissionRequest(String instanceKey, Context context) {
         for (Intent intent : TAPDefaultConstant.AUTO_START_INTENTS)
             if (context.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null) {
                 new TapTalkDialog.Builder(context)
                         .setTitle("Enable AutoStart")
-                        .setMessage("Please allow auto start in settings to receive chat notifications from " + TapTalk.getClientAppName() + ".")
+                        .setMessage("Please allow auto start in settings to receive chat notifications from " + TapTalk.getClientAppName(instanceKey) + ".")
                         .setPrimaryButtonTitle("Allow")
                         .setPrimaryButtonListener(v -> {
                             try {

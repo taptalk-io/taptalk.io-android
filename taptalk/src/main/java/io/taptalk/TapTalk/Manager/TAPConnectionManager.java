@@ -320,7 +320,7 @@ public class TAPConnectionManager {
         public void onSuccess(TAPErrorModel response) {
             if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
                 reconnect();
-            } else if (TapTalk.isAutoConnectEnabled() && NOT_CONNECTED == connectionStatus) {
+            } else if (TapTalk.isAutoConnectEnabled(instanceKey) && NOT_CONNECTED == connectionStatus) {
                 connect();
             }
         }

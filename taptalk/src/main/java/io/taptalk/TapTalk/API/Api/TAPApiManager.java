@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.AnalyticsManager;
@@ -101,11 +102,6 @@ public class TAPApiManager {
     private TAPTalkRefreshTokenService hpRefresh;
     private int isShouldRefreshToken = 0;
     private boolean isLoggedOut = false; // Flag to prevent unauthorized API call due to refresh token expired
-
-    // TODO: 018, 18 Mar 2020 REMOVE
-    public static TAPApiManager getInstance() {
-        return getInstance("");
-    }
 
     public static TAPApiManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
@@ -259,8 +255,8 @@ public class TAPApiManager {
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
                     } else if (UNAUTHORIZED == response.getStatus()) {
                         AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Refresh Token Failed", response.getError().getCode(), response.getError().getMessage());
-                        TapTalk.clearAllTapTalkData();
-                        for (TapListener listener : TapTalk.getTapTalkListeners()) {
+                        TapTalk.clearAllTapTalkData(instanceKey);
+                        for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
                             listener.onTapTalkRefreshTokenExpired();
                         }
                     } else {

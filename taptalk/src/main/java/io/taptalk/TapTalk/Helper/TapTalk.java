@@ -180,6 +180,7 @@ public class TapTalk implements LifecycleObserver {
         this.clientAppName = clientAppName;
 
         // Init Base URL
+        Log.e(TAG, "TapTalk: " + instanceKey);
         TAPApiManager.setBaseUrlApi(instanceKey, generateApiBaseURL(appBaseURL));
         TAPApiManager.setBaseUrlSocket(instanceKey, generateSocketBaseURL(appBaseURL));
         TAPConnectionManager.getInstance(instanceKey).setWebSocketEndpoint(generateWSSBaseURL(appBaseURL));
@@ -211,7 +212,7 @@ public class TapTalk implements LifecycleObserver {
 
         // Init configs
         presetConfigs();
-        refreshRemoteConfigs(new TapCommonListener() {
+        refreshRemoteConfigs(instanceKey, new TapCommonListener() {
         });
 
         if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
@@ -261,32 +262,32 @@ public class TapTalk implements LifecycleObserver {
         chatListener = new TAPChatListener() {
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount();
+                updateApplicationBadgeCount(instanceKey);
             }
 
             @Override
             public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount();
+                updateApplicationBadgeCount(instanceKey);
             }
 
             @Override
             public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount();
+                updateApplicationBadgeCount(instanceKey);
             }
 
             @Override
             public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount();
+                updateApplicationBadgeCount(instanceKey);
             }
 
             @Override
             public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount();
+                updateApplicationBadgeCount(instanceKey);
             }
 
             @Override
             public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount();
+                updateApplicationBadgeCount(instanceKey);
             }
         };
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
@@ -611,7 +612,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void updateApplicationBadgeCount(String instanceKey) {
-        if (!isAuthenticated()) {
+        if (!isAuthenticated(instanceKey)) {
             return;
         }
         TAPNotificationManager.getInstance(instanceKey).updateUnreadCount();

@@ -105,17 +105,17 @@ public class TAPFileUploadManager {
     }
 
     public Long getMaxFileUploadSize() {
-        String maxFileSize = TapTalk.getCoreConfigs().get(CHAT_MEDIA_MAX_FILE_SIZE);
+        String maxFileSize = TapTalk.getCoreConfigs(instanceKey).get(CHAT_MEDIA_MAX_FILE_SIZE);
         return null == maxFileSize ? Long.valueOf(DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
     }
 
     public Long getMaxRoomPhotoUploadSize() {
-        String maxFileSize = TapTalk.getCoreConfigs().get(ROOM_PHOTO_MAX_FILE_SIZE);
+        String maxFileSize = TapTalk.getCoreConfigs(instanceKey).get(ROOM_PHOTO_MAX_FILE_SIZE);
         return null == maxFileSize ? Long.valueOf(DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
     }
 
     public Long getMaxUserPhotoUploadSize() {
-        String maxFileSize = TapTalk.getCoreConfigs().get(USER_PHOTO_MAX_FILE_SIZE);
+        String maxFileSize = TapTalk.getCoreConfigs(instanceKey).get(USER_PHOTO_MAX_FILE_SIZE);
         return null == maxFileSize ? Long.valueOf(DEFAULT_USER_PHOTO_MAX_FILE_SIZE) : Long.valueOf(maxFileSize);
     }
 

@@ -5,16 +5,16 @@
     tools:context="io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity"
     android:background="@color/tapWhiteF3">
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_room_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment" />
+        android:layout_height="match_parent" />
+<!--        class="io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment" />-->
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_search_chat"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="io.taptalk.TapTalk.View.Fragment.TapUISearchChatFragment" />
+        android:layout_height="match_parent" />
+<!--        class="io.taptalk.TapTalk.View.Fragment.TapUISearchChatFragment" />-->
 
 </FrameLayout>

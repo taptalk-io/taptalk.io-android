@@ -333,7 +333,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void permissionCheckAndSyncContactList() {
-        if (!TapTalk.isAutoContactSyncEnabled()) {
+        if (!TapTalk.isAutoContactSyncEnabled(instanceKey)) {
             return;
         }
         if (!TAPContactManager.getInstance(instanceKey).isContactSyncPermissionAsked() &&
@@ -400,7 +400,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void syncContactList(boolean showLoading) {
-        if (!TapTalk.isAutoContactSyncEnabled()) {
+        if (!TapTalk.isAutoContactSyncEnabled(instanceKey)) {
             return;
         }
         if (showLoading) {

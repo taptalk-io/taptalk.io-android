@@ -47,11 +47,6 @@ public class TAPApiConnection {
 
     public ObjectMapper objectMapper;
 
-    // TODO: 018, 18 Mar 2020 REMOVE
-    public static TAPApiConnection getInstance() {
-        return getInstance("");
-    }
-
     public static TAPApiConnection getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
             TAPApiConnection instance = new TAPApiConnection(instanceKey);

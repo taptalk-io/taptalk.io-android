@@ -30,7 +30,7 @@ public class TapUIMainRoomListFragment extends Fragment {
     }
 
     private TapUIMainRoomListFragment(String instanceKey) {
-        setInstanceKey(instanceKey);
+        this.instanceKey = instanceKey;
     }
 
     public static TapUIMainRoomListFragment newInstance(String instanceKey) {
@@ -41,10 +41,6 @@ public class TapUIMainRoomListFragment extends Fragment {
         return instanceKey;
     }
 
-    public void setInstanceKey(String instanceKey) {
-        this.instanceKey = instanceKey;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,18 +49,31 @@ public class TapUIMainRoomListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_room_list, container, false);
+        return inflater.inflate(R.layout.tap_fragment_main_room_list, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView();
+        if (null != instanceKey) {
+            initView();
+        }
     }
 
     private void initView() {
-        fRoomList = (TapUIRoomListFragment) getChildFragmentManager().findFragmentById(R.id.fragment_room_list);
-        fSearchFragment = (TapUISearchChatFragment) getChildFragmentManager().findFragmentById(R.id.fragment_search_chat);
+//        fRoomList = (TapUIRoomListFragment) getChildFragmentManager().findFragmentById(R.id.fragment_room_list);
+//        fSearchFragment = (TapUISearchChatFragment) getChildFragmentManager().findFragmentById(R.id.fragment_search_chat);
+
+        fRoomList = TapUIRoomListFragment.newInstance();
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_room_list, fRoomList)
+                .commit();
+        fSearchFragment = TapUISearchChatFragment.newInstance();
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_search_chat, fSearchFragment)
+                .commit();
 
         showRoomList();
     }

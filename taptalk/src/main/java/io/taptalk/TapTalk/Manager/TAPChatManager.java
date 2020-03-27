@@ -123,11 +123,6 @@ public class TAPChatManager {
     private final int maxImageSize = 2000;
     private final Integer CHARACTER_LIMIT = 4000;
 
-    // TODO: 018, 18 Mar 2020 REMOVE
-    public static TAPChatManager getInstance() {
-        return getInstance("");
-    }
-
     public static TAPChatManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
             TAPChatManager instance = new TAPChatManager(instanceKey);
@@ -1619,7 +1614,7 @@ public class TAPChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
-        if (TapTalk.isAutoConnectEnabled()) {
+        if (TapTalk.isAutoConnectEnabled(instanceKey)) {
             TAPConnectionManager.getInstance(instanceKey).close();
         }
         saveUnsentMessage();

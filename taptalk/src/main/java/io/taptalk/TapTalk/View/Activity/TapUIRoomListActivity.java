@@ -60,8 +60,9 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
     }
 
     private void initView() {
-        fRoomList = (TapUIMainRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
-        fRoomList.setInstanceKey(instanceKey);
+//        fRoomList = (TapUIMainRoomListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_room_list);
+        fRoomList = TapUIMainRoomListFragment.newInstance(instanceKey);
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_room_list, fRoomList).commit();
         showRoomList();
         redirectToChatActivityFromNotification();
         requestForAutoStartPermission();
@@ -89,7 +90,7 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
     //This is for Sample Apps
     private void requestForAutoStartPermission() {
         if (!Hawk.contains(AUTO_START_PERMISSION)) {
-            TAPAutoStartPermission.getInstance().showPermissionRequest(this);
+            TAPAutoStartPermission.getInstance().showPermissionRequest(instanceKey, this);
             Hawk.put(AUTO_START_PERMISSION, true);
         }
     }
