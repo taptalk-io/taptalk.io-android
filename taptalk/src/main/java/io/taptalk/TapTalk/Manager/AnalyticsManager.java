@@ -41,6 +41,7 @@ public class AnalyticsManager {
             mixpanel.identify(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID());
             mixpanel.getPeople().identify(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID());
             mixpanel.getPeople().set("UserID", TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID());
+            mixpanel.getPeople().set("name", TAPChatManager.getInstance(instanceKey).getActiveUser().getName());
             mixpanel.getPeople().set("UserFullName", TAPChatManager.getInstance(instanceKey).getActiveUser().getName());
             mixpanel.getPeople().set("userPhoneNumber", TAPChatManager.getInstance(instanceKey).getActiveUser().getPhoneNumber());
         }
@@ -123,6 +124,7 @@ public class AnalyticsManager {
             metadata.put("UserID", TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID());
             metadata.put("UserFullName", TAPChatManager.getInstance(instanceKey).getActiveUser().getName());
             metadata.put("userPhoneNumber", TAPChatManager.getInstance(instanceKey).getActiveUser().getPhoneNumber());
+            metadata.put("uuid", TapTalk.getDeviceId());
         } catch (Exception e) {
             return metadata;
         }
