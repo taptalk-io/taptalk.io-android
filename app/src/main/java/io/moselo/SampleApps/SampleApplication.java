@@ -78,11 +78,6 @@ public class SampleApplication extends MultiDexApplication {
                 TAPTALK_SDK_BASE_URL,
                 TapTalkImplementationTypeCombine,
                 tapListener);
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-                        .build());
         TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
         TapUI.getInstance().setLogoutButtonVisible(true);
     }
