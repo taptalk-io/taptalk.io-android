@@ -55,7 +55,7 @@ public class TapCoreContactManager {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        TAPDataManager.getInstance().getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
+        TAPDataManager.getInstance(instanceKey).getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(List<TAPUserModel> entities) {
                 if (null != listener) {
@@ -77,13 +77,13 @@ public class TapCoreContactManager {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        TAPDataManager.getInstance().getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
+        TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
                 if (null != listener) {
                     listener.onSuccess(response.getUser());
                 }
-                TAPContactManager.getInstance().updateUserData(response.getUser());
+                TAPContactManager.getInstance(instanceKey).updateUserData(response.getUser());
             }
 
             @Override
@@ -107,13 +107,13 @@ public class TapCoreContactManager {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
+        TAPDataManager.getInstance(instanceKey).getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
                 if (null != listener) {
                     listener.onSuccess(response.getUser());
                 }
-                TAPContactManager.getInstance().updateUserData(response.getUser());
+                TAPContactManager.getInstance(instanceKey).updateUserData(response.getUser());
             }
 
             @Override
@@ -136,7 +136,7 @@ public class TapCoreContactManager {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TAPContactManager.getInstance().updateUserData(user);
+        TAPContactManager.getInstance(instanceKey).updateUserData(user);
     }
 
     public void addToTapTalkContactsWithUserID(String userID, TapCoreGetContactListener listener) {
@@ -144,14 +144,14 @@ public class TapCoreContactManager {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        TAPDataManager.getInstance().addContactApi(userID, new TAPDefaultDataView<TAPAddContactResponse>() {
+        TAPDataManager.getInstance(instanceKey).addContactApi(userID, new TAPDefaultDataView<TAPAddContactResponse>() {
             @Override
             public void onSuccess(TAPAddContactResponse response) {
                 if (null != listener) {
                     listener.onSuccess(response.getUser());
                 }
                 TAPUserModel newContact = response.getUser().setUserAsContact();
-                TAPContactManager.getInstance().updateUserData(newContact);
+                TAPContactManager.getInstance(instanceKey).updateUserData(newContact);
             }
 
             @Override
@@ -177,7 +177,7 @@ public class TapCoreContactManager {
         }
         List<String> phoneNumberList = new ArrayList<>();
         phoneNumberList.add(phoneNumber);
-        TAPDataManager.getInstance().addContactByPhone(phoneNumberList, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
+        TAPDataManager.getInstance(instanceKey).addContactByPhone(phoneNumberList, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
             @Override
             public void onSuccess(TAPAddContactByPhoneResponse response) {
                 if (null != listener) {
@@ -185,13 +185,13 @@ public class TapCoreContactManager {
                 }
                 List<TAPUserModel> users = new ArrayList<>();
                 for (TAPUserModel contact : response.getUsers()) {
-                    if (!contact.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                    if (!contact.getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                         contact.setUserAsContact();
                         users.add(contact);
                     }
                 }
-                TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                TAPContactManager.getInstance().updateUserData(users);
+                TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(users);
+                TAPContactManager.getInstance(instanceKey).updateUserData(users);
             }
 
             @Override
@@ -215,13 +215,13 @@ public class TapCoreContactManager {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        TAPDataManager.getInstance().removeContactApi(userID, new TAPDefaultDataView<TAPCommonResponse>() {
+        TAPDataManager.getInstance(instanceKey).removeContactApi(userID, new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
                 if (null != listener) {
                     listener.onSuccess(response.getMessage());
                 }
-                TAPContactManager.getInstance().removeFromContacts(userID);
+                TAPContactManager.getInstance(instanceKey).removeFromContacts(userID);
             }
 
             @Override

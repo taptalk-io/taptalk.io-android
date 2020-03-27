@@ -28,11 +28,6 @@ public class TAPNetworkStateManager {
     private TapNetworkCallback networkCallback;
     private NetworkRequest networkRequest;
 
-    // TODO: 018, 18 Mar 2020 REMOVE
-    public static TAPNetworkStateManager getInstance() {
-        return getInstance("");
-    }
-
     public static TAPNetworkStateManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
             TAPNetworkStateManager instance = new TAPNetworkStateManager(instanceKey);
@@ -109,10 +104,10 @@ public class TAPNetworkStateManager {
     }
 
     private void triggerConnectivityChange() {
-        if (TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
-            TAPNetworkStateManager.getInstance().onNetworkAvailable();
+        if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
+            TAPNetworkStateManager.getInstance(instanceKey).onNetworkAvailable();
         } else {
-            TAPNetworkStateManager.getInstance().onNetworkLost();
+            TAPNetworkStateManager.getInstance(instanceKey).onNetworkLost();
         }
     }
 
@@ -127,8 +122,8 @@ public class TAPNetworkStateManager {
 
     private void onNetworkLost() {
         TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
-        TAPDataManager.getInstance().setNeedToQueryUpdateRoomList(true);
-        TAPConnectionManager.getInstance().close();
+        TAPDataManager.getInstance(instanceKey).setNeedToQueryUpdateRoomList(true);
+        TAPConnectionManager.getInstance(instanceKey).close();
     }
 
     public class TapNetworkCallback extends ConnectivityManager.NetworkCallback {
@@ -157,7 +152,9 @@ public class TAPNetworkStateManager {
                     !intent.getAction().equals("android.net.conn.CONNECTIVITY_CHANGE")) {
                 return;
             }
-            TAPNetworkStateManager.getInstance().triggerConnectivityChange();
+            for (String instanceKey : TapTalk.getInstanceKeys()) {
+                TAPNetworkStateManager.getInstance(instanceKey).triggerConnectivityChange();
+            }
         }
     }
 }

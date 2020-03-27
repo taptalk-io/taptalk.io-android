@@ -507,7 +507,7 @@ public class TAPUtils {
      * @return Uri to receive saved image path
      * Reminder: Handle onRequestPermissionsResult in activity using the returned Uri
      */
-    public static Uri takePicture(Activity activity, int requestCode) {
+    public static Uri takePicture(String instanceKey, Activity activity, int requestCode) {
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
@@ -528,7 +528,7 @@ public class TAPUtils {
                     }
                     activity.startActivityForResult(intent, requestCode);
                     // Save file path to map
-                    TAPFileDownloadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());
+                    TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(imageUri, image.getAbsolutePath());
                     return imageUri;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -539,8 +539,8 @@ public class TAPUtils {
         return null;
     }
 
-    public static boolean openFile(Context context, Uri uri, String mimeType) {
-        String path = TAPFileDownloadManager.getInstance().getFileProviderPath(uri);
+    public static boolean openFile(String instanceKey, Context context, Uri uri, String mimeType) {
+        String path = TAPFileDownloadManager.getInstance(instanceKey).getFileProviderPath(uri);
         if (null == path) {
             return false;
         }
@@ -697,22 +697,22 @@ public class TAPUtils {
         }
     }
 
-    public static void getUserFromXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
+    public static void getUserFromXcUserID(String instanceKey, String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
         // Get user from Contact Manager
-        TAPDataManager.getInstance().getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+        TAPDataManager.getInstance(instanceKey).getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel entity) {
                 if (null != entity) {
-                    TAPContactManager.getInstance().updateUserData(entity);
+                    TAPContactManager.getInstance(instanceKey).updateUserData(entity);
                     listener.onSelectFinished(entity);
                 } else {
                     // Get user data from API
-                    if (TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
-                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
+                    if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
+                        TAPDataManager.getInstance(instanceKey).getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
                             @Override
                             public void onSuccess(TAPGetUserResponse response) {
                                 TAPUserModel userResponse = response.getUser();
-                                TAPContactManager.getInstance().updateUserData(userResponse);
+                                TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
                                 listener.onSelectFinished(userResponse);
                             }
 
@@ -723,8 +723,8 @@ public class TAPUtils {
 
                             @Override
                             public void onError(Throwable throwable) {
-                                if (TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
-                                    TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, this);
+                                if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
+                                    TAPDataManager.getInstance(instanceKey).getUserByXcUserIdFromApi(xcUserID, this);
                                 } else {
                                     listener.onSelectFailed(TapTalk.appContext.getString(R.string.tap_error_open_room_failed));
                                 }

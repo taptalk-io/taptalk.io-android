@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,7 +57,10 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
+        vm = new ViewModelProvider(this,
+                new TAPContactListViewModel.TAPContactListViewModelFactory(
+                        getApplication(), instanceKey))
+                .get(TAPContactListViewModel.class);
 
         //Dummy Contacts
         if (vm.getContactList().size() == 0) {
@@ -77,7 +80,7 @@ public class TAPBlockedListActivity extends TAPBaseActivity {
         ivButtonBack = findViewById(R.id.iv_button_back);
         rvBlockedList = findViewById(R.id.rv_blocked_list);
 
-        adapter = new TapContactListAdapter(TAPUtils.generateContactListForRecycler(vm.getFilteredContacts(), TYPE_DEFAULT_CONTACT_LIST));
+        adapter = new TapContactListAdapter(instanceKey, TAPUtils.generateContactListForRecycler(vm.getFilteredContacts(), TYPE_DEFAULT_CONTACT_LIST));
         rvBlockedList.setAdapter(adapter);
         rvBlockedList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvBlockedList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);

@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -174,7 +174,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             switch (requestCode) {
                 case PERMISSION_CAMERA_CAMERA:
                 case PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA:
-                    vm.setRoomImageUri(TAPUtils.takePicture(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));
+                    vm.setRoomImageUri(TAPUtils.takePicture(instanceKey, TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));
                     break;
                 case PERMISSION_READ_EXTERNAL_STORAGE_GALLERY:
                     TAPUtils.pickImageFromGallery(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_GALLERY, false);
@@ -209,7 +209,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPGroupViewModel.class);
+        vm = new ViewModelProvider(this).get(TAPGroupViewModel.class);
 
         vm.setGroupAction(getIntent().getIntExtra(GROUP_ACTION, CREATE_GROUP));
 
@@ -224,7 +224,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             vm.getGroupData().setRoomName(getIntent().getStringExtra(GROUP_NAME));
             vm.getGroupData().setRoomImage(getIntent().getParcelableExtra(GROUP_IMAGE));
             vm.setRoomImageUri(getIntent().getParcelableExtra(URI));
-            vm.setMyID(TAPChatManager.getInstance().getActiveUser().getUserID());
+            vm.setMyID(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID());
             vm.setParticipantsIDs(getIntent().getStringArrayListExtra(GROUP_MEMBER_IDS));
             vm.setGroupPictureStartsEmpty(true);
             List<TAPUserModel> groupParticipants = getIntent().getParcelableArrayListExtra(GROUP_MEMBERS);
@@ -285,8 +285,8 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             }
             etGroupName.addTextChangedListener(createGroupNameWatcher);
 
-            adapter = new TapSelectedGroupMemberAdapter(vm.getAdapterItems());
-            tvMemberCount.setText(String.format(getString(R.string.tap_format_dd_selected_member_count), adapter.getItemCount(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
+            adapter = new TapSelectedGroupMemberAdapter(instanceKey, vm.getAdapterItems());
+            tvMemberCount.setText(String.format(getString(R.string.tap_format_dd_selected_member_count), adapter.getItemCount(), TAPGroupManager.Companion.getInstance(instanceKey).getGroupMaxParticipants()));
             rvGroupMembers.setAdapter(adapter);
             rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvGroupMembers.addItemDecoration(new TAPHorizontalDecoration(0, 0,
@@ -359,7 +359,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     private void validateAndCreateGroup() {
         String groupName = etGroupName.getText().toString().trim();
         if (!groupName.trim().isEmpty() && null != vm.getGroupData().getGroupParticipants() && vm.getGroupData().getGroupParticipants().size() > 0) {
-            TAPDataManager.getInstance().createGroupChatRoom(groupName, vm.getParticipantsIDs(), createGroupRoomView);
+            TAPDataManager.getInstance(instanceKey).createGroupChatRoom(groupName, vm.getParticipantsIDs(), createGroupRoomView);
         } else {
             Toast.makeText(this, R.string.tap_error_message_group_name_empty, Toast.LENGTH_SHORT).show();
         }
@@ -399,11 +399,11 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     }
 
     private void callUpdateGroupChatAPI() {
-        TAPDataManager.getInstance().updateChatRoom(vm.getGroupData().getRoomID(), etGroupName.getText().toString(), updateRoomDataView);
+        TAPDataManager.getInstance(instanceKey).updateChatRoom(vm.getGroupData().getRoomID(), etGroupName.getText().toString(), updateRoomDataView);
     }
 
     private void callUpdateGroupPictureAPI() {
-        TAPFileUploadManager.getInstance().uploadRoomPicture(this, vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
+        TAPFileUploadManager.getInstance(instanceKey).uploadRoomPicture(this, vm.getRoomImageUri(), vm.getGroupData().getRoomID(), changeGroupPictureView);
     }
 
     private void removeGroupPicture() {
@@ -559,7 +559,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     private TAPAttachmentListener profilePicturePickerListener = new TAPAttachmentListener(instanceKey) {
         @Override
         public void onCameraSelected() {
-            vm.setRoomImageUri(TAPUtils.takePicture(TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));
+            vm.setRoomImageUri(TAPUtils.takePicture(instanceKey, TAPEditGroupSubjectActivity.this, PICK_GROUP_IMAGE_CAMERA));
         }
 
         @Override
@@ -612,7 +612,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             vm.setGroupData(response.getRoom());
             vm.getGroupData().setGroupParticipants(response.getParticipants());
             vm.getGroupData().setAdmins(response.getAdmins());
-            TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getGroupData());
+            TAPGroupManager.Companion.getInstance(instanceKey).addGroupData(vm.getGroupData());
         }
     };
 
@@ -627,7 +627,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             if (null == vm.getRoomImageUri() && null != response.getRoom()) {
                 hideUpdateGroupButtonLoading();
                 vm.getGroupData().setRoomName(response.getRoom().getRoomName());
-                TAPGroupManager.Companion.getGetInstance().updateRoomDataNameAndImage(response.getRoom());
+                TAPGroupManager.Companion.getInstance(instanceKey).updateRoomDataNameAndImage(response.getRoom());
                 finishGroupUpdate();
             } else {
                 callUpdateGroupPictureAPI();
@@ -669,7 +669,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
                 return;
             }
             vm.getGroupData().setRoomImage(response.getRoom().getRoomImage());
-            TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
+            TAPGroupManager.Companion.getInstance(instanceKey).updateGroupDataFromResponse(response);
 
             if (vm.getGroupAction() == EDIT_GROUP) {
                 hideUpdateGroupButtonLoading();

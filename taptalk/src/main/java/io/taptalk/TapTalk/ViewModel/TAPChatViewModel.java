@@ -5,8 +5,11 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -33,6 +36,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADI
 public class TAPChatViewModel extends AndroidViewModel {
 
     private static final String TAG = TAPChatViewModel.class.getSimpleName();
+    private String instanceKey = "";
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, ongoingOrders;
     private LinkedHashMap<String, TAPUserModel> groupTyping;
@@ -45,8 +49,8 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Uri cameraImageUri;
     private Handler lastActivityHandler;
     private String tappedMessageLocalID;
-    private Integer quoteAction;
     private String lastUnreadMessageLocalID;
+    private Integer quoteAction;
     private long lastTimestamp = 0;
     private int initialUnreadCount, numUsers, containerAnimationState, firstVisibleItemIndex;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
@@ -57,10 +61,36 @@ public class TAPChatViewModel extends AndroidViewModel {
     public final int ANIMATING = 1;
     public final int PROCESSING = 2;
 
-    public TAPChatViewModel(Application application) {
+    public static class TAPChatViewModelFactory implements ViewModelProvider.Factory {
+        private Application application;
+        private String instanceKey;
+
+        public TAPChatViewModelFactory(Application application, String instanceKey) {
+            this.application = application;
+            this.instanceKey = instanceKey;
+        }
+
+        @NonNull
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) new TAPChatViewModel(application, instanceKey);
+        }
+    }
+
+    public TAPChatViewModel(Application application, String instanceKey) {
         super(application);
-        allMessages = TAPDataManager.getInstance().getMessagesLiveData();
+        this.instanceKey = instanceKey;
+        allMessages = TAPDataManager.getInstance(instanceKey).getMessagesLiveData();
         setOnBottom(true);
+    }
+
+    public String getInstanceKey() {
+        return instanceKey;
+    }
+
+    public void setInstanceKey(String instanceKey) {
+        this.instanceKey = instanceKey;
     }
 
     public LiveData<List<TAPMessageEntity>> getAllMessages() {
@@ -68,11 +98,11 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void delete(String messageLocalID) {
-        TAPDataManager.getInstance().deleteFromDatabase(messageLocalID);
+        TAPDataManager.getInstance(instanceKey).deleteFromDatabase(messageLocalID);
     }
 
     public void removeFromUploadingList(String messageLocalID) {
-        TAPChatManager.getInstance().removeUploadingMessageFromHashMap(messageLocalID);
+        TAPChatManager.getInstance(instanceKey).removeUploadingMessageFromHashMap(messageLocalID);
     }
 
     public Map<String, TAPMessageModel> getMessagePointer() {
@@ -156,11 +186,11 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void getMessageEntities(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
-        TAPDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener);
+        TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, listener);
     }
 
     public void getMessageByTimestamp(String roomID, TAPDatabaseListener listener, long lastTimestamp) {
-        TAPDataManager.getInstance().getMessagesFromDatabaseDesc(roomID, listener, lastTimestamp);
+        TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, listener, lastTimestamp);
     }
 
     public List<TAPMessageModel> getMessageModels() {
@@ -221,11 +251,11 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setRoom(TAPRoomModel room) {
         this.room = room;
-        TAPChatManager.getInstance().setActiveRoom(room);
+        TAPChatManager.getInstance(instanceKey).setActiveRoom(room);
     }
 
     public TAPMessageModel getQuotedMessage() {
-        return null == quotedMessage ? TAPChatManager.getInstance().getQuotedMessage() : quotedMessage;
+        return null == quotedMessage ? TAPChatManager.getInstance(instanceKey).getQuotedMessage() : quotedMessage;
     }
 
     public int getInitialUnreadCount() {
@@ -237,13 +267,13 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public Integer getQuoteAction() {
-        return null == quoteAction ? null == TAPChatManager.getInstance().getQuoteAction() ? -1 : TAPChatManager.getInstance().getQuoteAction() : quoteAction;
+        return null == quoteAction ? null == TAPChatManager.getInstance(instanceKey).getQuoteAction() ? -1 : TAPChatManager.getInstance(instanceKey).getQuoteAction() : quoteAction;
     }
 
     public void setQuotedMessage(TAPMessageModel quotedMessage, int quoteAction) {
         this.quotedMessage = quotedMessage;
         this.quoteAction = quoteAction;
-        TAPChatManager.getInstance().setQuotedMessage(quotedMessage, quoteAction);
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(quotedMessage, quoteAction);
     }
 
     public String getTappedMessageLocalID() {
@@ -289,7 +319,7 @@ public class TAPChatViewModel extends AndroidViewModel {
             loadingIndicator = new TAPMessageModel();
             loadingIndicator.setType(TYPE_LOADING_MESSAGE_IDENTIFIER);
             loadingIndicator.setLocalID(LOADING_INDICATOR_LOCAL_ID);
-            loadingIndicator.setUser(TAPChatManager.getInstance().getActiveUser());
+            loadingIndicator.setUser(TAPChatManager.getInstance(instanceKey).getActiveUser());
         }
         if (updateCreated) {
             // Update created time for loading indicator to array's last message created time

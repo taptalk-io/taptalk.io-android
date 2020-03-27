@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -139,7 +139,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
+        vm = new ViewModelProvider(this,
+                new TAPContactListViewModel.TAPContactListViewModelFactory(
+                        getApplication(), instanceKey))
+                .get(TAPContactListViewModel.class);
         setupMenuButtons();
         // Set up listener for Live Data
         vm.getContactListLive().observe(this, userModels -> {
@@ -169,11 +172,11 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
+        new Thread(() -> TAPDataManager.getInstance(instanceKey).getMyContactListFromAPI(getContactView)).start();
 
         getWindow().setBackgroundDrawable(null);
 
-        adapter = new TapContactListAdapter(vm.getSeparatedContactList(), contactListListener);
+        adapter = new TapContactListAdapter(instanceKey, vm.getSeparatedContactList(), contactListListener);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
@@ -204,21 +207,21 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void setupMenuButtons() {
-        if (TapUI.getInstance().isNewContactMenuButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
             TapContactListModel menuAddNewContact = new TapContactListModel(
                     MENU_ID_ADD_NEW_CONTACT,
                     getString(R.string.tap_new_contact),
                     R.drawable.tap_ic_new_contact_orange);
             vm.getMenuButtonList().add(menuAddNewContact);
         }
-        if (TapUI.getInstance().isScanQRMenuButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isScanQRMenuButtonVisible()) {
             TapContactListModel menuScanQRCode = new TapContactListModel(
                     MENU_ID_SCAN_QR_CODE,
                     getString(R.string.tap_scan_qr_code),
                     R.drawable.tap_ic_scan_qr_orange);
             vm.getMenuButtonList().add(menuScanQRCode);
         }
-        if (TapUI.getInstance().isNewGroupMenuButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isNewGroupMenuButtonVisible()) {
             TapContactListModel menuCreateNewGroup = new TapContactListModel(
                     MENU_ID_CREATE_NEW_GROUP,
                     getString(R.string.tap_new_group),
@@ -291,7 +294,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             }
         }
 
-        if (TapUI.getInstance().isNewContactMenuButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
             setAddNewContactInfoLabelItem();
             vm.getAdapterItems().add(vm.getInfoLabelItem());
         }
@@ -333,15 +336,15 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         if (!TapTalk.isAutoContactSyncEnabled()) {
             return;
         }
-        if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
+        if (!TAPContactManager.getInstance(instanceKey).isContactSyncPermissionAsked() &&
                 !TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             showSyncContactPermissionDialog();
-            TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
-            TAPContactManager.getInstance().setAndSaveContactSyncAllowedByUser(false);
+            TAPContactManager.getInstance(instanceKey).setAndSaveContactSyncPermissionAsked(true);
+            TAPContactManager.getInstance(instanceKey).setAndSaveContactSyncAllowedByUser(false);
         } else if (!TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS) ||
-                !TAPContactManager.getInstance().isContactSyncAllowedByUser()) {
+                !TAPContactManager.getInstance(instanceKey).isContactSyncAllowedByUser()) {
             runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
-        } else if (TAPContactManager.getInstance().isContactSyncAllowedByUser()) {
+        } else if (TAPContactManager.getInstance(instanceKey).isContactSyncAllowedByUser()) {
             syncContactList(false);
         }
     }
@@ -403,7 +406,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         if (showLoading) {
             showSyncLoading();
         }
-        TAPContactManager.getInstance().setAndSaveContactSyncAllowedByUser(true);
+        TAPContactManager.getInstance(instanceKey).setAndSaveContactSyncAllowedByUser(true);
 
         new Thread(() -> {
             List<String> newContactsPhoneNumbers = new ArrayList<>();
@@ -426,8 +429,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                             while (pCur.moveToNext()) {
                                 String phoneNo = pCur.getString(pCur.getColumnIndex(
                                         ContactsContract.CommonDataKinds.Phone.NUMBER));
-                                String phoneNumb = TAPContactManager.getInstance().convertPhoneNumber(phoneNo);
-                                if (!"".equals(phoneNumb) && !TAPContactManager.getInstance()
+                                String phoneNumb = TAPContactManager.getInstance(instanceKey).convertPhoneNumber(phoneNo);
+                                if (!"".equals(phoneNumb) && !TAPContactManager.getInstance(instanceKey)
                                         .isUserPhoneNumberAlreadyExist(phoneNumb) && !newContactsPhoneNumbers.contains(phoneNumb)) {
                                     newContactsPhoneNumbers.add(phoneNumb);
                                 }
@@ -445,7 +448,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void callAddContactsByPhoneApi(List<String> newContactsPhoneNumbers, boolean showLoading) {
-        TAPDataManager.getInstance().addContactByPhone(newContactsPhoneNumbers, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
+        TAPDataManager.getInstance(instanceKey).addContactByPhone(newContactsPhoneNumbers, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
             @Override
             public void onSuccess(TAPAddContactByPhoneResponse response) {
                 new Thread(() -> {
@@ -465,13 +468,13 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                         new Thread(() -> {
                             List<TAPUserModel> users = new ArrayList<>();
                             for (TAPUserModel contact : response.getUsers()) {
-                                if (!contact.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                                if (!contact.getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                                     contact.setUserAsContact();
                                     users.add(contact);
                                 }
                             }
-                            TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                            TAPContactManager.getInstance().updateUserData(users);
+                            TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(users);
+                            TAPContactManager.getInstance(instanceKey).updateUserData(users);
                             runOnUiThread(() -> {
                                 //stopSyncLoading();
                                 flSync.setVisibility(View.GONE);
@@ -545,12 +548,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                     for (TAPContactModel contact : response.getContacts()) {
                         TAPUserModel contactUserModel = contact.getUser().setUserAsContact();
                         users.add(contactUserModel);
-                        TAPContactManager.getInstance().addUserMapByPhoneNumber(contactUserModel);
-                        TAPContactManager.getInstance().updateUserData(contactUserModel);
+                        TAPContactManager.getInstance(instanceKey).addUserMapByPhoneNumber(contactUserModel);
+                        TAPContactManager.getInstance(instanceKey).updateUserData(contactUserModel);
                     }
 
-                    TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                    TAPContactManager.getInstance().updateUserData(users);
+                    TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(users);
+                    TAPContactManager.getInstance(instanceKey).updateUserData(users);
                     permissionCheckAndSyncContactList();
                 }).start();
             } catch (Exception e) {
@@ -585,12 +588,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             if (null == user) {
                 return;
             }
-            if (!TAPChatManager.getInstance().getActiveUser().getUserID().equals(user.getUserID())) {
+            if (!TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(user.getUserID())) {
                 // TODO: 25 October 2018 SET ROOM COLOR
                 TapUIChatActivity.start(
                         TAPNewChatActivity.this,
                         instanceKey,
-                        TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), user.getUserID()),
+                        TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), user.getUserID()),
                         user.getName(),
                         user.getAvatarURL(),
                         TYPE_PERSONAL,

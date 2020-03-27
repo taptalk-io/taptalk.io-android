@@ -36,11 +36,6 @@ public class TAPContactManager {
         });
     }
 
-    // TODO: 018, 18 Mar 2020 REMOVE
-    public static TAPContactManager getInstance() {
-        return getInstance("");
-    }
-
     public static TAPContactManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
             TAPContactManager instance = new TAPContactManager(instanceKey);

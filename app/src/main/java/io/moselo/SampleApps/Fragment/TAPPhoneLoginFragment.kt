@@ -61,15 +61,15 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val lastCallCountryTimestamp = TAPDataManager.getInstance().lastCallCountryTimestamp
+        val lastCallCountryTimestamp = TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).lastCallCountryTimestamp
 
         if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneDayAgoTimestamp == lastCallCountryTimestamp) {
             callCountryListFromAPI()
         } else if (isNeedResetData) {
             callCountryListFromAPI()
             countryIsoCode = TAPUtils.getDeviceCountryCode(context)
-            //countryHashMap = TAPDataManager.getInstance().countryList
-            countryListitems = TAPDataManager.getInstance().countryList
+            //countryHashMap = TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).countryList
+            countryListitems = TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).countryList
             countryHashMap = countryListitems.associateBy({ it.iso2Code }, { it }).toMutableMap()
             isNeedResetData = false
             if (!countryHashMap.containsKey(countryIsoCode) || "" == countryHashMap.get(countryIsoCode)?.callingCode) {
@@ -202,7 +202,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                 && currentOTPTimestampLength <= maxTime) {
             requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true)
         } else {
-            TAPDataManager.getInstance().requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), object : TAPDefaultDataView<TAPLoginOTPResponse>() {
+            TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", checkAndEditPhoneNumber())
@@ -269,7 +269,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun callCountryListFromAPI() {
-        TAPDataManager.getInstance().getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
+        TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
             override fun startLoading() {
                 et_phone_number.isEnabled = false
                 tv_country_code.visibility = View.GONE
@@ -281,7 +281,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
             override fun onSuccess(response: TAPCountryListResponse?) {
                 et_phone_number.isEnabled = true
                 countryListitems.clear()
-                TAPDataManager.getInstance().saveLastCallCountryTimestamp(System.currentTimeMillis())
+                TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveLastCallCountryTimestamp(System.currentTimeMillis())
                 setCountry(0, "", "")
                 Thread {
                     var defaultCountry: TAPCountryListItem? = null
@@ -310,7 +310,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                         }
                     }
 
-                    TAPDataManager.getInstance().saveCountryList(countryListitems)
+                    TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveCountryList(countryListitems)
 
                     activity?.runOnUiThread {
                         iv_loading_progress_country.visibility = View.GONE

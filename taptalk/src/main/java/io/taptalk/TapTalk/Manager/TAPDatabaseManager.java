@@ -33,11 +33,6 @@ public class TAPDatabaseManager {
         this.instanceKey = instanceKey;
     }
 
-    // TODO: 023, 23 Mar 2020 REMOVE
-    public static TAPDatabaseManager getInstance() {
-        return getInstance("");
-    }
-
     public static TAPDatabaseManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
             TAPDatabaseManager instance = new TAPDatabaseManager(instanceKey);

@@ -22,7 +22,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.ImageViewCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
@@ -124,7 +124,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {
                 PERMISSION_CAMERA_CAMERA, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA -> {
-                    vm.profilePictureUri = TAPUtils.takePicture(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
+                    vm.profilePictureUri = TAPUtils.takePicture(instanceKey, this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
                 }
                 PERMISSION_READ_EXTERNAL_STORAGE_GALLERY -> {
                     TAPUtils.pickImageFromGallery(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_GALLERY, false)
@@ -154,7 +154,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPRegisterViewModel::class.java)
+        vm = ViewModelProvider(this,
+                TAPRegisterViewModel.TAPRegisterViewModelFactory(application, instanceKey))
+                .get(TAPRegisterViewModel::class.java)
         vm.countryID = intent.getIntExtra(COUNTRY_ID, 1)
         vm.countryCallingCode = intent.getStringExtra(COUNTRY_CALLING_CODE)
         vm.countryFlagUrl = intent.getStringExtra(COUNTRY_FLAG_URL)
@@ -287,13 +289,13 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun checkUsername(hasFocus: Boolean) {
-        TAPDataManager.getInstance().cancelCheckUsernameApiCall()
+        TAPDataManager.getInstance(instanceKey).cancelCheckUsernameApiCall()
         if (et_username.text.isNotEmpty() && et_username.text.length in 4..32 &&
                 et_username.text.matches(Regex("[a-z0-9._]*")) &&
                 et_username.text[0].isLetter() &&
                 et_username.text[et_username.text.lastIndex].isLetterOrDigit()) {
             // Valid username, continue to check if username exists
-            TAPDataManager.getInstance().checkUsernameExists(et_username.text.toString(), checkUsernameView)
+            TAPDataManager.getInstance(instanceKey).checkUsernameExists(et_username.text.toString(), checkUsernameView)
         } else if (et_username.text.isEmpty()) {
             AnalyticsManager.getInstance().trackEvent("Username Empty")
             // Not filled
@@ -460,7 +462,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun register() {
-        TAPDataManager.getInstance().register(
+        TAPDataManager.getInstance(instanceKey).register(
                 et_full_name.text.toString(),
                 et_username.text.toString(),
                 vm.countryID,
@@ -542,7 +544,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun uploadProfilePicture() {
         vm.isUploadingProfilePicture = true
         pb_profile_picture_progress.progress = 0
-        TAPFileUploadManager.getInstance().uploadProfilePicture(this@TAPRegisterActivity, vm.profilePictureUri, vm.myUserModel.userID)
+        TAPFileUploadManager.getInstance(instanceKey).uploadProfilePicture(this@TAPRegisterActivity, vm.profilePictureUri, vm.myUserModel.userID)
     }
 
     private fun finishRegisterAndOpenRoomList() {
@@ -553,7 +555,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private val profilePicturePickerListener = object : TAPAttachmentListener(instanceKey) {
 
         override fun onCameraSelected() {
-            vm.profilePictureUri = TAPUtils.takePicture(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
+            vm.profilePictureUri = TAPUtils.takePicture(instanceKey, this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
         }
 
         override fun onGallerySelected() {
@@ -814,8 +816,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
                     object : TapCommonListener() {
                         override fun onSuccess(successMessage: String?) {
                             AnalyticsManager.getInstance().identifyUser()
-                            TAPDataManager.getInstance().saveMyCountryCode(vm.countryCallingCode)
-                            TAPDataManager.getInstance().saveMyCountryFlagUrl(vm.countryFlagUrl)
+                            TAPDataManager.getInstance(instanceKey).saveMyCountryCode(vm.countryCallingCode)
+                            TAPDataManager.getInstance(instanceKey).saveMyCountryFlagUrl(vm.countryFlagUrl)
                             if (null != vm.profilePictureUri) {
                                 uploadProfilePicture()
                             } else {
@@ -856,7 +858,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             val action = intent?.action
             when (action) {
                 UploadProgressLoading -> {
-                    pb_profile_picture_progress.progress = TAPFileUploadManager.getInstance()
+                    pb_profile_picture_progress.progress = TAPFileUploadManager.getInstance(instanceKey)
                             .getUploadProgressPercent(vm.myUserModel.userID) ?: 0
                 }
                 UploadProgressFinish -> {

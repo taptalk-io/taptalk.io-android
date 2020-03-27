@@ -15,8 +15,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent;
-        if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
+        if (TAPDataManager.getInstance("").checkAccessTokenAvailable()) {
             TapUIRoomListActivity.start(MainActivity.this, "");
         } else {
             TAPLoginActivity.start(MainActivity.this, "");

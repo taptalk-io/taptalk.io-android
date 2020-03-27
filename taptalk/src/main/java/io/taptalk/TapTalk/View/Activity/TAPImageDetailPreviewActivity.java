@@ -215,7 +215,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE);
         } else {
             showLoading();
-            TAPFileDownloadManager.getInstance().writeImageFileToDisk(this, System.currentTimeMillis(), image.getBitmap(), mimeType, saveImageListener);
+            TAPFileDownloadManager.getInstance(instanceKey).writeImageFileToDisk(this, System.currentTimeMillis(), image.getBitmap(), mimeType, saveImageListener);
         }
     }
 

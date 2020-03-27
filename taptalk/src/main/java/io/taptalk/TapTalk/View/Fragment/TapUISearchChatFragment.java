@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -106,7 +106,10 @@ public class TapUISearchChatFragment extends Fragment {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPSearchChatViewModel.class);
+        vm = new ViewModelProvider(this,
+                new TAPSearchChatViewModel.TAPSearchChatViewModelFactory(
+                        getActivity().getApplication(), mainRoomListFragment.getInstanceKey()))
+                .get(TAPSearchChatViewModel.class);
     }
 
     private void initView(View view) {
@@ -116,8 +119,8 @@ public class TapUISearchChatFragment extends Fragment {
         ivButtonClearText = view.findViewById(R.id.iv_button_clear_text);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        boolean isContactAvailable = TapUI.getInstance().isNewContactMenuButtonVisible() || TapUI.getInstance().isScanQRMenuButtonVisible();
-        boolean isGroupChatAvailable = TapUI.getInstance().isNewGroupMenuButtonVisible();
+        boolean isContactAvailable = TapUI.getInstance(mainRoomListFragment.getInstanceKey()).isNewContactMenuButtonVisible() || TapUI.getInstance(mainRoomListFragment.getInstanceKey()).isScanQRMenuButtonVisible();
+        boolean isGroupChatAvailable = TapUI.getInstance(mainRoomListFragment.getInstanceKey()).isNewGroupMenuButtonVisible();
 
         if (isContactAvailable && isGroupChatAvailable) {
             etSearch.setHint(getString(R.string.tap_search_chat_placeholder));
@@ -221,7 +224,7 @@ public class TapUISearchChatFragment extends Fragment {
         } else if (vm.getSearchState() == vm.STATE_RECENT_SEARCHES || vm.getSearchState() == vm.STATE_IDLE) {
             // Search with keyword
             vm.setSearchState(vm.STATE_SEARCHING);
-            TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
+            TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
             ivButtonClearText.setVisibility(View.VISIBLE);
         } else {
             // Set search as pending
@@ -245,9 +248,9 @@ public class TapUISearchChatFragment extends Fragment {
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
                 for (TAPMessageEntity entity : entities) {
-                    String myId = TAPChatManager.getInstance().getActiveUser().getUserID();
+                    String myId = TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser().getUserID();
                     // Exclude active user's own room
-                    if (!entity.getRoomID().equals(TAPChatManager.getInstance().arrangeRoomId(myId, myId))) {
+                    if (!entity.getRoomID().equals(TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).arrangeRoomId(myId, myId))) {
                         TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                         // Convert message to room model
                         TAPRoomModel room = TAPRoomModel.Builder(entity);
@@ -259,11 +262,11 @@ public class TapUISearchChatFragment extends Fragment {
                 if (null != contactSearchListener) {
                     getActivity().runOnUiThread(() -> {
                         adapter.setItems(vm.getSearchResults(), false);
-                        TAPDataManager.getInstance().searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
+                        TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
                     });
                 }
             } else if (null != contactSearchListener) {
-                TAPDataManager.getInstance().searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
+                TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
             }
         }
     };
@@ -289,7 +292,7 @@ public class TapUISearchChatFragment extends Fragment {
                     // Convert contact to room model
                     // TODO: 18 October 2018 LENGKAPIN DATA
                     TAPRoomModel room = new TAPRoomModel(
-                            TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
+                            TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).arrangeRoomId(TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser().getUserID(), contact.getUserID()),
                             contact.getName(),
                             TYPE_PERSONAL,
                             contact.getAvatarURL(),
@@ -305,11 +308,11 @@ public class TapUISearchChatFragment extends Fragment {
                 if (null != getActivity() && null != messageSearchListener) {
                     getActivity().runOnUiThread(() -> {
                         adapter.setItems(vm.getSearchResults(), false);
-                        TAPDataManager.getInstance().searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
+                        TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
                     });
                 }
             } else if (null != messageSearchListener) {
-                TAPDataManager.getInstance().searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
+                TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).searchAllMessagesFromDatabase(vm.getSearchKeyword(), messageSearchListener);
             }
         }
     };

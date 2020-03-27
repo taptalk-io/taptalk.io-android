@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import io.moselo.SampleApps.Fragment.TAPLoginVerificationFragment;
 import io.moselo.SampleApps.Fragment.TAPPhoneLoginFragment;
@@ -93,10 +93,10 @@ public class TAPLoginActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPLoginViewModel.class);
+        vm = new ViewModelProvider(this).get(TAPLoginViewModel.class);
     }
 
     public TAPLoginViewModel getVm() {
-        return null == vm ? vm = ViewModelProviders.of(this).get(TAPLoginViewModel.class) : vm;
+        return null == vm ? vm = new ViewModelProvider(this).get(TAPLoginViewModel.class) : vm;
     }
 }

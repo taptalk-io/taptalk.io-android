@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -106,7 +106,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     protected void onPause() {
         super.onPause();
         pauseVideo();
-        TAPDataManager.getInstance().saveMediaVolumePreference(vm.getMediaVolume());
+        TAPDataManager.getInstance(instanceKey).saveMediaVolumePreference(vm.getMediaVolume());
     }
 
     @Override
@@ -133,7 +133,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPVideoPlayerViewModel.class);
+        vm = new ViewModelProvider(this).get(TAPVideoPlayerViewModel.class);
         String uriString = getIntent().getStringExtra(URI);
         vm.setMessage(getIntent().getParcelableExtra(MESSAGE));
         if (null != uriString) {
@@ -356,7 +356,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
         } else {
             showLoading();
-            TAPFileDownloadManager.getInstance().writeFileToDisk(this, vm.getMessage(), saveVideoListener);
+            TAPFileDownloadManager.getInstance(instanceKey).writeFileToDisk(this, vm.getMessage(), saveVideoListener);
         }
     }
 
@@ -400,7 +400,7 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
                 vm.setDuration(mediaPlayer.getDuration());
                 vm.setVideoPlaying(true);
                 TAPVideoPlayerActivity.this.startProgressTimer();
-                vm.setMediaVolume(TAPDataManager.getInstance().getMediaVolumePreference());
+                vm.setMediaVolume(TAPDataManager.getInstance(instanceKey).getMediaVolumePreference());
                 ivButtonMute.setImageDrawable(vm.getMediaVolume() > 0f ? ContextCompat.getDrawable(TAPVideoPlayerActivity.this, R.drawable.tap_ic_volume_on) : ContextCompat.getDrawable(TAPVideoPlayerActivity.this, R.drawable.tap_ic_volume_off));
                 tvDuration.setText(TAPUtils.getMediaDurationString(vm.getDuration(), vm.getDuration()));
                 vm.setFirstLoadFinished(true);

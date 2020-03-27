@@ -166,6 +166,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (resultCode) {
             case RESULT_OK:
                 switch (requestCode) {
@@ -249,7 +250,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                         new Thread(() -> {
                             try {
                                 InputStream inputStream = getContentResolver().openInputStream(uri);
-                                if (null != inputStream && !TAPFileUploadManager.getInstance()
+                                if (null != inputStream && !TAPFileUploadManager.getInstance(instanceKey)
                                         .isSizeAllowedForUpload((long) inputStream.available())) {
                                     media.setSizeExceedsLimit(true);
                                     errorMedias.add(media);
@@ -268,7 +269,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                         }).start();
                     } else {
                         // Check file size
-                        if (!TAPFileUploadManager.getInstance().isSizeAllowedForUpload(
+                        if (!TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(
                                 new File(TAPFileUtils.getInstance().getFilePath(this, uri)).length())) {
                             media.setSizeExceedsLimit(true);
                             errorMedias.add(media);
@@ -311,7 +312,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                     .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                     .setTitle(getString(R.string.tap_warning_files_may_not_be_sent))
                     .setMessage(String.format(getString(R.string.tap_format_s_warning_video_size_exceeds_limit_wont_be_sent),
-                            TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())))
+                            TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize())))
                     .setPrimaryButtonTitle(getString(R.string.tap_continue))
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                     .setPrimaryButtonListener(true, view -> sendMedias())

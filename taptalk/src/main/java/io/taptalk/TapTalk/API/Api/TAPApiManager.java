@@ -216,12 +216,12 @@ public class TAPApiManager {
     }
 
     private void updateSession(TAPBaseResponse<TAPGetAccessTokenResponse> r) {
-        TAPDataManager.getInstance().saveAccessToken(r.getData().getAccessToken());
-        TAPDataManager.getInstance().saveAccessTokenExpiry(r.getData().getAccessTokenExpiry());
-        TAPDataManager.getInstance().saveRefreshToken(r.getData().getRefreshToken());
-        TAPDataManager.getInstance().saveRefreshTokenExpiry(r.getData().getRefreshTokenExpiry());
+        TAPDataManager.getInstance(instanceKey).saveAccessToken(r.getData().getAccessToken());
+        TAPDataManager.getInstance(instanceKey).saveAccessTokenExpiry(r.getData().getAccessTokenExpiry());
+        TAPDataManager.getInstance(instanceKey).saveRefreshToken(r.getData().getRefreshToken());
+        TAPDataManager.getInstance(instanceKey).saveRefreshTokenExpiry(r.getData().getRefreshTokenExpiry());
 
-        TAPDataManager.getInstance().saveActiveUser(r.getData().getUser());
+        TAPDataManager.getInstance(instanceKey).saveActiveUser(r.getData().getUser());
     }
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
@@ -237,7 +237,7 @@ public class TAPApiManager {
     }
 
     public void getAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
-        execute(homingPigeon.getAccessToken("Bearer " + TAPDataManager.getInstance().getAuthTicket()), subscriber);
+        execute(homingPigeon.getAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getAuthTicket()), subscriber);
     }
 
     public void requestOTPLogin(String loginMethod, int countryID, String phone, Subscriber<TAPBaseResponse<TAPLoginOTPResponse>> subscriber) {
@@ -251,7 +251,7 @@ public class TAPApiManager {
     }
 
     public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
-        return hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance().getRefreshToken())
+        return hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getRefreshToken())
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
                     if (RESPONSE_SUCCESS == response.getStatus()) {
@@ -272,7 +272,7 @@ public class TAPApiManager {
     }
 
     public void refreshAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
-        execute(hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance().getRefreshToken()), subscriber);
+        execute(hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getRefreshToken()), subscriber);
     }
 
     public void validateAccessToken(Subscriber<TAPBaseResponse<TAPErrorModel>> subscriber) {
@@ -360,7 +360,7 @@ public class TAPApiManager {
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
-        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
         String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
@@ -377,7 +377,7 @@ public class TAPApiManager {
     public void uploadVideo(File videoFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
-        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(videoFile.length()));
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(videoFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(videoFile, mimeType, uploadCallback);
         String extension = videoFile.getAbsolutePath().substring(videoFile.getAbsolutePath().lastIndexOf("."));
 
@@ -394,7 +394,7 @@ public class TAPApiManager {
     public void uploadFile(File file, String roomID, String mimeType,
                            ProgressRequestBody.UploadCallbacks uploadCallback,
                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
-        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(file.length()));
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(file.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType, uploadCallback);
         String extension = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf("."));
 
@@ -410,7 +410,7 @@ public class TAPApiManager {
     public void uploadProfilePicture(File imageFile, String mimeType,
                                      ProgressRequestBody.UploadCallbacks uploadCallback,
                                      Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
-        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
         String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
@@ -424,7 +424,7 @@ public class TAPApiManager {
 
     public void uploadGroupPicture(File imageFile, String mimeType, String roomID,
                                    Subscriber<TAPBaseResponse<TAPUpdateRoomResponse>> subscriber) {
-        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType);
@@ -439,8 +439,8 @@ public class TAPApiManager {
     public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, Subscriber<ResponseBody> subscriber) {
         TAPTalkDownloadApiService tapDownload;
         if (null != fileSize) {
-            tapDownload = TAPApiConnection.getInstance().getTapDownload(calculateTimeOutTimeWithFileSize(fileSize.longValue()));
-        } else tapDownload = TAPApiConnection.getInstance().getTapDownload(30 * 60 * 1000);
+            tapDownload = TAPApiConnection.getInstance(instanceKey).getTapDownload(calculateTimeOutTimeWithFileSize(fileSize.longValue()));
+        } else tapDownload = TAPApiConnection.getInstance(instanceKey).getTapDownload(30 * 60 * 1000);
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
         executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
     }

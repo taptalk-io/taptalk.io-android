@@ -92,7 +92,10 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                     vSeparator.setVisibility(View.GONE);
                     clErrorMessage.setVisibility(View.VISIBLE);
                     tvErrorTitle.setText(String.format(context.getString(R.string.tap_format_s_error_exceed_upload_limit),
-                            TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())));
+                            TAPUtils.getStringSizeLengthFile(
+                                    TAPFileUploadManager.getInstance(
+                                            ((TAPBaseActivity) context).instanceKey)
+                                            .getMaxFileUploadSize())));
                 } else {
                     etCaption.setVisibility(View.VISIBLE);
                     tvTypingIndicator.setVisibility(View.VISIBLE);

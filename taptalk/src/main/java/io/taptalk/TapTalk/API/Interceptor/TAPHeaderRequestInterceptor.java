@@ -30,8 +30,8 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
-        String APP_KEY_ID = TAPDataManager.getInstance().getApplicationID();
-        String APP_KEY_SECRET = TAPDataManager.getInstance().getApplicationSecret();
+        String APP_KEY_ID = TAPDataManager.getInstance(instanceKey).getApplicationID();
+        String APP_KEY_SECRET = TAPDataManager.getInstance(instanceKey).getApplicationSecret();
         String userAgent = TapTalk.getTapTalkInstance(instanceKey).tapTalkUserAgent;
 
         String appKey = Base64.encodeToString((APP_KEY_ID + ":" + APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
@@ -63,7 +63,7 @@ public class TAPHeaderRequestInterceptor implements Interceptor {
         if (null == original.headers().get("Authorization")) {
             request = request
                     .newBuilder()
-                    .addHeader("Authorization", "Bearer " + TAPDataManager.getInstance().getAccessToken())
+                    .addHeader("Authorization", "Bearer " + TAPDataManager.getInstance(instanceKey).getAccessToken())
                     .build();
         }
 

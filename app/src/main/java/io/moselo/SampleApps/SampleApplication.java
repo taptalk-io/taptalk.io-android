@@ -25,7 +25,7 @@ public class SampleApplication extends MultiDexApplication {
 
     private static final String TAG = "SampleApplication";
 
-    TapListener tapListener = new TapListener() {
+    TapListener tapListener = new TapListener("") { // TODO: 027, 27 Mar 2020 INSTANCE KEY CONSTRUCTOR
         @Override
         public void onTapTalkRefreshTokenExpired() {
             Intent intent = new Intent(getApplicationContext(), TAPLoginActivity.class);
@@ -40,7 +40,7 @@ public class SampleApplication extends MultiDexApplication {
 
         @Override
         public void onNotificationReceived(TAPMessageModel message) {
-            TapTalk.showTapTalkNotification(message);
+            TapTalk.showTapTalkNotification("", message); // TODO: 027, 27 Mar 2020 INSTANCE KEY PARAM
         }
 
         @Override

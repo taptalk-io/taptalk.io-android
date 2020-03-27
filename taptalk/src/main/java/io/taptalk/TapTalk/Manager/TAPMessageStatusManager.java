@@ -27,11 +27,6 @@ public class TAPMessageStatusManager {
     private Map<Integer, List<TAPMessageModel>> apiDeliveredRequestMap;
     private Map<String, Integer> unreadList;
 
-    // TODO: 018, 18 Mar 2020 REMOVE
-    public static TAPMessageStatusManager getInstance() {
-        return getInstance("");
-    }
-
     public static TAPMessageStatusManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
             TAPMessageStatusManager instance = new TAPMessageStatusManager(instanceKey);
@@ -179,14 +174,14 @@ public class TAPMessageStatusManager {
         new Thread(() -> {
             List<String> messageIds = new ArrayList<>();
             messageIds.add(newMessageModel.getMessageID());
-            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance(instanceKey).updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
             });
         }).start();
     }
 
     public void updateMessageStatusToDelivered(List<TAPMessageModel> newMessageModels) {
         new Thread(() -> {
-            TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
+            TAPUserModel myUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
             List<String> messageIds = new ArrayList<>();
             for (TAPMessageModel model : newMessageModels) {
                 if (null != myUser && !model.getUser().getUserID().equals(myUser.getUserID())
@@ -195,7 +190,7 @@ public class TAPMessageStatusManager {
                         && null != model.getIsRead() && !model.getIsRead())
                     messageIds.add(model.getMessageID());
             }
-            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance(instanceKey).updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
             });
         }).start();
     }
@@ -208,7 +203,7 @@ public class TAPMessageStatusManager {
                 messageIds.add(model.getMessageID());
             }
             removeDeliveredMessageQueue(newMessageModels);
-            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance(instanceKey).updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
                 @Override
                 public void onSuccess(TAPUpdateMessageStatusResponse response) {
                     if (null != response.getUpdatedMessageIDs()) {
@@ -220,11 +215,11 @@ public class TAPMessageStatusManager {
                             for (TAPMessageModel messageModel : newMessageModels) {
                                 if (null != messageModel) {
                                     messageModel.updateDeliveredMessage();
-                                    messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                                    messageEntities.add(TAPChatManager.getInstance(instanceKey).convertToEntity(messageModel));
                                 }
                             }
                             if (!messageEntities.isEmpty()) {
-                                TAPDataManager.getInstance().insertToDatabase(messageEntities, false);
+                                TAPDataManager.getInstance(instanceKey).insertToDatabase(messageEntities, false);
                             }
                         }).start();
                     }
@@ -256,7 +251,7 @@ public class TAPMessageStatusManager {
         new Thread(() -> {
             getMessagesMarkedAsRead().addAll(newMessageIds);
             removeReadMessageQueue(newMessageIds);
-            TAPDataManager.getInstance().updateMessageStatusAsRead(newMessageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance(instanceKey).updateMessageStatusAsRead(newMessageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
                 @Override
                 public void onSuccess(TAPUpdateMessageStatusResponse response) {
                     if (null != response.getUpdatedMessageIDs()) {
@@ -264,7 +259,7 @@ public class TAPMessageStatusManager {
                             if (getApiReadRequestMap().containsKey(tempReadRequestID)) {
                                 removeApiDeliveredRequestMapItem(tempReadRequestID);
                             }
-                            TAPDataManager.getInstance().updateMessagesAsReadInDatabase(newMessageIds);
+                            TAPDataManager.getInstance(instanceKey).updateMessagesAsReadInDatabase(newMessageIds);
                         }).start();
                     }
                 }

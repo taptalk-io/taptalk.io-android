@@ -21,7 +21,7 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -96,7 +96,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tap_activity_scan_result);
-        vm = ViewModelProviders.of(this).get(TAPScanResultViewModel.class);
+        vm = new ViewModelProvider(this).get(TAPScanResultViewModel.class);
         initView();
     }
 
@@ -135,7 +135,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         vm.setAddedContactUserModel(getIntent().getParcelableExtra(ADDED_CONTACT));
         vm.setScanResult(getIntent().getStringExtra(SCAN_RESULT));
-        vm.setMyUserModel(TAPChatManager.getInstance().getActiveUser());
+        vm.setMyUserModel(TAPChatManager.getInstance(instanceKey).getActiveUser());
 
         if (null != vm.getAddedContactUserModel()) {
             setUpFromNewContact();
@@ -163,7 +163,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         llButton.setOnClickListener(v -> {
             TapUIChatActivity.start(TAPScanResultActivity.this,
                     instanceKey,
-                    TAPChatManager.getInstance().arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getAddedContactUserModel().getUserID()),
+                    TAPChatManager.getInstance(instanceKey).arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getAddedContactUserModel().getUserID()),
                     vm.getAddedContactUserModel().getName(),
                     vm.getAddedContactUserModel().getAvatarURL(),
                     1,
@@ -173,11 +173,11 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void setUpFromScanQR() {
-        TAPDataManager.getInstance().getUserByIdFromApi(vm.getScanResult(), getUserView);
+        TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(vm.getScanResult(), getUserView);
     }
 
     private void validateScanResult(TAPUserModel userModel) {
-        TAPContactManager.getInstance().updateUserData(userModel);
+        TAPContactManager.getInstance(instanceKey).updateUserData(userModel);
         cvResult.setVisibility(View.VISIBLE);
         ivLoading.clearAnimation();
         ivLoading.setVisibility(View.GONE);
@@ -196,7 +196,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void checkIsInContactAndSetUpAnimation() {
-        TAPDataManager.getInstance().checkUserInMyContacts(vm.getContactModel().getUserID(), new TAPDatabaseListener<TAPUserModel>() {
+        TAPDataManager.getInstance(instanceKey).checkUserInMyContacts(vm.getContactModel().getUserID(), new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onContactCheckFinished(int isContact) {
                 if (isContact != 0) animateAlreadyContact();
@@ -206,7 +206,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     }
 
     private void handleWhenUserNotInContact() {
-        runOnUiThread(() -> llButton.setOnClickListener(v -> TAPDataManager.getInstance().addContactApi(vm.getContactModel().getUserID(), addContactView)));
+        runOnUiThread(() -> llButton.setOnClickListener(v -> TAPDataManager.getInstance(instanceKey).addContactApi(vm.getContactModel().getUserID(), addContactView)));
     }
 
     TAPDefaultDataView<TAPAddContactResponse> addContactView = new TAPDefaultDataView<TAPAddContactResponse>() {
@@ -221,8 +221,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPAddContactResponse response) {
             TAPUserModel newContact = response.getUser().setUserAsContact();
-            TAPDataManager.getInstance().insertMyContactToDatabase(newContact);
-            TAPContactManager.getInstance().updateUserData(newContact);
+            TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(newContact);
+            TAPContactManager.getInstance(instanceKey).updateUserData(newContact);
             tvButtonTitle.setVisibility(View.VISIBLE);
             ivButtonIcon.setVisibility(View.VISIBLE);
             ivAddLoading.clearAnimation();
@@ -232,7 +232,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                 TapUIChatActivity.start(
                         TAPScanResultActivity.this,
                         instanceKey,
-                        TAPChatManager.getInstance().arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getContactModel().getUserID()),
+                        TAPChatManager.getInstance(instanceKey).arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getContactModel().getUserID()),
                         vm.getContactModel().getName(),
                         vm.getContactModel().getAvatarURL(),
                         1,
@@ -340,7 +340,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                 TapUIChatActivity.start(
                         TAPScanResultActivity.this,
                         instanceKey,
-                        TAPChatManager.getInstance().arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getContactModel().getUserID()),
+                        TAPChatManager.getInstance(instanceKey).arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getContactModel().getUserID()),
                         vm.getContactModel().getName(),
                         vm.getContactModel().getAvatarURL(),
                         1,

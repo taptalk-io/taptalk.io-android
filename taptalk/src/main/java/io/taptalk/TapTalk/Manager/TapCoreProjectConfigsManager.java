@@ -39,7 +39,7 @@ public class TapCoreProjectConfigsManager {
     }
 
     public void getProjectConfigs(TapCoreProjectConfigsListener listener) {
-        TAPDataManager.getInstance().getProjectConfig(new TAPDefaultDataView<TapConfigs>() {
+        TAPDataManager.getInstance(instanceKey).getProjectConfig(new TAPDefaultDataView<TapConfigs>() {
             @Override
             public void onSuccess(TapConfigs response) {
                 if (null != listener) {

@@ -18,10 +18,6 @@ public class TAPCustomBubbleManager {
         this.instanceKey = instanceKey;
     }
 
-    public static TAPCustomBubbleManager getInstance() {
-        return getInstance("");
-    }
-
     public static TAPCustomBubbleManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
             TAPCustomBubbleManager instance = new TAPCustomBubbleManager(instanceKey);

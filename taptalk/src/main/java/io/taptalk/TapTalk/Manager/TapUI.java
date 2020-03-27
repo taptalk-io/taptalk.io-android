@@ -224,22 +224,22 @@ public class TapUI {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        String roomID = TAPChatManager.getInstance().arrangeRoomId(
-                TAPChatManager.getInstance().getActiveUser().getUserID(),
+        String roomID = TAPChatManager.getInstance(instanceKey).arrangeRoomId(
+                TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
                 userID);
         if (null != customQuoteTitle) {
-            TAPChatManager.getInstance().setQuotedMessage(roomID, customQuoteTitle, customQuoteContent, customQuoteImageURL);
+            TAPChatManager.getInstance(instanceKey).setQuotedMessage(roomID, customQuoteTitle, customQuoteContent, customQuoteImageURL);
             if (null != userInfo) {
-                TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
+                TAPChatManager.getInstance(instanceKey).saveUserInfo(roomID, userInfo);
             }
         }
         if (null != prefilledText) {
-            TAPChatManager.getInstance().saveMessageToDraft(roomID, prefilledText);
+            TAPChatManager.getInstance(instanceKey).saveMessageToDraft(roomID, prefilledText);
         }
-        TAPUserModel user = TAPContactManager.getInstance().getUserData(userID);
+        TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(userID);
 
         if (null == user) {
-            TAPDataManager.getInstance().getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
+            TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
                 @Override
                 public void onSuccess(TAPGetUserResponse response) {
                     openChatRoom(
@@ -295,20 +295,20 @@ public class TapUI {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             return;
         }
-        TAPUtils.getUserFromXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+        TAPUtils.getUserFromXcUserID(instanceKey, xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel user) {
-                String roomID = TAPChatManager.getInstance().arrangeRoomId(
-                        TAPChatManager.getInstance().getActiveUser().getUserID(),
+                String roomID = TAPChatManager.getInstance(instanceKey).arrangeRoomId(
+                        TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
                         user.getUserID());
                 if (null != customQuoteTitle) {
-                    TAPChatManager.getInstance().setQuotedMessage(roomID, customQuoteTitle, customQuoteContent, customQuoteImageURL);
+                    TAPChatManager.getInstance(instanceKey).setQuotedMessage(roomID, customQuoteTitle, customQuoteContent, customQuoteImageURL);
                     if (null != userInfo) {
-                        TAPChatManager.getInstance().saveUserInfo(roomID, userInfo);
+                        TAPChatManager.getInstance(instanceKey).saveUserInfo(roomID, userInfo);
                     }
                 }
                 if (null != prefilledText) {
-                    TAPChatManager.getInstance().saveMessageToDraft(roomID, prefilledText);
+                    TAPChatManager.getInstance(instanceKey).saveMessageToDraft(roomID, prefilledText);
                 }
                 openChatRoom(
                         context,
@@ -337,7 +337,7 @@ public class TapUI {
         }
         openChatRoom(
                 context,
-                TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), otherUser.getUserID()),
+                TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), otherUser.getUserID()),
                 otherUser.getName(),
                 otherUser.getAvatarURL(),
                 TYPE_PERSONAL,
@@ -356,9 +356,9 @@ public class TapUI {
             return;
         }
         if (null != customQuoteTitle) {
-            TAPChatManager.getInstance().setQuotedMessage(roomModel.getRoomID(), customQuoteTitle, customQuoteContent, customQuoteImageURL);
+            TAPChatManager.getInstance(instanceKey).setQuotedMessage(roomModel.getRoomID(), customQuoteTitle, customQuoteContent, customQuoteImageURL);
             if (null != userInfo) {
-                TAPChatManager.getInstance().saveUserInfo(roomModel.getRoomID(), userInfo);
+                TAPChatManager.getInstance(instanceKey).saveUserInfo(roomModel.getRoomID(), userInfo);
             }
         }
         openChatRoomWithRoomModel(context, roomModel);
@@ -508,7 +508,7 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TAPCustomBubbleManager.getInstance().addCustomBubbleMap(baseCustomBubble);
+        TAPCustomBubbleManager.getInstance(instanceKey).addCustomBubbleMap(baseCustomBubble);
     }
 
     void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {

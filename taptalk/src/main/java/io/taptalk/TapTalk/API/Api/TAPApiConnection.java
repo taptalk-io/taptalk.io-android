@@ -143,7 +143,7 @@ public class TAPApiConnection {
                 .readTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
-                .addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(headerAuth))
+                .addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(instanceKey, headerAuth))
                 .build();
     }
 
