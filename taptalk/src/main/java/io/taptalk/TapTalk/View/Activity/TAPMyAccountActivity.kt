@@ -438,7 +438,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun logout() {
-        AnalyticsManager.getInstance().trackEvent("Logout")
+        AnalyticsManager.getInstance(instanceKey).trackEvent("Logout")
         TAPDataManager.getInstance(instanceKey).deleteAllPreference()
         TAPDataManager.getInstance(instanceKey).deleteAllFromDatabase()
         TAPDataManager.getInstance(instanceKey).deleteAllManagerData()
@@ -447,7 +447,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPChatManager.getInstance(instanceKey).disconnectAfterRefreshTokenExpired()
 
         hideLoading()
-        AnalyticsManager.getInstance().identifyUser()
+        AnalyticsManager.getInstance(instanceKey).identifyUser()
         for (listener in TapTalk.getTapTalkListeners()) {
             listener.onUserLogout()
         }

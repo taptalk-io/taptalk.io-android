@@ -207,7 +207,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", checkAndEditPhoneNumber())
                     additional.put("countryCode", defaultCountryID.toString())
-                    AnalyticsManager.getInstance().trackEvent("Request OTP Success", additional)
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Request OTP Success", additional)
                     super.onSuccess(response)
                     requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess)
                 }
@@ -217,7 +217,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", checkAndEditPhoneNumber())
                     additional.put("countryCode", defaultCountryID.toString())
-                    AnalyticsManager.getInstance().trackErrorEvent("Request OTP Failed", error.code, error.message, additional)
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Request OTP Failed", error.code, error.message, additional)
                     requestOTPInterface.onRequestFailed(error.message, error.code)
                 }
 

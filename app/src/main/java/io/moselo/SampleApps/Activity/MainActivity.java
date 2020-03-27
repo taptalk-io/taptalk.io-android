@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             TAPLoginActivity.start(MainActivity.this, "");
         }
-        AnalyticsManager.getInstance().trackActiveUser();
+        AnalyticsManager.getInstance("").trackActiveUser();
         finish();
     }
 }

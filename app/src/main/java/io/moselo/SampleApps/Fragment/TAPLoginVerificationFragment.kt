@@ -113,7 +113,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", phoneNumber)
                     additional.put("countryCode", countryID.toString())
-                    AnalyticsManager.getInstance().trackEvent("Resend OTP Success", additional)
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Resend OTP Success", additional)
                     requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess)
                 }
 
@@ -122,7 +122,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", phoneNumber)
                     additional.put("countryCode", countryID.toString())
-                    AnalyticsManager.getInstance().trackEvent("Resend OTP Failed", additional)
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Resend OTP Failed", additional)
                     requestOTPInterface.onRequestFailed(error.message, error.code)
                 }
 
@@ -233,28 +233,28 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).verifyOTPLogin(otpID, otpKey, et_otp_code.text.toString(), object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
             override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
                 if (response.isRegistered) {
-                    AnalyticsManager.getInstance().identifyUser()
-                    AnalyticsManager.getInstance().trackEvent("Login Success")
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success")
                     TapTalk.authenticateWithAuthTicket(response.ticket, true, object : TapCommonListener() {
                         override fun onSuccess(successMessage: String) {
-                            AnalyticsManager.getInstance().identifyUser()
-                            AnalyticsManager.getInstance().trackEvent("Authenticate TapTalk.io Success")
+                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
+                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Authenticate TapTalk.io Success")
                             verifyOTPInterface.verifyOTPSuccessToLogin()
                         }
 
                         override fun onError(errorCode: String, errorMessage: String) {
-                            AnalyticsManager.getInstance().trackErrorEvent("Authenticate TapTalk.io Failed", errorCode, errorMessage)
+                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Authenticate TapTalk.io Failed", errorCode, errorMessage)
                             verifyOTPInterface.verifyOTPFailed(errorCode, errorMessage)
                         }
                     })
                 } else {
-                    AnalyticsManager.getInstance().trackEvent("Login Success and Continue Register")
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success and Continue Register")
                     verifyOTPInterface.verifyOTPSuccessToRegister()
                 }
             }
 
             override fun onError(error: TAPErrorModel) {
-                AnalyticsManager.getInstance().trackErrorEvent("Login Failed", error.code, error.message)
+                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Login Failed", error.code, error.message)
                 verifyOTPInterface.verifyOTPFailed(error.message, error.code)
             }
 

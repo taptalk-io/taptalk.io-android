@@ -447,7 +447,7 @@ public class TapUIRoomListFragment extends Fragment {
             Log.e(TAG, "viewLoadedSequence: runFullRefreshSequence");
             runFullRefreshSequence();
         } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated()) {
-            AnalyticsManager.getInstance().trackEvent("View Loaded Sequence Failed");
+            AnalyticsManager.getInstance(mainRoomListFragment.getInstanceKey()).trackEvent("View Loaded Sequence Failed");
             TapTalk.clearAllTapTalkData();
             for (TapListener listener : TapTalk.getTapTalkListeners()) {
                 listener.onTapTalkRefreshTokenExpired();

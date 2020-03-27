@@ -258,7 +258,7 @@ public class TAPApiManager {
                         updateSession(response);
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
                     } else if (UNAUTHORIZED == response.getStatus()) {
-                        AnalyticsManager.getInstance().trackErrorEvent("Refresh Token Failed", response.getError().getCode(), response.getError().getMessage());
+                        AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Refresh Token Failed", response.getError().getCode(), response.getError().getMessage());
                         TapTalk.clearAllTapTalkData();
                         for (TapListener listener : TapTalk.getTapTalkListeners()) {
                             listener.onTapTalkRefreshTokenExpired();
