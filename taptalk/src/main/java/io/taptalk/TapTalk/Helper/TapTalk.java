@@ -28,6 +28,7 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
@@ -57,10 +58,9 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
+import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
-import io.taptalk.TapTalk.BuildConfig;
-import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
@@ -106,6 +106,7 @@ public class TapTalk implements LifecycleObserver {
     private Intent intent;
     private static boolean listenerInit = false;
     public static String taptalkUserAgent = "android";
+    public static boolean showConnectionStatusIndicator = false;
 
     //    private static Thread.UncaughtExceptionHandler defaultUEH;
     private List<TapListener> tapListeners = new ArrayList<>();
@@ -762,6 +763,10 @@ public class TapTalk implements LifecycleObserver {
         return TapTalk.screenOrientation;
     }
 
+    public static void setShowConnectionStatusIndicator(boolean status) {
+        showConnectionStatusIndicator = status;
+    }
+
     // Enable/disable in-app notification after chat fragment goes inactive or to background
     private static void setInAppNotificationEnabled(boolean enabled) {
         if (!checkTapTalkInitialized()) {
@@ -808,7 +813,6 @@ public class TapTalk implements LifecycleObserver {
         TAPFileDownloadManager.getInstance().getFileProviderPathFromPreference();
         TAPFileDownloadManager.getInstance().getFileMessageUriFromPreference();
         Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-            Log.e("]]]]]", "App Crashing");
             TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
             TAPContactManager.getInstance().saveUserDataMapToDatabase();
             TAPFileDownloadManager.getInstance().saveFileProviderPathToPreference();

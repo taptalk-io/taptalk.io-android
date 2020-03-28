@@ -5,8 +5,6 @@ import android.content.Intent;
 
 import androidx.multidex.MultiDexApplication;
 
-import com.facebook.stetho.Stetho;
-
 import io.moselo.SampleApps.Activity.TAPLoginActivity;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
@@ -79,6 +77,7 @@ public class SampleApplication extends MultiDexApplication {
                 TapTalkImplementationTypeCombine,
                 tapListener);
         TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
+        TapTalk.setShowConnectionStatusIndicator(true);
         TapUI.getInstance().setLogoutButtonVisible(true);
     }
 }
