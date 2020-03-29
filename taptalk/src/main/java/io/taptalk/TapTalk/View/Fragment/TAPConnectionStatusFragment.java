@@ -14,12 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
-import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.R;
 
 public class TAPConnectionStatusFragment extends Fragment implements TapTalkSocketInterface {
@@ -67,7 +67,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     public void onResume() {
         super.onResume();
         // TODO: 28 November 2019 CONNECTION STATUS SHOWN ONLY IF LOGGING IS ENABLED
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG || TapTalk.showConnectionStatusIndicator) {
             initConnectionStatus();
         }
     }
