@@ -155,9 +155,9 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     private fun attemptLogin() {
         TapTalkDialog.Builder(context)
                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
-                .setTitle("Send OTP SMS")
-                .setMessage("Are you sure you want to send OTP SMS to " + defaultCallingCode + checkAndEditPhoneNumber() + "?")
-                .setPrimaryButtonTitle("Yes")
+                .setTitle(getString(R.string.tap_login_confirmation_title))
+                .setMessage(getString(R.string.tap_login_confirmation, defaultCallingCode + checkAndEditPhoneNumber()))
+                .setPrimaryButtonTitle(getString(R.string.tap_send))
                 .setPrimaryButtonListener(true) {
                     disableContinueButton()
                     if (isVisible) {
@@ -166,7 +166,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                         checkNumberAndCallAPI()
                     }
                 }
-                .setSecondaryButtonTitle("No")
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .show()
     }
 
@@ -208,7 +208,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
             TAPDataManager.getInstance().requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
                     val additional = HashMap<String, String>()
-                    additional.put("phoneNumber", checkAndEditPhoneNumber())
+                    additional.put("phoneNumber", defaultCallingCode + checkAndEditPhoneNumber())
                     additional.put("countryCode", defaultCountryID.toString())
                     AnalyticsManager.getInstance().trackEvent("Request OTP Success", additional)
                     super.onSuccess(response)
@@ -218,7 +218,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                 override fun onError(error: TAPErrorModel) {
                     super.onError(error)
                     val additional = HashMap<String, String>()
-                    additional.put("phoneNumber", checkAndEditPhoneNumber())
+                    additional.put("phoneNumber", defaultCallingCode + checkAndEditPhoneNumber())
                     additional.put("countryCode", defaultCountryID.toString())
                     AnalyticsManager.getInstance().trackErrorEvent("Request OTP Failed", error.code, error.message, additional)
                     requestOTPInterface.onRequestFailed(error.message, error.code)
