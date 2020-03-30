@@ -28,9 +28,18 @@ public class TAPLoginActivity extends TAPBaseActivity {
     public static void start(
             Context context,
             String instanceKey) {
+        start(context, instanceKey, true);
+    }
+
+    public static void start(
+            Context context,
+            String instanceKey,
+            boolean newTask) {
         Intent intent = new Intent(context, TAPLoginActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        if (newTask) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
         context.startActivity(intent);
     }
 

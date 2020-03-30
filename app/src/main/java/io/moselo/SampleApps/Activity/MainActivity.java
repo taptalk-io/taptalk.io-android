@@ -9,19 +9,20 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalkSample.R;
 
-import static io.moselo.SampleApps.SampleApplication.INSTANCE_KEY;
-
 public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (TAPDataManager.getInstance(INSTANCE_KEY).checkAccessTokenAvailable()) {
-            TapUIRoomListActivity.start(MainActivity.this, INSTANCE_KEY);
+
+        String instanceKey = getIntent().getStringExtra("instanceKey");
+
+        if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
+            TapUIRoomListActivity.start(MainActivity.this, instanceKey);
         } else {
-            TAPLoginActivity.start(MainActivity.this, INSTANCE_KEY);
+            TAPLoginActivity.start(MainActivity.this, instanceKey, false);
         }
-        AnalyticsManager.getInstance(INSTANCE_KEY).trackActiveUser();
+        AnalyticsManager.getInstance(instanceKey).trackActiveUser();
         finish();
     }
 }
