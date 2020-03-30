@@ -452,11 +452,12 @@ public class TAPNotificationManager {
         }
 
         private void addPendingIntentWhenClicked() {
-            Intent intent = new Intent(context, aClass);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra(ROOM, roomModel);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
-            notificationBuilder.setContentIntent(pendingIntent);
+//            Intent intent = new Intent(context, aClass);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            intent.putExtra(ROOM, roomModel);
+//            PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+//            notificationBuilder.setContentIntent(pendingIntent);
+            notificationBuilder.setContentIntent(TapUIChatActivity.generatePendingIntent(context, instanceKey, roomModel));
         }
 
         private void createNotificationChannel() {

@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Activity;
 import android.Manifest;
 import android.animation.LayoutTransition;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -333,6 +334,14 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             activity.runOnUiThread(() -> TAPUtils.dismissKeyboard(activity));
             activity.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
         }
+    }
+
+    public static PendingIntent generatePendingIntent(Context context, String instanceKey, TAPRoomModel roomModel) {
+        Intent intent = new Intent(context, TapUIChatActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(ROOM, roomModel);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
     }
 
     /**
