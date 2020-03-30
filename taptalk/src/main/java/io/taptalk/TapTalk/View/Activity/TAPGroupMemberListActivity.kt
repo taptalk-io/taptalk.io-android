@@ -459,12 +459,13 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
         override fun onGroupMemberClicked(member: TAPUserModel?, isAdmin: Boolean) {
             if (member?.userID ?: "0" != TAPChatManager.getInstance(instanceKey).activeUser.userID) {
-                val intent = Intent(this@TAPGroupMemberListActivity, TAPChatProfileActivity::class.java)
-                intent.putExtra(ROOM, groupViewModel?.groupData)
-                intent.putExtra(TAPDefaultConstant.K_USER, member)
-                intent.putExtra(IS_ADMIN, isAdmin)
-                startActivityForResult(intent, GROUP_OPEN_MEMBER_PROFILE)
-                overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
+                TAPChatProfileActivity.start(
+                        this@TAPGroupMemberListActivity,
+                        instanceKey,
+                        groupViewModel?.groupData,
+                        member,
+                        isAdmin
+                )
             }
         }
     }

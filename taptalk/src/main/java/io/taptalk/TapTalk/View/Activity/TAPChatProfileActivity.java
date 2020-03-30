@@ -103,6 +103,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_OPEN_MEMBER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_UPDATE_DATA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
@@ -138,10 +139,23 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPRoomModel room,
             @Nullable TAPUserModel user
     ) {
+        start(context, instanceKey, room, user, null);
+    }
+
+    public static void start(
+            Activity context,
+            String instanceKey,
+            TAPRoomModel room,
+            @Nullable TAPUserModel user,
+            @Nullable Boolean isAdmin
+    ) {
         Intent intent = new Intent(context, TAPChatProfileActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         intent.putExtra(ROOM, room);
-        if (room.getRoomType() == TYPE_PERSONAL) {
+        if (null != isAdmin) {
+            intent.putExtra(IS_ADMIN, isAdmin);
+            context.startActivityForResult(intent, GROUP_OPEN_MEMBER_PROFILE);
+        } if (room.getRoomType() == TYPE_PERSONAL) {
             context.startActivity(intent);
         } else if (room.getRoomType() == TYPE_GROUP && null != user) {
             intent.putExtra(K_USER, user);
@@ -195,6 +209,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case GROUP_UPDATE_DATA:
+                    vm.setGroupDataFromManager(TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(vm.getRoom().getRoomID()));
                     if (null == data) {
                         return;
                     }
@@ -990,7 +1005,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         public void onMediaClicked(TAPMessageModel item, ImageView ivThumbnail, boolean isMediaReady) {
             if (item.getType() == TYPE_IMAGE && isMediaReady) {
                 // Preview image detail
-                TAPImageDetailPreviewActivity.start(TAPChatProfileActivity.this, "", item, ivThumbnail); // TODO: 023, 23 Mar 2020 INSTANCE KEY
+                TAPImageDetailPreviewActivity.start(TAPChatProfileActivity.this, instanceKey, item, ivThumbnail);
             } else if (item.getType() == TYPE_IMAGE) {
                 // Download image
                 TAPFileDownloadManager.getInstance(instanceKey).downloadImage(TAPChatProfileActivity.this, item);

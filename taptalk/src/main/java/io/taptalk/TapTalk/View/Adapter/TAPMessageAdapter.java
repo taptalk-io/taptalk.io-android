@@ -432,7 +432,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openImageDetailPreview(TAPMessageModel message) {
-            TAPImageDetailPreviewActivity.start(itemView.getContext(), "", message, rcivImageBody); // TODO: 023, 23 Mar 2020 INSTANCE KEY
+            TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, message, rcivImageBody);
         }
 
         private void setProgress(TAPMessageModel item) {

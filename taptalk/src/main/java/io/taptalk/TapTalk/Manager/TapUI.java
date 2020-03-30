@@ -549,10 +549,7 @@ public class TapUI {
 
     void triggerTapTalkAccountButtonTapped(Activity activity) {
         if (getRoomListListeners().isEmpty()) {
-            WeakReference<Activity> contextWeakReference = new WeakReference<>(activity);
-            Intent intent = new Intent(contextWeakReference.get(), TAPMyAccountActivity.class);
-            contextWeakReference.get().startActivity(intent);
-            contextWeakReference.get().overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+            TAPMyAccountActivity.Companion.start(activity, instanceKey);
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
                 if (null != listener) {
