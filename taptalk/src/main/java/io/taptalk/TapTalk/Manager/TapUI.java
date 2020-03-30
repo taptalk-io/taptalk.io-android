@@ -73,6 +73,7 @@ public class TapUI {
     private boolean isNewGroupMenuButtonHidden;
     private boolean isLogoutButtonVisible;
     private boolean isReadStatusHidden;
+    private boolean isConnectionStatusIndicatorHidden;
 
     public TapUI(String instanceKey) {
         this.instanceKey = instanceKey;
@@ -502,6 +503,17 @@ public class TapUI {
             return;
         }
         this.isReadStatusHidden = isReadStatusHidden;
+    }
+
+    public boolean isConnectionStatusIndicatorVisible() {
+        return !isConnectionStatusIndicatorHidden;
+    }
+
+    public void setConnectionStatusIndicatorVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isConnectionStatusIndicatorHidden = !isVisible;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {

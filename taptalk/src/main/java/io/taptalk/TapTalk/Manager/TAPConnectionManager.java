@@ -22,13 +22,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapCommonInterface;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.BuildConfig;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLOSE_FOR_RECONNECT_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ALREADY_CONNECTED;
@@ -164,7 +164,9 @@ public class TAPConnectionManager {
 
     private void initNetworkListener() {
         TapTalkNetworkInterface networkListener = () -> {
-            if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
+            if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable() &&
+                    (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED ||
+                    TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED)) {
                 TAPDataManager.getInstance(instanceKey).validateAccessToken(validateAccessView);
             }
         };
@@ -206,6 +208,7 @@ public class TAPConnectionManager {
                 createHeaderForConnectWebSocket(webSocketHeader);
                 initWebSocketClient(webSocketUri, webSocketHeader);
                 connectionStatus = CONNECTING;
+                triggerOnSocketConnectingListener();
                 webSocketClient.connect();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -225,6 +228,7 @@ public class TAPConnectionManager {
                 createHeaderForConnectWebSocket(websocketHeader);
                 initWebSocketClient(webSocketUri, websocketHeader);
                 connectionStatus = CONNECTING;
+                triggerOnSocketConnectingListener();
                 webSocketClient.connect();
                 listener.onSuccess(SUCCESS_MESSAGE_CONNECT);
             } catch (Exception e) {
@@ -262,29 +266,50 @@ public class TAPConnectionManager {
     }
 
     public void reconnect() {
-        if (reconnectAttempt < 120) reconnectAttempt++;
-        long delay = RECONNECT_DELAY * (long) reconnectAttempt;
+//        if (reconnectAttempt < 120) reconnectAttempt++;
+//        long delay = RECONNECT_DELAY * (long) reconnectAttempt;
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (DISCONNECTED == connectionStatus && !TAPChatManager.getInstance(instanceKey).isFinishChatFlow()) {
+                if (DISCONNECTED == connectionStatus &&
+                        !TAPChatManager.getInstance(instanceKey).isFinishChatFlow() &&
+                        TAPNetworkStateManager.getInstance(instanceKey)
+                                .hasNetworkConnection(TapTalk.appContext)) {
                     connectionStatus = CONNECTING;
-                    try {
-                        List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
-                        if (null != socketListeners && !socketListenersCopy.isEmpty()) {
-                            for (TapTalkSocketInterface listener : socketListenersCopy)
-                                listener.onSocketConnecting();
-                        }
-                        TAPDataManager.getInstance(instanceKey).validateAccessToken(validateAccessView);
-                        close(CLOSE_FOR_RECONNECT_CODE);
-                        connect();
-                    } catch (IllegalStateException e) {
-                        e.printStackTrace();
-                        //Log.e(TAG, "run: ", e);
-                    }
+                    triggerOnSocketConnectingListener();
+                    TAPDataManager.getInstance(instanceKey).validateAccessToken(validateAccessView);
                 }
             }
-        }, delay);
+        }, 100);
+    }
+
+    public void reconnectOnly() {
+        if (DISCONNECTED == connectionStatus &&
+                !TAPChatManager.getInstance(instanceKey).isFinishChatFlow()) {
+            connectionStatus = CONNECTING;
+            triggerOnSocketConnectingListener();
+            closeConnectionAndReconnect();
+        } else if (CONNECTING == connectionStatus &&
+                !TAPChatManager.getInstance(instanceKey).isFinishChatFlow()) {
+            closeConnectionAndReconnect();
+        }
+    }
+
+    private void triggerOnSocketConnectingListener() {
+        try {
+            List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
+            if (null != socketListeners && !socketListenersCopy.isEmpty()) {
+                for (TapTalkSocketInterface listener : socketListenersCopy)
+                    listener.onSocketConnecting();
+            }
+        } catch (Exception ignored) {
+
+        }
+    }
+
+    private void closeConnectionAndReconnect() {
+        close(CLOSE_FOR_RECONNECT_CODE);
+        connect();
     }
 
     public ConnectionStatus getConnectionStatus() {
@@ -319,7 +344,7 @@ public class TAPConnectionManager {
         @Override
         public void onSuccess(TAPErrorModel response) {
             if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
-                reconnect();
+                reconnectOnly();
             } else if (TapTalk.isAutoConnectEnabled(instanceKey) && NOT_CONNECTED == connectionStatus) {
                 connect();
             }

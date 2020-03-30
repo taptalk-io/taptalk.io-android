@@ -25,6 +25,7 @@ import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.Subscriber.TAPBaseSubscriber;
 import io.taptalk.TapTalk.API.Subscriber.TAPDefaultSubscriber;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -57,7 +58,6 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
-import io.taptalk.TapTalk.BuildConfig;
 import okhttp3.ResponseBody;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
@@ -102,6 +102,7 @@ public class TAPDataManager {
     private static HashMap<String, TAPDataManager> instances;
 
     private String instanceKey = "";
+    private TAPDefaultSubscriber validateSub;
     private boolean isNeedToQueryUpdateRoomList;
 
     public static TAPDataManager getInstance(String instanceKey) {
@@ -1045,8 +1046,13 @@ public class TAPDataManager {
     }
 
     public void validateAccessToken(TAPDefaultDataView<TAPErrorModel> view) {
-        if (checkAccessTokenAvailable())
-            TAPApiManager.getInstance(instanceKey).validateAccessToken(new TAPDefaultSubscriber<>(view));
+        if (checkAccessTokenAvailable()) {
+            if (null != validateSub) {
+                validateSub.unsubscribe();
+            }
+            TAPApiManager.getInstance(instanceKey).validateAccessToken(
+                    validateSub = new TAPDefaultSubscriber<>(view));
+        }
     }
 
     public void registerFcmTokenToServer(String fcmToken, TAPDefaultDataView<TAPCommonResponse> view) {
