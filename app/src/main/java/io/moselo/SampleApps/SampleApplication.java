@@ -29,9 +29,7 @@ public class SampleApplication extends MultiDexApplication {
     TapListener tapListener = new TapListener(INSTANCE_KEY) { // TODO: 027, 27 Mar 2020 INSTANCE KEY CONSTRUCTOR
         @Override
         public void onTapTalkRefreshTokenExpired() {
-            Intent intent = new Intent(getApplicationContext(), TAPLoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            getApplicationContext().startActivity(intent);
+            TAPLoginActivity.start(getApplicationContext(), INSTANCE_KEY);
         }
 
         @Override
@@ -46,9 +44,7 @@ public class SampleApplication extends MultiDexApplication {
 
         @Override
         public void onUserLogout() {
-            Intent intent = new Intent(getApplicationContext(), TAPLoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            getApplicationContext().startActivity(intent);
+            TAPLoginActivity.start(getApplicationContext(), INSTANCE_KEY);
         }
 
         @Override

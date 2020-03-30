@@ -135,6 +135,7 @@ public class TAPDataManager {
      * ==========================================================================================
      */
     public void deleteAllManagerData() {
+        setNeedToQueryUpdateRoomList(false);
         TAPCacheManager.getInstance(TapTalk.appContext).clearCache();
         TAPChatManager.getInstance(instanceKey).resetChatManager();
         TAPContactManager.getInstance(instanceKey).clearUserDataMap();
@@ -142,7 +143,6 @@ public class TAPDataManager {
         TAPContactManager.getInstance(instanceKey).resetMyCountryCode();
         TAPContactManager.getInstance(instanceKey).resetContactSyncPermissionAsked();
         TAPContactManager.getInstance(instanceKey).resetContactSyncAllowedByUser();
-        setNeedToQueryUpdateRoomList(false);
         TAPFileDownloadManager.getInstance(instanceKey).resetTAPFileDownloadManager();
         TAPFileUploadManager.getInstance(instanceKey).resetFileUploadManager();
         TAPNotificationManager.getInstance(instanceKey).clearAllNotificationMessageMap();
@@ -188,11 +188,11 @@ public class TAPDataManager {
     }
 
     private Boolean checkPreferenceKeyAvailable(String key) {
-        return Hawk.contains(key);
+        return Hawk.contains(instanceKey + key);
     }
 
     private void removePreference(String key) {
-        Hawk.delete(key);
+        Hawk.delete(instanceKey + key);
     }
 
     /**
