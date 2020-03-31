@@ -64,12 +64,12 @@ public class TapUIMainRoomListFragment extends Fragment {
 //        fRoomList = (TapUIRoomListFragment) getChildFragmentManager().findFragmentById(R.id.fragment_room_list);
 //        fSearchFragment = (TapUISearchChatFragment) getChildFragmentManager().findFragmentById(R.id.fragment_search_chat);
 
-        fRoomList = TapUIRoomListFragment.newInstance();
+        fRoomList = TapUIRoomListFragment.newInstance(instanceKey);
         getChildFragmentManager()
                 .beginTransaction()
                 .add(R.id.fragment_room_list, fRoomList)
                 .commit();
-        fSearchFragment = TapUISearchChatFragment.newInstance();
+        fSearchFragment = TapUISearchChatFragment.newInstance(instanceKey);
         getChildFragmentManager()
                 .beginTransaction()
                 .add(R.id.fragment_search_chat, fSearchFragment)

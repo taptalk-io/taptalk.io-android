@@ -95,6 +95,7 @@ public class TapUIRoomListFragment extends Fragment {
 
     private String TAG = TapUIRoomListFragment.class.getSimpleName();
 
+    private String instanceKey = "";
     private Activity activity;
     private TapUIMainRoomListFragment mainRoomListFragment;
 
@@ -122,12 +123,12 @@ public class TapUIRoomListFragment extends Fragment {
         }
     };
 
-    public TapUIRoomListFragment() {
-
+    public TapUIRoomListFragment(String instanceKey) {
+        this.instanceKey = instanceKey;
     }
 
-    public static TapUIRoomListFragment newInstance() {
-        return new TapUIRoomListFragment();
+    public static TapUIRoomListFragment newInstance(String instanceKey) {
+        return new TapUIRoomListFragment(instanceKey);
     }
 
     @Nullable
@@ -140,26 +141,24 @@ public class TapUIRoomListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (null != mainRoomListFragment.getInstanceKey()) {
-            Log.e(TAG, "onViewCreated: initRoomList " + mainRoomListFragment.getInstanceKey());
-            initViewModel();
-            initListener();
-            initView(view);
-            viewLoadedSequence();
-            TAPBroadcastManager.register(activity, reloadRoomListReceiver, RELOAD_ROOM_LIST, CLEAR_ROOM_LIST_BADGE);
-            TAPBroadcastManager.register(activity, reloadProfilePictureReceiver, RELOAD_PROFILE_PICTURE);
-        }
+        Log.e(TAG, "onViewCreated: initRoomList " + instanceKey);
+        initViewModel();
+        initListener();
+        initView(view);
+        viewLoadedSequence();
+        TAPBroadcastManager.register(activity, reloadRoomListReceiver, RELOAD_ROOM_LIST, CLEAR_ROOM_LIST_BADGE);
+        TAPBroadcastManager.register(activity, reloadProfilePictureReceiver, RELOAD_PROFILE_PICTURE);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (TAPGroupManager.Companion.getInstance(mainRoomListFragment.getInstanceKey()).getRefreshRoomList()) {
+        if (TAPGroupManager.Companion.getInstance(instanceKey).getRefreshRoomList()) {
             runFullRefreshSequence();
         }
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
-        TAPNotificationManager.getInstance(mainRoomListFragment.getInstanceKey()).setRoomListAppear(true);
-        new Thread(() -> TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).saveMessageToDatabase()).start();
+        TAPNotificationManager.getInstance(instanceKey).setRoomListAppear(true);
+        new Thread(() -> TAPChatManager.getInstance(instanceKey).saveMessageToDatabase()).start();
         Log.e(TAG, "onResume: updateQueryRoomListFromBackground");
         // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
         updateQueryRoomListFromBackground();
@@ -170,7 +169,7 @@ public class TapUIRoomListFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        TAPNotificationManager.getInstance(mainRoomListFragment.getInstanceKey()).setRoomListAppear(false);
+        TAPNotificationManager.getInstance(instanceKey).setRoomListAppear(false);
         TAPBroadcastManager.unregister(activity, refreshTokenReceiver);
         removeNetworkListener();
     }
@@ -185,9 +184,9 @@ public class TapUIRoomListFragment extends Fragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (hidden)
-            TAPNotificationManager.getInstance(mainRoomListFragment.getInstanceKey()).setRoomListAppear(false);
+            TAPNotificationManager.getInstance(instanceKey).setRoomListAppear(false);
         else {
-            TAPNotificationManager.getInstance(mainRoomListFragment.getInstanceKey()).setRoomListAppear(true);
+            TAPNotificationManager.getInstance(instanceKey).setRoomListAppear(true);
             updateQueryRoomListFromBackground();
         }
     }
@@ -195,8 +194,8 @@ public class TapUIRoomListFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).removeChatListener(chatListener);
-        TapTalk.getTapTalkInstance(mainRoomListFragment.getInstanceKey()).putGlobalChatListener();
+        TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
+        TapTalk.getTapTalkInstance(instanceKey).putGlobalChatListener();
     }
 
     private void initViewModel() {
@@ -204,13 +203,13 @@ public class TapUIRoomListFragment extends Fragment {
 
         vm = new ViewModelProvider(this,
                 new TAPRoomListViewModel.TAPRoomListViewModelFactory(
-                        activity.getApplication(), mainRoomListFragment.getInstanceKey()))
+                        activity.getApplication(), instanceKey))
                 .get(TAPRoomListViewModel.class);
     }
 
     private void initListener() {
-        Log.e(TAG, "initListener: " + mainRoomListFragment.getInstanceKey());
-        TapTalk.getTapTalkInstance(mainRoomListFragment.getInstanceKey()).removeGlobalChatListener();
+        Log.e(TAG, "initListener: " + instanceKey);
+        TapTalk.getTapTalkInstance(instanceKey).removeGlobalChatListener();
         chatListener = new TAPChatListener() {
             @Override
             public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
@@ -262,7 +261,7 @@ public class TapUIRoomListFragment extends Fragment {
                 showTypingIndicator(typingModel, false);
             }
         };
-        TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).addChatListener(chatListener);
+        TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
 
         typingIndicatorTimeoutTimers = new HashMap<>();
 
@@ -309,31 +308,31 @@ public class TapUIRoomListFragment extends Fragment {
 
         flSetupContainer.setVisibility(View.GONE);
 
-        if (TapUI.getInstance(mainRoomListFragment.getInstanceKey()).isSearchChatBarVisible()) {
+        if (TapUI.getInstance(instanceKey).isSearchChatBarVisible()) {
             clActionBar.setVisibility(View.VISIBLE);
         } else {
             clActionBar.setVisibility(View.GONE);
         }
 
-        if (TapUI.getInstance(mainRoomListFragment.getInstanceKey()).isCloseRoomListButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isCloseRoomListButtonVisible()) {
             ivButtonClose.setVisibility(View.VISIBLE);
         } else {
             ivButtonClose.setVisibility(View.GONE);
         }
 
-        if (TapUI.getInstance(mainRoomListFragment.getInstanceKey()).isMyAccountButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isMyAccountButtonVisible()) {
             civMyAvatarImage.setVisibility(View.VISIBLE);
         } else {
             civMyAvatarImage.setVisibility(View.GONE);
         }
 
-        if (TapUI.getInstance(mainRoomListFragment.getInstanceKey()).isMyAccountButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isMyAccountButtonVisible()) {
             civMyAvatarImage.setVisibility(View.VISIBLE);
         } else {
             civMyAvatarImage.setVisibility(View.GONE);
         }
 
-        if (TapUI.getInstance(mainRoomListFragment.getInstanceKey()).isNewChatButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isNewChatButtonVisible()) {
             tvStartNewChat.setVisibility(View.VISIBLE);
             tvStartNewChatDescription.setVisibility(View.VISIBLE);
         } else {
@@ -344,9 +343,9 @@ public class TapUIRoomListFragment extends Fragment {
         if (vm.isSelecting()) {
             showSelectionActionBar();
         }
-        vm.setDoneFirstApiSetup(TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).isRoomListSetupFinished());
+        vm.setDoneFirstApiSetup(TAPDataManager.getInstance(instanceKey).isRoomListSetupFinished());
 
-        adapter = new TAPRoomListAdapter(mainRoomListFragment.getInstanceKey(), vm, Glide.with(this), tapTalkRoomListInterface);
+        adapter = new TAPRoomListAdapter(instanceKey, vm, Glide.with(this), tapTalkRoomListInterface);
         llm = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false) {
             @Override
             public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
@@ -364,7 +363,7 @@ public class TapUIRoomListFragment extends Fragment {
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
 
-        ivButtonClose.setOnClickListener(v -> TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).triggerCloseRoomListButtonTapped(activity));
+        ivButtonClose.setOnClickListener(v -> TAPChatManager.getInstance(instanceKey).triggerCloseRoomListButtonTapped(activity));
         cvButtonSearch.setOnClickListener(v -> showSearchChat());
         vButtonMyAccount.setOnClickListener(v -> openMyAccountActivity());
         ivButtonNewChat.setOnClickListener(v -> openNewChatActivity());
@@ -386,7 +385,7 @@ public class TapUIRoomListFragment extends Fragment {
 
     private void reloadProfilePicture() {
         // TODO: 7 May 2019 CHECK IF PROFILE IS HIDDEN
-        TAPUserModel user = TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser();
+        TAPUserModel user = TAPChatManager.getInstance(instanceKey).getActiveUser();
         if (null != user && null != user.getAvatarURL()
                 && !user.getAvatarURL().getThumbnail().isEmpty()) {
             if (null != getActivity()) {
@@ -434,40 +433,40 @@ public class TapUIRoomListFragment extends Fragment {
 
     private void showSearchChat() {
         TAPUtils.animateClickButton(cvButtonSearch, 0.97f);
-        TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).triggerSearchChatBarTapped(activity, mainRoomListFragment);
+        TAPChatManager.getInstance(instanceKey).triggerSearchChatBarTapped(activity, mainRoomListFragment);
     }
 
     private void openMyAccountActivity() {
-        TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).triggerTapTalkAccountButtonTapped(activity);
+        TAPChatManager.getInstance(instanceKey).triggerTapTalkAccountButtonTapped(activity);
     }
 
     private void openNewChatActivity() {
-        TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).triggerNewChatButtonTapped(activity);
+        TAPChatManager.getInstance(instanceKey).triggerNewChatButtonTapped(activity);
     }
 
     private void viewLoadedSequence() {
-        Log.e(TAG, "viewLoadedSequence: getInstanceKey " + mainRoomListFragment.getInstanceKey());
-        Log.e(TAG, "viewLoadedSequence: isShouldNotLoadFromAPI " + TAPRoomListViewModel.isShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey()));
-        Log.e(TAG, "viewLoadedSequence: getActiveUser " + TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser());
+        Log.e(TAG, "viewLoadedSequence: getInstanceKey " + instanceKey);
+        Log.e(TAG, "viewLoadedSequence: isShouldNotLoadFromAPI " + TAPRoomListViewModel.isShouldNotLoadFromAPI(instanceKey));
+        Log.e(TAG, "viewLoadedSequence: getActiveUser " + TAPChatManager.getInstance(instanceKey).getActiveUser());
         Log.e(TAG, "viewLoadedSequence: checkTapTalkInitialized " + TapTalk.checkTapTalkInitialized());
-        Log.e(TAG, "viewLoadedSequence: isAuthenticated " + TapTalk.isAuthenticated(mainRoomListFragment.getInstanceKey()));
-        if (TAPRoomListViewModel.isShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey()) && null != TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser()) {
+        Log.e(TAG, "viewLoadedSequence: isAuthenticated " + TapTalk.isAuthenticated(instanceKey));
+        if (TAPRoomListViewModel.isShouldNotLoadFromAPI(instanceKey) && null != TAPChatManager.getInstance(instanceKey).getActiveUser()) {
             // Load room list from database if app is on foreground
             Log.e(TAG, "viewLoadedSequence: load room list from DB");
-            TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).getRoomList(true, dbListener);
-        } else if (null != TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser()) {
+            TAPDataManager.getInstance(instanceKey).getRoomList(true, dbListener);
+        } else if (null != TAPChatManager.getInstance(instanceKey).getActiveUser()) {
             // Run full cycle if app is on background or on first open
             // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
             Log.e(TAG, "viewLoadedSequence: runFullRefreshSequence");
             runFullRefreshSequence();
-        } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated(mainRoomListFragment.getInstanceKey())) {
+        } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated(instanceKey)) {
             Log.e(TAG, "viewLoadedSequence: onTapTalkRefreshTokenExpired");
-            AnalyticsManager.getInstance(mainRoomListFragment.getInstanceKey()).trackEvent("View Loaded Sequence Failed");
-            TapTalk.clearAllTapTalkData(mainRoomListFragment.getInstanceKey());
-            for (TapListener listener : TapTalk.getTapTalkListeners(mainRoomListFragment.getInstanceKey())) {
+            AnalyticsManager.getInstance(instanceKey).trackEvent("View Loaded Sequence Failed");
+            TapTalk.clearAllTapTalkData(instanceKey);
+            for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
                 listener.onTapTalkRefreshTokenExpired();
             }
-        } else if (null == TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser()) {
+        } else if (null == TAPChatManager.getInstance(instanceKey).getActiveUser()) {
             Log.e(TAG, "viewLoadedSequence: active user null");
             flSetupContainer.setVisibility(View.VISIBLE);
             showChatRoomSetupFailed();
@@ -485,27 +484,27 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void getDatabaseAndAnimateResult() {
-        TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).getRoomList(true, dbAnimatedListener);
+        TAPDataManager.getInstance(instanceKey).getRoomList(true, dbAnimatedListener);
     }
 
     private void runFullRefreshSequence() {
         if (vm.getRoomList().size() > 0) {
             // Check and update unread badge before updating view if recycler is not empty
-            TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).getRoomList(TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getSaveMessages(), true, dbListener);
+            TAPDataManager.getInstance(instanceKey).getRoomList(TAPChatManager.getInstance(instanceKey).getSaveMessages(), true, dbListener);
         } else {
             // Update unread badge after view is updated if recycler is empty
-            TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).getRoomList(TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getSaveMessages(), false, dbListener);
+            TAPDataManager.getInstance(instanceKey).getRoomList(TAPChatManager.getInstance(instanceKey).getSaveMessages(), false, dbListener);
         }
-        TAPGroupManager.Companion.getInstance(mainRoomListFragment.getInstanceKey()).setRefreshRoomList(false);
+        TAPGroupManager.Companion.getInstance(instanceKey).setRefreshRoomList(false);
     }
 
     private void fetchDataFromAPI() {
         if (vm.isDoneFirstApiSetup()) {
             // Call to refresh new messages
-            TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).getNewAndUpdatedMessage(roomListView);
+            TAPDataManager.getInstance(instanceKey).getNewAndUpdatedMessage(roomListView);
         } else {
             // Call on first load
-            TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).getMessageRoomListAndUnread(TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser().getUserID(), roomListView);
+            TAPDataManager.getInstance(instanceKey).getMessageRoomListAndUnread(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), roomListView);
         }
     }
 
@@ -516,17 +515,17 @@ public class TapUIRoomListFragment extends Fragment {
                     // Room list is empty
                     llRoomEmpty.setVisibility(View.VISIBLE);
                     flSetupContainer.setVisibility(View.GONE);
-                } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey()) || isAnimated) && TAPNotificationManager.getInstance(mainRoomListFragment.getInstanceKey()).isRoomListAppear()) {
+                } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI(instanceKey) || isAnimated) && TAPNotificationManager.getInstance(instanceKey).isRoomListAppear()) {
                     // Show room list on first open and animate
                     adapter.addRoomList(vm.getRoomList());
                     rvContactList.scrollToPosition(0);
                     llRoomEmpty.setVisibility(View.GONE);
                     if (!vm.isDoneFirstApiSetup()) {
                         vm.setDoneFirstApiSetup(true);
-                        TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).setRoomListSetupFinished();
+                        TAPDataManager.getInstance(instanceKey).setRoomListSetupFinished();
                         showChatRoomSetupSuccess();
                     }
-                } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey())) {
+                } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI(instanceKey)) {
                     // Update room list without animating
                     adapter.setItems(vm.getRoomList(), false);
                     llRoomEmpty.setVisibility(View.GONE);
@@ -534,8 +533,8 @@ public class TapUIRoomListFragment extends Fragment {
                 }
                 showNewChatButton();
 
-                if (!TAPRoomListViewModel.isShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey())) {
-                    TAPRoomListViewModel.setShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey(),true);
+                if (!TAPRoomListViewModel.isShouldNotLoadFromAPI(instanceKey)) {
+                    TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey,true);
                     fetchDataFromAPI();
                 }
             });
@@ -568,7 +567,7 @@ public class TapUIRoomListFragment extends Fragment {
 
                     // Add unread count by 1 if sender is not self
                     if (!roomList.getLastMessage().getUser().getUserID().equals(
-                            TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey())
+                            TAPChatManager.getInstance(instanceKey)
                                     .getActiveUser().getUserID())) {
                         roomList.setUnreadCount(roomList.getUnreadCount() + 1);
                     }
@@ -593,7 +592,7 @@ public class TapUIRoomListFragment extends Fragment {
             // Received message in a new room list
             TAPRoomListModel newRoomList = TAPRoomListModel.buildWithLastMessage(message);
             if (!newRoomList.getLastMessage().getUser().getUserID()
-                    .equals(TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey())
+                    .equals(TAPChatManager.getInstance(instanceKey)
                             .getActiveUser().getUserID())) {
                 newRoomList.setUnreadCount(1);
             }
@@ -625,9 +624,9 @@ public class TapUIRoomListFragment extends Fragment {
         if (message.getType() == TYPE_SYSTEM_MESSAGE &&
                 null != message.getAction() &&
                 message.getAction().equals(UPDATE_USER) &&
-                message.getRoom().getRoomID().equals(TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).arrangeRoomId(
-                        TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser().getUserID(),
-                        TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser().getUserID())) &&
+                message.getRoom().getRoomID().equals(TAPChatManager.getInstance(instanceKey).arrangeRoomId(
+                        TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
+                        TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) &&
                 civMyAvatarImage.getVisibility() == View.VISIBLE) {
             // Update user avatar
             reloadProfilePicture();
@@ -660,7 +659,7 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void showNewChatButton() {
-        if (!TapUI.getInstance(mainRoomListFragment.getInstanceKey()).isNewChatButtonVisible() || ivButtonNewChat.getVisibility() == View.VISIBLE) {
+        if (!TapUI.getInstance(instanceKey).isNewChatButtonVisible() || ivButtonNewChat.getVisibility() == View.VISIBLE) {
             return;
         }
         ivButtonNewChat.setTranslationY(TAPUtils.dpToPx(120));
@@ -784,11 +783,11 @@ public class TapUIRoomListFragment extends Fragment {
 
             llRetrySetup.setOnClickListener(view -> {
                 TAPUtils.animateClickButton(llRetrySetup, 0.95f);
-                if (null == TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser()) {
+                if (null == TAPChatManager.getInstance(instanceKey).getActiveUser()) {
                     return;
                 }
-                TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).getMessageRoomListAndUnread(
-                        TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser().getUserID(), roomListView);
+                TAPDataManager.getInstance(instanceKey).getMessageRoomListAndUnread(
+                        TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), roomListView);
             });
         });
     }
@@ -814,7 +813,7 @@ public class TapUIRoomListFragment extends Fragment {
                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                     try {
                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                        TAPMessageEntity entity = TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).convertToEntity(message);
+                        TAPMessageEntity entity = TAPChatManager.getInstance(instanceKey).convertToEntity(message);
                         tempMessage.add(entity);
 
                         // Save undelivered messages to list
@@ -822,15 +821,15 @@ public class TapUIRoomListFragment extends Fragment {
                             deliveredMessages.add(message);
                         }
 
-                        if (message.getUser().getUserID().equals(TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser().getUserID())) {
+                        if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                             // User is self, get other user data from API
-                            userIds.add(TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
+                            userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                         } else {
                             // Save user data to contact manager
-                            TAPContactManager.getInstance(mainRoomListFragment.getInstanceKey()).updateUserData(message.getUser());
+                            TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
                         }
                         if (null != message.getIsDeleted() && message.getIsDeleted()) {
-                            TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).deletePhysicalFile(entity);
+                            TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
                         }
 
                         if (message.getType() == TYPE_SYSTEM_MESSAGE &&
@@ -853,16 +852,16 @@ public class TapUIRoomListFragment extends Fragment {
 
                 // Update status to delivered
                 if (deliveredMessages.size() > 0) {
-                    TAPMessageStatusManager.getInstance(mainRoomListFragment.getInstanceKey()).updateMessageStatusToDelivered(deliveredMessages);
+                    TAPMessageStatusManager.getInstance(instanceKey).updateMessageStatusToDelivered(deliveredMessages);
                 }
 
                 // Get updated other user data from API
                 if (userIds.size() > 0) {
-                    TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
+                    TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
                 }
 
                 // Save message to database
-                TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
+                TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                     @Override
                     public void onInsertFinished() {
                         // Reload newest room list from database
@@ -873,7 +872,7 @@ public class TapUIRoomListFragment extends Fragment {
                 reloadLocalDataAndUpdateUILogic(true);
                 if (!vm.isDoneFirstApiSetup()) {
                     vm.setDoneFirstApiSetup(true);
-                    TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).setRoomListSetupFinished();
+                    TAPDataManager.getInstance(instanceKey).setRoomListSetupFinished();
                     showChatRoomSetupSuccess();
                 }
             }
@@ -903,7 +902,7 @@ public class TapUIRoomListFragment extends Fragment {
             if (null == response || response.getUsers().isEmpty()) {
                 return;
             }
-            new Thread(() -> TAPContactManager.getInstance(mainRoomListFragment.getInstanceKey()).updateUserData(response.getUsers())).start();
+            new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers())).start();
         }
     };
 
@@ -916,11 +915,11 @@ public class TapUIRoomListFragment extends Fragment {
             int limit = 10;
             // Convert entity to model
             for (TAPMessageEntity entity : entities) {
-                TAPMessageModel model = TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).convertToModel(entity);
+                TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
-                TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).getUnreadCountPerRoom(entity.getRoomID(), dbListener);
+                TAPDataManager.getInstance(instanceKey).getUnreadCountPerRoom(entity.getRoomID(), dbListener);
                 if (++count % limit == 0) {
                     vm.setRoomList(messageModels);
                     activity.runOnUiThread(() -> adapter.setItems(vm.getRoomList()));
@@ -950,7 +949,7 @@ public class TapUIRoomListFragment extends Fragment {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             vm.getRoomPointer().clear();
             for (TAPMessageEntity entity : entities) {
-                TAPMessageModel model = TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).convertToModel(entity);
+                TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
@@ -970,7 +969,7 @@ public class TapUIRoomListFragment extends Fragment {
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
-                TAPMessageModel model = TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).convertToModel(entity);
+                TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
@@ -985,32 +984,32 @@ public class TapUIRoomListFragment extends Fragment {
     };
 
     private void updateQueryRoomListFromBackground() {
-        if (TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).isNeedToQueryUpdateRoomList()) {
+        if (TAPDataManager.getInstance(instanceKey).isNeedToQueryUpdateRoomList()) {
             runFullRefreshSequence();
-            TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).setNeedToQueryUpdateRoomList(false);
+            TAPDataManager.getInstance(instanceKey).setNeedToQueryUpdateRoomList(false);
         }
     }
 
     private void addNetworkListener() {
-        TAPNetworkStateManager.getInstance(mainRoomListFragment.getInstanceKey()).addNetworkListener(networkListener);
+        TAPNetworkStateManager.getInstance(instanceKey).addNetworkListener(networkListener);
     }
 
     private void removeNetworkListener() {
-        TAPNetworkStateManager.getInstance(mainRoomListFragment.getInstanceKey()).removeNetworkListener(networkListener);
+        TAPNetworkStateManager.getInstance(instanceKey).removeNetworkListener(networkListener);
     }
 
     private void updateUnreadCountPerRoom(String roomID) {
         new Thread(() -> {
             if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) &&
-                    TAPMessageStatusManager.getInstance(mainRoomListFragment.getInstanceKey()).getUnreadList().containsKey(roomID) &&
-                    TAPMessageStatusManager.getInstance(mainRoomListFragment.getInstanceKey()).getUnreadList().get(roomID) <= vm.getRoomPointer().get(roomID).getUnreadCount()) {
-                vm.getRoomPointer().get(roomID).setUnreadCount(vm.getRoomPointer().get(roomID).getUnreadCount() - TAPMessageStatusManager.getInstance(mainRoomListFragment.getInstanceKey()).getUnreadList().get(roomID));
-                TAPMessageStatusManager.getInstance(mainRoomListFragment.getInstanceKey()).clearUnreadListPerRoomID(roomID);
+                    TAPMessageStatusManager.getInstance(instanceKey).getUnreadList().containsKey(roomID) &&
+                    TAPMessageStatusManager.getInstance(instanceKey).getUnreadList().get(roomID) <= vm.getRoomPointer().get(roomID).getUnreadCount()) {
+                vm.getRoomPointer().get(roomID).setUnreadCount(vm.getRoomPointer().get(roomID).getUnreadCount() - TAPMessageStatusManager.getInstance(instanceKey).getUnreadList().get(roomID));
+                TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
             } else if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) &&
-                    TAPMessageStatusManager.getInstance(mainRoomListFragment.getInstanceKey()).getUnreadList().containsKey(roomID)) {
+                    TAPMessageStatusManager.getInstance(instanceKey).getUnreadList().containsKey(roomID)) {
                 vm.getRoomPointer().get(roomID).setUnreadCount(0);
-                TAPMessageStatusManager.getInstance(mainRoomListFragment.getInstanceKey()).clearUnreadListPerRoomID(roomID);
+                TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
             }
             calculateBadgeCount();
@@ -1042,7 +1041,7 @@ public class TapUIRoomListFragment extends Fragment {
                 case CLEAR_ROOM_LIST_BADGE:
                     if (vm.getRoomPointer().containsKey(roomID)) {
                         vm.getRoomPointer().get(roomID).setUnreadCount(0);
-                        TAPMessageStatusManager.getInstance(mainRoomListFragment.getInstanceKey()).clearUnreadListPerRoomID(roomID);
+                        TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
                     }
                     break;
             }
@@ -1068,7 +1067,7 @@ public class TapUIRoomListFragment extends Fragment {
             e.printStackTrace();
         }
         if (vm.getLastBadgeCount() != vm.getRoomBadgeCount()) {
-            for (TapListener listener : TapTalk.getTapTalkListeners(mainRoomListFragment.getInstanceKey())) {
+            for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
                 listener.onTapTalkUnreadChatRoomBadgeCountUpdated(vm.getRoomBadgeCount());
             }
             vm.setLastBadgeCount(vm.getRoomBadgeCount());
