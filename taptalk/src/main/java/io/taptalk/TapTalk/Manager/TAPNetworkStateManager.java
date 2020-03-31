@@ -56,7 +56,11 @@ public class TAPNetworkStateManager {
 
     public void registerCallback(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != networkCallback) {
-            getConnectivityManager(context).registerNetworkCallback(networkRequest, networkCallback);
+            try {
+                getConnectivityManager(context).registerNetworkCallback(networkRequest, networkCallback);
+            } catch (IllegalArgumentException e) {
+                // FIXME: 31 Mar 2020
+            }
         } else {
             // Broadcast receiver will not receive callback right away, trigger connectivity change manually to update connection status
             triggerConnectivityChange();
@@ -65,7 +69,12 @@ public class TAPNetworkStateManager {
 
     public void unregisterCallback(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != networkCallback) {
-            getConnectivityManager(context).unregisterNetworkCallback(networkCallback);
+            try {
+                getConnectivityManager(context).unregisterNetworkCallback(networkCallback);
+            } catch (IllegalArgumentException e) {
+                // FIXME: 31 Mar 2020 java.lang.IllegalArgumentException:
+                //  NetworkCallback was already unregistered when called more than once
+            }
         }
     }
 
