@@ -446,8 +446,14 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void viewLoadedSequence() {
-        if (TAPRoomListViewModel.isShouldNotLoadFromAPI() && null != TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser()) {
+        Log.e(TAG, "viewLoadedSequence: getInstanceKey " + mainRoomListFragment.getInstanceKey());
+        Log.e(TAG, "viewLoadedSequence: isShouldNotLoadFromAPI " + TAPRoomListViewModel.isShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey()));
+        Log.e(TAG, "viewLoadedSequence: getActiveUser " + TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser());
+        Log.e(TAG, "viewLoadedSequence: checkTapTalkInitialized " + TapTalk.checkTapTalkInitialized());
+        Log.e(TAG, "viewLoadedSequence: isAuthenticated " + TapTalk.isAuthenticated(mainRoomListFragment.getInstanceKey()));
+        if (TAPRoomListViewModel.isShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey()) && null != TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser()) {
             // Load room list from database if app is on foreground
+            Log.e(TAG, "viewLoadedSequence: load room list from DB");
             TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).getRoomList(true, dbListener);
         } else if (null != TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser()) {
             // Run full cycle if app is on background or on first open
@@ -455,12 +461,14 @@ public class TapUIRoomListFragment extends Fragment {
             Log.e(TAG, "viewLoadedSequence: runFullRefreshSequence");
             runFullRefreshSequence();
         } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated(mainRoomListFragment.getInstanceKey())) {
+            Log.e(TAG, "viewLoadedSequence: onTapTalkRefreshTokenExpired");
             AnalyticsManager.getInstance(mainRoomListFragment.getInstanceKey()).trackEvent("View Loaded Sequence Failed");
             TapTalk.clearAllTapTalkData(mainRoomListFragment.getInstanceKey());
             for (TapListener listener : TapTalk.getTapTalkListeners(mainRoomListFragment.getInstanceKey())) {
                 listener.onTapTalkRefreshTokenExpired();
             }
         } else if (null == TAPChatManager.getInstance(mainRoomListFragment.getInstanceKey()).getActiveUser()) {
+            Log.e(TAG, "viewLoadedSequence: active user null");
             flSetupContainer.setVisibility(View.VISIBLE);
             showChatRoomSetupFailed();
             if (BuildConfig.DEBUG && null != activity) {
@@ -508,7 +516,7 @@ public class TapUIRoomListFragment extends Fragment {
                     // Room list is empty
                     llRoomEmpty.setVisibility(View.VISIBLE);
                     flSetupContainer.setVisibility(View.GONE);
-                } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI() || isAnimated) && TAPNotificationManager.getInstance(mainRoomListFragment.getInstanceKey()).isRoomListAppear()) {
+                } else if (null != adapter && (!TAPRoomListViewModel.isShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey()) || isAnimated) && TAPNotificationManager.getInstance(mainRoomListFragment.getInstanceKey()).isRoomListAppear()) {
                     // Show room list on first open and animate
                     adapter.addRoomList(vm.getRoomList());
                     rvContactList.scrollToPosition(0);
@@ -518,7 +526,7 @@ public class TapUIRoomListFragment extends Fragment {
                         TAPDataManager.getInstance(mainRoomListFragment.getInstanceKey()).setRoomListSetupFinished();
                         showChatRoomSetupSuccess();
                     }
-                } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
+                } else if (null != adapter && TAPRoomListViewModel.isShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey())) {
                     // Update room list without animating
                     adapter.setItems(vm.getRoomList(), false);
                     llRoomEmpty.setVisibility(View.GONE);
@@ -526,8 +534,8 @@ public class TapUIRoomListFragment extends Fragment {
                 }
                 showNewChatButton();
 
-                if (!TAPRoomListViewModel.isShouldNotLoadFromAPI()) {
-                    TAPRoomListViewModel.setShouldNotLoadFromAPI(true);
+                if (!TAPRoomListViewModel.isShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey())) {
+                    TAPRoomListViewModel.setShouldNotLoadFromAPI(mainRoomListFragment.getInstanceKey(),true);
                     fetchDataFromAPI();
                 }
             });

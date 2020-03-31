@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,8 @@ public class TAPRoomListViewModel extends AndroidViewModel {
     private boolean isSelecting;
     private boolean isDoneFirstSetup = false;
     private boolean isDoneFirstApiSetup = false;
-    private static boolean isShouldNotLoadFromAPI = false;
+
+    private static HashMap<String, Boolean> isShouldNotLoadFromAPI = new HashMap<>();
 
     public static class TAPRoomListViewModelFactory implements ViewModelProvider.Factory {
         private Application application;
@@ -118,12 +120,15 @@ public class TAPRoomListViewModel extends AndroidViewModel {
         this.myUserID = myUserID;
     }
 
-    public static boolean isShouldNotLoadFromAPI() {
-        return isShouldNotLoadFromAPI;
+    public static Boolean isShouldNotLoadFromAPI(String instanceKey) {
+        if (null == isShouldNotLoadFromAPI.get(instanceKey)) {
+            isShouldNotLoadFromAPI.put(instanceKey, false);
+        }
+        return isShouldNotLoadFromAPI.get(instanceKey);
     }
 
-    public static void setShouldNotLoadFromAPI(boolean shouldNotLoadFromAPI) {
-        isShouldNotLoadFromAPI = shouldNotLoadFromAPI;
+    public static void setShouldNotLoadFromAPI(String instanceKey, boolean shouldNotLoadFromAPI) {
+        isShouldNotLoadFromAPI.put(instanceKey, shouldNotLoadFromAPI);
     }
 
     public boolean isDoneFirstSetup() {

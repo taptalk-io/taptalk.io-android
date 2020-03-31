@@ -104,11 +104,11 @@ public class SampleApplication extends MultiDexApplication {
         TapTalk.initNewInstance(
                 INSTANCE_KEY_DEV,
                 this,
-                TAPTALK_SDK_APP_KEY_ID,
-                TAPTALK_SDK_APP_KEY_SECRET,
+                "d1e5dfe23d1e00bf54bc2316f",
+                "NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh",
                 R.drawable.ic_taptalk_logo,
                 getString(R.string.app_name),
-                TAPTALK_SDK_BASE_URL,
+                "https://engine-dev.taptalk.io",
                 TapTalkImplementationTypeCombine,
                 tapListenerDev);
         Stetho.initialize(

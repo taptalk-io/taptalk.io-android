@@ -121,7 +121,7 @@ public class TAPNetworkStateManager {
     }
 
     private void onNetworkLost() {
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey,false);
         TAPDataManager.getInstance(instanceKey).setNeedToQueryUpdateRoomList(true);
         TAPConnectionManager.getInstance(instanceKey).close();
     }

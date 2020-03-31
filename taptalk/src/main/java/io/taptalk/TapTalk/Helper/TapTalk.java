@@ -502,7 +502,7 @@ public class TapTalk implements LifecycleObserver {
         TAPDataManager.getInstance(instanceKey).deleteAllFromDatabase();
         TAPDataManager.getInstance(instanceKey).deleteAllManagerData();
         TAPApiManager.getInstance(instanceKey).setLoggedOut(true);
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey,false);
         TAPChatManager.getInstance(instanceKey).disconnectAfterRefreshTokenExpired();
         getTapTalkInstance(instanceKey).isRefreshTokenExpired = true;
     }
@@ -980,7 +980,7 @@ public class TapTalk implements LifecycleObserver {
         isForeground = false;
 
         for (Map.Entry<String, TapTalk> entry : getTapTalkInstances().entrySet()) {
-            TAPRoomListViewModel.setShouldNotLoadFromAPI(false);
+            TAPRoomListViewModel.setShouldNotLoadFromAPI(entry.getValue().instanceKey,false);
             // TODO: 18 Mar 2020
             TAPDataManager.getInstance(entry.getValue().instanceKey).setNeedToQueryUpdateRoomList(true);
             TAPNetworkStateManager.getInstance(entry.getValue().instanceKey).unregisterCallback(TapTalk.appContext);

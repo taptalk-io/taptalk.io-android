@@ -443,7 +443,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPDataManager.getInstance(instanceKey).deleteAllFromDatabase()
         TAPDataManager.getInstance(instanceKey).deleteAllManagerData()
         TAPApiManager.getInstance(instanceKey).isLoggedOut = true
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey,false)
         TAPChatManager.getInstance(instanceKey).disconnectAfterRefreshTokenExpired()
 
         hideLoading()
