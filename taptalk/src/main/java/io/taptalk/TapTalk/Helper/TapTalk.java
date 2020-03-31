@@ -106,8 +106,8 @@ public class TapTalk implements LifecycleObserver {
     private Map<String, String> coreConfigs;
     private Map<String, String> projectConfigs;
     private Map<String, String> customConfigs;
-    private TapTalkScreenOrientation screenOrientation = TapTalkOrientationDefault;
     private List<TapListener> tapListeners = new ArrayList<>();
+    private TapTalkScreenOrientation screenOrientation = TapTalkOrientationDefault;
     private TAPChatListener chatListener;
     private String clientAppName = "";
     private int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
@@ -793,15 +793,80 @@ public class TapTalk implements LifecycleObserver {
         handleTapTalkPushNotification("", remoteMessage);
     }
 
+//    public static void handleTapTalkPushNotification(String instanceKey, RemoteMessage remoteMessage) {
+//        TAPNotificationManager.getInstance(instanceKey).updateNotificationMessageMapWhenAppKilled();
+//        HashMap<String, Object> notificationMap = TAPUtils.fromJSON(new TypeReference<HashMap<String, Object>>() {
+//        }, remoteMessage.getData().get("body"));
+//        TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(notificationMap);
+//
+//        try {
+//            // Show background notification
+//            TAPNotificationManager.getInstance(instanceKey).createAndShowBackgroundNotification(
+//                    appContext,
+//                    getClientAppIcon(instanceKey),
+//                    TapUIChatActivity.class,
+//                    message);
+//        } catch (Exception e) {
+//            Log.e(TAG, "onMessageReceived: ", e);
+//            e.printStackTrace();
+//        }
+//    }
+
+    // FIXME: 31 Mar 2020 TEMPORARY FIX TO DETECT BACKGROUND NOTIFICATION INSTANCE
     public static void handleTapTalkPushNotification(String instanceKey, RemoteMessage remoteMessage) {
         TAPNotificationManager.getInstance(instanceKey).updateNotificationMessageMapWhenAppKilled();
         HashMap<String, Object> notificationMap = TAPUtils.fromJSON(new TypeReference<HashMap<String, Object>>() {
         }, remoteMessage.getData().get("body"));
+        TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(notificationMap);
+        if (getInstanceKeys().size() > 1) {
+            identifyMessageAndShowNotification(instanceKey, message);
+        } else {
+            showBackgroundNotification(instanceKey, message);
+        }
+    }
+
+    public static void identifyMessageAndShowNotification(String instanceKey, TAPMessageModel message) {
+        TAPUserModel sender = message.getUser();
+        String senderId = sender.getUserID();
+        if (null == senderId || senderId.isEmpty()) {
+            return;
+        }
+        TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(senderId, new TAPDefaultDataView<TAPGetUserResponse>() {
+            @Override
+            public void onSuccess(TAPGetUserResponse response) {
+                Log.e(TAG, "onSuccess: " + message.getBody());
+                TAPUserModel userResponse = response.getUser();
+                if (null == userResponse) {
+                    return;
+                }
+                Log.e(TAG, "onSuccess getXcUserID: " + sender.getXcUserID() + " - " + userResponse.getXcUserID());
+                Log.e(TAG, "onSuccess getName: " + sender.getName() + " - " + userResponse.getName());
+                Log.e(TAG, "onSuccess getUsername: " + sender.getUsername() + " - " + userResponse.getUsername());
+                Log.e(TAG, "onSuccess getEmail: " + sender.getEmail() + " - " + userResponse.getEmail());
+                Log.e(TAG, "onSuccess getPhoneNumber: " + sender.getPhoneNumber() + " - " + userResponse.getPhoneNumber());
+                if (sender.getXcUserID().equals(userResponse.getXcUserID()) &&
+                        sender.getName().equals(userResponse.getName()) &&
+                        (null == sender.getUsername() ||
+                                sender.getUsername().equals(userResponse.getUsername()))
+                ) {
+                    Log.e(TAG, "onSuccess: show notification");
+                    showBackgroundNotification(instanceKey, message);
+                }
+                else {
+                    Log.e(TAG, "onSuccess: not owner instance");
+                }
+            }
+        });
+    }
+
+    private static void showBackgroundNotification(String instanceKey, TAPMessageModel message) {
         try {
-            //Log.e(TAG, "onMessageReceived: " + TAPUtils.toJsonString(remoteMessage));
-            TAPNotificationManager.getInstance(instanceKey).createAndShowBackgroundNotification(appContext, getClientAppIcon(instanceKey),
+            // Show background notification
+            TAPNotificationManager.getInstance(instanceKey).createAndShowBackgroundNotification(
+                    appContext,
+                    getClientAppIcon(instanceKey),
                     TapUIChatActivity.class,
-                    TAPEncryptorManager.getInstance().decryptMessage(notificationMap));
+                    message);
         } catch (Exception e) {
             Log.e(TAG, "onMessageReceived: ", e);
             e.printStackTrace();
