@@ -23,62 +23,9 @@ import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_BASE_URL;
 public class SampleApplication extends MultiDexApplication {
 
     private static final String TAG = "SampleApplication";
+    public static final String INSTANCE_KEY = "";
     public static final String INSTANCE_KEY_DEV = "TAPTALK-DEV";
     public static final String INSTANCE_KEY_STAGING = "TAPTALK-STAGING";
-
-    TapListener tapListenerDev = new TapListener(INSTANCE_KEY_DEV) {
-        @Override
-        public void onTapTalkRefreshTokenExpired() {
-            TAPLoginActivity.start(getApplicationContext(), INSTANCE_KEY_DEV);
-        }
-
-        @Override
-        public void onTapTalkUnreadChatRoomBadgeCountUpdated(int unreadCount) {
-
-        }
-
-        @Override
-        public void onNotificationReceived(TAPMessageModel message) {
-            TapTalk.showTapTalkNotification(INSTANCE_KEY_DEV, message);
-        }
-
-        @Override
-        public void onUserLogout() {
-            TAPLoginActivity.start(getApplicationContext(), INSTANCE_KEY_DEV);
-        }
-
-        @Override
-        public void onTaskRootChatRoomClosed(Activity activity) {
-            TapUIRoomListActivity.start(activity, INSTANCE_KEY_DEV, null, true);
-        }
-    };
-
-    TapListener tapListenerStaging = new TapListener(INSTANCE_KEY_STAGING) {
-        @Override
-        public void onTapTalkRefreshTokenExpired() {
-            TAPLoginActivity.start(getApplicationContext(), INSTANCE_KEY_STAGING);
-        }
-
-        @Override
-        public void onTapTalkUnreadChatRoomBadgeCountUpdated(int unreadCount) {
-
-        }
-
-        @Override
-        public void onNotificationReceived(TAPMessageModel message) {
-            TapTalk.showTapTalkNotification(INSTANCE_KEY_STAGING, message);
-        }
-
-        @Override
-        public void onUserLogout() {
-            TAPLoginActivity.start(getApplicationContext(), INSTANCE_KEY_STAGING);
-        }
-
-        @Override
-        public void onTaskRootChatRoomClosed(Activity activity) {
-            TapUIRoomListActivity.start(activity, INSTANCE_KEY_STAGING, null, true);
-        }
-    };
 
     @Override
     public void onCreate() {
@@ -91,42 +38,16 @@ public class SampleApplication extends MultiDexApplication {
         } else {
             TapTalk.initializeAnalyticsForSampleApps("84f4d93bf3c34abe56fac7b2faaaa8b1");
         }
-//        TapTalk.init(
-//                this,
-//                TAPTALK_SDK_APP_KEY_ID,
-//                TAPTALK_SDK_APP_KEY_SECRET,
-//                R.drawable.ic_taptalk_logo,
-//                getString(R.string.app_name),
-//                TAPTALK_SDK_BASE_URL,
-//                TapTalkImplementationTypeCombine,
-//                tapListener);
-//        TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
-        TapTalk.initNewInstance(
-                INSTANCE_KEY_DEV,
+        TapTalk.init(
                 this,
-                "d1e5dfe23d1e00bf54bc2316f",
-                "NTQzMTBjZDI5YWNjNTEuMS4x/ZDY4MTg3Yjg/OTA0MTQwNDFhMDYw/MGI0YjA5NTJjM2Fh",
+                TAPTALK_SDK_APP_KEY_ID,
+                TAPTALK_SDK_APP_KEY_SECRET,
                 R.drawable.ic_taptalk_logo,
                 getString(R.string.app_name),
-                "https://engine-dev.taptalk.io",
+                TAPTALK_SDK_BASE_URL,
                 TapTalkImplementationTypeCombine,
-                tapListenerDev);
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-                        .build());
-
-        TapTalk.initNewInstance(
-                INSTANCE_KEY_STAGING,
-                this,
-                "b43b48745dfa0e44k1",
-                "MzI5XzEuMV/9hcHBfa2V5X2lkX2FuZD/oxNTM2OTk3ODc3MjI0NzI4",
-                R.drawable.ic_taptalk_logo,
-                getString(R.string.app_name),
-                "https://engine-stg.taptalk.io",
-                TapTalkImplementationTypeCombine,
-                tapListenerStaging);
+                tapListener);
+        TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
@@ -134,9 +55,34 @@ public class SampleApplication extends MultiDexApplication {
                         .build());
 
         TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
-        TapUI.getInstance(INSTANCE_KEY_DEV).setConnectionStatusIndicatorVisible(true);
-        TapUI.getInstance(INSTANCE_KEY_DEV).setLogoutButtonVisible(true);
-        TapUI.getInstance(INSTANCE_KEY_STAGING).setConnectionStatusIndicatorVisible(true);
-        TapUI.getInstance(INSTANCE_KEY_STAGING).setLogoutButtonVisible(true);
+        TapUI.getInstance(INSTANCE_KEY).setConnectionStatusIndicatorVisible(true);
+        TapUI.getInstance(INSTANCE_KEY).setLogoutButtonVisible(true);
     }
+
+    TapListener tapListener = new TapListener(INSTANCE_KEY) {
+        @Override
+        public void onTapTalkRefreshTokenExpired() {
+            TAPLoginActivity.start(getApplicationContext(), INSTANCE_KEY);
+        }
+
+        @Override
+        public void onTapTalkUnreadChatRoomBadgeCountUpdated(int unreadCount) {
+
+        }
+
+        @Override
+        public void onNotificationReceived(TAPMessageModel message) {
+            TapTalk.showTapTalkNotification(INSTANCE_KEY, message);
+        }
+
+        @Override
+        public void onUserLogout() {
+            TAPLoginActivity.start(getApplicationContext(), INSTANCE_KEY);
+        }
+
+        @Override
+        public void onTaskRootChatRoomClosed(Activity activity) {
+            TapUIRoomListActivity.start(activity, INSTANCE_KEY, null, true);
+        }
+    };
 }

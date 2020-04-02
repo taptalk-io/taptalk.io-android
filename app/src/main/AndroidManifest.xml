@@ -41,7 +41,7 @@
         </service>
 
         <activity
-            android:name="io.moselo.SampleApps.Activity.TAPLandingActivity"
+            android:name="io.moselo.SampleApps.Activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,7 +52,7 @@
         </activity>
 
         <activity
-            android:name="io.moselo.SampleApps.Activity.MainActivity"
+            android:name="io.moselo.SampleApps.Activity.TAPLandingActivity"
             android:screenOrientation="portrait" />
 
         <activity

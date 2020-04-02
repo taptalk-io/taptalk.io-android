@@ -15,7 +15,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String instanceKey = getIntent().getStringExtra("instanceKey");
+        //String instanceKey = getIntent().getStringExtra("instanceKey");
+        String instanceKey = "";
 
         if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
             TapUIRoomListActivity.start(MainActivity.this, instanceKey);

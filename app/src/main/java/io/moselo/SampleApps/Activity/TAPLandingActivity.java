@@ -6,9 +6,6 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import io.taptalk.TapTalk.Manager.AnalyticsManager;
-import io.taptalk.TapTalk.Manager.TAPDataManager;
-import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalkSample.R;
 
 import static io.moselo.SampleApps.SampleApplication.INSTANCE_KEY_DEV;
