@@ -141,7 +141,6 @@ public class TapUIRoomListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.e(TAG, "onViewCreated: initRoomList " + instanceKey);
         initViewModel();
         initListener();
         initView(view);
@@ -159,7 +158,6 @@ public class TapUIRoomListFragment extends Fragment {
         // TODO: 29 October 2018 UPDATE UNREAD BADGE
         TAPNotificationManager.getInstance(instanceKey).setRoomListAppear(true);
         new Thread(() -> TAPChatManager.getInstance(instanceKey).saveMessageToDatabase()).start();
-        Log.e(TAG, "onResume: updateQueryRoomListFromBackground");
         // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
         updateQueryRoomListFromBackground();
         addNetworkListener();
@@ -208,7 +206,6 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void initListener() {
-        Log.e(TAG, "initListener: " + instanceKey);
         TapTalk.getTapTalkInstance(instanceKey).removeGlobalChatListener();
         chatListener = new TAPChatListener() {
             @Override
@@ -445,29 +442,20 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void viewLoadedSequence() {
-        Log.e(TAG, "viewLoadedSequence: getInstanceKey " + instanceKey);
-        Log.e(TAG, "viewLoadedSequence: isShouldNotLoadFromAPI " + TAPRoomListViewModel.isShouldNotLoadFromAPI(instanceKey));
-        Log.e(TAG, "viewLoadedSequence: getActiveUser " + TAPChatManager.getInstance(instanceKey).getActiveUser());
-        Log.e(TAG, "viewLoadedSequence: checkTapTalkInitialized " + TapTalk.checkTapTalkInitialized());
-        Log.e(TAG, "viewLoadedSequence: isAuthenticated " + TapTalk.isAuthenticated(instanceKey));
         if (TAPRoomListViewModel.isShouldNotLoadFromAPI(instanceKey) && null != TAPChatManager.getInstance(instanceKey).getActiveUser()) {
             // Load room list from database if app is on foreground
-            Log.e(TAG, "viewLoadedSequence: load room list from DB");
             TAPDataManager.getInstance(instanceKey).getRoomList(true, dbListener);
         } else if (null != TAPChatManager.getInstance(instanceKey).getActiveUser()) {
             // Run full cycle if app is on background or on first open
             // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
-            Log.e(TAG, "viewLoadedSequence: runFullRefreshSequence");
             runFullRefreshSequence();
         } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated(instanceKey)) {
-            Log.e(TAG, "viewLoadedSequence: onTapTalkRefreshTokenExpired");
             AnalyticsManager.getInstance(instanceKey).trackEvent("View Loaded Sequence Failed");
             TapTalk.clearAllTapTalkData(instanceKey);
             for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
                 listener.onTapTalkRefreshTokenExpired();
             }
         } else if (null == TAPChatManager.getInstance(instanceKey).getActiveUser()) {
-            Log.e(TAG, "viewLoadedSequence: active user null");
             flSetupContainer.setVisibility(View.VISIBLE);
             showChatRoomSetupFailed();
             if (BuildConfig.DEBUG && null != activity) {

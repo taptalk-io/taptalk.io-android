@@ -139,7 +139,7 @@ public class TapTalk implements LifecycleObserver {
         return getTapTalkInstances().get(instanceKey);
     }
 
-    private static HashMap<String, TapTalk> getTapTalkInstances() {
+    public static HashMap<String, TapTalk> getTapTalkInstances() {
         return null == tapTalkInstances ? tapTalkInstances = new HashMap<>() : tapTalkInstances;
     }
 
@@ -181,7 +181,6 @@ public class TapTalk implements LifecycleObserver {
         this.clientAppName = clientAppName;
 
         // Init Base URL
-        Log.e(TAG, "TapTalk: " + instanceKey);
         TAPApiManager.setBaseUrlApi(instanceKey, generateApiBaseURL(appBaseURL));
         TAPApiManager.setBaseUrlSocket(instanceKey, generateSocketBaseURL(appBaseURL));
         TAPConnectionManager.getInstance(instanceKey).setWebSocketEndpoint(generateWSSBaseURL(appBaseURL));
@@ -213,8 +212,8 @@ public class TapTalk implements LifecycleObserver {
 
         // Init configs
         presetConfigs();
-        refreshRemoteConfigs(instanceKey, new TapCommonListener() {
-        });
+        // Refresh remote configs moved to init method
+//        refreshRemoteConfigs(this, instanceKey, new TapCommonListener() {});
 
         if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
             //TAPConnectionManager.getInstance(instanceKey).connect();
@@ -326,6 +325,7 @@ public class TapTalk implements LifecycleObserver {
             TapTalk instance =  new TapTalk(instanceKey, context, appKeyID, appKeySecret, userAgent, clientAppIcon, clientAppName, appBaseURL, type, listener);
             getTapTalkInstances().put(instanceKey, instance);
             getInstanceKeys().add(instanceKey);
+            refreshRemoteConfigs(instanceKey, new TapCommonListener() {});
         }
         return getTapTalkInstances().get(instanceKey);
     }
@@ -834,26 +834,16 @@ public class TapTalk implements LifecycleObserver {
         TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(senderId, new TAPDefaultDataView<TAPGetUserResponse>() {
             @Override
             public void onSuccess(TAPGetUserResponse response) {
-                Log.e(TAG, "onSuccess: " + message.getBody());
                 TAPUserModel userResponse = response.getUser();
                 if (null == userResponse) {
                     return;
                 }
-                Log.e(TAG, "onSuccess getXcUserID: " + sender.getXcUserID() + " - " + userResponse.getXcUserID());
-                Log.e(TAG, "onSuccess getName: " + sender.getName() + " - " + userResponse.getName());
-                Log.e(TAG, "onSuccess getUsername: " + sender.getUsername() + " - " + userResponse.getUsername());
-                Log.e(TAG, "onSuccess getEmail: " + sender.getEmail() + " - " + userResponse.getEmail());
-                Log.e(TAG, "onSuccess getPhoneNumber: " + sender.getPhoneNumber() + " - " + userResponse.getPhoneNumber());
                 if (sender.getXcUserID().equals(userResponse.getXcUserID()) &&
                         sender.getName().equals(userResponse.getName()) &&
                         (null == sender.getUsername() ||
                                 sender.getUsername().equals(userResponse.getUsername()))
                 ) {
-                    Log.e(TAG, "onSuccess: show notification");
                     showBackgroundNotification(instanceKey, message);
-                }
-                else {
-                    Log.e(TAG, "onSuccess: not owner instance");
                 }
             }
         });

@@ -39,8 +39,8 @@ public class TAPOldDataManager {
             long currentTimestamp = System.currentTimeMillis();
             boolean isOverOneWeek = TAPTimeFormatter.getInstance().isOverOneWeek(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp());
             if (BuildConfig.DEBUG) {
-                Log.e(TAG, "Start auto clean process: " + (TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists() && isOverOneWeek));
-                Log.e(TAG, "Last auto clean time: " + TAPTimeFormatter.getInstance().formatTime(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp(), "yyyy MMM dd - HH:mm:ss"));
+                Log.d(TAG, "Start auto clean process: " + (TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists() && isOverOneWeek));
+                Log.d(TAG, "Last auto clean time: " + TAPTimeFormatter.getInstance().formatTime(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp(), "yyyy MMM dd - HH:mm:ss"));
             }
 
             if (TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists() && isOverOneWeek) {
