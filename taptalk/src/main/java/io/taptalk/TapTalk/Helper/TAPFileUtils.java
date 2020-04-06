@@ -190,7 +190,13 @@ public class TAPFileUtils {
                 return uri.getLastPathSegment();
             } else if (isFileProviderUri(uri)) {
                 // FIXME: 23 January 2019
-                return TAPFileDownloadManager.getInstance().getFileProviderPath(uri);
+                for (String instanceKey : TapTalk.getInstanceKeys()) {
+                    String path = TAPFileDownloadManager.getInstance(instanceKey).getFileProviderPath(uri);
+                    if (null != path && !path.isEmpty()) {
+                        return path;
+                    }
+                }
+                return null;
             }
             return getDataColumn(context, uri, null, null);
         }

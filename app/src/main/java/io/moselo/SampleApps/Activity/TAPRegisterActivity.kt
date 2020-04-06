@@ -22,7 +22,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.ImageViewCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
@@ -69,6 +69,25 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private lateinit var glide: RequestManager
 
+    companion object {
+        fun start(
+                context: Activity,
+                instanceKey: String,
+                countryID: Int,
+                countryCallingCode: String,
+                countryFlagUrl: String,
+                phoneNumber: String
+        ) {
+            val intent = Intent(context, TAPRegisterActivity::class.java)
+            intent.putExtra(INSTANCE_KEY, instanceKey)
+            intent.putExtra(COUNTRY_ID, countryID)
+            intent.putExtra(COUNTRY_CALLING_CODE, countryCallingCode)
+            intent.putExtra(COUNTRY_FLAG_URL, countryFlagUrl)
+            intent.putExtra(MOBILE_NUMBER, phoneNumber)
+            context.startActivityForResult(intent, TAPDefaultConstant.RequestCode.REGISTER)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_register)
@@ -105,7 +124,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {
                 PERMISSION_CAMERA_CAMERA, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA -> {
-                    vm.profilePictureUri = TAPUtils.takePicture(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
+                    vm.profilePictureUri = TAPUtils.takePicture(instanceKey, this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
                 }
                 PERMISSION_READ_EXTERNAL_STORAGE_GALLERY -> {
                     TAPUtils.pickImageFromGallery(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_GALLERY, false)
@@ -115,6 +134,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
         when (resultCode) {
             Activity.RESULT_OK -> {
                 when (requestCode) {
@@ -134,7 +154,9 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPRegisterViewModel::class.java)
+        vm = ViewModelProvider(this,
+                TAPRegisterViewModel.TAPRegisterViewModelFactory(application, instanceKey))
+                .get(TAPRegisterViewModel::class.java)
         vm.countryID = intent.getIntExtra(COUNTRY_ID, 1)
         vm.countryCallingCode = intent.getStringExtra(COUNTRY_CALLING_CODE)
         vm.countryFlagUrl = intent.getStringExtra(COUNTRY_FLAG_URL)
@@ -267,15 +289,15 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun checkUsername(hasFocus: Boolean) {
-        TAPDataManager.getInstance().cancelCheckUsernameApiCall()
+        TAPDataManager.getInstance(instanceKey).cancelCheckUsernameApiCall()
         if (et_username.text.isNotEmpty() && et_username.text.length in 4..32 &&
                 et_username.text.matches(Regex("[a-z0-9._]*")) &&
                 et_username.text[0].isLetter() &&
                 et_username.text[et_username.text.lastIndex].isLetterOrDigit()) {
             // Valid username, continue to check if username exists
-            TAPDataManager.getInstance().checkUsernameExists(et_username.text.toString(), checkUsernameView)
+            TAPDataManager.getInstance(instanceKey).checkUsernameExists(et_username.text.toString(), checkUsernameView)
         } else if (et_username.text.isEmpty()) {
-            AnalyticsManager.getInstance().trackEvent("Username Empty")
+            AnalyticsManager.getInstance(instanceKey).trackEvent("Username Empty")
             // Not filled
             vm.formCheck[indexUsername] = stateEmpty
             tv_label_username_error.visibility = View.GONE
@@ -283,7 +305,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             checkContinueButtonAvailability()
         } else {
             // Invalid username
-            AnalyticsManager.getInstance().trackEvent("Username Invalid")
+            AnalyticsManager.getInstance(instanceKey).trackEvent("Username Invalid")
             vm.formCheck[indexUsername] = stateInvalid
             if (et_username.text.length in 4..32) {
                 tv_label_username_error.text = getString(R.string.tap_error_invalid_username)
@@ -304,12 +326,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
             updateEditTextBackground(et_email_address, hasFocus)
         } else if (et_email_address.text.isEmpty()) {
             // Not filled
-            AnalyticsManager.getInstance().trackEvent("Email Empty")
+            AnalyticsManager.getInstance(instanceKey).trackEvent("Email Empty")
             vm.formCheck[indexEmail] = stateEmpty
             tv_label_email_address_error.visibility = View.GONE
             updateEditTextBackground(et_email_address, hasFocus)
         } else {
-            AnalyticsManager.getInstance().trackEvent("Email Invalid")
+            AnalyticsManager.getInstance(instanceKey).trackEvent("Email Invalid")
             // Invalid email address
             vm.formCheck[indexEmail] = stateInvalid
             tv_label_email_address_error.visibility = View.VISIBLE
@@ -328,13 +350,13 @@ class TAPRegisterActivity : TAPBaseActivity() {
             updateEditTextBackground(cl_password, hasFocus)
         } else if (et_password.text.isEmpty()) {
             // Not filled
-            AnalyticsManager.getInstance().trackEvent("Password Empty")
+            AnalyticsManager.getInstance(instanceKey).trackEvent("Password Empty")
             vm.formCheck[indexPassword] = stateEmpty
             tv_label_password_error.visibility = View.GONE
             updateEditTextBackground(cl_password, hasFocus)
         } else {
             // Invalid password
-            AnalyticsManager.getInstance().trackEvent("Password Invalid")
+            AnalyticsManager.getInstance(instanceKey).trackEvent("Password Invalid")
             vm.formCheck[indexPassword] = stateInvalid
             tv_label_password_error.visibility = View.VISIBLE
             cl_password.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
@@ -440,7 +462,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     }
 
     private fun register() {
-        TAPDataManager.getInstance().register(
+        TAPDataManager.getInstance(instanceKey).register(
                 et_full_name.text.toString(),
                 et_username.text.toString(),
                 vm.countryID,
@@ -522,7 +544,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
     private fun uploadProfilePicture() {
         vm.isUploadingProfilePicture = true
         pb_profile_picture_progress.progress = 0
-        TAPFileUploadManager.getInstance().uploadProfilePicture(this@TAPRegisterActivity, vm.profilePictureUri, vm.myUserModel.userID)
+        TAPFileUploadManager.getInstance(instanceKey).uploadProfilePicture(this@TAPRegisterActivity, vm.profilePictureUri, vm.myUserModel.userID)
     }
 
     private fun finishRegisterAndOpenRoomList() {
@@ -530,10 +552,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
         finish()
     }
 
-    private val profilePicturePickerListener = object : TAPAttachmentListener() {
+    private val profilePicturePickerListener = object : TAPAttachmentListener(instanceKey) {
 
         override fun onCameraSelected() {
-            vm.profilePictureUri = TAPUtils.takePicture(this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
+            vm.profilePictureUri = TAPUtils.takePicture(instanceKey, this@TAPRegisterActivity, PICK_PROFILE_IMAGE_CAMERA)
         }
 
         override fun onGallerySelected() {
@@ -788,14 +810,14 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onSuccess(response: TAPRegisterResponse?) {
-            AnalyticsManager.getInstance().identifyUser()
-            AnalyticsManager.getInstance().trackEvent("Register Success")
-            TapTalk.authenticateWithAuthTicket(response?.ticket ?: "", true,
+            AnalyticsManager.getInstance(instanceKey).identifyUser()
+            AnalyticsManager.getInstance(instanceKey).trackEvent("Register Success")
+            TapTalk.authenticateWithAuthTicket(instanceKey,response?.ticket ?: "", true,
                     object : TapCommonListener() {
                         override fun onSuccess(successMessage: String?) {
-                            AnalyticsManager.getInstance().identifyUser()
-                            TAPDataManager.getInstance().saveMyCountryCode(vm.countryCallingCode)
-                            TAPDataManager.getInstance().saveMyCountryFlagUrl(vm.countryFlagUrl)
+                            AnalyticsManager.getInstance(instanceKey).identifyUser()
+                            TAPDataManager.getInstance(instanceKey).saveMyCountryCode(vm.countryCallingCode)
+                            TAPDataManager.getInstance(instanceKey).saveMyCountryFlagUrl(vm.countryFlagUrl)
                             if (null != vm.profilePictureUri) {
                                 uploadProfilePicture()
                             } else {
@@ -810,7 +832,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                                     .setMessage(errorMessage)
                                     .setPrimaryButtonTitle(getString(R.string.tap_retry))
                                     .setPrimaryButtonListener(true) {
-                                        TapTalk.authenticateWithAuthTicket(response?.ticket
+                                        TapTalk.authenticateWithAuthTicket(instanceKey,response?.ticket
                                                 ?: "", true, this)
                                     }
                                     .setCancelable(false)
@@ -822,7 +844,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onError(error: TAPErrorModel?) {
-            AnalyticsManager.getInstance().trackErrorEvent("Register Failed", error?.code, error?.message)
+            AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Register Failed", error?.code, error?.message)
             showErrorDialog(error?.message ?: getString(R.string.tap_error_message_general))
         }
 
@@ -836,7 +858,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             val action = intent?.action
             when (action) {
                 UploadProgressLoading -> {
-                    pb_profile_picture_progress.progress = TAPFileUploadManager.getInstance()
+                    pb_profile_picture_progress.progress = TAPFileUploadManager.getInstance(instanceKey)
                             .getUploadProgressPercent(vm.myUserModel.userID) ?: 0
                 }
                 UploadProgressFinish -> {

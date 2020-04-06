@@ -4,8 +4,11 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,22 +17,47 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 
 public class TAPRoomListViewModel extends AndroidViewModel {
+    private String instanceKey = "";
     private List<TAPRoomListModel> roomList;
     private Map<String, TAPRoomListModel> roomPointer;
     private Map<String, TAPRoomListModel> selectedRooms;
-    private boolean isSelecting;
-    private static boolean isShouldNotLoadFromAPI = false;
-    private boolean isDoneFirstSetup = false;
-    private boolean isDoneFirstApiSetup = false;
+    private String myUserID;
     private int roomBadgeCount;
     private int lastBadgeCount;
-    private String myUserID;
+    private boolean isSelecting;
+    private boolean isDoneFirstSetup = false;
+    private boolean isDoneFirstApiSetup = false;
 
-    public TAPRoomListViewModel(@NonNull Application application) {
+    private static HashMap<String, Boolean> isShouldNotLoadFromAPI = new HashMap<>();
+
+    public static class TAPRoomListViewModelFactory implements ViewModelProvider.Factory {
+        private Application application;
+        private String instanceKey;
+
+        public TAPRoomListViewModelFactory(Application application, String instanceKey) {
+            this.application = application;
+            this.instanceKey = instanceKey;
+        }
+
+        @NonNull
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) new TAPRoomListViewModel(application, instanceKey);
+        }
+    }
+
+    public TAPRoomListViewModel(@NonNull Application application, String instanceKey) {
         super(application);
-        myUserID = null != TAPChatManager.getInstance().getActiveUser() ?
-                TAPChatManager.getInstance().getActiveUser().getUserID()
-                : null;
+        this.instanceKey = instanceKey;
+    }
+
+    public String getInstanceKey() {
+        return instanceKey;
+    }
+
+    public void setInstanceKey(String instanceKey) {
+        this.instanceKey = instanceKey;
     }
 
     public List<TAPRoomListModel> getRoomList() {
@@ -81,19 +109,26 @@ public class TAPRoomListViewModel extends AndroidViewModel {
     }
 
     public String getMyUserID() {
-        return myUserID;
+        return null == myUserID ?
+                null != TAPChatManager.getInstance(instanceKey).getActiveUser() ?
+                        myUserID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID() :
+                        null
+                : myUserID;
     }
 
     public void setMyUserID(String myUserID) {
         this.myUserID = myUserID;
     }
 
-    public static boolean isShouldNotLoadFromAPI() {
-        return isShouldNotLoadFromAPI;
+    public static Boolean isShouldNotLoadFromAPI(String instanceKey) {
+        if (null == isShouldNotLoadFromAPI.get(instanceKey)) {
+            isShouldNotLoadFromAPI.put(instanceKey, false);
+        }
+        return isShouldNotLoadFromAPI.get(instanceKey);
     }
 
-    public static void setShouldNotLoadFromAPI(boolean shouldNotLoadFromAPI) {
-        isShouldNotLoadFromAPI = shouldNotLoadFromAPI;
+    public static void setShouldNotLoadFromAPI(String instanceKey, boolean shouldNotLoadFromAPI) {
+        isShouldNotLoadFromAPI.put(instanceKey, shouldNotLoadFromAPI);
     }
 
     public boolean isDoneFirstSetup() {

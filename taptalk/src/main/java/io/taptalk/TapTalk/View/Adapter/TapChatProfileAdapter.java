@@ -64,11 +64,13 @@ import static io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel.TYP
 
 public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemModel, TAPBaseViewHolder<TapChatProfileItemModel>> {
 
+    private String instanceKey = "";
     private TAPChatProfileActivity.ChatProfileInterface chatProfileInterface;
     private RequestManager glide;
     private int gridWidth;
 
-    public TapChatProfileAdapter(List<TapChatProfileItemModel> items, TAPChatProfileActivity.ChatProfileInterface chatProfileInterface, RequestManager glide) {
+    public TapChatProfileAdapter(String instanceKey, List<TapChatProfileItemModel> items, TAPChatProfileActivity.ChatProfileInterface chatProfileInterface, RequestManager glide) {
+        this.instanceKey = instanceKey;
         setItems(items, true);
         gridWidth = TAPUtils.getScreenWidth() / 3;
         this.chatProfileInterface = chatProfileInterface;
@@ -265,7 +267,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                 return;
             }
 
-            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(message.getLocalID());
+            Integer downloadProgressValue = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(message.getLocalID());
             clContainer.getLayoutParams().width = gridWidth;
             ivThumbnail.setImageDrawable(null);
 
@@ -302,7 +304,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 
             String fileID = (String) message.getData().get(FILE_ID);
 
-            if (TAPCacheManager.getInstance(itemView.getContext()).containsCache(fileID) || TAPFileDownloadManager.getInstance().checkPhysicalFileExists(message)) {
+            if (TAPCacheManager.getInstance(itemView.getContext()).containsCache(fileID) || TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(message)) {
                 // Image exists in cache / file exists in storage
                 if (message.getType() == TYPE_VIDEO && null != message.getData()) {
                     Number duration = (Number) message.getData().get(DURATION);
@@ -328,7 +330,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                             // Get full-size thumbnail from Uri
                             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                             String dataUri = (String) message.getData().get(FILE_URI);
-                            Uri videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), fileID);
+                            Uri videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message.getRoom().getRoomID(), fileID);
                             try {
                                 retriever.setDataSource(itemView.getContext(), videoUri);
                                 mediaThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
@@ -385,7 +387,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                     pbProgress.setMax(100);
                     pbProgress.setProgress(downloadProgressValue);
                     clContainer.setOnClickListener(v -> chatProfileInterface.onCancelDownloadClicked(message));
-                    //Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(item.getLocalID());
+                    //Long downloadProgressBytes = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressBytes(item.getLocalID());
                     //if (null != downloadProgressBytes) {
                     //    tvMediaInfo.setText(TAPUtils.getFileDisplayProgress(item, downloadProgressBytes));
                     //}

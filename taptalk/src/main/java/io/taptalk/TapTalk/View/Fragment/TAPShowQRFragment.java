@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Fragment;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import io.taptalk.TapTalk.Helper.QRCode.WriterException;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 
 public class TAPShowQRFragment extends Fragment {
 
@@ -30,6 +32,8 @@ public class TAPShowQRFragment extends Fragment {
     private ImageView ivQRCode;
     private Button btnScanQRCode;
 
+    private TAPBaseActivity activity;
+
     public TAPShowQRFragment() {
     }
 
@@ -38,6 +42,12 @@ public class TAPShowQRFragment extends Fragment {
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.activity = (TAPBaseActivity) context;
     }
 
     @Override
@@ -58,7 +68,7 @@ public class TAPShowQRFragment extends Fragment {
         btnScanQRCode = view.findViewById(R.id.btn_scan_qr_code);
 
         try {
-            bitmap = encodeAsBitmap("id:" + TAPChatManager.getInstance().getActiveUser().getUserID());
+            bitmap = encodeAsBitmap("id:" + TAPChatManager.getInstance(activity.instanceKey).getActiveUser().getUserID());
             ivQRCode.setImageBitmap(bitmap);
         } catch (Exception e) {
             e.printStackTrace();

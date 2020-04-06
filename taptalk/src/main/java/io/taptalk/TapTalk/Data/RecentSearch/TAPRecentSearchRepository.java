@@ -12,8 +12,8 @@ public class TAPRecentSearchRepository {
     private TAPRecentSearchDao recentSearchDao;
     private LiveData<List<TAPRecentSearchEntity>> allRecentSearch;
 
-    public TAPRecentSearchRepository(Application application) {
-        TapTalkDatabase db = TapTalkDatabase.getDatabase(application);
+    public TAPRecentSearchRepository(String instanceKey, Application application) {
+        TapTalkDatabase db = TapTalkDatabase.getDatabase(instanceKey, application);
         recentSearchDao = db.recentSearchDao();
         allRecentSearch = recentSearchDao.getAllRecentSearchLive();
     }

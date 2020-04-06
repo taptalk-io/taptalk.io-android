@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
+import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_CAPTION_LENGTH;
@@ -79,14 +81,21 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                 ivVideoIcon.setVisibility(View.VISIBLE);
                 ivLoading.clearAnimation();
                 ivLoading.setVisibility(View.GONE);
-                ivImagePreview.setOnClickListener(v -> TAPUtils.openVideoPreview(context, mediaPreview.getUri()));
+                ivImagePreview.setOnClickListener(v ->
+                        TAPVideoPlayerActivity.start(
+                                context,
+                                ((TAPBaseActivity) context).instanceKey,
+                                mediaPreview.getUri()));
                 if (null != mediaPreview.isSizeExceedsLimit() && mediaPreview.isSizeExceedsLimit()) {
                     etCaption.setVisibility(View.GONE);
                     tvTypingIndicator.setVisibility(View.GONE);
                     vSeparator.setVisibility(View.GONE);
                     clErrorMessage.setVisibility(View.VISIBLE);
                     tvErrorTitle.setText(String.format(context.getString(R.string.tap_format_s_error_exceed_upload_limit),
-                            TAPUtils.getStringSizeLengthFile(TAPFileUploadManager.getInstance().getMaxFileUploadSize())));
+                            TAPUtils.getStringSizeLengthFile(
+                                    TAPFileUploadManager.getInstance(
+                                            ((TAPBaseActivity) context).instanceKey)
+                                            .getMaxFileUploadSize())));
                 } else {
                     etCaption.setVisibility(View.VISIBLE);
                     tvTypingIndicator.setVisibility(View.VISIBLE);

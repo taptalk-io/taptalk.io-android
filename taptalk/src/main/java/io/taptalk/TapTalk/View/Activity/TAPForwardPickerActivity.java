@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
@@ -13,7 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +30,7 @@ import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -36,8 +38,10 @@ import io.taptalk.TapTalk.View.Adapter.TAPSearchChatAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPSearchChatViewModel;
 import io.taptalk.TapTalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.EMPTY_STATE;
@@ -54,6 +58,18 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
 
     private TAPSearchChatViewModel vm;
     private TAPSearchChatAdapter adapter;
+
+    public static void start(
+            Activity context,
+            String instanceKey,
+            TAPMessageModel message
+    ) {
+        Intent intent = new Intent(context, TAPForwardPickerActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(MESSAGE, message);
+        context.startActivityForResult(intent, FORWARD_MESSAGE);
+        context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +92,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPSearchChatViewModel.class);
+        vm = new ViewModelProvider(this).get(TAPSearchChatViewModel.class);
         vm.setSelectedMessage(getIntent().getParcelableExtra(MESSAGE));
     }
 
@@ -95,7 +111,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         ivButtonSearch.setOnClickListener(v -> showSearchBar());
         ivButtonClearText.setOnClickListener(v -> etSearch.setText(""));
 
-        adapter = new TAPSearchChatAdapter(vm.getSearchResults(), Glide.with(this), roomListInterface);
+        adapter = new TAPSearchChatAdapter(instanceKey, vm.getSearchResults(), Glide.with(this), roomListInterface);
         rvForwardList.setAdapter(adapter);
         rvForwardList.setHasFixedSize(false);
         rvForwardList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -143,13 +159,13 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
             showRecentChats();
             ivButtonClearText.setVisibility(View.GONE);
         } else {
-            TAPDataManager.getInstance().searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
+            TAPDataManager.getInstance(instanceKey).searchAllRoomsFromDatabase(vm.getSearchKeyword(), roomSearchListener);
             ivButtonClearText.setVisibility(View.VISIBLE);
         }
     }
 
     private void setRecentChatsFromDatabase() {
-        TAPDataManager.getInstance().getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
+        TAPDataManager.getInstance(instanceKey).getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
                 if (null != entities && entities.size() > 0) {
@@ -226,10 +242,10 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                 }
                 runOnUiThread(() -> {
                     adapter.setItems(vm.getSearchResults(), false);
-                    TAPDataManager.getInstance().searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
+                    TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
                 });
             } else {
-                TAPDataManager.getInstance().searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
+                TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
             }
         }
     };
@@ -248,7 +264,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                     // Convert contact to room model
                     // TODO: 18 October 2018 LENGKAPIN DATA
                     TAPRoomModel room = new TAPRoomModel(
-                            TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), contact.getUserID()),
+                            TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), contact.getUserID()),
                             contact.getName(),
                             TYPE_PERSONAL,
                             contact.getAvatarURL(),

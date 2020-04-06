@@ -24,8 +24,10 @@ public class TapTalkEndAppService extends JobIntentService {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        new Thread(() -> TAPNotificationManager.getInstance().saveNotificationMessageMapToPreference()).start();
-        TAPChatManager.getInstance().saveIncomingMessageAndDisconnect();
+        for (String instanceKey : TapTalk.getInstanceKeys()) {
+            new Thread(() -> TAPNotificationManager.getInstance(instanceKey).saveNotificationMessageMapToPreference()).start();
+            TAPChatManager.getInstance(instanceKey).saveIncomingMessageAndDisconnect();
+        }
         stopSelf();
     }
 }

@@ -44,12 +44,12 @@ import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.D
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.NOT_CONNECTED;
 
 public class TAPConnectionManager {
+    private static final String TAG = TAPConnectionManager.class.getSimpleName();
+    private static HashMap<String, TAPConnectionManager> instances;
 
-    private String TAG = TAPConnectionManager.class.getSimpleName();
-    private static TAPConnectionManager instance;
+    private String instanceKey = "";
     private WebSocketClient webSocketClient;
     @NonNull private String webSocketEndpoint = "wss://engine.taptalk.io/connect";
-    //private String webSocketEndpoint = "ws://echo.websocket.org";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;
     private List<TapTalkSocketInterface> socketListeners;
@@ -62,12 +62,21 @@ public class TAPConnectionManager {
         CONNECTING, CONNECTED, DISCONNECTED, NOT_CONNECTED
     }
 
-    public static TAPConnectionManager getInstance() {
-        return instance == null ? (instance = new TAPConnectionManager()) : instance;
+    public static TAPConnectionManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPConnectionManager instance = new TAPConnectionManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
     }
 
-    public TAPConnectionManager() {
+    private static HashMap<String, TAPConnectionManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public TAPConnectionManager(String instanceKey) {
         try {
+            this.instanceKey = instanceKey;
 //            webSocketUri = new URI(webSocketEndpoint);
 //            initWebSocketClient(webSocketUri);
             try {
@@ -132,7 +141,7 @@ public class TAPConnectionManager {
                 if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
                     connectionStatus = DISCONNECTED;
                 }
-                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+                TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
                 List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
                 if (null != socketListeners && !socketListenersCopy.isEmpty() && code != CLOSE_FOR_RECONNECT_CODE) {
                     for (TapTalkSocketInterface listener : socketListenersCopy) {
@@ -147,7 +156,7 @@ public class TAPConnectionManager {
                 if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
                     connectionStatus = DISCONNECTED;
                 }
-                TAPChatManager.getInstance().setNeedToCalledUpdateRoomStatusAPI(true);
+                TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
                 List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
                 if (null != socketListeners && !socketListenersCopy.isEmpty()) {
                     for (TapTalkSocketInterface listener : socketListenersCopy)
@@ -159,14 +168,13 @@ public class TAPConnectionManager {
 
     private void initNetworkListener() {
         TapTalkNetworkInterface networkListener = () -> {
-            if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
-                if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED ||
-                        TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED) {
-                    TAPDataManager.getInstance().validateAccessToken(validateAccessView);
-                }
+            if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable() &&
+                    (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED ||
+                    TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED)) {
+                TAPDataManager.getInstance(instanceKey).validateAccessToken(validateAccessView);
             }
         };
-        TAPNetworkStateManager.getInstance().addNetworkListener(networkListener);
+        TAPNetworkStateManager.getInstance(instanceKey).addNetworkListener(networkListener);
     }
 
     public void addSocketListener(TapTalkSocketInterface listener) {
@@ -197,7 +205,7 @@ public class TAPConnectionManager {
 
     public void connect() {
         if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) &&
-                TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
+                TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext)) {
             try {
                 webSocketUri = new URI(getWebSocketEndpoint());
                 Map<String, String> webSocketHeader = new HashMap<>();
@@ -215,7 +223,7 @@ public class TAPConnectionManager {
     public void connect(TapCommonInterface listener) {
         if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
             listener.onError(ERROR_CODE_ALREADY_CONNECTED, ERROR_MESSAGE_ALREADY_CONNECTED);
-        } else if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(appContext)) {
+        } else if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext)) {
             listener.onError(ERROR_CODE_NO_INTERNET, ERROR_MESSAGE_NO_INTERNET);
         } else {
             try {
@@ -267,23 +275,26 @@ public class TAPConnectionManager {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (DISCONNECTED == connectionStatus
-                        && !TAPChatManager.getInstance().isFinishChatFlow()
-                        && TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
+                if (DISCONNECTED == connectionStatus &&
+                        !TAPChatManager.getInstance(instanceKey).isFinishChatFlow() &&
+                        TAPNetworkStateManager.getInstance(instanceKey)
+                                .hasNetworkConnection(TapTalk.appContext)) {
                     connectionStatus = CONNECTING;
                     triggerOnSocketConnectingListener();
-                    TAPDataManager.getInstance().validateAccessToken(validateAccessView);
+                    TAPDataManager.getInstance(instanceKey).validateAccessToken(validateAccessView);
                 }
             }
         }, 100);
     }
 
     public void reconnectOnly() {
-        if (DISCONNECTED == connectionStatus && !TAPChatManager.getInstance().isFinishChatFlow()) {
+        if (DISCONNECTED == connectionStatus &&
+                !TAPChatManager.getInstance(instanceKey).isFinishChatFlow()) {
             connectionStatus = CONNECTING;
             triggerOnSocketConnectingListener();
             closeConnectionAndReconnect();
-        } else if (CONNECTING == connectionStatus && !TAPChatManager.getInstance().isFinishChatFlow()) {
+        } else if (CONNECTING == connectionStatus &&
+                !TAPChatManager.getInstance(instanceKey).isFinishChatFlow()) {
             closeConnectionAndReconnect();
         }
     }
@@ -312,16 +323,16 @@ public class TAPConnectionManager {
     private void createHeaderForConnectWebSocket(Map<String, String> websocketHeader) {
         //Map<String, String> websocketHeader = new HashMap<>();
 
-        String APP_KEY_ID = TAPDataManager.getInstance().getApplicationID();
-        String APP_KEY_SECRET = TAPDataManager.getInstance().getApplicationSecret();
+        String APP_KEY_ID = TAPDataManager.getInstance(instanceKey).getApplicationID();
+        String APP_KEY_SECRET = TAPDataManager.getInstance(instanceKey).getApplicationSecret();
         String appKey = Base64.encodeToString((APP_KEY_ID + ":" + APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
 
-        String userAgent = TAPDataManager.getInstance().getUserAgent();
+        String userAgent = TAPDataManager.getInstance(instanceKey).getUserAgent();
         String deviceID = Settings.Secure.getString(appContext.getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceOsVersion = "v" + android.os.Build.VERSION.RELEASE + "b" + android.os.Build.VERSION.SDK_INT;
 
-        if (TAPDataManager.getInstance().checkAccessTokenAvailable()) {
-            websocketHeader.put("Authorization", "Bearer " + TAPDataManager.getInstance().getAccessToken());
+        if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
+            websocketHeader.put("Authorization", "Bearer " + TAPDataManager.getInstance(instanceKey).getAccessToken());
             websocketHeader.put("App-Key", appKey);
             websocketHeader.put("Device-Identifier", deviceID);
             websocketHeader.put("Device-Model", android.os.Build.MODEL);
@@ -338,7 +349,7 @@ public class TAPConnectionManager {
         public void onSuccess(TAPErrorModel response) {
             if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
                 reconnectOnly();
-            } else if (TapTalk.isAutoConnectEnabled() && NOT_CONNECTED == connectionStatus) {
+            } else if (TapTalk.isAutoConnectEnabled(instanceKey) && NOT_CONNECTED == connectionStatus) {
                 connect();
             }
         }

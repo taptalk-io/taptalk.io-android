@@ -26,12 +26,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 public class TAPMessageRepository {
 
     private static final String TAG = TAPMessageRepository.class.getSimpleName();
+    private String instanceKey = "";
     private TAPMessageDao messageDao;
     private LiveData<List<TAPMessageEntity>> allMessages;
     private List<TAPMessageEntity> allMessageList = new ArrayList<>();
 
-    public TAPMessageRepository(Application application) {
-        TapTalkDatabase db = TapTalkDatabase.getDatabase(application);
+    public TAPMessageRepository(String instanceKey, Application application) {
+        this.instanceKey = instanceKey;
+        TapTalkDatabase db = TapTalkDatabase.getDatabase(instanceKey, application);
         messageDao = db.messageDao();
         allMessages = messageDao.getAllMessageLiveData();
     }
@@ -75,8 +77,8 @@ public class TAPMessageRepository {
                 return;
             }
             messageDao.insert(messageEntities);
-            if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages) {
-                TAPChatManager.getInstance().clearSaveMessages();
+            if (0 < TAPChatManager.getInstance(instanceKey).getSaveMessages().size() && isClearSaveMessages) {
+                TAPChatManager.getInstance(instanceKey).clearSaveMessages();
             }
         }).start();
     }
@@ -88,8 +90,8 @@ public class TAPMessageRepository {
                 listener.onInsertFailed("Could not save messages, inserted list is either empty or null.");
             } else {
                 messageDao.insert(messageEntities);
-                if (0 < TAPChatManager.getInstance().getSaveMessages().size() && isClearSaveMessages) {
-                    TAPChatManager.getInstance().clearSaveMessages();
+                if (0 < TAPChatManager.getInstance(instanceKey).getSaveMessages().size() && isClearSaveMessages) {
+                    TAPChatManager.getInstance(instanceKey).clearSaveMessages();
                 }
                 listener.onInsertFinished();
             }
@@ -148,7 +150,7 @@ public class TAPMessageRepository {
             try {
                 if (0 < saveMessages.size()) {
                     messageDao.insert(saveMessages);
-                    TAPChatManager.getInstance().clearSaveMessages();
+                    TAPChatManager.getInstance(instanceKey).clearSaveMessages();
                 }
                 List<TAPMessageEntity> entities = messageDao.getAllRoomList();
 
@@ -215,7 +217,7 @@ public class TAPMessageRepository {
 
     public void getRoom(String myID, TAPUserModel otherUserModel, final TAPDatabaseListener listener) {
         new Thread(() -> {
-            String roomID = TAPChatManager.getInstance().arrangeRoomId(myID, otherUserModel.getUserID());
+            String roomID = TAPChatManager.getInstance(instanceKey).arrangeRoomId(myID, otherUserModel.getUserID());
             TAPMessageEntity room = messageDao.getRoom(roomID);
             if (null != room && null != room.getRoomName() && !room.getRoomName().isEmpty()) {
                 // Get room model from saved message

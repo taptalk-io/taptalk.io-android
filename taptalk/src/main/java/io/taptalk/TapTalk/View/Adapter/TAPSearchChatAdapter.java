@@ -45,6 +45,8 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
@@ -53,16 +55,21 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACT
 
 public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAPBaseViewHolder<TAPSearchChatModel>> {
 
+    private String instanceKey;
     private String searchKeyword;
     private RequestManager glide;
     private TapTalkRoomListInterface roomListInterface;
 
-    public TAPSearchChatAdapter(List<TAPSearchChatModel> items, RequestManager glide) {
+    // Search chat constructor
+    public TAPSearchChatAdapter(String instanceKey, List<TAPSearchChatModel> items, RequestManager glide) {
+        this.instanceKey = instanceKey;
         setItems(items, true);
         this.glide = glide;
     }
 
-    public TAPSearchChatAdapter(List<TAPSearchChatModel> items, RequestManager glide, TapTalkRoomListInterface roomListInterface) {
+    // Forward picker constructor
+    public TAPSearchChatAdapter(String instanceKey, List<TAPSearchChatModel> items, RequestManager glide, TapTalkRoomListInterface roomListInterface) {
+        this.instanceKey = instanceKey;
         setItems(items, true);
         this.glide = glide;
         this.roomListInterface = roomListInterface;
@@ -113,7 +120,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                 tvClearHistory.setVisibility(View.GONE);
             } else {
                 tvClearHistory.setVisibility(View.VISIBLE);
-                tvClearHistory.setOnClickListener(v -> TAPDataManager.getInstance().deleteAllRecentSearch());
+                tvClearHistory.setOnClickListener(v -> TAPDataManager.getInstance(instanceKey).deleteAllRecentSearch());
             }
         }
     }
@@ -183,7 +190,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             if (null != item.getMessage() && null != item.getMessage().getRoomType() && item.getMessage().getRoomType() == TAPDefaultConstant.RoomType.TYPE_GROUP) {
                 tvLastMessage.setText(Html.fromHtml(String.format("<font color='#%s'>%s: </font> %s", colorSender.length() > 6 ? colorSender.substring(colorSender.length() - 6) : colorSender, TAPUtils.getFirstWordOfString(item.getMessage().getUserFullName()), highlightedText)));
             } else {
-                tvLastMessage.setText(TAPChatManager.getInstance().getActiveUser().getUserID().equals(message.getUserID()) ?
+                tvLastMessage.setText(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUserID()) ?
                         Html.fromHtml(String.format("%s: %s", itemView.getContext().getString(R.string.tap_you), highlightedText)) : Html.fromHtml(highlightedText));
             }
 
@@ -193,7 +200,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             // Change Status Message Icon
             // Message is read
-            if (null != message.getIsRead() && message.getIsRead() && !TapUI.getInstance().isReadStatusHidden()) {
+            if (null != message.getIsRead() && message.getIsRead() && !TapUI.getInstance(instanceKey).isReadStatusHidden()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
             }
@@ -218,7 +225,9 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSending)));
             }
 
-            clContainer.setOnClickListener(v -> TAPUtils.startChatActivity(itemView.getContext(),
+            clContainer.setOnClickListener(v -> TapUIChatActivity.start(
+                    itemView.getContext(),
+                    ((TAPBaseActivity) itemView.getContext()).instanceKey,
                     message.getRoomID(),
                     message.getRoomName(),
                     // TODO: 18 October 2018 REMOVE CHECK
@@ -268,9 +277,9 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             TAPUserModel user = null;
             TAPRoomModel group = null;
             if (room.getRoomType() == TYPE_PERSONAL) {
-                user = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()));
+                user = TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()));
             } else if (room.getRoomType() == TYPE_GROUP || room.getRoomType() == TYPE_TRANSACTION) {
-                group = TAPGroupManager.Companion.getGetInstance().getGroupData(room.getRoomID());
+                group = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(room.getRoomID());
             }
 
             // Load avatar
@@ -370,9 +379,9 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             clContainer.setOnClickListener(v -> {
                 if (null == roomListInterface) {
                     // Open chat room
-                    TAPUtils.startChatActivity(itemView.getContext(), room);
+                    TapUIChatActivity.start(itemView.getContext(), ((TAPBaseActivity) itemView.getContext()).instanceKey, room);
                     TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
-                    TAPDataManager.getInstance().insertToDatabase(recentItem);
+                    TAPDataManager.getInstance(instanceKey).insertToDatabase(recentItem);
                 } else {
                     // Trigger listener
                     roomListInterface.onRoomSelected(item.getRoom());

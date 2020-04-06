@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import io.taptalk.TapTalk.Helper.TAPQRDetection;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalk.View.Activity.TAPScanResultActivity;
 import io.taptalk.TapTalk.R;
 
@@ -42,7 +43,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
     private CameraSource cameraSource;
     private BarcodeDetector barcodeDetector;
 
-    private Activity activity;
+    private TAPBaseActivity activity;
 
     public interface ScanListener {
         void onScanSuccess(String textValue);
@@ -62,7 +63,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        this.activity = (Activity) context;
+        this.activity = (TAPBaseActivity) context;
     }
 
     @Override
@@ -86,11 +87,8 @@ public class TAPBarcodeScannerFragment extends Fragment {
 
         ScanListener scanListener = (String textValue) -> {
             if (!activity.isFinishing()) {
-                Intent intent = new Intent(activity, TAPScanResultActivity.class);
-                intent.putExtra(SCAN_RESULT, textValue);
-                startActivity(intent);
+                TAPScanResultActivity.start(activity, activity.instanceKey, textValue);
                 activity.finish();
-                activity.overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
             }
         };
 

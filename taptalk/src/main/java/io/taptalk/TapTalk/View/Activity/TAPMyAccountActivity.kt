@@ -21,7 +21,7 @@ import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.DataSource
@@ -70,6 +70,20 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private lateinit var glide: RequestManager
 
+    companion object {
+        fun start(
+                context: Context,
+                instanceKey: String
+        ) {
+            val intent = Intent(context, TAPMyAccountActivity::class.java)
+            intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
+            context.startActivity(intent)
+            if (context is Activity) {
+                context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_my_account)
@@ -103,7 +117,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {
                 PERMISSION_CAMERA_CAMERA, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA -> {
-                    vm.profilePictureUri = TAPUtils.takePicture(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
+                    vm.profilePictureUri = TAPUtils.takePicture(instanceKey, this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
                 }
                 PERMISSION_READ_EXTERNAL_STORAGE_GALLERY -> {
                     TAPUtils.pickImageFromGallery(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_GALLERY, false)
@@ -113,6 +127,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
         when (resultCode) {
             Activity.RESULT_OK -> {
                 when (requestCode) {
@@ -132,9 +147,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPRegisterViewModel::class.java)
+        vm = ViewModelProvider(this,
+                TAPRegisterViewModel.TAPRegisterViewModelFactory(application, instanceKey))
+                .get(TAPRegisterViewModel::class.java)
         vm.currentProfilePicture = vm.myUserModel.avatarURL.thumbnail
-        vm.countryFlagUrl = TAPDataManager.getInstance().myCountryFlagUrl
+        vm.countryFlagUrl = TAPDataManager.getInstance(instanceKey).myCountryFlagUrl
     }
 
     @SuppressLint("PrivateResource")
@@ -147,7 +164,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         //et_full_name.addTextChangedListener(fullNameWatcher)
         //et_email_address.addTextChangedListener(emailWatcher)
 
-        if (TapUI.getInstance().isLogoutButtonVisible) {
+        if (TapUI.getInstance(instanceKey).isLogoutButtonVisible) {
             cl_logout.visibility = View.VISIBLE
         } else {
             cl_logout.visibility = View.GONE
@@ -413,7 +430,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 .setMessage(getString(R.string.tap_log_out_confirmation))
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_log_out))
-                .setPrimaryButtonListener { TAPDataManager.getInstance().logout(logoutView) }
+                .setPrimaryButtonListener { TAPDataManager.getInstance(instanceKey).logout(logoutView) }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setSecondaryButtonListener(true) {}
@@ -421,17 +438,17 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun logout() {
-        AnalyticsManager.getInstance().trackEvent("Logout")
-        TAPDataManager.getInstance().deleteAllPreference()
-        TAPDataManager.getInstance().deleteAllFromDatabase()
-        TAPDataManager.getInstance().deleteAllManagerData()
-        TAPApiManager.getInstance().isLogout = true
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
-        TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
+        AnalyticsManager.getInstance(instanceKey).trackEvent("Logout")
+        TAPDataManager.getInstance(instanceKey).deleteAllPreference()
+        TAPDataManager.getInstance(instanceKey).deleteAllFromDatabase()
+        TAPDataManager.getInstance(instanceKey).deleteAllManagerData()
+        TAPApiManager.getInstance(instanceKey).isLoggedOut = true
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey,false)
+        TAPChatManager.getInstance(instanceKey).disconnectAfterRefreshTokenExpired()
 
         hideLoading()
-        AnalyticsManager.getInstance().identifyUser()
-        for (listener in TapTalk.getTapTalkListeners()) {
+        AnalyticsManager.getInstance(instanceKey).identifyUser()
+        for (listener in TapTalk.getTapTalkListeners(instanceKey)) {
             listener.onUserLogout()
         }
     }
@@ -439,7 +456,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun uploadProfilePicture() {
         vm.isUploadingProfilePicture = true
         showProfilePictureUploading()
-        TAPFileUploadManager.getInstance().uploadProfilePicture(this@TAPMyAccountActivity, vm.profilePictureUri, vm.myUserModel.userID)
+        TAPFileUploadManager.getInstance(instanceKey).uploadProfilePicture(this@TAPMyAccountActivity, vm.profilePictureUri, vm.myUserModel.userID)
     }
 
     private fun showErrorDialog(message: String) {
@@ -525,9 +542,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         pb_profile_picture_progress.progress = 0
     }
 
-    private val profilePicturePickerListener = object : TAPAttachmentListener() {
+    private val profilePicturePickerListener = object : TAPAttachmentListener(instanceKey) {
         override fun onCameraSelected() {
-            vm.profilePictureUri = TAPUtils.takePicture(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
+            vm.profilePictureUri = TAPUtils.takePicture(instanceKey, this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
         }
 
         override fun onGallerySelected() {
