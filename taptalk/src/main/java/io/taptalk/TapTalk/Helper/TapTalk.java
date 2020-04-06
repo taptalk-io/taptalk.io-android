@@ -825,7 +825,7 @@ public class TapTalk implements LifecycleObserver {
         }
     }
 
-    public static void identifyMessageAndShowNotification(String instanceKey, TAPMessageModel message) {
+    private static void identifyMessageAndShowNotification(String instanceKey, TAPMessageModel message) {
         TAPUserModel sender = message.getUser();
         String senderId = sender.getUserID();
         if (null == senderId || senderId.isEmpty()) {

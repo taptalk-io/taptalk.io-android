@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.API.Api;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import io.taptalk.TapTalk.API.Service.TAPTalkDownloadApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkMultipartApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkRefreshTokenService;
 import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
+import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
@@ -73,7 +75,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
-import io.taptalk.TapTalk.BuildConfig;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -83,14 +84,12 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.TOKEN_EXPIRED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
 
 public class TAPApiManager {
     private static final String TAG = TAPApiManager.class.getSimpleName();
-
-//    @NonNull private static String BaseUrlApi = "";
-//    @NonNull private static String BaseUrlSocket = "";
 
     private static HashMap<String, TAPApiManager> instances;
     private static HashMap<String, String> apiBaseUrlMap = new HashMap<>();
@@ -100,8 +99,10 @@ public class TAPApiManager {
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
-    private int isShouldRefreshToken = 0;
+//    private int isShouldRefreshToken = 0;
     private boolean isLoggedOut = false; // Flag to prevent unauthorized API call due to refresh token expired
+    private boolean isRefreshTokenRunning = false;
+    private String lastRefreshToken = "";
 
     public static TAPApiManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
@@ -177,30 +178,74 @@ public class TAPApiManager {
         o.compose((Observable.Transformer<T, T>) applyIOMainThreadSchedulers()).subscribe(s);
     }
 
+//    private <T> Observable validateResponse(T t) {
+//        TAPBaseResponse br = (TAPBaseResponse) t;
+//
+//        int code = br.getStatus();
+//        if (BuildConfig.DEBUG && code != RESPONSE_SUCCESS)
+//            Log.d(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
+//
+//        if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
+//            Log.d(TAG, "validateResponse: √√ NO ERROR √√");
+//        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken && !isLogout) {
+//            return raiseApiRefreshTokenRunningException();
+//        } else if (code == UNAUTHORIZED && !isLogout) {
+//            isShouldRefreshToken++;
+//            return raiseApiSessionExpiredException(br);
+//        }
+//        isShouldRefreshToken = 0;
+//        return Observable.just(t);
+//    }
+
     private <T> Observable validateResponse(T t) {
         TAPBaseResponse br = (TAPBaseResponse) t;
-
         int code = br.getStatus();
-        if (BuildConfig.DEBUG && code != RESPONSE_SUCCESS)
-            Log.d(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
-
-        if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
-            Log.d(TAG, "validateResponse: √√ NO ERROR √√");
-        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken && !isLoggedOut) {
-            return raiseApiRefreshTokenRunningException();
-        } else if (code == UNAUTHORIZED && !isLoggedOut) {
-            isShouldRefreshToken++;
-            return raiseApiSessionExpiredException(br);
+        if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG) {
+            Log.d(TAG, "√√ API CALL SUCCESS √√");
+            return Observable.just(t);
+        } else if (code == UNAUTHORIZED) {
+            Log.e(TAG, String.format(String.format("[Err %s - %s] %s", br.getStatus(), br.getError().getCode(), br.getError().getMessage()), code));
+            if (br.getError().getCode().equals(String.valueOf(TOKEN_EXPIRED))) {
+                if (!isLoggedOut) {
+                    if (isRefreshTokenRunning) {
+                        return raiseApiRefreshTokenRunningException();
+                    } else {
+                        return raiseApiSessionExpiredException(br);
+                    }
+                }
+            } else {
+                AnalyticsManager.getInstance(instanceKey).trackErrorEvent(br.getError().getMessage(), br.getError().getCode(), br.getError().getMessage());
+                if (!isLoggedOut) {
+                    if (isRefreshTokenRunning) {
+                        return raiseApiRefreshTokenRunningException();
+                    } else {
+                        return raiseApiSessionExpiredException(br);
+                    }
+                }
+            }
+        } else {
+            Log.e(TAG, String.format(String.format("[Err %s - %s] %s", br.getStatus(), br.getError().getCode(), br.getError().getMessage()), code));
+            return Observable.just(t);
         }
-        isShouldRefreshToken = 0;
         return Observable.just(t);
     }
 
+//    private Observable validateException(Throwable t) {
+//        Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
+//        return (t instanceof TAPApiSessionExpiredException && 1 == isShouldRefreshToken && !isLogout) ? refreshToken() :
+//                ((t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && 1 < isShouldRefreshToken)) && !isLogout) ?
+//                        Observable.just(Boolean.TRUE) : Observable.error(t);
+//    }
+
     private Observable validateException(Throwable t) {
-        Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
-        return (t instanceof TAPApiSessionExpiredException && 1 == isShouldRefreshToken && !isLoggedOut) ? refreshToken() :
-                ((t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && 1 < isShouldRefreshToken)) && !isLoggedOut) ?
-                        Observable.just(Boolean.TRUE) : Observable.error(t);
+        if (t instanceof TAPApiSessionExpiredException && !isRefreshTokenRunning && !isLoggedOut) {
+            return refreshToken();
+        } else if (t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && isRefreshTokenRunning) && !isLoggedOut) {
+            SystemClock.sleep(1000);
+            return Observable.just(Boolean.TRUE);
+        } else {
+            return Observable.error(t);
+        }
     }
 
     private Observable<Throwable> raiseApiSessionExpiredException(TAPBaseResponse br) {
@@ -247,16 +292,20 @@ public class TAPApiManager {
     }
 
     public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
+        lastRefreshToken = TAPDataManager.getInstance(instanceKey).getRefreshToken();
+        isRefreshTokenRunning = true;
         return hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getRefreshToken())
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
                     if (RESPONSE_SUCCESS == response.getStatus()) {
+                        isRefreshTokenRunning = false;
                         updateSession(response);
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
-                    } else if (UNAUTHORIZED == response.getStatus()) {
+                    } else if (UNAUTHORIZED == response.getStatus() &&
+                            lastRefreshToken.equals(TAPDataManager.getInstance(instanceKey).getRefreshToken())) {
                         AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Refresh Token Failed", response.getError().getCode(), response.getError().getMessage());
-                        TapTalk.clearAllTapTalkData(instanceKey);
-                        for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
+                        TapTalk.clearAllTapTalkData();
+                        for (TapListener listener : TapTalk.getTapTalkListeners()) {
                             listener.onTapTalkRefreshTokenExpired();
                         }
                     } else {
