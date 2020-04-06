@@ -153,9 +153,10 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         intent.putExtra(INSTANCE_KEY, instanceKey);
         intent.putExtra(ROOM, room);
         if (null != isAdmin) {
+            intent.putExtra(K_USER, user);
             intent.putExtra(IS_ADMIN, isAdmin);
             context.startActivityForResult(intent, GROUP_OPEN_MEMBER_PROFILE);
-        } if (room.getRoomType() == TYPE_PERSONAL) {
+        } else if (room.getRoomType() == TYPE_PERSONAL) {
             context.startActivity(intent);
         } else if (room.getRoomType() == TYPE_GROUP && null != user) {
             intent.putExtra(K_USER, user);
