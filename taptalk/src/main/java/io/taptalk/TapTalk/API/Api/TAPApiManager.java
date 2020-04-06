@@ -1,10 +1,12 @@
 package io.taptalk.TapTalk.API.Api;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -15,9 +17,11 @@ import io.taptalk.TapTalk.API.Service.TAPTalkDownloadApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkMultipartApiService;
 import io.taptalk.TapTalk.API.Service.TAPTalkRefreshTokenService;
 import io.taptalk.TapTalk.API.Service.TAPTalkSocketService;
+import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.AnalyticsManager;
@@ -71,7 +75,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
-import io.taptalk.TapTalk.BuildConfig;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -81,30 +84,41 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.TOKEN_EXPIRED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
 
 public class TAPApiManager {
     private static final String TAG = TAPApiManager.class.getSimpleName();
 
-    //ini url buat api disimpen sesuai environment
-    @NonNull private static String BaseUrlApi = "";
-    @NonNull private static String BaseUrlSocket = "";
+    private static HashMap<String, TAPApiManager> instances;
+    private static HashMap<String, String> apiBaseUrlMap = new HashMap<>();
+    private static HashMap<String, String> socketBaseUrlMap = new HashMap<>();
 
+    private String instanceKey = "";
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
-    private static TAPApiManager instance;
-    private int isShouldRefreshToken = 0;
-    //ini flagging jadi kalau logout (refresh token expired) dy ga akan ngulang2 manggil api krna 401
-    private boolean isLogout = false;
+//    private int isShouldRefreshToken = 0;
+    private boolean isLoggedOut = false; // Flag to prevent unauthorized API call due to refresh token expired
+    private boolean isRefreshTokenRunning = false;
+    private String lastRefreshToken = "";
 
-    public static TAPApiManager getInstance() {
-        return instance == null ? instance = new TAPApiManager() : instance;
+    public static TAPApiManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPApiManager instance = new TAPApiManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
     }
 
-    private TAPApiManager() {
-        TAPApiConnection connection = TAPApiConnection.getInstance();
+    private static HashMap<String, TAPApiManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    private TAPApiManager(String instanceKey) {
+        TAPApiConnection connection = TAPApiConnection.getInstance(instanceKey);
+        this.instanceKey = instanceKey;
         this.homingPigeon = connection.getHomingPigeon();
         this.hpSocket = connection.getHpValidate();
         this.hpRefresh = connection.getHpRefresh();
@@ -114,30 +128,28 @@ public class TAPApiManager {
         return fileSize / 10 + 60000;
     }
 
-    public boolean isLogout() {
-        return isLogout;
+    public boolean isLoggedOut() {
+        return isLoggedOut;
     }
 
-    public void setLogout(boolean logout) {
-        isLogout = logout;
+    public void setLoggedOut(boolean loggedOut) {
+        isLoggedOut = loggedOut;
     }
 
-    @NonNull
-    public static String getBaseUrlApi() {
-        return BaseUrlApi;
+    public static String getApiBaseUrl(String instanceKey) {
+        return apiBaseUrlMap.get(instanceKey);
     }
 
-    public static void setBaseUrlApi(@NonNull String baseUrlApi) {
-        BaseUrlApi = baseUrlApi;
+    public static void setBaseUrlApi(String instanceKey, @NonNull String apiBaseUrl) {
+        apiBaseUrlMap.put(instanceKey, apiBaseUrl);
     }
 
-    @NonNull
-    public static String getBaseUrlSocket() {
-        return BaseUrlSocket;
+    public static String getSocketBaseUrl(String instanceKey) {
+        return socketBaseUrlMap.get(instanceKey);
     }
 
-    public static void setBaseUrlSocket(@NonNull String baseUrlSocket) {
-        BaseUrlSocket = baseUrlSocket;
+    public static void setBaseUrlSocket(String instanceKey, @NonNull String socketBaseUrl) {
+        socketBaseUrlMap.put(instanceKey, socketBaseUrl);
     }
 
     private Observable.Transformer ioToMainThreadSchedulerTransformer
@@ -166,30 +178,74 @@ public class TAPApiManager {
         o.compose((Observable.Transformer<T, T>) applyIOMainThreadSchedulers()).subscribe(s);
     }
 
+//    private <T> Observable validateResponse(T t) {
+//        TAPBaseResponse br = (TAPBaseResponse) t;
+//
+//        int code = br.getStatus();
+//        if (BuildConfig.DEBUG && code != RESPONSE_SUCCESS)
+//            Log.d(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
+//
+//        if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
+//            Log.d(TAG, "validateResponse: √√ NO ERROR √√");
+//        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken && !isLogout) {
+//            return raiseApiRefreshTokenRunningException();
+//        } else if (code == UNAUTHORIZED && !isLogout) {
+//            isShouldRefreshToken++;
+//            return raiseApiSessionExpiredException(br);
+//        }
+//        isShouldRefreshToken = 0;
+//        return Observable.just(t);
+//    }
+
     private <T> Observable validateResponse(T t) {
         TAPBaseResponse br = (TAPBaseResponse) t;
-
         int code = br.getStatus();
-        if (BuildConfig.DEBUG && code != RESPONSE_SUCCESS)
-            Log.d(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
-
-        if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
-            Log.d(TAG, "validateResponse: √√ NO ERROR √√");
-        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken && !isLogout) {
-            return raiseApiRefreshTokenRunningException();
-        } else if (code == UNAUTHORIZED && !isLogout) {
-            isShouldRefreshToken++;
-            return raiseApiSessionExpiredException(br);
+        if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG) {
+            Log.d(TAG, "√√ API CALL SUCCESS √√");
+            return Observable.just(t);
+        } else if (code == UNAUTHORIZED) {
+            Log.e(TAG, String.format(String.format("[Err %s - %s] %s", br.getStatus(), br.getError().getCode(), br.getError().getMessage()), code));
+            if (br.getError().getCode().equals(String.valueOf(TOKEN_EXPIRED))) {
+                if (!isLoggedOut) {
+                    if (isRefreshTokenRunning) {
+                        return raiseApiRefreshTokenRunningException();
+                    } else {
+                        return raiseApiSessionExpiredException(br);
+                    }
+                }
+            } else {
+                AnalyticsManager.getInstance(instanceKey).trackErrorEvent(br.getError().getMessage(), br.getError().getCode(), br.getError().getMessage());
+                if (!isLoggedOut) {
+                    if (isRefreshTokenRunning) {
+                        return raiseApiRefreshTokenRunningException();
+                    } else {
+                        return raiseApiSessionExpiredException(br);
+                    }
+                }
+            }
+        } else {
+            Log.e(TAG, String.format(String.format("[Err %s - %s] %s", br.getStatus(), br.getError().getCode(), br.getError().getMessage()), code));
+            return Observable.just(t);
         }
-        isShouldRefreshToken = 0;
         return Observable.just(t);
     }
 
+//    private Observable validateException(Throwable t) {
+//        Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
+//        return (t instanceof TAPApiSessionExpiredException && 1 == isShouldRefreshToken && !isLogout) ? refreshToken() :
+//                ((t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && 1 < isShouldRefreshToken)) && !isLogout) ?
+//                        Observable.just(Boolean.TRUE) : Observable.error(t);
+//    }
+
     private Observable validateException(Throwable t) {
-        Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
-        return (t instanceof TAPApiSessionExpiredException && 1 == isShouldRefreshToken && !isLogout) ? refreshToken() :
-                ((t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && 1 < isShouldRefreshToken)) && !isLogout) ?
-                        Observable.just(Boolean.TRUE) : Observable.error(t);
+        if (t instanceof TAPApiSessionExpiredException && !isRefreshTokenRunning && !isLoggedOut) {
+            return refreshToken();
+        } else if (t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && isRefreshTokenRunning) && !isLoggedOut) {
+            SystemClock.sleep(1000);
+            return Observable.just(Boolean.TRUE);
+        } else {
+            return Observable.error(t);
+        }
     }
 
     private Observable<Throwable> raiseApiSessionExpiredException(TAPBaseResponse br) {
@@ -201,12 +257,12 @@ public class TAPApiManager {
     }
 
     private void updateSession(TAPBaseResponse<TAPGetAccessTokenResponse> r) {
-        TAPDataManager.getInstance().saveAccessToken(r.getData().getAccessToken());
-        TAPDataManager.getInstance().saveAccessTokenExpiry(r.getData().getAccessTokenExpiry());
-        TAPDataManager.getInstance().saveRefreshToken(r.getData().getRefreshToken());
-        TAPDataManager.getInstance().saveRefreshTokenExpiry(r.getData().getRefreshTokenExpiry());
+        TAPDataManager.getInstance(instanceKey).saveAccessToken(r.getData().getAccessToken());
+        TAPDataManager.getInstance(instanceKey).saveAccessTokenExpiry(r.getData().getAccessTokenExpiry());
+        TAPDataManager.getInstance(instanceKey).saveRefreshToken(r.getData().getRefreshToken());
+        TAPDataManager.getInstance(instanceKey).saveRefreshTokenExpiry(r.getData().getRefreshTokenExpiry());
 
-        TAPDataManager.getInstance().saveActiveUser(r.getData().getUser());
+        TAPDataManager.getInstance(instanceKey).saveActiveUser(r.getData().getUser());
     }
 
     public void getAuthTicket(String ipAddress, String userAgent, String userPlatform, String userDeviceID, String xcUserID
@@ -222,7 +278,7 @@ public class TAPApiManager {
     }
 
     public void getAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
-        execute(homingPigeon.getAccessToken("Bearer " + TAPDataManager.getInstance().getAuthTicket()), subscriber);
+        execute(homingPigeon.getAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getAuthTicket()), subscriber);
     }
 
     public void requestOTPLogin(String loginMethod, int countryID, String phone, Subscriber<TAPBaseResponse<TAPLoginOTPResponse>> subscriber) {
@@ -236,14 +292,18 @@ public class TAPApiManager {
     }
 
     public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
-        return hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance().getRefreshToken())
+        lastRefreshToken = TAPDataManager.getInstance(instanceKey).getRefreshToken();
+        isRefreshTokenRunning = true;
+        return hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getRefreshToken())
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
                     if (RESPONSE_SUCCESS == response.getStatus()) {
+                        isRefreshTokenRunning = false;
                         updateSession(response);
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
-                    } else if (UNAUTHORIZED == response.getStatus()) {
-                        AnalyticsManager.getInstance().trackErrorEvent("Refresh Token Failed", response.getError().getCode(), response.getError().getMessage());
+                    } else if (UNAUTHORIZED == response.getStatus() &&
+                            lastRefreshToken.equals(TAPDataManager.getInstance(instanceKey).getRefreshToken())) {
+                        AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Refresh Token Failed", response.getError().getCode(), response.getError().getMessage());
                         TapTalk.clearAllTapTalkData();
                         for (TapListener listener : TapTalk.getTapTalkListeners()) {
                             listener.onTapTalkRefreshTokenExpired();
@@ -257,7 +317,7 @@ public class TAPApiManager {
     }
 
     public void refreshAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
-        execute(hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance().getRefreshToken()), subscriber);
+        execute(hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getRefreshToken()), subscriber);
     }
 
     public void validateAccessToken(Subscriber<TAPBaseResponse<TAPErrorModel>> subscriber) {
@@ -345,7 +405,7 @@ public class TAPApiManager {
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         //RequestBody reqFile = RequestBody.create(MediaType.parse(mimeType), fileImage);
-        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
         String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
@@ -362,7 +422,7 @@ public class TAPApiManager {
     public void uploadVideo(File videoFile, String roomID, String caption, String mimeType,
                             ProgressRequestBody.UploadCallbacks uploadCallback,
                             Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
-        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(videoFile.length()));
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(videoFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(videoFile, mimeType, uploadCallback);
         String extension = videoFile.getAbsolutePath().substring(videoFile.getAbsolutePath().lastIndexOf("."));
 
@@ -379,7 +439,7 @@ public class TAPApiManager {
     public void uploadFile(File file, String roomID, String mimeType,
                            ProgressRequestBody.UploadCallbacks uploadCallback,
                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
-        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(file.length()));
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(file.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType, uploadCallback);
         String extension = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf("."));
 
@@ -395,7 +455,7 @@ public class TAPApiManager {
     public void uploadProfilePicture(File imageFile, String mimeType,
                                      ProgressRequestBody.UploadCallbacks uploadCallback,
                                      Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
-        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType, uploadCallback);
         String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
@@ -409,7 +469,7 @@ public class TAPApiManager {
 
     public void uploadGroupPicture(File imageFile, String mimeType, String roomID,
                                    Subscriber<TAPBaseResponse<TAPUpdateRoomResponse>> subscriber) {
-        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance().getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(imageFile.length()));
         String extension = imageFile.getAbsolutePath().substring(imageFile.getAbsolutePath().lastIndexOf("."));
 
         ProgressRequestBody reqFile = new ProgressRequestBody(imageFile, mimeType);
@@ -424,8 +484,8 @@ public class TAPApiManager {
     public void downloadFile(String roomID, String localID, String fileID, @Nullable Number fileSize, Subscriber<ResponseBody> subscriber) {
         TAPTalkDownloadApiService tapDownload;
         if (null != fileSize) {
-            tapDownload = TAPApiConnection.getInstance().getTapDownload(calculateTimeOutTimeWithFileSize(fileSize.longValue()));
-        } else tapDownload = TAPApiConnection.getInstance().getTapDownload(30 * 60 * 1000);
+            tapDownload = TAPApiConnection.getInstance(instanceKey).getTapDownload(calculateTimeOutTimeWithFileSize(fileSize.longValue()));
+        } else tapDownload = TAPApiConnection.getInstance(instanceKey).getTapDownload(30 * 60 * 1000);
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
         executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
     }

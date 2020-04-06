@@ -22,6 +22,7 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPAttachmentModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
@@ -52,8 +53,9 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createImagePickerMenu;
 public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
 
     private TAPAttachmentListener attachmentListener;
-    View.OnClickListener onClickListener;
-    private String messageToCopy = "", linkifyresult = "";
+    private View.OnClickListener onClickListener;
+    private String messageToCopy = "";
+    private String linkifyresult = "";
     private TAPMessageModel message;
 
     public TAPAttachmentAdapter(boolean isImagePickerBottomSheet, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
@@ -211,6 +213,13 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         }
 
         private void onAttachmentClicked(TAPAttachmentModel item) {
+            String instanceKey;
+            try {
+                TAPBaseActivity activity = (TAPBaseActivity) itemView.getContext();
+                instanceKey = activity.instanceKey;
+            } catch (Exception e) {
+                instanceKey = "";
+            }
             switch (item.getId()) {
                 case SELECT_PICTURE_CAMERA:
                 case ATTACH_CAMERA:
@@ -263,8 +272,8 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     attachmentListener.onSaveToDownloads(message);
                     break;
                 case LONG_PRESS_DELETE:
-                    if (null != TAPChatManager.getInstance().getOpenRoom())
-                        attachmentListener.onDeleteMessage(TAPChatManager.getInstance().getOpenRoom(), message);
+                    if (null != TAPChatManager.getInstance(instanceKey).getOpenRoom())
+                        attachmentListener.onDeleteMessage(TAPChatManager.getInstance(instanceKey).getOpenRoom(), message);
                     break;
             }
             onClickListener.onClick(itemView);

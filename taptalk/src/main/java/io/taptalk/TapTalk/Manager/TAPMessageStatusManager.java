@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,9 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPMessageStatusManager {
     private static final String TAG = TAPMessageStatusManager.class.getSimpleName();
-    private static TAPMessageStatusManager instance;
+    private static HashMap<String, TAPMessageStatusManager> instances;
+
+    private String instanceKey = "";
     private List<String> readMessageQueue;
     private List<String> messagesMarkedAsRead; // Message IDs already processed as read by API
     private List<TAPMessageModel> deliveredMessageQueue;
@@ -24,8 +27,20 @@ public class TAPMessageStatusManager {
     private Map<Integer, List<TAPMessageModel>> apiDeliveredRequestMap;
     private Map<String, Integer> unreadList;
 
-    public static TAPMessageStatusManager getInstance() {
-        return null == instance ? instance = new TAPMessageStatusManager() : instance;
+    public static TAPMessageStatusManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPMessageStatusManager instance = new TAPMessageStatusManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPMessageStatusManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    public TAPMessageStatusManager(String instanceKey) {
+        this.instanceKey = instanceKey;
     }
 
     public List<String> getReadMessageQueue() {
@@ -159,14 +174,14 @@ public class TAPMessageStatusManager {
         new Thread(() -> {
             List<String> messageIds = new ArrayList<>();
             messageIds.add(newMessageModel.getMessageID());
-            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance(instanceKey).updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
             });
         }).start();
     }
 
     public void updateMessageStatusToDelivered(List<TAPMessageModel> newMessageModels) {
         new Thread(() -> {
-            TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
+            TAPUserModel myUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
             List<String> messageIds = new ArrayList<>();
             for (TAPMessageModel model : newMessageModels) {
                 if (null != myUser && !model.getUser().getUserID().equals(myUser.getUserID())
@@ -175,7 +190,7 @@ public class TAPMessageStatusManager {
                         && null != model.getIsRead() && !model.getIsRead())
                     messageIds.add(model.getMessageID());
             }
-            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance(instanceKey).updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
             });
         }).start();
     }
@@ -188,7 +203,7 @@ public class TAPMessageStatusManager {
                 messageIds.add(model.getMessageID());
             }
             removeDeliveredMessageQueue(newMessageModels);
-            TAPDataManager.getInstance().updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance(instanceKey).updateMessageStatusAsDelivered(messageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
                 @Override
                 public void onSuccess(TAPUpdateMessageStatusResponse response) {
                     if (null != response.getUpdatedMessageIDs()) {
@@ -200,11 +215,11 @@ public class TAPMessageStatusManager {
                             for (TAPMessageModel messageModel : newMessageModels) {
                                 if (null != messageModel) {
                                     messageModel.updateDeliveredMessage();
-                                    messageEntities.add(TAPChatManager.getInstance().convertToEntity(messageModel));
+                                    messageEntities.add(TAPChatManager.getInstance(instanceKey).convertToEntity(messageModel));
                                 }
                             }
                             if (!messageEntities.isEmpty()) {
-                                TAPDataManager.getInstance().insertToDatabase(messageEntities, false);
+                                TAPDataManager.getInstance(instanceKey).insertToDatabase(messageEntities, false);
                             }
                         }).start();
                     }
@@ -236,7 +251,7 @@ public class TAPMessageStatusManager {
         new Thread(() -> {
             getMessagesMarkedAsRead().addAll(newMessageIds);
             removeReadMessageQueue(newMessageIds);
-            TAPDataManager.getInstance().updateMessageStatusAsRead(newMessageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
+            TAPDataManager.getInstance(instanceKey).updateMessageStatusAsRead(newMessageIds, new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
                 @Override
                 public void onSuccess(TAPUpdateMessageStatusResponse response) {
                     if (null != response.getUpdatedMessageIDs()) {
@@ -244,7 +259,7 @@ public class TAPMessageStatusManager {
                             if (getApiReadRequestMap().containsKey(tempReadRequestID)) {
                                 removeApiDeliveredRequestMapItem(tempReadRequestID);
                             }
-                            TAPDataManager.getInstance().updateMessagesAsReadInDatabase(newMessageIds);
+                            TAPDataManager.getInstance(instanceKey).updateMessagesAsReadInDatabase(newMessageIds);
                         }).start();
                     }
                 }

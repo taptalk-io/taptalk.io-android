@@ -38,15 +38,15 @@ public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactList
     private String myID;
     private boolean isAnimating = true;
 
-    public TapSelectedGroupMemberAdapter(List<TapContactListModel> contactList) {
+    public TapSelectedGroupMemberAdapter(String instanceKey, List<TapContactListModel> contactList) {
         setItems(contactList, false);
-        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
     }
 
-    public TapSelectedGroupMemberAdapter(List<TapContactListModel> contactList, TapContactListListener listener) {
+    public TapSelectedGroupMemberAdapter(String instanceKey, List<TapContactListModel> contactList, TapContactListListener listener) {
         setItems(contactList, false);
         this.listener = listener;
-        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
     }
 
     @NonNull

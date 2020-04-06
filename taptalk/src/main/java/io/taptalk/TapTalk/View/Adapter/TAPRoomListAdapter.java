@@ -38,6 +38,7 @@ import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 import io.taptalk.TapTalk.R;
 
@@ -48,12 +49,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACT
 
 public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>> {
 
+    private String instanceKey;
     private TAPRoomListViewModel vm;
     private TapTalkRoomListInterface tapTalkRoomListInterface;
     private RequestManager glide;
 
-    public TAPRoomListAdapter(TAPRoomListViewModel vm, RequestManager glide, TapTalkRoomListInterface tapTalkRoomListInterface) {
+    public TAPRoomListAdapter(String instanceKey, TAPRoomListViewModel vm, RequestManager glide, TapTalkRoomListInterface tapTalkRoomListInterface) {
         setItems(vm.getRoomList(), false);
+        this.instanceKey = instanceKey;
         this.vm = vm;
         this.glide = glide;
         this.tapTalkRoomListInterface = tapTalkRoomListInterface;
@@ -100,7 +103,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
         @Override
         protected void onBind(TAPRoomListModel item, int position) {
-            TAPUserModel activeUser = TAPChatManager.getInstance().getActiveUser();
+            TAPUserModel activeUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
             if (null == activeUser) {
                 return;
             }
@@ -110,9 +113,9 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             TAPRoomModel group = null;
 
             if (room.getRoomType() == TYPE_PERSONAL) {
-                user = TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance().getOtherUserIdFromRoom(room.getRoomID()));
+                user = TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()));
             } else if (room.getRoomType() == TYPE_GROUP || room.getRoomType() == TYPE_TRANSACTION) {
-                group = TAPGroupManager.Companion.getGetInstance().getGroupData(room.getRoomID());
+                group = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(room.getRoomID());
             }
 
             // Set room image
@@ -205,7 +208,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Set last message timestamp
             tvLastMessageTime.setText(item.getLastMessageTimestamp());
 
-            String draft = TAPChatManager.getInstance().getMessageFromDraft(item.getLastMessage().getRoom().getRoomID());
+            String draft = TAPChatManager.getInstance(instanceKey).getMessageFromDraft(item.getLastMessage().getRoom().getRoomID());
             if (null != draft && !draft.isEmpty()) {
                 // Show draft
                 tvLastMessage.setText(String.format(itemView.getContext().getString(R.string.tap_format_s_draft), draft));
@@ -274,7 +277,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
             } else if (TYPE_SYSTEM_MESSAGE == item.getLastMessage().getType()) {
                 // Show system message
-                tvLastMessage.setText(TAPChatManager.getInstance().formattingSystemMessage(item.getLastMessage()));
+                tvLastMessage.setText(TAPChatManager.getInstance(instanceKey).formattingSystemMessage(item.getLastMessage()));
                 tvGroupSenderName.setVisibility(View.GONE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
                 ivGroupRoomTypingIndicator.setVisibility(View.GONE);
@@ -319,7 +322,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDeleted)));
             }
             // Message is read
-            else if (null != item.getLastMessage() && null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead() && !TapUI.getInstance().isReadStatusHidden()) {
+            else if (null != item.getLastMessage() && null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead() && !TapUI.getInstance(instanceKey).isReadStatusHidden()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
             }
@@ -371,13 +374,13 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             onRoomSelected(item, position);
         } else {
             // Open chat room on click
-            if (TAPApiManager.getInstance().isLogout()) {
+            if (TAPApiManager.getInstance(instanceKey).isLoggedOut()) {
                 // Return if logged out (active user is null)
                 return;
             }
-            String myUserID = TAPChatManager.getInstance().getActiveUser().getUserID();
+            String myUserID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
             if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
-                TAPUtils.startChatActivity(itemView.getContext(), item.getLastMessage().getRoom(), item.getTypingUsers());
+                TapUIChatActivity.start(itemView.getContext(), instanceKey, item.getLastMessage().getRoom(), item.getTypingUsers());
             } else {
                 Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.tap_error_invalid_room), Toast.LENGTH_SHORT).show();
             }

@@ -67,7 +67,7 @@
             android:name="io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TAPCountryListActivity"
+            android:name="io.moselo.SampleApps.Activity.TAPCountryListActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity"

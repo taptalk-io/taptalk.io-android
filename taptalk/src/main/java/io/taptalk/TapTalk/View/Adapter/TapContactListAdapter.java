@@ -44,18 +44,18 @@ import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.TYPE_SE
 
 public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, TAPBaseViewHolder<TapContactListModel>> {
 
-    private TapContactListListener listener;
     private String myID;
+    private TapContactListListener listener;
 
-    public TapContactListAdapter(List<TapContactListModel> contactList) {
+    public TapContactListAdapter(String instanceKey, List<TapContactListModel> contactList) {
         setItems(contactList, false);
-        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
     }
 
-    public TapContactListAdapter(List<TapContactListModel> contactList, TapContactListListener listener) {
+    public TapContactListAdapter(String instanceKey, List<TapContactListModel> contactList, TapContactListListener listener) {
         setItems(contactList, false);
         this.listener = listener;
-        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
     }
 
     @Override

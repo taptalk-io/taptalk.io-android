@@ -1,5 +1,6 @@
-package io.taptalk.TapTalk.View.Activity;
+package io.moselo.SampleApps.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -16,12 +17,14 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
-import io.taptalk.TapTalk.View.Adapter.TAPCountryListAdapter;
-import io.taptalk.TapTalk.R;
+import io.moselo.SampleApps.Adapter.TAPCountryListAdapter;
+import io.taptalk.TapTalkSample.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_PICK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM_BOTTOM;
@@ -33,6 +36,19 @@ public class TAPCountryListActivity extends AppCompatActivity {
     private List<TAPCountryListItem> countryList;
     private TAPCountryListAdapter adapter;
     private int choosenCountryID = 0;
+
+    public static void start(
+            Activity context,
+            String instanceKey,
+            ArrayList<TAPCountryListItem> countryListItems,
+            int defaultCountryID) {
+        Intent intent = new Intent(context, TAPCountryListActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(COUNTRY_LIST, countryListItems);
+        intent.putExtra(COUNTRY_ID, defaultCountryID);
+        context.startActivityForResult(intent, COUNTRY_PICK);
+        context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+    }
 
     public interface TAPCountryPickInterface {
         void onPick(TAPCountryListItem country);

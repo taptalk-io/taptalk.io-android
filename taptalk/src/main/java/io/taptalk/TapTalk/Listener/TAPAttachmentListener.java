@@ -8,6 +8,13 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 @Keep
 public abstract class TAPAttachmentListener implements TapTalkAttachmentInterface {
+
+    private String instanceKey = "";
+
+    public TAPAttachmentListener(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
+
     @Override
     public void onDocumentSelected() {
     }
@@ -74,6 +81,6 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
 
     @Override
     public void onDeleteMessage(String roomID, TAPMessageModel message) {
-        TAPDataManager.getInstance().deleteMessagesAPI(roomID, message.getMessageID(), true);
+        TAPDataManager.getInstance(instanceKey).deleteMessagesAPI(roomID, message.getMessageID(), true);
     }
 }

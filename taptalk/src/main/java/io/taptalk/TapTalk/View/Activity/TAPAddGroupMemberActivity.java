@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.TransitionDrawable;
@@ -21,7 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,9 +58,8 @@ import io.taptalk.TapTalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBER_IDS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_NAME;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MY_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
@@ -80,6 +81,36 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     private TapSelectedGroupMemberAdapter selectedMembersAdapter;
     private TapContactListListener listener;
     private TAPContactListViewModel vm;
+
+    // Create new group
+    public static void start(
+            Context context,
+            String instanceKey
+    ) {
+        Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(GROUP_ACTION, CREATE_GROUP);
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        }
+    }
+
+    // Add group member
+    public static void start(
+            Activity context,
+            String instanceKey,
+            String roomID,
+            ArrayList<TAPUserModel> groupMembers
+    ) {
+        Intent intent = new Intent(context, TAPAddGroupMemberActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(GROUP_ACTION, GROUP_ADD_MEMBER);
+        intent.putExtra(ROOM_ID, roomID);
+        intent.putParcelableArrayListExtra(GROUP_MEMBERS, groupMembers);
+        context.startActivityForResult(intent, GROUP_ADD_MEMBER);
+        context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,8 +172,11 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        TAPUserModel myUser = TAPChatManager.getInstance().getActiveUser();
-        vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
+        TAPUserModel myUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
+        vm = new ViewModelProvider(this,
+                new TAPContactListViewModel.TAPContactListViewModelFactory(
+                        getApplication(), instanceKey))
+                .get(TAPContactListViewModel.class);
 
         vm.setGroupAction(getIntent().getIntExtra(GROUP_ACTION, CREATE_GROUP));
 
@@ -158,7 +192,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         }
 
         // Show users from contact list
-        TAPDataManager.getInstance().getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
+        TAPDataManager.getInstance(instanceKey).getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(List<TAPUserModel> entities) {
                 vm.setContactList(entities);
@@ -168,7 +202,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
 
                 // Put non-contact users from database to pointer
-                TAPDataManager.getInstance().getNonContactUsersFromDatabase(new TAPDatabaseListener<TAPUserModel>() {
+                TAPDataManager.getInstance(instanceKey).getNonContactUsersFromDatabase(new TAPDatabaseListener<TAPUserModel>() {
                     @Override
                     public void onSelectFinished(List<TAPUserModel> entities) {
                         for (TAPUserModel user : entities) {
@@ -193,7 +227,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 TAPUtils.dismissKeyboard(TAPAddGroupMemberActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContactList().contains(contact)) {
-                    if (vm.getSelectedContactList().size() + vm.getInitialGroupSize() >= TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()) {
+                    if (vm.getSelectedContactList().size() + vm.getInitialGroupSize() >= TAPGroupManager.Companion.getInstance(instanceKey).getGroupMaxParticipants()) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         // Member count exceeds limit
                         new TapTalkDialog.Builder(TAPAddGroupMemberActivity.this)
@@ -224,7 +258,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_format_dd_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContactList().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
+                tvMemberCount.setText(String.format(getString(R.string.tap_format_dd_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContactList().size(), TAPGroupManager.Companion.getInstance(instanceKey).getGroupMaxParticipants()));
                 return true;
             }
 
@@ -242,12 +276,12 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 } else {
                     llGroupMembers.setVisibility(View.GONE);
                 }
-                tvMemberCount.setText(String.format(getString(R.string.tap_format_dd_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContactList().size(), TAPGroupManager.Companion.getGetInstance().getGroupMaxParticipants()));
+                tvMemberCount.setText(String.format(getString(R.string.tap_format_dd_selected_member_count), vm.getInitialGroupSize() + vm.getSelectedContactList().size(), TAPGroupManager.Companion.getInstance(instanceKey).getGroupMaxParticipants()));
             }
         };
 
         // Add socket listener for pending global search
-        TAPConnectionManager.getInstance().addSocketListener(socketListener);
+        TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener);
     }
 
     private void initView() {
@@ -272,14 +306,14 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         getWindow().setBackgroundDrawable(null);
 
         // All contacts adapter
-        contactListAdapter = new TapContactListAdapter(vm.getAdapterItems(), listener);
+        contactListAdapter = new TapContactListAdapter(instanceKey, vm.getAdapterItems(), listener);
         rvContactList.setAdapter(contactListAdapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         // Selected members adapter
-        selectedMembersAdapter = new TapSelectedGroupMemberAdapter(vm.getSelectedContactList(), listener);
+        selectedMembersAdapter = new TapSelectedGroupMemberAdapter(instanceKey, vm.getSelectedContactList(), listener);
         rvGroupMembers.setAdapter(selectedMembersAdapter);
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         OverScrollDecoratorHelper.setUpOverScroll(rvGroupMembers, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
@@ -347,26 +381,19 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     }
 
     private void openGroupSubjectActivity() {
-        Intent intent = new Intent(this, TAPEditGroupSubjectActivity.class);
-        intent.putExtra(MY_ID, TAPChatManager.getInstance().getActiveUser().getUserID());
-        intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(vm.getSelectedContacts()));
-        intent.putStringArrayListExtra(GROUP_MEMBER_IDS, new ArrayList<>(vm.getSelectedContactsIds()));
-        if (null != vm.getGroupName()) {
-            intent.putExtra(GROUP_NAME, vm.getGroupName());
-        }
-        if (null != vm.getGroupImage()) {
-            intent.putExtra(GROUP_IMAGE, vm.getGroupImage());
-        }
-        if (null != vm.getGroupImageUri()) {
-            intent.putExtra(URI, vm.getGroupImageUri());
-        }
-        startActivityForResult(intent, CREATE_GROUP);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPEditGroupSubjectActivity.start(
+                this,
+                instanceKey,
+                new ArrayList<>(vm.getSelectedContacts()),
+                new ArrayList<>(vm.getSelectedContactsIds()),
+                vm.getGroupName(),
+                vm.getGroupImage(),
+                vm.getGroupImageUri());
     }
 
     private void startAddMemberProcess() {
         if (!"".equals(vm.getRoomID())) {
-            TAPDataManager.getInstance().addRoomParticipant(vm.getRoomID(), vm.getSelectedContactsIds(), addMemberView);
+            TAPDataManager.getInstance(instanceKey).addRoomParticipant(vm.getRoomID(), vm.getSelectedContactsIds(), addMemberView);
         }
     }
 
@@ -396,7 +423,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             vm.setNeedToCallGetUserApi(false);
             if (vm.getAdapterItems().isEmpty()) {
                 tvInfoEmptyContact.setText(getString(R.string.tap_contact_list_empty));
-                if (TapUI.getInstance().isNewContactMenuButtonVisible()) {
+                if (TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
                     tvButtonEmptyContact.setText(getString(R.string.tap_add_new_contact));
                     tvButtonEmptyContact.setVisibility(View.VISIBLE);
                     llEmptyContact.setOnClickListener(v -> openNewContactActivity());
@@ -415,7 +442,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             vm.setNeedToCallGetUserApi(true);
 
             // Search matching contacts from database
-            TAPDataManager.getInstance().searchContactsByNameAndUsername(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
+            TAPDataManager.getInstance(instanceKey).searchContactsByNameAndUsername(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
                 @Override
                 public void onSelectFinished(List<TAPUserModel> entities) {
                     if (null != entities && !entities.isEmpty()) {
@@ -437,7 +464,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             });
 
             // Search matching non-contact users from database
-            TAPDataManager.getInstance().searchNonContactUsersFromDatabase(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
+            TAPDataManager.getInstance(instanceKey).searchNonContactUsersFromDatabase(searchKeyword, new TAPDatabaseListener<TAPUserModel>() {
                 @Override
                 public void onSelectFinished(List<TAPUserModel> entities) {
                     if (null != entities && !entities.isEmpty()) {
@@ -480,7 +507,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
         if (vm.isNeedToCallGetUserApi()) {
             // Call get user API if no matching username is found in database result
-            TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
+            TAPDataManager.getInstance(instanceKey).getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
         }
 
         runOnUiThread(() -> {
@@ -491,9 +518,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
     }
 
     private void openNewContactActivity() {
-        Intent intent = new Intent(this, TAPNewContactActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPNewContactActivity.start(this, instanceKey);
     }
 
     private void showGlobalSearchLoading() {
@@ -535,7 +560,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             etSearch.removeTextChangedListener(this);
-            TAPDataManager.getInstance().cancelUserSearchApiCall();
+            TAPDataManager.getInstance(instanceKey).cancelUserSearchApiCall();
             hideGlobalSearchLoading();
             searchTimer.cancel();
             if (s.length() == 0) {
@@ -559,8 +584,8 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
         @Override
         public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
             updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim());
-            TAPDataManager.getInstance().cancelUserSearchApiCall();
-            TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
+            TAPDataManager.getInstance(instanceKey).cancelUserSearchApiCall();
+            TAPDataManager.getInstance(instanceKey).getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
             TAPUtils.dismissKeyboard(TAPAddGroupMemberActivity.this);
             return true;
         }
@@ -595,7 +620,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             TAPUserModel userResponse = response.getUser();
 
             // Save user response to database
-            TAPContactManager.getInstance().updateUserData(userResponse);
+            TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
 
             if (!vm.getContactListPointer().containsKey(userResponse.getUserID())) {
                 // Add user response to pointer
@@ -635,7 +660,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
-            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPAddGroupMemberActivity.this)) {
+            if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TAPAddGroupMemberActivity.this)) {
                 // No internet connection
                 vm.setPendingSearch(etSearch.getText().toString());
             }
@@ -653,7 +678,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             if (null == response.getParticipants()) {
                 return;
             }
-            TAPGroupManager.Companion.getGetInstance().updateGroupDataFromResponse(response);
+            TAPGroupManager.Companion.getInstance(instanceKey).updateGroupDataFromResponse(response);
 
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra(GROUP_MEMBERS, new ArrayList<>(response.getParticipants()));
@@ -692,7 +717,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             if (null == vm.getPendingSearch() || vm.getPendingSearch().isEmpty()) {
                 return;
             }
-            TAPDataManager.getInstance().getUserByUsernameFromApi(vm.getPendingSearch(), true, getUserView);
+            TAPDataManager.getInstance(instanceKey).getUserByUsernameFromApi(vm.getPendingSearch(), true, getUserView);
             vm.setPendingSearch("");
         }
     };

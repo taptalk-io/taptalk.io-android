@@ -12,6 +12,7 @@ import io.taptalk.TapTalk.Model.TAPAttachmentModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
 
 class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
@@ -70,6 +71,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val instanceKey = try {
+            val activity = context as TapUIChatActivity
+            activity.instanceKey
+        } catch (e: Exception) {
+            ""
+        }
+
         var longPressAdapter = TAPAttachmentAdapter(listOf(), message,
                 bottomSheetListener, onClickListener)
         when (longPressType) {
@@ -83,23 +91,23 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 } else if (!message?.sending!!) {
                     when (message?.type) {
                         TYPE_IMAGE -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createImageBubbleLongPressMenu(message),
+                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createImageBubbleLongPressMenu(instanceKey, message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_VIDEO -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createVideoBubbleLongPressMenu(message),
+                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createVideoBubbleLongPressMenu(instanceKey, message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_FILE -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createFileBubbleLongPressMenu(message),
+                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createFileBubbleLongPressMenu(instanceKey, message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_LOCATION -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLocationBubbleLongPressMenu(message),
+                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLocationBubbleLongPressMenu(instanceKey, message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_TEXT -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(message),
+                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(instanceKey, message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         else -> {
@@ -124,7 +132,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
         rv_long_press.adapter = longPressAdapter
-        rv_long_press.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, false)
+        rv_long_press.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rv_long_press.setHasFixedSize(true)
     }
 }

@@ -1,5 +1,8 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -10,16 +13,27 @@ import io.taptalk.TapTalk.View.Fragment.TAPBarcodeScannerFragment;
 import io.taptalk.TapTalk.View.Fragment.TAPShowQRFragment;
 import io.taptalk.TapTalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
+
 public class TAPBarcodeScannerActivity extends TAPBaseActivity {
     private TextView tvToolbarTitle;
     private ImageView ivBack;
     private FrameLayout flToolbar;
 
-    private enum ScanState {
-        SCAN, SHOW
-    }
-
+    private enum ScanState { SCAN, SHOW }
     private ScanState state = ScanState.SCAN;
+
+    public static void start(
+            Context context,
+            String instanceKey
+    ) {
+        Intent intent = new Intent(context, TAPBarcodeScannerActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
