@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -51,6 +52,8 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
+import io.taptalk.TapTalk.Helper.TAPRecyclerSwipeCallback;
+import io.taptalk.TapTalk.Helper.TAPSwipeHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
@@ -359,6 +362,13 @@ public class TapUIRoomListFragment extends Fragment {
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
+//        ItemTouchHelper swipeHelper = new ItemTouchHelper(new TAPRecyclerSwipeCallback(viewHolder -> {
+//            Log.e(TAG, "onItemSwiped: ");
+//        }));
+        ItemTouchHelper swipeHelper = new ItemTouchHelper(new TAPSwipeHelper(getContext(), viewHolder -> {
+            Log.e(TAG, "onItemSwiped: ");
+        }));
+        swipeHelper.attachToRecyclerView(rvContactList);
 
         ivButtonClose.setOnClickListener(v -> TAPChatManager.getInstance(instanceKey).triggerCloseRoomListButtonTapped(activity));
         cvButtonSearch.setOnClickListener(v -> showSearchChat());

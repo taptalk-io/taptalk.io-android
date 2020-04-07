@@ -25,6 +25,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -42,6 +43,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -76,6 +78,7 @@ import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
+import io.taptalk.TapTalk.Helper.TAPSwipeHelper;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
@@ -769,6 +772,11 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         }
         rvMessageList.setItemAnimator(null);
         OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+        ItemTouchHelper swipeHelper = new ItemTouchHelper(new TAPSwipeHelper(this, position -> {
+            Log.e(TAG, "onItemSwiped: ");
+            showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
+        }));
+        swipeHelper.attachToRecyclerView(rvMessageList);
 
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TAPChatManager.getInstance(instanceKey).getCustomKeyboardItems(vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel()));
