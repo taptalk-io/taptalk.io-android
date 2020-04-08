@@ -209,12 +209,12 @@ import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.LINK_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.PHONE_TYPE;
 
-public class TapUIChatActivity extends TAPBaseChatActivity {
+public class TapUIChatActivity extends TAPBaseActivity {
 
     private String TAG = TapUIChatActivity.class.getSimpleName();
 
     // View
-    private SwipeBackLayout sblChat;
+//    private SwipeBackLayout sblChat;
     private TAPChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
     private FrameLayout flMessageList;
@@ -588,7 +588,7 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
     }
 
     private void bindViews() {
-        sblChat = getSwipeBackLayout();
+//        sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         flRoomUnavailable = (FrameLayout) findViewById(R.id.fl_room_unavailable);
         flChatComposerAndHistory = (FrameLayout) findViewById(R.id.fl_chat_composer_and_history);
@@ -760,6 +760,10 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         rvMessageList.setAdapter(messageAdapter);
         rvMessageList.setLayoutManager(messageLayoutManager);
         rvMessageList.setHasFixedSize(false);
+        rvMessageList.setupSwipeHelper(this, position -> {
+            Log.e(TAG, "onItemSwiped: ");
+            showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
+        });
         // FIXME: 9 November 2018 IMAGES/VIDEOS CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0);
@@ -771,12 +775,18 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             messageAnimator.setSupportsChangeAnimations(false);
         }
         rvMessageList.setItemAnimator(null);
-        OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
-        ItemTouchHelper swipeHelper = new ItemTouchHelper(new TAPSwipeHelper(this, position -> {
-            Log.e(TAG, "onItemSwiped: ");
-            showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
-        }));
-        swipeHelper.attachToRecyclerView(rvMessageList);
+        rvMessageList.addOnScrollListener(messageListScrollListener);
+//        OverScrollDecoratorHelper.setUpOverScroll(rvMessageList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL); FIXME: 8 Apr 2020 DISABLED OVERSCROLL DECORATOR
+
+        // Listener for scroll pagination
+        endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                if (!vm.isOnBottom()) {
+                    loadMoreMessagesFromDatabase();
+                }
+            }
+        };
 
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TAPChatManager.getInstance(instanceKey).getCustomKeyboardItems(vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel()));
@@ -809,16 +819,6 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
         }
 
-        // Listener for scroll pagination
-        endlessScrollListener = new TAPEndlessScrollListener(messageLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if (!vm.isOnBottom()) {
-                    loadMoreMessagesFromDatabase();
-                }
-            }
-        };
-
         // Load items from database for the first time
         if (vm.getRoom().isRoomDeleted()) {
             //showRoomIsUnavailableState();
@@ -840,16 +840,14 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
             getAllUnreadMessage();
         }
 
-        rvMessageList.addOnScrollListener(messageListScrollListener);
-
         LayoutTransition containerTransition = clContainer.getLayoutTransition();
         containerTransition.addTransitionListener(containerTransitionListener);
 
         etChat.addTextChangedListener(chatWatcher);
         etChat.setOnFocusChangeListener(chatFocusChangeListener);
 
-        sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
-        sblChat.setSwipeInterface(swipeInterface);
+//        sblChat.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+//        sblChat.setSwipeInterface(swipeInterface);
 
         vRoomImage.setOnClickListener(v -> openRoomProfile());
         ivButtonBack.setOnClickListener(v -> closeActivity());
@@ -3266,27 +3264,20 @@ public class TapUIChatActivity extends TAPBaseChatActivity {
         }
     }
 
-    // Interface for swipe back
-    public interface SwipeBackInterface {
-        void onSwipeBack();
-
-        void onSwipeToFinishActivity();
-    }
-
-    private SwipeBackInterface swipeInterface = new SwipeBackInterface() {
-        @Override
-        public void onSwipeBack() {
-            TAPUtils.dismissKeyboard(TapUIChatActivity.this);
-        }
-
-        @Override
-        public void onSwipeToFinishActivity() {
-            if (isTaskRoot()) {
-                // Trigger listener callback if no other activity is open
-                for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
-                    listener.onTaskRootChatRoomClosed(TapUIChatActivity.this);
-                }
-            }
-        }
-    };
+//    private SwipeBackLayout.SwipeBackInterface swipeInterface = new SwipeBackLayout.SwipeBackInterface() {
+//        @Override
+//        public void onSwipeBack() {
+//            TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+//        }
+//
+//        @Override
+//        public void onSwipeToFinishActivity() {
+//            if (isTaskRoot()) {
+//                // Trigger listener callback if no other activity is open
+//                for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
+//                    listener.onTaskRootChatRoomClosed(TapUIChatActivity.this);
+//                }
+//            }
+//        }
+//    };
 }

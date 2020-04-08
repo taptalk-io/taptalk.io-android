@@ -129,7 +129,15 @@ public class SwipeBackLayout extends ConstraintLayout {
     /**
      * Add Interface to closeKeyboard when swipe back
      */
-    private TapUIChatActivity.SwipeBackInterface swipeInterface;
+
+    // Interface for swipe back
+    public interface SwipeBackInterface {
+        void onSwipeBack();
+
+        void onSwipeToFinishActivity();
+    }
+
+    private SwipeBackInterface swipeInterface;
 
     public SwipeBackLayout(Context context) {
         this(context, null);
@@ -347,7 +355,7 @@ public class SwipeBackLayout extends ConstraintLayout {
     /**
      * SetSwipe Interface
      */
-    public void setSwipeInterface(TapUIChatActivity.SwipeBackInterface swipeInterface) {
+    public void setSwipeInterface(SwipeBackInterface swipeInterface) {
         this.swipeInterface = swipeInterface;
     }
 

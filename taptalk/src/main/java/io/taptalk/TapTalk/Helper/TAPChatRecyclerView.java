@@ -1,11 +1,19 @@
 package io.taptalk.TapTalk.Helper;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
 
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
+
 public class TAPChatRecyclerView extends RecyclerView {
+
+    private ItemTouchHelper swipeHelper;
+//    private TAPSwipeHelper.SwipeControllerActions activitySwipeReplyInterface;
     private int oldHeight;
 
     public TAPChatRecyclerView(Context context) {
@@ -27,5 +35,20 @@ public class TAPChatRecyclerView extends RecyclerView {
         if (delta < 0) {
             this.scrollBy(0, -delta);
         }
+    }
+
+    @Override
+    public void onDraw(Canvas c) {
+        if (null != swipeHelper) {
+            Log.e("TAPChatRecyclerView", "onDraw: ");
+            swipeHelper.onDraw(c, this, null);
+        }
+        super.onDraw(c);
+    }
+
+    public void setupSwipeHelper(Context context, TAPSwipeHelper.SwipeControllerActions swipeReplyInterface) {
+//        activitySwipeReplyInterface = swipeReplyInterface;
+        swipeHelper = new ItemTouchHelper(new TAPSwipeHelper(context, swipeReplyInterface));
+        swipeHelper.attachToRecyclerView(this);
     }
 }

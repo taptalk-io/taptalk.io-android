@@ -52,6 +52,7 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
+import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPRecyclerSwipeCallback;
 import io.taptalk.TapTalk.Helper.TAPSwipeHelper;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -111,7 +112,7 @@ public class TapUIRoomListFragment extends Fragment {
     private CardView cvButtonSearch;
     private View vButtonMyAccount;
 
-    private RecyclerView rvContactList;
+    private TAPChatRecyclerView rvContactList;
     private LinearLayoutManager llm;
     private TAPRoomListAdapter adapter;
     private TapTalkRoomListInterface tapTalkRoomListInterface;

@@ -75,6 +75,7 @@ class TAPSwipeHelper(
             actionState: Int,
             isCurrentlyActive: Boolean
     ) {
+        Log.e("SwipeHelper", "onChildDraw: $actionState")
         if (actionState == ACTION_STATE_SWIPE) {
             setTouchListener(recyclerView, viewHolder)
         }
@@ -86,6 +87,11 @@ class TAPSwipeHelper(
         }
         currentItemViewHolder = viewHolder
         drawReplyButton(c)
+    }
+
+    override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+        Log.e("SwipeHelper", "clearView: ")
+        super.clearView(recyclerView, viewHolder)
     }
 
     @SuppressLint("ClickableViewAccessibility")
