@@ -764,6 +764,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
             Log.e(TAG, "onItemSwiped: ");
             showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
         });
+//        ItemTouchHelper swipeHelper = new ItemTouchHelper(new TAPSwipeHelper(this, position -> {
+//            Log.e(TAG, "onItemSwiped: ");
+//            showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
+//        }));
+//        swipeHelper.attachToRecyclerView(rvMessageList);
         // FIXME: 9 November 2018 IMAGES/VIDEOS CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0);

@@ -21,8 +21,7 @@ class TAPSwipeHelper(
         private val swipeControllerActions: SwipeControllerActions) :
         ItemTouchHelper.Callback() {
 
-    private lateinit var imageDrawable: Drawable
-    private lateinit var shareRound: Drawable
+    private val imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_circle_white)!!
 
     private var currentItemViewHolder: RecyclerView.ViewHolder? = null
     private lateinit var mView: View
@@ -33,16 +32,19 @@ class TAPSwipeHelper(
     private var swipeBack = false
     private var isVibrate = false
     private var startTracking = false
+    private var currentViewHolderSwiped = false
 
     interface SwipeControllerActions {
         fun showReplyUI(position: Int)
     }
 
+//    override fun isItemViewSwipeEnabled(): Boolean {
+//        return !currentViewHolderSwiped
+//    }
+
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
         Log.e("SwipeHelper", "getMovementFlags: ${makeMovementFlags(ACTION_STATE_IDLE, RIGHT)}")
         mView = viewHolder.itemView
-        imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_circle_white)!!
-        shareRound = ContextCompat.getDrawable(context, R.drawable.tap_bg_circle_6604040f)!!
         return makeMovementFlags(ACTION_STATE_IDLE, RIGHT)
     }
 
@@ -75,10 +77,17 @@ class TAPSwipeHelper(
             actionState: Int,
             isCurrentlyActive: Boolean
     ) {
-        Log.e("SwipeHelper", "onChildDraw: $actionState")
+        Log.e("SwipeHelper", "onChildDraw: action $actionState, ${currentItemViewHolder == viewHolder}, $currentViewHolderSwiped")
         if (actionState == ACTION_STATE_SWIPE) {
             setTouchListener(recyclerView, viewHolder)
         }
+
+
+        if (currentItemViewHolder == viewHolder && currentViewHolderSwiped) {
+            Log.e("SwipeHelper", "onChildDraw: return")
+            return
+        }
+
 
         if (mView.translationX < (130) || dX < this.dX) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
@@ -86,7 +95,12 @@ class TAPSwipeHelper(
             startTracking = true
         }
         currentItemViewHolder = viewHolder
+        currentViewHolderSwiped = false
         drawReplyButton(c)
+    }
+
+    fun currentViewHolderSwiped() : Boolean {
+        return currentViewHolderSwiped
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
@@ -101,6 +115,8 @@ class TAPSwipeHelper(
             if (swipeBack) {
                 if (Math.abs(mView.translationX) >= (100)) {
                     swipeControllerActions.showReplyUI(viewHolder.adapterPosition)
+                    recyclerView.setOnTouchListener(null)
+                    currentViewHolderSwiped = true
                 }
             }
             false
