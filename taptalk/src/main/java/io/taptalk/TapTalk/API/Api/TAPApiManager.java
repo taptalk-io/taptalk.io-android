@@ -298,8 +298,8 @@ public class TAPApiManager {
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
                     if (RESPONSE_SUCCESS == response.getStatus()) {
-                        isRefreshTokenRunning = false;
                         updateSession(response);
+                        isRefreshTokenRunning = false;
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
                     } else if (UNAUTHORIZED == response.getStatus() &&
                             lastRefreshToken.equals(TAPDataManager.getInstance(instanceKey).getRefreshToken())) {
