@@ -43,7 +43,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -71,14 +70,11 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
-import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
-import io.taptalk.TapTalk.Helper.SwipeBackLayout.SwipeBackLayout;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener;
 import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView;
-import io.taptalk.TapTalk.Helper.TAPSwipeHelper;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
@@ -764,11 +760,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             Log.e(TAG, "onItemSwiped: ");
             showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
         });
-//        ItemTouchHelper swipeHelper = new ItemTouchHelper(new TAPSwipeHelper(this, position -> {
-//            Log.e(TAG, "onItemSwiped: ");
-//            showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
-//        }));
-//        swipeHelper.attachToRecyclerView(rvMessageList);
         // FIXME: 9 November 2018 IMAGES/VIDEOS CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT, 0);
         rvMessageList.getRecycledViewPool().setMaxRecycledViews(TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT, 0);
