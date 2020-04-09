@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Helper
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 import io.taptalk.TapTalk.R
+import kotlin.math.min
 
 class TAPSwipeReplyCallback(
         private val context: Context,
@@ -21,7 +23,7 @@ class TAPSwipeReplyCallback(
     private val imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_circle_white)!!
 
     private var currentItemViewHolder: RecyclerView.ViewHolder? = null
-    private lateinit var mView: View
+    private lateinit var itemView: View
     private var dX = 0f
 
     private var replyButtonProgress: Float = 0.toFloat()
@@ -36,7 +38,7 @@ class TAPSwipeReplyCallback(
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
         Log.e("SwipeHelper", "getMovementFlags: ${makeMovementFlags(ACTION_STATE_IDLE, RIGHT)}")
-        mView = viewHolder.itemView
+        itemView = viewHolder.itemView
         return makeMovementFlags(ACTION_STATE_IDLE, RIGHT)
     }
 
@@ -74,7 +76,7 @@ class TAPSwipeReplyCallback(
             setTouchListener(recyclerView, viewHolder)
         }
 
-        if (mView.translationX < (130) || dX < this.dX) {
+        if (itemView.translationX < (130) || dX < this.dX) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             this.dX = dX
             startTracking = true
@@ -88,7 +90,7 @@ class TAPSwipeReplyCallback(
         recyclerView.setOnTouchListener { _, event ->
             swipeBack = event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP
             if (swipeBack) {
-                if (Math.abs(mView.translationX) >= (100)) {
+                if (Math.abs(itemView.translationX) >= (100)) {
                     swipeControllerActions.showReplyUI(viewHolder.adapterPosition)
                     recyclerView.setOnTouchListener(null)
                 }
@@ -101,18 +103,18 @@ class TAPSwipeReplyCallback(
         if (currentItemViewHolder == null) {
             return
         }
-        val translationX = mView.translationX
+        val translationX = itemView.translationX
         val newTime = System.currentTimeMillis()
-        val dt = Math.min(17, newTime - lastReplyButtonAnimationTime)
+        val dt = min(17, newTime - lastReplyButtonAnimationTime)
         lastReplyButtonAnimationTime = newTime
-        val showing = translationX >= (30)
+        val showing = translationX >= TAPUtils.dpToPx(30)
         if (showing) {
             if (replyButtonProgress < 1.0f) {
                 replyButtonProgress += dt / 180.0f
                 if (replyButtonProgress > 1.0f) {
                     replyButtonProgress = 1.0f
                 } else {
-                    mView.invalidate()
+                    itemView.invalidate()
                 }
             }
         } else if (translationX <= 0.0f) {
@@ -125,11 +127,11 @@ class TAPSwipeReplyCallback(
                 if (replyButtonProgress < 0.1f) {
                     replyButtonProgress = 0f
                 } else {
-                    mView.invalidate()
+                    itemView.invalidate()
                 }
             }
         }
-        val alpha: Int
+//        val alpha: Int
         val scale: Float
         if (showing) {
             scale = if (replyButtonProgress <= 0.8f) {
@@ -137,17 +139,16 @@ class TAPSwipeReplyCallback(
             } else {
                 1.2f - 0.2f * ((replyButtonProgress - 0.8f) / 0.2f)
             }
-            alpha = Math.min(255f, 255 * (replyButtonProgress / 0.8f)).toInt()
+//            alpha = min(255f, 255 * (replyButtonProgress / 0.8f)).toInt()
         } else {
             scale = replyButtonProgress
-            alpha = Math.min(255f, 255 * replyButtonProgress).toInt()
+//            alpha = min(255f, 255 * replyButtonProgress).toInt()
         }
-//        shareRound.alpha = alpha
 
-        imageDrawable.alpha = alpha
+//        imageDrawable.alpha = alpha
         if (startTracking) {
-            if (!isVibrate && mView.translationX >= (100)) {
-                mView.performHapticFeedback(
+            if (!isVibrate && itemView.translationX >= (100)) {
+                itemView.performHapticFeedback(
                         HapticFeedbackConstants.KEYBOARD_TAP,
                         HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
                 )
@@ -155,31 +156,20 @@ class TAPSwipeReplyCallback(
             }
         }
 
-        val x: Int = if (mView.translationX > (130)) {
-            (130) / 2
+        val x: Int = if (itemView.translationX > TAPUtils.dpToPx(120)) {
+            TAPUtils.dpToPx(120) / 2
         } else {
-            (mView.translationX / 2).toInt()
+            (itemView.translationX / 2).toInt()
         }
 
-        val y = (mView.top + mView.measuredHeight / 2).toFloat()
-//        shareRound.colorFilter =
-//                PorterDuffColorFilter(ContextCompat.getColor(context, R.color.tapColorPrimary), PorterDuff.Mode.MULTIPLY)
-
-//        shareRound.setBounds(
-//                (x - (18) * scale).toInt(),
-//                (y - (18) * scale).toInt(),
-//                (x + (18) * scale).toInt(),
-//                (y + (18) * scale).toInt()
-//        )
-//        shareRound.draw(canvas)
+        val y = (itemView.top + itemView.measuredHeight / 2).toFloat()
         imageDrawable.setBounds(
-                (x - (12) * scale).toInt(),
-                (y - (11) * scale).toInt(),
-                (x + (12) * scale).toInt(),
-                (y + (10) * scale).toInt()
+                (x - TAPUtils.dpToPx(16) * scale).toInt() - 1,
+                (y - TAPUtils.dpToPx(16) * scale).toInt() - 1,
+                (x + TAPUtils.dpToPx(16) * scale).toInt() + 1,
+                (y + TAPUtils.dpToPx(16) * scale).toInt() + 1
         )
         imageDrawable.draw(canvas)
-//        shareRound.alpha = 255
-        imageDrawable.alpha = 255
+//        imageDrawable.alpha = 255
     }
 }
