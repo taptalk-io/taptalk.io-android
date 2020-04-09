@@ -46,7 +46,7 @@ public class TAPChatRecyclerView extends RecyclerView {
         super.onDraw(c);
     }
 
-    public void setupSwipeHelper(Context context, TAPSwipeReplyCallback.SwipeControllerActions swipeReplyInterface) {
+    public void setupSwipeHelper(Context context, TAPSwipeReplyCallback.SwipeReplyInterface swipeReplyInterface) {
         swipeHelper = new ItemTouchHelper( new TAPSwipeReplyCallback(context, swipeReplyInterface));
         swipeHelper.attachToRecyclerView(this);
     }

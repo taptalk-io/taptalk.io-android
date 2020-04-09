@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.Helper
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -13,30 +12,37 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Adapter.TAPBaseChatViewHolder
+import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
 import kotlin.math.min
 
 class TAPSwipeReplyCallback(
-        private val context: Context,
-        private val swipeControllerActions: SwipeControllerActions) :
+        context: Context,
+        private val swipeReplyInterface: SwipeReplyInterface) :
         ItemTouchHelper.Callback() {
-
     private val imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_circle_white)!!
 
-    private var currentItemViewHolder: RecyclerView.ViewHolder? = null
     private lateinit var itemView: View
+    private var currentItemViewHolder: RecyclerView.ViewHolder? = null
     private var dX = 0f
-
     private var replyButtonProgress: Float = 0.toFloat()
     private var lastReplyButtonAnimationTime: Long = 0
     private var swipeBack = false
     private var isVibrate = false
     private var startTracking = false
 
-    interface SwipeControllerActions {
-        fun showReplyUI(position: Int)
+    interface SwipeReplyInterface {
+        fun onItemSwiped(position: Int)
     }
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+        if (viewHolder is TAPMessageAdapter.DeletedVH ||
+                (viewHolder is TAPBaseChatViewHolder &&
+                        null != viewHolder.item.failedSend &&
+                        viewHolder.item.failedSend!!)) {
+            // Disable swipe for deleted messages & messages that failed to send
+            return 0
+        }
         Log.e("SwipeHelper", "getMovementFlags: ${makeMovementFlags(ACTION_STATE_IDLE, RIGHT)}")
         itemView = viewHolder.itemView
         return makeMovementFlags(ACTION_STATE_IDLE, RIGHT)
@@ -91,7 +97,7 @@ class TAPSwipeReplyCallback(
             swipeBack = event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP
             if (swipeBack) {
                 if (Math.abs(itemView.translationX) >= (100)) {
-                    swipeControllerActions.showReplyUI(viewHolder.adapterPosition)
+                    swipeReplyInterface.onItemSwiped(viewHolder.adapterPosition)
                     recyclerView.setOnTouchListener(null)
                 }
             }

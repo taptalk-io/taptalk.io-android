@@ -36,7 +36,7 @@ public abstract class TAPBaseViewHolder<T>
         onBind(getItem(), position);
     }
 
-    protected T getItem() {
+    public T getItem() {
         return item;
     }
 
