@@ -22,7 +22,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.BuildConfig;
-import io.taptalk.TapTalk.View.Activity.TAPBaseChatActivity;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -64,19 +64,19 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                 (null == item.getIsRead() || !item.getIsRead()) &&
                 (null != item.getSending() && !item.getSending()) &&
                 !TAPMessageStatusManager.getInstance(
-                        ((TAPBaseChatActivity) itemView.getContext()).instanceKey)
+                        ((TAPBaseActivity) itemView.getContext()).instanceKey)
                         .getReadMessageQueue().contains(item.getMessageID()) &&
                 !TAPMessageStatusManager.getInstance(
-                        ((TAPBaseChatActivity) itemView.getContext()).instanceKey)
+                        ((TAPBaseActivity) itemView.getContext()).instanceKey)
                         .getMessagesMarkedAsRead().contains(item.getMessageID())
         ) {
             item.updateReadMessage();
             new Thread(() -> {
                 TAPMessageStatusManager.getInstance(
-                        ((TAPBaseChatActivity) itemView.getContext()).instanceKey)
+                        ((TAPBaseActivity) itemView.getContext()).instanceKey)
                         .addUnreadListByOne(item.getRoom().getRoomID());
                 TAPMessageStatusManager.getInstance(
-                        ((TAPBaseChatActivity) itemView.getContext()).instanceKey)
+                        ((TAPBaseActivity) itemView.getContext()).instanceKey)
                         .addReadMessageQueue(item.getMessageID());
             }).start();
         }
