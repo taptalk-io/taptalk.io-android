@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
@@ -148,7 +149,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private TAPMessageModel expandedBubble;
     private TAPUserModel myUserModel;
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
-    private List<String> participantListUsername;
     private RequestManager glide;
     private float initialTranslationX = TAPUtils.dpToPx(-22);
     private long defaultAnimationTime = 200L;
@@ -1613,28 +1613,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private List<String> getParticipantListUsername() {
-        if (null != participantListUsername) {
-            return participantListUsername;
-        }
-        participantListUsername = new ArrayList<>();
-        List<TAPUserModel> participants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
-        if (null == participants) {
-            return null;
-        }
-        for (TAPUserModel participant : participants) {
-            participantListUsername.add(participant.getUsername());
-        }
-        return participantListUsername;
-    }
-
     private void generateMessageBodySpan(TextView tvMessageBody, TAPMessageModel item, String body) {
         // Check for mentions
         if (item.getRoom().getRoomType() == TYPE_GROUP && body.contains("@")) {
             Log.e(TAG, "generateMessageBodySpan: has mentions");
             Log.e(TAG, "generateMessageBodySpan: " + body);
-
-            if (null == getParticipantListUsername() || getParticipantListUsername().size() < 1) {
+            List<TAPUserModel> groupParticipants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
+            if (null == groupParticipants || groupParticipants.size() < 1) {
                 tvMessageBody.setText(body);
                 return;
             }
@@ -1655,15 +1640,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         String username = body.substring(mentionStartIndex + 1, mentionEndIndex);
                         Log.e(TAG, "generateMessageBodySpan end index: " + mentionEndIndex);
                         Log.e(TAG, "generateMessageBodySpan mention: " + body.substring(mentionStartIndex, mentionEndIndex));
-
-                        if (getParticipantListUsername().contains(username)) {
-                            span.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), mentionStartIndex, mentionEndIndex, 0);
-                            span.setSpan(new ClickableSpan() {
-                                @Override
-                                public void onClick(@NonNull View view) {
-                                    chatListener.onMentionClicked(item);
-                                }
-                            }, mentionStartIndex, mentionEndIndex, 0);
+                        for (TAPUserModel participant : groupParticipants) {
+                            if (null != participant.getUsername() && participant.getUsername().equals(username)) {
+                                span.setSpan(new ForegroundColorSpan(
+                                                ContextCompat.getColor(TapTalk.appContext,
+                                                        isMessageFromMySelf(item) ?
+                                                                R.color.tapLeftBubbleMessageBodyURLColor :
+                                                                R.color.tapRightBubbleMessageBodyURLColor)),
+                                        mentionStartIndex, mentionEndIndex, 0);
+                                span.setSpan(new ClickableSpan() {
+                                    @Override
+                                    public void onClick(@NonNull View view) {
+                                        chatListener.onMentionClicked(item, participant);
+                                    }
+                                }, mentionStartIndex, mentionEndIndex, 0);
+                                break;
+                            }
                         }
                         mentionStartIndex = -1;
                     } else if (mentionStartIndex != -1 && !charMatchesUsernameFormat) {
@@ -1671,15 +1663,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         String username = body.substring(mentionStartIndex + 1, i);
                         Log.e(TAG, "generateMessageBodySpan end index: " + i);
                         Log.e(TAG, "generateMessageBodySpan mention: " + body.substring(mentionStartIndex, i));
-
-                        if (getParticipantListUsername().contains(username)) {
-                            span.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), mentionStartIndex, i, 0);
-                            span.setSpan(new ClickableSpan() {
-                                @Override
-                                public void onClick(@NonNull View view) {
-                                    chatListener.onMentionClicked(item);
-                                }
-                            }, mentionStartIndex, i, 0);
+                        for (TAPUserModel participant : groupParticipants) {
+                            if (null != participant.getUsername() && participant.getUsername().equals(username)) {
+                                span.setSpan(new ForegroundColorSpan(
+                                                ContextCompat.getColor(TapTalk.appContext,
+                                                        isMessageFromMySelf(item) ?
+                                                                R.color.tapLeftBubbleMessageBodyURLColor :
+                                                                R.color.tapRightBubbleMessageBodyURLColor)),
+                                        mentionStartIndex, i, 0);
+                                span.setSpan(new ClickableSpan() {
+                                    @Override
+                                    public void onClick(@NonNull View view) {
+                                        chatListener.onMentionClicked(item, participant);
+                                    }
+                                }, mentionStartIndex, i, 0);
+                                break;
+                            }
                         }
                         mentionStartIndex = -1;
                     }

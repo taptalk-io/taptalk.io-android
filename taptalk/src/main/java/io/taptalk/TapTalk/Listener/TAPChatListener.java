@@ -6,6 +6,7 @@ import io.taptalk.TapTalk.Interface.TapTalkChatInterface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 
 @Keep
 public abstract class TAPChatListener implements TapTalkChatInterface {
@@ -70,7 +71,7 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     }
 
     @Override
-    public void onMentionClicked(TAPMessageModel message) {
+    public void onMentionClicked(TAPMessageModel message, TAPUserModel mentionedUser) {
     }
 
     @Override

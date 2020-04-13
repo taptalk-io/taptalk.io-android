@@ -994,6 +994,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         @Override
+        public void onMentionClicked(TAPMessageModel message, TAPUserModel mentionedUser) {
+            TAPChatManager.getInstance(instanceKey).triggerUserMentionTapped(TapUIChatActivity.this, message, mentionedUser);
+        }
+
+        @Override
         public void onMessageQuoteClicked(TAPMessageModel message) {
             TAPChatManager.getInstance(instanceKey).triggerMessageQuoteTapped(TapUIChatActivity.this, message);
             if (null != message.getReplyTo() &&
