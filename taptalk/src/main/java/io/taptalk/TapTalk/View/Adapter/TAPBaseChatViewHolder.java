@@ -30,6 +30,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressMention;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
 
 public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
@@ -101,34 +102,44 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
         TAPBetterLinkMovementMethod movementMethod = TAPBetterLinkMovementMethod.newInstance()
                 .setOnLinkClickListener((textView, url, originalText) -> {
                     if (null != url && url.contains("mailto:")) {
-                        //for Email
+                        // Email
                         return false;
                     } else if (null != url && url.contains("tel:")) {
-                        //For Phone Number
+                        // Phone Number
+                        return false;
+                    } else if (null != url && url.contains("@")) {
+                        // Mention
                         return false;
                     } else if (null != url) {
-                        //For Url
+                        // Url
                         TAPUtils.openCustomTabLayout((Activity) itemView.getContext(), url);
                         return true;
                     }
                     return false;
                 }).setOnLinkLongClickListener((textView, url, originalText) -> {
                     if (null != url && url.contains("mailto:")) {
-                        //for Email
+                        // Email
                         Intent intent = new Intent(LongPressEmail);
                         intent.putExtra(URL_MESSAGE, url);
                         intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
                     } else if (null != url && url.contains("tel:")) {
-                        //For Phone Number
+                        // Phone Number
                         Intent intent = new Intent(LongPressPhone);
                         intent.putExtra(URL_MESSAGE, url);
                         intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         return true;
+                    } else if (null != url && url.contains("@")) {
+                        // Mention
+                        Intent intent = new Intent(LongPressMention);
+                        intent.putExtra(URL_MESSAGE, url);
+                        intent.putExtra(COPY_MESSAGE, originalText);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                        return true;
                     } else if (null != url) {
-                        //For Url
+                        // Url
                         Intent intent = new Intent(LongPressLink);
                         intent.putExtra(URL_MESSAGE, url);
                         intent.putExtra(COPY_MESSAGE, originalText);

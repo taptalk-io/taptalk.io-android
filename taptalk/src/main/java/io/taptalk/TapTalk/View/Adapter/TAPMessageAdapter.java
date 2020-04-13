@@ -10,6 +10,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.SpannableString;
+import android.text.style.ClickableSpan;
+import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -144,6 +148,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private TAPMessageModel expandedBubble;
     private TAPUserModel myUserModel;
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
+    private List<String> participantListUsername;
     private RequestManager glide;
     private float initialTranslationX = TAPUtils.dpToPx(-22);
     private long defaultAnimationTime = 200L;
@@ -321,7 +326,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
             }
 
-            tvMessageBody.setText(item.getBody());
+            //tvMessageBody.setText(item.getBody());
+            generateMessageBodySpan(tvMessageBody, item, item.getBody());
 
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 tvMessageStatus.setText(itemView.getContext().getText(R.string.tap_message_send_failed));
@@ -527,7 +533,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setBottomLeftRadius(0);
                 rcivImageBody.setBottomRightRadius(0);
                 tvMessageBody.setVisibility(View.VISIBLE);
-                tvMessageBody.setText(imageCaption);
+                //tvMessageBody.setText(imageCaption);
+                generateMessageBodySpan(tvMessageBody, item, imageCaption);
                 setLinkDetection(itemView.getContext(), tvMessageBody);
             } else {
                 rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(9));
@@ -802,7 +809,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivVideoThumbnail.setBottomLeftRadius(0);
                 rcivVideoThumbnail.setBottomRightRadius(0);
                 tvMessageBody.setVisibility(View.VISIBLE);
-                tvMessageBody.setText(videoCaption);
+                //tvMessageBody.setText(videoCaption);
+                generateMessageBodySpan(tvMessageBody, item, videoCaption);
                 setLinkDetection(itemView.getContext(), tvMessageBody);
             } else {
                 rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(9));
@@ -1602,6 +1610,85 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         } else if (null != ivReply) {
             tvMessageStatus.setVisibility(View.VISIBLE);
             ivReply.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private List<String> getParticipantListUsername() {
+        if (null != participantListUsername) {
+            return participantListUsername;
+        }
+        participantListUsername = new ArrayList<>();
+        List<TAPUserModel> participants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
+        if (null == participants) {
+            return null;
+        }
+        for (TAPUserModel participant : participants) {
+            participantListUsername.add(participant.getUsername());
+        }
+        return participantListUsername;
+    }
+
+    private void generateMessageBodySpan(TextView tvMessageBody, TAPMessageModel item, String body) {
+        // Check for mentions
+        if (item.getRoom().getRoomType() == TYPE_GROUP && body.contains("@")) {
+            Log.e(TAG, "generateMessageBodySpan: has mentions");
+            Log.e(TAG, "generateMessageBodySpan: " + body);
+
+            if (null == getParticipantListUsername() || getParticipantListUsername().size() < 1) {
+                tvMessageBody.setText(body);
+                return;
+            }
+
+            SpannableString span = new SpannableString(body);
+            int mentionStartIndex = -1;
+            int length = body.length();
+            for (int i = 0; i < length; i++) {
+                if (mentionStartIndex == -1 && body.charAt(i) == '@') {
+                    // Set index of @
+                    mentionStartIndex = i;
+                    Log.e(TAG, "generateMessageBodySpan start index: " + mentionStartIndex);
+                } else {
+                    boolean charMatchesUsernameFormat = body.substring(i, i + 1).matches("[a-zA-Z0-9._]*");
+                    if (mentionStartIndex != -1 && i == (length - 1)) {
+                        // End of string
+                        int mentionEndIndex = charMatchesUsernameFormat ? (i + 1) : i;
+                        String username = body.substring(mentionStartIndex + 1, mentionEndIndex);
+                        Log.e(TAG, "generateMessageBodySpan end index: " + mentionEndIndex);
+                        Log.e(TAG, "generateMessageBodySpan mention: " + body.substring(mentionStartIndex, mentionEndIndex));
+
+                        if (getParticipantListUsername().contains(username)) {
+                            span.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), mentionStartIndex, mentionEndIndex, 0);
+                            span.setSpan(new ClickableSpan() {
+                                @Override
+                                public void onClick(@NonNull View view) {
+                                    chatListener.onMentionClicked(item);
+                                }
+                            }, mentionStartIndex, mentionEndIndex, 0);
+                        }
+                        mentionStartIndex = -1;
+                    } else if (mentionStartIndex != -1 && !charMatchesUsernameFormat) {
+                        // End index for mentioned username
+                        String username = body.substring(mentionStartIndex + 1, i);
+                        Log.e(TAG, "generateMessageBodySpan end index: " + i);
+                        Log.e(TAG, "generateMessageBodySpan mention: " + body.substring(mentionStartIndex, i));
+
+                        if (getParticipantListUsername().contains(username)) {
+                            span.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), mentionStartIndex, i, 0);
+                            span.setSpan(new ClickableSpan() {
+                                @Override
+                                public void onClick(@NonNull View view) {
+                                    chatListener.onMentionClicked(item);
+                                }
+                            }, mentionStartIndex, i, 0);
+                        }
+                        mentionStartIndex = -1;
+                    }
+                }
+            }
+            tvMessageBody.setText(span);
+        } else {
+//            Log.e(TAG, "generateMessageBodySpan: no mention or not a group");
+            tvMessageBody.setText(body);
         }
     }
 

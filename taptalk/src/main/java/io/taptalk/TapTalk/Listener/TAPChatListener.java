@@ -70,6 +70,10 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     }
 
     @Override
+    public void onMentionClicked(TAPMessageModel message) {
+    }
+
+    @Override
     public void onGroupMemberAvatarClicked(TAPMessageModel message) {
     }
 
