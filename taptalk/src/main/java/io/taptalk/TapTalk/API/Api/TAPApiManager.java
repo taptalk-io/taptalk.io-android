@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.API.Api;
 
-import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,6 +7,7 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
@@ -21,7 +21,6 @@ import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
-import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.AnalyticsManager;
@@ -99,7 +98,6 @@ public class TAPApiManager {
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
-//    private int isShouldRefreshToken = 0;
     private boolean isLoggedOut = false; // Flag to prevent unauthorized API call due to refresh token expired
     private boolean isRefreshTokenRunning = false;
     private String lastRefreshToken = "";
@@ -241,8 +239,7 @@ public class TAPApiManager {
         if (t instanceof TAPApiSessionExpiredException && !isRefreshTokenRunning && !isLoggedOut) {
             return refreshToken();
         } else if (t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && isRefreshTokenRunning) && !isLoggedOut) {
-            SystemClock.sleep(1000);
-            return Observable.just(Boolean.TRUE);
+            return Observable.just(Boolean.TRUE).delay(1000, TimeUnit.MILLISECONDS);
         } else {
             return Observable.error(t);
         }
@@ -485,7 +482,9 @@ public class TAPApiManager {
         TAPTalkDownloadApiService tapDownload;
         if (null != fileSize) {
             tapDownload = TAPApiConnection.getInstance(instanceKey).getTapDownload(calculateTimeOutTimeWithFileSize(fileSize.longValue()));
-        } else tapDownload = TAPApiConnection.getInstance(instanceKey).getTapDownload(30 * 60 * 1000);
+        } else {
+            tapDownload = TAPApiConnection.getInstance(instanceKey).getTapDownload(30 * 60 * 1000);
+        }
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
         executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
     }
