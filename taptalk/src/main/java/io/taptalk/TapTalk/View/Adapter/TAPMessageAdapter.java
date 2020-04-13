@@ -1615,10 +1615,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     private void generateMessageBodySpan(TextView tvMessageBody, TAPMessageModel item, String body) {
         // Check for mentions
-        if (item.getRoom().getRoomType() == TYPE_GROUP && body.contains("@")) {
+        if (item.getRoom().getRoomType() != TYPE_PERSONAL && body.contains("@")) {
             Log.e(TAG, "generateMessageBodySpan: has mentions");
             Log.e(TAG, "generateMessageBodySpan: " + body);
-            List<TAPUserModel> groupParticipants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
+            List<TAPUserModel> groupParticipants = null;
+            if (null != TAPChatManager.getInstance(instanceKey).getActiveRoom()) {
+                groupParticipants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
+            }
             if (null == groupParticipants || groupParticipants.size() < 1) {
                 tvMessageBody.setText(body);
                 return;
@@ -1642,6 +1645,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         Log.e(TAG, "generateMessageBodySpan mention: " + body.substring(mentionStartIndex, mentionEndIndex));
                         for (TAPUserModel participant : groupParticipants) {
                             if (null != participant.getUsername() && participant.getUsername().equals(username)) {
+                                // Save temporary mentioned user data
+                                TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, participant);
+
+                                // Set span for textView
                                 span.setSpan(new ForegroundColorSpan(
                                                 ContextCompat.getColor(TapTalk.appContext,
                                                         isMessageFromMySelf(item) ?
@@ -1665,6 +1672,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         Log.e(TAG, "generateMessageBodySpan mention: " + body.substring(mentionStartIndex, i));
                         for (TAPUserModel participant : groupParticipants) {
                             if (null != participant.getUsername() && participant.getUsername().equals(username)) {
+                                // Save temporary mentioned user data
+                                TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, participant);
+
+                                // Set span for textView
                                 span.setSpan(new ForegroundColorSpan(
                                                 ContextCompat.getColor(TapTalk.appContext,
                                                         isMessageFromMySelf(item) ?

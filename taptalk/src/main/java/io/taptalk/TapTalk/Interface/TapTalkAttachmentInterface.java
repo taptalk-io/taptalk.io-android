@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Interface;
 
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public interface TapTalkAttachmentInterface {
     void onDocumentSelected();
@@ -34,6 +35,10 @@ public interface TapTalkAttachmentInterface {
     void onSaveVideoToGallery(TAPMessageModel message);
 
     void onSaveToDownloads(TAPMessageModel message);
+
+    void onViewProfileSelected(TAPUserModel user);
+
+    void onSendMessageSelected(TAPUserModel user);
 
     void onDeleteMessage(String roomID, TAPMessageModel message);
 }

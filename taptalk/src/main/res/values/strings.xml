@@ -234,6 +234,7 @@
     <string name="tap_call">Call</string>
     <string name="tap_send_sms">Send SMS</string>
     <string name="tap_delete">Delete Message</string>
+    <string name="tap_view_profile">View Profile</string>
 
     <!--Products-->
     <string name="tap_price">Price</string>

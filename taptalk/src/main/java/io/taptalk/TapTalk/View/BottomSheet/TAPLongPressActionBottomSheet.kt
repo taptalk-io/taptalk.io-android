@@ -21,7 +21,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         CHAT_BUBBLE_TYPE,
         LINK_TYPE,
         EMAIL_TYPE,
-        PHONE_TYPE
+        PHONE_TYPE,
+        MENTION_TYPE
     }
 
     var longPressType: LongPressType = LongPressType.CHAT_BUBBLE_TYPE
@@ -50,7 +51,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     companion object {
         fun newInstance(longPressType: LongPressType, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
             val fragment = TAPLongPressActionBottomSheet(longPressType, url, linkifyResult, bottomSheetListener)
-            val args: Bundle = Bundle()
+            val args = Bundle()
             fragment.arguments = args
             return fragment
         }
@@ -128,6 +129,10 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
             LongPressType.PHONE_TYPE -> {
                 longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createPhoneLongPressMenu(),
+                        urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+            }
+            LongPressType.MENTION_TYPE -> {
+                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createMentionLongPressMenu(),
                         urlMessage, linkifyResult, bottomSheetListener, onClickListener)
             }
         }

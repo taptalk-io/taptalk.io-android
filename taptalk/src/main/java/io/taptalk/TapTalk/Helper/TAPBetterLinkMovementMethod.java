@@ -381,13 +381,10 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     protected void dispatchUrlClick(TextView textView, ClickableSpan clickableSpan) {
         ClickableSpanWithText clickableSpanWithText = ClickableSpanWithText.ofSpan(textView, clickableSpan);
-
         if (null == clickableSpanWithText) {
             return;
         }
-
         boolean handled = onLinkClickListener != null && onLinkClickListener.onClick(textView, clickableSpanWithText.text(), clickableSpanWithText.originalText());
-
         if (!handled) {
             // Let Android handle this click.
             clickableSpanWithText.span().onClick(textView);
@@ -396,12 +393,10 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     protected void dispatchUrlLongClick(TextView textView, ClickableSpan clickableSpan) {
         ClickableSpanWithText clickableSpanWithText = ClickableSpanWithText.ofSpan(textView, clickableSpan);
-        boolean handled = onLinkLongClickListener != null && onLinkLongClickListener.onLongClick(textView, clickableSpanWithText.text(), clickableSpanWithText.originalText);
-
         if (null == clickableSpanWithText) {
             return;
         }
-
+        boolean handled = onLinkLongClickListener != null && onLinkLongClickListener.onLongClick(textView, clickableSpanWithText.text(), clickableSpanWithText.originalText);
         if (!handled) {
             // Let Android handle this long click as a short-click.
             clickableSpanWithText.span().onClick(textView);

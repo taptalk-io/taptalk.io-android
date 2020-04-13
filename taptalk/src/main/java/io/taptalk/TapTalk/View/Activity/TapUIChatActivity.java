@@ -146,6 +146,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressMention;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
@@ -203,6 +204,7 @@ import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.C
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.LINK_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.MENTION_TYPE;
 import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.PHONE_TYPE;
 
 public class TapUIChatActivity extends TAPBaseActivity {
@@ -895,10 +897,22 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void registerBroadcastManager() {
-        TAPBroadcastManager.register(this, broadcastReceiver, UploadProgressLoading,
-                UploadProgressFinish, UploadFailed, UploadCancelled,
-                DownloadProgressLoading, DownloadFinish, DownloadFailed, DownloadFile, OpenFile,
-                CancelDownload, LongPressChatBubble, LongPressEmail, LongPressLink, LongPressPhone);
+        TAPBroadcastManager.register(this, broadcastReceiver,
+                UploadProgressLoading,
+                UploadProgressFinish,
+                UploadFailed,
+                UploadCancelled,
+                DownloadProgressLoading,
+                DownloadFinish,
+                DownloadFailed,
+                DownloadFile,
+                OpenFile,
+                CancelDownload,
+                LongPressChatBubble,
+                LongPressEmail,
+                LongPressLink,
+                LongPressPhone,
+                LongPressMention);
     }
 
     private void cancelNotificationWhenEnterRoom() {
@@ -1489,6 +1503,26 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 });
             }
             // TODO: 6 Dec 2019 HANDLE FILE URL
+        }
+
+        @Override
+        public void onViewProfileSelected(TAPUserModel user) {
+            TAPChatManager.getInstance(instanceKey).triggerChatRoomProfileButtonTapped(
+                    TapUIChatActivity.this,
+                    TAPRoomModel.Builder(
+                            TAPChatManager.getInstance(instanceKey).arrangeRoomId(
+                                    TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
+                                    user.getUserID()),
+                            user.getName(),
+                            TYPE_PERSONAL,
+                            user.getAvatarURL(),
+                            ""), // TODO: 13 Apr 2020 ROOM COLOR
+                    user);
+        }
+
+        @Override
+        public void onSendMessageSelected(TAPUserModel user) {
+            TapUI.getInstance().openChatRoomWithOtherUser(TapUIChatActivity.this, user);
         }
     };
 
@@ -2466,6 +2500,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
                         TAPLongPressActionBottomSheet phoneBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(PHONE_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         phoneBottomSheet.show(getSupportFragmentManager(), "");
+                        TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                    }
+                    break;
+                case LongPressMention:
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(MENTION_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                        mentionBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
                     break;
