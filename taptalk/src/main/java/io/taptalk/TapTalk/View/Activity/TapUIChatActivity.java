@@ -114,6 +114,7 @@ import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
+import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter;
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
@@ -215,6 +216,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //    private SwipeBackLayout sblChat;
     private TAPChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
+    private RecyclerView rvUserMentionList;
     private FrameLayout flMessageList;
     private FrameLayout flRoomUnavailable;
     private FrameLayout flChatComposerAndHistory;
@@ -225,6 +227,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private ConstraintLayout clEmptyChat;
     private ConstraintLayout clQuote;
     private ConstraintLayout clChatComposer;
+    private ConstraintLayout clUserMentionList;
     private ConstraintLayout clRoomOnlineStatus;
     private ConstraintLayout clRoomTypingStatus;
     private ConstraintLayout clChatHistory;
@@ -269,6 +272,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     // RecyclerView
     private TAPMessageAdapter messageAdapter;
     private TAPCustomKeyboardAdapter customKeyboardAdapter;
+    private TapUserMentionListAdapter userMentionListAdapter;
     private LinearLayoutManager messageLayoutManager;
     private SimpleItemAnimator messageAnimator;
     private TAPEndlessScrollListener endlessScrollListener;
@@ -598,6 +602,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clChatHistory = (ConstraintLayout) findViewById(R.id.cl_chat_history);
         clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
+        clUserMentionList = (ConstraintLayout) findViewById(R.id.cl_user_mention_list);
         clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
         clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
         ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
@@ -634,6 +639,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvMessage = (TextView) findViewById(R.id.tv_message);
         rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);
         rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
+        rvUserMentionList = (RecyclerView) findViewById(R.id.rv_user_mention_list);
         etChat = (EditText) findViewById(R.id.et_chat);
         vRoomImage = findViewById(R.id.v_room_image);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
@@ -2206,6 +2212,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
                 }
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+                checkAndSearchUserMentionList();
             } else if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0) {
                 // Hide chat menu but keep send button disabled if trimmed text is empty
@@ -2217,6 +2224,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
                 }
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+                hideUserMentionList();
                 //} else if (s.length() > 0 && s.toString().trim().length() > 0) {
                 //    if (vm.isCustomKeyboardEnabled()) {
                 //        ivChatMenu.setVisibility(View.VISIBLE);
@@ -2250,6 +2258,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
                 }
+                hideUserMentionList();
             }
         }
 
@@ -2258,6 +2267,105 @@ public class TapUIChatActivity extends TAPBaseActivity {
             sendTypingEmit(s.length() > 0);
         }
     };
+
+    private void checkAndSearchUserMentionList() {
+        String s = etChat.getText().toString();
+        if (!s.contains("@")) {
+            // Return if text does not contain @
+            hideUserMentionList();
+            return;
+        }
+        List<TAPUserModel> groupParticipants = null;
+        if (null != TAPChatManager.getInstance(instanceKey).getActiveRoom()) {
+            groupParticipants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
+        }
+        if (null == groupParticipants || groupParticipants.size() < 1) {
+            // Return if room participant is empty
+            Log.e(TAG, "checkAndSearchUserMentionList: room participant is empty ");
+            hideUserMentionList();
+            return;
+        }
+        int cursorIndex = etChat.getSelectionStart();
+        int loopIndex = etChat.getSelectionStart();
+        Log.e(TAG, "checkAndSearchUserMentionList: cursorIndex = " + loopIndex);
+        while (loopIndex > 0) {
+            // Loop text from cursor index to the left
+            loopIndex--;
+            char c = s.charAt(loopIndex);
+            Log.e(TAG, "checkAndSearchUserMentionList: loop " + loopIndex + " - " + c);
+            if (c == ' ') {
+                // Found space before @, return
+                Log.e(TAG, "checkAndSearchUserMentionList: Found space before @, return ");
+                hideUserMentionList();
+                return;
+            }
+            if (c == '@') {
+                // Found @, start searching user
+                String keyword = s.substring(loopIndex + 1, cursorIndex).toLowerCase();
+                Log.e(TAG, "checkAndSearchUserMentionList: search " + keyword);
+                List<TAPUserModel> searchResult;
+                if (keyword.isEmpty()) {
+                    // Show all participants
+                    searchResult = new ArrayList<>(groupParticipants);
+                    Log.e(TAG, "checkAndSearchUserMentionList: add all participant ");
+                } else {
+                    // Search participants from keyword
+                    searchResult = new ArrayList<>();
+                    for (TAPUserModel user : groupParticipants) {
+                        if (user.getName().toLowerCase().contains(keyword) ||
+                                (null != user.getUsername() && user.getUsername().toLowerCase().contains(keyword))) {
+                            searchResult.add(user);
+                            Log.e(TAG, "checkAndSearchUserMentionList: add " + user.getUsername());
+                        }
+                    }
+                }
+                if (!searchResult.isEmpty()) {
+                    // Show search result in list
+                    Log.e(TAG, "checkAndSearchUserMentionList: Show search result in list ");
+                    int finalLoopIndex = loopIndex;
+                    userMentionListAdapter = new TapUserMentionListAdapter(instanceKey, searchResult, user -> {
+                        // Append username to typed text
+                        Log.e(TAG, "onUserTapped: " + finalLoopIndex + ", " + cursorIndex + " - " + user.getUsername());
+                        if (etChat.getText().length() >= cursorIndex) {
+                            etChat.getText().replace(finalLoopIndex + 1, cursorIndex, user.getUsername() + " ");
+                        }
+                    });
+                    rvUserMentionList.setAdapter(userMentionListAdapter);
+                    if (null == rvUserMentionList.getLayoutManager()) {
+                        rvUserMentionList.setLayoutManager(new LinearLayoutManager(
+                                TapUIChatActivity.this, LinearLayoutManager.VERTICAL, false) {
+                            @Override
+                            public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+                                try {
+                                    super.onLayoutChildren(recycler, state);
+                                } catch (IndexOutOfBoundsException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                    clUserMentionList.setVisibility(View.VISIBLE);
+                } else {
+                    // Result is empty
+                    Log.e(TAG, "checkAndSearchUserMentionList: Result is empty ");
+                    hideUserMentionList();
+                }
+                return;
+            }
+        }
+        hideUserMentionList();
+    }
+
+    private void hideUserMentionList() {
+        boolean hasFocus = etChat.hasFocus();
+        clUserMentionList.setVisibility(View.GONE);
+        if (hasFocus) {
+            clUserMentionList.post(() -> {
+                rvUserMentionList.setAdapter(null);
+                rvUserMentionList.post(() -> etChat.requestFocus());
+            });
+        }
+    }
 
     private View.OnFocusChangeListener chatFocusChangeListener = new View.OnFocusChangeListener() {
         @Override

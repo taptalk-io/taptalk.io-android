@@ -124,6 +124,9 @@ public class TapUIRoomListFragment extends Fragment {
         }
     };
 
+    public TapUIRoomListFragment() {
+    }
+
     public TapUIRoomListFragment(String instanceKey) {
         this.instanceKey = instanceKey;
     }

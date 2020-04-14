@@ -547,6 +547,11 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <include layout="@layout/tap_layout_user_mention_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/iv_send_area" />
+
             <ImageView
                 android:id="@+id/iv_chat_menu_area"
                 android:layout_width="0dp"

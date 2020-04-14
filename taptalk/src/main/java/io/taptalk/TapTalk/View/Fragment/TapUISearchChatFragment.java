@@ -61,6 +61,9 @@ public class TapUISearchChatFragment extends Fragment {
     private TAPSearchChatViewModel vm;
     private TAPSearchChatAdapter adapter;
 
+    public TapUISearchChatFragment() {
+    }
+
     public TapUISearchChatFragment(String instanceKey) {
         this.instanceKey = instanceKey;
     }

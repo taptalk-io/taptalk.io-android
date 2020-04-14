@@ -1616,8 +1616,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private void generateMessageBodySpan(TextView tvMessageBody, TAPMessageModel item, String body) {
         // Check for mentions
         if (item.getRoom().getRoomType() != TYPE_PERSONAL && body.contains("@")) {
-            Log.e(TAG, "generateMessageBodySpan: has mentions");
-            Log.e(TAG, "generateMessageBodySpan: " + body);
             List<TAPUserModel> groupParticipants = null;
             if (null != TAPChatManager.getInstance(instanceKey).getActiveRoom()) {
                 groupParticipants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
@@ -1634,15 +1632,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (mentionStartIndex == -1 && body.charAt(i) == '@') {
                     // Set index of @
                     mentionStartIndex = i;
-                    Log.e(TAG, "generateMessageBodySpan start index: " + mentionStartIndex);
                 } else {
                     boolean charMatchesUsernameFormat = body.substring(i, i + 1).matches("[a-zA-Z0-9._]*");
                     if (mentionStartIndex != -1 && i == (length - 1)) {
                         // End of string
                         int mentionEndIndex = charMatchesUsernameFormat ? (i + 1) : i;
                         String username = body.substring(mentionStartIndex + 1, mentionEndIndex);
-                        Log.e(TAG, "generateMessageBodySpan end index: " + mentionEndIndex);
-                        Log.e(TAG, "generateMessageBodySpan mention: " + body.substring(mentionStartIndex, mentionEndIndex));
                         for (TAPUserModel participant : groupParticipants) {
                             if (null != participant.getUsername() && participant.getUsername().equals(username)) {
                                 // Save temporary mentioned user data
@@ -1668,8 +1663,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     } else if (mentionStartIndex != -1 && !charMatchesUsernameFormat) {
                         // End index for mentioned username
                         String username = body.substring(mentionStartIndex + 1, i);
-                        Log.e(TAG, "generateMessageBodySpan end index: " + i);
-                        Log.e(TAG, "generateMessageBodySpan mention: " + body.substring(mentionStartIndex, i));
                         for (TAPUserModel participant : groupParticipants) {
                             if (null != participant.getUsername() && participant.getUsername().equals(username)) {
                                 // Save temporary mentioned user data
@@ -1697,7 +1690,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             tvMessageBody.setText(span);
         } else {
-//            Log.e(TAG, "generateMessageBodySpan: no mention or not a group");
             tvMessageBody.setText(body);
         }
     }
