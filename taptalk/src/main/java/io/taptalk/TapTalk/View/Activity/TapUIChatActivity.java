@@ -244,6 +244,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private ImageView ivSend;
     private ImageView ivButtonSend;
     private ImageView ivToBottom;
+    private ImageView ivMentionAnchor;
     private ImageView ivRoomTypingIndicator;
     private CircleImageView civRoomImage;
     private CircleImageView civMyAvatarEmpty;
@@ -260,6 +261,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TextView tvQuoteTitle;
     private TextView tvQuoteContent;
     private TextView tvBadgeUnread;
+    private TextView tvBadgeMentionCount;
     private TextView tvButtonBlockContact;
     private TextView tvButtonAddToContacts;
     private TextView tvRoomTypingStatus;
@@ -617,6 +619,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivSend = (ImageView) findViewById(R.id.iv_send);
         ivButtonSend = (ImageView) findViewById(R.id.iv_send_area);
         ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
+        ivMentionAnchor = (ImageView) findViewById(R.id.iv_mention_anchor);
         ivRoomTypingIndicator = (ImageView) findViewById(R.id.iv_room_typing_indicator);
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatarEmpty = (CircleImageView) findViewById(R.id.civ_my_avatar_empty);
@@ -636,6 +639,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvQuoteTitle = (TextView) findViewById(R.id.tv_quote_title);
         tvQuoteContent = (TextView) findViewById(R.id.tv_quote_content);
         tvBadgeUnread = (TextView) findViewById(R.id.tv_badge_unread);
+        tvBadgeMentionCount = (TextView) findViewById(R.id.tv_badge_mention_count);
         tvChatHistoryContent = (TextView) findViewById(R.id.tv_chat_history_content);
         tvMessage = (TextView) findViewById(R.id.tv_message);
         rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);
@@ -1011,6 +1015,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             //message.setIsRead(true);
             vm.removeUnreadMessage(message.getLocalID());
             updateUnreadCount();
+            updateMentionCount();
         }
 
         @Override
@@ -1152,7 +1157,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void updateUnreadCount() {
         runOnUiThread(() -> {
             if (vm.isOnBottom() || vm.getUnreadCount() == 0) {
-                tvBadgeUnread.setVisibility(View.INVISIBLE);
+                tvBadgeUnread.setVisibility(View.GONE);
                 if (View.INVISIBLE != ivToBottom.getVisibility()) {
                     ivToBottom.setVisibility(View.INVISIBLE);
                 }
@@ -1166,6 +1171,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 ivToBottom.setVisibility(View.INVISIBLE);
             }
         });
+    }
+
+    private void updateMentionCount() {
+        if (vm.getUnreadMentionCount() > 0) {
+            tvBadgeMentionCount.setText(String.valueOf(vm.getUnreadMentionCount()));
+            tvBadgeMentionCount.setVisibility(View.VISIBLE);
+            if (View.VISIBLE != ivMentionAnchor.getVisibility()) {
+                ivMentionAnchor.setVisibility(View.VISIBLE);
+            }
+        } else {
+            ivMentionAnchor.setVisibility(View.INVISIBLE);
+            tvBadgeMentionCount.setVisibility(View.GONE);
+        }
     }
 
     private void updateMessageDecoration() {
@@ -1299,7 +1317,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivToBottom.setVisibility(View.INVISIBLE);
         vm.setOnBottom(true);
         vm.clearUnreadMessages();
+        vm.clearUnreadMentions();
         updateUnreadCount();
+        updateMentionCount();
     }
 
     private void toggleCustomKeyboard() {
@@ -1920,6 +1940,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     vm.addUnreadMessage(newMessage);
                     vm.addMessagePointer(newMessage);
                     updateUnreadCount();
+                    updateMentionCount();
                 }
                 updateMessageDecoration();
             });
@@ -1952,6 +1973,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Message from other people is received when recycler is scrolled up
                     vm.addUnreadMessage(newMessage);
                     updateUnreadCount();
+                    updateMentionCount();
                 }
                 updateMessageDecoration();
             });
@@ -2180,7 +2202,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (messageLayoutManager.findFirstVisibleItemPosition() <= vm.getFirstVisibleItemIndex()) {
                 vm.setOnBottom(true);
                 ivToBottom.setVisibility(View.INVISIBLE);
-                tvBadgeUnread.setVisibility(View.INVISIBLE);
+                tvBadgeUnread.setVisibility(View.GONE);
                 vm.clearUnreadMessages();
             } else if (messageLayoutManager.findFirstVisibleItemPosition() > vm.getFirstVisibleItemIndex() && !vm.isScrollFromKeyboard()) {
                 vm.setOnBottom(false);

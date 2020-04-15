@@ -760,7 +760,6 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cl_contact_action"
         app:layout_constraintVertical_bias="1" />
 
     <TextView
@@ -777,10 +776,47 @@
         android:paddingEnd="8dp"
         android:paddingBottom="4dp"
         android:translationY="-14dp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@id/iv_to_bottom"
         app:layout_constraintStart_toStartOf="@id/iv_to_bottom"
         app:layout_constraintTop_toTopOf="@+id/iv_to_bottom"
+        tools:text="1" />
+
+    <ImageView
+        android:id="@+id/iv_mention_anchor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/tap_bg_scroll_to_bottom"
+        android:elevation="3dp"
+        android:padding="8dp"
+        android:src="@drawable/tap_ic_mention_orange"
+        android:tint="@color/tapIconChatRoomScrollToBottom"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/iv_to_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="1" />
+
+    <TextView
+        android:id="@+id/tv_badge_mention_count"
+        style="@style/tapChatRoomUnreadBadgeLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/tap_bg_chat_room_unread_badge"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:minWidth="24dp"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp"
+        android:translationY="-14dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/iv_mention_anchor"
+        app:layout_constraintStart_toStartOf="@id/iv_mention_anchor"
+        app:layout_constraintTop_toTopOf="@+id/iv_mention_anchor"
         tools:text="1" />
 
     <include

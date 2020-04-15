@@ -32,13 +32,14 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TAPChatViewModel extends AndroidViewModel {
 
     private static final String TAG = TAPChatViewModel.class.getSimpleName();
     private String instanceKey = "";
     private LiveData<List<TAPMessageEntity>> allMessages;
-    private Map<String, TAPMessageModel> messagePointer, unreadMessages, ongoingOrders;
+    private Map<String, TAPMessageModel> messagePointer, unreadMessages, unreadMentions, ongoingOrders;
     private LinkedHashMap<String, TAPUserModel> groupTyping;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
@@ -128,43 +129,8 @@ public class TAPChatViewModel extends AndroidViewModel {
         }
     }
 
-
     public Map<String, TAPMessageModel> getUnreadMessages() {
         return unreadMessages == null ? unreadMessages = new LinkedHashMap<>() : unreadMessages;
-    }
-
-    public void setUnreadMessages(Map<String, TAPMessageModel> unreadMessages) {
-        this.unreadMessages = unreadMessages;
-    }
-
-    public Map<String, TAPMessageModel> getOngoingOrders() {
-        return ongoingOrders == null ? ongoingOrders = new LinkedHashMap<>() : ongoingOrders;
-    }
-
-    public void setOngoingOrders(Map<String, TAPMessageModel> ongoingOrders) {
-        this.ongoingOrders = ongoingOrders;
-    }
-
-    public TAPOrderModel getOrderModel(TAPMessageModel message) {
-        return TAPUtils.fromJSON(new TypeReference<TAPOrderModel>() {
-        }, message.getBody());
-    }
-
-    public TAPMessageModel getPreviousOrderWithSameID(TAPMessageModel message) {
-        String orderID = getOrderModel(message).getOrderID();
-        if (getOngoingOrders().containsKey(orderID)) {
-            return getOngoingOrders().get(orderID);
-        } else {
-            return null;
-        }
-    }
-
-    public void addOngoingOrderCard(TAPMessageModel message) {
-        getOngoingOrders().put(getOrderModel(message).getOrderID(), message);
-    }
-
-    public void removeOngoingOrderCard(TAPMessageModel message) {
-        getOngoingOrders().remove(getOrderModel(message).getOrderID());
     }
 
     public int getUnreadCount() {
@@ -173,16 +139,45 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void addUnreadMessage(TAPMessageModel unreadMessage) {
         getUnreadMessages().put(unreadMessage.getLocalID(), unreadMessage);
+        if (isActiveUserMentioned(unreadMessage)) {
+            addUnreadMention(unreadMessage);
+        }
     }
 
     public void removeUnreadMessage(String localID) {
         getUnreadMessages().remove(localID);
+        if (isActiveUserMentioned(getMessagePointer().get(localID))) {
+            removeUnreadMention(localID);
+        }
     }
 
     public void clearUnreadMessages() {
-        if (getUnreadCount() == 0) return;
-
         getUnreadMessages().clear();
+    }
+
+    private boolean isActiveUserMentioned(TAPMessageModel message) {
+        return room.getRoomType() != TYPE_PERSONAL &&
+                message.getBody().contains("@" + myUserModel.getUsername() + " ");
+    }
+
+    public Map<String, TAPMessageModel> getUnreadMentions() {
+        return unreadMentions == null ? unreadMentions = new LinkedHashMap<>() : unreadMentions;
+    }
+
+    public int getUnreadMentionCount() {
+        return getUnreadMentions().size();
+    }
+
+    public void addUnreadMention(TAPMessageModel unreadMessage) {
+        getUnreadMentions().put(unreadMessage.getLocalID(), unreadMessage);
+    }
+
+    public void removeUnreadMention(String localID) {
+        getUnreadMentions().remove(localID);
+    }
+
+    public void clearUnreadMentions() {
+        getUnreadMentions().clear();
     }
 
     public void getMessageEntities(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
