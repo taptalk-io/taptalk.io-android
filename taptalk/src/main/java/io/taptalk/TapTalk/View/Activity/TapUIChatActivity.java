@@ -2282,33 +2282,27 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
         if (null == groupParticipants || groupParticipants.size() < 1) {
             // Return if room participant is empty
-            Log.e(TAG, "checkAndSearchUserMentionList: room participant is empty ");
             hideUserMentionList();
             return;
         }
         int cursorIndex = etChat.getSelectionStart();
         int loopIndex = etChat.getSelectionStart();
-        Log.e(TAG, "checkAndSearchUserMentionList: cursorIndex = " + loopIndex);
         while (loopIndex > 0) {
             // Loop text from cursor index to the left
             loopIndex--;
             char c = s.charAt(loopIndex);
-            Log.e(TAG, "checkAndSearchUserMentionList: loop " + loopIndex + " - " + c);
             if (c == ' ') {
                 // Found space before @, return
-                Log.e(TAG, "checkAndSearchUserMentionList: Found space before @, return ");
                 hideUserMentionList();
                 return;
             }
             if (c == '@') {
                 // Found @, start searching user
                 String keyword = s.substring(loopIndex + 1, cursorIndex).toLowerCase();
-                Log.e(TAG, "checkAndSearchUserMentionList: search " + keyword);
                 List<TAPUserModel> searchResult;
                 if (keyword.isEmpty()) {
                     // Show all participants
                     searchResult = new ArrayList<>(groupParticipants);
-                    Log.e(TAG, "checkAndSearchUserMentionList: add all participant ");
                 } else {
                     // Search participants from keyword
                     searchResult = new ArrayList<>();
@@ -2316,17 +2310,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         if (user.getName().toLowerCase().contains(keyword) ||
                                 (null != user.getUsername() && user.getUsername().toLowerCase().contains(keyword))) {
                             searchResult.add(user);
-                            Log.e(TAG, "checkAndSearchUserMentionList: add " + user.getUsername());
                         }
                     }
                 }
                 if (!searchResult.isEmpty()) {
                     // Show search result in list
-                    Log.e(TAG, "checkAndSearchUserMentionList: Show search result in list ");
                     int finalLoopIndex = loopIndex;
                     userMentionListAdapter = new TapUserMentionListAdapter(instanceKey, searchResult, user -> {
                         // Append username to typed text
-                        Log.e(TAG, "onUserTapped: " + finalLoopIndex + ", " + cursorIndex + " - " + user.getUsername());
                         if (etChat.getText().length() >= cursorIndex) {
                             etChat.getText().replace(finalLoopIndex + 1, cursorIndex, user.getUsername() + " ");
                         }
@@ -2349,7 +2340,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     clUserMentionList.setVisibility(View.VISIBLE);
                 } else {
                     // Result is empty
-                    Log.e(TAG, "checkAndSearchUserMentionList: Result is empty ");
                     hideUserMentionList();
                 }
                 return;
