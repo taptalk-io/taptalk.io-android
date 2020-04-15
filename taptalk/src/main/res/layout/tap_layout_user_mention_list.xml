@@ -4,8 +4,9 @@
     android:id="@+id/cl_user_mention_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/tap_bg_user_mention_list"
+    android:elevation="4dp"
     android:visibility="gone">
+    android:background="@drawable/tap_bg_user_mention_list"
 
     <ImageView
         android:id="@+id/iv_drag_indicator"
@@ -13,19 +14,30 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/tap_ic_drag_indicatior"
+        android:src="@drawable/tap_ic_drag_indicator"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/rv_user_mention_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <io.taptalk.TapTalk.Helper.MaxHeightRecyclerView
         android:id="@+id/rv_user_mention_list"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="wrap_content"
         android:overScrollMode="never"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_drag_indicator" />
+
+    <View
+        android:id="@+id/v_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:alpha="0.15"
+        android:background="@drawable/tap_bg_charcoal_40_gradient_90"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

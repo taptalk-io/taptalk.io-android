@@ -70,6 +70,7 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
+import io.taptalk.TapTalk.Helper.MaxHeightRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener;
@@ -216,14 +217,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //    private SwipeBackLayout sblChat;
     private TAPChatRecyclerView rvMessageList;
     private RecyclerView rvCustomKeyboard;
-    private RecyclerView rvUserMentionList;
+    private MaxHeightRecyclerView rvUserMentionList;
     private FrameLayout flMessageList;
     private FrameLayout flRoomUnavailable;
-    private FrameLayout flChatComposerAndHistory;
     private LinearLayout llButtonDeleteChat;
     private ConstraintLayout clContainer;
     private ConstraintLayout clContactAction;
     private ConstraintLayout clUnreadButton;
+    private ConstraintLayout clChatComposerAndHistory;
     private ConstraintLayout clEmptyChat;
     private ConstraintLayout clQuote;
     private ConstraintLayout clChatComposer;
@@ -593,12 +594,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //        sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         flRoomUnavailable = (FrameLayout) findViewById(R.id.fl_room_unavailable);
-        flChatComposerAndHistory = (FrameLayout) findViewById(R.id.fl_chat_composer_and_history);
         llButtonDeleteChat = (LinearLayout) findViewById(R.id.ll_button_delete_chat);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clContactAction = (ConstraintLayout) findViewById(R.id.cl_contact_action);
         clUnreadButton = (ConstraintLayout) findViewById(R.id.cl_unread_button);
         clEmptyChat = (ConstraintLayout) findViewById(R.id.cl_empty_chat);
+        clChatComposerAndHistory = (ConstraintLayout) findViewById(R.id.cl_chat_composer_and_history);
         clChatHistory = (ConstraintLayout) findViewById(R.id.cl_chat_history);
         clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
@@ -639,7 +640,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvMessage = (TextView) findViewById(R.id.tv_message);
         rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);
         rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
-        rvUserMentionList = (RecyclerView) findViewById(R.id.rv_user_mention_list);
+        rvUserMentionList = (MaxHeightRecyclerView) findViewById(R.id.rv_user_mention_list);
         etChat = (EditText) findViewById(R.id.et_chat);
         vRoomImage = findViewById(R.id.v_room_image);
         vStatusBadge = findViewById(R.id.v_room_status_badge);
@@ -765,7 +766,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         rvMessageList.setLayoutManager(messageLayoutManager);
         rvMessageList.setHasFixedSize(false);
         rvMessageList.setupSwipeHelper(this, position -> {
-            Log.e(TAG, "onItemSwiped: ");
             showQuoteLayout(messageAdapter.getItemAt(position), REPLY, true);
         });
         // FIXME: 9 November 2018 IMAGES/VIDEOS CURRENTLY NOT RECYCLED TO PREVENT INCONSISTENT DIMENSIONS
@@ -1271,8 +1271,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteContent.setMaxLines(2);
             }
             boolean hadFocus = etChat.hasFocus();
-            if (showKeyboard) {
+            if (hadFocus && showKeyboard) {
                 TAPUtils.showKeyboard(this, etChat);
+                clContainer.post(() -> etChat.requestFocus());
             }
             if (!hadFocus && etChat.getSelectionEnd() == 0) {
                 etChat.setSelection(etChat.getText().length());
@@ -2330,6 +2331,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             etChat.getText().replace(finalLoopIndex + 1, cursorIndex, user.getUsername() + " ");
                         }
                     });
+                    rvUserMentionList.setMaxHeight(TAPUtils.dpToPx(160));
                     rvUserMentionList.setAdapter(userMentionListAdapter);
                     if (null == rvUserMentionList.getLayoutManager()) {
                         rvUserMentionList.setLayoutManager(new LinearLayoutManager(
@@ -3354,7 +3356,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //            flRoomUnavailable.setVisibility(View.VISIBLE);
 //            flMessageList.setVisibility(View.GONE);
 //            clEmptyChat.setVisibility(View.GONE);
-//            flChatComposerAndHistory.setVisibility(View.GONE);
+//            clChatComposerAndHistory.setVisibility(View.GONE);
 //            if (null != vRoomImage) {
 //                vRoomImage.setClickable(false);
 //            }
