@@ -458,10 +458,10 @@
             android:animateLayoutChanges="true"
             android:background="@color/tapChatComposerBackgroundColor"
             android:clipToPadding="false"
-            android:outlineProvider="paddedBounds"
             android:elevation="6dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:outlineProvider="paddedBounds"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -756,8 +756,9 @@
         android:elevation="3dp"
         android:padding="15dp"
         android:src="@drawable/tap_ic_scroll_to_bottom_chat"
+
         android:tint="@color/tapIconChatRoomScrollToBottom"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_bias="1" />
@@ -794,10 +795,11 @@
         android:padding="8dp"
         android:src="@drawable/tap_ic_mention_orange"
         android:tint="@color/tapIconChatRoomScrollToBottom"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/iv_to_bottom"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/tv_badge_unread"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="1" />
+        app:layout_constraintVertical_bias="1"
+        app:layout_goneMarginBottom="16dp" />
 
     <TextView
         android:id="@+id/tv_badge_mention_count"

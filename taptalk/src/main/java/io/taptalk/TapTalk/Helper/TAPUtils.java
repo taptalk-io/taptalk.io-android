@@ -1149,4 +1149,9 @@ public class TAPUtils {
         String fileID = (String) message.getData().get(FILE_ID);
         return null != fileUrl ? removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
     }
+
+    public static boolean isActiveUserMentioned(TAPMessageModel message, TAPUserModel activeUser) {
+        return message.getRoom().getRoomType() != TYPE_PERSONAL &&
+                message.getBody().contains("@" + activeUser.getUsername() + " ");
+    }
 }

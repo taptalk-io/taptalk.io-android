@@ -1010,11 +1010,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onMessageRead(TAPMessageModel message) {
-            if (vm.getUnreadCount() == 0) return;
-
-            //message.setIsRead(true);
-            vm.removeUnreadMessage(message.getLocalID());
-            updateUnreadCount();
+            if (vm.getUnreadCount() != 0) {
+                //message.setIsRead(true);
+                vm.removeUnreadMessage(message.getLocalID());
+                updateUnreadCount();
+            }
+            vm.removeUnreadMention(message.getLocalID());
             updateMentionCount();
         }
 
@@ -1158,8 +1159,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         runOnUiThread(() -> {
             if (vm.isOnBottom() || vm.getUnreadCount() == 0) {
                 tvBadgeUnread.setVisibility(View.GONE);
-                if (View.INVISIBLE != ivToBottom.getVisibility()) {
-                    ivToBottom.setVisibility(View.INVISIBLE);
+                if (View.GONE != ivToBottom.getVisibility()) {
+                    ivToBottom.setVisibility(View.GONE);
                 }
             } else if (vm.getUnreadCount() > 0) {
                 tvBadgeUnread.setText(String.valueOf(vm.getUnreadCount()));
@@ -1168,22 +1169,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     ivToBottom.setVisibility(View.VISIBLE);
                 }
             } else if (View.VISIBLE == ivToBottom.getVisibility()) {
-                ivToBottom.setVisibility(View.INVISIBLE);
+                ivToBottom.setVisibility(View.GONE);
             }
         });
     }
 
     private void updateMentionCount() {
-        if (vm.getUnreadMentionCount() > 0) {
-            tvBadgeMentionCount.setText(String.valueOf(vm.getUnreadMentionCount()));
-            tvBadgeMentionCount.setVisibility(View.VISIBLE);
-            if (View.VISIBLE != ivMentionAnchor.getVisibility()) {
-                ivMentionAnchor.setVisibility(View.VISIBLE);
+        runOnUiThread(() -> {
+            if (vm.getUnreadMentionCount() > 0) {
+                tvBadgeMentionCount.setText(String.valueOf(vm.getUnreadMentionCount()));
+                tvBadgeMentionCount.setVisibility(View.VISIBLE);
+                if (View.VISIBLE != ivMentionAnchor.getVisibility()) {
+                    ivMentionAnchor.setVisibility(View.VISIBLE);
+                }
+            } else {
+                ivMentionAnchor.setVisibility(View.GONE);
+                tvBadgeMentionCount.setVisibility(View.GONE);
             }
-        } else {
-            ivMentionAnchor.setVisibility(View.INVISIBLE);
-            tvBadgeMentionCount.setVisibility(View.GONE);
-        }
+        });
     }
 
     private void updateMessageDecoration() {
@@ -1314,7 +1317,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void scrollToBottom() {
         rvMessageList.scrollToPosition(0);
-        ivToBottom.setVisibility(View.INVISIBLE);
+        ivToBottom.setVisibility(View.GONE);
         vm.setOnBottom(true);
         vm.clearUnreadMessages();
         vm.clearUnreadMentions();
@@ -2104,6 +2107,22 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             });
         }
+
+        // Get unread mentions
+        TAPDataManager.getInstance(instanceKey).getAllUnreadMentionsFromRoom(vm.getRoom().getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                Log.e(TAG, "getAllUnreadMentionsFromRoom onSelectFinished: " + entities.size());
+                if (!entities.isEmpty()) {
+                    for (TAPMessageEntity entity : entities) {
+                        TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+                        vm.addUnreadMention(model);
+                        Log.e(TAG, "getAllUnreadMentionsFromRoom onSelectFinished: addUnreadMention " + model.getLocalID() + " " + model.getBody());
+                    }
+                    updateMentionCount();
+                }
+            }
+        });
     }
 
     private void showUnreadButton(@Nullable TAPMessageModel unreadIndicator) {
@@ -2201,7 +2220,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             // Show/hide ivToBottom
             if (messageLayoutManager.findFirstVisibleItemPosition() <= vm.getFirstVisibleItemIndex()) {
                 vm.setOnBottom(true);
-                ivToBottom.setVisibility(View.INVISIBLE);
+                ivToBottom.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.GONE);
                 vm.clearUnreadMessages();
             } else if (messageLayoutManager.findFirstVisibleItemPosition() > vm.getFirstVisibleItemIndex() && !vm.isScrollFromKeyboard()) {
@@ -2338,7 +2357,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (!searchResult.isEmpty()) {
                     // Show search result in list
                     int finalLoopIndex = loopIndex;
-                    userMentionListAdapter = new TapUserMentionListAdapter(instanceKey, searchResult, user -> {
+                    userMentionListAdapter = new TapUserMentionListAdapter(searchResult, user -> {
                         // Append username to typed text
                         if (etChat.getText().length() >= cursorIndex) {
                             etChat.getText().replace(finalLoopIndex + 1, cursorIndex, user.getUsername() + " ");
@@ -2678,6 +2697,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (allMessagesHidden && (null == model.getHidden() || !model.getHidden())) {
                     allMessagesHidden = false;
                 }
+                if ((null == model.getIsRead() || !model.getIsRead()) &&
+                        TAPUtils.isActiveUserMentioned(model, vm.getMyUserModel())) {
+                    // Add unread mention
+                    vm.addUnreadMention(model);
+                    Log.e(TAG, "dbListener onSelectFinished: addUnreadMention " + model.getBody() + " " + vm.getUnreadMentionCount());
+                }
             }
 
             if (0 < models.size()) {
@@ -2735,6 +2760,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                         flMessageList.setVisibility(View.VISIBLE);
                         showUnreadButton(vm.getUnreadIndicator());
+                        updateMentionCount();
                         checkChatRoomLocked(models.get(0));
                     }
                     rvMessageList.scrollToPosition(0);
@@ -2809,6 +2835,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
                     models.add(model);
                     vm.addMessagePointer(model);
+                    if ((null == model.getIsRead() || !model.getIsRead()) &&
+                            TAPUtils.isActiveUserMentioned(model, vm.getMyUserModel())) {
+                        // Add unread mention
+                        vm.addUnreadMention(model);
+                        Log.e(TAG, "dbListenerPaging onSelectFinished: addUnreadMention " + model.getBody() + " " + vm.getUnreadMentionCount());
+                    }
                 }
             }
 
@@ -2850,6 +2882,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     new Thread(() -> {
                         vm.setMessageModels(messageAdapter.getItems());
                         showUnreadButton(vm.getUnreadIndicator());
+                        updateMentionCount();
                         if (null != vm.getTappedMessageLocalID()) {
                             scrollToMessage(vm.getTappedMessageLocalID());
                         }
@@ -2949,6 +2982,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             allMessagesHidden = false;
                         }
 
+                        if ((null == message.getIsRead() || !message.getIsRead()) &&
+                                TAPUtils.isActiveUserMentioned(message, vm.getMyUserModel())) {
+                            // Add unread mention
+                            vm.addUnreadMention(message);
+                            Log.e(TAG, "afterView: addUnreadMention " + message.getBody() + " " + vm.getUnreadMentionCount());
+                        }
+
                         if (message.getType() == TYPE_SYSTEM_MESSAGE &&
                                 null != message.getAction() &&
                                 (message.getAction().equals(UPDATE_ROOM) ||
@@ -3012,6 +3052,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Sort adapter items according to timestamp
                 mergeSort(messageAdapter.getItems(), ASCENDING);
                 showUnreadButton(vm.getUnreadIndicator());
+                updateMentionCount();
 
                 if (vm.isOnBottom() && 0 < messageAfterModels.size()) {
                     // Scroll recycler to bottom

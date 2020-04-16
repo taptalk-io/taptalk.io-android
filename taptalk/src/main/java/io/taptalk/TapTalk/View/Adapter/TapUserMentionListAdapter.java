@@ -32,7 +32,7 @@ public class TapUserMentionListAdapter extends TAPBaseAdapter<TAPUserModel, TAPB
 
     private TapUserMentionListInterface listener;
 
-    public TapUserMentionListAdapter(String instanceKey, List<TAPUserModel> contactList, TapUserMentionListInterface listener) {
+    public TapUserMentionListAdapter(List<TAPUserModel> contactList, TapUserMentionListInterface listener) {
         setItems(contactList, false);
         this.listener = listener;
     }

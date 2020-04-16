@@ -215,7 +215,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                 if (!searchResult.isEmpty()) {
                     // Show search result in list
                     int finalLoopIndex = loopIndex;
-                    TapUserMentionListAdapter userMentionListAdapter = new TapUserMentionListAdapter(instanceKey, searchResult, user -> {
+                    TapUserMentionListAdapter userMentionListAdapter = new TapUserMentionListAdapter(searchResult, user -> {
                         // Append username to typed text
                         if (etCaption.getText().length() >= cursorIndex) {
                             etCaption.getText().replace(finalLoopIndex + 1, cursorIndex, user.getUsername() + " ");

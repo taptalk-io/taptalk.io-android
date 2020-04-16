@@ -174,6 +174,13 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getAllUnreadMentionsFromRoom(String myID, String username, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> messageEntities = messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", roomID);
+            listener.onSelectFinished(messageEntities);
+        }).start();
+    }
+
     public void searchAllChatRooms(String myID, String keyword, final TAPDatabaseListener listener) {
         new Thread(() -> {
             String queryKeyword = '%' + keyword

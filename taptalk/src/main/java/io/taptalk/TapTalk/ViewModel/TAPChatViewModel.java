@@ -39,7 +39,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private static final String TAG = TAPChatViewModel.class.getSimpleName();
     private String instanceKey = "";
     private LiveData<List<TAPMessageEntity>> allMessages;
-    private Map<String, TAPMessageModel> messagePointer, unreadMessages, unreadMentions, ongoingOrders;
+    private Map<String, TAPMessageModel> messagePointer, unreadMessages, unreadMentions;
     private LinkedHashMap<String, TAPUserModel> groupTyping;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
@@ -139,25 +139,20 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void addUnreadMessage(TAPMessageModel unreadMessage) {
         getUnreadMessages().put(unreadMessage.getLocalID(), unreadMessage);
-        if (isActiveUserMentioned(unreadMessage)) {
+        if (TAPUtils.isActiveUserMentioned(unreadMessage, myUserModel)) {
             addUnreadMention(unreadMessage);
         }
     }
 
     public void removeUnreadMessage(String localID) {
         getUnreadMessages().remove(localID);
-        if (isActiveUserMentioned(getMessagePointer().get(localID))) {
+        if (TAPUtils.isActiveUserMentioned(getMessagePointer().get(localID), myUserModel)) {
             removeUnreadMention(localID);
         }
     }
 
     public void clearUnreadMessages() {
         getUnreadMessages().clear();
-    }
-
-    private boolean isActiveUserMentioned(TAPMessageModel message) {
-        return room.getRoomType() != TYPE_PERSONAL &&
-                message.getBody().contains("@" + myUserModel.getUsername() + " ");
     }
 
     public Map<String, TAPMessageModel> getUnreadMentions() {
