@@ -756,7 +756,6 @@
         android:elevation="3dp"
         android:padding="15dp"
         android:src="@drawable/tap_ic_scroll_to_bottom_chat"
-
         android:tint="@color/tapIconChatRoomScrollToBottom"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
