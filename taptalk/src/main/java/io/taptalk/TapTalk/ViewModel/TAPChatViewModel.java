@@ -499,6 +499,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void setAllUnreadMessagesHidden(boolean allUnreadMessagesHidden) {
+        Log.e(TAG, "setAllUnreadMessagesHidden: " + allUnreadMessagesHidden);
         isAllUnreadMessagesHidden = allUnreadMessagesHidden;
     }
 

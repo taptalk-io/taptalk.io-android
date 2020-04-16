@@ -2676,12 +2676,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     @Override
                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                         if (0 < entities.size()) {
+                            Log.e(TAG, "getAllUnreadMessage onSelectFinished: " + TAPUtils.toJsonString(entities.get(0)));
                             vm.setLastUnreadMessageLocalID(entities.get(0).getLocalID());
                             new Thread(() -> {
                                 boolean allUnreadHidden = true; // Flag to check hidden unread when looping
                                 for (TAPMessageEntity entity : entities) {
-                                    if (allUnreadHidden && (null == entity.getHidden() || !entity.getHidden())) {
+                                    if (null == entity.getHidden() || !entity.getHidden()) {
                                         allUnreadHidden = false;
+                                        break;
                                     }
                                 }
                                 if (allUnreadHidden) {
@@ -2941,7 +2943,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             long smallestUnreadCreated = 0L;
 
             vm.setAllUnreadMessagesHidden(false); // Set initial value for unread identifier/button flag
-            boolean allUnreadHidden = true; // Flag to check hidden unread when looping
+            int allUnreadHidden = 0; // Flag to check hidden unread when looping
             boolean allMessagesHidden = true; // Flag to check whether empty chat layout should be removed
 
             for (HashMap<String, Object> messageMap : response.getMessages()) {
@@ -2982,9 +2984,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             // Update first unread message index
                             unreadMessageIndex = messageAfterModels.indexOf(message);
                             smallestUnreadCreated = message.getCreated();
-                            if (allUnreadHidden && (null == message.getHidden() || !message.getHidden())) {
-                                allUnreadHidden = false;
-                            }
                         }
 
                         if (allMessagesHidden && (null == message.getHidden() || !message.getHidden())) {
@@ -3006,6 +3005,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                         updateRoomDetailSystemMessage.getCreated() < message.getCreated())) {
                             // Store update room system message
                             updateRoomDetailSystemMessage = message;
+                        }
+                    }
+
+                    if (null == message.getIsRead() || !message.getIsRead()) {
+                        if (allUnreadHidden != -1 && null != message.getHidden() && message.getHidden()) {
+                            allUnreadHidden = 1;
+                        } else {
+                            // Set allUnreadHidden to false
+                            allUnreadHidden = -1;
+                            Log.e(TAG, "afterView set unreadHidden false: " + message.getLocalID() + " " + message.getBody());
                         }
                     }
 
@@ -3032,7 +3041,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.setInitialUnreadCount(vm.getInitialUnreadCount() + unreadMessageIds.size());
             }
 
-            if (allUnreadHidden) {
+            Log.e(TAG, "afterView allUnreadHidden: " + allUnreadHidden);
+            if (allUnreadHidden == 1) {
                 // All unread messages are hidden
                 vm.setAllUnreadMessagesHidden(true);
             }
