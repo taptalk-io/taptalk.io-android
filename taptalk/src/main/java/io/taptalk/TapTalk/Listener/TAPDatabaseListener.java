@@ -26,11 +26,11 @@ public abstract class TAPDatabaseListener<T> implements TapTalkDatabaseInterface
     }
 
     @Override
-    public void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap) {
+    public void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
     }
 
     @Override
-    public void onCountedUnreadCount(String roomID, int unreadCount) {
+    public void onCountedUnreadCount(String roomID, int unreadCount, int mentionCount) {
     }
 
     @Override

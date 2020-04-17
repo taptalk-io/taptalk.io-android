@@ -564,6 +564,12 @@ public class TapUIRoomListFragment extends Fragment {
                         roomList.setUnreadCount(roomList.getUnreadCount() + 1);
                     }
 
+                    // Show mention badge if user is mentioned
+                    if (TAPUtils.isActiveUserMentioned(roomList.getLastMessage(),
+                            TAPChatManager.getInstance(instanceKey).getActiveUser())) {
+                        roomList.setUnreadMentions(roomList.getUnreadMentions() + 1);
+                    }
+
                     // Move room to top
                     vm.getRoomList().remove(roomList);
                     vm.getRoomList().add(0, roomList);
@@ -587,6 +593,11 @@ public class TapUIRoomListFragment extends Fragment {
                     .equals(TAPChatManager.getInstance(instanceKey)
                             .getActiveUser().getUserID())) {
                 newRoomList.setUnreadCount(1);
+            }
+
+            if (TAPUtils.isActiveUserMentioned(roomList.getLastMessage(),
+                    TAPChatManager.getInstance(instanceKey).getActiveUser())) {
+                roomList.setUnreadMentions(1);
             }
 
             vm.addRoomPointer(newRoomList);
@@ -911,6 +922,7 @@ public class TapUIRoomListFragment extends Fragment {
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
+                // Get unread count and unread mentions
                 TAPDataManager.getInstance(instanceKey).getUnreadCountPerRoom(entity.getRoomID(), dbListener);
                 if (++count % limit == 0) {
                     vm.setRoomList(messageModels);
@@ -925,10 +937,11 @@ public class TapUIRoomListFragment extends Fragment {
         }
 
         @Override
-        public void onCountedUnreadCount(String roomID, int unreadCount) {
+        public void onCountedUnreadCount(String roomID, int unreadCount, int mentionCount) {
             try {
                 if (null != activity && vm.getRoomPointer().containsKey(roomID) && null != vm.getRoomPointer().get(roomID)) {
                     vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
+                    vm.getRoomPointer().get(roomID).setUnreadMentions(mentionCount);
                     activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
                 }
             } catch (Exception e) {
@@ -937,7 +950,7 @@ public class TapUIRoomListFragment extends Fragment {
         }
 
         @Override
-        public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
+        public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             vm.getRoomPointer().clear();
             for (TAPMessageEntity entity : entities) {
@@ -947,6 +960,7 @@ public class TapUIRoomListFragment extends Fragment {
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
+                    vm.getRoomPointer().get(entity.getRoomID()).setUnreadMentions(mentionMap.get(entity.getRoomID()));
                 }
             }
 
@@ -958,7 +972,7 @@ public class TapUIRoomListFragment extends Fragment {
 
     private TAPDatabaseListener<TAPMessageEntity> dbAnimatedListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
-        public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
+        public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
@@ -967,6 +981,7 @@ public class TapUIRoomListFragment extends Fragment {
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
+                    vm.getRoomPointer().get(entity.getRoomID()).setUnreadMentions(mentionMap.get(entity.getRoomID()));
                 }
             }
             vm.setRoomList(messageModels);
@@ -1004,6 +1019,7 @@ public class TapUIRoomListFragment extends Fragment {
                 TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
                 getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
             }
+            // TODO: 17 Apr 2020 CHECK MENTION COUNT
             calculateBadgeCount();
         }).start();
     }
@@ -1033,6 +1049,7 @@ public class TapUIRoomListFragment extends Fragment {
                 case CLEAR_ROOM_LIST_BADGE:
                     if (vm.getRoomPointer().containsKey(roomID)) {
                         vm.getRoomPointer().get(roomID).setUnreadCount(0);
+                        vm.getRoomPointer().get(roomID).setUnreadMentions(0);
                         TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
                     }
                     break;

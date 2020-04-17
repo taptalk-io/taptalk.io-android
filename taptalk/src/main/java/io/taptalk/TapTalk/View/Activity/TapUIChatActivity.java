@@ -2095,7 +2095,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             // Query unread count from database
             TAPDataManager.getInstance(instanceKey).getUnreadCountPerRoom(vm.getRoom().getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
                 @Override
-                public void onCountedUnreadCount(String roomID, int unreadCount) {
+                public void onCountedUnreadCount(String roomID, int unreadCount, int mentionCount) {
                     if (!roomID.equals(vm.getRoom().getRoomID())) {
                         vm.setInitialUnreadCount(0);
                         hideUnreadButton();

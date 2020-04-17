@@ -839,7 +839,7 @@ public class TAPDataManager {
         if (null == getActiveUser()) {
             return;
         }
-        TAPDatabaseManager.getInstance(instanceKey).getRoomList(getActiveUser().getUserID(), saveMessages, isCheckUnreadFirst, listener);
+        TAPDatabaseManager.getInstance(instanceKey).getRoomList(getActiveUser().getUserID(), getActiveUser().getUsername(), saveMessages, isCheckUnreadFirst, listener);
     }
 
     public void getAllUnreadMessagesFromRoom(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
@@ -858,14 +858,14 @@ public class TAPDataManager {
         if (null == getActiveUser()) {
             return;
         }
-        TAPDatabaseManager.getInstance(instanceKey).getRoomList(getActiveUser().getUserID(), isCheckUnreadFirst, listener);
+        TAPDatabaseManager.getInstance(instanceKey).getRoomList(getActiveUser().getUserID(), getActiveUser().getUsername(), isCheckUnreadFirst, listener);
     }
 
     public void searchAllRoomsFromDatabase(String keyword, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;
         }
-        TAPDatabaseManager.getInstance(instanceKey).searchAllRooms(getActiveUser().getUserID(), keyword, listener);
+        TAPDatabaseManager.getInstance(instanceKey).searchAllRooms(getActiveUser().getUserID(), getActiveUser().getUsername(), keyword, listener);
     }
 
     public void getRoomModel(TAPUserModel userModel, TAPDatabaseListener<TAPRoomModel> listener) {
@@ -891,7 +891,7 @@ public class TAPDataManager {
         if (null == getActiveUser()) {
             return;
         }
-        TAPDatabaseManager.getInstance(instanceKey).getUnreadCountPerRoom(getActiveUser().getUserID(), roomID, listener);
+        TAPDatabaseManager.getInstance(instanceKey).getUnreadCountPerRoom(getActiveUser().getUserID(), getActiveUser().getUsername(), roomID, listener);
     }
 
     public void getUnreadCount(final TAPDatabaseListener<TAPMessageEntity> listener) {

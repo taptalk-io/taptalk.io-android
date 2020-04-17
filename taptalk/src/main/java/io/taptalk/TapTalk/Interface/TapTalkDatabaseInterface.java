@@ -12,11 +12,11 @@ public interface TapTalkDatabaseInterface<T> {
 
     void onDeleteFinished();
 
-    void onCountedUnreadCount(String roomID, int unreadCount);
+    void onCountedUnreadCount(String roomID, int unreadCount, int mentionCount);
 
     void onCountedUnreadCount(int unreadCount);
 
-    void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap);
+    void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount);
 
     void onContactCheckFinished(int isContact);
 

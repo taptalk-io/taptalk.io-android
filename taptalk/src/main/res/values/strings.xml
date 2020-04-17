@@ -338,5 +338,6 @@
     <string name="tap_update">Update</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
+    <string name="tap_at">\@</string>
 
 </resources>
