@@ -184,6 +184,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
             hideUserMentionList(etCaption, clUserMentionList, rvUserMentionList);
             return;
         }
+        groupParticipants.remove(TAPChatManager.getInstance(instanceKey).getActiveUser());
         int cursorIndex = etCaption.getSelectionStart();
         int loopIndex = etCaption.getSelectionStart();
         while (loopIndex > 0) {

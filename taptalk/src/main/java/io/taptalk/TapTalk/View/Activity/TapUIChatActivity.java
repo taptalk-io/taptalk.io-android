@@ -2036,23 +2036,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void scrollToMessage(String localID) {
-        Log.e(TAG, "scrollToMessage: " + localID);
         if (vm.getMessagePointer().containsKey(localID)) {
-            Log.e(TAG, "scrollToMessage: " + TAPUtils.toJsonString(vm.getMessagePointer().get(localID)));
             vm.setTappedMessageLocalID(null);
             if (null != vm.getMessagePointer().get(localID).getIsDeleted() &&
                     vm.getMessagePointer().get(localID).getIsDeleted() &&
                     null != vm.getMessagePointer().get(localID).getHidden() &&
                     vm.getMessagePointer().get(localID).getHidden()) {
                 // Message does not exist
-                Log.e(TAG, "scrollToMessage: message hidden/deleted");
                 runOnUiThread(() -> {
                     Toast.makeText(this, getResources().getString(R.string.tap_error_could_not_find_message), Toast.LENGTH_SHORT).show();
                     hideUnreadButtonLoading();
                 });
             } else {
                 // Scroll to message
-                Log.e(TAG, "scrollToMessage: Scroll to message");
                 runOnUiThread(() -> {
                     rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
                     rvMessageList.post(() -> {
@@ -2067,13 +2063,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         } else if (state != STATE.DONE) {
             // Find message in database/API
-            Log.e(TAG, "scrollToMessage: Find message in database/API");
             vm.setTappedMessageLocalID(localID);
             showUnreadButtonLoading();
             loadMoreMessagesFromDatabase();
         } else {
             // Message not found
-            Log.e(TAG, "scrollToMessage: Message not found");
             runOnUiThread(() -> {
                 Toast.makeText(this, getResources().getString(R.string.tap_error_could_not_find_message), Toast.LENGTH_SHORT).show();
                 hideUnreadButtonLoading();
@@ -2087,7 +2081,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         unreadIndicator.setLocalID(UNREAD_INDICATOR_LOCAL_ID);
         unreadIndicator.setCreated(created - 1);
         unreadIndicator.setUser(user);
-        Log.e(TAG, "insertUnreadMessageIdentifier: " + created);
 
         vm.addMessagePointer(unreadIndicator);
         vm.setUnreadIndicator(unreadIndicator);
@@ -2121,12 +2114,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPDataManager.getInstance(instanceKey).getAllUnreadMentionsFromRoom(vm.getRoom().getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
-                Log.e(TAG, "getAllUnreadMentionsFromRoom onSelectFinished: " + entities.size());
                 if (!entities.isEmpty()) {
                     for (TAPMessageEntity entity : entities) {
                         TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
                         vm.addUnreadMention(model);
-                        Log.e(TAG, "getAllUnreadMentionsFromRoom onSelectFinished: addUnreadMention " + model.getLocalID() + " " + model.getBody());
                     }
                     updateMentionCount();
                 }
@@ -2335,6 +2326,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             hideUserMentionList();
             return;
         }
+        groupParticipants.remove(vm.getMyUserModel());
         int cursorIndex = etChat.getSelectionStart();
         int loopIndex = etChat.getSelectionStart();
         while (loopIndex > 0) {
@@ -2676,7 +2668,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     @Override
                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                         if (0 < entities.size()) {
-                            Log.e(TAG, "getAllUnreadMessage onSelectFinished: " + TAPUtils.toJsonString(entities.get(0)));
                             vm.setLastUnreadMessageLocalID(entities.get(0).getLocalID());
                             new Thread(() -> {
                                 boolean allUnreadHidden = true; // Flag to check hidden unread when looping
@@ -2712,7 +2703,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         TAPUtils.isActiveUserMentioned(model, vm.getMyUserModel())) {
                     // Add unread mention
                     vm.addUnreadMention(model);
-                    Log.e(TAG, "dbListener onSelectFinished: addUnreadMention " + model.getBody() + " " + vm.getUnreadMentionCount());
                 }
             }
 
@@ -2850,7 +2840,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             TAPUtils.isActiveUserMentioned(model, vm.getMyUserModel())) {
                         // Add unread mention
                         vm.addUnreadMention(model);
-                        Log.e(TAG, "dbListenerPaging onSelectFinished: addUnreadMention " + model.getBody() + " " + vm.getUnreadMentionCount());
                     }
                 }
             }
@@ -2994,7 +2983,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                 TAPUtils.isActiveUserMentioned(message, vm.getMyUserModel())) {
                             // Add unread mention
                             vm.addUnreadMention(message);
-                            Log.e(TAG, "afterView: addUnreadMention " + message.getBody() + " " + vm.getUnreadMentionCount());
                         }
 
                         if (message.getType() == TYPE_SYSTEM_MESSAGE &&
@@ -3014,7 +3002,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         } else {
                             // Set allUnreadHidden to false
                             allUnreadHidden = -1;
-                            Log.e(TAG, "afterView set unreadHidden false: " + message.getLocalID() + " " + message.getBody());
                         }
                     }
 
@@ -3041,7 +3028,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.setInitialUnreadCount(vm.getInitialUnreadCount() + unreadMessageIds.size());
             }
 
-            Log.e(TAG, "afterView allUnreadHidden: " + allUnreadHidden);
             if (allUnreadHidden == 1) {
                 // All unread messages are hidden
                 vm.setAllUnreadMessagesHidden(true);
