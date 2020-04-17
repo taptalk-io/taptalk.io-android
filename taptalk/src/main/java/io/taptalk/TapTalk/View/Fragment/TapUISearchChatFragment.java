@@ -259,8 +259,15 @@ public class TapUISearchChatFragment extends Fragment {
                         TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                         // Convert message to room model
                         TAPRoomModel room = TAPRoomModel.Builder(entity);
-                        room.setUnreadCount(unreadMap.get(room.getRoomID()));
+                        Integer unreadCount = unreadMap.get(room.getRoomID());
+                        if (null != unreadCount) {
+                            room.setUnreadCount(unreadCount);
+                        }
                         result.setRoom(room);
+                        Integer mentionCount = mentionMap.get(room.getRoomID());
+                        if (null != mentionCount) {
+                            result.setRoomMentionCount(mentionCount);
+                        }
                         vm.addSearchResult(result);
                     }
                 }
