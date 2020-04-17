@@ -1294,9 +1294,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteContent.setMaxLines(2);
             }
             boolean hadFocus = etChat.hasFocus();
-            if (hadFocus && showKeyboard) {
+            if (/*hadFocus && */showKeyboard) {
                 TAPUtils.showKeyboard(this, etChat);
-                clContainer.post(() -> etChat.requestFocus());
+                //clContainer.post(() -> etChat.requestFocus());
+                // FIXME: 17 Apr 2020
+                new Handler().postDelayed(() -> {
+                    etChat.requestFocus();
+                }, 300L);
             }
             if (!hadFocus && etChat.getSelectionEnd() == 0) {
                 etChat.setSelection(etChat.getText().length());

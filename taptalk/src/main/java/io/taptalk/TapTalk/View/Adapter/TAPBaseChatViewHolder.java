@@ -76,6 +76,11 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                 TAPMessageStatusManager.getInstance(
                         ((TAPBaseActivity) itemView.getContext()).instanceKey)
                         .addUnreadListByOne(item.getRoom().getRoomID());
+                if (TAPUtils.isActiveUserMentioned(item, myUserModel)) {
+                    TAPMessageStatusManager.getInstance(
+                            ((TAPBaseActivity) itemView.getContext()).instanceKey)
+                            .addUnreadMentionByOne(item.getRoom().getRoomID());
+                }
                 TAPMessageStatusManager.getInstance(
                         ((TAPBaseActivity) itemView.getContext()).instanceKey)
                         .addReadMessageQueue(item.getMessageID());

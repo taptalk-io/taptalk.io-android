@@ -75,6 +75,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
@@ -1007,19 +1008,32 @@ public class TapUIRoomListFragment extends Fragment {
 
     private void updateUnreadCountPerRoom(String roomID) {
         new Thread(() -> {
-            if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) &&
-                    TAPMessageStatusManager.getInstance(instanceKey).getUnreadList().containsKey(roomID) &&
-                    TAPMessageStatusManager.getInstance(instanceKey).getUnreadList().get(roomID) <= vm.getRoomPointer().get(roomID).getUnreadCount()) {
-                vm.getRoomPointer().get(roomID).setUnreadCount(vm.getRoomPointer().get(roomID).getUnreadCount() - TAPMessageStatusManager.getInstance(instanceKey).getUnreadList().get(roomID));
-                TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
-                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
-            } else if (null != getActivity() && vm.getRoomPointer().containsKey(roomID) &&
-                    TAPMessageStatusManager.getInstance(instanceKey).getUnreadList().containsKey(roomID)) {
-                vm.getRoomPointer().get(roomID).setUnreadCount(0);
-                TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
-                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
+            TAPRoomListModel room = vm.getRoomPointer().get(roomID);
+            if (null != getActivity() && null != room) {
+                Integer roomUnreadList = TAPMessageStatusManager.getInstance(instanceKey).getUnreadList().get(roomID);
+                if (null != roomUnreadList) {
+                    if (roomUnreadList <= room.getUnreadCount()) {
+                        // Subtract unread count from room
+                        room.setUnreadCount(room.getUnreadCount() - roomUnreadList);
+                    } else {
+                        // Set room unread count to 0
+                        room.setUnreadCount(0);
+                    }
+                    TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
+                }
+                Integer roomUnreadMention = TAPMessageStatusManager.getInstance(instanceKey).getUnreadMention().get(roomID);
+                if (null != roomUnreadMention) {
+                    if (roomUnreadMention <= room.getUnreadMentions()) {
+                        // Subtract unread mention from room
+                        room.setUnreadMentions(room.getUnreadMentions() - roomUnreadMention);
+                    } else {
+                        // Set room unread mention to 0
+                        room.setUnreadMentions(0);
+                    }
+                    TAPMessageStatusManager.getInstance(instanceKey).clearUnreadMentionPerRoomID(roomID);
+                }
+                getActivity().runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(room)));
             }
-            // TODO: 17 Apr 2020 CHECK MENTION COUNT
             calculateBadgeCount();
         }).start();
     }
@@ -1047,10 +1061,12 @@ public class TapUIRoomListFragment extends Fragment {
                             vm.getRoomPointer().get(roomID)));
                     break;
                 case CLEAR_ROOM_LIST_BADGE:
-                    if (vm.getRoomPointer().containsKey(roomID)) {
-                        vm.getRoomPointer().get(roomID).setUnreadCount(0);
-                        vm.getRoomPointer().get(roomID).setUnreadMentions(0);
+                    TAPRoomListModel room = vm.getRoomPointer().get(roomID);
+                    if (null != room) {
+                        room.setUnreadCount(0);
+                        room.setUnreadMentions(0);
                         TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
+                        TAPMessageStatusManager.getInstance(instanceKey).clearUnreadMentionPerRoomID(roomID);
                     }
                     break;
             }
