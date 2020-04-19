@@ -17,6 +17,8 @@ import io.moselo.SampleApps.Activity.TAPCountryListActivity
 import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_ID
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COUNTRY_LIST
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
@@ -171,8 +173,12 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
     private fun enableCountryPicker() {
         ll_country_code.setOnClickListener {
-            val activity = context as TAPBaseActivity
-            TAPCountryListActivity.start(activity, activity.instanceKey, countryListitems, defaultCountryID)
+//            val activity = context as TAPBaseActivity
+//            TAPCountryListActivity.start(activity, activity.instanceKey, countryListitems, defaultCountryID)
+            val intent = Intent(context, TAPCountryListActivity::class.java)
+            intent.putExtra(COUNTRY_LIST, countryListitems)
+            intent.putExtra(COUNTRY_ID, defaultCountryID)
+            startActivityForResult(intent, COUNTRY_PICK)
         }
     }
 
