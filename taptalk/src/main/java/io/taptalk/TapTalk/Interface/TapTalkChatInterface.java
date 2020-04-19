@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Interface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public interface TapTalkChatInterface {
     void onReceiveMessageInActiveRoom(TAPMessageModel message);
@@ -34,6 +35,8 @@ public interface TapTalkChatInterface {
     void onReceiveStopTyping(TAPTypingModel typingModel);
 
     void onMessageQuoteClicked(TAPMessageModel message);
+
+    void onMentionClicked(TAPMessageModel message, TAPUserModel mentionedUser);
 
     void onGroupMemberAvatarClicked(TAPMessageModel message);
 

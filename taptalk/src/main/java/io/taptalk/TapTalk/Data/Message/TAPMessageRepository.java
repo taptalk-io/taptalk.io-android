@@ -145,7 +145,7 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public void getRoomList(String myID, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, final TAPDatabaseListener listener) {
+    public void getRoomList(String myID, String username, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, final TAPDatabaseListener listener) {
         new Thread(() -> {
             try {
                 if (0 < saveMessages.size()) {
@@ -156,10 +156,12 @@ public class TAPMessageRepository {
 
                 if (isCheckUnreadFirst && entities.size() > 0) {
                     Map<String, Integer> unreadMap = new LinkedHashMap<>();
+                    Map<String, Integer> mentionMap = new LinkedHashMap<>();
                     for (TAPMessageEntity entity : entities) {
                         unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+                        mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", entity.getRoomID()).size());
                     }
-                    listener.onSelectedRoomList(entities, unreadMap);
+                    listener.onSelectedRoomList(entities, unreadMap, mentionMap);
                 } else listener.onSelectFinished(entities);
             } catch (Exception e) {
                 listener.onSelectFailed(e.getMessage());
@@ -174,7 +176,14 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public void searchAllChatRooms(String myID, String keyword, final TAPDatabaseListener listener) {
+    public void getAllUnreadMentionsFromRoom(String myID, String username, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> messageEntities = messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", roomID);
+            listener.onSelectFinished(messageEntities);
+        }).start();
+    }
+
+    public void searchAllChatRooms(String myID, String username, String keyword, final TAPDatabaseListener listener) {
         new Thread(() -> {
             String queryKeyword = '%' + keyword
                     .replace("\\", "\\\\")
@@ -182,10 +191,12 @@ public class TAPMessageRepository {
                     .replace("_", "\\_") + '%';
             List<TAPMessageEntity> entities = messageDao.searchAllChatRooms(queryKeyword);
             Map<String, Integer> unreadMap = new LinkedHashMap<>();
+            Map<String, Integer> mentionMap = new LinkedHashMap<>();
             for (TAPMessageEntity entity : entities) {
                 unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
+                mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", entity.getRoomID()).size());
             }
-            listener.onSelectedRoomList(entities, unreadMap);
+            listener.onSelectedRoomList(entities, unreadMap, mentionMap);
         }).start();
     }
 
@@ -232,25 +243,29 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    public void getRoomList(String myID, boolean isCheckUnreadFirst, final TAPDatabaseListener listener) {
+    public void getRoomList(String myID, String username, boolean isCheckUnreadFirst, final TAPDatabaseListener listener) {
         new Thread(() -> {
             List<TAPMessageEntity> entities = messageDao.getAllRoomList();
 
             if (isCheckUnreadFirst && entities.size() > 0) {
                 Map<String, Integer> unreadMap = new LinkedHashMap<>();
-                for (TAPMessageEntity entity : entities)
+                Map<String, Integer> mentionMap = new LinkedHashMap<>();
+                for (TAPMessageEntity entity : entities) {
                     unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
-                listener.onSelectedRoomList(entities, unreadMap);
+                    mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", entity.getRoomID()).size());
+                }
+                listener.onSelectedRoomList(entities, unreadMap, mentionMap);
             } else {
                 listener.onSelectFinished(entities);
             }
         }).start();
     }
 
-    public void getUnreadCountPerRoom(String myID, String roomID, final TAPDatabaseListener listener) {
+    public void getUnreadCountPerRoom(String myID, String username, String roomID, final TAPDatabaseListener listener) {
         new Thread(() -> {
             int unreadCount = messageDao.getUnreadCount(myID, roomID);
-            listener.onCountedUnreadCount(roomID, unreadCount);
+            int mentionCount = messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", roomID).size();
+            listener.onCountedUnreadCount(roomID, unreadCount, mentionCount);
         }).start();
     }
 

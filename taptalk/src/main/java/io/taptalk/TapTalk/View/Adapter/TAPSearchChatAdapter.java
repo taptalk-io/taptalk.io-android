@@ -246,7 +246,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
         private View vSeparator;
         private ConstraintLayout clContainer;
         private CircleImageView civAvatar;
-        private ImageView ivAvatarIcon;
+        private ImageView ivAvatarIcon, ivBadgeMention;
         private TextView tvAvatarLabel, tvRoomName, tvBadgeUnread;
 
         RoomItemVH(ViewGroup parent, int itemLayoutId) {
@@ -255,6 +255,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             clContainer = itemView.findViewById(R.id.cl_container);
             civAvatar = itemView.findViewById(R.id.civ_avatar);
             ivAvatarIcon = itemView.findViewById(R.id.iv_avatar_icon);
+            ivBadgeMention = itemView.findViewById(R.id.iv_badge_mention);
             tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
             tvRoomName = itemView.findViewById(R.id.tv_room_name);
             tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
@@ -367,6 +368,13 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             } else {
                 tvBadgeUnread.setVisibility(View.GONE);
+            }
+
+            // Show mention badge
+            if (item.getRoomMentionCount() > 0) {
+                ivBadgeMention.setVisibility(View.VISIBLE);
+            } else {
+                ivBadgeMention.setVisibility(View.GONE);
             }
 
             // Check if room is muted

@@ -234,6 +234,7 @@
     <string name="tap_call">Telepon</string>
     <string name="tap_send_sms">SMS</string>
     <string name="tap_delete">Hapus Pesan</string>
+    <string name="tap_view_profile">Lihat Profil</string>
 
     <!--Products-->
     <string name="tap_price">Harga</string>
@@ -337,5 +338,6 @@
     <string name="tap_update">Simpan</string>
     <string name="tap_you">Anda</string>
     <string name="tap_over_99">99+</string>
+    <string name="tap_at">\@</string>
 
 </resources>

@@ -5,6 +5,7 @@ import androidx.annotation.Keep;
 import io.taptalk.TapTalk.Interface.TapTalkAttachmentInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 
 @Keep
 public abstract class TAPAttachmentListener implements TapTalkAttachmentInterface {
@@ -77,6 +78,16 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
 
     @Override
     public void onSaveToDownloads(TAPMessageModel message) {
+    }
+
+    @Override
+    public void onViewProfileSelected(TAPUserModel user) {
+
+    }
+
+    @Override
+    public void onSendMessageSelected(TAPUserModel user) {
+
     }
 
     @Override

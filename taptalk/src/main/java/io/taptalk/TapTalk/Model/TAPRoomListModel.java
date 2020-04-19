@@ -11,6 +11,7 @@ public class TAPRoomListModel {
     private String lastMessageTimestamp;
     private LinkedHashMap<String, TAPUserModel> typingUsers;
     private int unreadCount;
+    private int unreadMentions;
     private int defaultAvatarBackgroundColor; // Save default color in model to prevent lag on bind
 
     public TAPRoomListModel(TAPMessageModel lastMessage, int unreadCount) {
@@ -68,6 +69,14 @@ public class TAPRoomListModel {
 
     public void setUnreadCount(int unreadCount) {
         this.unreadCount = unreadCount;
+    }
+
+    public int getUnreadMentions() {
+        return unreadMentions;
+    }
+
+    public void setUnreadMentions(int unreadMentions) {
+        this.unreadMentions = unreadMentions;
     }
 
     public int getDefaultAvatarBackgroundColor() {

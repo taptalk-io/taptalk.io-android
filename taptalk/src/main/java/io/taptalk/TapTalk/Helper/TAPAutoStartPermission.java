@@ -11,6 +11,8 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 
 public class TAPAutoStartPermission {
 
+    private final String TAG = TAPAutoStartPermission.class.getSimpleName();
+
     private static TAPAutoStartPermission instance;
 
     public static TAPAutoStartPermission getInstance() {
@@ -29,7 +31,7 @@ public class TAPAutoStartPermission {
                                 //context.startActivity(intent);
                                 requestAutoStartPermission(context, intent);
                             } catch (Exception e) {
-                                Log.e("><><><", "showPermissionRequest: ", e);
+                                Log.e(TAG, "showPermissionRequest: ", e);
                                 e.printStackTrace();
                             }
                         })

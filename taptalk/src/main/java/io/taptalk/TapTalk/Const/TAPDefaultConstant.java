@@ -311,6 +311,7 @@ public class TAPDefaultConstant {
         public static final String LongPressLink = "kTAPLongPressLink";
         public static final String LongPressEmail = "kTAPLongPressEmail";
         public static final String LongPressPhone = "kTAPLongPressPhone";
+        public static final String LongPressMention = "kTAPLongPressMention";
     }
 
     public static final class TokenHeaderConst {

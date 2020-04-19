@@ -1936,6 +1936,10 @@ public class TAPChatManager {
         TapUI.getInstance(instanceKey).triggerChatRoomProfileButtonTapped(activity, room, user);
     }
 
+    public void triggerUserMentionTapped(Activity activity, TAPMessageModel message, TAPUserModel user) {
+        TapUI.getInstance(instanceKey).triggerUserMentionTapped(activity, message, user);
+    }
+
     public void triggerMessageQuoteTapped(Activity activity, TAPMessageModel messageModel) {
         TapUI.getInstance(instanceKey).triggerMessageQuoteTapped(activity, messageModel);
     }

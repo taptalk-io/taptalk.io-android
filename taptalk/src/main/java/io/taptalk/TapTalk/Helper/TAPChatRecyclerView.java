@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -54,16 +53,11 @@ public class TAPChatRecyclerView extends RecyclerView {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        Log.e("TAPChatRecyclerView", "onTouchEvent: " + e.getAction());
         if (e.getAction() == ACTION_UP && null != swipeHelper) {
             // Re-attach swipe helper on when user lifts touch
             post(() -> {
-                Log.e("TAPChatRecyclerView", "onTouchEvent: detach");
                 swipeHelper.attachToRecyclerView(new RecyclerView(getContext()));
-                post(() -> {
-                    Log.e("TAPChatRecyclerView", "onTouchEvent: re-attach");
-                    swipeHelper.attachToRecyclerView(this);
-                });
+                post(() -> swipeHelper.attachToRecyclerView(this));
             });
         }
         return super.onTouchEvent(e);

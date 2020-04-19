@@ -149,6 +149,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             @Nullable TAPUserModel user,
             @Nullable Boolean isAdmin
     ) {
+        if (null != user && TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(user.getUserID())) {
+            return;
+        }
         Intent intent = new Intent(context, TAPChatProfileActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         intent.putExtra(ROOM, room);

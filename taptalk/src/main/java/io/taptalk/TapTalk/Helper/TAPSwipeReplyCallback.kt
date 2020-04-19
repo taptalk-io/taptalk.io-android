@@ -3,7 +3,6 @@ package io.taptalk.TapTalk.Helper
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
@@ -43,7 +42,6 @@ class TAPSwipeReplyCallback(
             // Disable swipe for deleted messages & messages that failed to send
             return 0
         }
-        Log.e("SwipeHelper", "getMovementFlags: ${makeMovementFlags(ACTION_STATE_IDLE, RIGHT)}")
         itemView = viewHolder.itemView
         return makeMovementFlags(ACTION_STATE_IDLE, RIGHT)
     }
@@ -61,10 +59,8 @@ class TAPSwipeReplyCallback(
     override fun convertToAbsoluteDirection(flags: Int, layoutDirection: Int): Int {
         if (swipeBack) {
             swipeBack = false
-            Log.e("SwipeHelper", "convertToAbsoluteDirection: 0")
             return 0
         }
-        Log.e("SwipeHelper", "convertToAbsoluteDirection: ${super.convertToAbsoluteDirection(flags, layoutDirection)}")
         return super.convertToAbsoluteDirection(flags, layoutDirection)
     }
 
@@ -77,7 +73,6 @@ class TAPSwipeReplyCallback(
             actionState: Int,
             isCurrentlyActive: Boolean
     ) {
-        Log.e("SwipeHelper", "onChildDraw: action $actionState")
         if (actionState == ACTION_STATE_SWIPE) {
             setTouchListener(recyclerView, viewHolder)
         }

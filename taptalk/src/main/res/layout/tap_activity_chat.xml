@@ -252,7 +252,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/fl_chat_composer_and_history"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
         app:layout_constraintTop_toBottomOf="@id/cl_contact_action">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -356,7 +356,7 @@
         android:layout_height="0dp"
         android:descendantFocusability="blocksDescendants"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/fl_chat_composer_and_history"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
         app:layout_constraintTop_toBottomOf="@id/cl_contact_action"
         tools:background="@color/tapTransparentCharcoal40">
 
@@ -442,11 +442,13 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <FrameLayout
-        android:id="@+id/fl_chat_composer_and_history"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_chat_composer_and_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
+        android:clipToPadding="false"
+        android:outlineProvider="paddedBounds"
         app:layout_constraintBottom_toTopOf="@id/rv_custom_keyboard">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -455,10 +457,13 @@
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
             android:background="@color/tapChatComposerBackgroundColor"
-            android:elevation="2dp"
+            android:clipToPadding="false"
+            android:elevation="6dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:visibility="visible">
+            android:outlineProvider="paddedBounds"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_quote"
@@ -727,13 +732,14 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_custom_keyboard"
         android:layout_width="match_parent"
         android:layout_height="216dp"
         android:background="@color/tapWhite"
+        android:elevation="6dp"
         android:nestedScrollingEnabled="false"
         android:overScrollMode="never"
         android:visibility="gone"
@@ -747,21 +753,22 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="24dp"
         android:background="@drawable/tap_bg_scroll_to_bottom"
-        android:elevation="4dp"
+        android:elevation="3dp"
         android:padding="15dp"
         android:src="@drawable/tap_ic_scroll_to_bottom_chat"
         android:tint="@color/tapIconChatRoomScrollToBottom"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/fl_chat_composer_and_history"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="1" />
 
     <TextView
         android:id="@+id/tv_badge_unread"
         style="@style/tapChatRoomUnreadBadgeLabelStyle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="24dp"
         android:background="@drawable/tap_bg_chat_room_unread_badge"
-        android:elevation="6dp"
+        android:elevation="4dp"
         android:gravity="center"
         android:minWidth="24dp"
         android:paddingStart="8dp"
@@ -769,10 +776,54 @@
         android:paddingEnd="8dp"
         android:paddingBottom="4dp"
         android:translationY="-14dp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@id/iv_to_bottom"
         app:layout_constraintStart_toStartOf="@id/iv_to_bottom"
         app:layout_constraintTop_toTopOf="@+id/iv_to_bottom"
         tools:text="1" />
+
+    <ImageView
+        android:id="@+id/iv_mention_anchor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/tap_bg_scroll_to_bottom"
+        android:elevation="3dp"
+        android:padding="8dp"
+        android:src="@drawable/tap_ic_mention_orange"
+        android:tint="@color/tapIconChatRoomScrollToBottom"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/tv_badge_unread"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="1"
+        app:layout_goneMarginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tv_badge_mention_count"
+        style="@style/tapChatRoomUnreadBadgeLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:background="@drawable/tap_bg_chat_room_unread_badge"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:minWidth="24dp"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp"
+        android:translationY="-14dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/iv_mention_anchor"
+        app:layout_constraintStart_toStartOf="@id/iv_mention_anchor"
+        app:layout_constraintTop_toTopOf="@+id/iv_mention_anchor"
+        tools:text="1" />
+
+    <include
+        layout="@layout/tap_layout_user_mention_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
