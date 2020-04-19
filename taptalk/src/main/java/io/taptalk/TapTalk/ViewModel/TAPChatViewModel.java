@@ -473,7 +473,7 @@ public class TAPChatViewModel extends AndroidViewModel {
             String[] tempUserID = room.getRoomID().split("-");
             return tempUserID[0].equals(myUserModel.getUserID()) ? tempUserID[1] : tempUserID[0];
         } catch (Exception e) {
-            Log.e(TAG, "getOtherUserID: ", e);
+//            Log.e(TAG, "getOtherUserID: ", e);
             return "0";
         }
     }
@@ -499,7 +499,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void setAllUnreadMessagesHidden(boolean allUnreadMessagesHidden) {
-        Log.e(TAG, "setAllUnreadMessagesHidden: " + allUnreadMessagesHidden);
+//        Log.e(TAG, "setAllUnreadMessagesHidden: " + allUnreadMessagesHidden);
         isAllUnreadMessagesHidden = allUnreadMessagesHidden;
     }
 

@@ -1081,7 +1081,8 @@ public class TAPDataManager {
     }
 
     public void updateMessageStatusAsDelivered(List<String> messageIDs, TAPDefaultDataView<TAPUpdateMessageStatusResponse> view) {
-        TAPApiManager.getInstance(instanceKey).updateMessageStatusAsDelivered(messageIDs, new TAPDefaultSubscriber<>(view));
+        if (!messageIDs.isEmpty())
+            TAPApiManager.getInstance(instanceKey).updateMessageStatusAsDelivered(messageIDs, new TAPDefaultSubscriber<>(view));
     }
 
     public void updateMessageStatusAsRead(List<String> messageIDs, TAPDefaultDataView<TAPUpdateMessageStatusResponse> view) {
