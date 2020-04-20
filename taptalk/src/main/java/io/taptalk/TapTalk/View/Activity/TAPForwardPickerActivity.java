@@ -92,7 +92,10 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = new ViewModelProvider(this).get(TAPSearchChatViewModel.class);
+        vm = new ViewModelProvider(this,
+                new TAPSearchChatViewModel.TAPSearchChatViewModelFactory(
+                        getApplication(), instanceKey))
+                .get(TAPSearchChatViewModel.class);
         vm.setSelectedMessage(getIntent().getParcelableExtra(MESSAGE));
     }
 
