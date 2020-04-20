@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Helper
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.os.Handler
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
@@ -13,13 +14,16 @@ import androidx.recyclerview.widget.RecyclerView
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPBaseChatViewHolder
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
+import kotlin.math.abs
 import kotlin.math.min
 
 class TAPSwipeReplyCallback(
         context: Context,
         private val swipeReplyInterface: SwipeReplyInterface) :
         ItemTouchHelper.Callback() {
-    private val imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_circle_white)!!
+    private val imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_pumpkin_orange)!!
+    private val drawableBackground = ContextCompat.getDrawable(context, R.drawable.tap_bg_circle_primary)!!
+    private val drawableBackgroundColor = ContextCompat.getDrawable(context, R.color.tapDefaultBackgroundColor)!!
 
     private lateinit var itemView: View
     private var currentItemViewHolder: RecyclerView.ViewHolder? = null
@@ -76,12 +80,21 @@ class TAPSwipeReplyCallback(
         if (actionState == ACTION_STATE_SWIPE) {
             setTouchListener(recyclerView, viewHolder)
         }
-
-        if (itemView.translationX < (130) || dX < this.dX) {
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-            this.dX = dX
-            startTracking = true
+//        if (itemView.translationX < TAPUtils.dpToPx(56) || dX < this.dX) {
+//            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+//            this.dX = dX
+//            startTracking = true
+//        }
+        val swipeLimit = TAPUtils.dpToPx(56)
+        val newX: Float
+        newX = if (itemView.translationX < swipeLimit || dX < this.dX) {
+            dX
+        } else {
+            swipeLimit.toFloat()
         }
+        super.onChildDraw(c, recyclerView, viewHolder, newX, dY, actionState, isCurrentlyActive)
+        this.dX = newX
+        startTracking = true
         currentItemViewHolder = viewHolder
         drawReplyButton(c)
     }
@@ -91,8 +104,10 @@ class TAPSwipeReplyCallback(
         recyclerView.setOnTouchListener { _, event ->
             swipeBack = event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP
             if (swipeBack) {
-                if (Math.abs(itemView.translationX) >= (100)) {
-                    swipeReplyInterface.onItemSwiped(viewHolder.adapterPosition)
+                if (abs(itemView.translationX) >= TAPUtils.dpToPx(48)) {
+                    Handler().postDelayed({
+                        swipeReplyInterface.onItemSwiped(viewHolder.adapterPosition)
+                    }, 100L)
                     recyclerView.setOnTouchListener(null)
                 }
             }
@@ -132,7 +147,7 @@ class TAPSwipeReplyCallback(
                 }
             }
         }
-//        val alpha: Int
+        val alpha: Int
         val scale: Float
         if (showing) {
             scale = if (replyButtonProgress <= 0.8f) {
@@ -140,15 +155,16 @@ class TAPSwipeReplyCallback(
             } else {
                 1.2f - 0.2f * ((replyButtonProgress - 0.8f) / 0.2f)
             }
-//            alpha = min(255f, 255 * (replyButtonProgress / 0.8f)).toInt()
+            alpha = min(255f, 255 * (replyButtonProgress / 0.8f)).toInt()
         } else {
             scale = replyButtonProgress
-//            alpha = min(255f, 255 * replyButtonProgress).toInt()
+            alpha = min(255f, 255 * replyButtonProgress).toInt()
         }
+        drawableBackground.alpha = (alpha * 0.3).toInt()
+        imageDrawable.alpha = alpha
 
-//        imageDrawable.alpha = alpha
         if (startTracking) {
-            if (!isVibrate && itemView.translationX >= (100)) {
+            if (!isVibrate && itemView.translationX >= TAPUtils.dpToPx(48)) {
                 itemView.performHapticFeedback(
                         HapticFeedbackConstants.KEYBOARD_TAP,
                         HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
@@ -157,13 +173,34 @@ class TAPSwipeReplyCallback(
             }
         }
 
-        val x: Int = if (itemView.translationX > TAPUtils.dpToPx(120)) {
-            TAPUtils.dpToPx(120) / 2
-        } else {
-            (itemView.translationX / 2).toInt()
-        }
+        // For centered X
+//        val x: Int = if (itemView.translationX > TAPUtils.dpToPx(120)) {
+//            TAPUtils.dpToPx(120) / 2
+//        } else {
+//            (itemView.translationX / 2).toInt()
+//        }
+        val x = itemView.translationX - TAPUtils.dpToPx(18) - 1
 
-        val y = (itemView.top + itemView.measuredHeight / 2).toFloat()
+        // For centered Y
+//        val y = (itemView.top + itemView.measuredHeight / 2).toFloat()
+        val y = itemView.top + TAPUtils.dpToPx(18) + 1
+
+        drawableBackgroundColor.setBounds(
+                (x - TAPUtils.dpToPx(18) * scale).toInt() - 1,
+                (y - TAPUtils.dpToPx(18) * scale).toInt() - 1,
+                (x + TAPUtils.dpToPx(18) * scale).toInt() + 1,
+                (y + TAPUtils.dpToPx(18) * scale).toInt() + 1
+        )
+        drawableBackgroundColor.draw(canvas)
+
+        drawableBackground.setBounds(
+                (x - TAPUtils.dpToPx(18) * scale).toInt() - 1,
+                (y - TAPUtils.dpToPx(18) * scale).toInt() - 1,
+                (x + TAPUtils.dpToPx(18) * scale).toInt() + 1,
+                (y + TAPUtils.dpToPx(18) * scale).toInt() + 1
+        )
+        drawableBackground.draw(canvas)
+
         imageDrawable.setBounds(
                 (x - TAPUtils.dpToPx(16) * scale).toInt() - 1,
                 (y - TAPUtils.dpToPx(16) * scale).toInt() - 1,
@@ -171,6 +208,9 @@ class TAPSwipeReplyCallback(
                 (y + TAPUtils.dpToPx(16) * scale).toInt() + 1
         )
         imageDrawable.draw(canvas)
-//        imageDrawable.alpha = 255
+
+        drawableBackgroundColor.alpha = 255
+        drawableBackground.alpha = 51
+        imageDrawable.alpha = 255
     }
 }

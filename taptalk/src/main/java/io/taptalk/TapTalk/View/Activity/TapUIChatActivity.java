@@ -1298,9 +1298,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TAPUtils.showKeyboard(this, etChat);
                 //clContainer.post(() -> etChat.requestFocus());
                 // FIXME: 17 Apr 2020
-                new Handler().postDelayed(() -> {
-                    etChat.requestFocus();
-                }, 300L);
+                new Handler().postDelayed(() -> etChat.requestFocus(), 300L);
             }
             if (!hadFocus && etChat.getSelectionEnd() == 0) {
                 etChat.setSelection(etChat.getText().length());
