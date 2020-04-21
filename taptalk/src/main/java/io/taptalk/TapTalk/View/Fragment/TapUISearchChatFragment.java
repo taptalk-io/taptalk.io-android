@@ -61,6 +61,9 @@ public class TapUISearchChatFragment extends Fragment {
     private TAPSearchChatViewModel vm;
     private TAPSearchChatAdapter adapter;
 
+    public TapUISearchChatFragment() {
+    }
+
     public TapUISearchChatFragment(String instanceKey) {
         this.instanceKey = instanceKey;
     }
@@ -237,7 +240,7 @@ public class TapUISearchChatFragment extends Fragment {
 
     private TAPDatabaseListener<TAPMessageEntity> roomSearchListener = new TAPDatabaseListener<TAPMessageEntity>() {
         @Override
-        public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap) {
+        public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
             if (vm.getSearchState() == vm.STATE_PENDING && !vm.getPendingSearch().isEmpty()) {
                 vm.setSearchState(vm.STATE_IDLE);
                 startSearch(vm.getPendingSearch());
@@ -256,8 +259,15 @@ public class TapUISearchChatFragment extends Fragment {
                         TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                         // Convert message to room model
                         TAPRoomModel room = TAPRoomModel.Builder(entity);
-                        room.setUnreadCount(unreadMap.get(room.getRoomID()));
+                        Integer unreadCount = unreadMap.get(room.getRoomID());
+                        if (null != unreadCount) {
+                            room.setUnreadCount(unreadCount);
+                        }
                         result.setRoom(room);
+                        Integer mentionCount = mentionMap.get(room.getRoomID());
+                        if (null != mentionCount) {
+                            result.setRoomMentionCount(mentionCount);
+                        }
                         vm.addSearchResult(result);
                     }
                 }

@@ -141,6 +141,8 @@
     <color name="tapIconLongPressActionOpenLink">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressActionComposeEmail">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressActionSaveToGallery">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconLongPressActionViewProfile">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconLongPressActionSendMessage">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachDocuments">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachCamera">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachGallery">@color/tapColorPrimaryIcon</color>

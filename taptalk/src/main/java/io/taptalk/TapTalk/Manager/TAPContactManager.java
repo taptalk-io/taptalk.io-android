@@ -17,6 +17,7 @@ public class TAPContactManager {
     private String instanceKey = "";
     private HashMap<String, TAPUserModel> userDataMap;
     private HashMap<String, TAPUserModel> userMapByPhoneNumber;
+    private HashMap<String, TAPUserModel> tempUserDataMapByUsername;
     private String myCountryCode;
     private boolean isContactSyncPermissionAsked, isContactSyncAllowedByUser;
 
@@ -162,6 +163,10 @@ public class TAPContactManager {
         }
 
         return tempPhone;
+    }
+
+    public HashMap<String, TAPUserModel> getTempUserDataMapByUsername() {
+        return null == tempUserDataMapByUsername ? tempUserDataMapByUsername = new HashMap<>() : tempUserDataMapByUsername;
     }
 
     public String getMyCountryCode() {

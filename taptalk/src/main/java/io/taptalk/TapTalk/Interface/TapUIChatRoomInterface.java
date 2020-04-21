@@ -18,6 +18,8 @@ public interface TapUIChatRoomInterface {
 
     void onTapTalkGroupMemberAvatarTapped(Activity activity, TAPRoomModel room, TAPUserModel user);
 
+    void onTapTalkUserMentionTapped(Activity activity, TAPMessageModel messageModel, TAPUserModel user);
+
     void onTapTalkMessageQuoteTapped(Activity activity, TAPMessageModel messageModel, @Nullable HashMap<String, Object> userInfo);
 
     void onTapTalkProductListBubbleLeftOrSingleButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption);

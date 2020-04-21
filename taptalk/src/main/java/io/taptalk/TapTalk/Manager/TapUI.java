@@ -596,6 +596,16 @@ public class TapUI {
         }
     }
 
+    void triggerUserMentionTapped(Activity activity, TAPMessageModel message, TAPUserModel user) {
+        if (getChatRoomListeners().isEmpty()) {
+            TAPChatProfileActivity.start(activity, instanceKey, message.getRoom(), user);
+        } else {
+            for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+                listener.onTapTalkUserMentionTapped(activity, message, user);
+            }
+        }
+    }
+
     void triggerMessageQuoteTapped(Activity activity, TAPMessageModel messageModel) {
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             HashMap<String, Object> userInfo = null;

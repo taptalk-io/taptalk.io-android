@@ -19,6 +19,7 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Model.TAPAttachmentModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.R;
@@ -44,7 +45,9 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_REPLY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_DOWNLOADS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_IMAGE_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_VIDEO_GALLERY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_MESSAGE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_SMS;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_VIEW_PROFILE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_CAMERA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createAttachMenu;
@@ -55,7 +58,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
     private TAPAttachmentListener attachmentListener;
     private View.OnClickListener onClickListener;
     private String messageToCopy = "";
-    private String linkifyresult = "";
+    private String linkifyResult = "";
     private TAPMessageModel message;
 
     public TAPAttachmentAdapter(boolean isImagePickerBottomSheet, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
@@ -68,12 +71,12 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         }
     }
 
-    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, String linkifyresult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, String linkifyResult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         setItems(items);
         this.attachmentListener = attachmentListener;
         this.messageToCopy = messageToCopy;
         this.onClickListener = onClickListener;
-        this.linkifyresult = linkifyresult;
+        this.linkifyResult = linkifyResult;
     }
 
     public TAPAttachmentAdapter(List<TAPAttachmentModel> items, TAPMessageModel message, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
@@ -187,6 +190,12 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                 case LONG_PRESS_SAVE_DOWNLOADS:
                     setComponentColors(R.color.tapIconLongPressActionSaveToGallery, R.style.tapActionSheetDefaultLabelStyle);
                     break;
+                case LONG_PRESS_VIEW_PROFILE:
+                    setComponentColors(R.color.tapIconLongPressActionViewProfile, R.style.tapActionSheetDefaultLabelStyle);
+                    break;
+                case LONG_PRESS_SEND_MESSAGE:
+                    setComponentColors(R.color.tapIconLongPressActionSendMessage, R.style.tapActionSheetDefaultLabelStyle);
+                    break;
                 case LONG_PRESS_DELETE:
                     setComponentColors(R.color.tapIconLongPressActionDelete, R.style.tapActionSheetDestructiveLabelStyle);
                     break;
@@ -251,13 +260,13 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     attachmentListener.onCopySelected(messageToCopy);
                     break;
                 case LONG_PRESS_OPEN_LINK:
-                    attachmentListener.onOpenLinkSelected(linkifyresult);
+                    attachmentListener.onOpenLinkSelected(linkifyResult);
                     break;
                 case LONG_PRESS_COMPOSE_EMAIL:
-                    attachmentListener.onComposeSelected(linkifyresult);
+                    attachmentListener.onComposeSelected(linkifyResult);
                     break;
                 case LONG_PRESS_CALL:
-                    attachmentListener.onPhoneCallSelected(linkifyresult);
+                    attachmentListener.onPhoneCallSelected(linkifyResult);
                     break;
                 case LONG_PRESS_SEND_SMS:
                     attachmentListener.onPhoneSmsSelected(messageToCopy);
@@ -270,6 +279,12 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case LONG_PRESS_SAVE_DOWNLOADS:
                     attachmentListener.onSaveToDownloads(message);
+                    break;
+                case LONG_PRESS_VIEW_PROFILE:
+                    attachmentListener.onViewProfileSelected(TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().get(linkifyResult.substring(1)));
+                    break;
+                case LONG_PRESS_SEND_MESSAGE:
+                    attachmentListener.onSendMessageSelected(TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().get(linkifyResult.substring(1)));
                     break;
                 case LONG_PRESS_DELETE:
                     if (null != TAPChatManager.getInstance(instanceKey).getOpenRoom())
