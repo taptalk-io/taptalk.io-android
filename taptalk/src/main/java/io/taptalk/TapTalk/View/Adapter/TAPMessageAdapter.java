@@ -2196,6 +2196,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     private void checkAndAnimateHighlight(TAPMessageModel item, View vBackgroundHighlight) {
         if (null == highlightedMessage || highlightedMessage != item) {
+            vBackgroundHighlight.setVisibility(View.GONE);
             return;
         }
         vBackgroundHighlight.setAlpha(0f);
@@ -2207,10 +2208,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 .withEndAction(() -> new Handler().postDelayed(() -> {
                     vBackgroundHighlight.animate()
                             .alpha(0f)
-                            .setDuration(1000L)
+                            .setDuration(750L)
                             .withEndAction(() -> vBackgroundHighlight.setVisibility(View.GONE))
                             .start();
-                }, 2000L))
+                }, 1000L))
                 .start();
         highlightedMessage = null;
     }

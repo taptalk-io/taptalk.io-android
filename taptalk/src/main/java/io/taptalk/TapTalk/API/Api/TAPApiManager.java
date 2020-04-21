@@ -552,6 +552,6 @@ public class TAPApiManager {
     }
 
     public void getProjectConfig(Subscriber<TAPBaseResponse<TapConfigs>> subscriber) {
-        executeWithoutBaseResponse(homingPigeon.getProjectConfig(), subscriber);
+        executeWithoutHeaders(homingPigeon.getProjectConfig(), subscriber);
     }
 }
