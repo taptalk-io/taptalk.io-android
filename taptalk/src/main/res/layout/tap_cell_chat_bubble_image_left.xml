@@ -220,6 +220,7 @@
         android:layout_marginBottom="2dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/tap_ic_reply_circle_white"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintStart_toEndOf="@id/fl_bubble" />
 
