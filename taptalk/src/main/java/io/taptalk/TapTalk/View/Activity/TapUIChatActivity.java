@@ -2041,12 +2041,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void scrollToMessage(String localID) {
-        if (vm.getMessagePointer().containsKey(localID)) {
+        TAPMessageModel message = vm.getMessagePointer().get(localID);
+        if (null != message) {
             vm.setTappedMessageLocalID(null);
-            if (null != vm.getMessagePointer().get(localID).getIsDeleted() &&
-                    vm.getMessagePointer().get(localID).getIsDeleted() &&
-                    null != vm.getMessagePointer().get(localID).getHidden() &&
-                    vm.getMessagePointer().get(localID).getHidden()) {
+            if ((null != message.getIsDeleted() && message.getIsDeleted()) ||
+                    (null != message.getHidden() && message.getHidden())) {
                 // Message does not exist
                 runOnUiThread(() -> {
                     Toast.makeText(this, getResources().getString(R.string.tap_error_could_not_find_message), Toast.LENGTH_SHORT).show();
@@ -2055,7 +2054,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else {
                 // Scroll to message
                 runOnUiThread(() -> {
-                    rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(message));
                     rvMessageList.post(() -> {
                         if (messageLayoutManager.findFirstVisibleItemPosition() > 0) {
                             vm.setOnBottom(false);
@@ -2063,6 +2062,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             hideUnreadButton();
                             hideUnreadButtonLoading();
                         }
+                        messageAdapter.highlightMessage(message);
                     });
                 });
             }
