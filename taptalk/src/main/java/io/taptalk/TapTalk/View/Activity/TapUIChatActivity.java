@@ -2054,7 +2054,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else {
                 // Scroll to message
                 runOnUiThread(() -> {
-                    rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(message));
+                    messageLayoutManager.scrollToPositionWithOffset(messageAdapter.getItems().indexOf(message), TAPUtils.dpToPx(128));
                     rvMessageList.post(() -> {
                         if (messageLayoutManager.findFirstVisibleItemPosition() > 0) {
                             vm.setOnBottom(false);
