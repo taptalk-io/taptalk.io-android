@@ -21,7 +21,7 @@ class TAPSwipeReplyCallback(
         context: Context,
         private val swipeReplyInterface: SwipeReplyInterface) :
         ItemTouchHelper.Callback() {
-    private val imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_pumpkin_orange)!!
+    private val imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_orange)!!
     private val drawableBackground = ContextCompat.getDrawable(context, R.drawable.tap_bg_circle_primary)!!
     private val drawableBackgroundColor = ContextCompat.getDrawable(context, R.color.tapDefaultBackgroundColor)!!
 
@@ -202,10 +202,10 @@ class TAPSwipeReplyCallback(
         drawableBackground.draw(canvas)
 
         imageDrawable.setBounds(
-                (x - TAPUtils.dpToPx(16) * scale).toInt() - 1,
-                (y - TAPUtils.dpToPx(16) * scale).toInt() - 1,
-                (x + TAPUtils.dpToPx(16) * scale).toInt() + 1,
-                (y + TAPUtils.dpToPx(16) * scale).toInt() + 1
+                (x - TAPUtils.dpToPx(13) * scale).toInt() - 1,
+                (y - TAPUtils.dpToPx(13) * scale).toInt() - 1,
+                (x + TAPUtils.dpToPx(13) * scale).toInt() + 1,
+                (y + TAPUtils.dpToPx(13) * scale).toInt() + 1
         )
         imageDrawable.draw(canvas)
 
