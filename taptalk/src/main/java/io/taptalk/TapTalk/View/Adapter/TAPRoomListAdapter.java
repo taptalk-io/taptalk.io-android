@@ -78,7 +78,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         private final String TAG = RoomListVH.class.getSimpleName();
         private ConstraintLayout clContainer;
         private CircleImageView civAvatar;
-        private ImageView ivAvatarIcon, ivMute, ivMessageStatus, ivPersonalRoomTypingIndicator, ivGroupRoomTypingIndicator;
+        private ImageView ivAvatarIcon, ivMute, ivMessageStatus, ivPersonalRoomTypingIndicator, ivGroupRoomTypingIndicator, ivBadgeMention;
         private TextView tvAvatarLabel, tvFullName, tvLastMessage, tvLastMessageTime, tvBadgeUnread, tvGroupSenderName;
         private View vSeparator, vSeparatorFull;
 
@@ -97,6 +97,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             tvLastMessage = itemView.findViewById(R.id.tv_last_message);
             tvLastMessageTime = itemView.findViewById(R.id.tv_last_message_time);
             tvBadgeUnread = itemView.findViewById(R.id.tv_badge_unread);
+            ivBadgeMention = itemView.findViewById(R.id.iv_badge_mention);
             vSeparator = itemView.findViewById(R.id.v_separator);
             vSeparatorFull = itemView.findViewById(R.id.v_separator_full);
         }
@@ -360,6 +361,13 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             } else {
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 tvBadgeUnread.setVisibility(View.GONE);
+            }
+
+            // Show mention badge
+            if (item.getUnreadMentions() > 0) {
+                ivBadgeMention.setVisibility(View.VISIBLE);
+            } else {
+                ivBadgeMention.setVisibility(View.GONE);
             }
 
             itemView.setOnClickListener(v -> onRoomClicked(itemView, item, position));

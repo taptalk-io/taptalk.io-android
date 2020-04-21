@@ -339,7 +339,7 @@ public class TapTalk implements LifecycleObserver {
 
     public static boolean checkTapTalkInitialized() {
         if (getTapTalkInstances().isEmpty()) {
-            Log.e(TAG, ERROR_MESSAGE_INIT_TAPTALK);
+//            Log.e(TAG, ERROR_MESSAGE_INIT_TAPTALK);
             return false;
         }
         return true;
@@ -858,7 +858,7 @@ public class TapTalk implements LifecycleObserver {
                     TapUIChatActivity.class,
                     message);
         } catch (Exception e) {
-            Log.e(TAG, "onMessageReceived: ", e);
+//            Log.e(TAG, "onMessageReceived: ", e);
             e.printStackTrace();
         }
     }
@@ -1021,7 +1021,7 @@ public class TapTalk implements LifecycleObserver {
             TAPFileDownloadManager.getInstance(entry.getValue().instanceKey).getFileMessageUriFromPreference();
 
             Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-                Log.e(TAG, "App Crashing");
+//                Log.e(TAG, "App Crashing");
                 TAPChatManager.getInstance(entry.getValue().instanceKey).saveIncomingMessageAndDisconnect();
                 TAPContactManager.getInstance(entry.getValue().instanceKey).saveUserDataMapToDatabase();
                 TAPFileDownloadManager.getInstance(entry.getValue().instanceKey).saveFileProviderPathToPreference();

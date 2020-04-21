@@ -183,9 +183,9 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomList(String myID, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+    public void getRoomList(String myID, String username, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
         if (null != messageRepository)
-            messageRepository.getRoomList(myID, saveMessages, isCheckUnreadFirst, listener);
+            messageRepository.getRoomList(myID, username, saveMessages, isCheckUnreadFirst, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
@@ -195,15 +195,21 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized");
     }
 
-    public void getRoomList(String myID, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+    public void getAllUnreadMentionsFromRoom(String myID, String username, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
-            messageRepository.getRoomList(myID, isCheckUnreadFirst, listener);
+            messageRepository.getAllUnreadMentionsFromRoom(myID, username, roomID, listener);
+        else throw new IllegalStateException("Message Repository was not initialized");
+    }
+
+    public void getRoomList(String myID, String username, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+        if (null != messageRepository)
+            messageRepository.getRoomList(myID, username, isCheckUnreadFirst, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void searchAllRooms(String myID, String keyword, TAPDatabaseListener listener) {
+    public void searchAllRooms(String myID, String username, String keyword, TAPDatabaseListener listener) {
         if (null != messageRepository)
-            messageRepository.searchAllChatRooms(myID, keyword, listener);
+            messageRepository.searchAllChatRooms(myID, username, keyword, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
@@ -234,9 +240,9 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getUnreadCountPerRoom(String myID, String roomID, final TAPDatabaseListener listener) {
+    public void getUnreadCountPerRoom(String myID, String username, String roomID, final TAPDatabaseListener listener) {
         if (null != messageRepository)
-            messageRepository.getUnreadCountPerRoom(myID, roomID, listener);
+            messageRepository.getUnreadCountPerRoom(myID, username, roomID, listener);
         else throw new IllegalStateException("Message Repository was not initialized");
     }
 

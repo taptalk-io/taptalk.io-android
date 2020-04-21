@@ -12,7 +12,8 @@ public class TAPSearchChatModel {
     private TAPRoomModel room;
     private TAPMessageEntity message;
     private TAPUserModel contact;
-    private boolean isLastInSection = false;
+    private boolean isLastInSection;
+    private int roomMentionCount;
 
     public TAPSearchChatModel(Type type) {
         this.type = type;
@@ -64,5 +65,13 @@ public class TAPSearchChatModel {
 
     public void setLastInSection(boolean lastInSection) {
         isLastInSection = lastInSection;
+    }
+
+    public int getRoomMentionCount() {
+        return roomMentionCount;
+    }
+
+    public void setRoomMentionCount(int roomMentionCount) {
+        this.roomMentionCount = roomMentionCount;
     }
 }

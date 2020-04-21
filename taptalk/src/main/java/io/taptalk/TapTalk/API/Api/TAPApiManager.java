@@ -1,6 +1,5 @@
 package io.taptalk.TapTalk.API.Api;
 
-import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,6 +7,7 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
@@ -21,7 +21,6 @@ import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
-import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.AnalyticsManager;
@@ -99,7 +98,6 @@ public class TAPApiManager {
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
-//    private int isShouldRefreshToken = 0;
     private boolean isLoggedOut = false; // Flag to prevent unauthorized API call due to refresh token expired
     private boolean isRefreshTokenRunning = false;
     private String lastRefreshToken = "";
@@ -168,7 +166,15 @@ public class TAPApiManager {
     @SuppressWarnings("unchecked")
     private <T> void execute(Observable<? extends T> o, Subscriber<T> s) {
         o.compose((Observable.Transformer<T, T>) applyIOMainThreadSchedulers())
-                .flatMap((Func1<T, Observable<T>>) this::validateResponse)
+                .flatMap((Func1<T, Observable<T>>) t -> validateResponse(t, true))
+                .retryWhen(o1 -> o1.flatMap((Func1<Throwable, Observable<?>>) this::validateException))
+                .subscribe(s);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> void executeWithoutHeaders(Observable<? extends T> o, Subscriber<T> s) {
+        o.compose((Observable.Transformer<T, T>) applyIOMainThreadSchedulers())
+                .flatMap((Func1<T, Observable<T>>) t -> validateResponse(t, false))
                 .retryWhen(o1 -> o1.flatMap((Func1<Throwable, Observable<?>>) this::validateException))
                 .subscribe(s);
     }
@@ -178,28 +184,15 @@ public class TAPApiManager {
         o.compose((Observable.Transformer<T, T>) applyIOMainThreadSchedulers()).subscribe(s);
     }
 
-//    private <T> Observable validateResponse(T t) {
-//        TAPBaseResponse br = (TAPBaseResponse) t;
-//
-//        int code = br.getStatus();
-//        if (BuildConfig.DEBUG && code != RESPONSE_SUCCESS)
-//            Log.d(TAG, "validateResponse: XX HAS ERROR XX: __error_code:" + code);
-//
-//        if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG)
-//            Log.d(TAG, "validateResponse: √√ NO ERROR √√");
-//        else if (code == UNAUTHORIZED && 0 < isShouldRefreshToken && !isLogout) {
-//            return raiseApiRefreshTokenRunningException();
-//        } else if (code == UNAUTHORIZED && !isLogout) {
-//            isShouldRefreshToken++;
-//            return raiseApiSessionExpiredException(br);
-//        }
-//        isShouldRefreshToken = 0;
-//        return Observable.just(t);
-//    }
-
-    private <T> Observable validateResponse(T t) {
+    private <T> Observable validateResponse(T t, boolean withHeaders) {
         TAPBaseResponse br = (TAPBaseResponse) t;
         int code = br.getStatus();
+
+        if (code == RESPONSE_SUCCESS && withHeaders && isRefreshTokenRunning) {
+            isRefreshTokenRunning = false;
+            Log.e("-->", "Refresh Token is not Running");
+        }
+
         if (code == RESPONSE_SUCCESS && BuildConfig.DEBUG) {
             Log.d(TAG, "√√ API CALL SUCCESS √√");
             return Observable.just(t);
@@ -230,19 +223,11 @@ public class TAPApiManager {
         return Observable.just(t);
     }
 
-//    private Observable validateException(Throwable t) {
-//        Log.e(TAG, "call: retryWhen(), cause: " + t.getMessage());
-//        return (t instanceof TAPApiSessionExpiredException && 1 == isShouldRefreshToken && !isLogout) ? refreshToken() :
-//                ((t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && 1 < isShouldRefreshToken)) && !isLogout) ?
-//                        Observable.just(Boolean.TRUE) : Observable.error(t);
-//    }
-
     private Observable validateException(Throwable t) {
         if (t instanceof TAPApiSessionExpiredException && !isRefreshTokenRunning && !isLoggedOut) {
             return refreshToken();
         } else if (t instanceof TAPApiRefreshTokenRunningException || (t instanceof TAPApiSessionExpiredException && isRefreshTokenRunning) && !isLoggedOut) {
-            SystemClock.sleep(1000);
-            return Observable.just(Boolean.TRUE);
+            return Observable.just(Boolean.TRUE).delay(1000, TimeUnit.MILLISECONDS);
         } else {
             return Observable.error(t);
         }
@@ -294,11 +279,11 @@ public class TAPApiManager {
     public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
         lastRefreshToken = TAPDataManager.getInstance(instanceKey).getRefreshToken();
         isRefreshTokenRunning = true;
-        return hpRefresh.refreshAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getRefreshToken())
+        Log.e("-->", "Refresh Token is Running");
+        return hpRefresh.refreshAccessToken(String.format("Bearer %s", TAPDataManager.getInstance(instanceKey).getRefreshToken()))
                 .compose(this.applyIOMainThreadSchedulers())
                 .doOnNext(response -> {
                     if (RESPONSE_SUCCESS == response.getStatus()) {
-                        isRefreshTokenRunning = false;
                         updateSession(response);
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
                     } else if (UNAUTHORIZED == response.getStatus() &&
@@ -485,7 +470,9 @@ public class TAPApiManager {
         TAPTalkDownloadApiService tapDownload;
         if (null != fileSize) {
             tapDownload = TAPApiConnection.getInstance(instanceKey).getTapDownload(calculateTimeOutTimeWithFileSize(fileSize.longValue()));
-        } else tapDownload = TAPApiConnection.getInstance(instanceKey).getTapDownload(30 * 60 * 1000);
+        } else {
+            tapDownload = TAPApiConnection.getInstance(instanceKey).getTapDownload(30 * 60 * 1000);
+        }
         TAPFileDownloadRequest request = new TAPFileDownloadRequest(roomID, fileID);
         executeWithoutBaseResponse(tapDownload.downloadFile(request, request.getRoomID(), localID), subscriber);
     }
@@ -565,6 +552,6 @@ public class TAPApiManager {
     }
 
     public void getProjectConfig(Subscriber<TAPBaseResponse<TapConfigs>> subscriber) {
-        execute(homingPigeon.getProjectConfig(), subscriber);
+        executeWithoutBaseResponse(homingPigeon.getProjectConfig(), subscriber);
     }
 }

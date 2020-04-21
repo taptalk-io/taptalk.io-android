@@ -42,6 +42,8 @@ public class TAPAttachmentModel {
     public static final int LONG_PRESS_SAVE_VIDEO_GALLERY = 209;
     public static final int LONG_PRESS_SAVE_DOWNLOADS = 210;
     public static final int LONG_PRESS_DELETE = 211;
+    public static final int LONG_PRESS_VIEW_PROFILE = 212;
+    public static final int LONG_PRESS_SEND_MESSAGE = 213;
 
     // Check icon color in Attachment Adapter when adding more IDs
 
@@ -465,6 +467,33 @@ public class TAPAttachmentModel {
         int[] ids = {
                 LONG_PRESS_CALL,
                 LONG_PRESS_SEND_SMS,
+                LONG_PRESS_COPY
+        };
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.length;
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]));
+        }
+        return attachMenus;
+    }
+
+    public static List<TAPAttachmentModel> createMentionLongPressMenu() {
+        int[] imageResIds = {
+                R.drawable.tap_ic_members_grey,
+                R.drawable.tap_ic_send_message_grey,
+                R.drawable.tap_ic_copy_pumpkin_orange
+        };
+
+        int[] titleResIds = {
+                R.string.tap_view_profile,
+                R.string.tap_send_message,
+                R.string.tap_copy
+        };
+
+        int[] ids = {
+                LONG_PRESS_VIEW_PROFILE,
+                LONG_PRESS_SEND_MESSAGE,
                 LONG_PRESS_COPY
         };
 

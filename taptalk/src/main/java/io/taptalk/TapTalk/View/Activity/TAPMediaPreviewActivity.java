@@ -90,7 +90,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         ivAddMoreImage = findViewById(R.id.iv_add_more_Image);
 
         thumbnailAdapter = new TAPMediaPreviewRecyclerAdapter(medias, thumbInterface);
-        pagerAdapter = new TAPMediaPreviewPagerAdapter(this, medias);
+        pagerAdapter = new TAPMediaPreviewPagerAdapter(this, instanceKey, medias);
         vpImagePreview.setAdapter(pagerAdapter);
         vpImagePreview.addOnPageChangeListener(vpPreviewListener);
 
