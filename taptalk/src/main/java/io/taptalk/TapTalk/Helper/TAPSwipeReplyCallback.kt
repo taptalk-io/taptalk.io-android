@@ -2,12 +2,14 @@ package io.taptalk.TapTalk.Helper
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.os.Handler
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
@@ -18,11 +20,11 @@ import kotlin.math.abs
 import kotlin.math.min
 
 class TAPSwipeReplyCallback(
-        context: Context,
+        private val context: Context,
         private val swipeReplyInterface: SwipeReplyInterface) :
         ItemTouchHelper.Callback() {
     private val imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_pumpkin_orange)!!
-    private val drawableBackground = ContextCompat.getDrawable(context, R.drawable.tap_bg_circle_primary)!!
+    private val drawableBackground = ContextCompat.getDrawable(context, R.drawable.tap_bg_circle_primary_icon)!!
     private val drawableBackgroundColor = ContextCompat.getDrawable(context, R.color.tapDefaultBackgroundColor)!!
 
     private lateinit var itemView: View
@@ -212,5 +214,7 @@ class TAPSwipeReplyCallback(
         drawableBackgroundColor.alpha = 255
         drawableBackground.alpha = 51
         imageDrawable.alpha = 255
+        DrawableCompat.setTintList(imageDrawable, ColorStateList.valueOf(
+                ContextCompat.getColor(context, R.color.tapColorPrimaryIcon)))
     }
 }

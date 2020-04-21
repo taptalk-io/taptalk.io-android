@@ -23,8 +23,11 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -2257,6 +2260,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
                 checkAndSearchUserMentionList();
+                checkAndHighlightTypedText();
             } else if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0) {
                 // Hide chat menu but keep send button disabled if trimmed text is empty
@@ -2401,6 +2405,73 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rvUserMentionList.post(() -> etChat.requestFocus());
             });
         }
+    }
+
+    private void checkAndHighlightTypedText() {
+        String s = etChat.getText().toString();
+        // Check for mentions
+        if (vm.getRoom().getRoomType() == TYPE_PERSONAL || !s.contains("@")) {
+            return;
+        }
+        int cursorIndex = etChat.getSelectionStart();
+        List<TAPUserModel> groupParticipants = null;
+        if (null != TAPChatManager.getInstance(instanceKey).getActiveRoom()) {
+            groupParticipants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
+        }
+        if (null == groupParticipants || groupParticipants.size() < 1) {
+            return;
+        }
+        SpannableString span = new SpannableString(s);
+        int mentionStartIndex = -1;
+        int length = s.length();
+        for (int i = 0; i < length; i++) {
+            if (mentionStartIndex == -1 && s.charAt(i) == '@') {
+                // Set index of @
+                mentionStartIndex = i;
+            } else {
+                boolean charMatchesUsernameFormat = s.substring(i, i + 1).matches("[a-zA-Z0-9._]*");
+                if (mentionStartIndex != -1 && i == (length - 1)) {
+                    // End of string
+                    int mentionEndIndex = charMatchesUsernameFormat ? (i + 1) : i;
+                    String username = s.substring(mentionStartIndex + 1, mentionEndIndex);
+                    for (TAPUserModel participant : groupParticipants) {
+                        if (null != participant.getUsername() && participant.getUsername().equals(username)) {
+                            // Save temporary mentioned user data
+                            TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, participant);
+
+                            // Set span for textView
+                            span.setSpan(new ForegroundColorSpan(
+                                            ContextCompat.getColor(TapTalk.appContext,
+                                                    R.color.tapLeftBubbleMessageBodyURLColor)),
+                                    mentionStartIndex, mentionEndIndex, 0);
+                            break;
+                        }
+                    }
+                    mentionStartIndex = -1;
+                } else if (mentionStartIndex != -1 && !charMatchesUsernameFormat) {
+                    // End index for mentioned username
+                    String username = s.substring(mentionStartIndex + 1, i);
+                    for (TAPUserModel participant : groupParticipants) {
+                        if (null != participant.getUsername() && participant.getUsername().equals(username)) {
+                            // Save temporary mentioned user data
+                            TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, participant);
+
+                            // Set span
+                            span.setSpan(new ForegroundColorSpan(
+                                            ContextCompat.getColor(TapTalk.appContext,
+                                                    R.color.tapLeftBubbleMessageBodyURLColor)),
+                                    mentionStartIndex, i, 0);
+                            break;
+                        }
+                    }
+                    mentionStartIndex = -1;
+                }
+            }
+        }
+        etChat.removeTextChangedListener(chatWatcher);
+        etChat.setText(span);
+        etChat.setSelection(cursorIndex);
+        etChat.addTextChangedListener(chatWatcher);
     }
 
     private View.OnFocusChangeListener chatFocusChangeListener = new View.OnFocusChangeListener() {
