@@ -1560,6 +1560,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onSendMessageSelected(TAPUserModel user) {
             TapUI.getInstance().openChatRoomWithOtherUser(TapUIChatActivity.this, user);
+            rvCustomKeyboard.setVisibility(View.GONE);
+            onBackPressed();
         }
     };
 
@@ -3520,6 +3522,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 public void onDeleteFinished() {
                     super.onDeleteFinished();
                     vm.setDeleteGroup(true);
+                    rvCustomKeyboard.setVisibility(View.GONE);
                     onBackPressed();
                 }
             });
