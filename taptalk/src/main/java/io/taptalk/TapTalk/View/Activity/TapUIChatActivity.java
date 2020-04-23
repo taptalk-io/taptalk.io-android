@@ -1323,8 +1323,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void scrollToBottom() {
-        rvMessageList.scrollToPosition(0);
         ivToBottom.setVisibility(View.GONE);
+        rvMessageList.scrollToPosition(0);
         vm.setOnBottom(true);
         vm.clearUnreadMessages();
         vm.clearUnreadMentions();
@@ -1897,7 +1897,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
             etChat.setText("");
             messageAdapter.shrinkExpandedBubble();
             TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
-            rvMessageList.scrollToPosition(0);
+            // Updated 2020/04/23
+            //rvMessageList.scrollToPosition(0);
+            rvMessageList.post(this::scrollToBottom);
         } else {
             TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
             ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
