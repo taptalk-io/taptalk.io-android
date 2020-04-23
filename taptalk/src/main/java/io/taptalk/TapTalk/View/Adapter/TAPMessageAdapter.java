@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
@@ -10,9 +11,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -48,6 +51,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -147,16 +151,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private TAPChatListener chatListener;
     private TAPMessageModel expandedBubble, highlightedMessage;
     private TAPUserModel myUserModel;
+    private Map<String, TAPUserModel> roomParticipantsByUsername;
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
     private RequestManager glide;
     private float initialTranslationX = TAPUtils.dpToPx(-22);
     private long defaultAnimationTime = 200L;
 
-    public TAPMessageAdapter(String instanceKey, RequestManager glide, TAPChatListener chatListener) {
+    public TAPMessageAdapter(String instanceKey, RequestManager glide, TAPChatListener chatListener, Map<String, TAPUserModel> roomParticipantsByUsername) {
         myUserModel = TAPChatManager.getInstance(instanceKey).getActiveUser();
         this.instanceKey = instanceKey;
         this.chatListener = chatListener;
         this.glide = glide;
+        this.roomParticipantsByUsername = roomParticipantsByUsername;
     }
 
     @NonNull
@@ -341,7 +347,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             //tvMessageBody.setText(item.getBody());
-            setMessageBodyText(tvMessageBody, item, item.getBody());
+            setMessageBodyText(itemView.getContext(), tvMessageBody, item, item.getBody());
 
             if (isMessageFromMySelf(item)) {
                 if (null != item.getFailedSend() && item.getFailedSend()) {
@@ -566,7 +572,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setBottomRightRadius(0);
                 tvMessageBody.setVisibility(View.VISIBLE);
                 //tvMessageBody.setText(imageCaption);
-                setMessageBodyText(tvMessageBody, item, imageCaption);
+                setMessageBodyText(itemView.getContext(), tvMessageBody, item, imageCaption);
                 setLinkDetection(itemView.getContext(), tvMessageBody);
             } else {
                 rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(9));
@@ -844,7 +850,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivVideoThumbnail.setBottomRightRadius(0);
                 tvMessageBody.setVisibility(View.VISIBLE);
                 //tvMessageBody.setText(videoCaption);
-                setMessageBodyText(tvMessageBody, item, videoCaption);
+                setMessageBodyText(itemView.getContext(), tvMessageBody, item, videoCaption);
                 setLinkDetection(itemView.getContext(), tvMessageBody);
             } else {
                 rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(9));
@@ -1755,10 +1761,28 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void setMessageBodyText(TextView tvMessageBody, TAPMessageModel item, String body) {
-        String spaceAppend;
-        if (null != item.getSending() && item.getSending()) {
+    private void setMessageBodyText(Context context, TextView tvMessageBody, TAPMessageModel item, String body) {
+        String originalText, spaceAppend;
+        if (item.getType() == TYPE_TEXT) {
+            originalText = item.getBody();
+        } else if ((item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO) && null != item.getData()) {
+            originalText = (String) item.getData().get(CAPTION);
+        } else if (item.getType() == TYPE_LOCATION && null != item.getData()) {
+            originalText = (String) item.getData().get(ADDRESS);
+        } else {
+            return;
+        }
+        if (null == originalText) {
+            return;
+        }
+        if ((null != item.getSending() && item.getSending()) ||
+                (item.getType() != TYPE_TEXT &&
+                        item.getType() != TYPE_IMAGE &&
+                        item.getType() != TYPE_VIDEO &&
+                        item.getType() != TYPE_LOCATION)) {
             spaceAppend = "";
+        } else if (23 < originalText.length() && originalText.length() < 42) {
+            spaceAppend = "\n";
         } else if (isMessageFromMySelf(item)) {
             spaceAppend = RIGHT_BUBBLE_SPACE_APPEND;
         } else {
@@ -1772,93 +1796,48 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageBody.setText(String.format("%s%s", body, spaceAppend));
         }
         // FIXME: 23 Apr 2020 DELAYED LINE CHANGE CAUSES SCROLL OFFSET
-        if (null == item.getSending() || !item.getSending()) {
-            tvMessageBody.post(() -> {
-                if (tvMessageBody.getLineCount() == 1 && tvMessageBody.getText().length() > 35) {
-                    if (null != span) {
-                        tvMessageBody.setText(generateMentionSpan(item, body, "\n"));
-                    } else {
-                        tvMessageBody.setText(String.format("%s%s", body, "\n"));
-                    }
-                }
-            });
-        }
+//        if (null == item.getSending() || !item.getSending()) {
+//            tvMessageBody.post(() -> {
+//                if (tvMessageBody.getLineCount() == 1 && tvMessageBody.getText().length() > 35) {
+//                    if (null != span) {
+//                        tvMessageBody.setText(generateMentionSpan(item, body, "\n"));
+//                    } else {
+//                        tvMessageBody.setText(String.format("%s%s", body, "\n"));
+//                    }
+//                }
+//            });
+//        }
     }
 
     private SpannableString generateMentionSpan(TAPMessageModel item, String body, String spaceAppend) {
-        SpannableString span = null;
-        if (item.getRoom().getRoomType() != TYPE_PERSONAL && body.contains("@")) {
-            List<TAPUserModel> groupParticipants = null;
-            if (null != TAPChatManager.getInstance(instanceKey).getActiveRoom()) {
-                groupParticipants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
-            }
-            if (null == groupParticipants || groupParticipants.size() < 1) {
-                return null;
-            }
-
-            span = new SpannableString(body + spaceAppend);
-            int mentionStartIndex = -1;
-            int length = body.length();
-            for (int i = 0; i < length; i++) {
-                if (mentionStartIndex == -1 && body.charAt(i) == '@') {
-                    // Set index of @
-                    mentionStartIndex = i;
-                } else {
-                    boolean charMatchesUsernameFormat = body.substring(i, i + 1).matches("[a-zA-Z0-9._]*");
-                    if (mentionStartIndex != -1 && i == (length - 1)) {
-                        // End of string
-                        int mentionEndIndex = charMatchesUsernameFormat ? (i + 1) : i;
-                        String username = body.substring(mentionStartIndex + 1, mentionEndIndex);
-                        for (TAPUserModel participant : groupParticipants) {
-                            if (null != participant.getUsername() && participant.getUsername().equals(username)) {
-                                // Save temporary mentioned user data
-                                TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, participant);
-
-                                // Set span for textView
-                                span.setSpan(new ForegroundColorSpan(
-                                                ContextCompat.getColor(TapTalk.appContext,
-                                                        isMessageFromMySelf(item) ?
-                                                                R.color.tapLeftBubbleMessageBodyURLColor :
-                                                                R.color.tapRightBubbleMessageBodyURLColor)),
-                                        mentionStartIndex, mentionEndIndex, 0);
-                                span.setSpan(new ClickableSpan() {
-                                    @Override
-                                    public void onClick(@NonNull View view) {
-                                        chatListener.onMentionClicked(item, participant);
-                                    }
-                                }, mentionStartIndex, mentionEndIndex, 0);
-                                break;
-                            }
+        if (roomParticipantsByUsername.isEmpty() || item.getMentionIndexes().isEmpty()) {
+            return null;
+        }
+        SpannableString span = new SpannableString(body + spaceAppend);
+        int i = 1;
+        try {
+            List<Integer> indexes = item.getMentionIndexes();
+            while (i < indexes.size()) {
+                String username = body.substring(indexes.get(i - 1) + 1, indexes.get(i));
+                TAPUserModel user = roomParticipantsByUsername.get(username);
+                if (null != user) {
+                    span.setSpan(new ForegroundColorSpan(
+                                    ContextCompat.getColor(TapTalk.appContext,
+                                            isMessageFromMySelf(item) ?
+                                                    R.color.tapLeftBubbleMessageBodyURLColor :
+                                                    R.color.tapRightBubbleMessageBodyURLColor)),
+                            indexes.get(i - 1), indexes.get(i), 0);
+                    span.setSpan(new ClickableSpan() {
+                        @Override
+                        public void onClick(@NonNull View view) {
+                            chatListener.onMentionClicked(item, user);
                         }
-                        mentionStartIndex = -1;
-                    } else if (mentionStartIndex != -1 && !charMatchesUsernameFormat) {
-                        // End index for mentioned username
-                        String username = body.substring(mentionStartIndex + 1, i);
-                        for (TAPUserModel participant : groupParticipants) {
-                            if (null != participant.getUsername() && participant.getUsername().equals(username)) {
-                                // Save temporary mentioned user data
-                                TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, participant);
-
-                                // Set span for textView
-                                span.setSpan(new ForegroundColorSpan(
-                                                ContextCompat.getColor(TapTalk.appContext,
-                                                        isMessageFromMySelf(item) ?
-                                                                R.color.tapLeftBubbleMessageBodyURLColor :
-                                                                R.color.tapRightBubbleMessageBodyURLColor)),
-                                        mentionStartIndex, i, 0);
-                                span.setSpan(new ClickableSpan() {
-                                    @Override
-                                    public void onClick(@NonNull View view) {
-                                        chatListener.onMentionClicked(item, participant);
-                                    }
-                                }, mentionStartIndex, i, 0);
-                                break;
-                            }
-                        }
-                        mentionStartIndex = -1;
-                    }
+                    }, indexes.get(i - 1), indexes.get(i), 0);
                 }
+                i += 2;
             }
+        } catch (IndexOutOfBoundsException e) {
+            Log.e(TAG, "generateMentionSpan exception: " + TAPUtils.toJsonString(item.getMentionIndexes()));
         }
         return span;
     }

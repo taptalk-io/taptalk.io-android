@@ -26,9 +26,7 @@ import android.text.Html;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -756,7 +754,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Initialize chat message RecyclerView
-        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener);
+        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm.getRoomParticipantsByUsername());
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true) {
             @Override
@@ -825,6 +823,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
             tvRoomStatus.setText(String.format("%d Members", vm.getRoom().getGroupParticipants().size()));
+            new Thread(() -> {
+                for (TAPUserModel user : vm.getRoom().getGroupParticipants()) {
+                    vm.addRoomParticipantByUsername(user);
+                }
+            }).start();
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
