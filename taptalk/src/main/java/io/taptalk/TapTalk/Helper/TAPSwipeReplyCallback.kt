@@ -13,6 +13,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPBaseChatViewHolder
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
@@ -41,12 +42,22 @@ class TAPSwipeReplyCallback(
     }
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-        if (viewHolder is TAPMessageAdapter.DeletedVH ||
-                (viewHolder is TAPBaseChatViewHolder &&
-                        null != viewHolder.item.failedSend &&
-                        viewHolder.item.failedSend!!)) {
-            // Disable swipe for deleted messages & messages that failed to send
+        if (viewHolder is TAPMessageAdapter.DeletedVH) {
+            // Disable swipe for deleted messages
             return 0
+        }
+        if (viewHolder is TAPBaseChatViewHolder) {
+            if (null != viewHolder.item.failedSend && viewHolder.item.failedSend!!) {
+                // Disable swipe for messages that failed to send
+                return 0
+            } else if (viewHolder.item.type != TYPE_TEXT &&
+                    viewHolder.item.type != TYPE_IMAGE &&
+                    viewHolder.item.type != TYPE_VIDEO &&
+                    viewHolder.item.type != TYPE_FILE &&
+                    viewHolder.item.type != TYPE_LOCATION) {
+                // Disable swipe for custom message types
+                return 0
+            }
         }
         itemView = viewHolder.itemView
         return makeMovementFlags(ACTION_STATE_IDLE, RIGHT)
