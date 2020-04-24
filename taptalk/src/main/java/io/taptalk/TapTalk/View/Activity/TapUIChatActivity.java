@@ -2727,6 +2727,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
                 case LongPressMention:
                     if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        // Save temporary mentioned user data
+                        String linkifyResult = intent.getStringExtra(URL_MESSAGE);
+                        if (null == linkifyResult || linkifyResult.isEmpty()) {
+                            return;
+                        }
+                        String username = linkifyResult.substring(1);
+                        TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, vm.getRoomParticipantsByUsername().get(username));
                         TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(MENTION_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         mentionBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);

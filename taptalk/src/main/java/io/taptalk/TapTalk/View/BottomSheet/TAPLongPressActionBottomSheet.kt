@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
+import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Model.TAPAttachmentModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter
@@ -132,8 +133,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                         urlMessage, linkifyResult, bottomSheetListener, onClickListener)
             }
             LongPressType.MENTION_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createMentionLongPressMenu(),
-                        urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                longPressAdapter = if (linkifyResult.substring(1) == TAPChatManager.getInstance(instanceKey).activeUser.username) {
+                    TAPAttachmentAdapter(TAPAttachmentModel.createCopyLongPressMenu(),
+                            urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                } else {
+                    TAPAttachmentAdapter(TAPAttachmentModel.createMentionLongPressMenu(),
+                            urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                }
             }
         }
         rv_long_press.adapter = longPressAdapter

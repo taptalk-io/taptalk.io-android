@@ -504,4 +504,13 @@ public class TAPAttachmentModel {
         }
         return attachMenus;
     }
+
+    public static List<TAPAttachmentModel> createCopyLongPressMenu() {
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        attachMenus.add(new TAPAttachmentModel(
+                R.drawable.tap_ic_copy_orange,
+                R.string.tap_copy,
+                LONG_PRESS_COPY));
+        return attachMenus;
+    }
 }
