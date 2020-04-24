@@ -25,10 +25,12 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TAPMediaPreviewPagerAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMediaPreviewRecyclerAdapter;
 import io.taptalk.TapTalk.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
@@ -46,6 +48,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
     private ImageView ivAddMoreImage;
     private TAPMediaPreviewRecyclerAdapter thumbnailAdapter;
     private TAPMediaPreviewPagerAdapter pagerAdapter;
+    private ArrayList<TAPUserModel> roomParticipants;
 
     // Intent
     private ArrayList<TAPMediaPreviewModel> medias, errorMedias;
@@ -56,11 +59,13 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
     public static void start(
             Activity context,
             String instanceKey,
-            ArrayList<TAPMediaPreviewModel> mediaPreviews
+            ArrayList<TAPMediaPreviewModel> mediaPreviews,
+            ArrayList<TAPUserModel> roomParticipantsByUsername
     ) {
         Intent intent = new Intent(context, TAPMediaPreviewActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         intent.putExtra(MEDIA_PREVIEWS, mediaPreviews);
+        intent.putExtra(GROUP_MEMBERS, roomParticipantsByUsername);
         context.startActivityForResult(intent, SEND_MEDIA_FROM_PREVIEW);
         context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
     }
@@ -75,6 +80,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
 
     private void receiveIntent() {
         medias = getIntent().getParcelableArrayListExtra(MEDIA_PREVIEWS);
+        roomParticipants = getIntent().getParcelableArrayListExtra(GROUP_MEMBERS);
 
         if (null == medias) {
             medias = new ArrayList<>();
@@ -90,7 +96,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
         ivAddMoreImage = findViewById(R.id.iv_add_more_Image);
 
         thumbnailAdapter = new TAPMediaPreviewRecyclerAdapter(medias, thumbInterface);
-        pagerAdapter = new TAPMediaPreviewPagerAdapter(this, instanceKey, medias);
+        pagerAdapter = new TAPMediaPreviewPagerAdapter(this, instanceKey, medias, roomParticipants);
         vpImagePreview.setAdapter(pagerAdapter);
         vpImagePreview.addOnPageChangeListener(vpPreviewListener);
 

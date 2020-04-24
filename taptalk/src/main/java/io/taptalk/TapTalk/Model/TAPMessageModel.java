@@ -233,13 +233,13 @@ public class TAPMessageModel implements Parcelable {
                     mentionIndexes.add(i);
                     startIndexAdded = true;
                 } else {
-                    boolean charIsSpace = originalText.substring(i, i + 1).equals(" ") ||
-                            originalText.substring(i, i + 1).equals("\n");
+                    boolean endOfMention = originalText.charAt(i) == ' ' ||
+                            originalText.charAt(i) == '\n';
                     if (i == (length - 1) && startIndexAdded) {
                         // End of string (mention end index)
-                        mentionIndexes.add(charIsSpace ? i : (i + 1));
+                        mentionIndexes.add(endOfMention ? i : (i + 1));
                         startIndexAdded = false;
-                    } else if (charIsSpace && startIndexAdded) {
+                    } else if (endOfMention && startIndexAdded) {
                         // End index for mentioned username
                         mentionIndexes.add(i);
                         startIndexAdded = false;

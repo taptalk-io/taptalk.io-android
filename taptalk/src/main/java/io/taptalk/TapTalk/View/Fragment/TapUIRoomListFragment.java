@@ -596,9 +596,9 @@ public class TapUIRoomListFragment extends Fragment {
                 newRoomList.setUnreadCount(1);
             }
 
-            if (TAPUtils.isActiveUserMentioned(roomList.getLastMessage(),
+            if (TAPUtils.isActiveUserMentioned(newRoomList.getLastMessage(),
                     TAPChatManager.getInstance(instanceKey).getActiveUser())) {
-                roomList.setUnreadMentions(1);
+                newRoomList.setUnreadMentions(1);
             }
 
             vm.addRoomPointer(newRoomList);
