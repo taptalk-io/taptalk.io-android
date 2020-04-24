@@ -227,13 +227,11 @@ public class TAPMessageModel implements Parcelable {
         if (getRoom().getRoomType() != TYPE_PERSONAL && originalText.contains("@")) {
             int length = originalText.length();
             boolean startIndexAdded = false;
-            Log.e("MessageModel", "updateMentionIndexes: " + originalText);
             for (int i = 0; i < length; i++) {
                 if (originalText.charAt(i) == '@' && !startIndexAdded) {
                     // Set index of @ (mention start index)
                     mentionIndexes.add(i);
                     startIndexAdded = true;
-                    Log.e("MessageModel", "updateMentionIndexes: add start index " + i);
                 } else {
                     boolean charIsSpace = originalText.substring(i, i + 1).equals(" ") ||
                             originalText.substring(i, i + 1).equals("\n");
@@ -241,12 +239,10 @@ public class TAPMessageModel implements Parcelable {
                         // End of string (mention end index)
                         mentionIndexes.add(charIsSpace ? i : (i + 1));
                         startIndexAdded = false;
-                        Log.e("MessageModel", "updateMentionIndexes: add end index " + (charIsSpace ? i : (i + 1)));
                     } else if (charIsSpace && startIndexAdded) {
                         // End index for mentioned username
                         mentionIndexes.add(i);
                         startIndexAdded = false;
-                        Log.e("MessageModel", "updateMentionIndexes: add end index " + i);
                     }
                 }
             }

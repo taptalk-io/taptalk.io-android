@@ -347,7 +347,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             //tvMessageBody.setText(item.getBody());
-            setMessageBodyText(itemView.getContext(), tvMessageBody, item, item.getBody());
+            setMessageBodyText(tvMessageBody, item, item.getBody());
 
             if (isMessageFromMySelf(item)) {
                 if (null != item.getFailedSend() && item.getFailedSend()) {
@@ -572,7 +572,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setBottomRightRadius(0);
                 tvMessageBody.setVisibility(View.VISIBLE);
                 //tvMessageBody.setText(imageCaption);
-                setMessageBodyText(itemView.getContext(), tvMessageBody, item, imageCaption);
+                setMessageBodyText(tvMessageBody, item, imageCaption);
                 setLinkDetection(itemView.getContext(), tvMessageBody);
             } else {
                 rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(9));
@@ -850,7 +850,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivVideoThumbnail.setBottomRightRadius(0);
                 tvMessageBody.setVisibility(View.VISIBLE);
                 //tvMessageBody.setText(videoCaption);
-                setMessageBodyText(itemView.getContext(), tvMessageBody, item, videoCaption);
+                setMessageBodyText(tvMessageBody, item, videoCaption);
                 setLinkDetection(itemView.getContext(), tvMessageBody);
             } else {
                 rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(9));
@@ -1761,7 +1761,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void setMessageBodyText(Context context, TextView tvMessageBody, TAPMessageModel item, String body) {
+    private void setMessageBodyText(TextView tvMessageBody, TAPMessageModel item, String body) {
         String originalText, spaceAppend;
         if (item.getType() == TYPE_TEXT) {
             originalText = item.getBody();
@@ -1781,8 +1781,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         item.getType() != TYPE_VIDEO &&
                         item.getType() != TYPE_LOCATION)) {
             spaceAppend = "";
-        } else if (23 < originalText.length() && originalText.length() < 42) {
-            spaceAppend = "\n";
         } else if (isMessageFromMySelf(item)) {
             spaceAppend = RIGHT_BUBBLE_SPACE_APPEND;
         } else {
@@ -1795,18 +1793,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         } else {
             tvMessageBody.setText(String.format("%s%s", body, spaceAppend));
         }
-        // FIXME: 23 Apr 2020 DELAYED LINE CHANGE CAUSES SCROLL OFFSET
-//        if (null == item.getSending() || !item.getSending()) {
-//            tvMessageBody.post(() -> {
-//                if (tvMessageBody.getLineCount() == 1 && tvMessageBody.getText().length() > 35) {
-//                    if (null != span) {
-//                        tvMessageBody.setText(generateMentionSpan(item, body, "\n"));
-//                    } else {
-//                        tvMessageBody.setText(String.format("%s%s", body, "\n"));
-//                    }
-//                }
-//            });
-//        }
     }
 
     private SpannableString generateMentionSpan(TAPMessageModel item, String body, String spaceAppend) {
@@ -1815,29 +1801,25 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
         SpannableString span = new SpannableString(body + spaceAppend);
         int i = 1;
-        try {
-            List<Integer> indexes = item.getMentionIndexes();
-            while (i < indexes.size()) {
-                String username = body.substring(indexes.get(i - 1) + 1, indexes.get(i));
-                TAPUserModel user = roomParticipantsByUsername.get(username);
-                if (null != user) {
-                    span.setSpan(new ForegroundColorSpan(
-                                    ContextCompat.getColor(TapTalk.appContext,
-                                            isMessageFromMySelf(item) ?
-                                                    R.color.tapLeftBubbleMessageBodyURLColor :
-                                                    R.color.tapRightBubbleMessageBodyURLColor)),
-                            indexes.get(i - 1), indexes.get(i), 0);
-                    span.setSpan(new ClickableSpan() {
-                        @Override
-                        public void onClick(@NonNull View view) {
-                            chatListener.onMentionClicked(item, user);
-                        }
-                    }, indexes.get(i - 1), indexes.get(i), 0);
-                }
-                i += 2;
+        List<Integer> indexes = item.getMentionIndexes();
+        while (i < indexes.size()) {
+            String username = body.substring(indexes.get(i - 1) + 1, indexes.get(i));
+            TAPUserModel user = roomParticipantsByUsername.get(username);
+            if (null != user) {
+                span.setSpan(new ForegroundColorSpan(
+                                ContextCompat.getColor(TapTalk.appContext,
+                                        isMessageFromMySelf(item) ?
+                                                R.color.tapLeftBubbleMessageBodyURLColor :
+                                                R.color.tapRightBubbleMessageBodyURLColor)),
+                        indexes.get(i - 1), indexes.get(i), 0);
+                span.setSpan(new ClickableSpan() {
+                    @Override
+                    public void onClick(@NonNull View view) {
+                        chatListener.onMentionClicked(item, user);
+                    }
+                }, indexes.get(i - 1), indexes.get(i), 0);
             }
-        } catch (IndexOutOfBoundsException e) {
-            Log.e(TAG, "generateMentionSpan exception: " + TAPUtils.toJsonString(item.getMentionIndexes()));
+            i += 2;
         }
         return span;
     }

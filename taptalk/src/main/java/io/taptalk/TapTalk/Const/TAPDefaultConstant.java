@@ -467,6 +467,6 @@ public class TAPDefaultConstant {
     public static final String MY_COUNTRY_FLAG_URL = "kMyCountryFlagUrl";
     public static final String UNREAD_INDICATOR_LOCAL_ID = "kTAPUnreadIndicatorLocalIdentity";
     public static final String LOADING_INDICATOR_LOCAL_ID = "kTAPFetchingOlderMessagesLocalID";
-    public static final String RIGHT_BUBBLE_SPACE_APPEND = "              "; // 14
-    public static final String LEFT_BUBBLE_SPACE_APPEND = "          "; // 10
+    public static final String RIGHT_BUBBLE_SPACE_APPEND = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
+    public static final String LEFT_BUBBLE_SPACE_APPEND = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
 }

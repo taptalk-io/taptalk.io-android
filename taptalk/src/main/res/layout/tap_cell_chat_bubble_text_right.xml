@@ -102,6 +102,8 @@
                 android:layout_marginRight="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/iv_message_status"
+                app:layout_goneMarginEnd="0dp"
+                app:layout_goneMarginRight="0dp"
                 tools:text="17:05" />
 
             <ImageView
