@@ -156,7 +156,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void addRoomParticipantByUsername(TAPUserModel user) {
-        if (null == user.getUsername() || user.getUsername().isEmpty() || user.equals(myUserModel)) {
+        if (null == user.getUsername() || user.getUsername().isEmpty()) {
             return;
         }
         getRoomParticipantsByUsername().put(user.getUsername(), user);

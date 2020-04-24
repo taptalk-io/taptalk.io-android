@@ -27,6 +27,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -287,7 +288,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TAPSocketListener socketListener;
 
     // Scroll state
-    private enum STATE { WORKING, LOADED, DONE }
+    private enum STATE {WORKING, LOADED, DONE}
+
     private STATE state = STATE.WORKING;
 
     /**
@@ -317,7 +319,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     public static void start(Context context, String instanceKey, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
         if (TYPE_PERSONAL == roomModel.getRoomType() &&
                 TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(
-                TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomModel.getRoomID()))) {
+                        TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomModel.getRoomID()))) {
             // Disable opening active user's own room
             return;
         }
@@ -676,7 +678,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Updated 2020/02/10
-        if (TYPE_PERSONAL != vm.getRoom().getRoomType() && 
+        if (TYPE_PERSONAL != vm.getRoom().getRoomType() &&
                 TAPGroupManager.Companion.getInstance(instanceKey).checkIsRoomDataAvailable(vm.getRoom().getRoomID())) {
             TAPRoomModel room = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(vm.getRoom().getRoomID());
             if (null != room && null != room.getRoomName() && !room.getRoomName().isEmpty()) {
@@ -1734,6 +1736,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Show number of participants for group room
                     tvRoomStatus.setText(String.format(getString(R.string.tap_format_d_group_member_count), vm.getRoom().getGroupParticipants().size()));
                 }
+                if (null != vm.getRoom().getGroupParticipants()) {
+                    new Thread(() -> {
+                        vm.getRoomParticipantsByUsername().clear();
+                        for (TAPUserModel user : vm.getRoom().getGroupParticipants()) {
+                            vm.addRoomParticipantByUsername(user);
+                        }
+                    }).start();
+                }
             }
         })).start();
     }
@@ -1838,7 +1848,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (message.getType() != TYPE_SYSTEM_MESSAGE) {
             return;
         }
-        if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType() &&
+        if (null != vm.getRoom() && TYPE_PERSONAL != vm.getRoom().getRoomType() &&
                 (ROOM_ADD_PARTICIPANT.equals(message.getAction()) ||
                         ROOM_REMOVE_PARTICIPANT.equals(message.getAction())) &&
                 !TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
@@ -2352,6 +2362,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (keyword.isEmpty()) {
                     // Show all participants
                     List<TAPUserModel> searchResult = new ArrayList<>(vm.getRoomParticipantsByUsername().values());
+                    searchResult.remove(vm.getMyUserModel());
                     showUserMentionList(searchResult, loopIndex, cursorIndex);
                 } else {
                     // Search participants from keyword
@@ -2359,10 +2370,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     new Thread(() -> {
                         List<TAPUserModel> searchResult = new ArrayList<>();
                         for (Map.Entry<String, TAPUserModel> entry : vm.getRoomParticipantsByUsername().entrySet()) {
-                            if (entry.getValue().getName().toLowerCase().contains(keyword) ||
-                                    (null != entry.getValue().getUsername() && entry.getValue().
-                                            getUsername().toLowerCase().contains(keyword))) {
-                                // Add result if name/username matches
+                            if (null != entry.getValue().getUsername() &&
+                                    !entry.getValue().getUsername().equals(vm.getMyUserModel().getUsername()) &&
+                                    (entry.getValue().getName().toLowerCase().contains(keyword) ||
+                                            entry.getValue().getUsername().toLowerCase().contains(keyword))) {
+                                // Add result if name/username matches and not self
                                 searchResult.add(entry.getValue());
                             }
                         }
@@ -2681,7 +2693,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     fileUri = intent.getParcelableExtra(FILE_URI);
                     vm.setOpenedFileMessage(message);
                     if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
-                        if (!TAPUtils.openFile(instanceKey,TapUIChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
+                        if (!TAPUtils.openFile(instanceKey, TapUIChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
                             showDownloadFileDialog();
                         }
                     } else {

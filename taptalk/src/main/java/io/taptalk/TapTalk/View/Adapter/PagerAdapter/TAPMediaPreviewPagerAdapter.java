@@ -24,6 +24,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Helper.MaxHeightRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -170,86 +171,6 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
         return view == o;
     }
 
-//    private void checkAndSearchUserMentionList(EditText etCaption, ConstraintLayout clUserMentionList, MaxHeightRecyclerView rvUserMentionList) {
-//        String s = etCaption.getText().toString();
-//        if (!s.contains("@")) {
-//            // Return if text does not contain @
-//            hideUserMentionList(etCaption, clUserMentionList, rvUserMentionList);
-//            return;
-//        }
-//        List<TAPUserModel> groupParticipants = null;
-//        if (null != TAPChatManager.getInstance(instanceKey).getActiveRoom()) {
-//            groupParticipants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
-//        }
-//        if (null == groupParticipants || groupParticipants.size() < 1) {
-//            // Return if room participant is empty
-//            hideUserMentionList(etCaption, clUserMentionList, rvUserMentionList);
-//            return;
-//        }
-//        groupParticipants.remove(TAPChatManager.getInstance(instanceKey).getActiveUser());
-//        int cursorIndex = etCaption.getSelectionStart();
-//        int loopIndex = etCaption.getSelectionStart();
-//        while (loopIndex > 0) {
-//            // Loop text from cursor index to the left
-//            loopIndex--;
-//            char c = s.charAt(loopIndex);
-//            if (c == ' ') {
-//                // Found space before @, return
-//                hideUserMentionList(etCaption, clUserMentionList, rvUserMentionList);
-//                return;
-//            }
-//            if (c == '@') {
-//                // Found @, start searching user
-//                String keyword = s.substring(loopIndex + 1, cursorIndex).toLowerCase();
-//                List<TAPUserModel> searchResult;
-//                if (keyword.isEmpty()) {
-//                    // Show all participants
-//                    searchResult = new ArrayList<>(groupParticipants);
-//                } else {
-//                    // Search participants from keyword
-//                    searchResult = new ArrayList<>();
-//                    for (TAPUserModel user : groupParticipants) {
-//                        if (user.getName().toLowerCase().contains(keyword) ||
-//                                (null != user.getUsername() && user.getUsername().toLowerCase().contains(keyword))) {
-//                            searchResult.add(user);
-//                        }
-//                    }
-//                }
-//                if (!searchResult.isEmpty()) {
-//                    // Show search result in list
-//                    int finalLoopIndex = loopIndex;
-//                    TapUserMentionListAdapter userMentionListAdapter = new TapUserMentionListAdapter(searchResult, user -> {
-//                        // Append username to typed text
-//                        if (etCaption.getText().length() >= cursorIndex) {
-//                            etCaption.getText().replace(finalLoopIndex + 1, cursorIndex, user.getUsername() + " ");
-//                        }
-//                    });
-//                    rvUserMentionList.setMaxHeight(TAPUtils.dpToPx(160));
-//                    rvUserMentionList.setAdapter(userMentionListAdapter);
-//                    if (null == rvUserMentionList.getLayoutManager()) {
-//                        rvUserMentionList.setLayoutManager(new LinearLayoutManager(
-//                                context, LinearLayoutManager.VERTICAL, false) {
-//                            @Override
-//                            public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-//                                try {
-//                                    super.onLayoutChildren(recycler, state);
-//                                } catch (IndexOutOfBoundsException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        });
-//                    }
-//                    clUserMentionList.setVisibility(View.VISIBLE);
-//                } else {
-//                    // Result is empty
-//                    hideUserMentionList(etCaption, clUserMentionList, rvUserMentionList);
-//                }
-//                return;
-//            }
-//        }
-//        hideUserMentionList(etCaption, clUserMentionList, rvUserMentionList);
-//    }
-
     private void checkAndSearchUserMentionList(EditText etCaption, ConstraintLayout clUserMentionList, MaxHeightRecyclerView rvUserMentionList) {
         if (roomParticipants.isEmpty()) {
             hideUserMentionList(etCaption, clUserMentionList, rvUserMentionList);
@@ -278,6 +199,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                 if (keyword.isEmpty()) {
                     // Show all participants
                     List<TAPUserModel> searchResult = new ArrayList<>(roomParticipants);
+                    searchResult.remove(TAPChatManager.getInstance(instanceKey).getActiveUser());
                     showUserMentionList(searchResult, loopIndex, cursorIndex, etCaption, clUserMentionList, rvUserMentionList);
                 } else {
                     // Search participants from keyword
@@ -285,9 +207,11 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                     new Thread(() -> {
                         List<TAPUserModel> searchResult = new ArrayList<>();
                         for (TAPUserModel user : roomParticipants) {
-                            if (user.getName().toLowerCase().contains(keyword) ||
-                                    (null != user.getUsername() && user.getUsername().toLowerCase().contains(keyword))) {
-                                // Add result if name/username matches
+                            if (null != user.getUsername() &&
+                                    !user.getUsername().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUsername()) &&
+                                    (user.getName().toLowerCase().contains(keyword) ||
+                                            user.getUsername().toLowerCase().contains(keyword))) {
+                                // Add result if name/username matches and not self
                                 searchResult.add(user);
                             }
                         }
