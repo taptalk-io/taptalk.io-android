@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
@@ -10,10 +11,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -78,7 +80,6 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
-import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DELETED_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DELETED_RIGHT;
@@ -103,6 +104,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LEFT_BUBBLE_SPACE_APPEND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
@@ -127,6 +129,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RIGHT_BUBBLE_SPACE_APPEND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.CREATE_ROOM;
@@ -146,18 +149,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private static final String TAG = TAPMessageAdapter.class.getSimpleName();
     private String instanceKey = "";
     private TAPChatListener chatListener;
-    private TAPMessageModel expandedBubble;
+    private TAPMessageModel expandedBubble, highlightedMessage;
     private TAPUserModel myUserModel;
+    private Map<String, TAPUserModel> roomParticipantsByUsername;
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
     private RequestManager glide;
     private float initialTranslationX = TAPUtils.dpToPx(-22);
     private long defaultAnimationTime = 200L;
 
-    public TAPMessageAdapter(String instanceKey, RequestManager glide, TAPChatListener chatListener) {
+    public TAPMessageAdapter(String instanceKey, RequestManager glide, TAPChatListener chatListener, Map<String, TAPUserModel> roomParticipantsByUsername) {
         myUserModel = TAPChatManager.getInstance(instanceKey).getActiveUser();
         this.instanceKey = instanceKey;
         this.chatListener = chatListener;
         this.glide = glide;
+        this.roomParticipantsByUsername = roomParticipantsByUsername;
     }
 
     @NonNull
@@ -285,13 +290,26 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public class TextVH extends TAPBaseChatViewHolder {
 
-        private ConstraintLayout clContainer, clForwarded, clQuote;
+        private ConstraintLayout clContainer;
+        private ConstraintLayout clForwarded;
+        private ConstraintLayout clQuote;
         private FrameLayout flBubble;
         private CircleImageView civAvatar;
-        private ImageView ivMessageStatus, ivReply, ivSending;
+        private ImageView ivMessageStatus;
+        //private ImageView ivReply;
+        private ImageView ivSending;
         private TAPRoundedCornerImageView rcivQuoteImage;
-        private TextView tvAvatarLabel, tvUserName, tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
-        private View vQuoteBackground, vQuoteDecoration;
+        private TextView tvAvatarLabel;
+        private TextView tvUserName;
+        private TextView tvMessageBody;
+        private TextView tvMessageTimestamp;
+        private TextView tvMessageStatus;
+        private TextView tvForwardedFrom;
+        private TextView tvQuoteTitle;
+        private TextView tvQuoteContent;
+        private View vQuoteBackground;
+        private View vQuoteDecoration;
+        private View vBackgroundHighlight;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -300,21 +318,23 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clForwarded = itemView.findViewById(R.id.cl_forwarded);
             clQuote = itemView.findViewById(R.id.cl_quote);
             flBubble = itemView.findViewById(R.id.fl_bubble);
-            ivReply = itemView.findViewById(R.id.iv_reply);
+            //ivReply = itemView.findViewById(R.id.iv_reply);
             rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
-            tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvMessageTimestamp = itemView.findViewById(R.id.tv_message_timestamp);
             tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
             tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            vBackgroundHighlight = itemView.findViewById(R.id.v_background_highlight);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
                 tvUserName = itemView.findViewById(R.id.tv_user_name);
             } else {
+                tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivSending = itemView.findViewById(R.id.iv_sending);
             }
@@ -327,45 +347,61 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             //tvMessageBody.setText(item.getBody());
-            generateMessageBodySpan(tvMessageBody, item, item.getBody());
+            setMessageBodyText(tvMessageBody, item, item.getBody());
 
-            if (null != item.getFailedSend() && item.getFailedSend()) {
-                tvMessageStatus.setText(itemView.getContext().getText(R.string.tap_message_send_failed));
+            if (isMessageFromMySelf(item)) {
+                if (null != item.getFailedSend() && item.getFailedSend()) {
+                    tvMessageStatus.setVisibility(View.VISIBLE);
+                } else {
+                    tvMessageStatus.setVisibility(View.GONE);
+                }
+            }
+            if ((null != item.getSending() && item.getSending()) ||
+                    (null != item.getFailedSend() && item.getFailedSend())) {
+                tvMessageTimestamp.setVisibility(View.GONE);
+                if (isMessageFromMySelf(item)) {
+                    ivMessageStatus.setVisibility(View.GONE);
+                }
             } else {
-                tvMessageStatus.setText(item.getMessageStatusText());
+                tvMessageTimestamp.setText(item.getMessageStatusText());
+                tvMessageTimestamp.setVisibility(View.VISIBLE);
+                if (isMessageFromMySelf(item)) {
+                    ivMessageStatus.setVisibility(View.VISIBLE);
+                }
             }
 
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
+            //expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
+            checkAndAnimateHighlight(item, vBackgroundHighlight);
 
             markMessageAsRead(item, myUserModel);
             setLinkDetection(itemView.getContext(), tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
-            flBubble.setOnClickListener(v -> onBubbleClicked(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply));
-            ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+            flBubble.setOnClickListener(v -> onStatusImageClicked(item));
+            //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
         @Override
         protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveReadEmit(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
         }
 
         @Override
         protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmit(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
         }
 
         @Override
         protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
         }
 
         @Override
         protected void setMessage(TAPMessageModel message) {
-            setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
         }
     }
 
@@ -377,7 +413,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TAPRoundedCornerImageView rcivImageBody, rcivQuoteImage;
         private ImageView ivMessageStatus, ivReply, ivSending, ivButtonProgress;
         private TextView tvAvatarLabel, tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
-        private View vQuoteBackground, vQuoteDecoration;
+        private View vQuoteBackground, vQuoteDecoration, vBackgroundHighlight;
         private ProgressBar pbProgress;
 
         private Drawable thumbnail;
@@ -402,6 +438,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            vBackgroundHighlight = itemView.findViewById(R.id.v_background_highlight);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
@@ -424,6 +461,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setImageViewButtonProgress(item);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
+            checkAndAnimateHighlight(item, vBackgroundHighlight);
             setProgress(item);
             setImageData(item);
             fixBubbleMarginForGroupRoom(item, flBubble);
@@ -534,7 +572,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setBottomRightRadius(0);
                 tvMessageBody.setVisibility(View.VISIBLE);
                 //tvMessageBody.setText(imageCaption);
-                generateMessageBodySpan(tvMessageBody, item, imageCaption);
+                setMessageBodyText(tvMessageBody, item, imageCaption);
                 setLinkDetection(itemView.getContext(), tvMessageBody);
             } else {
                 rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(9));
@@ -647,22 +685,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveSentEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveReadEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void setMessage(TAPMessageModel message) {
-            setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            setMessageItemOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
     }
 
@@ -674,7 +712,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TAPRoundedCornerImageView rcivVideoThumbnail, rcivQuoteImage;
         private ImageView ivMessageStatus, ivReply, ivSending, ivButtonProgress;
         private TextView tvAvatarLabel, tvMediaInfo, tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
-        private View vQuoteBackground, vQuoteDecoration;
+        private View vQuoteBackground, vQuoteDecoration, vBackgroundHighlight;
         private ProgressBar pbProgress;
 
         private Uri videoUri;
@@ -701,6 +739,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            vBackgroundHighlight = itemView.findViewById(R.id.v_background_highlight);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
@@ -723,6 +762,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
+            checkAndAnimateHighlight(item, vBackgroundHighlight);
             setVideoProgress(item);
             fixBubbleMarginForGroupRoom(item, flBubble);
 
@@ -810,7 +850,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivVideoThumbnail.setBottomRightRadius(0);
                 tvMessageBody.setVisibility(View.VISIBLE);
                 //tvMessageBody.setText(videoCaption);
-                generateMessageBodySpan(tvMessageBody, item, videoCaption);
+                setMessageBodyText(tvMessageBody, item, videoCaption);
                 setLinkDetection(itemView.getContext(), tvMessageBody);
             } else {
                 rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(9));
@@ -971,22 +1011,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveSentEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveReadEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void setMessage(TAPMessageModel message) {
-            setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            setMessageItemOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
     }
 
@@ -998,7 +1038,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageView ivFileIcon, ivMessageStatus, ivReply, ivSending;
         private TAPRoundedCornerImageView rcivQuoteImage;
         private TextView tvAvatarLabel, tvUserName, tvFileName, tvFileInfo, tvFileInfoDummy, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
-        private View vQuoteBackground, vQuoteDecoration;
+        private View vQuoteBackground, vQuoteDecoration, vBackgroundHighlight;
         private ProgressBar pbProgress;
 
         private Uri fileUri;
@@ -1023,6 +1063,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            vBackgroundHighlight = itemView.findViewById(R.id.v_background_highlight);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_FILE_LEFT) {
@@ -1053,6 +1094,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
+            checkAndAnimateHighlight(item, vBackgroundHighlight);
             setFileProgress(item);
 
             markMessageAsRead(item, myUserModel);
@@ -1065,22 +1107,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveReadEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveSentEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void setMessage(TAPMessageModel message) {
-            setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            setMessageItemOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         private void setFileProgress(TAPMessageModel item) {
@@ -1188,7 +1230,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TAPRoundedCornerImageView rcivQuoteImage;
         private ImageView ivMessageStatus, ivReply, ivSending;
         private TextView tvAvatarLabel, tvUserName, tvMessageBody, tvMessageStatus, tvForwardedFrom, tvQuoteTitle, tvQuoteContent;
-        private View vQuoteBackground, vQuoteDecoration, vMapBorder;
+        private View vQuoteBackground, vQuoteDecoration, vMapBorder, vBackgroundHighlight;
         private MapView mapView;
 
         LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
@@ -1210,6 +1252,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             vMapBorder = itemView.findViewById(R.id.v_map_border);
+            vBackgroundHighlight = itemView.findViewById(R.id.v_background_highlight);
             mapView = itemView.findViewById(R.id.map_view);
             mapView.onCreate(new Bundle());
 
@@ -1240,6 +1283,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            checkAndAnimateHighlight(item, vBackgroundHighlight);
             fixBubbleMarginForGroupRoom(item, flBubble);
 
             if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
@@ -1294,22 +1338,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveReadEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveSentEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
         protected void setMessage(TAPMessageModel message) {
-            setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            setMessageItemOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
     }
 
@@ -1505,9 +1549,51 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void setMessageItem(TAPMessageModel item, View itemView, FrameLayout flBubble,
-                                TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
-                                @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
+    private void setMessageItem(TAPMessageModel item,
+                                View itemView,
+                                FrameLayout flBubble,
+                                @Nullable TextView tvMessageStatus,
+                                @Nullable ImageView ivMessageStatus,
+                                @Nullable ImageView ivSending) {
+        if (null != item.getFailedSend() && item.getFailedSend()) {
+            // Message failed to send
+            if (null != ivMessageStatus) {
+                ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_circle_transparent));
+                ImageViewCompat.setImageTintList(ivMessageStatus, null);
+                ivMessageStatus.setVisibility(View.VISIBLE);
+            }
+            if (null != tvMessageStatus) {
+                tvMessageStatus.setVisibility(View.VISIBLE);
+            }
+            if (null != ivSending) {
+                ivSending.setAlpha(0f);
+            }
+            flBubble.setTranslationX(0);
+            //if (null != ivReply) {
+            //    ivReply.setVisibility(View.GONE);
+            //}
+        } else if (null != item.getSending() && item.getSending()) {
+            // Message is sending
+            item.setNeedAnimateSend(true);
+            flBubble.setTranslationX(initialTranslationX);
+            if (null != ivSending) {
+                ivSending.setTranslationX(0);
+                ivSending.setTranslationY(0);
+                ivSending.setAlpha(1f);
+            }
+            if (null != ivMessageStatus) {
+                ivMessageStatus.setVisibility(View.GONE);
+            }
+            if (null != tvMessageStatus) {
+                tvMessageStatus.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    @Deprecated
+    private void setMessageItemOld(TAPMessageModel item, View itemView, FrameLayout flBubble,
+                                   TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
+                                   @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         // Message failed to send
         if (null != item.getFailedSend() && item.getFailedSend()) {
             tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
@@ -1521,9 +1607,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             flBubble.setTranslationX(0);
             tvMessageStatus.setVisibility(View.VISIBLE);
-            if (null != ivReply) {
-                ivReply.setVisibility(View.GONE);
-            }
+            //if (null != ivReply) {
+            //    ivReply.setVisibility(View.GONE);
+            //}
         }
         // Message is sending
         else if (null != item.getSending() && item.getSending()) {
@@ -1539,16 +1625,34 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != ivMessageStatus) {
                 ivMessageStatus.setVisibility(View.GONE);
             }
-            if (null != ivReply) {
-                ivReply.setVisibility(View.GONE);
-            }
+            //if (null != ivReply) {
+            //    ivReply.setVisibility(View.GONE);
+            //}
             tvMessageStatus.setVisibility(View.GONE);
         }
     }
 
-    private void receiveSentEmit(TAPMessageModel item, View itemView, FrameLayout flBubble,
-                                 TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
-                                 @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
+    private void receiveSentEmit(TAPMessageModel item,
+                                 View itemView,
+                                 FrameLayout flBubble,
+                                 @Nullable TextView tvMessageStatus,
+                                 @Nullable ImageView ivMessageStatus,
+                                 @Nullable ImageView ivSending) {
+        if (null != ivMessageStatus) {
+            ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSent)));
+            ivMessageStatus.setVisibility(View.VISIBLE);
+        }
+        if (null != tvMessageStatus) {
+            tvMessageStatus.setVisibility(View.GONE);
+        }
+        animateSend(item, flBubble, ivSending, ivMessageStatus);
+    }
+
+    @Deprecated
+    private void receiveSentEmitOld(TAPMessageModel item, View itemView, FrameLayout flBubble,
+                                    TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
+                                    @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
             ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSent)));
@@ -1560,16 +1664,82 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         } else if (null != ivReply) {
             tvMessageStatus.setVisibility(View.VISIBLE);
             tvMessageStatus.post(() -> chatListener.onLayoutLoaded(item));
-            ivReply.setVisibility(View.VISIBLE);
+            //ivReply.setVisibility(View.VISIBLE);
         }
-        animateSend(item, flBubble, ivSending, ivMessageStatus, ivReply);
+        animateSend(item, flBubble, ivSending, ivMessageStatus);
     }
 
-    private void receiveReadEmit(TAPMessageModel item, View itemView, FrameLayout flBubble,
-                                 TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
-                                 @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
+    private void receiveDeliveredEmit(View itemView,
+                                      FrameLayout flBubble,
+                                      @Nullable TextView tvMessageStatus,
+                                      @Nullable ImageView ivMessageStatus,
+                                      @Nullable ImageView ivSending) {
+        if (null != ivMessageStatus) {
+            ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDelivered)));
+            ivMessageStatus.setVisibility(View.VISIBLE);
+        }
+        if (null != tvMessageStatus) {
+            tvMessageStatus.setVisibility(View.GONE);
+        }
+        if (null != ivSending) {
+            ivSending.setAlpha(0f);
+        }
+        flBubble.setTranslationX(0);
+    }
+
+    @Deprecated
+    private void receiveDeliveredEmitOld(TAPMessageModel item, View itemView, FrameLayout flBubble,
+                                         TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
+                                         @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
+        if (null != ivMessageStatus) {
+            ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDelivered)));
+            ivMessageStatus.setVisibility(View.VISIBLE);
+        }
+        if (null != ivSending) {
+            ivSending.setAlpha(0f);
+        }
+        flBubble.setTranslationX(0);
+        tvMessageStatus.setVisibility(View.GONE);
+        // Show status text and reply button for non-text bubbles
+        if (item.getType() == TYPE_TEXT) {
+            tvMessageStatus.setVisibility(View.GONE);
+        } else if (null != ivReply) {
+            tvMessageStatus.setVisibility(View.VISIBLE);
+            //ivReply.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void receiveReadEmit(View itemView,
+                                 FrameLayout flBubble,
+                                 @Nullable TextView tvMessageStatus,
+                                 @Nullable ImageView ivMessageStatus,
+                                 @Nullable ImageView ivSending) {
         if (TapUI.getInstance(instanceKey).isReadStatusHidden()) {
-            receiveDeliveredEmit(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
+            receiveDeliveredEmit(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+            return;
+        }
+        if (null != ivMessageStatus) {
+            ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
+            ivMessageStatus.setVisibility(View.VISIBLE);
+        }
+        if (null != tvMessageStatus) {
+            tvMessageStatus.setVisibility(View.GONE);
+        }
+        if (null != ivSending) {
+            ivSending.setAlpha(0f);
+        }
+        flBubble.setTranslationX(0);
+    }
+
+    @Deprecated
+    private void receiveReadEmitOld(TAPMessageModel item, View itemView, FrameLayout flBubble,
+                                    TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
+                                    @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
+        if (TapUI.getInstance(instanceKey).isReadStatusHidden()) {
+            receiveDeliveredEmitOld(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
             return;
         }
 
@@ -1587,111 +1757,71 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageStatus.setVisibility(View.GONE);
         } else if (null != ivReply) {
             tvMessageStatus.setVisibility(View.VISIBLE);
-            ivReply.setVisibility(View.VISIBLE);
+            //ivReply.setVisibility(View.VISIBLE);
         }
     }
 
-    private void receiveDeliveredEmit(TAPMessageModel item, View itemView, FrameLayout flBubble,
-                                      TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
-                                      @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
-        if (null != ivMessageStatus) {
-            ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
-            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDelivered)));
-            ivMessageStatus.setVisibility(View.VISIBLE);
-        }
-        if (null != ivSending) {
-            ivSending.setAlpha(0f);
-        }
-        flBubble.setTranslationX(0);
-        tvMessageStatus.setVisibility(View.GONE);
-        // Show status text and reply button for non-text bubbles
+    private void setMessageBodyText(TextView tvMessageBody, TAPMessageModel item, String body) {
+        String originalText, spaceAppend;
         if (item.getType() == TYPE_TEXT) {
-            tvMessageStatus.setVisibility(View.GONE);
-        } else if (null != ivReply) {
-            tvMessageStatus.setVisibility(View.VISIBLE);
-            ivReply.setVisibility(View.VISIBLE);
+            originalText = item.getBody();
+        } else if ((item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO) && null != item.getData()) {
+            originalText = (String) item.getData().get(CAPTION);
+        } else if (item.getType() == TYPE_LOCATION && null != item.getData()) {
+            originalText = (String) item.getData().get(ADDRESS);
+        } else {
+            return;
         }
-    }
-
-    private void generateMessageBodySpan(TextView tvMessageBody, TAPMessageModel item, String body) {
+        if (null == originalText) {
+            return;
+        }
+        if ((null != item.getSending() && item.getSending()) ||
+                (item.getType() != TYPE_TEXT &&
+                        item.getType() != TYPE_IMAGE &&
+                        item.getType() != TYPE_VIDEO &&
+                        item.getType() != TYPE_LOCATION)) {
+            spaceAppend = "";
+        } else if (isMessageFromMySelf(item)) {
+            spaceAppend = RIGHT_BUBBLE_SPACE_APPEND;
+        } else {
+            spaceAppend = LEFT_BUBBLE_SPACE_APPEND;
+        }
         // Check for mentions
-        if (item.getRoom().getRoomType() != TYPE_PERSONAL && body.contains("@")) {
-            List<TAPUserModel> groupParticipants = null;
-            if (null != TAPChatManager.getInstance(instanceKey).getActiveRoom()) {
-                groupParticipants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
-            }
-            if (null == groupParticipants || groupParticipants.size() < 1) {
-                tvMessageBody.setText(body);
-                return;
-            }
-
-            SpannableString span = new SpannableString(body);
-            int mentionStartIndex = -1;
-            int length = body.length();
-            for (int i = 0; i < length; i++) {
-                if (mentionStartIndex == -1 && body.charAt(i) == '@') {
-                    // Set index of @
-                    mentionStartIndex = i;
-                } else {
-                    boolean charMatchesUsernameFormat = body.substring(i, i + 1).matches("[a-zA-Z0-9._]*");
-                    if (mentionStartIndex != -1 && i == (length - 1)) {
-                        // End of string
-                        int mentionEndIndex = charMatchesUsernameFormat ? (i + 1) : i;
-                        String username = body.substring(mentionStartIndex + 1, mentionEndIndex);
-                        for (TAPUserModel participant : groupParticipants) {
-                            if (null != participant.getUsername() && participant.getUsername().equals(username)) {
-                                // Save temporary mentioned user data
-                                TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, participant);
-
-                                // Set span for textView
-                                span.setSpan(new ForegroundColorSpan(
-                                                ContextCompat.getColor(TapTalk.appContext,
-                                                        isMessageFromMySelf(item) ?
-                                                                R.color.tapLeftBubbleMessageBodyURLColor :
-                                                                R.color.tapRightBubbleMessageBodyURLColor)),
-                                        mentionStartIndex, mentionEndIndex, 0);
-                                span.setSpan(new ClickableSpan() {
-                                    @Override
-                                    public void onClick(@NonNull View view) {
-                                        chatListener.onMentionClicked(item, participant);
-                                    }
-                                }, mentionStartIndex, mentionEndIndex, 0);
-                                break;
-                            }
-                        }
-                        mentionStartIndex = -1;
-                    } else if (mentionStartIndex != -1 && !charMatchesUsernameFormat) {
-                        // End index for mentioned username
-                        String username = body.substring(mentionStartIndex + 1, i);
-                        for (TAPUserModel participant : groupParticipants) {
-                            if (null != participant.getUsername() && participant.getUsername().equals(username)) {
-                                // Save temporary mentioned user data
-                                TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, participant);
-
-                                // Set span for textView
-                                span.setSpan(new ForegroundColorSpan(
-                                                ContextCompat.getColor(TapTalk.appContext,
-                                                        isMessageFromMySelf(item) ?
-                                                                R.color.tapLeftBubbleMessageBodyURLColor :
-                                                                R.color.tapRightBubbleMessageBodyURLColor)),
-                                        mentionStartIndex, i, 0);
-                                span.setSpan(new ClickableSpan() {
-                                    @Override
-                                    public void onClick(@NonNull View view) {
-                                        chatListener.onMentionClicked(item, participant);
-                                    }
-                                }, mentionStartIndex, i, 0);
-                                break;
-                            }
-                        }
-                        mentionStartIndex = -1;
-                    }
-                }
-            }
+        SpannableString span = generateMentionSpan(item, body, spaceAppend);
+        if (null != span) {
             tvMessageBody.setText(span);
         } else {
-            tvMessageBody.setText(body);
+            tvMessageBody.setText(String.format("%s%s", body, spaceAppend));
         }
+    }
+
+    private SpannableString generateMentionSpan(TAPMessageModel item, String body, String spaceAppend) {
+        if (roomParticipantsByUsername.isEmpty() || item.getMentionIndexes().isEmpty()) {
+            return null;
+        }
+        SpannableString span = new SpannableString(body + spaceAppend);
+        int i = 1;
+        List<Integer> indexes = item.getMentionIndexes();
+        while (i < indexes.size()) {
+            String username = body.substring(indexes.get(i - 1) + 1, indexes.get(i));
+            TAPUserModel user = roomParticipantsByUsername.get(username);
+            if (null != user) {
+                span.setSpan(new ForegroundColorSpan(
+                                ContextCompat.getColor(TapTalk.appContext,
+                                        isMessageFromMySelf(item) ?
+                                                R.color.tapLeftBubbleMessageBodyURLColor :
+                                                R.color.tapRightBubbleMessageBodyURLColor)),
+                        indexes.get(i - 1), indexes.get(i), 0);
+                span.setSpan(new ClickableSpan() {
+                    @Override
+                    public void onClick(@NonNull View view) {
+                        chatListener.onMentionClicked(item, user);
+                    }
+                }, indexes.get(i - 1), indexes.get(i), 0);
+            }
+            i += 2;
+        }
+        return span;
     }
 
     private void checkAndUpdateMessageStatus(TAPBaseChatViewHolder vh, TAPMessageModel item,
@@ -1802,95 +1932,95 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         tvAvatarLabel.setVisibility(View.VISIBLE);
     }
 
-    private void expandOrShrinkBubble(TAPMessageModel item, View itemView, FrameLayout flBubble,
-                                      TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
-                                      ImageView ivReply, boolean animate) {
-        if (item.isExpanded()) {
-            // Expand bubble
-            expandedBubble = item;
-            if (isMessageFromMySelf(item) && null != ivMessageStatus) {
-                // Right Bubble
-                if (animate) {
-                    // Animate expand
-                    animateFadeInToBottom(tvMessageStatus);
-                    animateFadeOutToBottom(ivMessageStatus);
-                    animateShowToLeft(ivReply);
-                } else {
-                    tvMessageStatus.setVisibility(View.VISIBLE);
-                    ivMessageStatus.setVisibility(View.GONE);
-                    ivReply.setVisibility(View.VISIBLE);
-                }
-                if (null == bubbleOverlayRight) {
-                    bubbleOverlayRight = ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_transparent_black_8dp_1dp_8dp_8dp);
-                }
-                flBubble.setForeground(bubbleOverlayRight);
-            } else {
-                // Left Bubble
-                if (animate) {
-                    // Animate expand
-                    animateFadeInToBottom(tvMessageStatus);
-                    animateShowToRight(ivReply);
-                } else {
-                    tvMessageStatus.setVisibility(View.VISIBLE);
-                    ivReply.setVisibility(View.VISIBLE);
-                }
-                if (null == bubbleOverlayLeft) {
-                    bubbleOverlayLeft = ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_transparent_black_1dp_8dp_8dp_8dp);
-                }
-                flBubble.setForeground(bubbleOverlayLeft);
-            }
-        } else {
-            // Shrink bubble
-            flBubble.setForeground(null);
-            if (isMessageFromMySelf(item) && null != ivMessageStatus) {
-                // Right bubble
-                if ((null != item.getFailedSend() && item.getFailedSend())) {
-                    // Message failed to send
-                    ivReply.setVisibility(View.GONE);
-                    ivMessageStatus.setVisibility(View.VISIBLE);
-                    ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_circle_transparent));
-                    ImageViewCompat.setImageTintList(ivMessageStatus, null);
-                    tvMessageStatus.setVisibility(View.VISIBLE);
-                } else if (null != item.getSending() && !item.getSending()) {
-                    if (null != item.getIsRead() && item.getIsRead() && !TapUI.getInstance(instanceKey).isReadStatusHidden()) {
-                        // Message has been read
-                        ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
-                        ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
-                    } else if (null != item.getDelivered() && item.getDelivered()) {
-                        // Message is delivered
-                        ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
-                        ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDelivered)));
-                    } else if (null != item.getSending() && !item.getSending()) {
-                        // Message sent
-                        ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
-                        ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSent)));
-                    }
-                    if (animate) {
-                        // Animate shrink
-                        animateHideToRight(ivReply);
-                        animateFadeInToTop(ivMessageStatus);
-                        animateFadeOutToTop(tvMessageStatus);
-                    } else {
-                        ivReply.setVisibility(View.GONE);
-                        ivMessageStatus.setVisibility(View.VISIBLE);
-                        tvMessageStatus.setVisibility(View.GONE);
-                    }
-                } else if (null != item.getSending() && item.getSending()) {
-                    // Message is sending
-                    ivReply.setVisibility(View.GONE);
-                }
-            }
-            // Message from others
-            else if (animate) {
-                // Animate shrink
-                animateHideToLeft(ivReply);
-                animateFadeOutToTop(tvMessageStatus);
-            } else {
-                ivReply.setVisibility(View.GONE);
-                tvMessageStatus.setVisibility(View.GONE);
-            }
-        }
-    }
+//    private void expandOrShrinkBubble(TAPMessageModel item, View itemView, FrameLayout flBubble,
+//                                      TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
+//                                      ImageView ivReply, boolean animate) {
+//        if (item.isExpanded()) {
+//            // Expand bubble
+//            expandedBubble = item;
+//            if (isMessageFromMySelf(item) && null != ivMessageStatus) {
+//                // Right Bubble
+//                if (animate) {
+//                    // Animate expand
+//                    animateFadeInToBottom(tvMessageStatus);
+//                    animateFadeOutToBottom(ivMessageStatus);
+//                    //animateShowToLeft(ivReply);
+//                } else {
+//                    tvMessageStatus.setVisibility(View.VISIBLE);
+//                    ivMessageStatus.setVisibility(View.GONE);
+//                    //ivReply.setVisibility(View.VISIBLE);
+//                }
+//                if (null == bubbleOverlayRight) {
+//                    bubbleOverlayRight = ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_transparent_black_8dp_1dp_8dp_8dp);
+//                }
+//                flBubble.setForeground(bubbleOverlayRight);
+//            } else {
+//                // Left Bubble
+//                if (animate) {
+//                    // Animate expand
+//                    animateFadeInToBottom(tvMessageStatus);
+//                    //animateShowToRight(ivReply);
+//                } else {
+//                    tvMessageStatus.setVisibility(View.VISIBLE);
+//                    //ivReply.setVisibility(View.VISIBLE);
+//                }
+//                if (null == bubbleOverlayLeft) {
+//                    bubbleOverlayLeft = ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_transparent_black_1dp_8dp_8dp_8dp);
+//                }
+//                flBubble.setForeground(bubbleOverlayLeft);
+//            }
+//        } else {
+//            // Shrink bubble
+//            flBubble.setForeground(null);
+//            if (isMessageFromMySelf(item) && null != ivMessageStatus) {
+//                // Right bubble
+//                if ((null != item.getFailedSend() && item.getFailedSend())) {
+//                    // Message failed to send
+//                    //ivReply.setVisibility(View.GONE);
+//                    ivMessageStatus.setVisibility(View.VISIBLE);
+//                    ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_circle_transparent));
+//                    ImageViewCompat.setImageTintList(ivMessageStatus, null);
+//                    tvMessageStatus.setVisibility(View.VISIBLE);
+//                } else if (null != item.getSending() && !item.getSending()) {
+//                    if (null != item.getIsRead() && item.getIsRead() && !TapUI.getInstance(instanceKey).isReadStatusHidden()) {
+//                        // Message has been read
+//                        ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
+//                        ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
+//                    } else if (null != item.getDelivered() && item.getDelivered()) {
+//                        // Message is delivered
+//                        ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
+//                        ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDelivered)));
+//                    } else if (null != item.getSending() && !item.getSending()) {
+//                        // Message sent
+//                        ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
+//                        ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSent)));
+//                    }
+//                    if (animate) {
+//                        // Animate shrink
+//                        //animateHideToRight(ivReply);
+//                        animateFadeInToTop(ivMessageStatus);
+//                        animateFadeOutToTop(tvMessageStatus);
+//                    } else {
+//                        //ivReply.setVisibility(View.GONE);
+//                        ivMessageStatus.setVisibility(View.VISIBLE);
+//                        tvMessageStatus.setVisibility(View.GONE);
+//                    }
+//                } else if (null != item.getSending() && item.getSending()) {
+//                    // Message is sending
+//                    //ivReply.setVisibility(View.GONE);
+//                }
+//            }
+//            // Message from others
+//            else if (animate) {
+//                // Animate shrink
+//                //animateHideToLeft(ivReply);
+//                animateFadeOutToTop(tvMessageStatus);
+//            } else {
+//                //ivReply.setVisibility(View.GONE);
+//                tvMessageStatus.setVisibility(View.GONE);
+//            }
+//        }
+//    }
 
     private void showForwardedFrom(TAPMessageModel item, ConstraintLayout clForwardedFrom, TextView tvForwardedFrom) {
         TAPForwardFromModel forwardFrom = item.getForwardFrom();
@@ -2001,24 +2131,25 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void onBubbleClicked(TAPMessageModel item, View itemView, FrameLayout flBubble, TextView tvMessageStatus, ImageView ivMessageStatus, ImageView ivReply) {
-        if (null != item.getFailedSend() && item.getFailedSend()) {
-            resendMessage(item);
-        } else if (item.getType() == TYPE_TEXT &&
-                ((null != item.getSending() && !item.getSending()) ||
-                        (null != item.getDelivered() && item.getDelivered()) ||
-                        (null != item.getIsRead() && item.getIsRead()))) {
-            if (item.isExpanded()) {
-                // Shrink bubble
-                item.setExpanded(false);
-            } else {
-                // Expand clicked bubble
-                shrinkExpandedBubble();
-                item.setExpanded(true);
-            }
-            expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, true);
-        }
-    }
+//    private void onBubbleClicked(TAPMessageModel item, View itemView, FrameLayout flBubble, TextView tvMessageStatus, ImageView ivMessageStatus, ImageView ivReply) {
+//        if (null != item.getFailedSend() && item.getFailedSend()) {
+//            resendMessage(item);
+//        }
+//        else if (item.getType() == TYPE_TEXT &&
+//                ((null != item.getSending() && !item.getSending()) ||
+//                        (null != item.getDelivered() && item.getDelivered()) ||
+//                        (null != item.getIsRead() && item.getIsRead()))) {
+//            if (item.isExpanded()) {
+//                // Shrink bubble
+//                item.setExpanded(false);
+//            } else {
+//                // Expand clicked bubble
+//                shrinkExpandedBubble();
+//                item.setExpanded(true);
+//            }
+//            expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, true);
+//        }
+//    }
 
     private void onStatusImageClicked(TAPMessageModel item) {
         if (null != item.getFailedSend() && item.getFailedSend()) {
@@ -2036,8 +2167,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private void animateSend(TAPMessageModel item, FrameLayout flBubble,
-                             ImageView ivSending, ImageView ivMessageStatus,
-                             @Nullable ImageView ivReply) {
+                             ImageView ivSending, ImageView ivMessageStatus) {
         if (!item.isNeedAnimateSend()) {
             // Set bubble state to post-animation
             flBubble.setTranslationX(0);
@@ -2072,9 +2202,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }, 200L);
 
             // Animate reply button
-            if (null != ivReply) {
-                animateShowToLeft(ivReply);
-            }
+            //if (null != ivReply) {
+            //    animateShowToLeft(ivReply);
+            //}
         }
     }
 
@@ -2183,6 +2313,28 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 .start();
     }
 
+    private void checkAndAnimateHighlight(TAPMessageModel item, View vBackgroundHighlight) {
+        if (null == highlightedMessage || highlightedMessage != item) {
+            vBackgroundHighlight.setVisibility(View.GONE);
+            return;
+        }
+        vBackgroundHighlight.setAlpha(0f);
+        vBackgroundHighlight.setVisibility(View.VISIBLE);
+        vBackgroundHighlight.animate()
+                .alpha(0.2f)
+                .setInterpolator(new AccelerateInterpolator())
+                .setDuration(200L)
+                .withEndAction(() -> new Handler().postDelayed(() -> {
+                    vBackgroundHighlight.animate()
+                            .alpha(0f)
+                            .setDuration(750L)
+                            .withEndAction(() -> vBackgroundHighlight.setVisibility(View.GONE))
+                            .start();
+                }, 1000L))
+                .start();
+        highlightedMessage = null;
+    }
+
     public void setMessages(List<TAPMessageModel> messages) {
         setItems(messages, false);
     }
@@ -2228,5 +2380,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
         expandedBubble.setExpanded(false);
         notifyItemChanged(getItems().indexOf(expandedBubble));
+    }
+
+    public void highlightMessage(TAPMessageModel message) {
+        if (!getItems().contains(message)) {
+            return;
+        }
+        this.highlightedMessage = message;
+        notifyItemChanged(getItems().indexOf(message));
     }
 }

@@ -3,15 +3,12 @@ package io.taptalk.TapTalk.ViewModel;
 import android.app.Application;
 import android.net.Uri;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -26,13 +23,11 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
-import io.taptalk.TapTalk.Model.TAPOrderModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 public class TAPChatViewModel extends AndroidViewModel {
 
@@ -40,6 +35,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private String instanceKey = "";
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, unreadMentions;
+    private Map<String, TAPUserModel> roomParticipantsByUsername;
     private LinkedHashMap<String, TAPUserModel> groupTyping;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
@@ -153,6 +149,17 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void clearUnreadMessages() {
         getUnreadMessages().clear();
+    }
+
+    public Map<String, TAPUserModel> getRoomParticipantsByUsername() {
+        return roomParticipantsByUsername == null ? roomParticipantsByUsername = new LinkedHashMap<>() : roomParticipantsByUsername;
+    }
+
+    public void addRoomParticipantByUsername(TAPUserModel user) {
+        if (null == user.getUsername() || user.getUsername().isEmpty()) {
+            return;
+        }
+        getRoomParticipantsByUsername().put(user.getUsername(), user);
     }
 
     public Map<String, TAPMessageModel> getUnreadMentions() {

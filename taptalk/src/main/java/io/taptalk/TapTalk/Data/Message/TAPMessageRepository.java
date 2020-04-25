@@ -159,7 +159,12 @@ public class TAPMessageRepository {
                     Map<String, Integer> mentionMap = new LinkedHashMap<>();
                     for (TAPMessageEntity entity : entities) {
                         unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
-                        mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", entity.getRoomID()).size());
+                        mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
+                                myID,
+                                "%@" + username + " %",
+                                "%@" + username + "\n%",
+                                "%@" + username,
+                                entity.getRoomID()).size());
                     }
                     listener.onSelectedRoomList(entities, unreadMap, mentionMap);
                 } else listener.onSelectFinished(entities);
@@ -178,7 +183,13 @@ public class TAPMessageRepository {
 
     public void getAllUnreadMentionsFromRoom(String myID, String username, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         new Thread(() -> {
-            List<TAPMessageEntity> messageEntities = messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", roomID);
+            // TODO: 023, 23 Apr 2020 ADD END OF STRING AND NEWLINE FILTER
+            List<TAPMessageEntity> messageEntities = messageDao.getAllUnreadMentionsFromRoom(
+                    myID,
+                    "%@" + username + " %",
+                    "%@" + username + "\n%",
+                    "%@" + username,
+                    roomID);
             listener.onSelectFinished(messageEntities);
         }).start();
     }
@@ -194,7 +205,12 @@ public class TAPMessageRepository {
             Map<String, Integer> mentionMap = new LinkedHashMap<>();
             for (TAPMessageEntity entity : entities) {
                 unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
-                mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", entity.getRoomID()).size());
+                mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
+                        myID,
+                        "%@" + username + " %",
+                        "%@" + username + "\n%",
+                        "%@" + username,
+                        entity.getRoomID()).size());
             }
             listener.onSelectedRoomList(entities, unreadMap, mentionMap);
         }).start();
@@ -252,7 +268,12 @@ public class TAPMessageRepository {
                 Map<String, Integer> mentionMap = new LinkedHashMap<>();
                 for (TAPMessageEntity entity : entities) {
                     unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
-                    mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", entity.getRoomID()).size());
+                    mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
+                            myID,
+                            "%@" + username + " %",
+                            "%@" + username + "\n%",
+                            "%@" + username,
+                            entity.getRoomID()).size());
                 }
                 listener.onSelectedRoomList(entities, unreadMap, mentionMap);
             } else {
@@ -264,7 +285,12 @@ public class TAPMessageRepository {
     public void getUnreadCountPerRoom(String myID, String username, String roomID, final TAPDatabaseListener listener) {
         new Thread(() -> {
             int unreadCount = messageDao.getUnreadCount(myID, roomID);
-            int mentionCount = messageDao.getAllUnreadMentionsFromRoom(myID, "%@" + username + " %", roomID).size();
+            int mentionCount = messageDao.getAllUnreadMentionsFromRoom(
+                    myID,
+                    "%@" + username + " %",
+                    "%@" + username + "\n%",
+                    "%@" + username,
+                    roomID).size();
             listener.onCountedUnreadCount(roomID, unreadCount, mentionCount);
         }).start();
     }
