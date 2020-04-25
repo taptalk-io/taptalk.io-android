@@ -100,7 +100,6 @@ public class TAPApiManager {
     private TAPTalkRefreshTokenService hpRefresh;
     private boolean isLoggedOut = false; // Flag to prevent unauthorized API call due to refresh token expired
     private boolean isRefreshTokenRunning = false;
-    private String lastRefreshToken = "";
 
     public static TAPApiManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
@@ -277,7 +276,7 @@ public class TAPApiManager {
     }
 
     public Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> refreshToken() {
-        lastRefreshToken = TAPDataManager.getInstance(instanceKey).getRefreshToken();
+        final String lastRefreshToken = TAPDataManager.getInstance(instanceKey).getRefreshToken();
         isRefreshTokenRunning = true;
         Log.e("-->", "Refresh Token is Running");
         return hpRefresh.refreshAccessToken(String.format("Bearer %s", TAPDataManager.getInstance(instanceKey).getRefreshToken()))
