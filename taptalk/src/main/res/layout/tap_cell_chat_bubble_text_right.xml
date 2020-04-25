@@ -6,43 +6,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/iv_message_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
-        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:src="@drawable/tap_ic_sent_grey" />
-
-    <ImageView
-        android:id="@+id/iv_reply"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/tap_ic_reply_circle_white"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
-        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent" />
+    <!--    <ImageView-->
+    <!--        android:id="@+id/iv_reply"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginEnd="2dp"-->
+    <!--        android:layout_marginRight="2dp"-->
+    <!--        android:layout_marginBottom="2dp"-->
+    <!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--        android:src="@drawable/tap_ic_reply_circle_white"-->
+    <!--        android:visibility="gone"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"-->
+    <!--        app:layout_constraintEnd_toStartOf="@id/fl_bubble"-->
+    <!--        app:layout_constraintHorizontal_bias="1"-->
+    <!--        app:layout_constraintHorizontal_chainStyle="packed"-->
+    <!--        app:layout_constraintStart_toStartOf="parent" />-->
 
     <FrameLayout
         android:id="@+id/fl_bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="64dp"
-        android:layout_marginStart="64dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginLeft="48dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:elevation="1dp"
@@ -51,18 +36,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/barrier_top"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_goneMarginBottom="8dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:animateLayoutChanges="false"
+            android:animateLayoutChanges="true"
             android:background="@drawable/tap_bg_chat_bubble_right_default"
-            android:paddingStart="10dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="10dp">
+            android:padding="10dp">
 
             <include
                 android:id="@+id/cl_forwarded"
@@ -71,6 +53,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@id/cl_quote"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <View
@@ -79,17 +64,20 @@
                 android:layout_height="0dp"
                 android:background="@drawable/tap_bg_bubble_quote_right_4dp"
                 app:layout_constraintBottom_toBottomOf="@id/cl_quote"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/cl_quote" />
 
             <include
                 android:id="@+id/cl_quote"
                 layout="@layout/tap_layout_quote_bubble_right"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@id/tv_message_body"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_forwarded" />
 
             <TextView
@@ -97,10 +85,43 @@
                 style="@style/tapRightBubbleMessageBodyStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:layout_constrainedWidth="true"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_quote"
                 tools:text="Hey there, love your work!" />
+
+            <TextView
+                android:id="@+id/tv_message_timestamp"
+                style="@style/tapRightBubbleMessageTimestampStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_message_status"
+                app:layout_goneMarginEnd="0dp"
+                app:layout_goneMarginRight="0dp"
+                tools:text="17:05" />
+
+            <ImageView
+                android:id="@+id/iv_message_status"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                tools:src="@drawable/tap_ic_delivered_grey"
+                tools:tint="@color/tapWhite" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_end"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="cl_forwarded,cl_quote,v_quote_background,tv_message_body" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -113,18 +134,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp"
+        android:text="@string/tap_message_send_failed"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/fl_bubble"
-        app:layout_constraintTop_toBottomOf="@id/fl_bubble"
-        tools:text="Delivered at 17:05 17/05/2018" />
+        app:layout_constraintTop_toBottomOf="@id/fl_bubble" />
 
     <ImageView
         android:id="@+id/iv_sending"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
         android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="5dp"
@@ -137,11 +158,16 @@
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/fl_bubble" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier_top"
+    <View
+        android:id="@+id/v_background_highlight"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:barrierDirection="top"
-        app:constraint_referenced_ids="fl_bubble,iv_message_status" />
+        android:layout_height="0dp"
+        android:alpha="0.2"
+        android:background="@color/tapColorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/fl_bubble" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

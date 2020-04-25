@@ -462,7 +462,6 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:outlineProvider="paddedBounds"
-            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -713,7 +712,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/tap_ic_trash_watermelon_red"
+                    android:src="@drawable/tap_ic_delete_red"
                     android:tint="@color/tapButtonIconColor" />
 
                 <TextView

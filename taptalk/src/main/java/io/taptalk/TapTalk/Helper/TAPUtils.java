@@ -104,12 +104,16 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.OPEN_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.SELECT_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
@@ -1151,7 +1155,25 @@ public class TAPUtils {
     }
 
     public static boolean isActiveUserMentioned(TAPMessageModel message, TAPUserModel activeUser) {
-        return message.getRoom().getRoomType() != TYPE_PERSONAL &&
-                message.getBody().contains("@" + activeUser.getUsername() + " ");
+        if (message.getUser().equals(activeUser) ||
+                message.getRoom().getRoomType() == TYPE_PERSONAL ||
+                null == activeUser.getUsername() ||
+                activeUser.getUsername().isEmpty()) {
+            return false;
+        }
+        String text;
+        if (message.getType() == TYPE_TEXT) {
+            text = message.getBody();
+        } else if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
+            text = (String) message.getData().get(CAPTION);
+        } else {
+            return false;
+        }
+        if (null == text || text.isEmpty()) {
+            return false;
+        }
+        return text.contains("@" + activeUser.getUsername() + " ") ||
+                text.contains("@" + activeUser.getUsername() + "\n") ||
+                (text.contains("@" + activeUser.getUsername()) && text.endsWith(activeUser.getUsername()));
     }
 }

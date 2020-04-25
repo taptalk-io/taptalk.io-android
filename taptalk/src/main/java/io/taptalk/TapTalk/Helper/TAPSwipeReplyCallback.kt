@@ -2,15 +2,18 @@ package io.taptalk.TapTalk.Helper
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.os.Handler
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPBaseChatViewHolder
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
@@ -18,11 +21,11 @@ import kotlin.math.abs
 import kotlin.math.min
 
 class TAPSwipeReplyCallback(
-        context: Context,
+        private val context: Context,
         private val swipeReplyInterface: SwipeReplyInterface) :
         ItemTouchHelper.Callback() {
-    private val imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_pumpkin_orange)!!
-    private val drawableBackground = ContextCompat.getDrawable(context, R.drawable.tap_bg_circle_primary)!!
+    private val imageDrawable = ContextCompat.getDrawable(context, R.drawable.tap_ic_reply_orange)!!
+    private val drawableBackground = ContextCompat.getDrawable(context, R.drawable.tap_bg_circle_primary_icon)!!
     private val drawableBackgroundColor = ContextCompat.getDrawable(context, R.color.tapDefaultBackgroundColor)!!
 
     private lateinit var itemView: View
@@ -39,12 +42,22 @@ class TAPSwipeReplyCallback(
     }
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-        if (viewHolder is TAPMessageAdapter.DeletedVH ||
-                (viewHolder is TAPBaseChatViewHolder &&
-                        null != viewHolder.item.failedSend &&
-                        viewHolder.item.failedSend!!)) {
-            // Disable swipe for deleted messages & messages that failed to send
+        if (viewHolder is TAPMessageAdapter.DeletedVH) {
+            // Disable swipe for deleted messages
             return 0
+        }
+        if (viewHolder is TAPBaseChatViewHolder) {
+            if (null != viewHolder.item.failedSend && viewHolder.item.failedSend!!) {
+                // Disable swipe for messages that failed to send
+                return 0
+            } else if (viewHolder.item.type != TYPE_TEXT &&
+                    viewHolder.item.type != TYPE_IMAGE &&
+                    viewHolder.item.type != TYPE_VIDEO &&
+                    viewHolder.item.type != TYPE_FILE &&
+                    viewHolder.item.type != TYPE_LOCATION) {
+                // Disable swipe for custom message types
+                return 0
+            }
         }
         itemView = viewHolder.itemView
         return makeMovementFlags(ACTION_STATE_IDLE, RIGHT)
@@ -202,15 +215,17 @@ class TAPSwipeReplyCallback(
         drawableBackground.draw(canvas)
 
         imageDrawable.setBounds(
-                (x - TAPUtils.dpToPx(16) * scale).toInt() - 1,
-                (y - TAPUtils.dpToPx(16) * scale).toInt() - 1,
-                (x + TAPUtils.dpToPx(16) * scale).toInt() + 1,
-                (y + TAPUtils.dpToPx(16) * scale).toInt() + 1
+                (x - TAPUtils.dpToPx(13) * scale).toInt() - 1,
+                (y - TAPUtils.dpToPx(13) * scale).toInt() - 1,
+                (x + TAPUtils.dpToPx(13) * scale).toInt() + 1,
+                (y + TAPUtils.dpToPx(13) * scale).toInt() + 1
         )
         imageDrawable.draw(canvas)
 
         drawableBackgroundColor.alpha = 255
         drawableBackground.alpha = 51
         imageDrawable.alpha = 255
+        DrawableCompat.setTintList(imageDrawable, ColorStateList.valueOf(
+                ContextCompat.getColor(context, R.color.tapColorPrimaryIcon)))
     }
 }

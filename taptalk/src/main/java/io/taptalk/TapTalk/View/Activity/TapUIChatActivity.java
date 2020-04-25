@@ -23,8 +23,10 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +67,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
@@ -285,7 +288,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TAPSocketListener socketListener;
 
     // Scroll state
-    private enum STATE { WORKING, LOADED, DONE }
+    private enum STATE {WORKING, LOADED, DONE}
+
     private STATE state = STATE.WORKING;
 
     /**
@@ -315,7 +319,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     public static void start(Context context, String instanceKey, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
         if (TYPE_PERSONAL == roomModel.getRoomType() &&
                 TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(
-                TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomModel.getRoomID()))) {
+                        TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomModel.getRoomID()))) {
             // Disable opening active user's own room
             return;
         }
@@ -674,7 +678,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Updated 2020/02/10
-        if (TYPE_PERSONAL != vm.getRoom().getRoomType() && 
+        if (TYPE_PERSONAL != vm.getRoom().getRoomType() &&
                 TAPGroupManager.Companion.getInstance(instanceKey).checkIsRoomDataAvailable(vm.getRoom().getRoomID())) {
             TAPRoomModel room = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(vm.getRoom().getRoomID());
             if (null != room && null != room.getRoomName() && !room.getRoomName().isEmpty()) {
@@ -753,7 +757,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Initialize chat message RecyclerView
-        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener);
+        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm.getRoomParticipantsByUsername());
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true) {
             @Override
@@ -822,6 +826,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
             tvRoomStatus.setText(String.format("%d Members", vm.getRoom().getGroupParticipants().size()));
+            new Thread(() -> {
+                for (TAPUserModel user : vm.getRoom().getGroupParticipants()) {
+                    vm.addRoomParticipantByUsername(user);
+                }
+            }).start();
         } else if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_group_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(getString(R.string.tap_group_chat_room_empty_guide_content));
@@ -1320,8 +1329,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void scrollToBottom() {
-        rvMessageList.scrollToPosition(0);
         ivToBottom.setVisibility(View.GONE);
+        rvMessageList.scrollToPosition(0);
         vm.setOnBottom(true);
         vm.clearUnreadMessages();
         vm.clearUnreadMentions();
@@ -1557,6 +1566,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onSendMessageSelected(TAPUserModel user) {
             TapUI.getInstance().openChatRoomWithOtherUser(TapUIChatActivity.this, user);
+            rvCustomKeyboard.setVisibility(View.GONE);
+            onBackPressed();
         }
     };
 
@@ -1698,7 +1709,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void openMediaPreviewPage(ArrayList<TAPMediaPreviewModel> mediaPreviews) {
-        TAPMediaPreviewActivity.start(TapUIChatActivity.this, instanceKey, mediaPreviews);
+        TAPMediaPreviewActivity.start(TapUIChatActivity.this, instanceKey, mediaPreviews, new ArrayList<>(vm.getRoomParticipantsByUsername().values()));
     }
 
     // Previously callApiGetGroupData
@@ -1724,6 +1735,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (vm.getRoom().getRoomType() == TYPE_GROUP && null != vm.getRoom().getGroupParticipants()) {
                     // Show number of participants for group room
                     tvRoomStatus.setText(String.format(getString(R.string.tap_format_d_group_member_count), vm.getRoom().getGroupParticipants().size()));
+                }
+                if (null != vm.getRoom().getGroupParticipants()) {
+                    new Thread(() -> {
+                        vm.getRoomParticipantsByUsername().clear();
+                        for (TAPUserModel user : vm.getRoom().getGroupParticipants()) {
+                            vm.addRoomParticipantByUsername(user);
+                        }
+                    }).start();
                 }
             }
         })).start();
@@ -1829,7 +1848,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (message.getType() != TYPE_SYSTEM_MESSAGE) {
             return;
         }
-        if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType() &&
+        if (null != vm.getRoom() && TYPE_PERSONAL != vm.getRoom().getRoomType() &&
                 (ROOM_ADD_PARTICIPANT.equals(message.getAction()) ||
                         ROOM_REMOVE_PARTICIPANT.equals(message.getAction())) &&
                 !TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getTarget().getTargetID())) {
@@ -1892,7 +1911,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
             etChat.setText("");
             messageAdapter.shrinkExpandedBubble();
             TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
-            rvMessageList.scrollToPosition(0);
+            // Updated 2020/04/23
+            //rvMessageList.scrollToPosition(0);
+            rvMessageList.post(this::scrollToBottom);
         } else {
             TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
             ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
@@ -2038,12 +2059,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void scrollToMessage(String localID) {
-        if (vm.getMessagePointer().containsKey(localID)) {
+        TAPMessageModel message = vm.getMessagePointer().get(localID);
+        if (null != message) {
             vm.setTappedMessageLocalID(null);
-            if (null != vm.getMessagePointer().get(localID).getIsDeleted() &&
-                    vm.getMessagePointer().get(localID).getIsDeleted() &&
-                    null != vm.getMessagePointer().get(localID).getHidden() &&
-                    vm.getMessagePointer().get(localID).getHidden()) {
+            if ((null != message.getIsDeleted() && message.getIsDeleted()) ||
+                    (null != message.getHidden() && message.getHidden())) {
                 // Message does not exist
                 runOnUiThread(() -> {
                     Toast.makeText(this, getResources().getString(R.string.tap_error_could_not_find_message), Toast.LENGTH_SHORT).show();
@@ -2052,7 +2072,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else {
                 // Scroll to message
                 runOnUiThread(() -> {
-                    rvMessageList.scrollToPosition(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localID)));
+                    messageLayoutManager.scrollToPositionWithOffset(messageAdapter.getItems().indexOf(message), TAPUtils.dpToPx(128));
                     rvMessageList.post(() -> {
                         if (messageLayoutManager.findFirstVisibleItemPosition() > 0) {
                             vm.setOnBottom(false);
@@ -2060,6 +2080,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             hideUnreadButton();
                             hideUnreadButtonLoading();
                         }
+                        messageAdapter.highlightMessage(message);
                     });
                 });
             }
@@ -2257,6 +2278,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
                 checkAndSearchUserMentionList();
+                //checkAndHighlightTypedText();
             } else if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
                     && s.length() > 0) {
                 // Hide chat menu but keep send button disabled if trimmed text is empty
@@ -2313,29 +2335,23 @@ public class TapUIChatActivity extends TAPBaseActivity {
     };
 
     private void checkAndSearchUserMentionList() {
+        if (vm.getRoomParticipantsByUsername().isEmpty()) {
+            hideUserMentionList();
+            return;
+        }
         String s = etChat.getText().toString();
         if (!s.contains("@")) {
             // Return if text does not contain @
             hideUserMentionList();
             return;
         }
-        List<TAPUserModel> groupParticipants = null;
-        if (null != TAPChatManager.getInstance(instanceKey).getActiveRoom()) {
-            groupParticipants = TAPChatManager.getInstance(instanceKey).getActiveRoom().getGroupParticipants();
-        }
-        if (null == groupParticipants || groupParticipants.size() < 1) {
-            // Return if room participant is empty
-            hideUserMentionList();
-            return;
-        }
-        groupParticipants.remove(vm.getMyUserModel());
         int cursorIndex = etChat.getSelectionStart();
         int loopIndex = etChat.getSelectionStart();
         while (loopIndex > 0) {
             // Loop text from cursor index to the left
             loopIndex--;
             char c = s.charAt(loopIndex);
-            if (c == ' ') {
+            if (c == ' ' || c == '\n') {
                 // Found space before @, return
                 hideUserMentionList();
                 return;
@@ -2343,53 +2359,63 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (c == '@') {
                 // Found @, start searching user
                 String keyword = s.substring(loopIndex + 1, cursorIndex).toLowerCase();
-                List<TAPUserModel> searchResult;
                 if (keyword.isEmpty()) {
                     // Show all participants
-                    searchResult = new ArrayList<>(groupParticipants);
+                    List<TAPUserModel> searchResult = new ArrayList<>(vm.getRoomParticipantsByUsername().values());
+                    searchResult.remove(vm.getMyUserModel());
+                    showUserMentionList(searchResult, loopIndex, cursorIndex);
                 } else {
                     // Search participants from keyword
-                    searchResult = new ArrayList<>();
-                    for (TAPUserModel user : groupParticipants) {
-                        if (user.getName().toLowerCase().contains(keyword) ||
-                                (null != user.getUsername() && user.getUsername().toLowerCase().contains(keyword))) {
-                            searchResult.add(user);
-                        }
-                    }
-                }
-                if (!searchResult.isEmpty()) {
-                    // Show search result in list
                     int finalLoopIndex = loopIndex;
-                    userMentionListAdapter = new TapUserMentionListAdapter(searchResult, user -> {
-                        // Append username to typed text
-                        if (etChat.getText().length() >= cursorIndex) {
-                            etChat.getText().replace(finalLoopIndex + 1, cursorIndex, user.getUsername() + " ");
-                        }
-                    });
-                    rvUserMentionList.setMaxHeight(TAPUtils.dpToPx(160));
-                    rvUserMentionList.setAdapter(userMentionListAdapter);
-                    if (null == rvUserMentionList.getLayoutManager()) {
-                        rvUserMentionList.setLayoutManager(new LinearLayoutManager(
-                                TapUIChatActivity.this, LinearLayoutManager.VERTICAL, false) {
-                            @Override
-                            public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-                                try {
-                                    super.onLayoutChildren(recycler, state);
-                                } catch (IndexOutOfBoundsException e) {
-                                    e.printStackTrace();
-                                }
+                    new Thread(() -> {
+                        List<TAPUserModel> searchResult = new ArrayList<>();
+                        for (Map.Entry<String, TAPUserModel> entry : vm.getRoomParticipantsByUsername().entrySet()) {
+                            if (null != entry.getValue().getUsername() &&
+                                    !entry.getValue().getUsername().equals(vm.getMyUserModel().getUsername()) &&
+                                    (entry.getValue().getName().toLowerCase().contains(keyword) ||
+                                            entry.getValue().getUsername().toLowerCase().contains(keyword))) {
+                                // Add result if name/username matches and not self
+                                searchResult.add(entry.getValue());
                             }
-                        });
-                    }
-                    clUserMentionList.setVisibility(View.VISIBLE);
-                } else {
-                    // Result is empty
-                    hideUserMentionList();
+                        }
+                        runOnUiThread(() -> showUserMentionList(searchResult, finalLoopIndex, cursorIndex));
+                    }).start();
                 }
                 return;
             }
         }
         hideUserMentionList();
+    }
+
+    private void showUserMentionList(List<TAPUserModel> searchResult, int loopIndex, int cursorIndex) {
+        if (!searchResult.isEmpty()) {
+            // Show search result in list
+            userMentionListAdapter = new TapUserMentionListAdapter(searchResult, user -> {
+                // Append username to typed text
+                if (etChat.getText().length() >= cursorIndex) {
+                    etChat.getText().replace(loopIndex + 1, cursorIndex, user.getUsername() + " ");
+                }
+            });
+            rvUserMentionList.setMaxHeight(TAPUtils.dpToPx(160));
+            rvUserMentionList.setAdapter(userMentionListAdapter);
+            if (null == rvUserMentionList.getLayoutManager()) {
+                rvUserMentionList.setLayoutManager(new LinearLayoutManager(
+                        TapUIChatActivity.this, LinearLayoutManager.VERTICAL, false) {
+                    @Override
+                    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+                        try {
+                            super.onLayoutChildren(recycler, state);
+                        } catch (IndexOutOfBoundsException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+            clUserMentionList.setVisibility(View.VISIBLE);
+        } else {
+            // Result is empty
+            hideUserMentionList();
+        }
     }
 
     private void hideUserMentionList() {
@@ -2400,6 +2426,61 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rvUserMentionList.setAdapter(null);
                 rvUserMentionList.post(() -> etChat.requestFocus());
             });
+        }
+    }
+
+    private void checkAndHighlightTypedText() {
+        if (vm.getRoomParticipantsByUsername().isEmpty()) {
+            hideUserMentionList();
+            return;
+        }
+        String s = etChat.getText().toString();
+        // Check for mentions
+        if (vm.getRoom().getRoomType() == TYPE_PERSONAL || !s.contains("@")) {
+            return;
+        }
+        SpannableString span = new SpannableString(s);
+        int cursorIndex = etChat.getSelectionStart();
+        int mentionStartIndex = -1;
+        int length = s.length();
+        boolean isSpanSet = false;
+        for (int i = 0; i < length; i++) {
+            if (mentionStartIndex == -1 && s.charAt(i) == '@') {
+                // Set index of @
+                mentionStartIndex = i;
+            } else {
+                boolean endOfMention = s.charAt(i) == ' ' || s.charAt(i) == '\n';
+                if (mentionStartIndex != -1 && i == (length - 1)) {
+                    // End of string
+                    int mentionEndIndex = endOfMention ? i : (i + 1);
+                    String username = s.substring(mentionStartIndex + 1, mentionEndIndex);
+                    if (vm.getRoomParticipantsByUsername().containsKey(username)) {
+                        span.setSpan(new ForegroundColorSpan(
+                                        ContextCompat.getColor(TapTalk.appContext,
+                                                R.color.tapLeftBubbleMessageBodyURLColor)),
+                                mentionStartIndex, mentionEndIndex, 0);
+                        isSpanSet = true;
+                    }
+                    mentionStartIndex = -1;
+                } else if (mentionStartIndex != -1 && endOfMention) {
+                    // End index for mentioned username
+                    String username = s.substring(mentionStartIndex + 1, i);
+                    if (vm.getRoomParticipantsByUsername().containsKey(username)) {
+                        span.setSpan(new ForegroundColorSpan(
+                                        ContextCompat.getColor(TapTalk.appContext,
+                                                R.color.tapLeftBubbleMessageBodyURLColor)),
+                                mentionStartIndex, i, 0);
+                        isSpanSet = true;
+                    }
+                    mentionStartIndex = -1;
+                }
+            }
+        }
+        if (isSpanSet) {
+            etChat.removeTextChangedListener(chatWatcher);
+            etChat.setText(span);
+            etChat.setSelection(cursorIndex); // FIXME: 24 Apr 2020 TAP AND HOLD BACKSPACE NOT WORKING IF TEXT CONTAINS @
+            etChat.addTextChangedListener(chatWatcher);
         }
     }
 
@@ -2612,7 +2693,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     fileUri = intent.getParcelableExtra(FILE_URI);
                     vm.setOpenedFileMessage(message);
                     if (null != fileUri && null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
-                        if (!TAPUtils.openFile(instanceKey,TapUIChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
+                        if (!TAPUtils.openFile(instanceKey, TapUIChatActivity.this, fileUri, (String) message.getData().get(MEDIA_TYPE))) {
                             showDownloadFileDialog();
                         }
                     } else {
@@ -2649,6 +2730,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
                 case LongPressMention:
                     if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
+                        // Save temporary mentioned user data
+                        String linkifyResult = intent.getStringExtra(URL_MESSAGE);
+                        if (null == linkifyResult || linkifyResult.isEmpty()) {
+                            return;
+                        }
+                        String username = linkifyResult.substring(1);
+                        TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, vm.getRoomParticipantsByUsername().get(username));
                         TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(MENTION_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         mentionBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
@@ -3449,6 +3537,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 public void onDeleteFinished() {
                     super.onDeleteFinished();
                     vm.setDeleteGroup(true);
+                    rvCustomKeyboard.setVisibility(View.GONE);
                     onBackPressed();
                 }
             });
