@@ -79,12 +79,19 @@
     <color name="tapIconCircleSelectionInactive">@color/tapColorGrayIcon</color>
     <color name="tapIconLoadingPopupSuccess">@color/tapColorPrimaryIcon</color>
     <color name="tapIconSearchConnectionLost">@color/tapColorTextDark</color>
-    <color name="tapIconMessageSending">@color/tapColorGrayIcon</color>
-    <color name="tapIconMessageFailed">@color/tapColorGrayIcon</color>
-    <color name="tapIconMessageSent">@color/tapColorGrayIcon</color>
-    <color name="tapIconMessageDelivered">@color/tapColorGrayIcon</color>
-    <color name="tapIconMessageRead">@color/tapVibrantGreen</color>
-    <color name="tapIconMessageDeleted">@color/tapColorGrayIcon</color>
+    <color name="tapIconRoomListMessageSending">@color/tapColorGrayIcon</color>
+    <color name="tapIconRoomListMessageFailed">@color/tapColorGrayIcon</color>
+    <color name="tapIconRoomListMessageSent">@color/tapColorGrayIcon</color>
+    <color name="tapIconRoomListMessageDelivered">@color/tapColorGrayIcon</color>
+    <color name="tapIconRoomListMessageRead">@color/tapVibrantGreen</color>
+    <color name="tapIconRoomListMessageDeleted">@color/tapColorGrayIcon</color>
+    <color name="tapIconChatRoomMessageSending">@color/tapColorGrayIcon</color>
+    <color name="tapIconChatRoomMessageFailed">@color/tapColorWhiteIcon</color>
+    <color name="tapIconChatRoomMessageSent">@color/tapTransparentBlack1920</color>
+    <color name="tapIconChatRoomMessageDelivered">@color/tapTransparentBlack1920</color>
+    <color name="tapIconChatRoomMessageRead">@color/tapColorWhiteIcon</color>
+    <color name="tapIconChatRoomMessageDeletedLeft">@color/tapColorGrayIcon</color>
+    <color name="tapIconChatRoomMessageDeletedRight">@color/tapColorWhiteIcon</color>
     <color name="tapIconRemoveItem">@color/tapColorWhiteIcon</color>
     <color name="tapIconRemoveItemBackground">@color/tapColorDestructiveIcon</color>
 
@@ -429,6 +436,7 @@
     <color name="tapTransparentCharcoal">#0004040f</color>
     <color name="tapTransparentCharcoal50">#8004040f</color>
     <color name="tapTransparentCharcoal40">#6604040f</color>
+    <color name="tapTransparentBlack1920">#33191919</color>
     <color name="tapTransparentBlack1940">#66191919</color>
     <color name="tapTransparentBlack4770">#b3474747</color>
 

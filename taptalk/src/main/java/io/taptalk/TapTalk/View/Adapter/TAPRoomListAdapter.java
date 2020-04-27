@@ -320,32 +320,32 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Message is deleted
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsDeleted() && item.getLastMessage().getIsDeleted()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_block_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDeleted)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageDeleted)));
             }
             // Message is read
             else if (null != item.getLastMessage() && null != item.getLastMessage().getIsRead() && item.getLastMessage().getIsRead() && !TapUI.getInstance(instanceKey).isReadStatusHidden()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageRead)));
             }
             // Message is delivered
             else if (null != item.getLastMessage() && null != item.getLastMessage().getDelivered() && item.getLastMessage().getDelivered()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDelivered)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageDelivered)));
             }
             // Message failed to send
             else if (null != item.getLastMessage() && null != item.getLastMessage().getFailedSend() && item.getLastMessage().getFailedSend()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_warning_red_circle_background));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageFailed)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageFailed)));
             }
             // Message sent
             else if (null != item.getLastMessage() && null != item.getLastMessage().getSending() && !item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSent)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageSent)));
             }
             // Message is sending
             else if (null != item.getLastMessage() && null != item.getLastMessage().getSending() && item.getLastMessage().getSending()) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sending_grey));
-                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSending)));
+                ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageSending)));
             }
 
             // Show unread count

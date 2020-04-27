@@ -44,19 +44,23 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
         // TODO: 13 November 2019 MARK MESSAGE READ HERE?
     }
 
-    protected void setMessage(TAPMessageModel message) {
+    protected void onMessageSending(TAPMessageModel message) {
 
     }
 
-    protected void receiveSentEvent(TAPMessageModel message) {
+    protected void onMessageFailedToSend(TAPMessageModel message) {
 
     }
 
-    protected void receiveDeliveredEvent(TAPMessageModel message) {
+    protected void onMessageSent(TAPMessageModel message) {
 
     }
 
-    protected void receiveReadEvent(TAPMessageModel message) {
+    protected void onMessageDelivered(TAPMessageModel message) {
+
+    }
+
+    protected void onMessageRead(TAPMessageModel message) {
 
     }
 

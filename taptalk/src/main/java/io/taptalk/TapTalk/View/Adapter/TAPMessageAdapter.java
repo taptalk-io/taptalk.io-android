@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.View.Adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,11 +10,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -318,7 +315,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clForwarded = itemView.findViewById(R.id.cl_forwarded);
             clQuote = itemView.findViewById(R.id.cl_quote);
             flBubble = itemView.findViewById(R.id.fl_bubble);
-            //ivReply = itemView.findViewById(R.id.iv_reply);
             rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
             tvMessageBody = itemView.findViewById(R.id.tv_message_body);
             tvMessageTimestamp = itemView.findViewById(R.id.tv_message_timestamp);
@@ -345,31 +341,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (!item.isAnimating()) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
             }
-
-            //tvMessageBody.setText(item.getBody());
+            tvMessageTimestamp.setText(item.getMessageStatusText());
             setMessageBodyText(tvMessageBody, item, item.getBody());
-
-            if (isMessageFromMySelf(item)) {
-                if (null != item.getFailedSend() && item.getFailedSend()) {
-                    tvMessageStatus.setVisibility(View.VISIBLE);
-                } else {
-                    tvMessageStatus.setVisibility(View.GONE);
-                }
-            }
-            if ((null != item.getSending() && item.getSending()) ||
-                    (null != item.getFailedSend() && item.getFailedSend())) {
-                tvMessageTimestamp.setVisibility(View.GONE);
-                if (isMessageFromMySelf(item)) {
-                    ivMessageStatus.setVisibility(View.GONE);
-                }
-            } else {
-                tvMessageTimestamp.setText(item.getMessageStatusText());
-                tvMessageTimestamp.setVisibility(View.VISIBLE);
-                if (isMessageFromMySelf(item)) {
-                    ivMessageStatus.setVisibility(View.VISIBLE);
-                }
-            }
-
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             //expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
@@ -381,27 +354,31 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             flBubble.setOnClickListener(v -> onStatusImageClicked(item));
-            //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
         @Override
-        protected void receiveReadEvent(TAPMessageModel message) {
-            receiveReadEmit(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        protected void onMessageSending(TAPMessageModel message) {
+            showMessageAsSending(message, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
         }
 
         @Override
-        protected void receiveDeliveredEvent(TAPMessageModel message) {
-            receiveDeliveredEmit(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        protected void onMessageFailedToSend(TAPMessageModel message) {
+            showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
         }
 
         @Override
-        protected void receiveSentEvent(TAPMessageModel message) {
-            receiveSentEmit(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        protected void onMessageSent(TAPMessageModel message) {
+            showMessageAsSent(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
         }
 
         @Override
-        protected void setMessage(TAPMessageModel message) {
-            setMessageItem(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        protected void onMessageDelivered(TAPMessageModel message) {
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageRead(TAPMessageModel message) {
+            showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
         }
     }
 
@@ -684,22 +661,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         @Override
-        protected void receiveSentEvent(TAPMessageModel message) {
+        protected void onMessageSent(TAPMessageModel message) {
             receiveSentEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void receiveDeliveredEvent(TAPMessageModel message) {
+        protected void onMessageDelivered(TAPMessageModel message) {
             receiveDeliveredEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void receiveReadEvent(TAPMessageModel message) {
+        protected void onMessageRead(TAPMessageModel message) {
             receiveReadEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void setMessage(TAPMessageModel message) {
+        protected void onMessageSending(TAPMessageModel message) {
             setMessageItemOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
     }
@@ -1010,22 +987,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         @Override
-        protected void receiveSentEvent(TAPMessageModel message) {
+        protected void onMessageSent(TAPMessageModel message) {
             receiveSentEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void receiveDeliveredEvent(TAPMessageModel message) {
+        protected void onMessageDelivered(TAPMessageModel message) {
             receiveDeliveredEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void receiveReadEvent(TAPMessageModel message) {
+        protected void onMessageRead(TAPMessageModel message) {
             receiveReadEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void setMessage(TAPMessageModel message) {
+        protected void onMessageSending(TAPMessageModel message) {
             setMessageItemOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
     }
@@ -1106,22 +1083,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         @Override
-        protected void receiveReadEvent(TAPMessageModel message) {
+        protected void onMessageRead(TAPMessageModel message) {
             receiveReadEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void receiveDeliveredEvent(TAPMessageModel message) {
+        protected void onMessageDelivered(TAPMessageModel message) {
             receiveDeliveredEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void receiveSentEvent(TAPMessageModel message) {
+        protected void onMessageSent(TAPMessageModel message) {
             receiveSentEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void setMessage(TAPMessageModel message) {
+        protected void onMessageSending(TAPMessageModel message) {
             setMessageItemOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
@@ -1337,22 +1314,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         @Override
-        protected void receiveReadEvent(TAPMessageModel message) {
+        protected void onMessageRead(TAPMessageModel message) {
             receiveReadEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void receiveDeliveredEvent(TAPMessageModel message) {
+        protected void onMessageDelivered(TAPMessageModel message) {
             receiveDeliveredEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void receiveSentEvent(TAPMessageModel message) {
+        protected void onMessageSent(TAPMessageModel message) {
             receiveSentEmitOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
 
         @Override
-        protected void setMessage(TAPMessageModel message) {
+        protected void onMessageSending(TAPMessageModel message) {
             setMessageItemOld(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
         }
     }
@@ -1549,45 +1526,43 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void setMessageItem(TAPMessageModel item,
-                                View itemView,
-                                FrameLayout flBubble,
-                                @Nullable TextView tvMessageStatus,
-                                @Nullable ImageView ivMessageStatus,
-                                @Nullable ImageView ivSending) {
-        if (null != item.getFailedSend() && item.getFailedSend()) {
-            // Message failed to send
-            if (null != ivMessageStatus) {
-                ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_circle_transparent));
-                ImageViewCompat.setImageTintList(ivMessageStatus, null);
-                ivMessageStatus.setVisibility(View.VISIBLE);
-            }
-            if (null != tvMessageStatus) {
-                tvMessageStatus.setVisibility(View.VISIBLE);
-            }
-            if (null != ivSending) {
-                ivSending.setAlpha(0f);
-            }
-            flBubble.setTranslationX(0);
-            //if (null != ivReply) {
-            //    ivReply.setVisibility(View.GONE);
-            //}
-        } else if (null != item.getSending() && item.getSending()) {
-            // Message is sending
-            item.setNeedAnimateSend(true);
-            flBubble.setTranslationX(initialTranslationX);
-            if (null != ivSending) {
-                ivSending.setTranslationX(0);
-                ivSending.setTranslationY(0);
-                ivSending.setAlpha(1f);
-            }
-            if (null != ivMessageStatus) {
-                ivMessageStatus.setVisibility(View.GONE);
-            }
-            if (null != tvMessageStatus) {
-                tvMessageStatus.setVisibility(View.GONE);
-            }
+    private void showMessageAsSending(TAPMessageModel item,
+                                      FrameLayout flBubble,
+                                      @Nullable TextView tvMessageStatus,
+                                      @Nullable ImageView ivMessageStatus,
+                                      @Nullable ImageView ivSending) {
+        item.setNeedAnimateSend(true);
+        flBubble.setTranslationX(initialTranslationX);
+        if (null != ivSending) {
+            ivSending.setTranslationX(0);
+            ivSending.setTranslationY(0);
+            ivSending.setAlpha(1f);
         }
+        if (null != ivMessageStatus) {
+            ivMessageStatus.setVisibility(View.INVISIBLE);
+        }
+        if (null != tvMessageStatus) {
+            tvMessageStatus.setVisibility(View.GONE);
+        }
+    }
+
+    private void showMessageFailedToSend(View itemView,
+                                         FrameLayout flBubble,
+                                         @Nullable TextView tvMessageStatus,
+                                         @Nullable ImageView ivMessageStatus,
+                                         @Nullable ImageView ivSending) {
+        if (null != ivMessageStatus) {
+            ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_warning_red_circle_background));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageFailed)));
+            ivMessageStatus.setVisibility(View.VISIBLE);
+        }
+        if (null != tvMessageStatus) {
+            tvMessageStatus.setVisibility(View.VISIBLE);
+        }
+        if (null != ivSending) {
+            ivSending.setAlpha(0f);
+        }
+        flBubble.setTranslationX(0);
     }
 
     @Deprecated
@@ -1632,15 +1607,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void receiveSentEmit(TAPMessageModel item,
-                                 View itemView,
-                                 FrameLayout flBubble,
-                                 @Nullable TextView tvMessageStatus,
-                                 @Nullable ImageView ivMessageStatus,
-                                 @Nullable ImageView ivSending) {
+    private void showMessageAsSent(TAPMessageModel item,
+                                   View itemView,
+                                   FrameLayout flBubble,
+                                   @Nullable TextView tvMessageStatus,
+                                   @Nullable ImageView ivMessageStatus,
+                                   @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
-            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSent)));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageSent)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         if (null != tvMessageStatus) {
@@ -1655,7 +1630,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                     @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
-            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageSent)));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageSent)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         // Show status text and reply button for non-text bubbles
@@ -1669,14 +1644,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         animateSend(item, flBubble, ivSending, ivMessageStatus);
     }
 
-    private void receiveDeliveredEmit(View itemView,
-                                      FrameLayout flBubble,
-                                      @Nullable TextView tvMessageStatus,
-                                      @Nullable ImageView ivMessageStatus,
-                                      @Nullable ImageView ivSending) {
+    private void showMessageAsDelivered(View itemView,
+                                        FrameLayout flBubble,
+                                        @Nullable TextView tvMessageStatus,
+                                        @Nullable ImageView ivMessageStatus,
+                                        @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
-            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDelivered)));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageDelivered)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         if (null != tvMessageStatus) {
@@ -1694,7 +1669,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                          @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
-            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageDelivered)));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageDelivered)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         if (null != ivSending) {
@@ -1711,18 +1686,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void receiveReadEmit(View itemView,
-                                 FrameLayout flBubble,
-                                 @Nullable TextView tvMessageStatus,
-                                 @Nullable ImageView ivMessageStatus,
-                                 @Nullable ImageView ivSending) {
+    private void showMessageAsRead(View itemView,
+                                   FrameLayout flBubble,
+                                   @Nullable TextView tvMessageStatus,
+                                   @Nullable ImageView ivMessageStatus,
+                                   @Nullable ImageView ivSending) {
         if (TapUI.getInstance(instanceKey).isReadStatusHidden()) {
-            receiveDeliveredEmit(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
             return;
         }
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
-            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageRead)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         if (null != tvMessageStatus) {
@@ -1745,7 +1720,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
-            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconMessageRead)));
+            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageRead)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
         if (null != ivSending) {
@@ -1775,11 +1750,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         if (null == originalText) {
             return;
         }
-        if ((null != item.getSending() && item.getSending()) ||
-                (item.getType() != TYPE_TEXT &&
-                        item.getType() != TYPE_IMAGE &&
-                        item.getType() != TYPE_VIDEO &&
-                        item.getType() != TYPE_LOCATION)) {
+        if (item.getType() != TYPE_TEXT &&
+                    item.getType() != TYPE_IMAGE &&
+                    item.getType() != TYPE_VIDEO &&
+                    item.getType() != TYPE_LOCATION) {
             spaceAppend = "";
         } else if (isMessageFromMySelf(item)) {
             spaceAppend = RIGHT_BUBBLE_SPACE_APPEND;
@@ -1833,19 +1807,23 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         if (isMessageFromMySelf(item) && null != ivMessageStatus && null != ivSending) {
             // Message has been read
             if (null != item.getIsRead() && item.getIsRead()) {
-                vh.receiveReadEvent(item);
+                vh.onMessageRead(item);
             }
             // Message is delivered
             else if (null != item.getDelivered() && item.getDelivered()) {
-                vh.receiveDeliveredEvent(item);
-            } else if (null != item.getFailedSend() && item.getFailedSend()) {
-                vh.setMessage(item);
+                vh.onMessageDelivered(item);
+            }
+            // Message failed to send
+            else if (null != item.getFailedSend() && item.getFailedSend()) {
+                vh.onMessageFailedToSend(item);
             }
             // Message sent
             else if ((null != item.getSending() && !item.getSending())) {
-                vh.receiveSentEvent(item);
-            } else {
-                vh.setMessage(item);
+                vh.onMessageSent(item);
+            }
+            // Message sending
+            else {
+                vh.onMessageSending(item);
             }
             ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
         } else {
