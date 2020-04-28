@@ -148,18 +148,23 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private TAPChatListener chatListener;
     private TAPMessageModel expandedBubble, highlightedMessage;
     private TAPUserModel myUserModel;
-    private Map<String, TAPUserModel> roomParticipantsByUsername;
+    private Map<String, List<Integer>> messageMentionIndexes;
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
     private RequestManager glide;
     private float initialTranslationX = TAPUtils.dpToPx(-22);
     private long defaultAnimationTime = 200L;
 
-    public TAPMessageAdapter(String instanceKey, RequestManager glide, TAPChatListener chatListener, Map<String, TAPUserModel> roomParticipantsByUsername) {
+    public TAPMessageAdapter(
+            String instanceKey,
+            RequestManager glide,
+            TAPChatListener chatListener,
+            Map<String, List<Integer>> messageMentionIndexes
+    ) {
         myUserModel = TAPChatManager.getInstance(instanceKey).getActiveUser();
         this.instanceKey = instanceKey;
         this.chatListener = chatListener;
         this.glide = glide;
-        this.roomParticipantsByUsername = roomParticipantsByUsername;
+        this.messageMentionIndexes = messageMentionIndexes;
     }
 
     @NonNull
@@ -1793,16 +1798,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private SpannableString generateMentionSpan(TAPMessageModel item, String body, String spaceAppend) {
-        if (roomParticipantsByUsername.isEmpty() || item.getMentionIndexes().isEmpty()) {
+        List<Integer> indexes = messageMentionIndexes.get(item.getLocalID());
+        if (null == indexes || indexes.isEmpty()) {
             return null;
         }
         SpannableString span = new SpannableString(body + spaceAppend);
         int i = 1;
-        List<Integer> indexes = item.getMentionIndexes();
         while (i < indexes.size()) {
             String username = body.substring(indexes.get(i - 1) + 1, indexes.get(i));
-            TAPUserModel user = roomParticipantsByUsername.get(username);
-            if (null != user) {
                 span.setSpan(new ForegroundColorSpan(
                                 ContextCompat.getColor(TapTalk.appContext,
                                         isMessageFromMySelf(item) ?
@@ -1812,10 +1815,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 span.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(@NonNull View view) {
-                        chatListener.onMentionClicked(item, user);
+                        chatListener.onMentionClicked(item, username);
                     }
                 }, indexes.get(i - 1), indexes.get(i), 0);
-            }
             i += 2;
         }
         return span;

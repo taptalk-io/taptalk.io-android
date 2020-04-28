@@ -126,7 +126,6 @@ public class TAPEncryptorManager {
         TAPMessageModel decryptedMessage = TAPUtils.convertObject(messageMap, new TypeReference<TAPMessageModel>() {
         });
         if (null != decryptedMessage) {
-            decryptedMessage.updateMentionIndexes();
             decryptedMessage.updateMessageStatusText();
         }
         return decryptedMessage;

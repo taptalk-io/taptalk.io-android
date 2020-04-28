@@ -36,7 +36,7 @@ public interface TapTalkChatInterface {
 
     void onMessageQuoteClicked(TAPMessageModel message);
 
-    void onMentionClicked(TAPMessageModel message, TAPUserModel mentionedUser);
+    void onMentionClicked(TAPMessageModel message, String username);
 
     void onGroupMemberAvatarClicked(TAPMessageModel message);
 

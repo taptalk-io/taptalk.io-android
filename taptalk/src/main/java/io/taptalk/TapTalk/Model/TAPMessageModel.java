@@ -100,7 +100,6 @@ public class TAPMessageModel implements Parcelable {
     @Nullable
     @JsonProperty("target")
     private TAPMessageTargetModel target;
-    @JsonIgnore private List<Integer> mentionIndexes = new ArrayList<>();
     @JsonIgnore private String messageStatusText;
     @JsonIgnore private boolean isExpanded, isNeedAnimateSend, isAnimating;
 
@@ -152,7 +151,6 @@ public class TAPMessageModel implements Parcelable {
         this.action = action;
         // Update when adding fields to model
 
-        updateMentionIndexes();
         updateMessageStatusText();
     }
 
@@ -207,46 +205,6 @@ public class TAPMessageModel implements Parcelable {
     public static TAPMessageModel BuilderResendMessage(TAPMessageModel message, Long created) {
         String localID = TAPUtils.generateRandomString(32);
         return new TAPMessageModel("0", localID, "", message.getBody(), message.getRoom(), message.getType(), created, message.getUser(), message.getRecipientID(), message.getData(), message.getQuote(), message.getReplyTo(), message.getForwardFrom(), false, true, false, false, false, false, created, null, null, null);
-    }
-
-    public void updateMentionIndexes() {
-        mentionIndexes.clear();
-        String originalText;
-        if (getType() == TYPE_TEXT) {
-            originalText = getBody();
-        } else if ((getType() == TYPE_IMAGE || getType() == TYPE_VIDEO) && null != getData()) {
-            originalText = (String) getData().get(CAPTION);
-        } else if (getType() == TYPE_LOCATION && null != getData()) {
-            originalText = (String) getData().get(ADDRESS);
-        } else {
-            return;
-        }
-        if (null == originalText) {
-            return;
-        }
-        if (getRoom().getRoomType() != TYPE_PERSONAL && originalText.contains("@")) {
-            int length = originalText.length();
-            boolean startIndexAdded = false;
-            for (int i = 0; i < length; i++) {
-                if (originalText.charAt(i) == '@' && !startIndexAdded) {
-                    // Set index of @ (mention start index)
-                    mentionIndexes.add(i);
-                    startIndexAdded = true;
-                } else {
-                    boolean endOfMention = originalText.charAt(i) == ' ' ||
-                            originalText.charAt(i) == '\n';
-                    if (i == (length - 1) && startIndexAdded) {
-                        // End of string (mention end index)
-                        mentionIndexes.add(endOfMention ? i : (i + 1));
-                        startIndexAdded = false;
-                    } else if (endOfMention && startIndexAdded) {
-                        // End index for mentioned username
-                        mentionIndexes.add(i);
-                        startIndexAdded = false;
-                    }
-                }
-            }
-        }
     }
 
     public void updateMessageStatusText() {
@@ -465,10 +423,6 @@ public class TAPMessageModel implements Parcelable {
         this.target = target;
     }
 
-    public List<Integer> getMentionIndexes() {
-        return mentionIndexes;
-    }
-
     public String getMessageStatusText() {
         return messageStatusText;
     }
@@ -553,7 +507,6 @@ public class TAPMessageModel implements Parcelable {
             this.isRead = model.getIsRead();
         if (null != model.getAction()) this.action = model.getAction();
         if (null != model.getTarget()) this.target = model.getTarget();
-        updateMentionIndexes();
         updateMessageStatusText();
         // Update when adding fields to model
     }
@@ -659,7 +612,6 @@ public class TAPMessageModel implements Parcelable {
         dest.writeValue(this.deleted);
         dest.writeString(this.action);
         dest.writeParcelable(this.target, flags);
-        dest.writeList(this.mentionIndexes);
         dest.writeString(this.messageStatusText);
         dest.writeByte(this.isExpanded ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isNeedAnimateSend ? (byte) 1 : (byte) 0);
@@ -690,8 +642,6 @@ public class TAPMessageModel implements Parcelable {
         this.deleted = (Long) in.readValue(Long.class.getClassLoader());
         this.action = in.readString();
         this.target = in.readParcelable(TAPMessageTargetModel.class.getClassLoader());
-        this.mentionIndexes = new ArrayList<>();
-        in.readList(this.mentionIndexes, Integer.class.getClassLoader());
         this.messageStatusText = in.readString();
         this.isExpanded = in.readByte() != 0;
         this.isNeedAnimateSend = in.readByte() != 0;

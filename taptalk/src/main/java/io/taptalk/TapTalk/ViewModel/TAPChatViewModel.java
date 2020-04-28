@@ -36,6 +36,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, unreadMentions;
     private Map<String, TAPUserModel> roomParticipantsByUsername;
+    private Map<String, List<Integer>> messageMentionIndexes;
     private LinkedHashMap<String, TAPUserModel> groupTyping;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
@@ -160,6 +161,14 @@ public class TAPChatViewModel extends AndroidViewModel {
             return;
         }
         getRoomParticipantsByUsername().put(user.getUsername(), user);
+    }
+
+    public Map<String, List<Integer>> getMessageMentionIndexes() {
+        return messageMentionIndexes == null ? messageMentionIndexes = new LinkedHashMap<>() : messageMentionIndexes;
+    }
+
+    public void addMessageMentionIndexes(String localID, List<Integer> indexes) {
+        getMessageMentionIndexes().put(localID, indexes);
     }
 
     public Map<String, TAPMessageModel> getUnreadMentions() {
