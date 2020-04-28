@@ -27,7 +27,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -1944,15 +1943,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
             });
             // Replace pending message with new message
             String newID = newMessage.getLocalID();
+            updateMessageMentionIndexes(newMessage);
             boolean ownMessage = newMessage.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID());
-
-            vm.getMessageMentionIndexes().remove(newMessage.getLocalID());
-            List<Integer> mentionIndexes = getMessageMentionIndexes(newMessage);
-            if (null != mentionIndexes) {
-                // Add mention indexes
-                vm.getMessageMentionIndexes().put(newMessage.getLocalID(), mentionIndexes);
-            }
-
             runOnUiThread(() -> {
                 if (vm.getMessagePointer().containsKey(newID) &&
                         TYPE_IMAGE == newMessage.getType() &&
@@ -2005,16 +1997,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     flMessageList.setVisibility(View.VISIBLE);
                 }
             });
-
+            updateMessageMentionIndexes(newMessage);
             boolean ownMessage = newMessage.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID());
-
-            vm.getMessageMentionIndexes().remove(newMessage.getLocalID());
-            List<Integer> mentionIndexes = getMessageMentionIndexes(newMessage);
-            if (null != mentionIndexes) {
-                // Add mention indexes
-                vm.getMessageMentionIndexes().put(newMessage.getLocalID(), mentionIndexes);
-            }
-
             runOnUiThread(() -> {
                 messageAdapter.addMessage(newMessage);
                 vm.addMessagePointer(newMessage);
@@ -2411,10 +2395,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         hideUserMentionList();
     }
 
-    @Nullable
-    private List<Integer> getMessageMentionIndexes(TAPMessageModel message) {
+    private void updateMessageMentionIndexes(TAPMessageModel message) {
+        vm.getMessageMentionIndexes().remove(message.getLocalID());
         if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
-            return null;
+            return;
         }
         String originalText;
         if (message.getType() == TYPE_TEXT) {
@@ -2424,10 +2408,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else if (message.getType() == TYPE_LOCATION && null != message.getData()) {
             originalText = (String) message.getData().get(ADDRESS);
         } else {
-            return null;
+            return;
         }
         if (null == originalText) {
-            return null;
+            return;
         }
         List<Integer> mentionIndexes = new ArrayList<>();
         if (originalText.contains("@")) {
@@ -2444,27 +2428,26 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         // End of string (mention end index)
                         int endIndex = endOfMention ? i : (i + 1);
                         String username = originalText.substring(startIndex + 1, endIndex);
-                        if (vm.getRoomParticipantsByUsername().containsKey(username)) {
+                        //if (vm.getRoomParticipantsByUsername().containsKey(username)) {
                             mentionIndexes.add(startIndex);
                             mentionIndexes.add(endIndex);
-                        }
+                        //}
                         startIndex = -1;
                     } else if (endOfMention && startIndex != -1) {
                         // End index for mentioned username
                         String username = originalText.substring(startIndex + 1, i);
-                        if (vm.getRoomParticipantsByUsername().containsKey(username)) {
+                        //if (vm.getRoomParticipantsByUsername().containsKey(username)) {
                             mentionIndexes.add(startIndex);
                             mentionIndexes.add(i);
-                        }
+                        //}
                         startIndex = -1;
                     }
                 }
             }
             if (!mentionIndexes.isEmpty()) {
-                return mentionIndexes;
+                vm.getMessageMentionIndexes().put(message.getLocalID(), mentionIndexes);
             }
         }
-        return null;
     }
 
     private void showUserMentionList(List<TAPUserModel> searchResult, int loopIndex, int cursorIndex) {
@@ -2871,12 +2854,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     allMessagesHidden = false;
                 }
 
-                vm.getMessageMentionIndexes().remove(model.getLocalID());
-                List<Integer> mentionIndexes = getMessageMentionIndexes(model);
-                if (null != mentionIndexes) {
-                    // Add mention indexes
-                    vm.getMessageMentionIndexes().put(model.getLocalID(), mentionIndexes);
-                }
+                updateMessageMentionIndexes(model);
 
                 if ((null == model.getIsRead() || !model.getIsRead()) &&
                         TAPUtils.isActiveUserMentioned(model, vm.getMyUserModel())) {
@@ -3015,14 +2993,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
                     models.add(model);
                     vm.addMessagePointer(model);
-
-                    vm.getMessageMentionIndexes().remove(model.getLocalID());
-                    List<Integer> mentionIndexes = getMessageMentionIndexes(model);
-                    if (null != mentionIndexes) {
-                        // Add mention indexes
-                        vm.getMessageMentionIndexes().put(model.getLocalID(), mentionIndexes);
-                    }
-
+                    updateMessageMentionIndexes(model);
                     if ((null == model.getIsRead() || !model.getIsRead()) &&
                             TAPUtils.isActiveUserMentioned(model, vm.getMyUserModel())) {
                         // Add unread mention
@@ -3166,12 +3137,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             allMessagesHidden = false;
                         }
 
-                        vm.getMessageMentionIndexes().remove(message.getLocalID());
-                        List<Integer> mentionIndexes = getMessageMentionIndexes(message);
-                        if (null != mentionIndexes) {
-                            // Add mention indexes
-                            vm.getMessageMentionIndexes().put(message.getLocalID(), mentionIndexes);
-                        }
+                        updateMessageMentionIndexes(message);
 
                         if ((null == message.getIsRead() || !message.getIsRead()) &&
                                 TAPUtils.isActiveUserMentioned(message, vm.getMyUserModel())) {
@@ -3384,17 +3350,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     messageBeforeModels.addAll(addBeforeTextMessage(message));
                     responseMessages.add(TAPChatManager.getInstance(instanceKey).convertToEntity(message));
-
                     if (allMessagesHidden && (null == message.getHidden() || !message.getHidden())) {
                         allMessagesHidden = false;
                     }
-
-                    vm.getMessageMentionIndexes().remove(message.getLocalID());
-                    List<Integer> mentionIndexes = getMessageMentionIndexes(message);
-                    if (null != mentionIndexes) {
-                        // Add mention indexes
-                        vm.getMessageMentionIndexes().put(message.getLocalID(), mentionIndexes);
-                    }
+                    updateMessageMentionIndexes(message);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -3488,13 +3447,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     messageBeforeModels.addAll(addBeforeTextMessage(message));
                     responseMessages.add(TAPChatManager.getInstance(instanceKey).convertToEntity(message));
-
-                    vm.getMessageMentionIndexes().remove(message.getLocalID());
-                    List<Integer> mentionIndexes = getMessageMentionIndexes(message);
-                    if (null != mentionIndexes) {
-                        // Add mention indexes
-                        vm.getMessageMentionIndexes().put(message.getLocalID(), mentionIndexes);
-                    }
+                    updateMessageMentionIndexes(message);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
