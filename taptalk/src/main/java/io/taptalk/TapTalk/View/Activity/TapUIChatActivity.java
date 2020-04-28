@@ -226,6 +226,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private MaxHeightRecyclerView rvUserMentionList;
     private FrameLayout flMessageList;
     private FrameLayout flRoomUnavailable;
+    private FrameLayout flLoading;
     private LinearLayout llButtonDeleteChat;
     private ConstraintLayout clContainer;
     private ConstraintLayout clContactAction;
@@ -252,6 +253,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private ImageView ivToBottom;
     private ImageView ivMentionAnchor;
     private ImageView ivRoomTypingIndicator;
+    private ImageView ivLoadingPopup;
     private CircleImageView civRoomImage;
     private CircleImageView civMyAvatarEmpty;
     private CircleImageView civRoomAvatarEmpty;
@@ -273,6 +275,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TextView tvRoomTypingStatus;
     private TextView tvChatHistoryContent;
     private TextView tvMessage;
+    private TextView tvLoadingText;
     private View vRoomImage;
     private View vStatusBadge;
     private View vQuoteDecoration;
@@ -603,6 +606,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //        sblChat = getSwipeBackLayout();
         flMessageList = (FrameLayout) findViewById(R.id.fl_message_list);
         flRoomUnavailable = (FrameLayout) findViewById(R.id.fl_room_unavailable);
+        flLoading = (FrameLayout) findViewById(R.id.fl_loading);
         llButtonDeleteChat = (LinearLayout) findViewById(R.id.ll_button_delete_chat);
         clContainer = (ConstraintLayout) findViewById(R.id.cl_container);
         clContactAction = (ConstraintLayout) findViewById(R.id.cl_contact_action);
@@ -628,6 +632,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivToBottom = (ImageView) findViewById(R.id.iv_to_bottom);
         ivMentionAnchor = (ImageView) findViewById(R.id.iv_mention_anchor);
         ivRoomTypingIndicator = (ImageView) findViewById(R.id.iv_room_typing_indicator);
+        ivLoadingPopup = findViewById(R.id.iv_loading_image);
         civRoomImage = (CircleImageView) findViewById(R.id.civ_room_image);
         civMyAvatarEmpty = (CircleImageView) findViewById(R.id.civ_my_avatar_empty);
         civRoomAvatarEmpty = (CircleImageView) findViewById(R.id.civ_room_avatar_empty);
@@ -649,6 +654,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvBadgeMentionCount = (TextView) findViewById(R.id.tv_badge_mention_count);
         tvChatHistoryContent = (TextView) findViewById(R.id.tv_chat_history_content);
         tvMessage = (TextView) findViewById(R.id.tv_message);
+        tvLoadingText = findViewById(R.id.tv_loading_text);
         rvMessageList = (TAPChatRecyclerView) findViewById(R.id.rv_message_list);
         rvCustomKeyboard = (RecyclerView) findViewById(R.id.rv_custom_keyboard);
         rvUserMentionList = (MaxHeightRecyclerView) findViewById(R.id.rv_user_mention_list);
@@ -880,6 +886,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivToBottom.setOnClickListener(v -> scrollToBottom());
         ivMentionAnchor.setOnClickListener(v -> scrollToMessage(vm.getUnreadMentions().entrySet().iterator().next().getValue().getLocalID()));
         flMessageList.setOnClickListener(v -> chatListener.onOutsideClicked());
+        flLoading.setOnClickListener(v -> {});
 
 //        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
 //        if (null == vm.getRoom().getGroupParticipants()) {
@@ -1035,9 +1042,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onMentionClicked(TAPMessageModel message, String username) {
-            TAPUserModel mentionedUser = vm.getRoomParticipantsByUsername().get(username);
-            if (null != mentionedUser) {
-                TAPChatManager.getInstance(instanceKey).triggerUserMentionTapped(TapUIChatActivity.this, message, mentionedUser);
+            TAPUserModel participant = vm.getRoomParticipantsByUsername().get(username);
+            if (null != participant) {
+                TAPChatManager.getInstance(instanceKey).triggerUserMentionTapped(TapUIChatActivity.this, message, participant, true);
+            } else {
+                TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserDataByUsername(username);
+                if (null != user) {
+                    TAPChatManager.getInstance(instanceKey).triggerUserMentionTapped(TapUIChatActivity.this, message, user, false);
+                } else {
+                    callApiGetUserByUsername(username, message);
+                }
             }
         }
 
@@ -1555,25 +1569,37 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         @Override
-        public void onViewProfileSelected(TAPUserModel user) {
-            TAPChatManager.getInstance(instanceKey).triggerChatRoomProfileButtonTapped(
-                    TapUIChatActivity.this,
-                    TAPRoomModel.Builder(
-                            TAPChatManager.getInstance(instanceKey).arrangeRoomId(
-                                    TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
-                                    user.getUserID()),
-                            user.getName(),
-                            TYPE_PERSONAL,
-                            user.getAvatarURL(),
-                            ""), // TODO: 13 Apr 2020 ROOM COLOR
-                    user);
+        public void onViewProfileSelected(String username, TAPMessageModel message) {
+            TAPUserModel participant = vm.getRoomParticipantsByUsername().get(username);
+            if (null != participant) {
+                TAPChatManager.getInstance(instanceKey).triggerUserMentionTapped(TapUIChatActivity.this, message, participant, true);
+            } else {
+                TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserDataByUsername(username);
+                if (null != user) {
+                    TAPChatManager.getInstance(instanceKey).triggerUserMentionTapped(TapUIChatActivity.this, message, user, false);
+                } else {
+                    callApiGetUserByUsername(username, message);
+                }
+            }
         }
 
         @Override
-        public void onSendMessageSelected(TAPUserModel user) {
-            TapUI.getInstance().openChatRoomWithOtherUser(TapUIChatActivity.this, user);
-            rvCustomKeyboard.setVisibility(View.GONE);
-            onBackPressed();
+        public void onSendMessageSelected(String username) {
+            TAPUserModel participant = vm.getRoomParticipantsByUsername().get(username);
+            if (null != participant) {
+                TapUI.getInstance().openChatRoomWithOtherUser(TapUIChatActivity.this, participant);
+                rvCustomKeyboard.setVisibility(View.GONE);
+                onBackPressed();
+            } else {
+                TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserDataByUsername(username);
+                if (null != user) {
+                    TapUI.getInstance().openChatRoomWithOtherUser(TapUIChatActivity.this, user);
+                    rvCustomKeyboard.setVisibility(View.GONE);
+                    onBackPressed();
+                } else {
+                    callApiGetUserByUsername(username, null);
+                }
+            }
         }
     };
 
@@ -1791,6 +1817,56 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
             }
         }).start();
+    }
+
+    // For mentioned user data
+    private void callApiGetUserByUsername(String username, @Nullable TAPMessageModel message) {
+        TAPDataManager.getInstance(instanceKey).getUserByUsernameFromApi(username, true, new TAPDefaultDataView<TAPGetUserResponse>() {
+            private boolean isCanceled = false;
+
+            @Override
+            public void startLoading() {
+                showLoadingPopup();
+                tvLoadingText.setOnClickListener(v -> {
+                    hideLoadingPopup();
+                    isCanceled = true;
+                });
+            }
+
+            @Override
+            public void onSuccess(TAPGetUserResponse response) {
+                TAPUserModel userResponse = response.getUser();
+                TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
+                if (!isCanceled) {
+                    hideLoadingPopup();
+                    if (null == message) {
+                        // Open chat room if message is null (from send message menu)
+                        TapUI.getInstance().openChatRoomWithOtherUser(TapUIChatActivity.this, userResponse);
+                        rvCustomKeyboard.setVisibility(View.GONE);
+                        onBackPressed();
+                    } else {
+                        // Open profile if message is not null (from mention tap/view profile menu)
+                        TAPChatManager.getInstance(instanceKey).triggerUserMentionTapped(TapUIChatActivity.this, message, userResponse, false);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (!isCanceled) {
+                    hideLoadingPopup();
+                    showErrorDialog(getString(R.string.tap_error), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (!isCanceled) {
+                    hideLoadingPopup();
+                    showErrorDialog(getString(R.string.tap_error), getString(R.string.tap_error_message_general));
+                }
+            }
+        });
     }
 
     private void showChatAsHistory(String message) {
@@ -2427,18 +2503,22 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (i == (length - 1) && startIndex != -1) {
                         // End of string (mention end index)
                         int endIndex = endOfMention ? i : (i + 1);
-                        String username = originalText.substring(startIndex + 1, endIndex);
+                        //String username = originalText.substring(startIndex + 1, endIndex);
                         //if (vm.getRoomParticipantsByUsername().containsKey(username)) {
+                        if (endIndex > (startIndex + 1)) {
                             mentionIndexes.add(startIndex);
                             mentionIndexes.add(endIndex);
+                        }
                         //}
                         startIndex = -1;
                     } else if (endOfMention && startIndex != -1) {
                         // End index for mentioned username
-                        String username = originalText.substring(startIndex + 1, i);
+                        //String username = originalText.substring(startIndex + 1, i);
                         //if (vm.getRoomParticipantsByUsername().containsKey(username)) {
+                        if (i > (startIndex + 1)) {
                             mentionIndexes.add(startIndex);
                             mentionIndexes.add(i);
+                        }
                         //}
                         startIndex = -1;
                     }
@@ -2673,6 +2753,37 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     }
 
+    private void showLoadingPopup() {
+        runOnUiThread(() -> {
+            ivLoadingPopup.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
+            if (null == ivLoadingPopup.getAnimation()) {
+                TAPUtils.rotateAnimateInfinitely(this, ivLoadingPopup);
+            }
+            tvLoadingText.setVisibility(View.INVISIBLE);
+            flLoading.setVisibility(View.VISIBLE);
+            new Handler().postDelayed(() -> {
+                if (flLoading.getVisibility() == View.VISIBLE) {
+                    tvLoadingText.setText(getString(R.string.tap_cancel));
+                    tvLoadingText.setVisibility(View.VISIBLE);
+                }
+            }, 1000L);
+        });
+    }
+
+    private void hideLoadingPopup() {
+        runOnUiThread(() -> flLoading.setVisibility(View.GONE));
+    }
+
+    private void showErrorDialog(String title, String message) {
+        runOnUiThread(() -> new TapTalkDialog.Builder(this)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(title)
+                .setCancelable(true)
+                .setMessage(message)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                .show());
+    }
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -2793,13 +2904,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
                 case LongPressMention:
                     if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
-                        // Save temporary mentioned user data
-                        String linkifyResult = intent.getStringExtra(URL_MESSAGE);
-                        if (null == linkifyResult || linkifyResult.isEmpty()) {
-                            return;
-                        }
-                        String username = linkifyResult.substring(1);
-                        TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().put(username, vm.getRoomParticipantsByUsername().get(username));
                         TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(MENTION_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         mentionBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);

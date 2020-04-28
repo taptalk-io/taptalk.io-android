@@ -36,9 +36,9 @@ public interface TapTalkAttachmentInterface {
 
     void onSaveToDownloads(TAPMessageModel message);
 
-    void onViewProfileSelected(TAPUserModel user);
+    void onViewProfileSelected(String username, TAPMessageModel message);
 
-    void onSendMessageSelected(TAPUserModel user);
+    void onSendMessageSelected(String username);
 
     void onDeleteMessage(String roomID, TAPMessageModel message);
 }

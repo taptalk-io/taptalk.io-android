@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tapTransparentCharcoal40"
-    android:elevation="2dp"
+    android:elevation="8dp"
     android:visibility="gone">
 
     <androidx.constraintlayout.widget.ConstraintLayout

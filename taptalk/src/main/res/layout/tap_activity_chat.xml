@@ -385,7 +385,7 @@
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/fl_loading"
+        android:id="@+id/fl_connection_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/cl_contact_action">
@@ -824,5 +824,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history" />
+
+    <include layout="@layout/tap_layout_popup_loading_screen" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
