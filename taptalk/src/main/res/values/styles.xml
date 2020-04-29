@@ -434,26 +434,26 @@
     <style name="tapRightFileBubbleNameStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapRightFileBubbleNameColor</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapLeftFileBubbleNameStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapLeftFileBubbleNameColor</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapRightFileBubbleInfoStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapRightFileBubbleInfoColor</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
 
     <style name="tapLeftFileBubbleInfoStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapLeftFileBubbleInfoColor</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
 

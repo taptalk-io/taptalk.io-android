@@ -51,7 +51,7 @@
             android:indeterminate="false"
             android:max="100"
             android:padding="4dp"
-            android:progressDrawable="@drawable/tap_file_circular_progress"
+            android:progressDrawable="@drawable/tap_file_circular_progress_white"
             tools:progress="65" />
 
         <ImageView

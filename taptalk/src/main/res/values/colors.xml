@@ -60,7 +60,8 @@
     <color name="tapLeftFileButtonBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
     <color name="tapUnreadIdentifierBackgroundColor">@color/tapPumpkinOrange10</color>
-    <color name="tapFileProgressBackgroundColor">@color/tapWhite</color>
+    <color name="tapLeftFileProgressBackgroundColor">@color/tapWhite</color>
+    <color name="tapRightFileProgressBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapDeletedChatRoomInfoBackgroundColor">@color/tapParchment</color>
     <color name="tapChatRoomBackgroundColor">@color/tapDefaultBackgroundColor</color> <!--*-->
 
@@ -166,10 +167,14 @@
     <color name="tapIconChatComposerBurgerMenuBackground">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatComposerShowKeyboardBackground">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatComposerAttach">@color/tapColorGrayIcon</color>
-    <color name="tapIconFile">@color/tapColorWhiteIcon</color>
-    <color name="tapIconFileUploadDownload">@color/tapColorWhiteIcon</color>
-    <color name="tapIconFileCancelUploadDownload">@color/tapColorWhiteIcon</color>
-    <color name="tapIconFileRetryUploadDownload">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileLeft">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileUploadDownloadLeft">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileCancelUploadDownloadLeft">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileRetryUploadDownloadLeft">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileRight">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconFileUploadDownloadRight">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconFileCancelUploadDownloadRight">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconFileRetryUploadDownloadRight">@color/tapColorPrimaryIcon</color>
     <color name="tapIconFilePlayMedia">@color/tapColorWhiteIcon</color>
     <color name="tapIconDeletedRightMessageBubble">@color/tapColorWhiteIcon</color>
     <color name="tapIconDeletedLeftMessageBubble">@color/tapColorGrayIcon</color>

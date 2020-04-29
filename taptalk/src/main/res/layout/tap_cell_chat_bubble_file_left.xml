@@ -42,6 +42,7 @@
         android:layout_marginEnd="64dp"
         android:layout_marginRight="64dp"
         android:elevation="1dp"
+        android:background="@drawable/tap_bg_chat_bubble_left_default"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/tv_message_status"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,7 +55,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:background="@drawable/tap_bg_chat_bubble_left_default"
             android:padding="10dp">
 
             <TextView
@@ -133,7 +133,7 @@
                         android:layout_gravity="center"
                         android:indeterminate="false"
                         android:max="100"
-                        android:progressDrawable="@drawable/tap_file_circular_progress"
+                        android:progressDrawable="@drawable/tap_file_circular_progress_white"
                         tools:progress="65" />
 
                     <ImageView
@@ -202,6 +202,15 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <TextView
+                android:id="@+id/tv_message_timestamp"
+                style="@style/tapLeftBubbleMessageTimestampStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                tools:text="17:05" />
+
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier_end"
                 android:layout_width="wrap_content"
@@ -220,23 +229,24 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/fl_bubble"
         app:layout_constraintTop_toBottomOf="@id/fl_bubble"
         tools:text="Delivered at 17:05 17/05/2018" />
 
-    <ImageView
-        android:id="@+id/iv_reply"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/tap_ic_reply_circle_white"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
-        app:layout_constraintStart_toEndOf="@id/fl_bubble" />
+<!--    <ImageView-->
+<!--        android:id="@+id/iv_reply"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginLeft="2dp"-->
+<!--        android:layout_marginStart="2dp"-->
+<!--        android:layout_marginBottom="2dp"-->
+<!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--        android:src="@drawable/tap_ic_reply_circle_white"-->
+<!--        android:visibility="gone"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"-->
+<!--        app:layout_constraintStart_toEndOf="@id/fl_bubble" />-->
 
     <View
         android:id="@+id/v_background_highlight"
