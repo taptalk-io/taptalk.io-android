@@ -1407,9 +1407,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void openAttachMenu() {
-        if (!etChat.hasFocus()) {
-            etChat.requestFocus();
-        }
+        //if (!etChat.hasFocus()) {
+        //    etChat.requestFocus();
+        //}
         TAPUtils.dismissKeyboard(this);
         TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
@@ -2038,12 +2038,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
                     vm.setScrollFromKeyboard(true);
                     messageAdapter.addMessage(newMessage);
-                    rvMessageList.scrollToPosition(0);
+                    //rvMessageList.scrollToPosition(0);
+                    scrollToBottom();
                     vm.addMessagePointer(newMessage);
                 } else if (ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
                     messageAdapter.addMessage(newMessage);
-                    rvMessageList.scrollToPosition(0);
+                    //rvMessageList.scrollToPosition(0);
+                    scrollToBottom();
                     vm.addMessagePointer(newMessage);
                 } else {
                     // Message from other people is received when recycler is scrolled up
@@ -2080,6 +2082,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.addMessagePointer(newMessage);
                 if (vm.isOnBottom() || ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
+                    ivToBottom.setVisibility(View.GONE);
                     rvMessageList.scrollToPosition(0);
                 } else {
                     // Message from other people is received when recycler is scrolled up

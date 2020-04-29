@@ -338,7 +338,7 @@ public class TAPAttachmentModel {
             imageResIds.add(R.drawable.tap_ic_save_orange);
 
             titleResIds.add(R.string.tap_reply);
-            titleResIds.add(R.string.tap_save_to_download);
+            titleResIds.add(R.string.tap_save_to_downloads);
 
             ids.add(LONG_PRESS_REPLY);
             ids.add(LONG_PRESS_SAVE_DOWNLOADS);

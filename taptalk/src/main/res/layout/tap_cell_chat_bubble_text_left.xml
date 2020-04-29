@@ -139,18 +139,18 @@
 
     </FrameLayout>
 
-    <!--    <TextView-->
-    <!--        android:id="@+id/tv_message_status"-->
-    <!--        style="@style/tapBubbleMessageStatusStyle"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginTop="2dp"-->
-    <!--        android:layout_marginBottom="8dp"-->
-    <!--        android:visibility="gone"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="@id/fl_bubble"-->
-    <!--        app:layout_constraintTop_toBottomOf="@id/fl_bubble"-->
-    <!--        android:text="@string/tap_message_send_failed" />-->
+    <TextView
+        android:id="@+id/tv_message_status"
+        style="@style/tapBubbleMessageStatusStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/fl_bubble"
+        app:layout_constraintTop_toBottomOf="@id/fl_bubble"
+        tools:text="@string/tap_message_send_failed" />
 
     <!--    <ImageView-->
     <!--        android:id="@+id/iv_reply"-->
