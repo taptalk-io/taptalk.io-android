@@ -43,7 +43,6 @@
         android:layout_marginRight="48dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/tap_bg_chat_bubble_left_default"
-        android:elevation="1dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

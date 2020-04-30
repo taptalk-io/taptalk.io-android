@@ -13,19 +13,19 @@
         style="@style/tapSystemMessageBodyStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/tap_bg_system_message_bubble"
         android:elevation="1dp"
         android:gravity="center"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="6dp"
         android:paddingStart="10dp"
         android:paddingTop="5dp"
         android:paddingEnd="10dp"
         android:paddingBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="System Message" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1191,10 +1191,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showMessageList() {
         flMessageList.setVisibility(View.VISIBLE);
         flMessageList.post(() -> {
-            tvDateIndicator.setVisibility(View.VISIBLE);
-            tvDateIndicator.setText(TAPTimeFormatter.getInstance().dateStampString(this,
-                    messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition())
-                            .getCreated()));
+            TAPMessageModel message = messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition());
+            if (null != message) {
+                tvDateIndicator.setVisibility(View.VISIBLE);
+                tvDateIndicator.setText(TAPTimeFormatter.getInstance().dateStampString(this, message.getCreated()));
+            }
         });
     }
 
