@@ -261,6 +261,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TextView tvRoomName;
     private TextView tvRoomStatus;
     private TextView tvRoomImageLabel;
+    private TextView tvDateIndicator;
     private TextView tvUnreadButtonCount;
     private TextView tvChatEmptyGuide;
     private TextView tvMyAvatarLabelEmpty;
@@ -643,6 +644,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvRoomTypingStatus = (TextView) findViewById(R.id.tv_room_typing_status);
         tvButtonBlockContact = (TextView) findViewById(R.id.tv_button_block_contact);
         tvButtonAddToContacts = (TextView) findViewById(R.id.tv_button_add_to_contacts);
+        tvDateIndicator = (TextView) findViewById(R.id.tv_date_indicator);
         tvUnreadButtonCount = (TextView) findViewById(R.id.tv_unread_button_count);
         tvChatEmptyGuide = (TextView) findViewById(R.id.tv_chat_empty_guide);
         tvMyAvatarLabelEmpty = (TextView) findViewById(R.id.tv_my_avatar_label_empty);
@@ -1184,6 +1186,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
         imageView.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_circle_9b9b9b));
         tvAvatarLabel.setVisibility(View.VISIBLE);
+    }
+
+    private void showMessageList() {
+        flMessageList.setVisibility(View.VISIBLE);
+        flMessageList.post(() -> {
+            tvDateIndicator.setVisibility(View.VISIBLE);
+            tvDateIndicator.setText(TAPTimeFormatter.getInstance().dateStampString(this,
+                    messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition())
+                            .getCreated()));
+        });
     }
 
     private void updateUnreadCount() {
@@ -2014,7 +2026,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Remove empty chat layout if still shown
                 if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getHidden() || !newMessage.getHidden())) {
                     clEmptyChat.setVisibility(View.GONE);
-                    flMessageList.setVisibility(View.VISIBLE);
+                    showMessageList();
                 }
             });
             // Replace pending message with new message
@@ -2072,7 +2084,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Remove empty chat layout if still shown
                 if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getHidden() || !newMessage.getHidden())) {
                     clEmptyChat.setVisibility(View.GONE);
-                    flMessageList.setVisibility(View.VISIBLE);
+                    showMessageList();
                 }
             });
             updateMessageMentionIndexes(newMessage);
@@ -2341,6 +2353,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.setOnBottom(false);
                 ivToBottom.setVisibility(View.VISIBLE);
                 vm.setScrollFromKeyboard(false);
+            }
+        }
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            // Update date indicator
+            if (tvDateIndicator.getVisibility() == View.VISIBLE) {
+                tvDateIndicator.setText(TAPTimeFormatter.getInstance().dateStampString(TapUIChatActivity.this,
+                        messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition()).getCreated()));
             }
         }
     };
@@ -3023,7 +3045,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         if (clEmptyChat.getVisibility() == View.VISIBLE && !finalAllMessagesHidden) {
                             clEmptyChat.setVisibility(View.GONE);
                         }
-                        flMessageList.setVisibility(View.VISIBLE);
+                        showMessageList();
                         showUnreadButton(vm.getUnreadIndicator());
                         updateMentionCount();
                         checkChatRoomLocked(models.get(0));
@@ -3054,7 +3076,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (clEmptyChat.getVisibility() == View.VISIBLE && !finalAllMessagesHidden) {
                         clEmptyChat.setVisibility(View.GONE);
                     }
-                    flMessageList.setVisibility(View.VISIBLE);
+                    showMessageList();
                     messageAdapter.setMessages(models);
                     new Thread(() -> {
                         vm.setMessageModels(messageAdapter.getItems());
@@ -3317,7 +3339,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (clEmptyChat.getVisibility() == View.VISIBLE && !finalAllMessagesHidden) {
                     clEmptyChat.setVisibility(View.GONE);
                 }
-                flMessageList.setVisibility(View.VISIBLE);
+                showMessageList();
                 updateMessageDecoration();
                 // Insert new messages to first index
                 messageAdapter.addMessage(0, messageAfterModels, false);
@@ -3485,7 +3507,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         || (0 < messageAdapter.getItems().size() && DELETE_ROOM.equals(messageAdapter.getItems().get(0).getAction()))
                         || (0 < messageAdapter.getItems().size() && LEAVE_ROOM.equals(messageAdapter.getItems().get(0).getAction()) &&
                         TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(messageAdapter.getItems().get(0).getUser().getUserID())))) {
-                    flMessageList.setVisibility(View.VISIBLE);
+                    showMessageList();
                 }
 
                 // Add messages to last index

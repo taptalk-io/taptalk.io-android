@@ -59,6 +59,7 @@
     <color name="tapRightFileButtonBackgroundColor">@color/tapColorPrimaryDark</color>
     <color name="tapLeftFileButtonBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
+    <color name="tapDateIndicatorBackgroundColor">@color/tapWhite</color>
     <color name="tapUnreadIdentifierBackgroundColor">@color/tapPumpkinOrange10</color>
     <color name="tapLeftFileProgressBackgroundColor">@color/tapWhite</color>
     <color name="tapRightFileProgressBackgroundColor">@color/tapColorPrimary</color>
@@ -294,6 +295,7 @@
     <color name="tapLeftBubbleMessageTimestampColor">@color/tapTransparentBlack1940</color>
     <color name="tapBubbleMediaInfoColor">@color/tapColorTextLight</color>
     <color name="tapSystemMessageBodyColor">@color/tapColorTextMedium</color>
+    <color name="tapDateIndicatorTextColor">@color/tapTransparentBlack1960</color>
     <color name="tapChatRoomUnreadBadgeLabelColor">@color/tapColorTextLight</color>
     <color name="tapUnreadMessageIdentifierColor">@color/tapColorPrimary</color>
     <color name="tapUnreadMessageButtonLabelColor">@color/tapColorPrimary</color>
@@ -443,6 +445,7 @@
     <color name="tapTransparentCharcoal40">#6604040f</color>
     <color name="tapTransparentBlack1920">#33191919</color>
     <color name="tapTransparentBlack1940">#66191919</color>
+    <color name="tapTransparentBlack1960">#99191919</color>
     <color name="tapTransparentBlack4770">#b3474747</color>
 
 </resources>

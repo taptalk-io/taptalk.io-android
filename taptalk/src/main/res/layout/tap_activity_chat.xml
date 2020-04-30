@@ -357,7 +357,7 @@
         android:descendantFocusability="blocksDescendants"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
-        app:layout_constraintTop_toBottomOf="@id/cl_contact_action"
+        app:layout_constraintTop_toBottomOf="@id/fl_connection_status"
         tools:background="@color/tapTransparentCharcoal40">
 
         <io.taptalk.TapTalk.Helper.TAPChatRecyclerView
@@ -398,6 +398,25 @@
 
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/tv_date_indicator"
+        style="@style/tapDateIndicatorTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/tap_bg_date_indicator"
+        android:elevation="2dp"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fl_connection_status"
+        tools:text="Today" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_unread_button"
         android:layout_width="wrap_content"
@@ -412,7 +431,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cl_contact_action">
+        app:layout_constraintTop_toBottomOf="@+id/fl_connection_status">
 
         <TextView
             android:id="@+id/tv_unread_button_count"

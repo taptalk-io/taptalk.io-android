@@ -491,6 +491,12 @@
         <item name="android:textSize">11sp</item>
     </style>
 
+    <style name="tapDateIndicatorTextStyle" parent="tapFontFamilyMedium">
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">@color/tapDateIndicatorTextColor</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="tapChatRoomUnreadBadgeLabelStyle" parent="tapFontFamilyBold">
         <item name="android:textColor">@color/tapChatRoomUnreadBadgeLabelColor</item>
         <item name="android:textSize">11dp</item>

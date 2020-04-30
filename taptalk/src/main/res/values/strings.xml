@@ -136,6 +136,7 @@
     <string name="tap_network_error">Network Error</string>
     <string name="tap_waiting_for_network">Waiting for Network</string>
     <string name="tap_active_now">Active now</string>
+    <string name="tap_today">Today</string>
     <string name="tap_yesterday">Yesterday</string>
     <string name="tap_active_recently">Active recently</string>
     <string name="tap_format_s_sent_yesterday_at">Sent yesterday at %s</string>
