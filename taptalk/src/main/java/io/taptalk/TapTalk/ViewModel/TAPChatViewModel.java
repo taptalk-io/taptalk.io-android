@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -27,6 +29,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
 
 public class TAPChatViewModel extends AndroidViewModel {
@@ -38,6 +41,8 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Map<String, TAPUserModel> roomParticipantsByUsername;
     private Map<String, List<Integer>> messageMentionIndexes;
     private LinkedHashMap<String, TAPUserModel> groupTyping;
+    private LinkedHashMap<Integer, TAPMessageModel> dateSeparators;
+    private LinkedHashMap<String, TAPMessageModel> dateSeparatorsByText;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
@@ -332,6 +337,27 @@ public class TAPChatViewModel extends AndroidViewModel {
             loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated() - 1L);
         }
         return loadingIndicator;
+    }
+
+    public LinkedHashMap<Integer, TAPMessageModel> getDateSeparators() {
+        return null == dateSeparators ? dateSeparators = new LinkedHashMap<>() : dateSeparators;
+    }
+
+    public LinkedHashMap<String, TAPMessageModel> getDateSeparatorsByText() { // TODO: 030, 30 Apr 2020 REMOVE IF NOT NEEDED
+        return null == dateSeparatorsByText ? dateSeparatorsByText = new LinkedHashMap<>() : dateSeparatorsByText;
+    }
+
+    public void generateDateSeparator(Context context, TAPMessageModel message, int index) {
+        TAPMessageModel dateSeparator = TAPMessageModel.Builder(
+                TAPTimeFormatter.getInstance().dateStampString(context, message.getCreated()),
+                getRoom(),
+                TYPE_DATE_SEPARATOR,
+                message.getCreated() - 1,
+                getMyUserModel(),
+                "",
+                null);
+        getDateSeparators().put(index, dateSeparator);
+        getDateSeparatorsByText().put(dateSeparator.getBody(), dateSeparator);
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {

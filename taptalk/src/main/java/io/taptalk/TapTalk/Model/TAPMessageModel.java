@@ -210,7 +210,9 @@ public class TAPMessageModel implements Parcelable {
     public void updateMessageStatusText() {
         if (created > 0L) {
             //messageStatusText = TAPTimeFormatter.getInstance().durationChatString(TapTalk.appContext, created);
-            messageStatusText = TAPTimeFormatter.getInstance().formatClock(created);
+//            messageStatusText = TAPTimeFormatter.getInstance().formatClock(created);
+            // TODO: 030, 30 Apr 2020 TEMP
+            messageStatusText = TAPTimeFormatter.getInstance().formatTime(created, "dd/MM");
         }
     }
 
