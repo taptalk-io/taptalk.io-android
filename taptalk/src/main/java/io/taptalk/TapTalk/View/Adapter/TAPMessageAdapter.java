@@ -719,32 +719,41 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onMessageSending(TAPMessageModel message) {
-            showMessageAsSending(itemView, message, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
-            showMessageAsSending(itemView, message, flBubble, tvMessageStatus, ivMessageStatusImage, ivSending);
+            showMessageAsSending(itemView, message, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
         }
 
         @Override
         protected void onMessageFailedToSend(TAPMessageModel message) {
-            showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
-            showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatusImage, ivSending);
+            showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
         }
 
         @Override
         protected void onMessageSent(TAPMessageModel message) {
-            showMessageAsSent(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
-            showMessageAsSent(message, itemView, flBubble, tvMessageStatus, ivMessageStatusImage, ivSending);
+            boolean noCaption = true;
+            if (null != message.getData() && null != message.getData().get(CAPTION)) {
+                String caption = (String) message.getData().get(CAPTION);
+                if (null != caption && !caption.isEmpty()) {
+                    noCaption = false;
+                }
+            }
+            showMessageAsSent(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending, noCaption);
         }
 
         @Override
         protected void onMessageDelivered(TAPMessageModel message) {
-            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
-            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatusImage, ivSending);
+            boolean noCaption = true;
+            if (null != message.getData() && null != message.getData().get(CAPTION)) {
+                String caption = (String) message.getData().get(CAPTION);
+                if (null != caption && !caption.isEmpty()) {
+                    noCaption = false;
+                }
+            }
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending, noCaption);
         }
 
         @Override
         protected void onMessageRead(TAPMessageModel message) {
-            showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
-            showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatusImage, ivSending);
+            showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
         }
     }
 
@@ -1099,32 +1108,41 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onMessageSending(TAPMessageModel message) {
-            showMessageAsSending(itemView, message, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
-            showMessageAsSending(itemView, message, flBubble, tvMessageStatus, ivMessageStatusImage, ivSending);
+            showMessageAsSending(itemView, message, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
         }
 
         @Override
         protected void onMessageFailedToSend(TAPMessageModel message) {
-            showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
-            showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatusImage, ivSending);
+            showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
         }
 
         @Override
         protected void onMessageSent(TAPMessageModel message) {
-            showMessageAsSent(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
-            showMessageAsSent(message, itemView, flBubble, tvMessageStatus, ivMessageStatusImage, ivSending);
+            boolean noCaption = true;
+            if (null != message.getData() && null != message.getData().get(CAPTION)) {
+                String caption = (String) message.getData().get(CAPTION);
+                if (null != caption && !caption.isEmpty()) {
+                    noCaption = false;
+                }
+            }
+            showMessageAsSent(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending, noCaption);
         }
 
         @Override
         protected void onMessageDelivered(TAPMessageModel message) {
-            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
-            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatusImage, ivSending);
+            boolean noCaption = true;
+            if (null != message.getData() && null != message.getData().get(CAPTION)) {
+                String caption = (String) message.getData().get(CAPTION);
+                if (null != caption && !caption.isEmpty()) {
+                    noCaption = false;
+                }
+            }
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending, noCaption);
         }
 
         @Override
         protected void onMessageRead(TAPMessageModel message) {
-            showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
-            showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatusImage, ivSending);
+            showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivMessageStatusImage, ivSending);
         }
     }
 
@@ -1743,6 +1761,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                       TextView tvMessageStatus,
                                       @Nullable ImageView ivMessageStatus,
                                       @Nullable ImageView ivSending) {
+        showMessageAsSending(itemView, item, flBubble, tvMessageStatus, ivMessageStatus, null, ivSending);
+    }
+
+    private void showMessageAsSending(View itemView,
+                                      TAPMessageModel item,
+                                      FrameLayout flBubble,
+                                      TextView tvMessageStatus,
+                                      @Nullable ImageView ivMessageStatus,
+                                      @Nullable ImageView ivMessageStatusImage,
+                                      @Nullable ImageView ivSending) {
         item.setNeedAnimateSend(true);
         flBubble.setTranslationX(initialTranslationX);
         if (null != ivSending) {
@@ -1752,6 +1780,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
         if (null != ivMessageStatus) {
             ivMessageStatus.setVisibility(View.INVISIBLE);
+        }
+        if (null != ivMessageStatusImage) {
+            ivMessageStatusImage.setVisibility(View.INVISIBLE);
         }
         if (item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO) {
             tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_sending));
@@ -1766,10 +1797,24 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                          TextView tvMessageStatus,
                                          @Nullable ImageView ivMessageStatus,
                                          @Nullable ImageView ivSending) {
+        showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatus, null, ivSending);
+    }
+
+    private void showMessageFailedToSend(View itemView,
+                                         FrameLayout flBubble,
+                                         TextView tvMessageStatus,
+                                         @Nullable ImageView ivMessageStatus,
+                                         @Nullable ImageView ivMessageStatusImage,
+                                         @Nullable ImageView ivSending) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_warning_red_circle_background));
             ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageFailed)));
             ivMessageStatus.setVisibility(View.VISIBLE);
+        }
+        if (null != ivMessageStatusImage) {
+            ivMessageStatusImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_warning_red_circle_background));
+            ImageViewCompat.setImageTintList(ivMessageStatusImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageFailed)));
+            ivMessageStatusImage.setVisibility(View.VISIBLE);
         }
         tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
         tvMessageStatus.setVisibility(View.VISIBLE);
@@ -1779,46 +1824,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         flBubble.setTranslationX(0);
     }
 
-    @Deprecated
-    private void setMessageItemOld(TAPMessageModel item, View itemView, FrameLayout flBubble,
-                                   TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
-                                   @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
-        // Message failed to send
-        if (null != item.getFailedSend() && item.getFailedSend()) {
-            tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
-            if (null != ivMessageStatus) {
-                ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_circle_transparent));
-                ImageViewCompat.setImageTintList(ivMessageStatus, null);
-                ivMessageStatus.setVisibility(View.VISIBLE);
-            }
-            if (null != ivSending) {
-                ivSending.setAlpha(0f);
-            }
-            flBubble.setTranslationX(0);
-            tvMessageStatus.setVisibility(View.VISIBLE);
-            //if (null != ivReply) {
-            //    ivReply.setVisibility(View.GONE);
-            //}
-        }
-        // Message is sending
-        else if (null != item.getSending() && item.getSending()) {
-            item.setNeedAnimateSend(true);
-            tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_sending));
-
-            flBubble.setTranslationX(initialTranslationX);
-            if (null != ivSending) {
-                ivSending.setTranslationX(0);
-                ivSending.setTranslationY(0);
-                ivSending.setAlpha(1f);
-            }
-            if (null != ivMessageStatus) {
-                ivMessageStatus.setVisibility(View.GONE);
-            }
-            //if (null != ivReply) {
-            //    ivReply.setVisibility(View.GONE);
-            //}
-            tvMessageStatus.setVisibility(View.GONE);
-        }
+    private void showMessageAsSent(TAPMessageModel item,
+                                   View itemView,
+                                   FrameLayout flBubble,
+                                   TextView tvMessageStatus,
+                                   @Nullable ImageView ivMessageStatus,
+                                   @Nullable ImageView ivSending) {
+        showMessageAsSent(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, null, ivSending, false);
     }
 
     private void showMessageAsSent(TAPMessageModel item,
@@ -1826,33 +1838,21 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                    FrameLayout flBubble,
                                    TextView tvMessageStatus,
                                    @Nullable ImageView ivMessageStatus,
-                                   @Nullable ImageView ivSending) {
+                                   @Nullable ImageView ivMessageStatusImage,
+                                   @Nullable ImageView ivSending,
+                                   boolean isImageWithoutCaption) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
             ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageSent)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
+        if (null != ivMessageStatusImage) {
+            ivMessageStatusImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
+            int iconColor = isImageWithoutCaption ? R.color.tapIconChatRoomMessageSentImage : R.color.tapIconChatRoomMessageSent;
+            ImageViewCompat.setImageTintList(ivMessageStatusImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), iconColor)));
+            ivMessageStatusImage.setVisibility(View.VISIBLE);
+        }
         tvMessageStatus.setVisibility(View.GONE);
-        animateSend(item, flBubble, ivSending, ivMessageStatus);
-    }
-
-    @Deprecated
-    private void receiveSentEmitOld(TAPMessageModel item, View itemView, FrameLayout flBubble,
-                                    TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
-                                    @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
-        if (null != ivMessageStatus) {
-            ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_sent_grey));
-            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageSent)));
-            ivMessageStatus.setVisibility(View.VISIBLE);
-        }
-        // Show status text and reply button for non-text bubbles
-        if (item.getType() == TYPE_TEXT) {
-            tvMessageStatus.setVisibility(View.GONE);
-        } else if (null != ivReply) {
-            tvMessageStatus.setVisibility(View.VISIBLE);
-            tvMessageStatus.post(() -> chatListener.onLayoutLoaded(item));
-            //ivReply.setVisibility(View.VISIBLE);
-        }
         animateSend(item, flBubble, ivSending, ivMessageStatus);
     }
 
@@ -1861,45 +1861,47 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                         TextView tvMessageStatus,
                                         @Nullable ImageView ivMessageStatus,
                                         @Nullable ImageView ivSending) {
+        showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, null, ivSending, false);
+    }
+
+    private void showMessageAsDelivered(View itemView,
+                                        FrameLayout flBubble,
+                                        TextView tvMessageStatus,
+                                        @Nullable ImageView ivMessageStatus,
+                                        @Nullable ImageView ivMessageStatusImage,
+                                        @Nullable ImageView ivSending,
+                                        boolean isImageWithoutCaption) {
         if (null != ivMessageStatus) {
             ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
             ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageDelivered)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
+        if (null != ivMessageStatusImage) {
+            ivMessageStatusImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
+            int iconColor = isImageWithoutCaption ? R.color.tapIconChatRoomMessageDeliveredImage : R.color.tapIconChatRoomMessageDelivered;
+            ImageViewCompat.setImageTintList(ivMessageStatusImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), iconColor)));
+            ivMessageStatusImage.setVisibility(View.VISIBLE);
+        }
         tvMessageStatus.setVisibility(View.GONE);
         if (null != ivSending) {
             ivSending.setAlpha(0f);
         }
         flBubble.setTranslationX(0);
-    }
-
-    @Deprecated
-    private void receiveDeliveredEmitOld(TAPMessageModel item, View itemView, FrameLayout flBubble,
-                                         TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
-                                         @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
-        if (null != ivMessageStatus) {
-            ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_delivered_grey));
-            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageDelivered)));
-            ivMessageStatus.setVisibility(View.VISIBLE);
-        }
-        if (null != ivSending) {
-            ivSending.setAlpha(0f);
-        }
-        flBubble.setTranslationX(0);
-        tvMessageStatus.setVisibility(View.GONE);
-        // Show status text and reply button for non-text bubbles
-        if (item.getType() == TYPE_TEXT) {
-            tvMessageStatus.setVisibility(View.GONE);
-        } else if (null != ivReply) {
-            tvMessageStatus.setVisibility(View.VISIBLE);
-            //ivReply.setVisibility(View.VISIBLE);
-        }
     }
 
     private void showMessageAsRead(View itemView,
                                    FrameLayout flBubble,
                                    TextView tvMessageStatus,
                                    @Nullable ImageView ivMessageStatus,
+                                   @Nullable ImageView ivSending) {
+        showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatus, null, ivSending);
+    }
+
+    private void showMessageAsRead(View itemView,
+                                   FrameLayout flBubble,
+                                   TextView tvMessageStatus,
+                                   @Nullable ImageView ivMessageStatus,
+                                   @Nullable ImageView ivMessageStatusImage,
                                    @Nullable ImageView ivSending) {
         if (TapUI.getInstance(instanceKey).isReadStatusHidden()) {
             showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
@@ -1910,38 +1912,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageRead)));
             ivMessageStatus.setVisibility(View.VISIBLE);
         }
+        if (null != ivMessageStatusImage) {
+            ivMessageStatusImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
+            ImageViewCompat.setImageTintList(ivMessageStatusImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconChatRoomMessageRead)));
+            ivMessageStatusImage.setVisibility(View.VISIBLE);
+        }
         tvMessageStatus.setVisibility(View.GONE);
         if (null != ivSending) {
             ivSending.setAlpha(0f);
         }
         flBubble.setTranslationX(0);
-    }
-
-    @Deprecated
-    private void receiveReadEmitOld(TAPMessageModel item, View itemView, FrameLayout flBubble,
-                                    TextView tvMessageStatus, @Nullable ImageView ivMessageStatus,
-                                    @Nullable ImageView ivReply, @Nullable ImageView ivSending) {
-        if (TapUI.getInstance(instanceKey).isReadStatusHidden()) {
-            receiveDeliveredEmitOld(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, ivSending);
-            return;
-        }
-
-        if (null != ivMessageStatus) {
-            ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_read_orange));
-            ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconRoomListMessageRead)));
-            ivMessageStatus.setVisibility(View.VISIBLE);
-        }
-        if (null != ivSending) {
-            ivSending.setAlpha(0f);
-        }
-        flBubble.setTranslationX(0);
-        // Show status text and reply button for non-text bubbles
-        if (item.getType() == TYPE_TEXT) {
-            tvMessageStatus.setVisibility(View.GONE);
-        } else if (null != ivReply) {
-            tvMessageStatus.setVisibility(View.VISIBLE);
-            //ivReply.setVisibility(View.VISIBLE);
-        }
     }
 
     private void setMessageBodyText(TextView tvMessageBody, TAPMessageModel item, String body) {
