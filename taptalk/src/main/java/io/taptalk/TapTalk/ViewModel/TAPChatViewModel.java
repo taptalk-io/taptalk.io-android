@@ -42,7 +42,6 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Map<String, List<Integer>> messageMentionIndexes;
     private LinkedHashMap<String, TAPUserModel> groupTyping;
     private LinkedHashMap<Integer, TAPMessageModel> dateSeparators;
-    private LinkedHashMap<String, TAPMessageModel> dateSeparatorsByText;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
@@ -343,12 +342,8 @@ public class TAPChatViewModel extends AndroidViewModel {
         return null == dateSeparators ? dateSeparators = new LinkedHashMap<>() : dateSeparators;
     }
 
-    public LinkedHashMap<String, TAPMessageModel> getDateSeparatorsByText() { // TODO: 030, 30 Apr 2020 REMOVE IF NOT NEEDED
-        return null == dateSeparatorsByText ? dateSeparatorsByText = new LinkedHashMap<>() : dateSeparatorsByText;
-    }
-
-    public void generateDateSeparator(Context context, TAPMessageModel message, int index) {
-        TAPMessageModel dateSeparator = TAPMessageModel.Builder(
+    public TAPMessageModel generateDateSeparator(Context context, TAPMessageModel message) {
+        return TAPMessageModel.Builder(
                 TAPTimeFormatter.getInstance().dateStampString(context, message.getCreated()),
                 getRoom(),
                 TYPE_DATE_SEPARATOR,
@@ -356,8 +351,6 @@ public class TAPChatViewModel extends AndroidViewModel {
                 getMyUserModel(),
                 "",
                 null);
-        getDateSeparators().put(index, dateSeparator);
-        getDateSeparatorsByText().put(dateSeparator.getBody(), dateSeparator);
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {
