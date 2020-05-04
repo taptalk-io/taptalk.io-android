@@ -27,7 +27,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -125,6 +124,8 @@ import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 import io.taptalk.TapTalk.R;
 
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
@@ -1193,13 +1194,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void showMessageList() {
         flMessageList.setVisibility(View.VISIBLE);
-        flMessageList.post(() -> {
-            TAPMessageModel message = messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition());
-            if (null != message) {
-                tvDateIndicator.setVisibility(View.VISIBLE);
-                tvDateIndicator.setText(TAPTimeFormatter.getInstance().dateStampString(this, message.getCreated()));
-            }
-        });
+//        flMessageList.post(() -> {
+//            TAPMessageModel message = messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition());
+//            if (null != message) {
+//                tvDateIndicator.setVisibility(View.VISIBLE);
+//                tvDateIndicator.setText(TAPTimeFormatter.getInstance().dateStampString(this, message.getCreated()));
+//            }
+//        });
     }
 
     private void updateUnreadCount() {
@@ -1367,6 +1368,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void scrollToBottom() {
         ivToBottom.setVisibility(View.GONE);
         rvMessageList.scrollToPosition(0);
+        tvDateIndicator.setVisibility(View.GONE);
         vm.setOnBottom(true);
         vm.clearUnreadMessages();
         vm.clearUnreadMentions();
@@ -2358,17 +2360,41 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 ivToBottom.setVisibility(View.VISIBLE);
                 vm.setScrollFromKeyboard(false);
             }
+
+            if (newState == SCROLL_STATE_IDLE) {
+                // Start hide date indicator timer if state is idle
+                hideDateIndicatorTimer.start();
+            } else if (newState == SCROLL_STATE_DRAGGING) {
+                // Show date indicator
+                hideDateIndicatorTimer.cancel();
+                tvDateIndicator.setText(TAPTimeFormatter.getInstance().dateStampString(TapUIChatActivity.this,
+                        messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition()).getCreated()));
+                tvDateIndicator.setVisibility(View.VISIBLE);
+            }
         }
 
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            // Update date indicator
+            // Update date indicator text
             if (tvDateIndicator.getVisibility() == View.VISIBLE) {
                 tvDateIndicator.setText(TAPTimeFormatter.getInstance().dateStampString(TapUIChatActivity.this,
                         messageAdapter.getItemAt(messageLayoutManager.findLastVisibleItemPosition()).getCreated()));
+                tvDateIndicator.setVisibility(View.VISIBLE);
             }
         }
+
+        private CountDownTimer hideDateIndicatorTimer = new CountDownTimer(1500L, 100L) {
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                runOnUiThread(() -> tvDateIndicator.setVisibility(View.GONE));
+            }
+        };
     };
 
     private TextWatcher chatWatcher = new TextWatcher() {
@@ -3185,7 +3211,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
                 if (MAX_ITEMS_PER_PAGE > entities.size() && STATE.DONE != state) {
                     if (0 == entities.size()) {
-                        Log.e(TAG, "dbListenerPaging: Show loading STATE.DONE");
                         showLoadingOlderMessagesIndicator();
                     } else {
                         vm.setNeedToShowLoading(true);
@@ -3202,7 +3227,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (vm.isNeedToShowLoading()) {
                         // Show loading if Before API is called
                         vm.setNeedToShowLoading(false);
-                        Log.e(TAG, "dbListenerPaging: Show loading if Before API is called");
                         showLoadingOlderMessagesIndicator();
                     }
 
@@ -3236,12 +3260,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
     };
 
     private void callApiAfter() {
-        Log.e(TAG, "callApiAfter: " + TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(this));
         if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(this)) {
             return;
         }
         if (!vm.isInitialAPICallFinished()) {
-            Log.e(TAG, "callApiAfter: showLoadingOlderMessagesIndicator");
             showLoadingOlderMessagesIndicator();
         }
         new Thread(() -> {
@@ -3264,7 +3286,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
-            Log.e(TAG, "messageAfterView onSuccess: " + response.getMessages().size());
             List<TAPMessageEntity> responseMessages = new ArrayList<>(); // Entities to be saved to database
             List<TAPMessageModel> messageAfterModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
             List<String> unreadMessageIds = new ArrayList<>(); // Results to be marked as read
@@ -3466,13 +3487,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            Log.e(TAG, "messageBeforeView onError: error");
             onError(error.getMessage());
         }
 
         @Override
         public void onError(String errorMessage) {
-            Log.e(TAG, "messageBeforeView onError: throwable");
             checkIfChatIsAvailableAndUpdateUI();
             if (0 < vm.getMessageModels().size()) {
                 fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
@@ -3557,7 +3576,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
-            Log.e(TAG, "messageBeforeView onSuccess: " + response.getMessages().size());
             List<TAPMessageEntity> responseMessages = new ArrayList<>();  // Entities to be saved to database
             List<TAPMessageModel> messageBeforeModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
             boolean allMessagesHidden = true; // Flag to check whether empty chat layout should be removed
@@ -3659,14 +3677,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            Log.e(TAG, "messageBeforeView onError: error");
             setRecyclerViewAnimator();
             hideLoadingOlderMessagesIndicator();
         }
 
         @Override
         public void onError(Throwable throwable) {
-            Log.e(TAG, "messageBeforeView onError: throwable");
             setRecyclerViewAnimator();
             hideLoadingOlderMessagesIndicator();
         }
@@ -3684,7 +3700,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageBeforeViewPaging = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
-            Log.e(TAG, "messageBeforeViewPaging onSuccess: " + response.getMessages().size());
             hideLoadingOlderMessagesIndicator();
             List<TAPMessageEntity> responseMessages = new ArrayList<>(); // Entities to be saved to database
             List<TAPMessageModel> messageBeforeModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
@@ -3756,13 +3771,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onError(TAPErrorModel error) {
-            Log.e(TAG, "messageBeforeViewPaging onError: error");
             onError(error.getMessage());
         }
 
         @Override
         public void onError(Throwable throwable) {
-            Log.e(TAG, "messageBeforeViewPaging onError: throwable");
             hideLoadingOlderMessagesIndicator();
         }
     };
