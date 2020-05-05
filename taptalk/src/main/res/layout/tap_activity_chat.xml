@@ -238,7 +238,7 @@
             android:layout_height="48dp"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
-            android:src="@drawable/tap_ic_demote_admins"
+            android:src="@drawable/tap_ic_dismiss_circle_white"
             android:tint="@color/tapButtonIconPrimaryColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

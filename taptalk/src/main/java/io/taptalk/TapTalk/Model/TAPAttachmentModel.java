@@ -480,8 +480,8 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createMentionLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_members_grey,
-                R.drawable.tap_ic_send_message_grey,
+                R.drawable.tap_ic_members_orange,
+                R.drawable.tap_ic_send_message_orange,
                 R.drawable.tap_ic_copy_orange
         };
 

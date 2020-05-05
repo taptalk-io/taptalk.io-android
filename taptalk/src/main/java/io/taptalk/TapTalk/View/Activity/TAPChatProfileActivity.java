@@ -508,7 +508,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     TapChatProfileItemModel menuAddToContact = new TapChatProfileItemModel(
                             MENU_ADD_TO_CONTACTS,
                             getString(R.string.tap_add_to_contacts),
-                            R.drawable.tap_ic_add_circle_grey,
+                            R.drawable.tap_ic_add_circle_orange,
                             R.color.tapIconGroupMemberProfileMenuAddToContacts,
                             R.style.tapChatProfileMenuLabelStyle);
                     menuItems.add(menuAddToContact);
@@ -518,7 +518,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 TapChatProfileItemModel menuBlock = new TapChatProfileItemModel(
                         MENU_BLOCK,
                         getString(R.string.tap_block_user),
-                        R.drawable.tap_ic_block_grey,
+                        R.drawable.tap_ic_block_red,
                         R.color.tapIconChatProfileMenuBlockUser,
                         R.style.tapChatProfileMenuLabelStyle);
 
@@ -542,7 +542,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 TapChatProfileItemModel menuViewMembers = new TapChatProfileItemModel(
                         MENU_VIEW_MEMBERS,
                         getString(R.string.tap_view_members),
-                        R.drawable.tap_ic_members_grey,
+                        R.drawable.tap_ic_members_orange,
                         R.color.tapIconGroupProfileMenuViewMembers,
                         R.style.tapChatProfileMenuLabelStyle);
                 menuItems.add(menuViewMembers);
@@ -551,7 +551,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 TapChatProfileItemModel menuExitGroup = new TapChatProfileItemModel(
                         MENU_EXIT_GROUP,
                         getString(R.string.tap_leave_group),
-                        R.drawable.tap_ic_logout_red_with_padding,
+                        R.drawable.tap_ic_logout_red,
                         R.color.tapIconChatProfileMenuClearChat,
                         R.style.tapChatProfileMenuDestructiveLabelStyle);
                 menuItems.add(menuExitGroup);
@@ -564,7 +564,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 TapChatProfileItemModel menuViewMembers = new TapChatProfileItemModel(
                         MENU_VIEW_MEMBERS,
                         getString(R.string.tap_view_members),
-                        R.drawable.tap_ic_members_grey,
+                        R.drawable.tap_ic_members_orange,
                         R.color.tapIconGroupProfileMenuViewMembers,
                         R.style.tapChatProfileMenuLabelStyle);
                 menuItems.add(menuViewMembers);
@@ -587,7 +587,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 TapChatProfileItemModel menuAddToContact = new TapChatProfileItemModel(
                         MENU_ADD_TO_CONTACTS,
                         getString(R.string.tap_add_to_contacts),
-                        R.drawable.tap_ic_add_circle_grey,
+                        R.drawable.tap_ic_add_circle_orange,
                         R.color.tapIconGroupMemberProfileMenuAddToContacts,
                         R.style.tapChatProfileMenuLabelStyle);
                 menuItems.add(menuAddToContact);
@@ -597,7 +597,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TapChatProfileItemModel menuSendMessage = new TapChatProfileItemModel(
                     MENU_SEND_MESSAGE,
                     getString(R.string.tap_send_message),
-                    R.drawable.tap_ic_send_message_grey,
+                    R.drawable.tap_ic_send_message_orange,
                     R.color.tapIconGroupMemberProfileMenuSendMessage,
                     R.style.tapChatProfileMenuLabelStyle);
             menuItems.add(menuSendMessage);

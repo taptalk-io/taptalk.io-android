@@ -156,7 +156,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:src="@drawable/tap_ic_add_circle_grey"
+                android:src="@drawable/tap_ic_add_circle_orange"
                 android:tint="@color/tapButtonIconColor" />
 
             <TextView

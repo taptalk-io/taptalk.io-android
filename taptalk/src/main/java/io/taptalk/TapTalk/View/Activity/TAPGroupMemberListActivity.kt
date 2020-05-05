@@ -14,7 +14,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME
@@ -405,7 +404,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance(instanceKey).getGroupMaxParticipants()) {
                 groupViewModel?.addSelectedMember(contact)
                 ll_promote_demote_admin.visibility = View.VISIBLE
-                iv_promote_demote_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_demote_admins))
+                iv_promote_demote_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_demote_admin))
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_demote_admin)
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE
                 startSelectionMode()
@@ -445,7 +444,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                             groupViewModel?.selectedMembers?.entries?.iterator()?.next()?.value?.userID) == true
                     && groupViewModel?.groupData?.groupParticipants?.size ?: 0 < TAPGroupManager.getInstance(instanceKey).getGroupMaxParticipants()) {
                 ll_promote_demote_admin.visibility = View.VISIBLE
-                iv_promote_demote_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_demote_admins))
+                iv_promote_demote_icon.setImageDrawable(ContextCompat.getDrawable(this@TAPGroupMemberListActivity, R.drawable.tap_ic_demote_admin))
                 tv_promote_demote_icon.text = resources.getText(R.string.tap_demote_admin)
                 groupViewModel?.adminButtonStatus = TAPGroupMemberViewModel.AdminButtonShowed.DEMOTE
             } else if (groupViewModel?.isActiveUserIsAdmin == true && groupViewModel?.selectedMembers?.size == 1
