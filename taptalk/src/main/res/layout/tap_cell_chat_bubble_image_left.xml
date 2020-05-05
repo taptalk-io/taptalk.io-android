@@ -120,7 +120,7 @@
                 android:maxHeight="292dp"
                 android:src="@drawable/tap_bg_grey_e4"
                 android:transitionName="@string/tap_transition_view_image"
-                app:cornerRadius="9dp"
+                app:cornerRadius="12dp"
                 app:dimensionRatio="0.86"
                 app:layout_constraintBottom_toTopOf="@id/tv_message_body"
                 app:layout_constraintEnd_toEndOf="parent"

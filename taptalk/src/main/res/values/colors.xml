@@ -90,7 +90,9 @@
     <color name="tapIconChatRoomMessageSending">@color/tapColorGrayIcon</color>
     <color name="tapIconChatRoomMessageFailed">@color/tapColorWhiteIcon</color>
     <color name="tapIconChatRoomMessageSent">@color/tapTransparentBlack1920</color>
+    <color name="tapIconChatRoomMessageSentImage">@color/tapTransparentWhite60</color>
     <color name="tapIconChatRoomMessageDelivered">@color/tapTransparentBlack1920</color>
+    <color name="tapIconChatRoomMessageDeliveredImage">@color/tapTransparentWhite60</color>
     <color name="tapIconChatRoomMessageRead">@color/tapColorWhiteIcon</color>
     <color name="tapIconChatRoomMessageDeletedLeft">@color/tapColorGrayIcon</color>
     <color name="tapIconChatRoomMessageDeletedRight">@color/tapColorWhiteIcon</color>
