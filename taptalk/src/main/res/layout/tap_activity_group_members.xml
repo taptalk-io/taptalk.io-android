@@ -121,8 +121,8 @@
                 style="@style/tapPopupLoadingLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
                 android:gravity="end"
                 android:text="@string/tap_loading_members" />
 
@@ -153,8 +153,8 @@
             android:visibility="visible">
 
             <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_gravity="center"
                 android:src="@drawable/tap_ic_add_circle_orange"
                 android:tint="@color/tapButtonIconColor" />
@@ -164,8 +164,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginLeft="4dp"
                 android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
                 android:lineSpacingExtra="6sp"
                 android:text="@string/tap_add_members" />
 
@@ -189,8 +189,8 @@
 
                 <ImageView
                     android:id="@+id/iv_promote_demote_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:src="@drawable/tap_ic_appoint_admin"
                     android:tint="@color/tapButtonIconColor" />
@@ -201,8 +201,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="4dp"
                     android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
                     android:text="@string/tap_promote_admin" />
 
             </LinearLayout>
@@ -213,12 +213,11 @@
                 android:layout_height="44dp"
                 android:background="@drawable/tap_bg_button_white"
                 android:gravity="center"
-                android:orientation="horizontal"
-                android:visibility="visible">
+                android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:src="@drawable/tap_ic_delete_red"
                     android:tint="@color/tapButtonIconDestructiveColor" />
@@ -228,8 +227,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="4dp"
                     android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
                     android:text="@string/tap_remove_group_member" />
 
             </LinearLayout>

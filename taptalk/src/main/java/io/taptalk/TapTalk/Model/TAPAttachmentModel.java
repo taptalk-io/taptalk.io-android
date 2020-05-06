@@ -183,7 +183,7 @@ public class TAPAttachmentModel {
         if (null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
                 messageModel.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) &&
                 null != messageModel.getSending() && !messageModel.getSending()) {
-            imageResIds.add(R.drawable.tap_ic_delete_red_big);
+            imageResIds.add(R.drawable.tap_ic_delete_red);
             titleResIds.add(R.string.tap_delete);
             ids.add(LONG_PRESS_DELETE);
         }
@@ -250,7 +250,7 @@ public class TAPAttachmentModel {
         if (null != messageModel && null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
                 messageModel.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) &&
                 null != messageModel.getSending() && !messageModel.getSending()) {
-            imageResIds.add(R.drawable.tap_ic_delete_red_big);
+            imageResIds.add(R.drawable.tap_ic_delete_red);
             titleResIds.add(R.string.tap_delete);
             ids.add(LONG_PRESS_DELETE);
         }
@@ -315,7 +315,7 @@ public class TAPAttachmentModel {
         if (null != messageModel && null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
                 messageModel.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) &&
                 null != messageModel.getSending() && !messageModel.getSending()) {
-            imageResIds.add(R.drawable.tap_ic_delete_red_big);
+            imageResIds.add(R.drawable.tap_ic_delete_red);
             titleResIds.add(R.string.tap_delete);
             ids.add(LONG_PRESS_DELETE);
         }
@@ -353,7 +353,7 @@ public class TAPAttachmentModel {
         if (null != messageModel && null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
                 messageModel.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) &&
                 null != messageModel.getSending() && !messageModel.getSending()) {
-            imageResIds.add(R.drawable.tap_ic_delete_red_big);
+            imageResIds.add(R.drawable.tap_ic_delete_red);
             titleResIds.add(R.string.tap_delete);
             ids.add(LONG_PRESS_DELETE);
         }
@@ -390,7 +390,7 @@ public class TAPAttachmentModel {
         if (null != messageModel && null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
                 messageModel.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) &&
                 null != messageModel.getSending() && !messageModel.getSending()) {
-            imageResIds.add(R.drawable.tap_ic_delete_red_big);
+            imageResIds.add(R.drawable.tap_ic_delete_red);
             titleResIds.add(R.string.tap_delete);
             ids.add(LONG_PRESS_DELETE);
         }

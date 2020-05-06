@@ -11,6 +11,7 @@
     <string name="tap_leave_group">Leave Group</string>
     <string name="tap_delete_group">Delete Group</string>
     <string name="tap_forward">Forward</string>
+    <string name="tap_group_details">Group Details</string>
     <string name="tap_group_subject">Group Subject</string>
     <string name="tap_my_account">My Account</string>
     <string name="tap_new_chat">New Chat</string>
@@ -26,6 +27,7 @@
     <string name="tap_shared_media">Shared Media</string>
     <string name="tap_scan_qr_code">Scan QR Code</string>
     <string name="tap_show_qr_code">Show QR Code</string>
+    <string name="tap_user_details">User Details</string>
     <string name="tap_view_members">View Group Members</string>
     <string name="tap_welcome">Welcome</string>
 

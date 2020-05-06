@@ -728,8 +728,8 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_chat_history_content">
 
                 <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/tap_ic_delete_red"
                     android:tint="@color/tapButtonIconColor" />

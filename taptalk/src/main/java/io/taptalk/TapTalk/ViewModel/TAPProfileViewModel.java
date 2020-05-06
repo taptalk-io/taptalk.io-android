@@ -19,6 +19,7 @@ public class TAPProfileViewModel extends AndroidViewModel {
     private TAPRoomModel room, groupDataFromManager;
     private List<TapChatProfileItemModel> menuItems;
     private List<TapChatProfileItemModel> adapterItems;
+    private TapChatProfileItemModel profileDetailItem;
     private TapChatProfileItemModel sharedMediaSectionTitle;
     private TapChatProfileItemModel loadingItem;
     private List<TAPMessageModel> sharedMedias;
@@ -55,6 +56,14 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setAdapterItems(List<TapChatProfileItemModel> adapterItems) {
         this.adapterItems = adapterItems;
+    }
+
+    public TapChatProfileItemModel getProfileDetailItem() {
+        return profileDetailItem;
+    }
+
+    public void setProfileDetailItem(TapChatProfileItemModel profileDetailItem) {
+        this.profileDetailItem = profileDetailItem;
     }
 
     public TapChatProfileItemModel getSharedMediaSectionTitle() {

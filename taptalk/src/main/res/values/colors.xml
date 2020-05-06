@@ -124,16 +124,17 @@
     <color name="tapIconMenuCreateNewGroup">@color/tapColorPrimaryIcon</color>
 
     <color name="tapIconChatProfileMenuNotificationActive">@color/tapColorPrimaryIcon</color>
-    <color name="tapIconChatProfileMenuNotificationInactive">@color/tapColorGrayIcon</color>
-    <color name="tapIconChatProfileMenuConversationColor">@color/tapColorGrayIcon</color>
-    <color name="tapIconChatProfileMenuBlockUser">@color/tapColorGrayIcon</color>
-    <color name="tapIconChatProfileMenuSearchChat">@color/tapColorGrayIcon</color>
+    <color name="tapIconChatProfileMenuNotificationInactive">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconChatProfileMenuConversationColor">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconChatProfileMenuBlockUser">@color/tapColorDestructiveIcon</color>
+    <color name="tapIconChatProfileMenuSearchChat">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuClearChat">@color/tapColorDestructiveIcon</color>
-    <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorGrayIcon</color>
-    <color name="tapIconGroupMemberProfileMenuAddToContacts">@color/tapColorGrayIcon</color>
-    <color name="tapIconGroupMemberProfileMenuSendMessage">@color/tapColorGrayIcon</color>
-    <color name="tapIconGroupMemberProfileMenuPromoteAdmin">@color/tapColorGrayIcon</color>
-    <color name="tapIconGroupMemberProfileMenuDemoteAdmin">@color/tapColorGrayIcon</color>
+    <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconGroupProfileMenuEditGroup">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconGroupMemberProfileMenuAddToContacts">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconGroupMemberProfileMenuSendMessage">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconGroupMemberProfileMenuPromoteAdmin">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconGroupMemberProfileMenuDemoteAdmin">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupMemberProfileMenuRemoveMember">@color/tapColorDestructiveIcon</color>
 
     <color name="tapIconMediaPreviewAdd">@color/tapColorWhiteIcon</color>
@@ -239,6 +240,7 @@
     <color name="tapActionSheetDestructiveLabelColor">@color/tapColorError</color>
 
     <color name="tapSectionHeaderLabelColor">@color/tapColorPrimary</color>
+    <color name="tapSharedMediaTitleLabelColor">@color/tapColorPrimary</color>
 
     <color name="tapContactListNameColor">@color/tapColorTextDark</color>
     <color name="tapContactListNameHighlightedColor">@color/tapColorPrimary</color>
@@ -254,7 +256,9 @@
 
     <color name="tapNewChatMenuLabelColor">@color/tapColorTextDark</color>
 
-    <color name="tapChatProfileRoomNameColor">@color/tapColorTextLight</color>
+    <color name="tapChatProfileRoomNameColor">@color/tapColorTextDark</color>
+    <color name="tapChatProfileUsernameColor">@color/tapColorPrimary</color>
+    <color name="tapChatProfileMemberCountColor">@color/tapColorTextMedium</color>
     <color name="tapChatProfileMenuLabelColor">@color/tapColorTextDark</color>
     <color name="tapChatProfileMenuDestructiveLabelColor">@color/tapColorError</color>
 
