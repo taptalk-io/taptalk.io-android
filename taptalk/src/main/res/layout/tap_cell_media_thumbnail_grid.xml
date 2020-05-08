@@ -2,8 +2,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
-    android:layout_width="120dp"
+    android:layout_width="110dp"
     android:layout_height="wrap_content"
+    android:layout_margin="1dp"
     android:foreground="?attr/selectableItemBackground">
 
     <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
@@ -11,10 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:adjustViewBounds="true"
-        android:padding="1dp"
         android:scaleType="centerCrop"
-        app:cornerRadius="8dp"
         android:transitionName="@string/tap_transition_view_image"
+        app:cornerRadius="5dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintTop_toTopOf="parent"
         tools:background="@color/tapColorAccent" />
@@ -26,7 +26,11 @@
         android:alpha="0.4"
         android:background="@drawable/tap_bg_media_thumbnail_bottom_overlay"
         app:layout_constraintBottom_toBottomOf="@id/rciv_thumbnail"
-        app:layout_constraintDimensionRatio="W, 1:2" />
+        app:layout_constraintDimensionRatio="W, 1:2"
+        app:layout_constraintEnd_toEndOf="@id/rciv_thumbnail"
+        app:layout_constraintStart_toStartOf="@id/rciv_thumbnail"
+        app:layout_constraintTop_toTopOf="@id/rciv_thumbnail"
+        app:layout_constraintVertical_bias="1" />
 
     <FrameLayout
         android:id="@+id/fl_progress"
@@ -78,8 +82,8 @@
         android:id="@+id/iv_video_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginBottom="4dp"
         android:src="@drawable/tap_ic_video_white_outline"
         android:tint="@color/tapIconMediaListVideo"

@@ -71,11 +71,12 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
     private TAPChatProfileActivity.ChatProfileInterface chatProfileInterface;
     private RequestManager glide;
     private int gridWidth;
+    private int mediaThumbnailStartIndex;
 
     public TapChatProfileAdapter(String instanceKey, List<TapChatProfileItemModel> items, TAPChatProfileActivity.ChatProfileInterface chatProfileInterface, RequestManager glide) {
         this.instanceKey = instanceKey;
         setItems(items, true);
-        gridWidth = TAPUtils.getScreenWidth() / 3;
+        gridWidth = (TAPUtils.getScreenWidth() - TAPUtils.dpToPx(34)) / 3;
         this.chatProfileInterface = chatProfileInterface;
         this.glide = glide;
     }
@@ -385,6 +386,28 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 
             Integer downloadProgressValue = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(message.getLocalID());
             clContainer.getLayoutParams().width = gridWidth;
+            if (clContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+                // Update left/right margin per item
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) clContainer.getLayoutParams();
+                int indexMod = (getAdapterPosition() - mediaThumbnailStartIndex) % 3;
+                switch (indexMod) {
+                    case 0:
+                        params.leftMargin = TAPUtils.dpToPx(14);
+//                        params.rightMargin = 0;
+                        break;
+                    case 1:
+                        params.leftMargin = TAPUtils.dpToPx(5);
+//                        params.rightMargin = 0;
+                        break;
+                    case 2:
+                        params.leftMargin = TAPUtils.dpToPx(-4);
+//                        params.leftMargin = 0;
+//                        params.rightMargin = 0;
+//                        params.rightMargin = TAPUtils.dpToPx(18);
+                        break;
+                }
+                clContainer.requestLayout();
+            }
             rcivThumbnail.setImageDrawable(null);
 
 //            if (null == thumbnail) {
@@ -552,5 +575,9 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
         protected void onBind(TapChatProfileItemModel item, int position) {
 
         }
+    }
+
+    public void setMediaThumbnailStartIndex(int mediaThumbnailStartIndex) {
+        this.mediaThumbnailStartIndex = mediaThumbnailStartIndex;
     }
 }

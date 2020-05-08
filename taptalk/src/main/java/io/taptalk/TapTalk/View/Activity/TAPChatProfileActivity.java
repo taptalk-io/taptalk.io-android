@@ -728,6 +728,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             return;
         }
         vm.getAdapterItems().add(vm.getLoadingItem());
+        adapter.setMediaThumbnailStartIndex(vm.getAdapterItems().indexOf(vm.getSharedMediaSectionTitle()) + 1);
         adapter.notifyItemInserted(adapter.getItemCount() - 1);
     }
 
@@ -737,6 +738,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         }
         int index = vm.getAdapterItems().indexOf(vm.getLoadingItem());
         vm.getAdapterItems().remove(index);
+        adapter.setMediaThumbnailStartIndex(vm.getAdapterItems().indexOf(vm.getSharedMediaSectionTitle()) + 1);
         adapter.notifyItemRemoved(index);
     }
 
@@ -1063,6 +1065,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         // First load
                         vm.setSharedMediaSectionTitle(new TapChatProfileItemModel(getString(R.string.tap_shared_media)));
                         vm.getAdapterItems().add(vm.getSharedMediaSectionTitle());
+                        adapter.setMediaThumbnailStartIndex(vm.getAdapterItems().indexOf(vm.getSharedMediaSectionTitle()) + 1);
                         runOnUiThread(() -> {
                             if (MAX_ITEMS_PER_PAGE <= entities.size()) {
                                 sharedMediaPagingScrollListener = () -> {
