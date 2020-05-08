@@ -56,6 +56,8 @@
     <color name="tapLeftBubbleBackgroundColor">@color/tapWhite</color>
     <color name="tapRightBubbleQuoteBackgroundColor">@color/tapColorPrimaryDark</color>
     <color name="tapLeftBubbleQuoteBackgroundColor">@color/tapWhiteF3</color>
+    <color name="tapRightBubbleHighlightBackgroundColor">@color/tapHighlightBlue</color>
+    <color name="tapLeftBubbleHighlightBackgroundColor">@color/tapHighlight</color>
     <color name="tapRightFileButtonBackgroundColor">@color/tapColorPrimaryDark</color>
     <color name="tapLeftFileButtonBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
@@ -401,6 +403,7 @@
     <color name="tapTealish">#2eccad</color>
     <color name="tapAquaMarine">#3de1c1</color>
     <color name="tapLightTeal">#a7ebde</color>
+    <color name="tapHighlight">#d1f4ff</color>
     <color name="tapHighlightBlue">#5ac8fa</color>
     <color name="tapDodgerBlue">#48beff</color>
     <color name="tapClearBlue">#188cff</color>

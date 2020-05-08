@@ -41,7 +41,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginEnd="64dp"
         android:layout_marginRight="64dp"
-        android:background="@drawable/tap_bg_chat_bubble_left_default"
+        android:background="@drawable/tap_bg_chat_bubble_left_transition"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/tv_message_status"
         app:layout_constraintEnd_toEndOf="parent"
