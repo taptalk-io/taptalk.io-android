@@ -68,8 +68,8 @@ public interface TAPMessageDao {
 
     @Query("select * from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 " +
             "and RoomID like :roomID and userID not like :userID and type in (" + TYPE_TEXT + ", " + TYPE_IMAGE + ", " + TYPE_VIDEO +
-            ") and :usernameFilter order by created asc")
-    List<TAPMessageEntity> getAllUnreadMentionsFromRoom(String userID, String usernameFilter, String roomID);
+            ") and (body like :filter1 or body like :filter2 or body like :filter3 or body like :filter4 or body like :filter5 or body like :filter6 or body like :filter7 or body like :filter8 or body like :filter9) order by created asc")
+    List<TAPMessageEntity> getAllUnreadMentionsFromRoom(String userID, String filter1, String filter2, String filter3, String filter4, String filter5, String filter6, String filter7, String filter8, String filter9, String roomID);
 
     @Query("select * from (select roomID, max(created) as max_created from Message_Table group by roomID) " +
             "secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created where roomName like :keyword escape '\\' group by firstQuery.roomID order by firstQuery.created desc")

@@ -162,7 +162,15 @@ public class TAPMessageRepository {
                         unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
                         mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
                                 myID,
-                                generateMentionFilter(username),
+                                generateMentionFilter(username, 0),
+                                generateMentionFilter(username, 1),
+                                generateMentionFilter(username, 2),
+                                generateMentionFilter(username, 3),
+                                generateMentionFilter(username, 4),
+                                generateMentionFilter(username, 5),
+                                generateMentionFilter(username, 6),
+                                generateMentionFilter(username, 7),
+                                generateMentionFilter(username, 8),
                                 entity.getRoomID()).size());
                     }
                     listener.onSelectedRoomList(entities, unreadMap, mentionMap);
@@ -185,7 +193,15 @@ public class TAPMessageRepository {
             // TODO: 023, 23 Apr 2020 ADD END OF STRING AND NEWLINE FILTER
             List<TAPMessageEntity> messageEntities = messageDao.getAllUnreadMentionsFromRoom(
                     myID,
-                    generateMentionFilter(username),
+                    generateMentionFilter(username, 0),
+                    generateMentionFilter(username, 1),
+                    generateMentionFilter(username, 2),
+                    generateMentionFilter(username, 3),
+                    generateMentionFilter(username, 4),
+                    generateMentionFilter(username, 5),
+                    generateMentionFilter(username, 6),
+                    generateMentionFilter(username, 7),
+                    generateMentionFilter(username, 8),
                     roomID);
             listener.onSelectFinished(messageEntities);
         }).start();
@@ -204,7 +220,15 @@ public class TAPMessageRepository {
                 unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
                 mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
                         myID,
-                        generateMentionFilter(username),
+                        generateMentionFilter(username, 0),
+                        generateMentionFilter(username, 1),
+                        generateMentionFilter(username, 2),
+                        generateMentionFilter(username, 3),
+                        generateMentionFilter(username, 4),
+                        generateMentionFilter(username, 5),
+                        generateMentionFilter(username, 6),
+                        generateMentionFilter(username, 7),
+                        generateMentionFilter(username, 8),
                         entity.getRoomID()).size());
             }
             listener.onSelectedRoomList(entities, unreadMap, mentionMap);
@@ -265,7 +289,15 @@ public class TAPMessageRepository {
                     unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
                     mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
                             myID,
-                            generateMentionFilter(username),
+                            generateMentionFilter(username, 0),
+                            generateMentionFilter(username, 1),
+                            generateMentionFilter(username, 2),
+                            generateMentionFilter(username, 3),
+                            generateMentionFilter(username, 4),
+                            generateMentionFilter(username, 5),
+                            generateMentionFilter(username, 6),
+                            generateMentionFilter(username, 7),
+                            generateMentionFilter(username, 8),
                             entity.getRoomID()).size());
                 }
                 listener.onSelectedRoomList(entities, unreadMap, mentionMap);
@@ -280,7 +312,15 @@ public class TAPMessageRepository {
             int unreadCount = messageDao.getUnreadCount(myID, roomID);
             int mentionCount = messageDao.getAllUnreadMentionsFromRoom(
                     myID,
-                    generateMentionFilter(username),
+                    generateMentionFilter(username, 0),
+                    generateMentionFilter(username, 1),
+                    generateMentionFilter(username, 2),
+                    generateMentionFilter(username, 3),
+                    generateMentionFilter(username, 4),
+                    generateMentionFilter(username, 5),
+                    generateMentionFilter(username, 6),
+                    generateMentionFilter(username, 7),
+                    generateMentionFilter(username, 8),
                     roomID).size();
             listener.onCountedUnreadCount(roomID, unreadCount, mentionCount);
         }).start();
@@ -363,26 +403,27 @@ public class TAPMessageRepository {
         }).start();
     }
 
-    private String generateMentionFilter(String username) {
-        String a = String.format("(body like %s" +
-                        " or body like %s" +
-                        " or body like %s" +
-                        " or body like %s" +
-                        " or body like %s" +
-                        " or body like %s" +
-                        " or body like %s" +
-                        " or body like %s" +
-                        " or body like %s)",
-                "% " + username + " %",
-                "%\n" + username + " %",
-                username + " %",
-                "% " + username + "\n%",
-                "%\n" + username + "\n%",
-                username + "\n%",
-                "% " + username,
-                "%\n" + username,
-                username);
-        Log.e(TAG, "generateMentionFilter: " + a);
-        return a;
+    private String generateMentionFilter(String username, int type) {
+        switch (type) {
+            case 0:
+                return "% @" + username + " %";
+            case 1:
+                return "%\n@" + username + " %";
+            case 2:
+                return "@" + username + " %";
+            case 3:
+                return "% @" + username + "\n%";
+            case 4:
+                return "%\n@" + username + "\n%";
+            case 5:
+                return "@" + username + "\n%";
+            case 6:
+                return "% @" + username;
+            case 7:
+                return "%\n@" + username;
+            case 8:
+            default:
+                return "@" + username;
+        }
     }
 }
