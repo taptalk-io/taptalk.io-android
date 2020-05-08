@@ -85,11 +85,11 @@ public class TAPAttachmentModel {
         titleResIds.add(R.string.tap_document);
         ids.add(ATTACH_DOCUMENT);
 
-        imageResIds.add(R.drawable.tap_ic_camera_pumpkin_orange);
+        imageResIds.add(R.drawable.tap_ic_camera_orange);
         titleResIds.add(R.string.tap_camera);
         ids.add(ATTACH_CAMERA);
 
-        imageResIds.add(R.drawable.tap_ic_gallery_pumpkin_orange);
+        imageResIds.add(R.drawable.tap_ic_gallery_orange);
         titleResIds.add(R.string.tap_gallery);
         ids.add(ATTACH_GALLERY);
 
@@ -118,8 +118,8 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createImagePickerMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_camera_pumpkin_orange,
-                R.drawable.tap_ic_gallery_pumpkin_orange,
+                R.drawable.tap_ic_camera_orange,
+                R.drawable.tap_ic_gallery_orange,
         };
 
         int[] titleResIds = {
@@ -405,7 +405,7 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createLinkLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_open_link_pumpkin_orange,
+                R.drawable.tap_ic_open_link_orange,
                 R.drawable.tap_ic_copy_orange
         };
 
@@ -429,7 +429,7 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createEmailLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_mail_pumpkin_orange,
+                R.drawable.tap_ic_mail_orange,
                 R.drawable.tap_ic_copy_orange
         };
 
@@ -453,8 +453,8 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createPhoneLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_call_pumpkin_orange,
-                R.drawable.tap_ic_sms_pumpkin_orange,
+                R.drawable.tap_ic_call_orange,
+                R.drawable.tap_ic_sms_orange,
                 R.drawable.tap_ic_copy_orange
         };
 
@@ -480,8 +480,8 @@ public class TAPAttachmentModel {
 
     public static List<TAPAttachmentModel> createMentionLongPressMenu() {
         int[] imageResIds = {
-                R.drawable.tap_ic_members_orange,
-                R.drawable.tap_ic_send_message_orange,
+                R.drawable.tap_ic_contact_orange,
+                R.drawable.tap_ic_sms_orange,
                 R.drawable.tap_ic_copy_orange
         };
 
