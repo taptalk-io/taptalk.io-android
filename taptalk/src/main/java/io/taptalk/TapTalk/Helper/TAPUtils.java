@@ -1157,23 +1157,25 @@ public class TAPUtils {
     public static boolean isActiveUserMentioned(TAPMessageModel message, TAPUserModel activeUser) {
         if (message.getUser().equals(activeUser) ||
                 message.getRoom().getRoomType() == TYPE_PERSONAL ||
+                (message.getType() != TYPE_TEXT &&
+                        message.getType() != TYPE_IMAGE &&
+                        message.getType() != TYPE_VIDEO) ||
                 null == activeUser.getUsername() ||
                 activeUser.getUsername().isEmpty()) {
             return false;
         }
-        String text;
-        if (message.getType() == TYPE_TEXT) {
-            text = message.getBody();
-        } else if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
-            text = (String) message.getData().get(CAPTION);
-        } else {
-            return false;
-        }
+        String text = message.getBody();
         if (null == text || text.isEmpty()) {
             return false;
         }
-        return text.contains("@" + activeUser.getUsername() + " ") ||
-                text.contains("@" + activeUser.getUsername() + "\n") ||
-                (text.contains("@" + activeUser.getUsername()) && text.endsWith(activeUser.getUsername()));
+        return text.contains(" @" + activeUser.getUsername() + " ") ||
+                text.contains(" @" + activeUser.getUsername() + "\n") ||
+                (text.contains(" @" + activeUser.getUsername()) && text.endsWith(activeUser.getUsername())) ||
+                text.contains("\n@" + activeUser.getUsername() + " ") ||
+                text.contains("\n@" + activeUser.getUsername() + "\n") ||
+                (text.contains("\n@" + activeUser.getUsername()) && text.endsWith(activeUser.getUsername())) ||
+                text.startsWith("@" + activeUser.getUsername()) && text.contains("@" + activeUser.getUsername() + " ") ||
+                text.startsWith("@" + activeUser.getUsername()) && text.contains("@" + activeUser.getUsername() + "\n") ||
+                text.equals("@" + activeUser.getUsername());
     }
 }

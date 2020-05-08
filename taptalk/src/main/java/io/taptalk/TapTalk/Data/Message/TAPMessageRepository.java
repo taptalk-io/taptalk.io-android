@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.Data.Message;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -161,9 +162,7 @@ public class TAPMessageRepository {
                         unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
                         mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
                                 myID,
-                                "%@" + username + " %",
-                                "%@" + username + "\n%",
-                                "%@" + username,
+                                generateMentionFilter(username),
                                 entity.getRoomID()).size());
                     }
                     listener.onSelectedRoomList(entities, unreadMap, mentionMap);
@@ -186,9 +185,7 @@ public class TAPMessageRepository {
             // TODO: 023, 23 Apr 2020 ADD END OF STRING AND NEWLINE FILTER
             List<TAPMessageEntity> messageEntities = messageDao.getAllUnreadMentionsFromRoom(
                     myID,
-                    "%@" + username + " %",
-                    "%@" + username + "\n%",
-                    "%@" + username,
+                    generateMentionFilter(username),
                     roomID);
             listener.onSelectFinished(messageEntities);
         }).start();
@@ -207,9 +204,7 @@ public class TAPMessageRepository {
                 unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
                 mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
                         myID,
-                        "%@" + username + " %",
-                        "%@" + username + "\n%",
-                        "%@" + username,
+                        generateMentionFilter(username),
                         entity.getRoomID()).size());
             }
             listener.onSelectedRoomList(entities, unreadMap, mentionMap);
@@ -270,9 +265,7 @@ public class TAPMessageRepository {
                     unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
                     mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
                             myID,
-                            "%@" + username + " %",
-                            "%@" + username + "\n%",
-                            "%@" + username,
+                            generateMentionFilter(username),
                             entity.getRoomID()).size());
                 }
                 listener.onSelectedRoomList(entities, unreadMap, mentionMap);
@@ -287,9 +280,7 @@ public class TAPMessageRepository {
             int unreadCount = messageDao.getUnreadCount(myID, roomID);
             int mentionCount = messageDao.getAllUnreadMentionsFromRoom(
                     myID,
-                    "%@" + username + " %",
-                    "%@" + username + "\n%",
-                    "%@" + username,
+                    generateMentionFilter(username),
                     roomID).size();
             listener.onCountedUnreadCount(roomID, unreadCount, mentionCount);
         }).start();
@@ -370,5 +361,28 @@ public class TAPMessageRepository {
             messageDao.deleteMessageByRoomId(roomId);
             listener.onDeleteFinished();
         }).start();
+    }
+
+    private String generateMentionFilter(String username) {
+        String a = String.format("(body like %s" +
+                        " or body like %s" +
+                        " or body like %s" +
+                        " or body like %s" +
+                        " or body like %s" +
+                        " or body like %s" +
+                        " or body like %s" +
+                        " or body like %s" +
+                        " or body like %s)",
+                "% " + username + " %",
+                "%\n" + username + " %",
+                username + " %",
+                "% " + username + "\n%",
+                "%\n" + username + "\n%",
+                username + "\n%",
+                "% " + username,
+                "%\n" + username,
+                username);
+        Log.e(TAG, "generateMentionFilter: " + a);
+        return a;
     }
 }

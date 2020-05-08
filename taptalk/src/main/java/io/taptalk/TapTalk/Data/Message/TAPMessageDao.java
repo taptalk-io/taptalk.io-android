@@ -12,6 +12,7 @@ import java.util.List;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 @Dao
@@ -66,9 +67,9 @@ public interface TAPMessageDao {
     List<TAPMessageEntity> getAllUnreadMessagesFromRoom(String userID, String roomID);
 
     @Query("select * from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 " +
-            "and RoomID like :roomID and userID not like :userID " +
-            "and (body like :usernameFilterSpace or body like :usernameFilterNewline or body like :usernameFilterEnd) order by created asc")
-    List<TAPMessageEntity> getAllUnreadMentionsFromRoom(String userID, String usernameFilterSpace, String usernameFilterNewline, String usernameFilterEnd, String roomID);
+            "and RoomID like :roomID and userID not like :userID and type in (" + TYPE_TEXT + ", " + TYPE_IMAGE + ", " + TYPE_VIDEO +
+            ") and :usernameFilter order by created asc")
+    List<TAPMessageEntity> getAllUnreadMentionsFromRoom(String userID, String usernameFilter, String roomID);
 
     @Query("select * from (select roomID, max(created) as max_created from Message_Table group by roomID) " +
             "secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created where roomName like :keyword escape '\\' group by firstQuery.roomID order by firstQuery.created desc")
