@@ -262,6 +262,17 @@
 
     </FrameLayout>
 
+    <ImageView
+        android:id="@+id/iv_bubble_highlight"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/tap_bg_chat_bubble_right_highlight"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toEndOf="@id/fl_bubble"
+        app:layout_constraintStart_toStartOf="@id/fl_bubble"
+        app:layout_constraintTop_toTopOf="@id/fl_bubble" />
+
     <TextView
         android:id="@+id/tv_message_status"
         style="@style/tapBubbleMessageStatusStyle"
@@ -292,17 +303,5 @@
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/fl_bubble" />
-
-    <View
-        android:id="@+id/v_background_highlight"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:alpha="0.2"
-        android:background="@color/tapColorPrimary"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/fl_bubble" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
