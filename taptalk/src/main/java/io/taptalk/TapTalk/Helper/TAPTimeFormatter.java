@@ -44,7 +44,6 @@ public class TAPTimeFormatter {
         midnightFromSendTime.set(Calendar.MILLISECOND, 0);
         midnightTimeGap = midnightFromSendTime.getTimeInMillis() - timestamp;
 
-
         if (timestamp == 0) {
             return "";
         } else if (midnightTimeGap > timeGap) {
@@ -82,6 +81,32 @@ public class TAPTimeFormatter {
             return String.format(context.getString(R.string.tap_format_s_sent_yesterday_at), formatClock(timestamp));
         } else {
             return String.format("%s %s %s", sentAt, formatDate(timestamp), formatClock(timestamp));
+        }
+    }
+
+    public String dateStampString(Context context, long timestamp) {
+        long timeGap;
+        long timeNow = Calendar.getInstance().getTimeInMillis();
+        timeGap = timeNow - timestamp;
+
+        long midnightTimeGap;
+        Calendar midnightFromSendTime = Calendar.getInstance();
+        midnightFromSendTime.setTime(new Date(timestamp));
+        midnightFromSendTime.add(Calendar.DATE, 1);
+        midnightFromSendTime.set(Calendar.HOUR_OF_DAY, 0);
+        midnightFromSendTime.set(Calendar.MINUTE, 0);
+        midnightFromSendTime.set(Calendar.SECOND, 0);
+        midnightFromSendTime.set(Calendar.MILLISECOND, 0);
+        midnightTimeGap = midnightFromSendTime.getTimeInMillis() - timestamp;
+
+        if (timestamp == 0) {
+            return "";
+        } else if (midnightTimeGap > timeGap) {
+            return context.getString(R.string.tap_today);
+        } else if ((TAPTimeFormatter.times.get(3)) + midnightTimeGap > timeGap) {
+            return context.getString(R.string.tap_yesterday);
+        } else {
+            return formatDate(timestamp);
         }
     }
 

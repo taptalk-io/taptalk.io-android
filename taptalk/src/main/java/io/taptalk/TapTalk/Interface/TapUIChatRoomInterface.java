@@ -18,7 +18,7 @@ public interface TapUIChatRoomInterface {
 
     void onTapTalkGroupMemberAvatarTapped(Activity activity, TAPRoomModel room, TAPUserModel user);
 
-    void onTapTalkUserMentionTapped(Activity activity, TAPMessageModel messageModel, TAPUserModel user);
+    void onTapTalkUserMentionTapped(Activity activity, TAPMessageModel messageModel, TAPUserModel user, boolean isRoomParticipant);
 
     void onTapTalkMessageQuoteTapped(Activity activity, TAPMessageModel messageModel, @Nullable HashMap<String, Object> userInfo);
 

@@ -212,7 +212,7 @@
                     android:id="@+id/iv_button_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/tap_ic_send_message_grey"
+                    android:src="@drawable/tap_ic_send_message_orange"
                     android:tint="@color/tapButtonIconColor"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"

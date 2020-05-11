@@ -34,6 +34,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPTouchImageView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -155,10 +156,10 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
         }
         fileUrl = (String) message.getData().get(FILE_URL);
         fileID = (String) message.getData().get(FILE_ID);
-        title = message.getUser().getName();
-        messageStatus = message.getMessageStatusText();
         caption = (String) message.getData().get(CAPTION);
         mimeType = (String) message.getData().get(MEDIA_TYPE);
+        title = message.getUser().getName();
+        messageStatus = TAPTimeFormatter.getInstance().durationChatString(TapTalk.appContext, message.getCreated());
     }
 
     @SuppressLint("ClickableViewAccessibility")

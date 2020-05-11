@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -27,6 +29,7 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
 
 public class TAPChatViewModel extends AndroidViewModel {
@@ -36,7 +39,9 @@ public class TAPChatViewModel extends AndroidViewModel {
     private LiveData<List<TAPMessageEntity>> allMessages;
     private Map<String, TAPMessageModel> messagePointer, unreadMessages, unreadMentions;
     private Map<String, TAPUserModel> roomParticipantsByUsername;
+    private Map<String, List<Integer>> messageMentionIndexes;
     private LinkedHashMap<String, TAPUserModel> groupTyping;
+    private LinkedHashMap<Integer, TAPMessageModel> dateSeparators;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private TAPUserModel myUserModel, otherUserModel;
@@ -160,6 +165,14 @@ public class TAPChatViewModel extends AndroidViewModel {
             return;
         }
         getRoomParticipantsByUsername().put(user.getUsername(), user);
+    }
+
+    public Map<String, List<Integer>> getMessageMentionIndexes() {
+        return messageMentionIndexes == null ? messageMentionIndexes = new LinkedHashMap<>() : messageMentionIndexes;
+    }
+
+    public void addMessageMentionIndexes(String localID, List<Integer> indexes) {
+        getMessageMentionIndexes().put(localID, indexes);
     }
 
     public Map<String, TAPMessageModel> getUnreadMentions() {
@@ -323,6 +336,21 @@ public class TAPChatViewModel extends AndroidViewModel {
             loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated() - 1L);
         }
         return loadingIndicator;
+    }
+
+    public LinkedHashMap<Integer, TAPMessageModel> getDateSeparators() {
+        return null == dateSeparators ? dateSeparators = new LinkedHashMap<>() : dateSeparators;
+    }
+
+    public TAPMessageModel generateDateSeparator(Context context, TAPMessageModel message) {
+        return TAPMessageModel.Builder(
+                TAPTimeFormatter.getInstance().dateStampString(context, message.getCreated()),
+                getRoom(),
+                TYPE_DATE_SEPARATOR,
+                message.getCreated() - 1,
+                getMyUserModel(),
+                "",
+                null);
     }
 
     public TAPOnlineStatusModel getOnlineStatus() {

@@ -281,10 +281,10 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     attachmentListener.onSaveToDownloads(message);
                     break;
                 case LONG_PRESS_VIEW_PROFILE:
-                    attachmentListener.onViewProfileSelected(TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().get(linkifyResult.substring(1)));
+                    attachmentListener.onViewProfileSelected(linkifyResult.substring(1), message);
                     break;
                 case LONG_PRESS_SEND_MESSAGE:
-                    attachmentListener.onSendMessageSelected(TAPContactManager.getInstance(instanceKey).getTempUserDataMapByUsername().get(linkifyResult.substring(1)));
+                    attachmentListener.onSendMessageSelected(linkifyResult.substring(1));
                     break;
                 case LONG_PRESS_DELETE:
                     if (null != TAPChatManager.getInstance(instanceKey).getOpenRoom())

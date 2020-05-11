@@ -56,11 +56,15 @@
     <color name="tapLeftBubbleBackgroundColor">@color/tapWhite</color>
     <color name="tapRightBubbleQuoteBackgroundColor">@color/tapColorPrimaryDark</color>
     <color name="tapLeftBubbleQuoteBackgroundColor">@color/tapWhiteF3</color>
+    <color name="tapRightBubbleHighlightBackgroundColor">@color/tapHighlightBlue</color>
+    <color name="tapLeftBubbleHighlightBackgroundColor">@color/tapHighlight</color>
     <color name="tapRightFileButtonBackgroundColor">@color/tapColorPrimaryDark</color>
     <color name="tapLeftFileButtonBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
+    <color name="tapDateIndicatorBackgroundColor">@color/tapWhite</color>
     <color name="tapUnreadIdentifierBackgroundColor">@color/tapPumpkinOrange10</color>
-    <color name="tapFileProgressBackgroundColor">@color/tapWhite</color>
+    <color name="tapLeftFileProgressBackgroundColor">@color/tapWhite</color>
+    <color name="tapRightFileProgressBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapDeletedChatRoomInfoBackgroundColor">@color/tapParchment</color>
     <color name="tapChatRoomBackgroundColor">@color/tapDefaultBackgroundColor</color> <!--*-->
 
@@ -79,12 +83,21 @@
     <color name="tapIconCircleSelectionInactive">@color/tapColorGrayIcon</color>
     <color name="tapIconLoadingPopupSuccess">@color/tapColorPrimaryIcon</color>
     <color name="tapIconSearchConnectionLost">@color/tapColorTextDark</color>
-    <color name="tapIconMessageSending">@color/tapColorGrayIcon</color>
-    <color name="tapIconMessageFailed">@color/tapColorGrayIcon</color>
-    <color name="tapIconMessageSent">@color/tapColorGrayIcon</color>
-    <color name="tapIconMessageDelivered">@color/tapColorGrayIcon</color>
-    <color name="tapIconMessageRead">@color/tapVibrantGreen</color>
-    <color name="tapIconMessageDeleted">@color/tapColorGrayIcon</color>
+    <color name="tapIconRoomListMessageSending">@color/tapColorGrayIcon</color>
+    <color name="tapIconRoomListMessageFailed">@color/tapColorGrayIcon</color>
+    <color name="tapIconRoomListMessageSent">@color/tapColorGrayIcon</color>
+    <color name="tapIconRoomListMessageDelivered">@color/tapColorGrayIcon</color>
+    <color name="tapIconRoomListMessageRead">@color/tapVibrantGreen</color>
+    <color name="tapIconRoomListMessageDeleted">@color/tapColorGrayIcon</color>
+    <color name="tapIconChatRoomMessageSending">@color/tapColorGrayIcon</color>
+    <color name="tapIconChatRoomMessageFailed">@color/tapColorWhiteIcon</color>
+    <color name="tapIconChatRoomMessageSent">@color/tapTransparentBlack1920</color>
+    <color name="tapIconChatRoomMessageSentImage">@color/tapTransparentWhite60</color>
+    <color name="tapIconChatRoomMessageDelivered">@color/tapTransparentBlack1920</color>
+    <color name="tapIconChatRoomMessageDeliveredImage">@color/tapTransparentWhite60</color>
+    <color name="tapIconChatRoomMessageRead">@color/tapColorWhiteIcon</color>
+    <color name="tapIconChatRoomMessageDeletedLeft">@color/tapColorGrayIcon</color>
+    <color name="tapIconChatRoomMessageDeletedRight">@color/tapColorWhiteIcon</color>
     <color name="tapIconRemoveItem">@color/tapColorWhiteIcon</color>
     <color name="tapIconRemoveItemBackground">@color/tapColorDestructiveIcon</color>
 
@@ -113,16 +126,17 @@
     <color name="tapIconMenuCreateNewGroup">@color/tapColorPrimaryIcon</color>
 
     <color name="tapIconChatProfileMenuNotificationActive">@color/tapColorPrimaryIcon</color>
-    <color name="tapIconChatProfileMenuNotificationInactive">@color/tapColorGrayIcon</color>
-    <color name="tapIconChatProfileMenuConversationColor">@color/tapColorGrayIcon</color>
-    <color name="tapIconChatProfileMenuBlockUser">@color/tapColorGrayIcon</color>
-    <color name="tapIconChatProfileMenuSearchChat">@color/tapColorGrayIcon</color>
+    <color name="tapIconChatProfileMenuNotificationInactive">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconChatProfileMenuConversationColor">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconChatProfileMenuBlockUser">@color/tapColorDestructiveIcon</color>
+    <color name="tapIconChatProfileMenuSearchChat">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuClearChat">@color/tapColorDestructiveIcon</color>
-    <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorGrayIcon</color>
-    <color name="tapIconGroupMemberProfileMenuAddToContacts">@color/tapColorGrayIcon</color>
-    <color name="tapIconGroupMemberProfileMenuSendMessage">@color/tapColorGrayIcon</color>
-    <color name="tapIconGroupMemberProfileMenuPromoteAdmin">@color/tapColorGrayIcon</color>
-    <color name="tapIconGroupMemberProfileMenuDemoteAdmin">@color/tapColorGrayIcon</color>
+    <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconGroupProfileMenuEditGroup">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconGroupMemberProfileMenuAddToContacts">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconGroupMemberProfileMenuSendMessage">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconGroupMemberProfileMenuPromoteAdmin">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconGroupMemberProfileMenuDemoteAdmin">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupMemberProfileMenuRemoveMember">@color/tapColorDestructiveIcon</color>
 
     <color name="tapIconMediaPreviewAdd">@color/tapColorWhiteIcon</color>
@@ -159,10 +173,14 @@
     <color name="tapIconChatComposerBurgerMenuBackground">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatComposerShowKeyboardBackground">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatComposerAttach">@color/tapColorGrayIcon</color>
-    <color name="tapIconFile">@color/tapColorWhiteIcon</color>
-    <color name="tapIconFileUploadDownload">@color/tapColorWhiteIcon</color>
-    <color name="tapIconFileCancelUploadDownload">@color/tapColorWhiteIcon</color>
-    <color name="tapIconFileRetryUploadDownload">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileLeft">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileUploadDownloadLeft">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileCancelUploadDownloadLeft">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileRetryUploadDownloadLeft">@color/tapColorWhiteIcon</color>
+    <color name="tapIconFileRight">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconFileUploadDownloadRight">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconFileCancelUploadDownloadRight">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconFileRetryUploadDownloadRight">@color/tapColorPrimaryIcon</color>
     <color name="tapIconFilePlayMedia">@color/tapColorWhiteIcon</color>
     <color name="tapIconDeletedRightMessageBubble">@color/tapColorWhiteIcon</color>
     <color name="tapIconDeletedLeftMessageBubble">@color/tapColorGrayIcon</color>
@@ -224,6 +242,7 @@
     <color name="tapActionSheetDestructiveLabelColor">@color/tapColorError</color>
 
     <color name="tapSectionHeaderLabelColor">@color/tapColorPrimary</color>
+    <color name="tapSharedMediaTitleLabelColor">@color/tapColorPrimary</color>
 
     <color name="tapContactListNameColor">@color/tapColorTextDark</color>
     <color name="tapContactListNameHighlightedColor">@color/tapColorPrimary</color>
@@ -239,7 +258,9 @@
 
     <color name="tapNewChatMenuLabelColor">@color/tapColorTextDark</color>
 
-    <color name="tapChatProfileRoomNameColor">@color/tapColorTextLight</color>
+    <color name="tapChatProfileRoomNameColor">@color/tapColorTextDark</color>
+    <color name="tapChatProfileUsernameColor">@color/tapColorPrimary</color>
+    <color name="tapChatProfileMemberCountColor">@color/tapColorTextMedium</color>
     <color name="tapChatProfileMenuLabelColor">@color/tapColorTextDark</color>
     <color name="tapChatProfileMenuDestructiveLabelColor">@color/tapColorError</color>
 
@@ -282,6 +303,7 @@
     <color name="tapLeftBubbleMessageTimestampColor">@color/tapTransparentBlack1940</color>
     <color name="tapBubbleMediaInfoColor">@color/tapColorTextLight</color>
     <color name="tapSystemMessageBodyColor">@color/tapColorTextMedium</color>
+    <color name="tapDateIndicatorTextColor">@color/tapTransparentBlack1960</color>
     <color name="tapChatRoomUnreadBadgeLabelColor">@color/tapColorTextLight</color>
     <color name="tapUnreadMessageIdentifierColor">@color/tapColorPrimary</color>
     <color name="tapUnreadMessageButtonLabelColor">@color/tapColorPrimary</color>
@@ -381,6 +403,7 @@
     <color name="tapTealish">#2eccad</color>
     <color name="tapAquaMarine">#3de1c1</color>
     <color name="tapLightTeal">#a7ebde</color>
+    <color name="tapHighlight">#d1f4ff</color>
     <color name="tapHighlightBlue">#5ac8fa</color>
     <color name="tapDodgerBlue">#48beff</color>
     <color name="tapClearBlue">#188cff</color>
@@ -429,7 +452,10 @@
     <color name="tapTransparentCharcoal">#0004040f</color>
     <color name="tapTransparentCharcoal50">#8004040f</color>
     <color name="tapTransparentCharcoal40">#6604040f</color>
+    <color name="tapTransparentBlack1910">#1a191919</color>
+    <color name="tapTransparentBlack1920">#33191919</color>
     <color name="tapTransparentBlack1940">#66191919</color>
+    <color name="tapTransparentBlack1960">#99191919</color>
     <color name="tapTransparentBlack4770">#b3474747</color>
 
 </resources>

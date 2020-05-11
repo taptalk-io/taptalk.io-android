@@ -596,12 +596,29 @@ public class TapUI {
         }
     }
 
-    void triggerUserMentionTapped(Activity activity, TAPMessageModel message, TAPUserModel user) {
+    void triggerUserMentionTapped(Activity activity, TAPMessageModel message, TAPUserModel user, boolean isRoomParticipant) {
         if (getChatRoomListeners().isEmpty()) {
-            TAPChatProfileActivity.start(activity, instanceKey, message.getRoom(), user);
+            if (isRoomParticipant) {
+                // Open member profile
+                TAPChatProfileActivity.start(activity, instanceKey, message.getRoom(), user);
+            } else {
+                // Open personal profile
+                TAPChatProfileActivity.start(
+                        activity,
+                        instanceKey,
+                        TAPRoomModel.Builder(
+                                TAPChatManager.getInstance(instanceKey).arrangeRoomId(
+                                        TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
+                                        user.getUserID()),
+                                user.getName(),
+                                TYPE_PERSONAL,
+                                user.getAvatarURL(),
+                                ""), // TODO: 13 Apr 2020 ROOM COLOR
+                        user);
+            }
         } else {
             for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-                listener.onTapTalkUserMentionTapped(activity, message, user);
+                listener.onTapTalkUserMentionTapped(activity, message, user, isRoomParticipant);
             }
         }
     }

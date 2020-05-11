@@ -58,6 +58,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_SYSTEM_MESSAGE = 9001;
         public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9002;
         public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9003;
+        public static final int TYPE_DATE_SEPARATOR = 9005;
     }
 
     public static final class BubbleType {
@@ -78,6 +79,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_LOADING = 9003;
         public static final int TYPE_BUBBLE_DELETED_RIGHT = 90041;
         public static final int TYPE_BUBBLE_DELETED_LEFT = 90042;
+        public static final int TYPE_BUBBLE_DATE_SEPARATOR = 9005;
         public static final int TYPE_EMPTY = 9999;
     }
 
@@ -407,6 +409,7 @@ public class TAPDefaultConstant {
         public static final int MENU_DEMOTE_ADMIN = 11;
         public static final int MENU_REMOVE_MEMBER = 12;
         public static final int MENU_DELETE_GROUP = 13;
+        public static final int MENU_EDIT_GROUP = 14;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";

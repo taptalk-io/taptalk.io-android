@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/tapLeftBubbleBackgroundColor" />
-    <!--<stroke-->
-    <!--android:width="1dp"-->
-    <!--android:color="@color/tapGreyEa" />-->
+    <stroke
+        android:width="1dp"
+        android:color="@color/tapTransparentBlack1910" />
     <corners
-        android:bottomLeftRadius="8dp"
-        android:bottomRightRadius="8dp"
-        android:topLeftRadius="1dp"
-        android:topRightRadius="8dp" />
+        android:bottomLeftRadius="16dp"
+        android:bottomRightRadius="16dp"
+        android:topLeftRadius="2dp"
+        android:topRightRadius="16dp" />
 </shape>

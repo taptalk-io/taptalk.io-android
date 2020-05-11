@@ -226,6 +226,13 @@
         <item name="android:textSize">11sp</item>
     </style>
 
+    <style name="tapSharedMediaTitleLabelStyle" parent="tapFontFamilyBold">
+        <item name="android:letterSpacing">0.21</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/tapSharedMediaTitleLabelColor</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="tapContactListNameStyle" parent="tapFontFamilyBold">
         <item name="android:textColor">@color/tapContactListNameColor</item>
         <item name="android:textSize">14sp</item>
@@ -279,15 +286,24 @@
     </style>
 
     <style name="tapChatProfileRoomNameStyle" parent="tapFontFamilyBold">
-        <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapChatProfileRoomNameColor</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="tapChatProfileUsernameStyle" parent="tapFontFamilyRegular">
+        <item name="android:textColor">@color/tapChatProfileUsernameColor</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="tapChatProfileMemberCountStyle" parent="tapFontFamilyRegular">
+        <item name="android:textColor">@color/tapChatProfileMemberCountColor</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapChatProfileMenuLabelStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapChatProfileMenuLabelColor</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="tapChatProfileMenuDestructiveLabelStyle" parent="tapFontFamilyRegular">
@@ -434,26 +450,26 @@
     <style name="tapRightFileBubbleNameStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapRightFileBubbleNameColor</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapLeftFileBubbleNameStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapLeftFileBubbleNameColor</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="tapRightFileBubbleInfoStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapRightFileBubbleInfoColor</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
 
     <style name="tapLeftFileBubbleInfoStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">@color/tapLeftFileBubbleInfoColor</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
 
@@ -489,6 +505,12 @@
         <item name="android:letterSpacing">-0.02</item>
         <item name="android:textColor">@color/tapSystemMessageBodyColor</item>
         <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="tapDateIndicatorTextStyle" parent="tapFontFamilyMedium">
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">@color/tapDateIndicatorTextColor</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="tapChatRoomUnreadBadgeLabelStyle" parent="tapFontFamilyBold">

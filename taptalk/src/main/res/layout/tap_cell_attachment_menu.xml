@@ -18,7 +18,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/tap_ic_camera_pumpkin_orange" />
+        tools:src="@drawable/tap_ic_camera_orange" />
 
     <TextView
         android:id="@+id/tv_attach_title"
