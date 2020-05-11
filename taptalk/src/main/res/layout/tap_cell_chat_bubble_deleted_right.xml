@@ -69,6 +69,8 @@
                 android:id="@+id/iv_deleted_icon"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
                 android:src="@drawable/tap_ic_block_red"
                 android:tint="@color/tapIconDeletedRightMessageBubble"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_body"

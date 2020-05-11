@@ -2040,38 +2040,46 @@ public class TapUIChatActivity extends TAPBaseActivity {
             updateMessageMentionIndexes(newMessage);
             boolean ownMessage = newMessage.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID());
             runOnUiThread(() -> {
-                if (vm.getMessagePointer().containsKey(newID) &&
-                        TYPE_IMAGE == newMessage.getType() &&
-                        TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()
-                                .equals(newMessage.getUser().getUserID())) {
-                    // Update message instead of adding when message pointer already contains the same local ID
-                    vm.updateMessagePointer(newMessage);
-                    TAPFileUploadManager.getInstance(instanceKey).removeUploadProgressMap(newMessage.getLocalID());
-                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-                } else if (vm.getMessagePointer().containsKey(newID)) {
+                if (vm.getMessagePointer().containsKey(newID)) {
                     // Update message instead of adding when message pointer already contains the same local ID
                     vm.updateMessagePointer(newMessage);
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
-                } else if (vm.isOnBottom() && !ownMessage) {
-                    // Scroll recycler to bottom if own message or recycler is already on bottom
-                    vm.setScrollFromKeyboard(true);
-                    messageAdapter.addMessage(newMessage);
-                    //rvMessageList.scrollToPosition(0);
-                    scrollToBottom();
-                    vm.addMessagePointer(newMessage);
-                } else if (ownMessage) {
-                    // Scroll recycler to bottom if own message or recycler is already on bottom
-                    messageAdapter.addMessage(newMessage);
-                    //rvMessageList.scrollToPosition(0);
-                    scrollToBottom();
-                    vm.addMessagePointer(newMessage);
+                    if (TYPE_IMAGE == newMessage.getType() && ownMessage) {
+                        TAPFileUploadManager.getInstance(instanceKey).removeUploadProgressMap(newMessage.getLocalID());
+                    }
                 } else {
-                    // Message from other people is received when recycler is scrolled up
+                    // Check previous message date and add new message
+                    TAPMessageModel previousMessage = messageAdapter.getItemAt(0);
+                    String currentDate = TAPTimeFormatter.getInstance().formatDate(newMessage.getCreated());
+                    if ((null == newMessage.getHidden() || !newMessage.getHidden()) &&
+                            newMessage.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
+                            newMessage.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
+                            newMessage.getType() != TYPE_DATE_SEPARATOR &&
+                            (null == previousMessage || !currentDate.equals(TAPTimeFormatter.getInstance()
+                                    .formatDate(previousMessage.getCreated())))
+                    ) {
+                        // Generate date separator if first message or date is different
+                        TAPMessageModel dateSeparator = vm.generateDateSeparator(TapUIChatActivity.this, newMessage);
+                        vm.getDateSeparators().put(0, dateSeparator);
+                        messageAdapter.addMessage(dateSeparator);
+                    }
+
+                    // Add new message
                     messageAdapter.addMessage(newMessage);
-                    vm.addUnreadMessage(newMessage);
                     vm.addMessagePointer(newMessage);
-                    updateUnreadCount();
-                    updateMentionCount();
+                    if (vm.isOnBottom() && !ownMessage) {
+                        // Scroll recycler to bottom if recycler is already on bottom
+                        vm.setScrollFromKeyboard(true);
+                        scrollToBottom();
+                    } else if (ownMessage) {
+                        // Scroll recycler to bottom if own message
+                        scrollToBottom();
+                    } else {
+                        // Message from other people is received when recycler is scrolled up
+                        vm.addUnreadMessage(newMessage);
+                        updateUnreadCount();
+                        updateMentionCount();
+                    }
                 }
                 updateMessageDecoration();
             });
@@ -2095,9 +2103,26 @@ public class TapUIChatActivity extends TAPBaseActivity {
             });
             updateMessageMentionIndexes(newMessage);
             boolean ownMessage = newMessage.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID());
+
+            TAPMessageModel previousMessage = messageAdapter.getItemAt(0);
+            String currentDate = TAPTimeFormatter.getInstance().formatDate(newMessage.getCreated());
+            if ((null == newMessage.getHidden() || !newMessage.getHidden()) &&
+                    newMessage.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
+                    newMessage.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
+                    newMessage.getType() != TYPE_DATE_SEPARATOR &&
+                    (null == previousMessage || !currentDate.equals(TAPTimeFormatter.getInstance()
+                            .formatDate(previousMessage.getCreated())))
+            ) {
+                // Generate date separator if first message or date is different
+                TAPMessageModel dateSeparator = vm.generateDateSeparator(TapUIChatActivity.this, newMessage);
+                vm.getDateSeparators().put(0, dateSeparator);
+                messageAdapter.addMessage(dateSeparator);
+            }
+
+            messageAdapter.addMessage(newMessage);
+            vm.addMessagePointer(newMessage);
+
             runOnUiThread(() -> {
-                messageAdapter.addMessage(newMessage);
-                vm.addMessagePointer(newMessage);
                 if (vm.isOnBottom() || ownMessage) {
                     // Scroll recycler to bottom if own message or recycler is already on bottom
                     ivToBottom.setVisibility(View.GONE);
