@@ -2384,7 +2384,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         }
 
-        private CountDownTimer hideDateIndicatorTimer = new CountDownTimer(1500L, 100L) {
+        private CountDownTimer hideDateIndicatorTimer = new CountDownTimer(1000L, 100L) {
             @Override
             public void onTick(long l) {
 
