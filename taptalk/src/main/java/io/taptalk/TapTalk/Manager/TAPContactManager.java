@@ -16,8 +16,8 @@ public class TAPContactManager {
 
     private String instanceKey = "";
     private HashMap<String, TAPUserModel> userDataMap;
+    private HashMap<String, TAPUserModel> userDataMapByUsername;
     private HashMap<String, TAPUserModel> userMapByPhoneNumber;
-    private HashMap<String, TAPUserModel> tempUserDataMapByUsername;
     private String myCountryCode;
     private boolean isContactSyncPermissionAsked, isContactSyncAllowedByUser;
 
@@ -53,6 +53,10 @@ public class TAPContactManager {
         return getUserDataMap().get(userID);
     }
 
+    public TAPUserModel getUserDataByUsername(String username) {
+        return getUserDataMapByUsername().get(username);
+    }
+
     public void updateUserData(TAPUserModel user) {
         String myUserId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
         String incomingUserId = user.getUserID();
@@ -61,6 +65,7 @@ public class TAPContactManager {
             // Add new user to map
             user.checkAndSetContact(0);
             getUserDataMap().put(incomingUserId, user);
+            getUserDataMapByUsername().put(user.getUsername(), user);
             saveUserDataToDatabase(user);
         } else if (!incomingUserId.equals(myUserId) &&
                 null != existingUser.getUpdated() &&
@@ -105,6 +110,10 @@ public class TAPContactManager {
         getUserDataMap().clear();
     }
 
+    private HashMap<String, TAPUserModel> getUserDataMapByUsername() {
+        return null == userDataMapByUsername ? userDataMapByUsername = new HashMap<>() : userDataMapByUsername;
+    }
+
     private List<TAPUserModel> convertUserDataToList(HashMap<String, TAPUserModel> userModelMap) {
         List<TAPUserModel> userModelList = new ArrayList<>();
         for (Map.Entry<String, TAPUserModel> entry : userModelMap.entrySet()) {
@@ -113,18 +122,15 @@ public class TAPContactManager {
         return userModelList;
     }
 
-    private HashMap<String, TAPUserModel> convertUserDataToMap(List<TAPUserModel> userModelList) {
-        HashMap<String, TAPUserModel> userModelMap = new HashMap<>();
-        for (TAPUserModel userModel : userModelList) {
-            userModelMap.put(userModel.getUserID(), userModel);
-        }
-        return userModelMap;
-    }
-
     private TAPDatabaseListener<TAPUserModel> getAllUserDataListener = new TAPDatabaseListener<TAPUserModel>() {
         @Override
         public void onSelectFinished(List<TAPUserModel> entities) {
-            userDataMap = convertUserDataToMap(entities);
+            userDataMap = new HashMap<>();
+            userDataMapByUsername = new HashMap<>();
+            for (TAPUserModel userModel : entities) {
+                userDataMap.put(userModel.getUserID(), userModel);
+                userDataMapByUsername.put(userModel.getUsername(), userModel);
+            }
         }
     };
 
@@ -163,10 +169,6 @@ public class TAPContactManager {
         }
 
         return tempPhone;
-    }
-
-    public HashMap<String, TAPUserModel> getTempUserDataMapByUsername() {
-        return null == tempUserDataMapByUsername ? tempUserDataMapByUsername = new HashMap<>() : tempUserDataMapByUsername;
     }
 
     public String getMyCountryCode() {

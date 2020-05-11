@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import io.taptalk.TapTalk.Interface.TapUIChatRoomInterface;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -52,8 +53,25 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
     }
 
     @Override
-    public void onTapTalkUserMentionTapped(Activity activity, TAPMessageModel messageModel, TAPUserModel user) {
-        openTapTalkChatProfile(activity, messageModel.getRoom(), user);
+    public void onTapTalkUserMentionTapped(Activity activity, TAPMessageModel messageModel, TAPUserModel user, boolean isRoomParticipant) {
+        if (isRoomParticipant) {
+            // Open member profile
+            TAPChatProfileActivity.start(activity, instanceKey, messageModel.getRoom(), user);
+        } else {
+            // Open personal profile
+            TAPChatProfileActivity.start(
+                    activity,
+                    instanceKey,
+                    TAPRoomModel.Builder(
+                            TAPChatManager.getInstance(instanceKey).arrangeRoomId(
+                                    TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
+                                    user.getUserID()),
+                            user.getName(),
+                            TYPE_PERSONAL,
+                            user.getAvatarURL(),
+                            ""), // TODO: 13 Apr 2020 ROOM COLOR
+                    user);
+        }
     }
 
     @Override

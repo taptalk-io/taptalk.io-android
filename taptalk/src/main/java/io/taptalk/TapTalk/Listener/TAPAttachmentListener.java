@@ -81,12 +81,12 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     }
 
     @Override
-    public void onViewProfileSelected(TAPUserModel user) {
+    public void onViewProfileSelected(String username, TAPMessageModel message) {
 
     }
 
     @Override
-    public void onSendMessageSelected(TAPUserModel user) {
+    public void onSendMessageSelected(String username) {
 
     }
 

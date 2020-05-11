@@ -11,6 +11,7 @@
     <string name="tap_leave_group">Keluar dari Grup</string>
     <string name="tap_delete_group">Hapus Grup</string>
     <string name="tap_forward">Teruskan</string>
+    <string name="tap_group_details">Detail Grup</string>
     <string name="tap_group_subject">Subjek Grup</string>
     <string name="tap_my_account">Akun Saya</string>
     <string name="tap_new_chat">Chat Baru</string>
@@ -23,8 +24,9 @@
     <string name="tap_search_chat">Cari Chat</string>
     <string name="tap_search_results">Hasil Pencarian</string>
     <string name="tap_send_message">Kirim Pesan</string>
-    <string name="tap_shared_media">Media Bersama</string>
+    <string name="tap_shared_media">Media</string>
     <string name="tap_scan_qr_code">Pindai Kode QR</string>
+    <string name="tap_user_details">Detail Pengguna</string>
     <string name="tap_show_qr_code">Tampilkan Kode QR</string>
     <string name="tap_view_members">Lihat Anggota Grup</string>
     <string name="tap_welcome">Selamat Datang</string>
@@ -135,6 +137,7 @@
     <string name="tap_network_error">Terjadi Kesalahan Jaringan</string>
     <string name="tap_waiting_for_network">Menunggu Jaringan</string>
     <string name="tap_active_now">Sedang Aktif</string>
+    <string name="tap_today">Hari ini</string>
     <string name="tap_yesterday">Kemarin</string>
     <string name="tap_active_recently">Baru saja aktif</string>
     <string name="tap_format_s_sent_yesterday_at">Terkirim kemarin pada %s</string>
@@ -245,9 +248,10 @@
 
     <!--Media-->
     <string name="tap_add_a_caption">Tambahkan keterangan</string>
-    <string name="tap_save_to_gallery">Simpan to Galeri</string>
-    <string name="tap_save_to_download">Simpan to Downloads</string>
-    <string name="tap_uploading">Mengunggah</string>
+    <string name="tap_save_to_gallery">Simpan ke Galeri</string>
+    <string name="tap_save_to_downloads">Simpan ke Downloads</string>
+    <string name="tap_uploading">Mengunggah…</string>
+    <string name="tap_downloading">Mengunduh…</string>
     <string name="tap_image_saved">Gambar Tersimpan</string>
     <string name="tap_video_saved">Video Tersimpan</string>
     <string name="tap_format_s_successfully_saved">Berhasil menyimpan %s</string>

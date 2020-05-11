@@ -355,7 +355,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     llTextUsername.setVisibility(View.GONE);
                     tvAlreadyContact.setVisibility(View.VISIBLE);
                     llButton.setVisibility(View.VISIBLE);
-                    ivButtonIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_send_message_grey));
+                    ivButtonIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_send_message_orange));
                     tvButtonTitle.setText(getString(R.string.tap_chat_now));
                     llButton.animate().alpha(1f).start();
                     civMyUserAvatar.animate()
@@ -416,7 +416,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                     llTextUsername.setVisibility(View.GONE);
                     llAddSuccess.setVisibility(View.VISIBLE);
                     llButton.setVisibility(View.VISIBLE);
-                    ivButtonIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_send_message_grey));
+                    ivButtonIcon.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_send_message_orange));
                     tvButtonTitle.setText(getString(R.string.tap_chat_now));
                     llButton.animate().alpha(1f).start();
                     civMyUserAvatar.animate()

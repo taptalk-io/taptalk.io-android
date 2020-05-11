@@ -71,7 +71,7 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     }
 
     @Override
-    public void onMentionClicked(TAPMessageModel message, TAPUserModel mentionedUser) {
+    public void onMentionClicked(TAPMessageModel message, String username) {
     }
 
     @Override

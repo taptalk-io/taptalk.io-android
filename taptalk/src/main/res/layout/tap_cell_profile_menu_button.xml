@@ -4,30 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="48dp"
+    android:layout_marginStart="12dp"
+    android:layout_marginLeft="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginRight="12dp"
     android:background="@color/tapWhite"
-    android:elevation="2dp"
-    android:foreground="?attr/selectableItemBackground"
+    android:elevation="1dp"
     android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/iv_menu_icon"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/tap_ic_search_grey_small" />
+        tools:src="@drawable/tap_ic_notification_orange" />
 
     <TextView
         android:id="@+id/tv_menu_label"
         style="@style/tapChatProfileMenuLabelStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="12dp"
         android:text="@string/tap_notifications"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_menu_icon"
@@ -40,27 +43,32 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:checked="true"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/iv_right_arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
         android:src="@drawable/tap_ic_chevron_right_grey"
         android:tint="@color/tapIconChevronRightGray"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
+        android:id="@+id/v_separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
         android:background="@color/tapGreyDc"
         android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent" />
