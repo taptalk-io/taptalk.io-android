@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
@@ -319,6 +318,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TextView tvQuoteContent;
         private View vQuoteBackground;
         private View vQuoteDecoration;
+        private View vBackgroundHighlight;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -337,6 +337,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            vBackgroundHighlight = itemView.findViewById(R.id.v_background_highlight);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -358,7 +359,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             //expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
-            checkAndAnimateHighlight(item, flBubble);
+            checkAndAnimateHighlight(item, vBackgroundHighlight);
 
             markMessageAsRead(item, myUserModel);
             setLinkDetection(itemView.getContext(), tvMessageBody);
@@ -422,6 +423,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TextView tvQuoteContent;
         private View vQuoteBackground;
         private View vQuoteDecoration;
+        private View vBackgroundHighlight;
         private ProgressBar pbProgress;
 
         private Drawable thumbnail;
@@ -449,6 +451,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            vBackgroundHighlight = itemView.findViewById(R.id.v_background_highlight);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
@@ -471,7 +474,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setImageViewButtonProgress(item);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
-            checkAndAnimateHighlight(item, flBubble);
+            checkAndAnimateHighlight(item, vBackgroundHighlight);
             setProgress(item);
             setImageData(item);
             fixBubbleMarginForGroupRoom(item, flBubble);
@@ -782,6 +785,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TextView tvQuoteContent;
         private View vQuoteBackground;
         private View vQuoteDecoration;
+        private View vBackgroundHighlight;
         private ProgressBar pbProgress;
 
         private Uri videoUri;
@@ -811,6 +815,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            vBackgroundHighlight = itemView.findViewById(R.id.v_background_highlight);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
@@ -835,7 +840,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
-            checkAndAnimateHighlight(item, flBubble);
+            checkAndAnimateHighlight(item, vBackgroundHighlight);
             setVideoProgress(item);
             fixBubbleMarginForGroupRoom(item, flBubble);
 
@@ -1166,6 +1171,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TextView tvQuoteContent;
         private View vQuoteBackground;
         private View vQuoteDecoration;
+        private View vBackgroundHighlight;
         private ProgressBar pbProgress;
 
         private Uri fileUri;
@@ -1191,6 +1197,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            vBackgroundHighlight = itemView.findViewById(R.id.v_background_highlight);
             pbProgress = itemView.findViewById(R.id.pb_progress);
 
             if (bubbleType == TYPE_BUBBLE_FILE_LEFT) {
@@ -1221,7 +1228,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageTimestamp.setText(item.getMessageStatusText());
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
-            checkAndAnimateHighlight(item, flBubble);
+            checkAndAnimateHighlight(item, vBackgroundHighlight);
             setFileProgress(item);
 
             markMessageAsRead(item, myUserModel);
@@ -1403,6 +1410,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteBackground;
         private View vQuoteDecoration;
         //private View vMapBorder;
+        private View vBackgroundHighlight;
         private MapView mapView;
 
         LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
@@ -1425,6 +1433,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             //vMapBorder = itemView.findViewById(R.id.v_map_border);
+            vBackgroundHighlight = itemView.findViewById(R.id.v_background_highlight);
             mapView = itemView.findViewById(R.id.map_view);
             mapView.onCreate(new Bundle());
 
@@ -1450,7 +1459,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageTimestamp.setText(item.getMessageStatusText());
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            checkAndAnimateHighlight(item, flBubble);
+            checkAndAnimateHighlight(item, vBackgroundHighlight);
             fixBubbleMarginForGroupRoom(item, flBubble);
 
             if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
@@ -2467,17 +2476,25 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 .start();
     }
 
-    private void checkAndAnimateHighlight(TAPMessageModel item, View flBubble) {
-        TransitionDrawable transitionDrawable = (TransitionDrawable) flBubble.getBackground();
-        if (null == transitionDrawable) {
-            return;
-        }
+    private void checkAndAnimateHighlight(TAPMessageModel item, View vBackgroundHighlight) {
         if (null == highlightedMessage || highlightedMessage != item) {
-            transitionDrawable.resetTransition();
+            vBackgroundHighlight.setVisibility(View.GONE);
             return;
         }
-        transitionDrawable.startTransition(200);
-        new Handler().postDelayed(() -> transitionDrawable.reverseTransition(750), 1500L);
+        vBackgroundHighlight.setAlpha(0f);
+        vBackgroundHighlight.setVisibility(View.VISIBLE);
+        vBackgroundHighlight.animate()
+                .alpha(0.2f)
+                .setInterpolator(new AccelerateInterpolator())
+                .setDuration(200L)
+                .withEndAction(() -> new Handler().postDelayed(() -> {
+                    vBackgroundHighlight.animate()
+                            .alpha(0f)
+                            .setDuration(750L)
+                            .withEndAction(() -> vBackgroundHighlight.setVisibility(View.GONE))
+                            .start();
+                }, 1000L))
+                .start();
         highlightedMessage = null;
     }
 
