@@ -27,6 +27,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -3058,7 +3059,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     String currentDate = TAPTimeFormatter.getInstance().formatDate(model.getCreated());
                     if (null != previousMessage && !currentDate.equals(previousDate)) {
                         // Generate date separator if date is different
-                        dateSeparators.put(models.indexOf(previousMessage),
+                        dateSeparators.put(models.indexOf(previousMessage) + 1,
                                 vm.generateDateSeparator(TapUIChatActivity.this, previousMessage));
                     }
                     previousDate = currentDate;
@@ -3196,9 +3197,26 @@ public class TapUIChatActivity extends TAPBaseActivity {
             final List<TAPMessageModel> models = new ArrayList<>();
             String previousDate = "";
             TAPMessageModel previousMessage = null;
-//            if (null != messageAdapter && !messageAdapter.getItems().isEmpty()) {
-//                previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - 1);
-//            }
+            if (null != messageAdapter && !messageAdapter.getItems().isEmpty()) {
+                int offset = 1;
+                while (null == previousMessage) {
+                    if (messageAdapter.getItems().size() < offset) {
+                        break;
+                    }
+                    previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
+                    if ((null != previousMessage.getHidden() && previousMessage.getHidden()) ||
+                            previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
+                            previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
+                            previousMessage.getType() == TYPE_DATE_SEPARATOR
+                    ) {
+                        previousMessage = null;
+                        offset++;
+                    }
+                }
+                if (null != previousMessage) {
+                    previousDate = TAPTimeFormatter.getInstance().formatDate(previousMessage.getCreated());
+                }
+            }
             LinkedHashMap<Integer, TAPMessageModel> dateSeparators = new LinkedHashMap<>();
 
             for (TAPMessageEntity entity : entities) {
@@ -3221,8 +3239,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         String currentDate = TAPTimeFormatter.getInstance().formatDate(model.getCreated());
                         if (null != previousMessage && !currentDate.equals(previousDate)) {
                             // Generate date separator if date is different
-                            dateSeparators.put(models.indexOf(previousMessage),
-                                    vm.generateDateSeparator(TapUIChatActivity.this, previousMessage));
+                            int index = models.contains(previousMessage) ?
+                                    models.indexOf(previousMessage) + 1 : 0;
+                            dateSeparators.put(index, vm.generateDateSeparator(TapUIChatActivity.this, previousMessage));
                         }
                         previousDate = currentDate;
                         previousMessage = model;
@@ -3327,8 +3346,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
             int allUnreadHidden = 0; // Flag to check hidden unread when looping
             boolean allMessagesHidden = true; // Flag to check whether empty chat layout should be removed
 
+            Log.e(TAG, "messageAfterView adapter size: " + messageAdapter.getItems().size());
+            Log.e(TAG, "messageAfterView separator size: " + vm.getDateSeparators().size());
             messageAdapter.getItems().removeAll(vm.getDateSeparators().values());
             vm.getDateSeparators().clear();
+            Log.e(TAG, "messageAfterView: remove separators");
+            Log.e(TAG, "messageAfterView adapter size: " + messageAdapter.getItems().size());
+            Log.e(TAG, "messageAfterView separator size: " + vm.getDateSeparators().size());
 
             for (HashMap<String, Object> messageMap : response.getMessages()) {
                 try {
@@ -3458,7 +3482,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     String currentDate = TAPTimeFormatter.getInstance().formatDate(message.getCreated());
                     if (null != previousMessage && !currentDate.equals(previousDate)) {
                         // Generate date separator if date is different
-                        dateSeparators.put(messageAdapter.getItems().indexOf(previousMessage),
+                        dateSeparators.put(messageAdapter.getItems().indexOf(previousMessage) + 1,
                                 vm.generateDateSeparator(TapUIChatActivity.this, previousMessage));
                     }
                     previousDate = currentDate;
@@ -3466,6 +3490,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
             insertDateSeparators(dateSeparators, messageAdapter.getItems());
+            Log.e(TAG, "messageAfterView: insert separators");
+            Log.e(TAG, "messageAfterView adapter size: " + messageAdapter.getItems().size());
+            Log.e(TAG, "messageAfterView separator size: " + vm.getDateSeparators().size());
 
             boolean finalAllMessagesHidden = allMessagesHidden;
             runOnUiThread(() -> {
@@ -3630,9 +3657,26 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
             String previousDate = "";
             TAPMessageModel previousMessage = null;
-//            if (null != messageAdapter && !messageAdapter.getItems().isEmpty()) {
-//                previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - 1);
-//            }
+            if (null != messageAdapter && !messageAdapter.getItems().isEmpty()) {
+                int offset = 1;
+                while (null == previousMessage) {
+                    if (messageAdapter.getItems().size() < offset) {
+                        break;
+                    }
+                    previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
+                    if ((null != previousMessage.getHidden() && previousMessage.getHidden()) ||
+                            previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
+                            previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
+                            previousMessage.getType() == TYPE_DATE_SEPARATOR
+                    ) {
+                        previousMessage = null;
+                        offset++;
+                    }
+                }
+                if (null != previousMessage) {
+                    previousDate = TAPTimeFormatter.getInstance().formatDate(previousMessage.getCreated());
+                }
+            }
             for (TAPMessageModel message : messageBeforeModels) {
                 if ((null == message.getHidden() || !message.getHidden()) &&
                         message.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
@@ -3642,8 +3686,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     String currentDate = TAPTimeFormatter.getInstance().formatDate(message.getCreated());
                     if (null != previousMessage && !currentDate.equals(previousDate)) {
                         // Generate date separator if date is different
-                        dateSeparators.put(messageBeforeModels.indexOf(previousMessage),
-                                vm.generateDateSeparator(TapUIChatActivity.this, previousMessage));
+                        int index = messageBeforeModels.contains(previousMessage) ?
+                                messageBeforeModels.indexOf(previousMessage) + 1 : 0;
+                        dateSeparators.put(index, vm.generateDateSeparator(TapUIChatActivity.this, previousMessage));
                     }
                     previousDate = currentDate;
                     previousMessage = message;
@@ -3754,9 +3799,26 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
             String previousDate = "";
             TAPMessageModel previousMessage = null;
-//            if (null != messageAdapter && !messageAdapter.getItems().isEmpty()) {
-//                previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - 1);
-//            }
+            if (null != messageAdapter && !messageAdapter.getItems().isEmpty()) {
+                int offset = 1;
+                while (null == previousMessage) {
+                    if (messageAdapter.getItems().size() < offset) {
+                        break;
+                    }
+                    previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
+                    if ((null != previousMessage.getHidden() && previousMessage.getHidden()) ||
+                            previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
+                            previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
+                            previousMessage.getType() == TYPE_DATE_SEPARATOR
+                    ) {
+                        previousMessage = null;
+                        offset++;
+                    }
+                }
+                if (null != previousMessage) {
+                    previousDate = TAPTimeFormatter.getInstance().formatDate(previousMessage.getCreated());
+                }
+            }
             for (TAPMessageModel message : messageBeforeModels) {
                 if ((null == message.getHidden() || !message.getHidden()) &&
                         message.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
@@ -3766,8 +3828,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     String currentDate = TAPTimeFormatter.getInstance().formatDate(message.getCreated());
                     if (null != previousMessage && !currentDate.equals(previousDate)) {
                         // Generate date separator if date is different
-                        dateSeparators.put(messageBeforeModels.indexOf(previousMessage),
-                                vm.generateDateSeparator(TapUIChatActivity.this, previousMessage));
+                        int index = messageBeforeModels.contains(previousMessage) ?
+                                messageBeforeModels.indexOf(previousMessage) + 1 : 0;
+                        dateSeparators.put(index, vm.generateDateSeparator(TapUIChatActivity.this, previousMessage));
                     }
                     previousDate = currentDate;
                     previousMessage = message;
@@ -3824,11 +3887,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (dateSeparators.isEmpty()) {
             return;
         }
-        int separatorCount = 1;
+        int separatorCount = 0;
         for (Map.Entry<Integer, TAPMessageModel> entry : dateSeparators.entrySet()) {
-            int index = entry.getKey() + separatorCount;
+            Log.e(TAG, "insertDateSeparators: " + entry.getKey() + ", " + entry.getValue().getBody());
+            int index = /*0 == entry.getKey() ? 0 : */entry.getKey() + separatorCount;
             if (index <= insertToList.size()) {
-                insertToList.add(entry.getKey() + separatorCount, entry.getValue());
+                Log.e(TAG, "insertDateSeparators index: " + index);
+                insertToList.add(index, entry.getValue());
                 separatorCount++;
             }
         }
