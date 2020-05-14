@@ -62,6 +62,7 @@ import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACCESS_TOKEN_UNAVAILABLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
@@ -476,16 +477,31 @@ public class TapTalk implements LifecycleObserver {
             @Override
             public void onSuccess(TAPCommonResponse response) {
                 clearAllTapTalkData(instanceKey);
+                for (TapListener listener : getTapTalkListeners()) {
+                    listener.onUserLogout();
+                }
+                Intent intent = new Intent(CLEAR_ROOM_LIST);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
             }
 
             @Override
             public void onError(TAPErrorModel error) {
                 clearAllTapTalkData(instanceKey);
+                for (TapListener listener : getTapTalkListeners()) {
+                    listener.onUserLogout();
+                }
+                Intent intent = new Intent(CLEAR_ROOM_LIST);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
             }
 
             @Override
             public void onError(String errorMessage) {
                 clearAllTapTalkData(instanceKey);
+                for (TapListener listener : getTapTalkListeners()) {
+                    listener.onUserLogout();
+                }
+                Intent intent = new Intent(CLEAR_ROOM_LIST);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
             }
         });
     }
