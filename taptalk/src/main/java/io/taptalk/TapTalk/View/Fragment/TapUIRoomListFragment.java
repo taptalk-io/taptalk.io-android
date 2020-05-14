@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
@@ -75,13 +76,13 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
-import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
@@ -116,6 +117,8 @@ public class TapUIRoomListFragment extends Fragment {
     private TapTalkRoomListInterface tapTalkRoomListInterface;
     private TAPRoomListViewModel vm;
     private HashMap<String, CountDownTimer> typingIndicatorTimeoutTimers;
+    private RequestManager glide;
+    private TapTalkDialog userNullErrorDialog;
 
     private TAPChatListener chatListener;
 
@@ -148,10 +151,15 @@ public class TapUIRoomListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initViewModel();
         initListener();
-        initView(view);
+        bindViews(view);
+        initView();
         viewLoadedSequence();
-        TAPBroadcastManager.register(activity, reloadRoomListReceiver, RELOAD_ROOM_LIST, CLEAR_ROOM_LIST_BADGE);
-        TAPBroadcastManager.register(activity, reloadProfilePictureReceiver, RELOAD_PROFILE_PICTURE);
+        TAPBroadcastManager.register(activity, roomListBroadcastReceiver,
+                REFRESH_TOKEN_RENEWED,
+                RELOAD_PROFILE_PICTURE,
+                RELOAD_ROOM_LIST,
+                CLEAR_ROOM_LIST_BADGE,
+                CLEAR_ROOM_LIST);
     }
 
     @Override
@@ -166,22 +174,19 @@ public class TapUIRoomListFragment extends Fragment {
         // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
         updateQueryRoomListFromBackground();
         addNetworkListener();
-        TAPBroadcastManager.register(activity, refreshTokenReceiver, REFRESH_TOKEN_RENEWED);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         TAPNotificationManager.getInstance(instanceKey).setRoomListAppear(false);
-        TAPBroadcastManager.unregister(activity, refreshTokenReceiver);
         removeNetworkListener();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        TAPBroadcastManager.unregister(activity, reloadRoomListReceiver);
-        TAPBroadcastManager.unregister(activity, reloadProfilePictureReceiver);
+        TAPBroadcastManager.unregister(activity, roomListBroadcastReceiver);
     }
 
     @Override
@@ -203,6 +208,9 @@ public class TapUIRoomListFragment extends Fragment {
 
     private void initViewModel() {
         activity = getActivity();
+        if (null == activity) {
+            return;
+        }
 
         vm = new ViewModelProvider(this,
                 new TAPRoomListViewModel.TAPRoomListViewModelFactory(
@@ -276,7 +284,7 @@ public class TapUIRoomListFragment extends Fragment {
         };
     }
 
-    private void initView(View view) {
+    private void bindViews(View view) {
         clActionBar = view.findViewById(R.id.cl_action_bar);
         clButtonSearch = view.findViewById(R.id.cl_button_search);
         //clSelection = view.findViewById(R.id.cl_selection);
@@ -301,10 +309,14 @@ public class TapUIRoomListFragment extends Fragment {
         civMyAvatarImage = view.findViewById(R.id.civ_my_avatar_image);
         cvButtonSearch = view.findViewById(R.id.cv_button_search);
         vButtonMyAccount = view.findViewById(R.id.v_my_avatar_image);
+    }
 
+    private void initView() {
         if (null != activity) {
             activity.getWindow().setBackgroundDrawable(null);
         }
+
+        glide = Glide.with(this);
 
         reloadProfilePicture();
 
@@ -347,7 +359,7 @@ public class TapUIRoomListFragment extends Fragment {
         }
         vm.setDoneFirstApiSetup(TAPDataManager.getInstance(instanceKey).isRoomListSetupFinished());
 
-        adapter = new TAPRoomListAdapter(instanceKey, vm, Glide.with(this), tapTalkRoomListInterface);
+        adapter = new TAPRoomListAdapter(instanceKey, vm, glide, tapTalkRoomListInterface);
         llm = new LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false) {
             @Override
             public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
@@ -392,7 +404,7 @@ public class TapUIRoomListFragment extends Fragment {
                 && !user.getAvatarURL().getThumbnail().isEmpty()) {
             if (null != getActivity()) {
                 getActivity().runOnUiThread(() -> {
-                    Glide.with(this).load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                    glide.load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             // Show initial
@@ -415,6 +427,7 @@ public class TapUIRoomListFragment extends Fragment {
                         }
                     }).into(civMyAvatarImage);
                     ImageViewCompat.setImageTintList(civMyAvatarImage, null);
+                    civMyAvatarImage.setVisibility(View.VISIBLE);
                     tvMyAvatarLabel.setVisibility(View.GONE);
                 });
             }
@@ -422,14 +435,25 @@ public class TapUIRoomListFragment extends Fragment {
             // Show initial
             if (null != getActivity()) {
                 getActivity().runOnUiThread(() -> {
+                    glide.clear(civMyAvatarImage);
                     ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getRandomColor(getContext(), user.getName())));
                     if (null != getContext()) {
                         civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
                     }
+                    civMyAvatarImage.setVisibility(View.VISIBLE);
+                    tvMyAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
+                    tvMyAvatarLabel.setVisibility(View.VISIBLE);
                 });
             }
-            tvMyAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
-            tvMyAvatarLabel.setVisibility(View.VISIBLE);
+        } else {
+            // Hide profile picture
+            if (null != getActivity()) {
+                getActivity().runOnUiThread(() -> {
+                    glide.clear(civMyAvatarImage);
+                    civMyAvatarImage.setVisibility(View.GONE);
+                    tvMyAvatarLabel.setVisibility(View.GONE);
+                });
+            }
         }
     }
 
@@ -455,22 +479,26 @@ public class TapUIRoomListFragment extends Fragment {
             // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
             runFullRefreshSequence();
         } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated(instanceKey)) {
+            // Clear data when refresh token is expired
             AnalyticsManager.getInstance(instanceKey).trackEvent("View Loaded Sequence Failed");
             TapTalk.clearAllTapTalkData(instanceKey);
             for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
                 listener.onTapTalkRefreshTokenExpired();
             }
         } else if (null == TAPChatManager.getInstance(instanceKey).getActiveUser()) {
+            // Show setup failed if active user is null
             flSetupContainer.setVisibility(View.VISIBLE);
             showChatRoomSetupFailed();
             if (BuildConfig.DEBUG && null != activity) {
-                new TapTalkDialog.Builder(activity)
-                        .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                        .setTitle(getString(R.string.tap_error))
-                        .setMessage(getString(R.string.tap_error_active_user_is_null))
-                        .setCancelable(false)
-                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
-                        .show();
+                if (null == userNullErrorDialog) {
+                    userNullErrorDialog = new TapTalkDialog(new TapTalkDialog.Builder(activity)
+                            .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                            .setTitle(getString(R.string.tap_error))
+                            .setMessage(getString(R.string.tap_error_active_user_is_null))
+                            .setCancelable(false)
+                            .setPrimaryButtonTitle(getString(R.string.tap_ok)));
+                }
+                userNullErrorDialog.show();
             }
             Log.e(TAG, getString(R.string.tap_error_active_user_is_null));
         }
@@ -1038,46 +1066,48 @@ public class TapUIRoomListFragment extends Fragment {
         }).start();
     }
 
-    private BroadcastReceiver refreshTokenReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver roomListBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (null == intent.getAction() || !intent.getAction().equals(REFRESH_TOKEN_RENEWED)) {
+            if (null == intent.getAction()) {
                 return;
             }
-            viewLoadedSequence();
-        }
-    };
-
-    private BroadcastReceiver reloadRoomListReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (null == intent.getAction() || null == adapter) {
-                return;
-            }
-            String roomID = intent.getStringExtra(ROOM_ID);
-            switch (intent.getAction()) {
-                case RELOAD_ROOM_LIST:
-                    adapter.notifyItemChanged(vm.getRoomList().indexOf(
-                            vm.getRoomPointer().get(roomID)));
-                    break;
-                case CLEAR_ROOM_LIST_BADGE:
-                    TAPRoomListModel room = vm.getRoomPointer().get(roomID);
-                    if (null != room) {
-                        room.setUnreadCount(0);
-                        room.setUnreadMentions(0);
-                        TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
-                        TAPMessageStatusManager.getInstance(instanceKey).clearUnreadMentionPerRoomID(roomID);
-                    }
-                    break;
-            }
-        }
-    };
-
-    private BroadcastReceiver reloadProfilePictureReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (null != intent.getAction() && RELOAD_PROFILE_PICTURE.equals(intent.getAction())) {
+            if (intent.getAction().equals(REFRESH_TOKEN_RENEWED)) {
+                if (null != userNullErrorDialog) {
+                    userNullErrorDialog.dismiss();
+                }
+                // Token refreshed
+                initViewModel();
+                initView();
+                viewLoadedSequence();
+            } else if (intent.getAction().equals(CLEAR_ROOM_LIST)) {
+                // Logged out
+                initViewModel();
+                initView();
+                viewLoadedSequence();
+            } else if (RELOAD_PROFILE_PICTURE.equals(intent.getAction())) {
+                // Reload profile picture
                 reloadProfilePicture();
+            } else {
+                // Update room list
+                String roomID = intent.getStringExtra(ROOM_ID);
+                switch (intent.getAction()) {
+                    case RELOAD_ROOM_LIST:
+                        if (null != adapter) {
+                            adapter.notifyItemChanged(vm.getRoomList().indexOf(
+                                    vm.getRoomPointer().get(roomID)));
+                        }
+                        break;
+                    case CLEAR_ROOM_LIST_BADGE:
+                        TAPRoomListModel room = vm.getRoomPointer().get(roomID);
+                        if (null != room) {
+                            room.setUnreadCount(0);
+                            room.setUnreadMentions(0);
+                            TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
+                            TAPMessageStatusManager.getInstance(instanceKey).clearUnreadMentionPerRoomID(roomID);
+                        }
+                        break;
+                }
             }
         }
     };

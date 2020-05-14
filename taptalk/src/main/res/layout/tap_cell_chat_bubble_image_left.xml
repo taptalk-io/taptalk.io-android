@@ -41,7 +41,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginEnd="48dp"
         android:layout_marginRight="48dp"
-        android:background="@drawable/tap_bg_chat_bubble_left_transition"
+        android:background="@drawable/tap_bg_chat_bubble_left_default"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/tv_message_status"
         app:layout_constraintEnd_toEndOf="parent"
@@ -243,6 +243,17 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/iv_bubble_highlight"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/tap_bg_chat_bubble_left_highlight"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toEndOf="@id/fl_bubble"
+        app:layout_constraintStart_toStartOf="@id/fl_bubble"
+        app:layout_constraintTop_toTopOf="@id/fl_bubble" />
 
     <TextView
         android:id="@+id/tv_message_status"

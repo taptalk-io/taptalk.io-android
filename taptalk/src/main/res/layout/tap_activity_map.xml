@@ -70,16 +70,15 @@
             tools:context=".activity.MapAddressActivity" />
 
         <ImageView
-            android:layout_width="53dp"
-            android:layout_height="62dp"
-            android:layout_marginBottom="31dp"
-            android:src="@drawable/tap_ic_location_pumpkin_orange"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="40dp"
+            android:src="@drawable/tap_ic_location_pin_orange"
             android:tint="@color/tapIconLocationPickerMarker"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
 
         <ImageView
             android:id="@+id/iv_current_location"
@@ -88,7 +87,7 @@
             android:layout_margin="16dp"
             android:background="@drawable/tap_bg_recenter_location_button"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_location"
+            android:src="@drawable/tap_ic_recenter_location"
             android:tint="@color/tapIconLocationPickerRecenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -202,17 +201,17 @@
 
             <ImageView
                 android:id="@+id/iv_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/tap_ic_location_pumpkin_orange" />
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/tap_ic_location_orange" />
 
             <TextView
                 android:id="@+id/tv_location"
                 style="@style/tapLocationPickerAddressStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
                 android:hint="@string/tap_searching_for_address" />
 
         </LinearLayout>
