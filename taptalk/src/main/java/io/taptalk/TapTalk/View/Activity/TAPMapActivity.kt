@@ -224,7 +224,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         latitude = centerOfMap?.latitude ?: 0.0
         longitude = centerOfMap?.longitude ?: 0.0
         disableSendButton()
-        iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
+        iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
         iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressInactive))
 
         tv_location.setHint(R.string.tap_searching_for_address)
@@ -237,7 +237,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
     override fun onCameraIdle() {
         getGeoCoderAddress()
 
-        iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
+        iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
         iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
 
         cv_search_result.visibility = View.GONE
@@ -317,7 +317,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
                 val curr: LatLng = LatLng(latitude, longitude)
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(curr, 16.toFloat()))
                 getGeoCoderAddress()
-                iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_pumpkin_orange))
+                iv_location.setImageDrawable(ContextCompat.getDrawable(this@TAPMapActivity, R.drawable.tap_ic_location_orange))
                 iv_location.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconLocationPickerAddressActive))
                 cv_search_result.visibility = View.GONE
                 if (et_keyword.isFocused)

@@ -148,7 +148,14 @@ public class TapTalkDialog extends Dialog {
         protected TapTalkDialog dialog;
 
         // Listener
-        protected View.OnClickListener emptyListener = v -> dialog.dismiss();
+        protected View.OnClickListener emptyListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (null != dialog) {
+                    dialog.dismiss();
+                }
+            }
+        };
         protected View.OnClickListener primaryListener = emptyListener;
         protected View.OnClickListener secondaryListener = emptyListener;
         protected boolean primaryIsDismiss = true;

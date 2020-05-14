@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.DataSource
@@ -29,7 +30,6 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
-import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -41,14 +41,16 @@ import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
-import io.taptalk.TapTalk.Manager.*
+import io.taptalk.TapTalk.Manager.AnalyticsManager
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager
+import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPUserModel
+import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
-import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel
-import io.taptalk.TapTalk.R
 import kotlinx.android.synthetic.main.tap_activity_my_account.*
 import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
@@ -439,18 +441,15 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun logout() {
         AnalyticsManager.getInstance(instanceKey).trackEvent("Logout")
-        TAPDataManager.getInstance(instanceKey).deleteAllPreference()
-        TAPDataManager.getInstance(instanceKey).deleteAllFromDatabase()
-        TAPDataManager.getInstance(instanceKey).deleteAllManagerData()
-        TAPApiManager.getInstance(instanceKey).isLoggedOut = true
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey,false)
-        TAPChatManager.getInstance(instanceKey).disconnectAfterRefreshTokenExpired()
-
+        TapTalk.clearAllTapTalkData(instanceKey)
         hideLoading()
         AnalyticsManager.getInstance(instanceKey).identifyUser()
         for (listener in TapTalk.getTapTalkListeners(instanceKey)) {
             listener.onUserLogout()
         }
+        val intent = Intent(CLEAR_ROOM_LIST)
+        LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent)
+        finish()
     }
 
     private fun uploadProfilePicture() {

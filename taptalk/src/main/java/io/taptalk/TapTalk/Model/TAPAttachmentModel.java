@@ -98,7 +98,7 @@ public class TAPAttachmentModel {
 //        ids.add(ATTACH_AUDIO);
 
         if (Places.isInitialized()) {
-            imageResIds.add(R.drawable.tap_ic_location_pumpkin_orange);
+            imageResIds.add(R.drawable.tap_ic_location_orange);
             titleResIds.add(R.string.tap_location);
             ids.add(ATTACH_LOCATION);
         }
