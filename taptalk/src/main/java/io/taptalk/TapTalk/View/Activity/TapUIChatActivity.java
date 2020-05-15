@@ -922,7 +922,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         getRoomDataFromApi();
                     } else if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType())
                         callApiGetUserByUserID();
-                } else if (vm.getMessageModels().size() > 0) {
+                }
+                // Updated 2020-05-15
+                if (vm.getMessageModels().size() > 0) {
                     callApiAfter();
                 } else {
                     fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
@@ -1239,10 +1241,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void updateMessageDecoration() {
         // Update decoration for the top item in recycler view
-        if (rvMessageList.getItemDecorationCount() > 0) {
-            rvMessageList.removeItemDecorationAt(0);
-        }
-        rvMessageList.addItemDecoration(new TAPVerticalDecoration(TAPUtils.dpToPx(10), 0, messageAdapter.getItemCount() - 1));
+        runOnUiThread(() -> {
+            if (rvMessageList.getItemDecorationCount() > 0) {
+                rvMessageList.removeItemDecorationAt(0);
+            }
+            rvMessageList.addItemDecoration(new TAPVerticalDecoration(TAPUtils.dpToPx(10), 0, messageAdapter.getItemCount() - 1));
+        });
     }
 
     private void showQuoteLayout(@Nullable TAPMessageModel message, int quoteAction, boolean showKeyboard) {
@@ -2061,7 +2065,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         // Generate date separator if first message or date is different
                         TAPMessageModel dateSeparator = vm.generateDateSeparator(TapUIChatActivity.this, newMessage);
                         vm.getDateSeparators().put(dateSeparator.getLocalID(), dateSeparator);
-                        vm.getDateSeparatorIndex().put(dateSeparator.getLocalID(), 0);
+                        vm.getDateSeparatorIndexes().put(dateSeparator.getLocalID(), 0);
                         messageAdapter.addMessage(dateSeparator);
                     }
 
@@ -2117,7 +2121,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Generate date separator if first message or date is different
                 TAPMessageModel dateSeparator = vm.generateDateSeparator(TapUIChatActivity.this, newMessage);
                 vm.getDateSeparators().put(dateSeparator.getLocalID(), dateSeparator);
-                vm.getDateSeparatorIndex().put(dateSeparator.getLocalID(), 0);
+                vm.getDateSeparatorIndexes().put(dateSeparator.getLocalID(), 0);
                 messageAdapter.addMessage(dateSeparator);
             }
 
@@ -3135,8 +3139,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     updateMessageDecoration();
 
                     if (0 < vm.getMessageModels().size() && MAX_ITEMS_PER_PAGE > vm.getMessageModels().size()) {
-                        // Only Fetch newer messages from API if message is below 50
+                        // Only fetch newer messages from API if message is below 50
                         callApiAfter();
+                        if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapUIChatActivity.this)) {
+                            insertDateSeparatorToLastIndex();
+                        }
                         if (null != vm.getTappedMessageLocalID()) {
                             scrollToMessage(vm.getTappedMessageLocalID());
                         }
@@ -3169,6 +3176,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         rvMessageList.setVisibility(View.VISIBLE);
                     }
                     if (state == STATE.DONE) {
+                        insertDateSeparatorToLastIndex();
                         updateMessageDecoration();
                     }
                     if (!models.isEmpty()) {
@@ -3517,6 +3525,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     rvMessageList.setVisibility(View.VISIBLE);
                 }
                 if (state == STATE.DONE) {
+                    insertDateSeparatorToLastIndex();
                     updateMessageDecoration();
                 }
             });
@@ -3653,6 +3662,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
 
+            // Check if room has more messages
+            state = response.getHasMore() ? STATE.LOADED : STATE.DONE;
+
             // Sort adapter items according to timestamp
             mergeSort(messageBeforeModels, ASCENDING);
 
@@ -3739,18 +3751,22 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 setRecyclerViewAnimator();
 
                 if (state == STATE.DONE) {
+                    insertDateSeparatorToLastIndex();
                     updateMessageDecoration();
+                } else if (state == STATE.LOADED) {
+                    rvMessageList.addOnScrollListener(endlessScrollListener);
                 }
             });
 
             TAPDataManager.getInstance(instanceKey).insertToDatabase(responseMessages, false, new TAPDatabaseListener() {
             });
-            if (MAX_ITEMS_PER_PAGE > response.getMessages().size() && 1 < response.getMessages().size()) {
-                state = STATE.DONE;
-            } else {
-                rvMessageList.addOnScrollListener(endlessScrollListener);
-                state = STATE.LOADED;
-            }
+            // Moved to UI thread 2020-05-15
+//            if (MAX_ITEMS_PER_PAGE > response.getMessages().size() && 1 < response.getMessages().size()) {
+//                state = STATE.DONE;
+//            } else {
+//                rvMessageList.addOnScrollListener(endlessScrollListener);
+//                state = STATE.LOADED;
+//            }
         }
 
         @Override
@@ -3763,6 +3779,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         public void onError(Throwable throwable) {
             setRecyclerViewAnimator();
             hideLoadingOlderMessagesIndicator();
+            insertDateSeparatorToLastIndex();
         }
 
         private void setRecyclerViewAnimator() {
@@ -3848,8 +3865,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Add messages to last index
                 messageAdapter.addMessage(messageBeforeModels);
 
-                if (0 < messageBeforeModels.size())
+                if (0 < messageBeforeModels.size()) {
                     vm.setLastTimestamp(messageBeforeModels.get(messageBeforeModels.size() - 1).getCreated());
+                }
 
                 new Thread(() -> {
                     vm.setMessageModels(messageAdapter.getItems());
@@ -3860,6 +3878,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
                 if (rvMessageList.getVisibility() != View.VISIBLE) {
                     rvMessageList.setVisibility(View.VISIBLE);
+                }
+                if (state == STATE.DONE) {
+                    insertDateSeparatorToLastIndex();
                 }
                 updateMessageDecoration();
             });
@@ -3876,6 +3897,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onError(Throwable throwable) {
             hideLoadingOlderMessagesIndicator();
+            insertDateSeparatorToLastIndex();
         }
     };
 
@@ -3907,6 +3929,35 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         }
         vm.getDateSeparators().putAll(dateSeparators);
+    }
+
+    private void insertDateSeparatorToLastIndex() {
+        if (null == messageAdapter || messageAdapter.getItems().isEmpty()) {
+            return;
+        }
+        TAPMessageModel firstMessage = null;
+        int offset = 1;
+        while (null == firstMessage) {
+            if (messageAdapter.getItems().size() < offset) {
+                return;
+            }
+            firstMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
+            if ((null != firstMessage.getHidden() && firstMessage.getHidden()) ||
+                    firstMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
+                    firstMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
+                    firstMessage.getType() == TYPE_DATE_SEPARATOR
+            ) {
+                firstMessage = null;
+                offset++;
+            }
+        }
+        TAPMessageModel dateSeparator = vm.generateDateSeparator(this, firstMessage);
+        vm.getDateSeparators().put(dateSeparator.getLocalID(), dateSeparator);
+        vm.getDateSeparatorIndexes().put(dateSeparator.getLocalID(), messageAdapter.getItems().size());
+        runOnUiThread(() -> {
+            messageAdapter.addItem(messageAdapter.getItems().size(), dateSeparator);
+            messageAdapter.notifyItemInserted(messageAdapter.getItems().indexOf(dateSeparator));
+        });
     }
 
     /**
