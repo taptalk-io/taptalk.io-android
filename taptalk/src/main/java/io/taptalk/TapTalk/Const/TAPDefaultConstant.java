@@ -144,6 +144,7 @@ public class TAPDefaultConstant {
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
         public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
         public static final String CLOSE_ACTIVITY = "kTAPCloseActivity";
+        public static final String IS_NON_PARTICIPANT_USER_PROFILE = "kTAPIsNotParticipantUserProfile";
     }
 
     public static final class RequestCode {

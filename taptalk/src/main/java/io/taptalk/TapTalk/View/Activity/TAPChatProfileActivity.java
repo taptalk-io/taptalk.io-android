@@ -95,6 +95,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NON_PARTICIPANT_USER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
@@ -134,7 +135,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TAPRoomModel room,
             @Nullable TAPUserModel user
     ) {
-        start(context, instanceKey, room, user, null);
+        start(context, instanceKey, room, user, null, false);
     }
 
     public static void start(
@@ -142,7 +143,18 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             String instanceKey,
             TAPRoomModel room,
             @Nullable TAPUserModel user,
-            @Nullable Boolean isAdmin
+            boolean isNonParticipantUserProfile
+    ) {
+        start(context, instanceKey, room, user, null, isNonParticipantUserProfile);
+    }
+
+    public static void start(
+            Activity context,
+            String instanceKey,
+            TAPRoomModel room,
+            @Nullable TAPUserModel user,
+            @Nullable Boolean isAdmin,
+            boolean isNonParticipantUserProfile
     ) {
         if (null != user && TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(user.getUserID())) {
             return;
@@ -155,6 +167,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             intent.putExtra(IS_ADMIN, isAdmin);
             context.startActivityForResult(intent, GROUP_OPEN_MEMBER_PROFILE);
         } else if (room.getRoomType() == TYPE_PERSONAL) {
+            if (isNonParticipantUserProfile) {
+                intent.putExtra(IS_NON_PARTICIPANT_USER_PROFILE, true);
+            }
             context.startActivity(intent);
         } else if (room.getRoomType() == TYPE_GROUP && null != user) {
             intent.putExtra(K_USER, user);
@@ -430,6 +445,17 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             R.color.tapIconGroupMemberProfileMenuAddToContacts,
                             R.style.tapChatProfileMenuLabelStyle);
                     menuItems.add(menuAddToContact);
+                }
+
+                if (getIntent().getBooleanExtra(IS_NON_PARTICIPANT_USER_PROFILE, false)) {
+                    // Send message
+                    TapChatProfileItemModel menuSendMessage = new TapChatProfileItemModel(
+                            MENU_SEND_MESSAGE,
+                            getString(R.string.tap_send_message),
+                            R.drawable.tap_ic_send_message_orange,
+                            R.color.tapIconGroupMemberProfileMenuSendMessage,
+                            R.style.tapChatProfileMenuLabelStyle);
+                    menuItems.add(menuSendMessage);
                 }
 
                 // Block user
@@ -823,7 +849,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     addToContacts();
                     break;
                 case MENU_SEND_MESSAGE:
-                    openChatRoom(vm.getGroupMemberUser());
+                    if (getIntent().getBooleanExtra(IS_NON_PARTICIPANT_USER_PROFILE, false)) {
+                        openChatRoom(TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm.getRoom().getRoomID())));
+                    } else {
+                        openChatRoom(vm.getGroupMemberUser());
+                    }
                     break;
                 case MENU_PROMOTE_ADMIN:
                     promoteAdmin();
