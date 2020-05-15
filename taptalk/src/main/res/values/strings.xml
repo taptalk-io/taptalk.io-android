@@ -76,6 +76,7 @@
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>
     <string name="tap_edit_group">Edit Group</string>
+    <string name="tap_change_avatar">Change Avatar</string>
     <string name="tap_group_members">Group Members</string>
     <string name="tap_remove_group_member">Remove Member</string>
     <string name="tap_clear_and_exit_chat">Clear and Exit Chat</string>
@@ -331,6 +332,7 @@
     <string name="tap_ok">OK</string>
     <string name="tap_oops">Oops…</string>
     <string name="tap_optional">Optional</string>
+    <string name="tap_optional_brackets">(optional)</string>
     <string name="tap_reply">Reply</string>
     <string name="tap_retry">Retry</string>
     <string name="tap_saving">Saving…</string>
