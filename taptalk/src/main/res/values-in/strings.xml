@@ -76,6 +76,7 @@
     <string name="tap_group_picture">Foto Grup</string>
     <string name="tap_create_group">Buat Grup</string>
     <string name="tap_edit_group">Ubah Grup</string>
+    <string name="tap_change_avatar">Ganti Gambar</string>
     <string name="tap_group_members">Anggota Grup</string>
     <string name="tap_remove_group_member">Keluarkan Anggota</string>
     <string name="tap_clear_and_exit_chat">Keluar dan Hapus Chat</string>
@@ -331,6 +332,7 @@
     <string name="tap_ok">OK</string>
     <string name="tap_oops">Oops…</string>
     <string name="tap_optional">Tidak Wajib</string>
+    <string name="tap_optional_brackets">(tidak wajib)</string>
     <string name="tap_reply">Balas</string>
     <string name="tap_retry">Coba lagi</string>
     <string name="tap_saving">Menyimpan…</string>
