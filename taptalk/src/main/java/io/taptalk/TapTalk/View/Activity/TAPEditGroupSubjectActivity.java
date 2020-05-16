@@ -84,7 +84,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     private ConstraintLayout clActionBar, clSelectedMembers;
     private FrameLayout flRemoveGroupPicture, flButtonCreateGroup, flButtonUpdateGroup;
     private LinearLayout llChangeGroupPicture;
-    private ImageView ivButtonBack, ivButtonClose, ivGroupPicBackground, ivLoadingProgressCreateGroup, ivLoadingProgressUpdateGroup;
+    private ImageView ivButtonBack, ivButtonClose, ivChangeGroupPicture, ivGroupPicBackground, ivLoadingProgressCreateGroup, ivLoadingProgressUpdateGroup;
     private CircleImageView civGroupImage;
     private TextView tvTitle, tvGroupPictureLabel, tvMemberCount, tvButtonCreateGroup, tvButtonUpdateGroup;
     private EditText etGroupName;
@@ -161,7 +161,8 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
                         groupImage.setThumbnail(vm.getRoomImageUri().toString());
                         groupImage.setFullsize(vm.getRoomImageUri().toString());
                         vm.getGroupData().setRoomImage(groupImage);
-                        loadGroupImage();
+                        //loadGroupImage();
+                        loadGroupImage(groupImage.getThumbnail());
                     }
                     break;
             }
@@ -248,6 +249,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         llChangeGroupPicture = findViewById(R.id.ll_change_group_picture);
         ivButtonBack = findViewById(R.id.iv_button_back);
         ivButtonClose = findViewById(R.id.iv_button_close);
+        ivChangeGroupPicture = findViewById(R.id.iv_change_group_picture);
         ivLoadingProgressCreateGroup = findViewById(R.id.iv_loading_progress_create_group);
         ivLoadingProgressUpdateGroup = findViewById(R.id.iv_loading_progress_update_group);
         ivGroupPicBackground = findViewById(R.id.iv_group_pic_background);
@@ -296,7 +298,8 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
             ivButtonBack.setOnClickListener(v -> onBackPressed());
             flButtonCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
-            loadGroupImage();
+            //loadGroupImage();
+            loadGroupImage(null == vm.getGroupData().getRoomImage() ? "" : vm.getGroupData().getRoomImage().getThumbnail());
         }
 
         if (null != vm.getGroupData().getRoomName()) {
@@ -338,14 +341,18 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
     private void loadGroupImage(String imageUrl) {
         if (null == imageUrl || imageUrl.isEmpty()) {
-            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getGroupData().getRoomName())));
+            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorPrimary)));
             civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
+            civGroupImage.setAlpha(0.1f);
             tvGroupPictureLabel.setText(TAPUtils.getInitials(vm.getGroupData().getRoomName(), 1));
             tvGroupPictureLabel.setVisibility(View.VISIBLE);
+            ivChangeGroupPicture.setVisibility(View.VISIBLE);
         } else {
+            civGroupImage.setAlpha(1f);
             Glide.with(this).load(imageUrl).into(civGroupImage);
             ImageViewCompat.setImageTintList(civGroupImage, null);
             tvGroupPictureLabel.setVisibility(View.GONE);
+            ivChangeGroupPicture.setVisibility(View.GONE);
             //fl_remove_group_picture.visibility = View.VISIBLE
         }
     }

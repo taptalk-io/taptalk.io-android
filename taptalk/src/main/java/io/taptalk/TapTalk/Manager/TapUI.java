@@ -614,7 +614,8 @@ public class TapUI {
                                 TYPE_PERSONAL,
                                 user.getAvatarURL(),
                                 ""), // TODO: 13 Apr 2020 ROOM COLOR
-                        user);
+                        user,
+                        true);
             }
         } else {
             for (TapUIChatRoomListener listener : getChatRoomListeners()) {
