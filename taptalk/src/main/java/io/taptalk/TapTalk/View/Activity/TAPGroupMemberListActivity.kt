@@ -463,7 +463,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                         instanceKey,
                         groupViewModel?.groupData,
                         member,
-                        isAdmin
+                        isAdmin,
+                        false
                 )
             }
         }
