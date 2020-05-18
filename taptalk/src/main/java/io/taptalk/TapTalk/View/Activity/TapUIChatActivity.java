@@ -3012,18 +3012,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                         if (0 < entities.size()) {
                             vm.setLastUnreadMessageLocalID(entities.get(0).getLocalID());
-                            new Thread(() -> {
-                                boolean allUnreadHidden = true; // Flag to check hidden unread when looping
-                                for (TAPMessageEntity entity : entities) {
-                                    if (null == entity.getHidden() || !entity.getHidden()) {
-                                        allUnreadHidden = false;
-                                        break;
-                                    }
+//                            new Thread(() -> {
+                            boolean allUnreadHidden = true; // Flag to check hidden unread when looping
+                            for (TAPMessageEntity entity : entities) {
+                                if (null == entity.getHidden() || !entity.getHidden()) {
+                                    allUnreadHidden = false;
+                                    break;
                                 }
-                                if (allUnreadHidden) {
-                                    vm.setAllUnreadMessagesHidden(true);
-                                }
-                            }).start();
+                            }
+                            if (allUnreadHidden) {
+                                vm.setAllUnreadMessagesHidden(true);
+                            }
+//                            }).start();
                         }
                         vm.getMessageEntities(vm.getRoom().getRoomID(), dbListener);
                     }
