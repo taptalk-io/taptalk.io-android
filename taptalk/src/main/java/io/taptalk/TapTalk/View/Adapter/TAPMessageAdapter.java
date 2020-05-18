@@ -1410,7 +1410,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TextView tvQuoteContent;
         private View vQuoteBackground;
         private View vQuoteDecoration;
-        //private View vMapBorder;
+        private View vMapBorder;
         private MapView mapView;
 
         LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
@@ -1433,7 +1433,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
-            //vMapBorder = itemView.findViewById(R.id.v_map_border);
+            vMapBorder = itemView.findViewById(R.id.v_map_border);
             mapView = itemView.findViewById(R.id.map_view);
             mapView.onCreate(new Bundle());
 
@@ -1485,9 +1485,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);
-            //enableLongPress(itemView.getContext(), vMapBorder, item);
+            enableLongPress(itemView.getContext(), vMapBorder, item);
 
-            //vMapBorder.setOnClickListener(v -> openMapDetail(mapData));
+            vMapBorder.setOnClickListener(v -> openMapDetail(mapData));
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
@@ -1512,8 +1512,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openMapDetail(HashMap<String, Object> mapData) {
-            Number latitude = null != mapData.get(LATITUDE) ? ((Number) mapData.get(LATITUDE)).doubleValue() : 0.0;
-            Number longitude = null != mapData.get(LONGITUDE) ? ((Number) mapData.get(LONGITUDE)).doubleValue() : 0.0;
+            Number latitude = (Number) mapData.get(LATITUDE);
+            Number longitude = (Number) mapData.get(LONGITUDE);
+            if (null == latitude || null == longitude) {
+                latitude = 0.0;
+                longitude = 0.0;
+            }
             TAPUtils.openMaps((Activity) itemView.getContext(), latitude.doubleValue(), longitude.doubleValue());
         }
 

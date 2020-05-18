@@ -125,15 +125,14 @@
                 app:layout_constraintTop_toTopOf="@id/map_view"
                 app:layout_constraintVertical_bias="0.385" />
 
-            <!--            <View-->
-            <!--                android:id="@+id/v_map_border"-->
-            <!--                android:layout_width="0dp"-->
-            <!--                android:layout_height="0dp"-->
-            <!--                android:background="@drawable/tap_bg_rounded_1dp_8dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp"-->
-            <!--                app:layout_constraintBottom_toBottomOf="@id/map_view"-->
-            <!--                app:layout_constraintEnd_toEndOf="@id/map_view"-->
-            <!--                app:layout_constraintStart_toStartOf="@id/map_view"-->
-            <!--                app:layout_constraintTop_toTopOf="@id/map_view" />-->
+            <View
+                android:id="@+id/v_map_border"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@id/map_view"
+                app:layout_constraintEnd_toEndOf="@id/map_view"
+                app:layout_constraintStart_toStartOf="@id/map_view"
+                app:layout_constraintTop_toTopOf="@id/map_view" />
 
             <TextView
                 android:id="@+id/tv_message_body"
