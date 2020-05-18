@@ -2066,11 +2066,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         TAPMessageModel dateSeparator = vm.generateDateSeparator(TapUIChatActivity.this, newMessage);
                         vm.getDateSeparators().put(dateSeparator.getLocalID(), dateSeparator);
                         vm.getDateSeparatorIndexes().put(dateSeparator.getLocalID(), 0);
-                        messageAdapter.addMessage(dateSeparator);
+                        runOnUiThread(() -> messageAdapter.addMessage(dateSeparator));
                     }
 
                     // Add new message
-                    messageAdapter.addMessage(newMessage);
+                    runOnUiThread(() -> messageAdapter.addMessage(newMessage));
                     vm.addMessagePointer(newMessage);
                     if (vm.isOnBottom() && !ownMessage) {
                         // Scroll recycler to bottom if recycler is already on bottom
@@ -2122,10 +2122,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TAPMessageModel dateSeparator = vm.generateDateSeparator(TapUIChatActivity.this, newMessage);
                 vm.getDateSeparators().put(dateSeparator.getLocalID(), dateSeparator);
                 vm.getDateSeparatorIndexes().put(dateSeparator.getLocalID(), 0);
-                messageAdapter.addMessage(dateSeparator);
+                runOnUiThread(() -> messageAdapter.addMessage(dateSeparator));
             }
 
-            messageAdapter.addMessage(newMessage);
+            runOnUiThread(() -> messageAdapter.addMessage(newMessage));
             vm.addMessagePointer(newMessage);
 
             runOnUiThread(() -> {
