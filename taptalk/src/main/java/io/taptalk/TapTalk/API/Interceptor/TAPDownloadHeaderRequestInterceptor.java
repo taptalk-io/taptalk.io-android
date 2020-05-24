@@ -3,8 +3,9 @@ package io.taptalk.TapTalk.API.Interceptor;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Base64;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.IOException;
 
@@ -13,7 +14,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkDownloadProgressInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
-import io.taptalk.Taptalk.BuildConfig;
+import io.taptalk.TapTalk.BuildConfig;
 import okhttp3.Interceptor;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
@@ -28,12 +29,13 @@ import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TAPDownloadHeaderRequestInterceptor implements Interceptor {
     public static final String TAG = TAPDownloadHeaderRequestInterceptor.class.getSimpleName();
+    private String instanceKey = "";
     private int headerAuth;
     private TapTalkDownloadProgressInterface listener = new TapTalkDownloadProgressInterface() {
 
         @Override
         public void update(String localID, int percentage, long bytes) {
-            TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, percentage, bytes);
+            TAPFileDownloadManager.getInstance(instanceKey).addDownloadProgressMap(localID, percentage, bytes);
             Intent intent = new Intent(DownloadProgressLoading);
             intent.putExtra(DownloadLocalID, localID);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
@@ -41,7 +43,7 @@ public class TAPDownloadHeaderRequestInterceptor implements Interceptor {
 
         @Override
         public void finish(String localID, long bytes) {
-            TAPFileDownloadManager.getInstance().addDownloadProgressMap(localID, 100, bytes);
+            TAPFileDownloadManager.getInstance(instanceKey).addDownloadProgressMap(localID, 100, bytes);
             Intent intent = new Intent(DownloadProgressLoading);
             intent.putExtra(DownloadLocalID, localID);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
@@ -49,16 +51,17 @@ public class TAPDownloadHeaderRequestInterceptor implements Interceptor {
     };
 
 
-    public TAPDownloadHeaderRequestInterceptor(int headerAuth) {
+    public TAPDownloadHeaderRequestInterceptor(String instanceKey, int headerAuth) {
+        this.instanceKey = instanceKey;
         this.headerAuth = headerAuth;
     }
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
-        String APP_KEY_ID = TAPDataManager.getInstance().getApplicationID();
-        String APP_KEY_SECRET = TAPDataManager.getInstance().getApplicationSecret();
-        String userAgent = TAPDataManager.getInstance().getUserAgent();
+        String APP_KEY_ID = TAPDataManager.getInstance(instanceKey).getApplicationID();
+        String APP_KEY_SECRET = TAPDataManager.getInstance(instanceKey).getApplicationSecret();
+        String userAgent = TAPDataManager.getInstance(instanceKey).getUserAgent();
 
         String appKey = Base64.encodeToString((APP_KEY_ID + ":" + APP_KEY_SECRET).getBytes(), Base64.NO_WRAP);
 
@@ -68,12 +71,12 @@ public class TAPDownloadHeaderRequestInterceptor implements Interceptor {
         // kalau ga ada kita cek lagi auth ticket nya udah ada atau belom kalau ada brati kita pake auth ticket
         // kalau nggak brati bearer aja karena brati belom request auth ticket
         String authorization;
-        if (TAPDataManager.getInstance().checkAccessTokenAvailable() && (NOT_USE_REFRESH_TOKEN == headerAuth || MULTIPART_CONTENT_TYPE == headerAuth)) {
-            authorization = "Bearer " + TAPDataManager.getInstance().getAccessToken();
-        } else if (TAPDataManager.getInstance().checkRefreshTokenAvailable() && USE_REFRESH_TOKEN == headerAuth) {
-            authorization = "Bearer " + TAPDataManager.getInstance().getRefreshToken();
-        } else if (TAPDataManager.getInstance().checkAuthTicketAvailable()) {
-            authorization = "Bearer " + TAPDataManager.getInstance().getAuthTicket();
+        if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable() && (NOT_USE_REFRESH_TOKEN == headerAuth || MULTIPART_CONTENT_TYPE == headerAuth)) {
+            authorization = "Bearer " + TAPDataManager.getInstance(instanceKey).getAccessToken();
+        } else if (TAPDataManager.getInstance(instanceKey).checkRefreshTokenAvailable() && USE_REFRESH_TOKEN == headerAuth) {
+            authorization = "Bearer " + TAPDataManager.getInstance(instanceKey).getRefreshToken();
+        } else if (TAPDataManager.getInstance(instanceKey).checkAuthTicketAvailable()) {
+            authorization = "Bearer " + TAPDataManager.getInstance(instanceKey).getAuthTicket();
         } else
             authorization = "Bearer ";
 

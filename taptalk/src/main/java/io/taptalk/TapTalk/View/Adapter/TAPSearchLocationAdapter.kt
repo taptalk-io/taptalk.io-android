@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TAPBaseViewHolder
 import io.taptalk.TapTalk.Listener.TAPGeneralListener
 import io.taptalk.TapTalk.Model.TAPLocationItem
 import io.taptalk.TapTalk.Model.TAPLocationItem.MyReturnType.*
-import io.taptalk.Taptalk.R
+import io.taptalk.TapTalk.R
 
 class TAPSearchLocationAdapter : TAPBaseAdapter<TAPLocationItem, TAPBaseViewHolder<TAPLocationItem>> {
     var generalListener: TAPGeneralListener<TAPLocationItem>? = null
@@ -34,7 +34,7 @@ class TAPSearchLocationAdapter : TAPBaseAdapter<TAPLocationItem, TAPBaseViewHold
 
     class BasicViewHolder : TAPBaseViewHolder<TAPLocationItem>, View.OnClickListener {
         var tvLocation: TextView? = null
-        var generalListener :TAPGeneralListener<TAPLocationItem>? = null
+        var generalListener: TAPGeneralListener<TAPLocationItem>? = null
 
         constructor(parent: ViewGroup?, itemLayoutId: Int, generalListener: TAPGeneralListener<TAPLocationItem>?) : super(parent, itemLayoutId) {
             tvLocation = itemView.findViewById(R.id.tv_location)

@@ -1,10 +1,11 @@
 package io.taptalk.TapTalk.Helper;
 
-import android.support.annotation.LayoutRes;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.LayoutRes;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Fadhlan on 8/2/16.
@@ -35,7 +36,7 @@ public abstract class TAPBaseViewHolder<T>
         onBind(getItem(), position);
     }
 
-    protected T getItem() {
+    public T getItem() {
         return item;
     }
 

@@ -1,9 +1,12 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,6 +21,7 @@ import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 
 public class TAPSearchChatViewModel extends AndroidViewModel {
 
+    private String instanceKey = "";
     private LiveData<List<TAPRecentSearchEntity>> recentSearchList;
     private List<TAPSearchChatModel> searchResults;
     private List<TAPSearchChatModel> recentSearches;
@@ -31,8 +35,26 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
     public final int STATE_SEARCHING = 2;
     public final int STATE_PENDING = 3;
 
-    public TAPSearchChatViewModel(@NonNull Application application) {
+    public static class TAPSearchChatViewModelFactory implements ViewModelProvider.Factory {
+        private Application application;
+        private String instanceKey;
+
+        public TAPSearchChatViewModelFactory(Application application, String instanceKey) {
+            this.application = application;
+            this.instanceKey = instanceKey;
+        }
+
+        @NonNull
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) new TAPSearchChatViewModel(application, instanceKey);
+        }
+    }
+
+    public TAPSearchChatViewModel(@NonNull Application application, String instanceKey) {
         super(application);
+        this.instanceKey = instanceKey;
     }
 
     private Map<String, TAPRoomModel> getRoomPointer() {
@@ -96,7 +118,7 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<TAPRecentSearchEntity>> getRecentSearchList() {
-        return null == recentSearchList ? recentSearchList = TAPDataManager.getInstance().getRecentSearchLive() : recentSearchList;
+        return null == recentSearchList ? recentSearchList = TAPDataManager.getInstance(instanceKey).getRecentSearchLive() : recentSearchList;
     }
 
     public List<TAPSearchChatModel> getRecentSearches() {

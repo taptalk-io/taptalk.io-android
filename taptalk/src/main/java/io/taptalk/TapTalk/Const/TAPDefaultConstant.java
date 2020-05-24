@@ -10,6 +10,7 @@ public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
         public static final int kDatabaseVersion = 7;
+        public static final String DATABASE_NAME = "message_database";
     }
 
     public static final class DatabaseType {
@@ -57,6 +58,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_SYSTEM_MESSAGE = 9001;
         public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9002;
         public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9003;
+        public static final int TYPE_DATE_SEPARATOR = 9005;
     }
 
     public static final class BubbleType {
@@ -77,6 +79,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_LOADING = 9003;
         public static final int TYPE_BUBBLE_DELETED_RIGHT = 90041;
         public static final int TYPE_BUBBLE_DELETED_LEFT = 90042;
+        public static final int TYPE_BUBBLE_DATE_SEPARATOR = 9005;
         public static final int TYPE_EMPTY = 9999;
     }
 
@@ -107,16 +110,16 @@ public class TAPDefaultConstant {
     }
 
     public static final class IntentType {
-    public static final String INTENT_TYPE_ALL = "*/*";
-    public static final String INTENT_TYPE_IMAGE = "image/*";
-    public static final String INTENT_TYPE_VIDEO = "video/*";
-    public static final String GALLERY = "Gallery";
-    public static final String SELECT_PICTURE = "Select Picture";
-    public static final String OPEN_FILE = "Open File";
-
+        public static final String INTENT_TYPE_ALL = "*/*";
+        public static final String INTENT_TYPE_IMAGE = "image/*";
+        public static final String INTENT_TYPE_VIDEO = "video/*";
+        public static final String GALLERY = "Gallery";
+        public static final String SELECT_PICTURE = "Select Picture";
+        public static final String OPEN_FILE = "Open File";
     }
 
     public static final class Extras {
+        public static final String INSTANCE_KEY = "kTAPExtraInstanceKey";
         public static final String MESSAGE = "kTAPExtraMessage";
         public static final String ROOM = "kTAPExtraRoom";
         public static final String ROOM_ID = "kTAPExtraRoomID";
@@ -141,6 +144,7 @@ public class TAPDefaultConstant {
         public static final String MOBILE_NUMBER = "kTAPExtraMobileNumber";
         public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
         public static final String CLOSE_ACTIVITY = "kTAPCloseActivity";
+        public static final String IS_NON_PARTICIPANT_USER_PROFILE = "kTAPIsNotParticipantUserProfile";
     }
 
     public static final class RequestCode {
@@ -310,6 +314,7 @@ public class TAPDefaultConstant {
         public static final String LongPressLink = "kTAPLongPressLink";
         public static final String LongPressEmail = "kTAPLongPressEmail";
         public static final String LongPressPhone = "kTAPLongPressPhone";
+        public static final String LongPressMention = "kTAPLongPressMention";
     }
 
     public static final class TokenHeaderConst {
@@ -405,6 +410,7 @@ public class TAPDefaultConstant {
         public static final int MENU_DEMOTE_ADMIN = 11;
         public static final int MENU_REMOVE_MEMBER = 12;
         public static final int MENU_DELETE_GROUP = 13;
+        public static final int MENU_EDIT_GROUP = 14;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -456,6 +462,7 @@ public class TAPDefaultConstant {
     public static final String CONTACT_LIST = "kTAPContactList";
     public static final String REFRESH_TOKEN_RENEWED = "kTAPRefreshTokenRenewed";
     public static final String RELOAD_ROOM_LIST = "kTAPReloadRoomList";
+    public static final String CLEAR_ROOM_LIST = "kTAPClearRoomList";
     public static final String CLEAR_ROOM_LIST_BADGE = "kTAPClearRoomListBadge";
     public static final String RELOAD_PROFILE_PICTURE = "kTAPReloadProfilePicture";
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
@@ -465,4 +472,6 @@ public class TAPDefaultConstant {
     public static final String MY_COUNTRY_FLAG_URL = "kMyCountryFlagUrl";
     public static final String UNREAD_INDICATOR_LOCAL_ID = "kTAPUnreadIndicatorLocalIdentity";
     public static final String LOADING_INDICATOR_LOCAL_ID = "kTAPFetchingOlderMessagesLocalID";
+    public static final String RIGHT_BUBBLE_SPACE_APPEND = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
+    public static final String LEFT_BUBBLE_SPACE_APPEND = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0";
 }

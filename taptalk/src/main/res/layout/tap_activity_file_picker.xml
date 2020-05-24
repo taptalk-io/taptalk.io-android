@@ -7,7 +7,7 @@
     android:background="@color/tapDefaultBackgroundColor"
     android:orientation="vertical">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -43,7 +43,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Directory" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/container"

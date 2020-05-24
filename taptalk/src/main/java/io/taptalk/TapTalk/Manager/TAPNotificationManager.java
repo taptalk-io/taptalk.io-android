@@ -9,13 +9,15 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.RemoteInput;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.RemoteInput;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +30,9 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
-import io.taptalk.Taptalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
@@ -48,12 +50,25 @@ import static io.taptalk.TapTalk.Helper.TapTalk.getTapTalkListeners;
 
 public class TAPNotificationManager {
     private static final String TAG = TAPNotificationManager.class.getSimpleName();
-    private static TAPNotificationManager instance;
+    private static HashMap<String, TAPNotificationManager> instances;
     private static Map<String, List<TAPMessageModel>> notificationMessagesMap;
+    private String instanceKey = ""; // TODO: 18 Mar 2020
     private boolean isRoomListAppear;
 
-    public static TAPNotificationManager getInstance() {
-        return null == instance ? (instance = new TAPNotificationManager()) : instance;
+    public TAPNotificationManager(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
+
+    public static TAPNotificationManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPNotificationManager instance = new TAPNotificationManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TAPNotificationManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
     }
 
     public Map<String, List<TAPMessageModel>> getNotificationMessagesMap() {
@@ -75,12 +90,12 @@ public class TAPNotificationManager {
     public void addNotificationMessageToMap(TAPMessageModel notificationMessage) {
         String messageRoomID = notificationMessage.getRoom().getRoomID();
         if (checkMapContainsRoomID(messageRoomID) && TYPE_SYSTEM_MESSAGE == notificationMessage.getType()) {
-            notificationMessage.setBody(TAPChatManager.getInstance().formattingSystemMessage(notificationMessage));
+            notificationMessage.setBody(TAPChatManager.getInstance(instanceKey).formattingSystemMessage(notificationMessage));
             getNotificationMessagesMap().get(messageRoomID).add(notificationMessage);
         } else if (checkMapContainsRoomID(messageRoomID)) {
             getNotificationMessagesMap().get(messageRoomID).add(notificationMessage);
         } else if (TYPE_SYSTEM_MESSAGE == notificationMessage.getType()) {
-            notificationMessage.setBody(TAPChatManager.getInstance().formattingSystemMessage(notificationMessage));
+            notificationMessage.setBody(TAPChatManager.getInstance(instanceKey).formattingSystemMessage(notificationMessage));
             List<TAPMessageModel> listNotificationMessagePerRoomID = new ArrayList<>();
             listNotificationMessagePerRoomID.add(notificationMessage);
             getNotificationMessagesMap().put(messageRoomID, listNotificationMessagePerRoomID);
@@ -128,8 +143,8 @@ public class TAPNotificationManager {
         String summaryContent = messageSize + " messages from " + chatSize + " chats";
 
         return new NotificationCompat.Builder(context, TAP_NOTIFICATION_CHANNEL)
-                .setSmallIcon(TapTalk.getClientAppIcon())
-                .setContentTitle(TapTalk.getClientAppName())
+                .setSmallIcon(TapTalk.getClientAppIcon(instanceKey))
+                .setContentTitle(TapTalk.getClientAppName(instanceKey))
                 .setContentText(summaryContent)
                 .setStyle(new NotificationCompat.InboxStyle()/*.setSummaryText(summaryContent)*/)
                 .setGroup(NOTIFICATION_GROUP_DEFAULT)
@@ -266,42 +281,42 @@ public class TAPNotificationManager {
     }
 
     public void createAndShowInAppNotification(Context context, TAPMessageModel newMessageModel) {
-        if (TapTalk.implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
+        if (TapTalk.getTapTalkInstance(instanceKey).implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
             if (TapTalk.isForeground) {
-                new NotificationBuilder(context)
+                new NotificationBuilder(context, instanceKey)
                         .setNotificationMessage(newMessageModel)
-                        .setSmallIcon(TapTalk.getClientAppIcon())
+                        .setSmallIcon(TapTalk.getClientAppIcon(instanceKey))
                         .setNeedReply(false)
                         .setOnClickAction(TapUIChatActivity.class)
                         .show();
             }
         } else {
-            for (TapListener listener : getTapTalkListeners()) {
+            for (TapListener listener : getTapTalkListeners(instanceKey)) {
                 listener.onNotificationReceived(newMessageModel);
             }
         }
     }
 
     public void createAndShowBackgroundNotification(Context context, int notificationIcon, Class destinationClass, TAPMessageModel newMessageModel) {
-        TAPContactManager.getInstance().loadAllUserDataFromDatabase();
-        TAPContactManager.getInstance().saveUserDataToDatabase(newMessageModel.getUser());
-        TAPMessageStatusManager.getInstance().updateMessageStatusToDeliveredFromNotification(newMessageModel);
-        if (newMessageModel.getUser() != TAPChatManager.getInstance().getActiveUser() ||
+        TAPContactManager.getInstance(instanceKey).loadAllUserDataFromDatabase();
+        TAPContactManager.getInstance(instanceKey).saveUserDataToDatabase(newMessageModel.getUser());
+        TAPMessageStatusManager.getInstance(instanceKey).updateMessageStatusToDeliveredFromNotification(newMessageModel);
+        if (newMessageModel.getUser() != TAPChatManager.getInstance(instanceKey).getActiveUser() ||
                 UPDATE_USER.equals(newMessageModel.getAction())) {
-            TAPContactManager.getInstance().updateUserData(newMessageModel.getUser());
+            TAPContactManager.getInstance(instanceKey).updateUserData(newMessageModel.getUser());
         }
-        if (TapTalk.implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
-            if (!TapTalk.isForeground || (null != TAPChatManager.getInstance().getActiveRoom()
-                    && !TAPChatManager.getInstance().getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
-                new NotificationBuilder(context)
+        if (TapTalk.getTapTalkInstance(instanceKey).implementationType == TapTalk.TapTalkImplementationType.TapTalkImplementationTypeUI) {
+            if (!TapTalk.isForeground || (null != TAPChatManager.getInstance(instanceKey).getActiveRoom()
+                    && !TAPChatManager.getInstance(instanceKey).getActiveRoom().getRoomID().equals(newMessageModel.getRoom().getRoomID()))) {
+                new NotificationBuilder(context, instanceKey)
                         .setNotificationMessage(newMessageModel)
-                        .setSmallIcon(TapTalk.getClientAppIcon())
+                        .setSmallIcon(TapTalk.getClientAppIcon(instanceKey))
                         .setNeedReply(false)
                         .setOnClickAction(destinationClass)
                         .show();
             }
         } else {
-            for (TapListener listener : getTapTalkListeners()) {
+            for (TapListener listener : getTapTalkListeners(instanceKey)) {
                 listener.onNotificationReceived(newMessageModel);
             }
         }
@@ -310,36 +325,36 @@ public class TAPNotificationManager {
     public void cancelNotificationWhenEnterRoom(Context context, String roomID) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel(roomID, 0);
-        TAPNotificationManager.getInstance().removeNotificationMessagesMap(roomID);
+        TAPNotificationManager.getInstance(instanceKey).removeNotificationMessagesMap(roomID);
 
-        if (0 == TAPNotificationManager.getInstance().getNotificationMessagesMap().size()) {
+        if (0 == TAPNotificationManager.getInstance(instanceKey).getNotificationMessagesMap().size()) {
             notificationManager.cancel(0);
         }
     }
 
     public void saveNotificationMessageMapToPreference() {
         if (0 < getNotificationMessagesMap().size()) {
-            TAPDataManager.getInstance().saveNotificationMessageMap(TAPUtils.toJsonString(getNotificationMessagesMap()));
+            TAPDataManager.getInstance(instanceKey).saveNotificationMessageMap(TAPUtils.toJsonString(getNotificationMessagesMap()));
         }
     }
 
     public void updateNotificationMessageMapWhenAppKilled() {
-        if (TAPDataManager.getInstance().checkNotificationMap() && 0 == getNotificationMessagesMap().size()) {
+        if (TAPDataManager.getInstance(instanceKey).checkNotificationMap() && 0 == getNotificationMessagesMap().size()) {
             Map<String, List<TAPMessageModel>> tempNotifMessage = TAPUtils.fromJSON(
                     new TypeReference<Map<String, List<TAPMessageModel>>>() {
                     },
-                    TAPDataManager.getInstance().getNotificationMessageMap());
+                    TAPDataManager.getInstance(instanceKey).getNotificationMessageMap());
             setNotificationMessagesMap(tempNotifMessage);
-            TAPDataManager.getInstance().clearNotificationMessageMap();
+            TAPDataManager.getInstance(instanceKey).clearNotificationMessageMap();
         }
     }
 
     public void updateUnreadCount() {
-        new Thread(() -> TAPDataManager.getInstance().getUnreadCount(new TAPDatabaseListener<TAPMessageEntity>() {
+        new Thread(() -> TAPDataManager.getInstance(instanceKey).getUnreadCount(new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onCountedUnreadCount(int unreadCount) {
-                if (null != getTapTalkListeners() && !getTapTalkListeners().isEmpty()) {
-                    for (TapListener listener : getTapTalkListeners()) {
+                if (null != getTapTalkListeners(instanceKey) && !getTapTalkListeners(instanceKey).isEmpty()) {
+                    for (TapListener listener : getTapTalkListeners(instanceKey)) {
                         listener.onTapTalkUnreadChatRoomBadgeCountUpdated(unreadCount);
                     }
                 }
@@ -349,7 +364,9 @@ public class TAPNotificationManager {
 
     public static class NotificationBuilder {
         public Context context;
-        public String chatSender = "", chatMessage = "";
+        private String instanceKey = "";
+        public String chatSender = "";
+        public String chatMessage = "";
         public TAPMessageModel notificationMessage;
         public int smallIcon;
         boolean isNeedReply;
@@ -357,13 +374,14 @@ public class TAPNotificationManager {
         NotificationCompat.Builder notificationBuilder;
         private Class aClass;
 
-        public NotificationBuilder(Context context) {
+        public NotificationBuilder(Context context, String instanceKey) {
             this.context = context;
+            this.instanceKey = instanceKey;
         }
 
         public NotificationBuilder setNotificationMessage(TAPMessageModel notificationMessage) {
             this.notificationMessage = notificationMessage;
-            TAPNotificationManager.getInstance().addNotificationMessageToMap(notificationMessage);
+            TAPNotificationManager.getInstance(instanceKey).addNotificationMessageToMap(notificationMessage);
             if (null != notificationMessage &&
                     null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
                     TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
@@ -401,9 +419,16 @@ public class TAPNotificationManager {
         }
 
         public Notification build() {
-            this.notificationBuilder = TAPNotificationManager.getInstance().createNotificationBubble(this);
+            int messageSize = 0;
+            for (Map.Entry<String, List<TAPMessageModel>> item : notificationMessagesMap.entrySet()) {
+                if (notificationMessage.getRoom().getRoomID().equals(item.getKey())) {
+                    messageSize = item.getValue().size();
+                }
+            }
+            this.notificationBuilder = TAPNotificationManager.getInstance(instanceKey).createNotificationBubble(this);
             addReply();
             if (null != roomModel && null != aClass) addPendingIntentWhenClicked();
+            this.notificationBuilder.setNumber(messageSize);
             return this.notificationBuilder.build();
         }
 
@@ -427,11 +452,12 @@ public class TAPNotificationManager {
         }
 
         private void addPendingIntentWhenClicked() {
-            Intent intent = new Intent(context, aClass);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra(ROOM, roomModel);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
-            notificationBuilder.setContentIntent(pendingIntent);
+//            Intent intent = new Intent(context, aClass);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            intent.putExtra(ROOM, roomModel);
+//            PendingIntent pendingIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
+//            notificationBuilder.setContentIntent(pendingIntent);
+            notificationBuilder.setContentIntent(TapUIChatActivity.generatePendingIntent(context, instanceKey, roomModel));
         }
 
         private void createNotificationChannel() {
@@ -453,8 +479,8 @@ public class TAPNotificationManager {
 
             notificationManager.notify(notificationMessage.getRoom().getRoomID(), 0, build());
 
-            if (1 < TAPNotificationManager.getInstance().getNotificationMessagesMap().size()) {
-                notificationManager.notify(0, TAPNotificationManager.getInstance().createSummaryNotificationBubble(context, TapUIRoomListActivity.class).build());
+            if (1 < TAPNotificationManager.getInstance(instanceKey).getNotificationMessagesMap().size()) {
+                notificationManager.notify(0, TAPNotificationManager.getInstance(instanceKey).createSummaryNotificationBubble(context, TapUIRoomListActivity.class).build());
             }
 
         }

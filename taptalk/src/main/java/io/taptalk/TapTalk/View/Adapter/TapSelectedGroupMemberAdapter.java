@@ -3,14 +3,15 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ImageViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -29,7 +30,7 @@ import io.taptalk.TapTalk.Listener.TapContactListListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactListModel, TAPBaseViewHolder<TapContactListModel>> {
 
@@ -37,15 +38,15 @@ public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactList
     private String myID;
     private boolean isAnimating = true;
 
-    public TapSelectedGroupMemberAdapter(List<TapContactListModel> contactList) {
+    public TapSelectedGroupMemberAdapter(String instanceKey, List<TapContactListModel> contactList) {
         setItems(contactList, false);
-        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
     }
 
-    public TapSelectedGroupMemberAdapter(List<TapContactListModel> contactList, TapContactListListener listener) {
+    public TapSelectedGroupMemberAdapter(String instanceKey, List<TapContactListModel> contactList, TapContactListListener listener) {
         setItems(contactList, false);
         this.listener = listener;
-        this.myID = TAPChatManager.getInstance().getActiveUser().getUserID();
+        this.myID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
     }
 
     @NonNull

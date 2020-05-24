@@ -1,8 +1,9 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
-import android.arch.lifecycle.ViewModelProviders;
+import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -11,12 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -25,6 +20,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +50,11 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TapContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_CONTACT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.CREATE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel.INFO_LABEL_ID_ADD_NEW_CONTACT;
@@ -75,6 +77,18 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private TapContactListAdapter adapter;
     private TAPContactListViewModel vm;
+
+    public static void start(
+            Context context,
+            String instanceKey
+    ) {
+        Intent intent = new Intent(context, TAPNewChatActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +139,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPContactListViewModel.class);
+        vm = new ViewModelProvider(this,
+                new TAPContactListViewModel.TAPContactListViewModelFactory(
+                        getApplication(), instanceKey))
+                .get(TAPContactListViewModel.class);
         setupMenuButtons();
         // Set up listener for Live Data
         vm.getContactListLive().observe(this, userModels -> {
@@ -155,11 +172,11 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         etSearch.addTextChangedListener(searchTextWatcher);
 
-        new Thread(() -> TAPDataManager.getInstance().getMyContactListFromAPI(getContactView)).start();
+        new Thread(() -> TAPDataManager.getInstance(instanceKey).getMyContactListFromAPI(getContactView)).start();
 
         getWindow().setBackgroundDrawable(null);
 
-        adapter = new TapContactListAdapter(vm.getSeparatedContactList(), contactListListener);
+        adapter = new TapContactListAdapter(instanceKey, vm.getSeparatedContactList(), contactListListener);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContactList.setHasFixedSize(false);
@@ -190,21 +207,21 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void setupMenuButtons() {
-        if (TapUI.getInstance().isNewContactMenuButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
             TapContactListModel menuAddNewContact = new TapContactListModel(
                     MENU_ID_ADD_NEW_CONTACT,
                     getString(R.string.tap_new_contact),
                     R.drawable.tap_ic_new_contact_orange);
             vm.getMenuButtonList().add(menuAddNewContact);
         }
-        if (TapUI.getInstance().isScanQRMenuButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isScanQRMenuButtonVisible()) {
             TapContactListModel menuScanQRCode = new TapContactListModel(
                     MENU_ID_SCAN_QR_CODE,
                     getString(R.string.tap_scan_qr_code),
                     R.drawable.tap_ic_scan_qr_orange);
             vm.getMenuButtonList().add(menuScanQRCode);
         }
-        if (TapUI.getInstance().isNewGroupMenuButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isNewGroupMenuButtonVisible()) {
             TapContactListModel menuCreateNewGroup = new TapContactListModel(
                     MENU_ID_CREATE_NEW_GROUP,
                     getString(R.string.tap_new_group),
@@ -277,7 +294,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             }
         }
 
-        if (TapUI.getInstance().isNewContactMenuButtonVisible()) {
+        if (TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
             setAddNewContactInfoLabelItem();
             vm.getAdapterItems().add(vm.getInfoLabelItem());
         }
@@ -316,18 +333,18 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void permissionCheckAndSyncContactList() {
-        if (!TapTalk.isAutoContactSyncEnabled()) {
+        if (!TapTalk.isAutoContactSyncEnabled(instanceKey)) {
             return;
         }
-        if (!TAPContactManager.getInstance().isContactSyncPermissionAsked() &&
+        if (!TAPContactManager.getInstance(instanceKey).isContactSyncPermissionAsked() &&
                 !TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS)) {
             showSyncContactPermissionDialog();
-            TAPContactManager.getInstance().setAndSaveContactSyncPermissionAsked(true);
-            TAPContactManager.getInstance().setAndSaveContactSyncAllowedByUser(false);
+            TAPContactManager.getInstance(instanceKey).setAndSaveContactSyncPermissionAsked(true);
+            TAPContactManager.getInstance(instanceKey).setAndSaveContactSyncAllowedByUser(false);
         } else if (!TAPUtils.hasPermissions(this, Manifest.permission.READ_CONTACTS) ||
-                !TAPContactManager.getInstance().isContactSyncAllowedByUser()) {
+                !TAPContactManager.getInstance(instanceKey).isContactSyncAllowedByUser()) {
             runOnUiThread(() -> flSync.setVisibility(View.VISIBLE));
-        } else if (TAPContactManager.getInstance().isContactSyncAllowedByUser()){
+        } else if (TAPContactManager.getInstance(instanceKey).isContactSyncAllowedByUser()) {
             syncContactList(false);
         }
     }
@@ -354,25 +371,18 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
     private void openQRScanner() {
         if (TAPUtils.hasPermissions(TAPNewChatActivity.this, Manifest.permission.CAMERA)) {
-            Intent intent = new Intent(TAPNewChatActivity.this, TAPBarcodeScannerActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+            TAPBarcodeScannerActivity.start(TAPNewChatActivity.this, instanceKey);
         } else {
             ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
         }
     }
 
     private void addNewContact() {
-        Intent intent = new Intent(TAPNewChatActivity.this, TAPNewContactActivity.class);
-        startActivity(intent);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPNewContactActivity.start(this, instanceKey);
     }
 
     private void createNewGroup() {
-        Intent intent = new Intent(this, TAPAddGroupMemberActivity.class);
-        intent.putExtra(GROUP_ACTION, CREATE_GROUP);
-        startActivity(intent);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPAddGroupMemberActivity.start(this, instanceKey);
     }
 
     private void viewBlockedContacts() {
@@ -390,13 +400,13 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void syncContactList(boolean showLoading) {
-        if (!TapTalk.isAutoContactSyncEnabled()) {
+        if (!TapTalk.isAutoContactSyncEnabled(instanceKey)) {
             return;
         }
         if (showLoading) {
             showSyncLoading();
         }
-        TAPContactManager.getInstance().setAndSaveContactSyncAllowedByUser(true);
+        TAPContactManager.getInstance(instanceKey).setAndSaveContactSyncAllowedByUser(true);
 
         new Thread(() -> {
             List<String> newContactsPhoneNumbers = new ArrayList<>();
@@ -419,8 +429,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                             while (pCur.moveToNext()) {
                                 String phoneNo = pCur.getString(pCur.getColumnIndex(
                                         ContactsContract.CommonDataKinds.Phone.NUMBER));
-                                String phoneNumb = TAPContactManager.getInstance().convertPhoneNumber(phoneNo);
-                                if (!"".equals(phoneNumb) && !TAPContactManager.getInstance()
+                                String phoneNumb = TAPContactManager.getInstance(instanceKey).convertPhoneNumber(phoneNo);
+                                if (!"".equals(phoneNumb) && !TAPContactManager.getInstance(instanceKey)
                                         .isUserPhoneNumberAlreadyExist(phoneNumb) && !newContactsPhoneNumbers.contains(phoneNumb)) {
                                     newContactsPhoneNumbers.add(phoneNumb);
                                 }
@@ -438,7 +448,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void callAddContactsByPhoneApi(List<String> newContactsPhoneNumbers, boolean showLoading) {
-        TAPDataManager.getInstance().addContactByPhone(newContactsPhoneNumbers, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
+        TAPDataManager.getInstance(instanceKey).addContactByPhone(newContactsPhoneNumbers, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
             @Override
             public void onSuccess(TAPAddContactByPhoneResponse response) {
                 new Thread(() -> {
@@ -458,13 +468,13 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                         new Thread(() -> {
                             List<TAPUserModel> users = new ArrayList<>();
                             for (TAPUserModel contact : response.getUsers()) {
-                                if (!contact.getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                                if (!contact.getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                                     contact.setUserAsContact();
                                     users.add(contact);
                                 }
                             }
-                            TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                            TAPContactManager.getInstance().updateUserData(users);
+                            TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(users);
+                            TAPContactManager.getInstance(instanceKey).updateUserData(users);
                             runOnUiThread(() -> {
                                 //stopSyncLoading();
                                 flSync.setVisibility(View.GONE);
@@ -538,12 +548,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                     for (TAPContactModel contact : response.getContacts()) {
                         TAPUserModel contactUserModel = contact.getUser().setUserAsContact();
                         users.add(contactUserModel);
-                        TAPContactManager.getInstance().addUserMapByPhoneNumber(contactUserModel);
-                        TAPContactManager.getInstance().updateUserData(contactUserModel);
+                        TAPContactManager.getInstance(instanceKey).addUserMapByPhoneNumber(contactUserModel);
+                        TAPContactManager.getInstance(instanceKey).updateUserData(contactUserModel);
                     }
 
-                    TAPDataManager.getInstance().insertMyContactToDatabase(users);
-                    TAPContactManager.getInstance().updateUserData(users);
+                    TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(users);
+                    TAPContactManager.getInstance(instanceKey).updateUserData(users);
                     permissionCheckAndSyncContactList();
                 }).start();
             } catch (Exception e) {
@@ -578,11 +588,12 @@ public class TAPNewChatActivity extends TAPBaseActivity {
             if (null == user) {
                 return;
             }
-            if (!TAPChatManager.getInstance().getActiveUser().getUserID().equals(user.getUserID())) {
+            if (!TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(user.getUserID())) {
                 // TODO: 25 October 2018 SET ROOM COLOR
-                TAPUtils.startChatActivity(
+                TapUIChatActivity.start(
                         TAPNewChatActivity.this,
-                        TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), user.getUserID()),
+                        instanceKey,
+                        TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), user.getUserID()),
                         user.getName(),
                         user.getAvatarURL(),
                         TYPE_PERSONAL,

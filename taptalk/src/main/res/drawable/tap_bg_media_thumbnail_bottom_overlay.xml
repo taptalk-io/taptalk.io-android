@@ -5,4 +5,7 @@
         android:angle="270"
         android:startColor="#000a0a22"
         android:endColor="@color/tapCharcoal" />
+    <corners
+        android:bottomLeftRadius="4dp"
+        android:bottomRightRadius="4dp" />
 </shape>

@@ -5,12 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -23,7 +24,7 @@ import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.CompositeFilter
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.HiddenFilter;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.filter.PatternFilter;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.utils.FileUtils;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 /**
  * Created by Dimorinny on 24.10.15.

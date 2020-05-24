@@ -1,14 +1,15 @@
 package io.taptalk.TapTalk.Model;
 
-import android.arch.persistence.room.Embedded;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.Index;
-import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,31 +18,78 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity(tableName = "MyContact", indices = @Index("isContact"))
 public class TAPUserModel implements Parcelable {
 
-    @PrimaryKey @NonNull @JsonProperty("userID") @JsonAlias("id")
+    @PrimaryKey
+    @NonNull
+    @JsonProperty("userID")
+    @JsonAlias("id")
     private String userID;
     @JsonProperty("xcUserID") private String xcUserID;
     @JsonProperty("fullname") private String name;
-    @Embedded @JsonProperty("imageURL") private TAPImageURL avatarURL;
-    @Nullable @JsonProperty("username") private String username;
-    @Nullable @JsonProperty("email") private String email;
-    @Nullable @JsonProperty("phone") private String phoneNumber;
-    @Nullable @JsonProperty("phoneWithCode") private String phoneWithCode;
-    @Embedded @Nullable @JsonProperty("userRole") private TAPUserRoleModel userRole;
-    @Nullable @JsonProperty("lastLogin") private Long lastLogin;
-    @Nullable @JsonProperty("lastActivity") private Long lastActivity;
-    @Nullable @JsonProperty("requireChangePassword") private Boolean requireChangePassword;
-    @Nullable @JsonProperty("created") private Long created;
-    @Nullable @JsonProperty("updated") private Long updated;
-    @Nullable @JsonProperty("deleted") private Long deleted;
-    @Nullable @JsonProperty("isRequestPending") private Boolean isRequestPending;
-    @Nullable @JsonProperty("isEmailVerified") private Boolean isEmailVerified;
-    @Nullable @JsonProperty("isPhoneVerified") private Boolean isPhoneVerified;
-    @Nullable @JsonProperty("isRequestAccepted") private Boolean isRequestAccepted;
-    @Nullable @JsonProperty("isOnline") private Boolean isOnline;
-    @Nullable @JsonProperty("countryID") private Integer countryID;
-    @Nullable @JsonProperty("countryCallingCode") private String countryCallingCode;
-    @Nullable @JsonIgnore private Integer isContact;
-    @Nullable @Ignore @JsonIgnore private boolean isSelected;
+    @Embedded
+    @JsonProperty("imageURL")
+    private TAPImageURL avatarURL;
+    @Nullable
+    @JsonProperty("username")
+    private String username;
+    @Nullable
+    @JsonProperty("email")
+    private String email;
+    @Nullable
+    @JsonProperty("phone")
+    private String phoneNumber;
+    @Nullable
+    @JsonProperty("phoneWithCode")
+    private String phoneWithCode;
+    @Embedded
+    @Nullable
+    @JsonProperty("userRole")
+    private TAPUserRoleModel userRole;
+    @Nullable
+    @JsonProperty("lastLogin")
+    private Long lastLogin;
+    @Nullable
+    @JsonProperty("lastActivity")
+    private Long lastActivity;
+    @Nullable
+    @JsonProperty("requireChangePassword")
+    private Boolean requireChangePassword;
+    @Nullable
+    @JsonProperty("created")
+    private Long created;
+    @Nullable
+    @JsonProperty("updated")
+    private Long updated;
+    @Nullable
+    @JsonProperty("deleted")
+    private Long deleted;
+    @Nullable
+    @JsonProperty("isRequestPending")
+    private Boolean isRequestPending;
+    @Nullable
+    @JsonProperty("isEmailVerified")
+    private Boolean isEmailVerified;
+    @Nullable
+    @JsonProperty("isPhoneVerified")
+    private Boolean isPhoneVerified;
+    @Nullable
+    @JsonProperty("isRequestAccepted")
+    private Boolean isRequestAccepted;
+    @Nullable
+    @JsonProperty("isOnline")
+    private Boolean isOnline;
+    @Nullable
+    @JsonProperty("countryID")
+    private Integer countryID;
+    @Nullable
+    @JsonProperty("countryCallingCode")
+    private String countryCallingCode;
+    @Nullable
+    @JsonIgnore
+    private Integer isContact;
+    @Nullable
+    @Ignore
+    @JsonIgnore
+    private boolean isSelected;
 
     @Override
     public boolean equals(Object obj) {

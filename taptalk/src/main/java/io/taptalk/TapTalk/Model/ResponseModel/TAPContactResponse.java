@@ -9,7 +9,8 @@ import io.taptalk.TapTalk.Model.TAPContactModel;
 public class TAPContactResponse {
     @JsonProperty("contacts") private List<TAPContactModel> contacts;
 
-    public TAPContactResponse() {}
+    public TAPContactResponse() {
+    }
 
     public List<TAPContactModel> getContacts() {
         return contacts;

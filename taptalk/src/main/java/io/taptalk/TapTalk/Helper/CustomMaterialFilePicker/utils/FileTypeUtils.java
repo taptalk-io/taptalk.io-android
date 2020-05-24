@@ -8,7 +8,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 /**
  * Created by nickolay on 25.10.15.

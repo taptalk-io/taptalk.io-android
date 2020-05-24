@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,7 +7,7 @@
     android:animateLayoutChanges="true"
     android:background="@color/tapDefaultBackgroundColor">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cv_button_search"
             android:layout_width="0dp"
             android:layout_height="50dp"
@@ -49,7 +49,7 @@
             app:layout_goneMarginLeft="16dp"
             app:layout_goneMarginStart="16dp">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_button_search"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -122,9 +122,9 @@
                     app:layout_constraintStart_toStartOf="@id/civ_my_avatar_image"
                     app:layout_constraintTop_toTopOf="@id/civ_my_avatar_image" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <View
             android:layout_width="match_parent"
@@ -132,7 +132,7 @@
             android:background="@color/tapGreyDc"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!--JANGAN DIAPUS-->
 
@@ -206,7 +206,7 @@
 
     <!--</android.support.constraint.ConstraintLayout>-->
 
-    <android.support.v7.widget.RecyclerView
+    <io.taptalk.TapTalk.Helper.TAPChatRecyclerView
         android:id="@+id/rv_contact_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -287,4 +287,4 @@
         layout="@layout/tap_layout_setup_chat"
         tools:visibility="gone" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

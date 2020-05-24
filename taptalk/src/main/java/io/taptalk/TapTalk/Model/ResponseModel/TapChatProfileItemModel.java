@@ -2,12 +2,15 @@ package io.taptalk.TapTalk.Model.ResponseModel;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 
+import androidx.annotation.Nullable;
+
+import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 public class TapChatProfileItemModel implements Parcelable {
 
+    public static final int TYPE_USER_GROUP_DETAIL = 0;
     public static final int TYPE_SECTION_TITLE = 1;
     public static final int TYPE_MENU_BUTTON = 2;
     public static final int TYPE_MEDIA_THUMBNAIL = 3;
@@ -20,7 +23,18 @@ public class TapChatProfileItemModel implements Parcelable {
     private int textStyleResource;
     private boolean isChecked;
     @Nullable private TAPMessageModel mediaMessage;
+    @Nullable private TAPImageURL imageURL;
     @Nullable private String itemLabel;
+    @Nullable private String itemSubLabel;
+
+    // Constructor for user/group detail
+    public TapChatProfileItemModel(@Nullable TAPImageURL imageURL, @Nullable String itemLabel, @Nullable String itemSubLabel, int textStyleResource) {
+        this.type = TYPE_USER_GROUP_DETAIL;
+        this.imageURL = imageURL;
+        this.itemLabel = itemLabel;
+        this.itemSubLabel = itemSubLabel;
+        this.textStyleResource = textStyleResource;
+    }
 
     // Constructor for section title
     public TapChatProfileItemModel(@Nullable String sectionTitle) {
@@ -107,12 +121,30 @@ public class TapChatProfileItemModel implements Parcelable {
     }
 
     @Nullable
+    public TAPImageURL getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(@Nullable TAPImageURL imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    @Nullable
     public String getItemLabel() {
         return itemLabel;
     }
 
     public void setItemLabel(@Nullable String itemLabel) {
         this.itemLabel = itemLabel;
+    }
+
+    @Nullable
+    public String getItemSubLabel() {
+        return itemSubLabel;
+    }
+
+    public void setItemSubLabel(@Nullable String itemSubLabel) {
+        this.itemSubLabel = itemSubLabel;
     }
 
     @Override
@@ -129,7 +161,9 @@ public class TapChatProfileItemModel implements Parcelable {
         dest.writeInt(this.textStyleResource);
         dest.writeByte(this.isChecked ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.mediaMessage, flags);
+        dest.writeParcelable(this.imageURL, flags);
         dest.writeString(this.itemLabel);
+        dest.writeString(this.itemSubLabel);
     }
 
     protected TapChatProfileItemModel(Parcel in) {
@@ -140,7 +174,9 @@ public class TapChatProfileItemModel implements Parcelable {
         this.textStyleResource = in.readInt();
         this.isChecked = in.readByte() != 0;
         this.mediaMessage = in.readParcelable(TAPMessageModel.class.getClassLoader());
+        this.imageURL = in.readParcelable(TAPImageURL.class.getClassLoader());
         this.itemLabel = in.readString();
+        this.itemSubLabel = in.readString();
     }
 
     public static final Creator<TapChatProfileItemModel> CREATOR = new Creator<TapChatProfileItemModel>() {

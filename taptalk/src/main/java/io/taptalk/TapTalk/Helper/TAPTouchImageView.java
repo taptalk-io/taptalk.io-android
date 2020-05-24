@@ -26,7 +26,7 @@ import android.widget.Scroller;
  * Created by Rionaldo on 10/2/17.
  */
 
-public class TAPTouchImageView extends android.support.v7.widget.AppCompatImageView {
+public class TAPTouchImageView extends androidx.appcompat.widget.AppCompatImageView {
     private static final String DEBUG = "DEBUG";
 
     //

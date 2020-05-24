@@ -1,23 +1,21 @@
 package io.taptalk.TapTalk.View.Fragment;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Helper.TapTalkDialog;
-import io.taptalk.TapTalk.Listener.TapListener;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.Taptalk.BuildConfig;
-import io.taptalk.Taptalk.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import io.taptalk.TapTalk.R;
 
 public class TapUIMainRoomListFragment extends Fragment {
+
     private static final String TAG = TapUIMainRoomListFragment.class.getSimpleName();
+
+    private String instanceKey = "";
 
     private enum RoomListState {
         STATE_SEARCH_CHAT, STATE_ROOM_LIST
@@ -31,8 +29,16 @@ public class TapUIMainRoomListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static TapUIMainRoomListFragment newInstance() {
-        return new TapUIMainRoomListFragment();
+    private TapUIMainRoomListFragment(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
+
+    public static TapUIMainRoomListFragment newInstance(String instanceKey) {
+        return new TapUIMainRoomListFragment(instanceKey);
+    }
+
+    public String getInstanceKey() {
+        return instanceKey;
     }
 
     @Override
@@ -43,18 +49,31 @@ public class TapUIMainRoomListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_room_list, container, false);
+        return inflater.inflate(R.layout.tap_fragment_main_room_list, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView();
+        if (null != instanceKey) {
+            initView();
+        }
     }
 
     private void initView() {
-        fRoomList = (TapUIRoomListFragment) getChildFragmentManager().findFragmentById(R.id.fragment_room_list);
-        fSearchFragment = (TapUISearchChatFragment) getChildFragmentManager().findFragmentById(R.id.fragment_search_chat);
+//        fRoomList = (TapUIRoomListFragment) getChildFragmentManager().findFragmentById(R.id.fragment_room_list);
+//        fSearchFragment = (TapUISearchChatFragment) getChildFragmentManager().findFragmentById(R.id.fragment_search_chat);
+
+        fRoomList = TapUIRoomListFragment.newInstance(instanceKey);
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_room_list, fRoomList)
+                .commit();
+        fSearchFragment = TapUISearchChatFragment.newInstance(instanceKey);
+        getChildFragmentManager()
+                .beginTransaction()
+                .add(R.id.fragment_search_chat, fSearchFragment)
+                .commit();
 
         showRoomList();
     }
