@@ -1,24 +1,20 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
-    android:layout_width="120dp"
+    android:layout_width="110dp"
     android:layout_height="wrap_content"
-    android:background="@color/tapWhite"
+    android:layout_margin="1dp"
     android:foreground="?attr/selectableItemBackground">
 
-    <ImageView
-        android:id="@+id/iv_thumbnail"
+    <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
+        android:id="@+id/rciv_thumbnail"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:adjustViewBounds="true"
-        android:paddingLeft="0dp"
-        android:paddingStart="0dp"
-        android:paddingEnd="1dp"
-        android:paddingRight="1dp"
-        android:paddingBottom="1dp"
         android:scaleType="centerCrop"
         android:transitionName="@string/tap_transition_view_image"
+        app:cornerRadius="5dp"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintTop_toTopOf="parent"
         tools:background="@color/tapColorAccent" />
@@ -29,8 +25,12 @@
         android:layout_height="0dp"
         android:alpha="0.4"
         android:background="@drawable/tap_bg_media_thumbnail_bottom_overlay"
-        app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail"
-        app:layout_constraintDimensionRatio="W, 1:2" />
+        app:layout_constraintBottom_toBottomOf="@id/rciv_thumbnail"
+        app:layout_constraintDimensionRatio="W, 1:2"
+        app:layout_constraintEnd_toEndOf="@id/rciv_thumbnail"
+        app:layout_constraintStart_toStartOf="@id/rciv_thumbnail"
+        app:layout_constraintTop_toTopOf="@id/rciv_thumbnail"
+        app:layout_constraintVertical_bias="1" />
 
     <FrameLayout
         android:id="@+id/fl_progress"
@@ -51,7 +51,7 @@
             android:indeterminate="false"
             android:max="100"
             android:padding="4dp"
-            android:progressDrawable="@drawable/tap_file_circular_progress"
+            android:progressDrawable="@drawable/tap_file_circular_progress_white"
             tools:progress="65" />
 
         <ImageView
@@ -72,8 +72,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="4dp"
         android:gravity="end"
-        app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail"
-        app:layout_constraintEnd_toEndOf="@id/iv_thumbnail"
+        app:layout_constraintBottom_toBottomOf="@id/rciv_thumbnail"
+        app:layout_constraintEnd_toEndOf="@id/rciv_thumbnail"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toEndOf="@id/iv_video_icon"
         tools:text="12.8 MB" />
@@ -82,13 +82,13 @@
         android:id="@+id/iv_video_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginBottom="4dp"
         android:src="@drawable/tap_ic_video_white_outline"
         android:tint="@color/tapIconMediaListVideo"
-        app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail"
+        app:layout_constraintBottom_toBottomOf="@id/rciv_thumbnail"
         app:layout_constraintEnd_toStartOf="@id/tv_media_info"
-        app:layout_constraintStart_toStartOf="@id/iv_thumbnail" />
+        app:layout_constraintStart_toStartOf="@id/rciv_thumbnail" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

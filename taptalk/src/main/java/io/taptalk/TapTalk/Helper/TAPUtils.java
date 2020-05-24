@@ -17,12 +17,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -36,6 +30,13 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -51,7 +52,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
@@ -88,7 +88,7 @@ import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
@@ -104,12 +104,16 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.OPEN_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.SELECT_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
@@ -434,54 +438,7 @@ public class TAPUtils {
         }
     }
 
-    public static void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, null);
-    }
-
-    public static void startChatActivity(Context context, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
-        startChatActivity(context, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
-    }
-
-    // Open chat room from notification
-    public static void startChatActivity(Context context, TAPRoomModel roomModel) {
-        startChatActivity(context, roomModel, null, null);
-    }
-
-    // Open chat room from notification
-    public static void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser) {
-        startChatActivity(context, roomModel, typingUser, null);
-    }
-
-    public static void startChatActivity(Context context, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
-        if (TYPE_PERSONAL == roomModel.getRoomType() && TAPChatManager.getInstance().getActiveUser().getUserID().equals(
-                TAPChatManager.getInstance().getOtherUserIdFromRoom(roomModel.getRoomID()))) {
-            // Disable opening active user's own room
-            return;
-        }
-
-        TAPChatManager.getInstance().saveUnsentMessage();
-        Intent intent = new Intent(context, TapUIChatActivity.class);
-        intent.putExtra(ROOM, roomModel);
-
-        if (null != typingUser) {
-            Gson gson = new Gson();
-            String list = gson.toJson(typingUser);
-            intent.putExtra(GROUP_TYPING_MAP, list);
-        }
-        if (null != jumpToMessageLocalID) {
-            intent.putExtra(JUMP_TO_MESSAGE, jumpToMessageLocalID);
-        }
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-        context.startActivity(intent);
-        if (context instanceof Activity) {
-            Activity activity = (Activity) context;
-            activity.runOnUiThread(() -> dismissKeyboard(activity));
-            activity.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
-        }
-    }
-
+    @Deprecated
     public static void openProfileActivity(Context context, TAPRoomModel room) {
         Intent intent = new Intent(context, TAPChatProfileActivity.class);
         intent.putExtra(ROOM, room);
@@ -494,12 +451,11 @@ public class TAPUtils {
         }
     }
 
-    public static void openLocationPicker(Activity activity) {
+    public static void openLocationPicker(Activity activity, String instanceKey) {
         if (!hasPermissions(activity, Manifest.permission.ACCESS_FINE_LOCATION)) {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_LOCATION);
         } else {
-            Intent intent = new Intent(activity, TAPMapActivity.class);
-            activity.startActivityForResult(intent, PICK_LOCATION);
+            TAPMapActivity.Companion.start(activity, instanceKey);
         }
     }
 
@@ -555,7 +511,7 @@ public class TAPUtils {
      * @return Uri to receive saved image path
      * Reminder: Handle onRequestPermissionsResult in activity using the returned Uri
      */
-    public static Uri takePicture(Activity activity, int requestCode) {
+    public static Uri takePicture(String instanceKey, Activity activity, int requestCode) {
         if (!hasPermissions(activity, Manifest.permission.CAMERA)) {
             // Check camera permission
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, PERMISSION_CAMERA_CAMERA);
@@ -576,7 +532,7 @@ public class TAPUtils {
                     }
                     activity.startActivityForResult(intent, requestCode);
                     // Save file path to map
-                    TAPFileDownloadManager.getInstance().addFileProviderPath(imageUri, image.getAbsolutePath());
+                    TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(imageUri, image.getAbsolutePath());
                     return imageUri;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -587,8 +543,8 @@ public class TAPUtils {
         return null;
     }
 
-    public static boolean openFile(Context context, Uri uri, String mimeType) {
-        String path = TAPFileDownloadManager.getInstance().getFileProviderPath(uri);
+    public static boolean openFile(String instanceKey, Context context, Uri uri, String mimeType) {
+        String path = TAPFileDownloadManager.getInstance(instanceKey).getFileProviderPath(uri);
         if (null == path) {
             return false;
         }
@@ -607,23 +563,6 @@ public class TAPUtils {
             e.printStackTrace();
             Toast.makeText(context, context.getString(R.string.tap_error_no_app_to_open_file), Toast.LENGTH_SHORT).show();
             return true;
-        }
-    }
-
-    public static void openVideoPreview(Context context, Uri uri) {
-        openVideoPreview(context, uri, null);
-    }
-
-    public static void openVideoPreview(Context context, Uri uri, @Nullable TAPMessageModel message) {
-        Intent intent = new Intent(context, TAPVideoPlayerActivity.class);
-        intent.putExtra(URI, uri.toString());
-        if (null != message) {
-            intent.putExtra(MESSAGE, message);
-        }
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        context.startActivity(intent);
-        if (context instanceof Activity) {
-            ((Activity) context).overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
         }
     }
 
@@ -762,22 +701,22 @@ public class TAPUtils {
         }
     }
 
-    public static void getUserFromXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
+    public static void getUserFromXcUserID(String instanceKey, String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
         // Get user from Contact Manager
-        TAPDataManager.getInstance().getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
+        TAPDataManager.getInstance(instanceKey).getUserWithXcUserID(xcUserID, new TAPDatabaseListener<TAPUserModel>() {
             @Override
             public void onSelectFinished(TAPUserModel entity) {
                 if (null != entity) {
-                    TAPContactManager.getInstance().updateUserData(entity);
+                    TAPContactManager.getInstance(instanceKey).updateUserData(entity);
                     listener.onSelectFinished(entity);
                 } else {
                     // Get user data from API
-                    if (TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
-                        TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
+                    if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
+                        TAPDataManager.getInstance(instanceKey).getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
                             @Override
                             public void onSuccess(TAPGetUserResponse response) {
                                 TAPUserModel userResponse = response.getUser();
-                                TAPContactManager.getInstance().updateUserData(userResponse);
+                                TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
                                 listener.onSelectFinished(userResponse);
                             }
 
@@ -788,8 +727,8 @@ public class TAPUtils {
 
                             @Override
                             public void onError(Throwable throwable) {
-                                if (TAPNetworkStateManager.getInstance().hasNetworkConnection(TapTalk.appContext)) {
-                                    TAPDataManager.getInstance().getUserByXcUserIdFromApi(xcUserID, this);
+                                if (TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
+                                    TAPDataManager.getInstance(instanceKey).getUserByXcUserIdFromApi(xcUserID, this);
                                 } else {
                                     listener.onSelectFailed(TapTalk.appContext.getString(R.string.tap_error_open_room_failed));
                                 }
@@ -1136,7 +1075,10 @@ public class TAPUtils {
                     "ro.cdma.home.operator.numeric"));
 
             // first 3 chars (MCC) from homeOperator represents the country code
-            int mcc = Integer.parseInt(homeOperator.substring(0, 3));
+            int mcc = 0;
+            if (homeOperator != null && homeOperator.length() > 3) {
+                mcc = Integer.parseInt(homeOperator.substring(0, 3));
+            }
 
             // mapping just countries that actually use CDMA networks
             switch (mcc) {
@@ -1176,15 +1118,12 @@ public class TAPUtils {
                     return "LV";
                 case 255:
                     return "UA";
+                default:
+                    return null;
             }
-        } catch (ClassNotFoundException ignored) {
-        } catch (NoSuchMethodException ignored) {
-        } catch (IllegalAccessException ignored) {
-        } catch (InvocationTargetException ignored) {
-        } catch (NullPointerException ignored) {
+        } catch (Exception e) {
+            return null;
         }
-
-        return null;
     }
 
     public static boolean listEqualsIgnoreOrder(List<TAPUserModel> list1, List<TAPUserModel> list2) {
@@ -1213,5 +1152,30 @@ public class TAPUtils {
         String fileUrl = (String) message.getData().get(FILE_URL);
         String fileID = (String) message.getData().get(FILE_ID);
         return null != fileUrl ? removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
+    }
+
+    public static boolean isActiveUserMentioned(TAPMessageModel message, TAPUserModel activeUser) {
+        if (message.getUser().equals(activeUser) ||
+                message.getRoom().getRoomType() == TYPE_PERSONAL ||
+                (message.getType() != TYPE_TEXT &&
+                        message.getType() != TYPE_IMAGE &&
+                        message.getType() != TYPE_VIDEO) ||
+                null == activeUser.getUsername() ||
+                activeUser.getUsername().isEmpty()) {
+            return false;
+        }
+        String text = message.getBody();
+        if (null == text || text.isEmpty()) {
+            return false;
+        }
+        return text.contains(" @" + activeUser.getUsername() + " ") ||
+                text.contains(" @" + activeUser.getUsername() + "\n") ||
+                (text.contains(" @" + activeUser.getUsername()) && text.endsWith(activeUser.getUsername())) ||
+                text.contains("\n@" + activeUser.getUsername() + " ") ||
+                text.contains("\n@" + activeUser.getUsername() + "\n") ||
+                (text.contains("\n@" + activeUser.getUsername()) && text.endsWith(activeUser.getUsername())) ||
+                text.startsWith("@" + activeUser.getUsername()) && text.contains("@" + activeUser.getUsername() + " ") ||
+                text.startsWith("@" + activeUser.getUsername()) && text.contains("@" + activeUser.getUsername() + "\n") ||
+                text.equals("@" + activeUser.getUsername());
     }
 }

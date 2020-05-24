@@ -1,10 +1,12 @@
 package io.moselo.SampleApps.Activity;
 
-import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.widget.FrameLayout;
+
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import io.moselo.SampleApps.Fragment.TAPLoginVerificationFragment;
 import io.moselo.SampleApps.Fragment.TAPPhoneLoginFragment;
@@ -12,8 +14,9 @@ import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel;
-import io.taptalk.TaptalkSample.R;
+import io.taptalk.TapTalkSample.R;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.REGISTER;
 
 public class TAPLoginActivity extends TAPBaseActivity {
@@ -21,6 +24,24 @@ public class TAPLoginActivity extends TAPBaseActivity {
     private static final String TAG = TAPLoginActivity.class.getSimpleName();
     private FrameLayout flContainer;
     private TAPLoginViewModel vm;
+
+    public static void start(
+            Context context,
+            String instanceKey) {
+        start(context, instanceKey, true);
+    }
+
+    public static void start(
+            Context context,
+            String instanceKey,
+            boolean newTask) {
+        Intent intent = new Intent(context, TAPLoginActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        if (newTask) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +63,8 @@ public class TAPLoginActivity extends TAPBaseActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REGISTER:
-                    TAPApiManager.getInstance().setLogout(false);
-                    Intent intent = new Intent(TAPLoginActivity.this, TapUIRoomListActivity.class);
-                    startActivity(intent);
+                    TAPApiManager.getInstance(instanceKey).setLoggedOut(false);
+                    TapUIRoomListActivity.start(TAPLoginActivity.this, instanceKey);
                     finish();
                     break;
             }
@@ -82,10 +102,10 @@ public class TAPLoginActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPLoginViewModel.class);
+        vm = new ViewModelProvider(this).get(TAPLoginViewModel.class);
     }
 
     public TAPLoginViewModel getVm() {
-        return null == vm ? vm = ViewModelProviders.of(this).get(TAPLoginViewModel.class) : vm;
+        return null == vm ? vm = new ViewModelProvider(this).get(TAPLoginViewModel.class) : vm;
     }
 }

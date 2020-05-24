@@ -3,10 +3,10 @@
     android:height="48dp"
     android:viewportWidth="48"
     android:viewportHeight="48">
-  <path
-      android:pathData="M24.1736,36L12,43.6085L12,36L8,36C5.7909,36 4,34.2091 4,32L4,8C4,5.7909 5.7909,4 8,4L40,4C42.2091,4 44,5.7909 44,8L44,32C44,34.2091 42.2091,36 40,36L24.1736,36ZM16,36.3915L23.0264,32L40,32L40,8L8,8L8,32L16,32L16,36.3915ZM22,21.1716L30.5858,12.5858L33.4142,15.4142L22,26.8284L14.5858,19.4142L17.4142,16.5858L22,21.1716Z"
-      android:strokeWidth="1"
-      android:fillColor="#7EC82A"
-      android:fillType="evenOdd"
-      android:strokeColor="#00000000"/>
+    <path
+        android:pathData="M24.1736,36L12,43.6085L12,36L8,36C5.7909,36 4,34.2091 4,32L4,8C4,5.7909 5.7909,4 8,4L40,4C42.2091,4 44,5.7909 44,8L44,32C44,34.2091 42.2091,36 40,36L24.1736,36ZM16,36.3915L23.0264,32L40,32L40,8L8,8L8,32L16,32L16,36.3915ZM22,21.1716L30.5858,12.5858L33.4142,15.4142L22,26.8284L14.5858,19.4142L17.4142,16.5858L22,21.1716Z"
+        android:strokeWidth="1"
+        android:fillColor="#7EC82A"
+        android:fillType="evenOdd"
+        android:strokeColor="#00000000" />
 </vector>

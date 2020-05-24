@@ -3,9 +3,6 @@ package io.taptalk.TapTalk.View.Fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,17 +10,25 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
-import io.taptalk.Taptalk.BuildConfig;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.Manager.TapUI;
+import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
+import io.taptalk.TapTalk.View.Activity.TAPBaseChatActivity;
 
 public class TAPConnectionStatusFragment extends Fragment implements TapTalkSocketInterface {
 
     private String TAG = TAPConnectionStatusFragment.class.getSimpleName();
+    private String instanceKey = "";
     private Activity activity;
 
     private LinearLayout llConnectionStatus;
@@ -35,12 +40,18 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     private final int padding = TAPUtils.dpToPx(2);
 
     public TAPConnectionStatusFragment() {
+        
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         activity = getActivity();
+        if (activity instanceof TAPBaseActivity) {
+            this.instanceKey = ((TAPBaseActivity) activity).instanceKey;
+        } else if (activity instanceof TAPBaseChatActivity) {
+            this.instanceKey = ((TAPBaseChatActivity) activity).instanceKey;
+        }
         return inflater.inflate(R.layout.tap_fragment_connection_status, container, false);
     }
 
@@ -53,20 +64,19 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     @Override
     public void onPause() {
         super.onPause();
-        TAPConnectionManager.getInstance().removeSocketListener(this);
+        TAPConnectionManager.getInstance(instanceKey).removeSocketListener(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        TAPConnectionManager.getInstance().removeSocketListener(this);
+        TAPConnectionManager.getInstance(instanceKey).removeSocketListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // TODO: 28 November 2019 CONNECTION STATUS SHOWN ONLY IF LOGGING IS ENABLED
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG || TapUI.getInstance(instanceKey).isConnectionStatusIndicatorVisible()) {
             initConnectionStatus();
         }
     }
@@ -105,21 +115,21 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     private void initConnectionStatus() {
-        TAPConnectionManager.getInstance().addSocketListener(this);
-        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext())) {
+        TAPConnectionManager.getInstance(instanceKey).addSocketListener(this);
+        if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(getContext())) {
             onSocketDisconnected();
-        } else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+        } else if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
             llConnectionStatus.setVisibility(View.GONE);
-        } else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTING) {
+        } else if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTING) {
             onSocketConnecting();
-        } else if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED ||
-                TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED) {
+        } else if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED ||
+                TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED) {
             onSocketDisconnected();
         }
     }
 
     private void setStatusConnected() {
-        if (TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTED) {
+        if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTED) {
             return;
         }
 
@@ -135,7 +145,7 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
                 ivConnectionStatus.clearAnimation();
 
                 new Handler().postDelayed(() -> {
-                    if (TAPConnectionManager.getInstance().getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+                    if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
                         llConnectionStatus.setVisibility(View.GONE);
                     }
                 }, 500L);
@@ -144,8 +154,8 @@ public class TAPConnectionStatusFragment extends Fragment implements TapTalkSock
     }
 
     private void setStatusConnecting() {
-        if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(getContext()) ||
-                TAPConnectionManager.getInstance().getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTING ||
+        if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(getContext()) ||
+                TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() != TAPConnectionManager.ConnectionStatus.CONNECTING ||
                 hideUntilNextConnect) {
             return;
         }

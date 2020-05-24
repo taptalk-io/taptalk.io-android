@@ -6,22 +6,22 @@ import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 
-import io.taptalk.Taptalk.R;
+import androidx.annotation.Nullable;
+
+import io.taptalk.TapTalk.R;
 
 
 /**
- **** Use app:cornerRadius to set a universal corner radius for the ImageView
- **** Setting individual radius (e.g. app:topLeftRadius) will override cornerRadius value
- **** app:dimensionRatio is used to set a limit to the ImageView's dimension ratio
- **** app:minWidth, app:minHeight, android:maxWidth, android:maxHeight are required along with
- *    app:dimensionRatio to to limit the view's ratio
- **** corner radius value might be inaccurate (less than the set value)
+ * *** Use app:cornerRadius to set a universal corner radius for the ImageView
+ * *** Setting individual radius (e.g. app:topLeftRadius) will override cornerRadius value
+ * *** app:dimensionRatio is used to set a limit to the ImageView's dimension ratio
+ * *** app:minWidth, app:minHeight, android:maxWidth, android:maxHeight are required along with
+ * app:dimensionRatio to to limit the view's ratio
+ * *** corner radius value might be inaccurate (less than the set value)
  */
-public class TAPRoundedCornerImageView extends android.support.v7.widget.AppCompatImageView {
+public class TAPRoundedCornerImageView extends androidx.appcompat.widget.AppCompatImageView {
 
     private Path path;
     private RectF rounded;

@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.View.Activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,15 +13,16 @@ import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.ImageViewCompat
-import android.support.v4.content.LocalBroadcastManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Patterns
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.DataSource
@@ -30,43 +30,28 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
-import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.*
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_CAMERA
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_GALLERY
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.*
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
-import io.taptalk.TapTalk.Manager.*
+import io.taptalk.TapTalk.Manager.AnalyticsManager
+import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPFileUploadManager
+import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPUserModel
+import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
-import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel
-import io.taptalk.Taptalk.R
 import kotlinx.android.synthetic.main.tap_activity_my_account.*
-import kotlinx.android.synthetic.main.tap_activity_my_account.civ_profile_picture_overlay
-import kotlinx.android.synthetic.main.tap_activity_my_account.iv_edit_profile_picture_icon
-import kotlinx.android.synthetic.main.tap_activity_my_account.pb_profile_picture_progress
-import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_change_profile_picture
-import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_password
-import kotlinx.android.synthetic.main.tap_activity_my_account.civ_profile_picture
-import kotlinx.android.synthetic.main.tap_activity_my_account.cl_form_container
-import kotlinx.android.synthetic.main.tap_activity_my_account.cl_password
-import kotlinx.android.synthetic.main.tap_activity_my_account.et_email_address
-import kotlinx.android.synthetic.main.tap_activity_my_account.et_full_name
-import kotlinx.android.synthetic.main.tap_activity_my_account.et_mobile_number
-import kotlinx.android.synthetic.main.tap_activity_my_account.et_username
-import kotlinx.android.synthetic.main.tap_activity_my_account.fl_container
-import kotlinx.android.synthetic.main.tap_activity_my_account.tv_country_code
-import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_email_address_error
-import kotlinx.android.synthetic.main.tap_activity_my_account.tv_label_full_name_error
-import kotlinx.android.synthetic.main.tap_activity_my_account.v_password_separator
 import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
 class TAPMyAccountActivity : TAPBaseActivity() {
@@ -86,6 +71,20 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private lateinit var vm: TAPRegisterViewModel
 
     private lateinit var glide: RequestManager
+
+    companion object {
+        fun start(
+                context: Context,
+                instanceKey: String
+        ) {
+            val intent = Intent(context, TAPMyAccountActivity::class.java)
+            intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
+            context.startActivity(intent)
+            if (context is Activity) {
+                context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,7 +119,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             when (requestCode) {
                 PERMISSION_CAMERA_CAMERA, PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA -> {
-                    vm.profilePictureUri = TAPUtils.takePicture(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
+                    vm.profilePictureUri = TAPUtils.takePicture(instanceKey, this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
                 }
                 PERMISSION_READ_EXTERNAL_STORAGE_GALLERY -> {
                     TAPUtils.pickImageFromGallery(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_GALLERY, false)
@@ -130,6 +129,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
         when (resultCode) {
             Activity.RESULT_OK -> {
                 when (requestCode) {
@@ -149,9 +149,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPRegisterViewModel::class.java)
+        vm = ViewModelProvider(this,
+                TAPRegisterViewModel.TAPRegisterViewModelFactory(application, instanceKey))
+                .get(TAPRegisterViewModel::class.java)
         vm.currentProfilePicture = vm.myUserModel.avatarURL.thumbnail
-        vm.countryFlagUrl = TAPDataManager.getInstance().myCountryFlagUrl
+        vm.countryFlagUrl = TAPDataManager.getInstance(instanceKey).myCountryFlagUrl
     }
 
     @SuppressLint("PrivateResource")
@@ -164,7 +166,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         //et_full_name.addTextChangedListener(fullNameWatcher)
         //et_email_address.addTextChangedListener(emailWatcher)
 
-        if (TapUI.getInstance().isLogoutButtonVisible) {
+        if (TapUI.getInstance(instanceKey).isLogoutButtonVisible) {
             cl_logout.visibility = View.VISIBLE
         } else {
             cl_logout.visibility = View.GONE
@@ -430,7 +432,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 .setMessage(getString(R.string.tap_log_out_confirmation))
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_log_out))
-                .setPrimaryButtonListener { TAPDataManager.getInstance().logout(logoutView) }
+                .setPrimaryButtonListener { TAPDataManager.getInstance(instanceKey).logout(logoutView) }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setSecondaryButtonListener(true) {}
@@ -438,25 +440,22 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun logout() {
-        AnalyticsManager.getInstance().trackEvent("Logout")
-        TAPDataManager.getInstance().deleteAllPreference()
-        TAPDataManager.getInstance().deleteAllFromDatabase()
-        TAPDataManager.getInstance().deleteAllManagerData()
-        TAPApiManager.getInstance().isLogout = true
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(false)
-        TAPChatManager.getInstance().disconnectAfterRefreshTokenExpired()
-
+        AnalyticsManager.getInstance(instanceKey).trackEvent("Logout")
+        TapTalk.clearAllTapTalkData(instanceKey)
         hideLoading()
-        AnalyticsManager.getInstance().identifyUser()
-        for (listener in TapTalk.getTapTalkListeners()) {
+        AnalyticsManager.getInstance(instanceKey).identifyUser()
+        for (listener in TapTalk.getTapTalkListeners(instanceKey)) {
             listener.onUserLogout()
         }
+        val intent = Intent(CLEAR_ROOM_LIST)
+        LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent)
+        finish()
     }
 
     private fun uploadProfilePicture() {
         vm.isUploadingProfilePicture = true
         showProfilePictureUploading()
-        TAPFileUploadManager.getInstance().uploadProfilePicture(this@TAPMyAccountActivity, vm.profilePictureUri, vm.myUserModel.userID)
+        TAPFileUploadManager.getInstance(instanceKey).uploadProfilePicture(this@TAPMyAccountActivity, vm.profilePictureUri, vm.myUserModel.userID)
     }
 
     private fun showErrorDialog(message: String) {
@@ -542,9 +541,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         pb_profile_picture_progress.progress = 0
     }
 
-    private val profilePicturePickerListener = object : TAPAttachmentListener() {
+    private val profilePicturePickerListener = object : TAPAttachmentListener(instanceKey) {
         override fun onCameraSelected() {
-            vm.profilePictureUri = TAPUtils.takePicture(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
+            vm.profilePictureUri = TAPUtils.takePicture(instanceKey, this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
         }
 
         override fun onGallerySelected() {
@@ -718,7 +717,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                         enableEditing()
                         reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
                     }
-                    LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))
+                    androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))
                 }
                 UploadFailed -> {
                     val userID = intent.getStringExtra(K_USER_ID)

@@ -5,15 +5,15 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import io.moselo.SampleApps.Activity.TAPCountryListActivity
 import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
@@ -29,11 +29,11 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
 import io.taptalk.TapTalk.Model.TAPErrorModel
-import io.taptalk.TapTalk.View.Activity.TAPCountryListActivity
-import io.taptalk.TaptalkSample.R
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
+import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_phone_login.*
 
-class TAPPhoneLoginFragment : Fragment() {
+class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
     val generalErrorMessage = context?.resources?.getString(R.string.tap_error_message_general)
             ?: ""
@@ -46,7 +46,7 @@ class TAPPhoneLoginFragment : Fragment() {
     private val oneDayAgoTimestamp: Long = 24 * 60 * 60 * 1000
     private var countryHashMap = mutableMapOf<String, TAPCountryListItem>()
     private var countryListitems = arrayListOf<TAPCountryListItem>()
-    private val maxTime = 30L
+    private val maxTime = 120L * 1000
     private var countryFlagUrl = ""
 
     companion object {
@@ -63,15 +63,15 @@ class TAPPhoneLoginFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val lastCallCountryTimestamp = TAPDataManager.getInstance().lastCallCountryTimestamp
+        val lastCallCountryTimestamp = TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).lastCallCountryTimestamp
 
         if (0L == lastCallCountryTimestamp || System.currentTimeMillis() - oneDayAgoTimestamp == lastCallCountryTimestamp) {
             callCountryListFromAPI()
         } else if (isNeedResetData) {
             callCountryListFromAPI()
             countryIsoCode = TAPUtils.getDeviceCountryCode(context)
-            //countryHashMap = TAPDataManager.getInstance().countryList
-            countryListitems = TAPDataManager.getInstance().countryList
+            //countryHashMap = TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).countryList
+            countryListitems = TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).countryList
             countryHashMap = countryListitems.associateBy({ it.iso2Code }, { it }).toMutableMap()
             isNeedResetData = false
             if (!countryHashMap.containsKey(countryIsoCode) || "" == countryHashMap.get(countryIsoCode)?.callingCode) {
@@ -138,7 +138,43 @@ class TAPPhoneLoginFragment : Fragment() {
             }
         }
 
+        enableCountryPicker()
+    }
+
+    private fun enableContinueButton() {
+        enableCountryPicker()
+        fl_continue_btn.setOnClickListener { attemptLogin() }
+        fl_continue_btn.isClickable = true
+    }
+
+    private fun disableContinueButton() {
+        disableCountryPicker()
+        fl_continue_btn.setOnClickListener(null)
+        fl_continue_btn.isClickable = false
+    }
+
+    private fun attemptLogin() {
+        TapTalkDialog.Builder(context)
+                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                .setTitle(getString(R.string.tap_login_confirmation_title))
+                .setMessage(getString(R.string.tap_login_confirmation, defaultCallingCode + checkAndEditPhoneNumber()))
+                .setPrimaryButtonTitle(getString(R.string.tap_send))
+                .setPrimaryButtonListener(true) {
+                    disableContinueButton()
+                    if (isVisible) {
+                        TAPUtils.dismissKeyboard(activity)
+                        showProgress()
+                        checkNumberAndCallAPI()
+                    }
+                }
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .show()
+    }
+
+    private fun enableCountryPicker() {
         ll_country_code.setOnClickListener {
+//            val activity = context as TAPBaseActivity
+//            TAPCountryListActivity.start(activity, activity.instanceKey, countryListitems, defaultCountryID)
             val intent = Intent(context, TAPCountryListActivity::class.java)
             intent.putExtra(COUNTRY_LIST, countryListitems)
             intent.putExtra(COUNTRY_ID, defaultCountryID)
@@ -146,23 +182,8 @@ class TAPPhoneLoginFragment : Fragment() {
         }
     }
 
-    private fun enableContinueButton() {
-        fl_continue_btn.setOnClickListener { attemptLogin() }
-        fl_continue_btn.isClickable = true
-    }
-
-    private fun disableContinueButton() {
-        fl_continue_btn.setOnClickListener(null)
-        fl_continue_btn.isClickable = false
-    }
-
-    private fun attemptLogin() {
-        disableContinueButton()
-        if (isVisible) {
-            TAPUtils.dismissKeyboard(activity)
-            showProgress()
-            checkNumberAndCallAPI()
-        }
+    private fun disableCountryPicker() {
+        ll_country_code.setOnClickListener(null)
     }
 
     private fun checkAndEditPhoneNumber(): String {
@@ -184,15 +205,15 @@ class TAPPhoneLoginFragment : Fragment() {
         val currentOTPTimestampLength = System.currentTimeMillis() - loginViewModel.lastLoginTimestamp
         if (defaultCountryID == loginViewModel.countryID
                 && checkAndEditPhoneNumber() == loginViewModel.phoneNumber
-                && currentOTPTimestampLength <= maxTime * 1000) {
+                && currentOTPTimestampLength <= maxTime) {
             requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true)
         } else {
-            TAPDataManager.getInstance().requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), object : TAPDefaultDataView<TAPLoginOTPResponse>() {
+            TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
                     val additional = HashMap<String, String>()
-                    additional.put("phoneNumber", checkAndEditPhoneNumber())
+                    additional.put("phoneNumber", defaultCallingCode + checkAndEditPhoneNumber())
                     additional.put("countryCode", defaultCountryID.toString())
-                    AnalyticsManager.getInstance().trackEvent("Request OTP Success", additional)
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Request OTP Success", additional)
                     super.onSuccess(response)
                     requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess)
                 }
@@ -200,9 +221,9 @@ class TAPPhoneLoginFragment : Fragment() {
                 override fun onError(error: TAPErrorModel) {
                     super.onError(error)
                     val additional = HashMap<String, String>()
-                    additional.put("phoneNumber", checkAndEditPhoneNumber())
+                    additional.put("phoneNumber", defaultCallingCode + checkAndEditPhoneNumber())
                     additional.put("countryCode", defaultCountryID.toString())
-                    AnalyticsManager.getInstance().trackErrorEvent("Request OTP Failed", error.code, error.message, additional)
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Request OTP Failed", error.code, error.message, additional)
                     requestOTPInterface.onRequestFailed(error.message, error.code)
                 }
 
@@ -254,7 +275,7 @@ class TAPPhoneLoginFragment : Fragment() {
     }
 
     private fun callCountryListFromAPI() {
-        TAPDataManager.getInstance().getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
+        TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).getCountryList(object : TAPDefaultDataView<TAPCountryListResponse>() {
             override fun startLoading() {
                 et_phone_number.isEnabled = false
                 tv_country_code.visibility = View.GONE
@@ -266,7 +287,7 @@ class TAPPhoneLoginFragment : Fragment() {
             override fun onSuccess(response: TAPCountryListResponse?) {
                 et_phone_number.isEnabled = true
                 countryListitems.clear()
-                TAPDataManager.getInstance().saveLastCallCountryTimestamp(System.currentTimeMillis())
+                TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveLastCallCountryTimestamp(System.currentTimeMillis())
                 setCountry(0, "", "")
                 Thread {
                     var defaultCountry: TAPCountryListItem? = null
@@ -295,7 +316,7 @@ class TAPPhoneLoginFragment : Fragment() {
                         }
                     }
 
-                    TAPDataManager.getInstance().saveCountryList(countryListitems)
+                    TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveCountryList(countryListitems)
 
                     activity?.runOnUiThread {
                         iv_loading_progress_country.visibility = View.GONE

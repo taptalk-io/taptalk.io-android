@@ -11,7 +11,7 @@
     android:background="@drawable/tap_bg_white_rounded_8dp"
     android:foreground="@drawable/tap_bg_rounded_1dp_8dp_8dp_8dp_stroke_eaeaea_1dp">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -196,6 +196,6 @@
             app:layout_constraintStart_toEndOf="@id/tv_button_one"
             app:layout_constraintTop_toTopOf="@id/tv_button_one" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

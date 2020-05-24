@@ -1,7 +1,8 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.ViewModelProviders;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -9,12 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -23,6 +18,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -43,15 +46,13 @@ import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.ViewModel.TAPNewContactViewModel;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ADDED_CONTACT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 
 public class TAPNewContactActivity extends TAPBaseActivity {
 
@@ -68,6 +69,18 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     private TAPNewContactViewModel vm;
 
     private RequestManager glide;
+
+    public static void start(
+            Context context,
+            String instanceKey
+    ) {
+        Intent intent = new Intent(context, TAPNewContactActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        context.startActivity(intent);
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +106,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPNewContactViewModel.class);
+        vm = new ViewModelProvider(this).get(TAPNewContactViewModel.class);
     }
 
     private void initView() {
@@ -133,12 +146,12 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     private void initListener() {
-        TAPConnectionManager.getInstance().addSocketListener(socketListener);
+        TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener);
     }
 
     private boolean onSearchEditorClicked() {
-        TAPDataManager.getInstance().cancelUserSearchApiCall();
-        TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
+        TAPDataManager.getInstance(instanceKey).cancelUserSearchApiCall();
+        TAPDataManager.getInstance(instanceKey).getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
         return true;
     }
 
@@ -248,7 +261,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         clButtonAction.setOnClickListener(null);
 
-        if (vm.getSearchResult().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+        if (vm.getSearchResult().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
             ivButtonImage.setVisibility(View.GONE);
             tvButtonText.setVisibility(View.VISIBLE);
             tvButtonText.setText(getString(R.string.tap_this_is_you));
@@ -262,7 +275,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             ivButtonImage.setVisibility(View.GONE);
             TAPUtils.rotateAnimateInfinitely(this, ivResultButtonLoading);
             ivResultButtonLoading.setVisibility(View.VISIBLE);
-            TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
+            TAPDataManager.getInstance(instanceKey).checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
         }
     }
 
@@ -333,7 +346,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         clButtonAction.setOnClickListener(null);
 
-        if (vm.getSearchResult().getUserID().equals(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+        if (vm.getSearchResult().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
             ivButtonImage.setVisibility(View.GONE);
             tvButtonText.setVisibility(View.VISIBLE);
             tvButtonText.setText(getString(R.string.tap_this_is_you));
@@ -347,7 +360,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             ivButtonImage.setVisibility(View.GONE);
             TAPUtils.rotateAnimateInfinitely(this, ivResultButtonLoading);
             ivResultButtonLoading.setVisibility(View.VISIBLE);
-            TAPDataManager.getInstance().checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
+            TAPDataManager.getInstance(instanceKey).checkUserInMyContacts(vm.getSearchResult().getUserID(), dbListener);
         }
     }
 
@@ -361,14 +374,15 @@ public class TAPNewContactActivity extends TAPBaseActivity {
     }
 
     private void addToContact() {
-        TAPDataManager.getInstance().addContactApi(vm.getSearchResult().getUserID(), addContactView);
+        TAPDataManager.getInstance(instanceKey).addContactApi(vm.getSearchResult().getUserID(), addContactView);
     }
 
     private void openChatRoom() {
         // TODO: 25 October 2018 SET ROOM TYPE AND COLOR
-        TAPUtils.startChatActivity(
+        TapUIChatActivity.start(
                 this,
-                TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
+                instanceKey,
+                TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
                 vm.getSearchResult().getName(),
                 vm.getSearchResult().getAvatarURL(),
                 1,
@@ -404,7 +418,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            TAPDataManager.getInstance().cancelUserSearchApiCall();
+            TAPDataManager.getInstance(instanceKey).cancelUserSearchApiCall();
             endLoading();
             searchTimer.cancel();
             if (s.length() > 0) {
@@ -431,7 +445,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         @Override
         public void onFinish() {
-            TAPDataManager.getInstance().getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
+            TAPDataManager.getInstance(instanceKey).getUserByUsernameFromApi(etSearch.getText().toString(), true, getUserView);
         }
     };
 
@@ -494,7 +508,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPGetUserResponse response) {
             TAPUserModel userResponse = response.getUser();
-            TAPContactManager.getInstance().updateUserData(userResponse);
+            TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
             vm.setSearchResult(userResponse);
             showSearchResult();
         }
@@ -510,7 +524,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
 
         @Override
         public void onError(String errorMessage) {
-            if (!TAPNetworkStateManager.getInstance().hasNetworkConnection(TAPNewContactActivity.this)) {
+            if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TAPNewContactActivity.this)) {
                 // No internet connection
                 vm.setPendingSearch(etSearch.getText().toString());
                 showConnectionLost();
@@ -530,15 +544,12 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         public void onSuccess(TAPAddContactResponse response) {
             // Add contact to database
             TAPUserModel newContact = response.getUser().setUserAsContact();
-            TAPDataManager.getInstance().insertMyContactToDatabase(dbListener, newContact);
-            TAPContactManager.getInstance().updateUserData(newContact);
+            TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(dbListener, newContact);
+            TAPContactManager.getInstance(instanceKey).updateUserData(newContact);
 
-            // Change To Animation Page
-            Intent intent = new Intent(TAPNewContactActivity.this, TAPScanResultActivity.class);
-            intent.putExtra(ADDED_CONTACT, newContact);
-            startActivity(intent);
+            // Show result page
+            TAPScanResultActivity.start(TAPNewContactActivity.this, instanceKey, newContact);
             finish();
-            overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
         }
 
         @Override
@@ -566,7 +577,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
             if (null == vm.getPendingSearch() || vm.getPendingSearch().isEmpty()) {
                 return;
             }
-            TAPDataManager.getInstance().getUserByUsernameFromApi(vm.getPendingSearch(), true, getUserView);
+            TAPDataManager.getInstance(instanceKey).getUserByUsernameFromApi(vm.getPendingSearch(), true, getUserView);
             vm.setPendingSearch("");
         }
     };

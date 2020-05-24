@@ -1,63 +1,136 @@
 package io.taptalk.TapTalk.Data.Message;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Embedded;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Index;
-import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
 import io.taptalk.TapTalk.Model.TAPMessageTargetModel;
 
 @Entity(tableName = "Message_Table", indices = @Index(value = "roomID"))
 public class TAPMessageEntity {
 
-    @PrimaryKey() @NonNull @ColumnInfo(name = "localID") private String localID;
-    @Nullable @ColumnInfo(name = "messageID") private String messageID;
-    @Nullable @ColumnInfo(name = "filterID") private String filterID;
+    @PrimaryKey()
+    @NonNull
+    @ColumnInfo(name = "localID")
+    private String localID;
+    @Nullable
+    @ColumnInfo(name = "messageID")
+    private String messageID;
+    @Nullable
+    @ColumnInfo(name = "filterID")
+    private String filterID;
     @ColumnInfo(name = "body") private String body;
     @ColumnInfo(name = "recipientID") private String recipientID;
     @ColumnInfo(name = "type") private Integer type;
     @ColumnInfo(name = "created") private Long created;
-    @Nullable @ColumnInfo(name = "data") private String data;
-    @Nullable @ColumnInfo(name = "quote") private String quote;
-    @Nullable @ColumnInfo(name = "replyTo") private String replyTo;
-    @Nullable @ColumnInfo(name = "forwardFrom") private String forwardFrom;
-    @Nullable @ColumnInfo(name = "updated") private Long updated;
-    @Nullable @ColumnInfo(name = "deleted") private Long deleted;
-    @Nullable @ColumnInfo(name = "isRead") private Boolean isRead;
-    @Nullable @ColumnInfo(name = "isDelivered") private Boolean isDelivered;
-    @Nullable @ColumnInfo(name = "isHidden") private Boolean isHidden;
-    @Nullable @ColumnInfo(name = "isDeleted") private Boolean isDeleted;
-    @Nullable @ColumnInfo(name = "isSending") private Boolean isSending;
-    @Nullable @ColumnInfo(name = "isFailedSend") private Boolean isFailedSend;
+    @Nullable
+    @ColumnInfo(name = "data")
+    private String data;
+    @Nullable
+    @ColumnInfo(name = "quote")
+    private String quote;
+    @Nullable
+    @ColumnInfo(name = "replyTo")
+    private String replyTo;
+    @Nullable
+    @ColumnInfo(name = "forwardFrom")
+    private String forwardFrom;
+    @Nullable
+    @ColumnInfo(name = "updated")
+    private Long updated;
+    @Nullable
+    @ColumnInfo(name = "deleted")
+    private Long deleted;
+    @Nullable
+    @ColumnInfo(name = "isRead")
+    private Boolean isRead;
+    @Nullable
+    @ColumnInfo(name = "isDelivered")
+    private Boolean isDelivered;
+    @Nullable
+    @ColumnInfo(name = "isHidden")
+    private Boolean isHidden;
+    @Nullable
+    @ColumnInfo(name = "isDeleted")
+    private Boolean isDeleted;
+    @Nullable
+    @ColumnInfo(name = "isSending")
+    private Boolean isSending;
+    @Nullable
+    @ColumnInfo(name = "isFailedSend")
+    private Boolean isFailedSend;
     @ColumnInfo(name = "roomID") private String roomID;
-    @Nullable @ColumnInfo(name = "xcRoomID") private String xcRoomID;
-    @Nullable @ColumnInfo(name = "roomName") private String roomName;
-    @Nullable @ColumnInfo(name = "roomColor") private String roomColor;
-    @Nullable @ColumnInfo(name = "roomImage") private String roomImage;
-    @Nullable @ColumnInfo(name = "roomType") private Integer roomType;
-    @Nullable @ColumnInfo(name = "isRoomLocked") private Boolean isRoomLocked;
-    @Nullable @ColumnInfo(name = "isRoomDeleted") private Boolean isRoomDeleted;
-    @Nullable @ColumnInfo(name = "roomLockedTimestamp") private Long roomLockedTimestamp;
-    @Nullable @ColumnInfo(name = "roomDeletedTimestamp") private Long roomDeletedTimestamp;
+    @Nullable
+    @ColumnInfo(name = "xcRoomID")
+    private String xcRoomID;
+    @Nullable
+    @ColumnInfo(name = "roomName")
+    private String roomName;
+    @Nullable
+    @ColumnInfo(name = "roomColor")
+    private String roomColor;
+    @Nullable
+    @ColumnInfo(name = "roomImage")
+    private String roomImage;
+    @Nullable
+    @ColumnInfo(name = "roomType")
+    private Integer roomType;
+    @Nullable
+    @ColumnInfo(name = "isRoomLocked")
+    private Boolean isRoomLocked;
+    @Nullable
+    @ColumnInfo(name = "isRoomDeleted")
+    private Boolean isRoomDeleted;
+    @Nullable
+    @ColumnInfo(name = "roomLockedTimestamp")
+    private Long roomLockedTimestamp;
+    @Nullable
+    @ColumnInfo(name = "roomDeletedTimestamp")
+    private Long roomDeletedTimestamp;
     @ColumnInfo(name = "userID") private String userID;
     @ColumnInfo(name = "xcUserID") private String xcUserID;
     @ColumnInfo(name = "userFullName") private String userFullName;
-    @Nullable @ColumnInfo(name = "username") private String username;
+    @Nullable
+    @ColumnInfo(name = "username")
+    private String username;
     @ColumnInfo(name = "userImage") private String userImage;
-    @Nullable @ColumnInfo(name = "userEmail") private String userEmail;
-    @Nullable @ColumnInfo(name = "userPhone") private String userPhone;
-    @Nullable @ColumnInfo(name = "userRole") private String userRole;
-    @Nullable @ColumnInfo(name = "lastLogin") private Long lastLogin;
-    @Nullable @ColumnInfo(name = "lastActivity") private Long lastActivity;
-    @Nullable @ColumnInfo(name = "requireChangePassword") private Boolean requireChangePassword;
-    @Nullable @ColumnInfo(name = "userCreated") private Long userCreated;
-    @Nullable @ColumnInfo(name = "userUpdated") private Long userUpdated;
-    @Nullable @ColumnInfo(name = "userDeleted") private Long userDeleted;
-    @Nullable @ColumnInfo(name = "action") private String action;
-    @Nullable @Embedded private TAPMessageTargetModel target;
+    @Nullable
+    @ColumnInfo(name = "userEmail")
+    private String userEmail;
+    @Nullable
+    @ColumnInfo(name = "userPhone")
+    private String userPhone;
+    @Nullable
+    @ColumnInfo(name = "userRole")
+    private String userRole;
+    @Nullable
+    @ColumnInfo(name = "lastLogin")
+    private Long lastLogin;
+    @Nullable
+    @ColumnInfo(name = "lastActivity")
+    private Long lastActivity;
+    @Nullable
+    @ColumnInfo(name = "requireChangePassword")
+    private Boolean requireChangePassword;
+    @Nullable
+    @ColumnInfo(name = "userCreated")
+    private Long userCreated;
+    @Nullable
+    @ColumnInfo(name = "userUpdated")
+    private Long userUpdated;
+    @Nullable
+    @ColumnInfo(name = "userDeleted")
+    private Long userDeleted;
+    @Nullable
+    @ColumnInfo(name = "action")
+    private String action;
+    @Nullable
+    @Embedded
+    private TAPMessageTargetModel target;
 
     public TAPMessageEntity(@Nullable String messageID, @NonNull String localID, @Nullable String filterID,
                             String body, String recipientID, Integer type, Long created,

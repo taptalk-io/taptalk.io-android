@@ -7,16 +7,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -26,8 +27,9 @@ import java.io.IOException;
 
 import io.taptalk.TapTalk.Helper.TAPQRDetection;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
+import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalk.View.Activity.TAPScanResultActivity;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SCAN_RESULT;
@@ -41,7 +43,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
     private CameraSource cameraSource;
     private BarcodeDetector barcodeDetector;
 
-    private Activity activity;
+    private TAPBaseActivity activity;
 
     public interface ScanListener {
         void onScanSuccess(String textValue);
@@ -61,7 +63,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        this.activity = (Activity) context;
+        this.activity = (TAPBaseActivity) context;
     }
 
     @Override
@@ -85,11 +87,8 @@ public class TAPBarcodeScannerFragment extends Fragment {
 
         ScanListener scanListener = (String textValue) -> {
             if (!activity.isFinishing()) {
-                Intent intent = new Intent(activity, TAPScanResultActivity.class);
-                intent.putExtra(SCAN_RESULT, textValue);
-                startActivity(intent);
+                TAPScanResultActivity.start(activity, activity.instanceKey, textValue);
                 activity.finish();
-                activity.overridePendingTransition(R.anim.tap_fade_in, R.anim.tap_stay);
             }
         };
 

@@ -1,14 +1,18 @@
 package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPRegisterViewModel extends AndroidViewModel {
+    private String instanceKey = "";
     private int[] formCheck = {0, 0, 0, 0, 0, 0, 0};
     private int countryID = 0, fontResourceId, textFieldFontColor, textFieldFontColorHint, clickableLabelFontColor;
     private boolean isUpdatingProfile, isUploadingProfilePicture;
@@ -16,8 +20,26 @@ public class TAPRegisterViewModel extends AndroidViewModel {
     private Uri profilePictureUri;
     private TAPUserModel myUserModel;
 
-    public TAPRegisterViewModel(@NonNull Application application) {
+    public static class TAPRegisterViewModelFactory implements ViewModelProvider.Factory {
+        private Application application;
+        private String instanceKey;
+
+        public TAPRegisterViewModelFactory(Application application, String instanceKey) {
+            this.application = application;
+            this.instanceKey = instanceKey;
+        }
+
+        @NonNull
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) new TAPRegisterViewModel(application, instanceKey);
+        }
+    }
+
+    public TAPRegisterViewModel(@NonNull Application application, String instanceKey) {
         super(application);
+        this.instanceKey = instanceKey;
     }
 
     public int[] getFormCheck() {
@@ -117,7 +139,7 @@ public class TAPRegisterViewModel extends AndroidViewModel {
     }
 
     public TAPUserModel getMyUserModel() {
-        return null == myUserModel ? TAPChatManager.getInstance().getActiveUser() : myUserModel;
+        return null == myUserModel ? TAPChatManager.getInstance(instanceKey).getActiveUser() : myUserModel;
     }
 
     public void setMyUserModel(TAPUserModel myUserModel) {

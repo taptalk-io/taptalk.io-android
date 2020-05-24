@@ -1,7 +1,5 @@
 package io.taptalk.TapTalk.Model;
 
-import io.taptalk.Taptalk.R;
-
 @Deprecated
 public class TAPMenuItem {
 

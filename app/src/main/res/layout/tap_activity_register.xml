@@ -23,7 +23,7 @@
             android:paddingEnd="10.5dp"
             android:paddingBottom="18dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            android:tint="@color/tapIconNavBarBackButton" />
+            android:tint="@color/tapIconNavigationBarBackButton" />
 
     </FrameLayout>
 
@@ -34,7 +34,7 @@
         android:layout_marginTop="?attr/actionBarSize"
         android:overScrollMode="never">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_form_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
                 android:elevation="2dp"
                 android:indeterminate="false"
                 android:max="100"
-                android:progressDrawable="@drawable/tap_file_circular_progress"
+                android:progressDrawable="@drawable/tap_file_circular_progress_white"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/civ_profile_picture"
                 app:layout_constraintEnd_toEndOf="@id/civ_profile_picture"
@@ -409,7 +409,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_label_password"
                 app:layout_constraintStart_toEndOf="@id/tv_label_password" />
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -463,7 +463,7 @@
                     app:layout_constraintStart_toStartOf="@id/iv_view_password"
                     app:layout_constraintTop_toTopOf="@id/iv_view_password" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tv_label_password_guide"
@@ -505,7 +505,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_label_password_error" />
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_retype_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -559,7 +559,7 @@
                     app:layout_constraintStart_toStartOf="@id/iv_view_password_retype"
                     app:layout_constraintTop_toTopOf="@id/iv_view_password_retype" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tv_label_retype_password_error"
@@ -609,7 +609,7 @@
 
             </FrameLayout>
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,7 +7,7 @@
     android:background="@color/tapDefaultBackgroundColor"
     tools:context="io.taptalk.TapTalk.View.Activity.TAPEditGroupSubjectActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -22,7 +22,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            android:tint="@color/tapIconNavBarBackButton"
+            android:tint="@color/tapIconNavigationBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +55,7 @@
             app:layout_constraintStart_toEndOf="@id/tv_title"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
         android:id="@+id/sv_group_subject"
@@ -65,46 +65,85 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/iv_group_pic_background"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:background="@drawable/tap_bg_half_circle_bottom_white"
-                android:paddingBottom="12dp"
-                app:layout_constraintDimensionRatio="W, 1:2"
+                android:elevation="2dp"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <io.taptalk.TapTalk.Helper.CircleImageView
                 android:id="@+id/civ_group_image"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="12dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginTop="28dp"
+                android:elevation="2dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/tap_img_default_group_avatar"
-                app:layout_constraintEnd_toEndOf="@id/iv_group_pic_background"
-                app:layout_constraintStart_toStartOf="@id/iv_group_pic_background"
+                android:src="@drawable/tap_bg_circle_9b9b9b"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tv_group_picture_label"
-                style="@style/tapDefaultRoomAvatarExtraLargeFontStyle"
+                style="@style/tapDefaultRoomAvatarLargeFontStyle"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:elevation="2dp"
                 android:gravity="center"
                 android:textAllCaps="true"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/civ_group_image"
                 app:layout_constraintEnd_toEndOf="@id/civ_group_image"
                 app:layout_constraintStart_toStartOf="@id/civ_group_image"
                 app:layout_constraintTop_toTopOf="@id/civ_group_image"
                 tools:text="A" />
+
+            <ImageView
+                android:id="@+id/iv_change_group_picture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="2dp"
+                android:src="@drawable/tap_ic_camera_orange"
+                android:tint="@color/tapColorPrimaryIcon"
+                app:layout_constraintBottom_toBottomOf="@id/civ_group_image"
+                app:layout_constraintEnd_toEndOf="@id/civ_group_image"
+                app:layout_constraintStart_toStartOf="@id/civ_group_image"
+                app:layout_constraintTop_toTopOf="@id/civ_group_image" />
+
+            <io.taptalk.TapTalk.Helper.CircleImageView
+                android:id="@+id/civ_group_image_overlay"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="2dp"
+                android:src="@drawable/tap_bg_circle_6604040f"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/civ_group_image"
+                app:layout_constraintEnd_toEndOf="@id/civ_group_image"
+                app:layout_constraintStart_toStartOf="@id/civ_group_image"
+                app:layout_constraintTop_toTopOf="@id/civ_group_image" />
+
+            <ProgressBar
+                android:id="@+id/pb_profile_picture_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:elevation="2dp"
+                android:indeterminate="false"
+                android:max="100"
+                android:progressDrawable="@drawable/tap_file_circular_progress_white"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/civ_group_image"
+                app:layout_constraintEnd_toEndOf="@id/civ_group_image"
+                app:layout_constraintStart_toStartOf="@id/civ_group_image"
+                app:layout_constraintTop_toTopOf="@id/civ_group_image"
+                tools:progress="65" />
 
             <FrameLayout
                 android:id="@+id/fl_remove_group_picture"
@@ -131,32 +170,34 @@
                 android:id="@+id/ll_change_group_picture"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
                 android:elevation="2dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="@id/iv_group_pic_background"
-                app:layout_constraintStart_toStartOf="@id/iv_group_pic_background"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/civ_group_image">
 
                 <TextView
                     android:id="@+id/tv_label_change_group_picture"
-                    style="@style/tapClickableLabelStyle"
+                    style="@style/tapChatProfileRoomNameStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
                     android:gravity="center"
-                    android:text="@string/tap_change" />
+                    android:text="@string/tap_change_avatar" />
 
-                <ImageView
-                    android:id="@+id/iv_edit_group_picture_icon"
+                <TextView
+                    android:id="@+id/tv_label_optional"
+                    style="@style/tapGroupMemberCountStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginStart="5dp"
-                    android:src="@drawable/tap_ic_edit_orange"
-                    android:tint="@color/tapIconChangePicture" />
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center"
+                    android:text="@string/tap_optional_brackets" />
 
             </LinearLayout>
 
@@ -165,8 +206,8 @@
                 style="@style/tapFormLabelStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="24dp"
                 android:text="@string/tap_group_name"
                 android:textSize="16sp"
@@ -190,7 +231,7 @@
                 android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintTop_toBottomOf="@id/tv_label_full_name" />
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_selected_members"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -209,14 +250,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
                     android:layout_marginTop="8dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Group Members (5/50)" />
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_group_members"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -256,7 +297,7 @@
 
                 </FrameLayout>
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <FrameLayout
                 android:id="@+id/fl_button_update_group"
@@ -292,8 +333,8 @@
 
             </FrameLayout>
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

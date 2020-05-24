@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
@@ -10,8 +10,8 @@
         android:id="@+id/civ_avatar"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toStartOf="@id/fl_bubble"
         app:layout_constraintHorizontal_bias="0"
@@ -37,24 +37,23 @@
         android:id="@+id/fl_bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
         android:layout_marginStart="4dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginRight="64dp"
-        android:elevation="1dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginEnd="48dp"
+        android:layout_marginRight="48dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/tap_bg_chat_bubble_left_default"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toTopOf="@id/tv_message_status"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_goneMarginBottom="8dp"
         app:layout_goneMarginStart="16dp">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:background="@drawable/tap_bg_chat_bubble_left_default"
             android:padding="10dp">
 
             <TextView
@@ -119,16 +118,36 @@
                 app:layout_constraintTop_toBottomOf="@id/cl_quote"
                 tools:text="Hey there, love your work!" />
 
-            <android.support.constraint.Barrier
+            <TextView
+                android:id="@+id/tv_message_timestamp"
+                style="@style/tapLeftBubbleMessageTimestampStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/barrier_end"
+                tools:text="17:05" />
+
+            <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier_end"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 app:barrierDirection="end"
                 app:constraint_referenced_ids="tv_user_name,cl_forwarded,cl_quote,v_quote_background,tv_message_body" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/iv_bubble_highlight"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/tap_bg_chat_bubble_left_highlight"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toEndOf="@id/fl_bubble"
+        app:layout_constraintStart_toStartOf="@id/fl_bubble"
+        app:layout_constraintTop_toTopOf="@id/fl_bubble" />
 
     <TextView
         android:id="@+id/tv_message_status"
@@ -141,19 +160,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/fl_bubble"
         app:layout_constraintTop_toBottomOf="@id/fl_bubble"
-        tools:text="Delivered at 17:05 17/05/2018" />
+        tools:text="@string/tap_message_send_failed" />
 
-    <ImageView
-        android:id="@+id/iv_reply"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/tap_ic_reply_circle_white"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
-        app:layout_constraintStart_toEndOf="@id/fl_bubble" />
+    <!--    <ImageView-->
+    <!--        android:id="@+id/iv_reply"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginLeft="2dp"-->
+    <!--        android:layout_marginStart="2dp"-->
+    <!--        android:layout_marginBottom="2dp"-->
+    <!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--        android:src="@drawable/tap_ic_reply_circle_white"-->
+    <!--        android:visibility="gone"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"-->
+    <!--        app:layout_constraintStart_toEndOf="@id/fl_bubble" />-->
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

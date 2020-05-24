@@ -12,7 +12,6 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,7 +20,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 /**
  * https://github.com/saket/Better-Link-Movement-Method/blob/master/better-link-movement-method/src/main/java/me/saket/bettermovementmethod/BetterLinkMovementMethod.java
@@ -43,9 +42,9 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     public interface OnLinkClickListener {
         /**
-         * @param textView The TextView on which a click was registered.
-         * @param url      The clicked URL.
-         * @param originalText    The TextView original text that being highlighted
+         * @param textView     The TextView on which a click was registered.
+         * @param url          The clicked URL.
+         * @param originalText The TextView original text that being highlighted
          * @return True if this click was handled. False to let Android handle the URL.
          */
         boolean onClick(TextView textView, String url, String originalText);
@@ -53,9 +52,9 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     public interface OnLinkLongClickListener {
         /**
-         * @param textView The TextView on which a long-click was registered.
-         * @param url      The long-clicked URL.
-         * @param originalText    The TextView original text that being highlighted
+         * @param textView     The TextView on which a long-click was registered.
+         * @param url          The long-clicked URL.
+         * @param originalText The TextView original text that being highlighted
          * @return True if this long-click was handled. False to let Android handle the URL (as a short-click).
          */
         boolean onLongClick(TextView textView, String url, String originalText);
@@ -382,8 +381,10 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     protected void dispatchUrlClick(TextView textView, ClickableSpan clickableSpan) {
         ClickableSpanWithText clickableSpanWithText = ClickableSpanWithText.ofSpan(textView, clickableSpan);
+        if (null == clickableSpanWithText) {
+            return;
+        }
         boolean handled = onLinkClickListener != null && onLinkClickListener.onClick(textView, clickableSpanWithText.text(), clickableSpanWithText.originalText());
-
         if (!handled) {
             // Let Android handle this click.
             clickableSpanWithText.span().onClick(textView);
@@ -392,8 +393,10 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     protected void dispatchUrlLongClick(TextView textView, ClickableSpan clickableSpan) {
         ClickableSpanWithText clickableSpanWithText = ClickableSpanWithText.ofSpan(textView, clickableSpan);
+        if (null == clickableSpanWithText) {
+            return;
+        }
         boolean handled = onLinkLongClickListener != null && onLinkLongClickListener.onLongClick(textView, clickableSpanWithText.text(), clickableSpanWithText.originalText);
-
         if (!handled) {
             // Let Android handle this long click as a short-click.
             clickableSpanWithText.span().onClick(textView);
@@ -426,22 +429,26 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
         private String originalText;
 
         protected static ClickableSpanWithText ofSpan(TextView textView, ClickableSpan span) {
-            CharSequence oriCharSequence = textView.getText();
-            Spanned s = (Spanned) oriCharSequence;
-            String text;
-            String originalText;
-            if (span instanceof URLSpan) {
-                text = ((URLSpan) span).getURL();
-                int start = s.getSpanStart(span);
-                int end = s.getSpanEnd(span);
-                originalText = s.subSequence(start, end).toString();
-            } else {
-                int start = s.getSpanStart(span);
-                int end = s.getSpanEnd(span);
-                text = s.subSequence(start, end).toString();
-                originalText = text;
+            try {
+                CharSequence oriCharSequence = textView.getText();
+                Spanned s = (Spanned) oriCharSequence;
+                String text;
+                String originalText;
+                if (span instanceof URLSpan) {
+                    text = ((URLSpan) span).getURL();
+                    int start = s.getSpanStart(span);
+                    int end = s.getSpanEnd(span);
+                    originalText = s.subSequence(start, end).toString();
+                } else {
+                    int start = s.getSpanStart(span);
+                    int end = s.getSpanEnd(span);
+                    text = s.subSequence(start, end).toString();
+                    originalText = text;
+                }
+                return new ClickableSpanWithText(span, text, originalText);
+            } catch (IndexOutOfBoundsException e) {
+                return null;
             }
-            return new ClickableSpanWithText(span, text, originalText);
         }
 
         protected ClickableSpanWithText(ClickableSpan span, String text, String originalText) {
