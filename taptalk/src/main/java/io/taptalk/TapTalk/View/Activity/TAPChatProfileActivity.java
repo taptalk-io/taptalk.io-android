@@ -2,7 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
-import android.arch.lifecycle.ViewModelProviders;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,30 +10,27 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -42,6 +39,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,17 +65,20 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_ADD_TO_CONTACTS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_BLOCK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_CLEAR_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_DELETE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_DEMOTE_ADMIN;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_CLEAR_CHAT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EDIT_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_EXIT_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_PROMOTE_ADMIN;
@@ -91,10 +92,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_ACTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_ADMIN;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NON_PARTICIPANT_USER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
@@ -102,8 +103,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.EDIT_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_OPEN_MEMBER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.GROUP_UPDATE_DATA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel.TYPE_LOADING_LAYOUT;
@@ -113,15 +116,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     private static final String TAG = TAPChatProfileActivity.class.getSimpleName();
 
-    private LinearLayout llToolbarCollapsed;
     private FrameLayout flLoading;
-    private ImageView ivProfile, ivButtonBack, ivButtonEdit, ivSaving;
-    private TextView tvFullName, tvCollapsedName, tvLoadingText;
-    private View vGradient;
+    private ImageView ivButtonBack, ivSaving;
+    private TextView tvTitle, tvLoadingText;
     private RecyclerView rvChatProfile;
 
-    private CollapsingToolbarLayout collapsingToolbarLayout;
-    private AppBarLayout appBarLayout;
     private TapChatProfileAdapter adapter;
     private GridLayoutManager glm;
     private ViewTreeObserver.OnScrollChangedListener sharedMediaPagingScrollListener;
@@ -129,6 +128,57 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private TAPProfileViewModel vm;
 
     private RequestManager glide;
+
+    public static void start(
+            Activity context,
+            String instanceKey,
+            TAPRoomModel room,
+            @Nullable TAPUserModel user
+    ) {
+        start(context, instanceKey, room, user, null, false);
+    }
+
+    public static void start(
+            Activity context,
+            String instanceKey,
+            TAPRoomModel room,
+            @Nullable TAPUserModel user,
+            boolean isNonParticipantUserProfile
+    ) {
+        start(context, instanceKey, room, user, null, isNonParticipantUserProfile);
+    }
+
+    public static void start(
+            Activity context,
+            String instanceKey,
+            TAPRoomModel room,
+            @Nullable TAPUserModel user,
+            @Nullable Boolean isAdmin,
+            boolean isNonParticipantUserProfile
+    ) {
+        if (null != user && TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(user.getUserID())) {
+            return;
+        }
+        Intent intent = new Intent(context, TAPChatProfileActivity.class);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
+        intent.putExtra(ROOM, room);
+        if (null != isAdmin) {
+            intent.putExtra(K_USER, user);
+            intent.putExtra(IS_ADMIN, isAdmin);
+            context.startActivityForResult(intent, GROUP_OPEN_MEMBER_PROFILE);
+        } else if (room.getRoomType() == TYPE_PERSONAL) {
+            if (isNonParticipantUserProfile) {
+                intent.putExtra(IS_NON_PARTICIPANT_USER_PROFILE, true);
+            }
+            context.startActivity(intent);
+        } else if (room.getRoomType() == TYPE_GROUP && null != user) {
+            intent.putExtra(K_USER, user);
+            context.startActivityForResult(intent, OPEN_MEMBER_PROFILE);
+        } else if (room.getRoomType() == TYPE_GROUP) {
+            context.startActivityForResult(intent, OPEN_GROUP_PROFILE);
+        }
+        context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,9 +219,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case GROUP_UPDATE_DATA:
+                    vm.setGroupDataFromManager(TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(vm.getRoom().getRoomID()));
                     if (null == data) {
                         return;
                     }
@@ -193,7 +245,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void initViewModel() {
-        vm = ViewModelProviders.of(this).get(TAPProfileViewModel.class);
+        vm = new ViewModelProvider(this).get(TAPProfileViewModel.class);
         vm.setRoom(getIntent().getParcelableExtra(ROOM));
         if (null == vm.getRoom()) {
             finish();
@@ -202,41 +254,26 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         if (null != vm.getGroupMemberUser()) {
             vm.setGroupMemberProfile(true);
             vm.setGroupAdmin(getIntent().getBooleanExtra(IS_ADMIN, false));
-            vm.setUserDataFromManager(TAPContactManager.getInstance().getUserData(vm.getGroupMemberUser().getUserID()));
+            vm.setUserDataFromManager(TAPContactManager.getInstance(instanceKey).getUserData(vm.getGroupMemberUser().getUserID()));
         } else if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
-            vm.setUserDataFromManager(TAPContactManager.getInstance().getUserData(TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID())));
+            vm.setUserDataFromManager(TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm.getRoom().getRoomID())));
         } else if (vm.getRoom().getRoomType() == TYPE_GROUP) {
-            vm.setGroupDataFromManager(TAPGroupManager.Companion.getGetInstance().getGroupData(vm.getRoom().getRoomID()));
+            vm.setGroupDataFromManager(TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(vm.getRoom().getRoomID()));
         }
         vm.getSharedMedias().clear();
     }
 
     private void initView() {
-        llToolbarCollapsed = findViewById(R.id.ll_toolbar_collapsed);
         flLoading = findViewById(R.id.fl_loading);
-        ivProfile = findViewById(R.id.iv_profile);
         ivButtonBack = findViewById(R.id.iv_button_back);
-        ivButtonEdit = findViewById(R.id.iv_button_edit);
         ivSaving = findViewById(R.id.iv_loading_image);
-        tvFullName = findViewById(R.id.tv_full_name);
-        tvCollapsedName = findViewById(R.id.tv_collapsed_name);
+        tvTitle = findViewById(R.id.tv_title);
         tvLoadingText = findViewById(R.id.tv_loading_text);
-        vGradient = findViewById(R.id.v_gradient);
         rvChatProfile = findViewById(R.id.rv_chat_profile);
-        collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
-        appBarLayout = findViewById(R.id.app_bar_layout);
 
         getWindow().setBackgroundDrawable(null);
 
         updateView();
-
-        // Set gradient for profile picture overlay
-        vGradient.setBackground(new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM, new int[]{
-                ContextCompat.getColor(this, R.color.tapTransparentBlack40),
-                ContextCompat.getColor(this, R.color.tapTransparentBlack18),
-                ContextCompat.getColor(this, R.color.tapTransparentBlack),
-                ContextCompat.getColor(this, R.color.tapTransparentBlack40)}));
 
         if (!vm.isGroupMemberProfile()) {
             // Show loading on start
@@ -244,11 +281,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             vm.getAdapterItems().add(vm.getLoadingItem());
 
             // Load shared medias
-            new Thread(() -> TAPDataManager.getInstance().getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
+            new Thread(() -> TAPDataManager.getInstance(instanceKey).getRoomMedias(0L, vm.getRoom().getRoomID(), sharedMediaListener)).start();
         }
 
         // Setup recycler view
-        adapter = new TapChatProfileAdapter(vm.getAdapterItems(), chatProfileInterface, glide);
+        adapter = new TapChatProfileAdapter(instanceKey, vm.getAdapterItems(), chatProfileInterface, glide);
         glm = new GridLayoutManager(this, 3) {
             @Override
             public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
@@ -271,155 +308,93 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         });
         rvChatProfile.setAdapter(adapter);
         rvChatProfile.setLayoutManager(glm);
+        rvChatProfile.addOnScrollListener(scrollListener);
         SimpleItemAnimator recyclerAnimator = (SimpleItemAnimator) rvChatProfile.getItemAnimator();
         if (null != recyclerAnimator) {
             recyclerAnimator.setSupportsChangeAnimations(false);
         }
 
-        appBarLayout.addOnOffsetChangedListener(offsetChangedListener);
-
         ivButtonBack.setOnClickListener(v -> onBackPressed());
-        ivButtonEdit.setOnClickListener(v -> openEditGroup());
         flLoading.setOnClickListener(v -> {
         });
 
         // Update room data
         if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
-            TAPDataManager.getInstance().getUserByIdFromApi(
-                    TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID()),
+            TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(
+                    TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm.getRoom().getRoomID()),
                     getUserView);
         } else if (vm.getRoom().getRoomType() == TYPE_GROUP) {
-            TAPDataManager.getInstance().getChatRoomData(vm.getRoom().getRoomID(), getRoomView);
+            TAPDataManager.getInstance(instanceKey).getChatRoomData(vm.getRoom().getRoomID(), getRoomView);
+            if (!vm.isGroupMemberProfile()) {
+                // Change title to Group Details
+                tvTitle.setText(R.string.tap_group_details);
+            }
         }
     }
 
     private void updateView() {
-        // Update room image
-        if (null != vm.getUserDataFromManager() &&
-                null != vm.getUserDataFromManager().getAvatarURL() &&
-                !vm.getUserDataFromManager().getAvatarURL().getFullsize().isEmpty()) {
-            // Load image from contact manager
-            glide.load(vm.getUserDataFromManager().getAvatarURL().getFullsize())
-                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            runOnUiThread(() -> showDefaultAvatar());
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false;
-                        }
-                    })
-                    .into(ivProfile);
-        } else if (null != vm.getGroupDataFromManager() &&
-                null != vm.getGroupDataFromManager().getRoomImage() &&
-                !vm.getGroupDataFromManager().getRoomImage().getFullsize().isEmpty()) {
-            // Load image from group manager
-            glide.load(vm.getGroupDataFromManager().getRoomImage().getFullsize())
-                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            runOnUiThread(() -> showDefaultAvatar());
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false;
-                        }
-                    })
-                    .into(ivProfile);
-        } else if (vm.isGroupMemberProfile() && null != vm.getGroupMemberUser().getAvatarURL()) {
-            // Load member image from intent
-            glide.load(vm.getGroupMemberUser().getAvatarURL().getFullsize())
-                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            runOnUiThread(() -> showDefaultAvatar());
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false;
-                        }
-                    })
-                    .into(ivProfile);
-        } else if (!vm.isGroupMemberProfile() &&
-                null != vm.getRoom().getRoomImage() &&
-                !vm.getRoom().getRoomImage().getFullsize().isEmpty()) {
-            // Load room image from intent
-            glide.load(vm.getRoom().getRoomImage().getFullsize())
-                    .apply(new RequestOptions().placeholder(R.drawable.tap_bg_grey_e4))
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            runOnUiThread(() -> showDefaultAvatar());
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false;
-                        }
-                    })
-                    .into(ivProfile);
-        } else {
-            showDefaultAvatar();
-        }
-
-        // Update room name
+        // Set profile detail item
+        TAPImageURL imageURL;
+        String itemLabel = "";
+        String itemSubLabel = "";
+        int textStyleResource = 0;
         if (null != vm.getUserDataFromManager() &&
                 !vm.getUserDataFromManager().getName().isEmpty()) {
-            // Set name from contact manager
-            tvFullName.setText(vm.getUserDataFromManager().getName());
-            tvCollapsedName.setText(vm.getUserDataFromManager().getName());
+            // Set name & avatar from contact manager
+            imageURL = vm.getUserDataFromManager().getAvatarURL();
+            itemLabel = vm.getUserDataFromManager().getName();
+            if (null != vm.getUserDataFromManager().getUsername() &&
+                    !vm.getUserDataFromManager().getUsername().isEmpty()) {
+                itemSubLabel = "@" + vm.getUserDataFromManager().getUsername();
+                textStyleResource = R.style.tapChatProfileUsernameStyle;
+            }
         } else if (null != vm.getGroupDataFromManager() &&
                 !vm.getGroupDataFromManager().getRoomName().isEmpty()) {
-            // Set name from group manager
-            tvFullName.setText(vm.getGroupDataFromManager().getRoomName());
-            tvCollapsedName.setText(vm.getGroupDataFromManager().getRoomName());
+            // Set name & avatar from group manager
+            imageURL = vm.getGroupDataFromManager().getRoomImage();
+            itemLabel = vm.getGroupDataFromManager().getRoomName();
+            if (null != vm.getGroupDataFromManager().getGroupParticipants() &&
+                    !vm.getGroupDataFromManager().getGroupParticipants().isEmpty()) {
+                itemSubLabel = String.format(getString(R.string.tap_format_d_group_member_count),
+                        vm.getGroupDataFromManager().getGroupParticipants().size());
+                textStyleResource = R.style.tapChatProfileMemberCountStyle;
+            }
         } else if (vm.isGroupMemberProfile()) {
-            // Set name from passed member profile intent
-            tvFullName.setText(vm.getGroupMemberUser().getName());
-            tvCollapsedName.setText(vm.getGroupMemberUser().getName());
+            // Set name & avatar from passed member profile intent
+            imageURL = vm.getGroupMemberUser().getAvatarURL();
+            itemLabel = vm.getGroupMemberUser().getName();
+            if (null != vm.getGroupMemberUser().getUsername() &&
+                    !vm.getGroupMemberUser().getUsername().isEmpty()) {
+                itemSubLabel = "@" + vm.getGroupMemberUser().getUsername();
+                textStyleResource = R.style.tapChatProfileUsernameStyle;
+            }
         } else {
-            // Set name from passed room intent
-            tvFullName.setText(vm.getRoom().getRoomName());
-            tvCollapsedName.setText(vm.getRoom().getRoomName());
+            // Set name & avatar from passed room intent
+            imageURL = vm.getRoom().getRoomImage();
+            itemLabel = vm.getRoom().getRoomName();
+            if (null != vm.getRoom().getGroupParticipants() &&
+                    !vm.getRoom().getGroupParticipants().isEmpty()) {
+                itemSubLabel = String.format(getString(R.string.tap_format_d_group_member_count),
+                        vm.getRoom().getGroupParticipants().size());
+                textStyleResource = R.style.tapChatProfileMemberCountStyle;
+            }
         }
-
-        // Show / hide edit group button
-        if (!vm.isGroupMemberProfile() && null != vm.getRoom() &&
-                TYPE_GROUP == vm.getRoom().getRoomType() && null != vm.getRoom().getAdmins() &&
-                vm.getRoom().getAdmins().contains(TAPChatManager.getInstance().getActiveUser().getUserID())) {
-            ivButtonEdit.setVisibility(View.VISIBLE);
-        } else {
-            ivButtonEdit.setVisibility(View.GONE);
-        }
+        vm.getAdapterItems().remove(vm.getProfileDetailItem());
+        vm.setProfileDetailItem(new TapChatProfileItemModel(
+                imageURL,
+                itemLabel,
+                itemSubLabel,
+                textStyleResource
+        ));
+        vm.getAdapterItems().add(0, vm.getProfileDetailItem());
 
         // Update room menu
         vm.getAdapterItems().removeAll(vm.getMenuItems());
         vm.setMenuItems(generateChatProfileMenu());
-        vm.getAdapterItems().addAll(0, vm.getMenuItems());
+        vm.getAdapterItems().addAll(1, vm.getMenuItems());
         if (null != adapter) {
             adapter.setItems(vm.getAdapterItems());
             adapter.notifyDataSetChanged();
-        }
-    }
-
-    private void showDefaultAvatar() {
-        if (null != vm.getRoom() && TYPE_GROUP == vm.getRoom().getRoomType()) {
-            // Show default group avatar
-            ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_group_avatar));
-        } else {
-            // Show default user avatar
-            ivProfile.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_img_default_avatar));
         }
     }
 
@@ -457,26 +432,37 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 //        menuItems.add(menuRoomSearchChat);
 
             if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
-                // Personal chat room
+                //// Personal chat room
 
                 // Add to contacts
-                TAPUserModel contact = TAPContactManager.getInstance().getUserData(
-                        TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID()));
+                TAPUserModel contact = TAPContactManager.getInstance(instanceKey).getUserData(
+                        TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm.getRoom().getRoomID()));
                 if (null == contact || null == contact.getIsContact() || contact.getIsContact() == 0) {
                     TapChatProfileItemModel menuAddToContact = new TapChatProfileItemModel(
                             MENU_ADD_TO_CONTACTS,
                             getString(R.string.tap_add_to_contacts),
-                            R.drawable.tap_ic_add_circle_grey,
+                            R.drawable.tap_ic_add_circle_orange,
                             R.color.tapIconGroupMemberProfileMenuAddToContacts,
                             R.style.tapChatProfileMenuLabelStyle);
                     menuItems.add(menuAddToContact);
+                }
+
+                if (getIntent().getBooleanExtra(IS_NON_PARTICIPANT_USER_PROFILE, false)) {
+                    // Send message
+                    TapChatProfileItemModel menuSendMessage = new TapChatProfileItemModel(
+                            MENU_SEND_MESSAGE,
+                            getString(R.string.tap_send_message),
+                            R.drawable.tap_ic_send_message_orange,
+                            R.color.tapIconGroupMemberProfileMenuSendMessage,
+                            R.style.tapChatProfileMenuLabelStyle);
+                    menuItems.add(menuSendMessage);
                 }
 
                 // Block user
                 TapChatProfileItemModel menuBlock = new TapChatProfileItemModel(
                         MENU_BLOCK,
                         getString(R.string.tap_block_user),
-                        R.drawable.tap_ic_block_grey,
+                        R.drawable.tap_ic_block_red,
                         R.color.tapIconChatProfileMenuBlockUser,
                         R.style.tapChatProfileMenuLabelStyle);
 
@@ -492,40 +478,27 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 //            menuItems.add(2, menuBlock);
 //            menuItems.add(menuClearChat);
             } else if (vm.getRoom().getRoomType() == TYPE_GROUP &&
-                    null != vm.getRoom().getGroupParticipants() &&
-                    1 < vm.getRoom().getGroupParticipants().size()) {
-                // Group chat with more than 1 member
-
-                // View members
-                TapChatProfileItemModel menuViewMembers = new TapChatProfileItemModel(
-                        MENU_VIEW_MEMBERS,
-                        getString(R.string.tap_view_members),
-                        R.drawable.tap_ic_members_grey,
-                        R.color.tapIconGroupProfileMenuViewMembers,
-                        R.style.tapChatProfileMenuLabelStyle);
-                menuItems.add(menuViewMembers);
-
-                // Exit group
-                TapChatProfileItemModel menuExitGroup = new TapChatProfileItemModel(
-                        MENU_EXIT_GROUP,
-                        getString(R.string.tap_leave_group),
-                        R.drawable.tap_ic_logout_red_with_padding,
-                        R.color.tapIconChatProfileMenuClearChat,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle);
-                menuItems.add(menuExitGroup);
-            } else if (vm.getRoom().getRoomType() == TYPE_GROUP &&
                     null != vm.getRoom().getAdmins() &&
-                    vm.getRoom().getAdmins().contains(TAPChatManager.getInstance().getActiveUser().getUserID())) {
-                // Group chat where the active user is admin
+                    vm.getRoom().getAdmins().contains(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+                //// Group chat where the active user is admin
 
                 // View members
                 TapChatProfileItemModel menuViewMembers = new TapChatProfileItemModel(
                         MENU_VIEW_MEMBERS,
                         getString(R.string.tap_view_members),
-                        R.drawable.tap_ic_members_grey,
+                        R.drawable.tap_ic_members_orange,
                         R.color.tapIconGroupProfileMenuViewMembers,
                         R.style.tapChatProfileMenuLabelStyle);
                 menuItems.add(menuViewMembers);
+
+                // Edit group
+                TapChatProfileItemModel menuEditGroup = new TapChatProfileItemModel(
+                        MENU_EDIT_GROUP,
+                        getString(R.string.tap_edit_group),
+                        R.drawable.tap_ic_edit_orange,
+                        R.color.tapIconGroupProfileMenuEditGroup,
+                        R.style.tapChatProfileMenuLabelStyle);
+                menuItems.add(menuEditGroup);
 
                 // Delete group
                 TapChatProfileItemModel menuDeleteGroup = new TapChatProfileItemModel(
@@ -535,17 +508,39 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         R.color.tapIconChatProfileMenuClearChat,
                         R.style.tapChatProfileMenuDestructiveLabelStyle);
                 menuItems.add(menuDeleteGroup);
+            } else if (vm.getRoom().getRoomType() == TYPE_GROUP &&
+                    null != vm.getRoom().getGroupParticipants() &&
+                    1 < vm.getRoom().getGroupParticipants().size()) {
+                //// Group chat with more than 1 member
+
+                // View members
+                TapChatProfileItemModel menuViewMembers = new TapChatProfileItemModel(
+                        MENU_VIEW_MEMBERS,
+                        getString(R.string.tap_view_members),
+                        R.drawable.tap_ic_members_orange,
+                        R.color.tapIconGroupProfileMenuViewMembers,
+                        R.style.tapChatProfileMenuLabelStyle);
+                menuItems.add(menuViewMembers);
+
+                // Exit group
+                TapChatProfileItemModel menuExitGroup = new TapChatProfileItemModel(
+                        MENU_EXIT_GROUP,
+                        getString(R.string.tap_leave_group),
+                        R.drawable.tap_ic_logout_red,
+                        R.color.tapIconChatProfileMenuClearChat,
+                        R.style.tapChatProfileMenuDestructiveLabelStyle);
+                menuItems.add(menuExitGroup);
             }
         } else {
-            // Group chat member profile
+            //// Group chat member profile
 
             // Add to contacts
-            TAPUserModel contact = TAPContactManager.getInstance().getUserData(vm.getGroupMemberUser().getUserID());
+            TAPUserModel contact = TAPContactManager.getInstance(instanceKey).getUserData(vm.getGroupMemberUser().getUserID());
             if (null == contact || null == contact.getIsContact() || contact.getIsContact() == 0) {
                 TapChatProfileItemModel menuAddToContact = new TapChatProfileItemModel(
                         MENU_ADD_TO_CONTACTS,
                         getString(R.string.tap_add_to_contacts),
-                        R.drawable.tap_ic_add_circle_grey,
+                        R.drawable.tap_ic_add_circle_orange,
                         R.color.tapIconGroupMemberProfileMenuAddToContacts,
                         R.style.tapChatProfileMenuLabelStyle);
                 menuItems.add(menuAddToContact);
@@ -555,14 +550,14 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             TapChatProfileItemModel menuSendMessage = new TapChatProfileItemModel(
                     MENU_SEND_MESSAGE,
                     getString(R.string.tap_send_message),
-                    R.drawable.tap_ic_send_message_grey,
+                    R.drawable.tap_ic_send_message_orange,
                     R.color.tapIconGroupMemberProfileMenuSendMessage,
                     R.style.tapChatProfileMenuLabelStyle);
             menuItems.add(menuSendMessage);
 
             // Promote admin
             if (null != vm.getRoom().getAdmins() &&
-                    vm.getRoom().getAdmins().contains(TAPChatManager.getInstance().getActiveUser().getUserID()) &&
+                    vm.getRoom().getAdmins().contains(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) &&
                     !vm.getRoom().getAdmins().contains(vm.getGroupMemberUser().getUserID())) {
                 TapChatProfileItemModel menuPromoteAdmin = new TapChatProfileItemModel(
                         MENU_PROMOTE_ADMIN,
@@ -574,11 +569,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             }
             // Demote admin
             else if (null != vm.getRoom().getAdmins() &&
-                    vm.getRoom().getAdmins().contains(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                    vm.getRoom().getAdmins().contains(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                 TapChatProfileItemModel menuDemoteAdmin = new TapChatProfileItemModel(
                         MENU_DEMOTE_ADMIN,
                         getString(R.string.tap_demote_admin),
-                        R.drawable.tap_ic_remove_circle_grey,
+                        R.drawable.tap_ic_demote_admin,
                         R.color.tapIconGroupMemberProfileMenuDemoteAdmin,
                         R.style.tapChatProfileMenuLabelStyle);
                 menuItems.add(menuDemoteAdmin);
@@ -586,7 +581,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
             // Remove member
             if (null != vm.getRoom().getAdmins() &&
-                    vm.getRoom().getAdmins().contains(TAPChatManager.getInstance().getActiveUser().getUserID())) {
+                    vm.getRoom().getAdmins().contains(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                 TapChatProfileItemModel menuRemoveMember = new TapChatProfileItemModel(
                         MENU_REMOVE_MEMBER,
                         getString(R.string.tap_remove_group_member),
@@ -608,11 +603,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void openEditGroup() {
-        Intent intent = new Intent(TAPChatProfileActivity.this, TAPEditGroupSubjectActivity.class);
-        intent.putExtra(GROUP_ACTION, EDIT_GROUP);
-        intent.putExtra(ROOM, vm.getRoom());
-        startActivityForResult(intent, GROUP_UPDATE_DATA);
-        overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
+        TAPEditGroupSubjectActivity.start(this, instanceKey, vm.getRoom());
     }
 
     private void searchChat() {
@@ -628,10 +619,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     }
 
     private void viewMembers() {
-        Intent intent = new Intent(TAPChatProfileActivity.this, TAPGroupMemberListActivity.class);
-        intent.putExtra(ROOM, vm.getRoom());
-        startActivityForResult(intent, GROUP_UPDATE_DATA);
-        overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay);
+        TAPGroupMemberListActivity.Companion.start(TAPChatProfileActivity.this, instanceKey, vm.getRoom());
     }
 
     private void showExitChatDialog() {
@@ -643,7 +631,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .setPrimaryButtonListener(v -> {
                     vm.setLoadingStartText(getString(R.string.tap_loading));
                     vm.setLoadingEndText(getString(R.string.tap_left_group));
-                    TAPDataManager.getInstance().leaveChatRoom(vm.getRoom().getRoomID(), deleteRoomView);
+                    TAPDataManager.getInstance(instanceKey).leaveChatRoom(vm.getRoom().getRoomID(), deleteRoomView);
                 })
                 .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                 .setSecondaryButtonListener(v -> {
@@ -653,15 +641,18 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
     private void addToContacts() {
         if (vm.isGroupMemberProfile()) {
-            TAPDataManager.getInstance().addContactApi(vm.getGroupMemberUser().getUserID(), addContactView);
+            TAPDataManager.getInstance(instanceKey).addContactApi(vm.getGroupMemberUser().getUserID(), addContactView);
         } else if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
-            TAPDataManager.getInstance().addContactApi(TAPChatManager.getInstance().getOtherUserIdFromRoom(vm.getRoom().getRoomID()), addContactView);
+            TAPDataManager.getInstance(instanceKey).addContactApi(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm.getRoom().getRoomID()), addContactView);
         }
     }
 
     private void openChatRoom(TAPUserModel userModel) {
-        TAPUtils.startChatActivity(this,
-                TAPChatManager.getInstance().arrangeRoomId(TAPChatManager.getInstance().getActiveUser().getUserID(),
+        TapUIChatActivity.start(
+                this,
+                instanceKey,
+                TAPChatManager.getInstance(instanceKey).arrangeRoomId(
+                        TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
                         userModel.getUserID()),
                 userModel.getName(),
                 userModel.getAvatarURL(),
@@ -676,7 +667,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
     private void promoteAdmin() {
         vm.setLoadingStartText(getString(R.string.tap_updating));
         vm.setLoadingEndText(getString(R.string.tap_promoted_admin));
-        TAPDataManager.getInstance().promoteGroupAdmins(vm.getRoom().getRoomID(),
+        TAPDataManager.getInstance(instanceKey).promoteGroupAdmins(vm.getRoom().getRoomID(),
                 Arrays.asList(vm.getGroupMemberUser().getUserID()), userActionView);
     }
 
@@ -689,7 +680,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .setPrimaryButtonListener(v -> {
                     vm.setLoadingStartText(getString(R.string.tap_updating));
                     vm.setLoadingEndText(getString(R.string.tap_demoted_admin));
-                    TAPDataManager.getInstance().demoteGroupAdmins(
+                    TAPDataManager.getInstance(instanceKey).demoteGroupAdmins(
                             vm.getRoom().getRoomID(),
                             Arrays.asList(vm.getGroupMemberUser().getUserID()),
                             userActionView);
@@ -709,7 +700,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .setPrimaryButtonListener(v -> {
                     vm.setLoadingStartText(getString(R.string.tap_removing));
                     vm.setLoadingEndText(getString(R.string.tap_removed_member));
-                    TAPDataManager.getInstance().removeRoomParticipant(
+                    TAPDataManager.getInstance(instanceKey).removeRoomParticipant(
                             vm.getRoom().getRoomID(),
                             Arrays.asList(vm.getGroupMemberUser().getUserID()),
                             userActionView);
@@ -729,7 +720,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .setPrimaryButtonListener(v -> {
                     vm.setLoadingStartText(getString(R.string.tap_loading));
                     vm.setLoadingEndText(getString(R.string.tap_group_deleted));
-                    TAPDataManager.getInstance().deleteChatRoom(vm.getRoom(), deleteRoomView);
+                    TAPDataManager.getInstance(instanceKey).deleteChatRoom(vm.getRoom(), deleteRoomView);
                 })
                 .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
                 .setSecondaryButtonListener(v -> {
@@ -749,13 +740,13 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         } else {
             // Download file
             vm.setPendingDownloadMessage(null);
-            TAPFileDownloadManager.getInstance().downloadMessageFile(message);
+            TAPFileDownloadManager.getInstance(instanceKey).downloadMessageFile(message);
         }
         notifyItemChanged(message);
     }
 
     private void notifyItemChanged(TAPMessageModel mediaMessage) {
-        runOnUiThread(() -> adapter.notifyItemChanged(vm.getMenuItems().size() + 1 + vm.getSharedMedias().indexOf(mediaMessage)));
+        runOnUiThread(() -> adapter.notifyItemChanged(vm.getMenuItems().size() + 2 + vm.getSharedMedias().indexOf(mediaMessage)));
     }
 
     private void showSharedMediaLoading() {
@@ -763,6 +754,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             return;
         }
         vm.getAdapterItems().add(vm.getLoadingItem());
+        adapter.setMediaThumbnailStartIndex(vm.getAdapterItems().indexOf(vm.getSharedMediaSectionTitle()) + 1);
         adapter.notifyItemInserted(adapter.getItemCount() - 1);
     }
 
@@ -772,6 +764,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         }
         int index = vm.getAdapterItems().indexOf(vm.getLoadingItem());
         vm.getAdapterItems().remove(index);
+        adapter.setMediaThumbnailStartIndex(vm.getAdapterItems().indexOf(vm.getSharedMediaSectionTitle()) + 1);
         adapter.notifyItemRemoved(index);
     }
 
@@ -814,103 +807,6 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .show();
     }
 
-    private AppBarLayout.OnOffsetChangedListener offsetChangedListener = new AppBarLayout.OnOffsetChangedListener() {
-
-        private boolean isShowing;
-        private int scrollRange = -1;
-        private int nameTranslationY = TAPUtils.dpToPx(8);
-        private int scrimHeight;
-
-        private ValueAnimator transitionToCollapse, transitionToExpand;
-
-        @Override
-        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-            if (scrollRange == -1) {
-                // Initialize
-                scrimHeight = llToolbarCollapsed.getLayoutParams().height * 3 / 2;
-                scrollRange = appBarLayout.getTotalScrollRange() - scrimHeight;
-                collapsingToolbarLayout.setScrimVisibleHeightTrigger(scrimHeight);
-            }
-
-            if (Math.abs(verticalOffset) >= scrollRange && !isShowing) {
-                // Show Toolbar
-                isShowing = true;
-                llToolbarCollapsed.setVisibility(View.VISIBLE);
-                llToolbarCollapsed.animate()
-                        .alpha(1f)
-                        .setDuration(DEFAULT_ANIMATION_TIME)
-                        .start();
-                tvCollapsedName.setTranslationY(nameTranslationY);
-                tvCollapsedName.animate()
-                        .translationY(0)
-                        .alpha(1f)
-                        .setDuration(DEFAULT_ANIMATION_TIME)
-                        .start();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    getTransitionToExpand().cancel();
-                    getTransitionToCollapse().start();
-                } else {
-                    ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
-                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton)));
-                    ImageViewCompat.setImageTintList(ivButtonEdit, ColorStateList.valueOf(ContextCompat.
-                            getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton)));
-                }
-            } else if (Math.abs(verticalOffset) < scrollRange && isShowing) {
-                // Hide Toolbar
-                isShowing = false;
-                llToolbarCollapsed.animate()
-                        .alpha(0f)
-                        .setDuration(DEFAULT_ANIMATION_TIME)
-                        .withEndAction(() -> llToolbarCollapsed.setVisibility(View.GONE))
-                        .start();
-                tvCollapsedName.animate()
-                        .translationY(nameTranslationY)
-                        .alpha(0f)
-                        .setDuration(DEFAULT_ANIMATION_TIME)
-                        .start();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    getTransitionToCollapse().cancel();
-                    getTransitionToExpand().start();
-                } else {
-                    ImageViewCompat.setImageTintList(ivButtonBack, ColorStateList.valueOf(ContextCompat.
-                            getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton)));
-                    ImageViewCompat.setImageTintList(ivButtonEdit, ColorStateList.valueOf(ContextCompat.
-                            getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton)));
-                }
-            }
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        private ValueAnimator getTransitionToCollapse() {
-            if (null == transitionToCollapse) {
-                transitionToCollapse = ValueAnimator.ofArgb(
-                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton),
-                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton));
-                transitionToCollapse.setDuration(DEFAULT_ANIMATION_TIME);
-                transitionToCollapse.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
-                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
-                transitionToCollapse.addUpdateListener(valueAnimator -> ivButtonEdit.setColorFilter(
-                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
-            }
-            return transitionToCollapse;
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        private ValueAnimator getTransitionToExpand() {
-            if (null == transitionToExpand) {
-                transitionToExpand = ValueAnimator.ofArgb(
-                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconNavBarBackButton),
-                        ContextCompat.getColor(TAPChatProfileActivity.this, R.color.tapIconTransparentBackgroundBackButton));
-                transitionToExpand.setDuration(DEFAULT_ANIMATION_TIME);
-                transitionToExpand.addUpdateListener(valueAnimator -> ivButtonBack.setColorFilter(
-                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
-                transitionToExpand.addUpdateListener(valueAnimator -> ivButtonEdit.setColorFilter(
-                        (Integer) valueAnimator.getAnimatedValue(), PorterDuff.Mode.SRC_IN));
-            }
-            return transitionToExpand;
-        }
-    };
-
     public interface ChatProfileInterface {
         void onMenuClicked(TapChatProfileItemModel item);
 
@@ -943,6 +839,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 case MENU_VIEW_MEMBERS:
                     viewMembers();
                     break;
+                case MENU_EDIT_GROUP:
+                    openEditGroup();
+                    break;
                 case MENU_EXIT_GROUP:
                     showExitChatDialog();
                     break;
@@ -950,7 +849,11 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     addToContacts();
                     break;
                 case MENU_SEND_MESSAGE:
-                    openChatRoom(vm.getGroupMemberUser());
+                    if (getIntent().getBooleanExtra(IS_NON_PARTICIPANT_USER_PROFILE, false)) {
+                        openChatRoom(TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm.getRoom().getRoomID())));
+                    } else {
+                        openChatRoom(vm.getGroupMemberUser());
+                    }
                     break;
                 case MENU_PROMOTE_ADMIN:
                     promoteAdmin();
@@ -971,19 +874,13 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         public void onMediaClicked(TAPMessageModel item, ImageView ivThumbnail, boolean isMediaReady) {
             if (item.getType() == TYPE_IMAGE && isMediaReady) {
                 // Preview image detail
-                Intent intent = new Intent(TAPChatProfileActivity.this, TAPImageDetailPreviewActivity.class);
-                intent.putExtra(MESSAGE, item);
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        TAPChatProfileActivity.this,
-                        ivThumbnail,
-                        getString(R.string.tap_transition_view_image));
-                startActivity(intent, options.toBundle());
+                TAPImageDetailPreviewActivity.start(TAPChatProfileActivity.this, instanceKey, item, ivThumbnail);
             } else if (item.getType() == TYPE_IMAGE) {
                 // Download image
-                TAPFileDownloadManager.getInstance().downloadImage(TAPChatProfileActivity.this, item);
+                TAPFileDownloadManager.getInstance(instanceKey).downloadImage(TAPChatProfileActivity.this, item);
                 notifyItemChanged(item);
             } else if (item.getType() == TYPE_VIDEO && isMediaReady && null != item.getData()) {
-                Uri videoUri = TAPFileDownloadManager.getInstance().getFileMessageUri(item.getRoom().getRoomID(), (String) item.getData().get(FILE_ID));
+                Uri videoUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item.getRoom().getRoomID(), (String) item.getData().get(FILE_ID));
                 if (null == videoUri) {
                     // Prompt download
                     String fileID = (String) item.getData().get(FILE_ID);
@@ -999,7 +896,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             .show();
                 } else {
                     // Open video player
-                    TAPUtils.openVideoPreview(TAPChatProfileActivity.this, videoUri, item);
+                    TAPVideoPlayerActivity.start(TAPChatProfileActivity.this, instanceKey, videoUri, item);
                 }
             } else if (item.getType() == TYPE_VIDEO) {
                 // Download video
@@ -1009,7 +906,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
 
         @Override
         public void onCancelDownloadClicked(TAPMessageModel item) {
-            TAPFileDownloadManager.getInstance().cancelFileDownload(item.getLocalID());
+            TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(item.getLocalID());
             notifyItemChanged(item);
         }
 
@@ -1026,7 +923,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             vm.getRoom().setGroupParticipants(response.getParticipants());
             vm.getRoom().setAdmins(response.getAdmins());
 
-            TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getRoom());
+            TAPGroupManager.Companion.getInstance(instanceKey).addGroupData(vm.getRoom());
             updateView();
         }
     };
@@ -1035,10 +932,24 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPGetUserResponse response) {
             TAPUserModel user = response.getUser();
-            TAPContactManager.getInstance().updateUserData(user);
+            TAPContactManager.getInstance(instanceKey).updateUserData(user);
             vm.getRoom().setRoomImage(user.getAvatarURL());
             vm.getRoom().setRoomName(user.getName());
             updateView();
+        }
+    };
+
+    private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (!recyclerView.canScrollVertically(-1)) {
+                    recyclerView.setElevation(TAPUtils.dpToPx(2));
+                } else {
+                    recyclerView.setElevation(0);
+                }
+            }
         }
     };
 
@@ -1051,15 +962,15 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPCommonResponse response) {
             if (response.getSuccess()) {
-                TAPOldDataManager.getInstance().cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+                TAPOldDataManager.getInstance(instanceKey).cleanRoomPhysicalData(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                     @Override
                     public void onDeleteFinished() {
-                        TAPDataManager.getInstance().deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
+                        TAPDataManager.getInstance(instanceKey).deleteMessageByRoomId(vm.getRoom().getRoomID(), new TAPDatabaseListener() {
                             @Override
                             public void onDeleteFinished() {
                                 //hideLoadingPopup(vm.getLoadingEndText());
-                                TAPGroupManager.Companion.getGetInstance().removeGroupData(vm.getRoom().getRoomID());
-                                TAPGroupManager.Companion.getGetInstance().setRefreshRoomList(true);
+                                TAPGroupManager.Companion.getInstance(instanceKey).removeGroupData(vm.getRoom().getRoomID());
+                                TAPGroupManager.Companion.getInstance(instanceKey).setRefreshRoomList(true);
                                 runOnUiThread(() -> {
                                     ivSaving.setImageDrawable(ContextCompat.getDrawable(TAPChatProfileActivity.this, R.drawable.tap_ic_checklist_pumpkin));
                                     ivSaving.clearAnimation();
@@ -1111,9 +1022,9 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
         @Override
         public void onSuccess(TAPAddContactResponse response) {
             TAPUserModel newContact = response.getUser().setUserAsContact();
-            //TAPDataManager.getInstance().insertMyContactToDatabase(new TAPDatabaseListener<TAPUserModel>() {
+            //TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(new TAPDatabaseListener<TAPUserModel>() {
             //}, newContact);
-            TAPContactManager.getInstance().updateUserData(newContact);
+            TAPContactManager.getInstance(instanceKey).updateUserData(newContact);
             hideLoadingPopup(getString(R.string.tap_added_contact));
             updateView();
         }
@@ -1143,7 +1054,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             vm.getRoom().setGroupParticipants(response.getParticipants());
             vm.getRoom().setAdmins(response.getAdmins());
 
-            TAPGroupManager.Companion.getGetInstance().addGroupData(vm.getRoom());
+            TAPGroupManager.Companion.getInstance(instanceKey).addGroupData(vm.getRoom());
 
             hideLoadingPopup(vm.getLoadingEndText());
 
@@ -1184,6 +1095,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         // First load
                         vm.setSharedMediaSectionTitle(new TapChatProfileItemModel(getString(R.string.tap_shared_media)));
                         vm.getAdapterItems().add(vm.getSharedMediaSectionTitle());
+                        adapter.setMediaThumbnailStartIndex(vm.getAdapterItems().indexOf(vm.getSharedMediaSectionTitle()) + 1);
                         runOnUiThread(() -> {
                             if (MAX_ITEMS_PER_PAGE <= entities.size()) {
                                 sharedMediaPagingScrollListener = () -> {
@@ -1192,7 +1104,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                                         if (!vm.isLoadingSharedMedia()) {
                                             vm.setLoadingSharedMedia(true);
                                             showSharedMediaLoading();
-                                            new Thread(() -> TAPDataManager.getInstance().getRoomMedias(vm.getLastSharedMediaTimestamp(), vm.getRoom().getRoomID(), sharedMediaListener)).start();
+                                            new Thread(() -> TAPDataManager.getInstance(instanceKey).getRoomMedias(vm.getLastSharedMediaTimestamp(), vm.getRoom().getRoomID(), sharedMediaListener)).start();
                                         }
                                     }
                                 };
@@ -1207,7 +1119,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         runOnUiThread(() -> rvChatProfile.getViewTreeObserver().removeOnScrollChangedListener(sharedMediaPagingScrollListener));
                     }
                     for (TAPMessageEntity entity : entities) {
-                        TAPMessageModel mediaMessage = TAPChatManager.getInstance().convertToModel(entity);
+                        TAPMessageModel mediaMessage = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
                         vm.addSharedMedia(mediaMessage);
                         vm.getAdapterItems().add(new TapChatProfileItemModel(mediaMessage));
                     }
@@ -1215,7 +1127,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                     vm.setLoadingSharedMedia(false);
                     runOnUiThread(() -> rvChatProfile.post(() -> {
                         hideSharedMediaLoading();
-                        rvChatProfile.post(() -> adapter.notifyItemRangeInserted(vm.getMenuItems().size() + 1 + previousSize, entities.size()));
+                        rvChatProfile.post(() -> adapter.notifyItemRangeInserted(vm.getMenuItems().size() + 2 + previousSize, entities.size()));
                     }));
                 }
             }).start();

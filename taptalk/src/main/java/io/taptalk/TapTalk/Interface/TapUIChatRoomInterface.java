@@ -1,7 +1,8 @@
 package io.taptalk.TapTalk.Interface;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import java.util.HashMap;
 
@@ -16,6 +17,8 @@ public interface TapUIChatRoomInterface {
     void onTapTalkGroupChatProfileButtonTapped(Activity activity, TAPRoomModel room);
 
     void onTapTalkGroupMemberAvatarTapped(Activity activity, TAPRoomModel room, TAPUserModel user);
+
+    void onTapTalkUserMentionTapped(Activity activity, TAPMessageModel messageModel, TAPUserModel user, boolean isRoomParticipant);
 
     void onTapTalkMessageQuoteTapped(Activity activity, TAPMessageModel messageModel, @Nullable HashMap<String, Object> userInfo);
 

@@ -1,7 +1,7 @@
 package io.taptalk.TapTalk.Helper.OverScrolled;
 
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import io.taptalk.TapTalk.Helper.OverScrolled.Adapter.RecyclerViewOverScrollDecorAdapter;
 import io.taptalk.TapTalk.Helper.OverScrolled.Adapter.ScrollViewOverScrollDecorAdapter;

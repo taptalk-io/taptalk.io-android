@@ -106,7 +106,7 @@ class TapLocaleManager private constructor() {
     }
 
     internal class LocaleApplicationCallbacks(private val context: Context,
-                                               private val localeManager: TapLocaleManager) : ComponentCallbacks {
+                                              private val localeManager: TapLocaleManager) : ComponentCallbacks {
 
         override fun onConfigurationChanged(newConfig: Configuration) {
             localeManager.setLocaleInternal(context)

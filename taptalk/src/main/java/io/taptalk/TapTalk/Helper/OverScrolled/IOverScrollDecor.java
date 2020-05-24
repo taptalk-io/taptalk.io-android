@@ -6,6 +6,7 @@ public interface IOverScrollDecor {
     View getView();
 
     void setOverScrollStateListener(IOverScrollStateListener listener);
+
     void setOverScrollUpdateListener(IOverScrollUpdateListener listener);
 
     int getCurrentState();

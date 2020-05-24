@@ -1,50 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/iv_message_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
-        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:src="@drawable/tap_ic_sent_grey" />
-
-    <ImageView
-        android:id="@+id/iv_reply"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_marginBottom="12dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/tap_ic_reply_circle_white"
-        app:layout_constraintBottom_toTopOf="@id/iv_message_status"
-        app:layout_constraintEnd_toStartOf="@id/fl_bubble"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent" />
+    <!--    <ImageView-->
+    <!--        android:id="@+id/iv_reply"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginEnd="2dp"-->
+    <!--        android:layout_marginRight="2dp"-->
+    <!--        android:layout_marginBottom="12dp"-->
+    <!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--        android:src="@drawable/tap_ic_reply_circle_white"-->
+    <!--        android:visibility="gone"-->
+    <!--        app:layout_constraintBottom_toTopOf="@id/iv_message_status"-->
+    <!--        app:layout_constraintEnd_toStartOf="@id/fl_bubble"-->
+    <!--        app:layout_constraintHorizontal_bias="1"-->
+    <!--        app:layout_constraintHorizontal_chainStyle="packed"-->
+    <!--        app:layout_constraintStart_toStartOf="parent" />-->
 
     <FrameLayout
         android:id="@+id/fl_bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="110dp"
-        android:layout_marginStart="110dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginLeft="48dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:elevation="1dp"
+        android:background="@drawable/tap_bg_chat_bubble_right_default"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@id/tv_message_status"
         app:layout_constraintEnd_toEndOf="parent"
@@ -53,15 +39,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_goneMarginBottom="8dp">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_forwarded_quote"
-                android:layout_width="234dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/tap_bg_chat_bubble_right_top"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -109,36 +95,40 @@
                     app:layout_constraintTop_toTopOf="@id/v_quote_background"
                     app:layout_goneMarginTop="10dp" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.gms.maps.MapView
                 android:id="@+id/map_view"
-                android:layout_width="234dp"
-                android:layout_height="177dp"
+                android:layout_width="244dp"
+                android:layout_height="170dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
                 android:clickable="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_forwarded_quote"
+                app:layout_goneMarginTop="4dp"
                 app:topLeftRadius="8dp"
                 app:topRightRadius="1dp"
                 tools:background="@color/tapCreamWhite" />
 
             <ImageView
-                android:layout_width="53dp"
-                android:layout_height="62dp"
-                android:src="@drawable/tap_ic_location_pumpkin_orange"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/tap_ic_location_pin_orange"
                 android:tint="@color/tapIconLocationBubbleMarker"
                 app:layout_constraintBottom_toBottomOf="@id/map_view"
                 app:layout_constraintEnd_toEndOf="@id/map_view"
                 app:layout_constraintStart_toStartOf="@id/map_view"
                 app:layout_constraintTop_toTopOf="@id/map_view"
-                app:layout_constraintVertical_bias="0.355" />
+                app:layout_constraintVertical_bias="0.385" />
 
             <View
                 android:id="@+id/v_map_border"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@drawable/tap_bg_rounded_1dp_8dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp"
                 app:layout_constraintBottom_toBottomOf="@id/map_view"
                 app:layout_constraintEnd_toEndOf="@id/map_view"
                 app:layout_constraintStart_toStartOf="@id/map_view"
@@ -149,19 +139,57 @@
                 style="@style/tapRightBubbleMessageBodyStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/tap_bg_chat_bubble_right_bottom"
-                android:paddingStart="10dp"
+                android:paddingStart="6dp"
                 android:paddingTop="10dp"
-                android:paddingEnd="10dp"
+                android:paddingEnd="6dp"
                 android:paddingBottom="10dp"
                 app:layout_constraintEnd_toEndOf="@id/map_view"
                 app:layout_constraintStart_toStartOf="@id/map_view"
                 app:layout_constraintTop_toBottomOf="@id/map_view"
-                tools:text="Jalan Kyai Maja No. 25C, Gunung, Kebayoran Baru, RT.12/RW.2, Gunung, Kby. Baru, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12120" />
+                tools:text="Jalan Kyai Maja No. 25C, Gunung, Kebayoran Baru, RT.12/RW.2, Gunung, Kby. Baru, Kota Jakarta Selatan, DKI Jakarta 12120" />
 
-        </android.support.constraint.ConstraintLayout>
+            <TextView
+                android:id="@+id/tv_message_timestamp"
+                style="@style/tapRightBubbleMessageTimestampStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_message_status"
+                app:layout_goneMarginEnd="0dp"
+                app:layout_goneMarginRight="0dp"
+                tools:text="17:05" />
+
+            <ImageView
+                android:id="@+id/iv_message_status"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:ignore="RtlSymmetry"
+                tools:src="@drawable/tap_ic_delivered_grey"
+                tools:tint="@color/tapWhite" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/iv_bubble_highlight"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/tap_bg_chat_bubble_right_highlight"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toEndOf="@id/fl_bubble"
+        app:layout_constraintStart_toStartOf="@id/fl_bubble"
+        app:layout_constraintTop_toTopOf="@id/fl_bubble" />
 
     <TextView
         android:id="@+id/tv_message_status"
@@ -170,27 +198,28 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp"
+        android:text="@string/tap_message_send_failed"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/fl_bubble"
-        app:layout_constraintTop_toBottomOf="@id/fl_bubble"
-        tools:text="Delivered at 17:05 17/05/2018" />
+        app:layout_constraintTop_toBottomOf="@id/fl_bubble" />
 
     <ImageView
         android:id="@+id/iv_sending"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
         android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="5dp"
         android:alpha="0"
         android:src="@drawable/tap_ic_sending_grey"
-        android:tint="@color/tapIconMessageSending"
+        android:tint="@color/tapIconRoomListMessageSending"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@id/fl_bubble" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,13 +5,22 @@ import java.util.Map;
 
 public interface TapTalkDatabaseInterface<T> {
     void onSelectFinished(List<T> entities);
+
     void onSelectFinished(T entity);
+
     void onInsertFinished();
+
     void onDeleteFinished();
-    void onCountedUnreadCount(String roomID, int unreadCount);
+
+    void onCountedUnreadCount(String roomID, int unreadCount, int mentionCount);
+
     void onCountedUnreadCount(int unreadCount);
-    void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap);
+
+    void onSelectedRoomList(List<T> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount);
+
     void onContactCheckFinished(int isContact);
+
     void onSelectFailed(String errorMessage);
+
     void onInsertFailed(String errorMessage);
 }

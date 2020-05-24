@@ -11,6 +11,7 @@
     <string name="tap_leave_group">Leave Group</string>
     <string name="tap_delete_group">Delete Group</string>
     <string name="tap_forward">Forward</string>
+    <string name="tap_group_details">Group Details</string>
     <string name="tap_group_subject">Group Subject</string>
     <string name="tap_my_account">My Account</string>
     <string name="tap_new_chat">New Chat</string>
@@ -26,6 +27,7 @@
     <string name="tap_shared_media">Shared Media</string>
     <string name="tap_scan_qr_code">Scan QR Code</string>
     <string name="tap_show_qr_code">Show QR Code</string>
+    <string name="tap_user_details">User Details</string>
     <string name="tap_view_members">View Group Members</string>
     <string name="tap_welcome">Welcome</string>
 
@@ -74,6 +76,7 @@
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>
     <string name="tap_edit_group">Edit Group</string>
+    <string name="tap_change_avatar">Change Avatar</string>
     <string name="tap_group_members">Group Members</string>
     <string name="tap_remove_group_member">Remove Member</string>
     <string name="tap_clear_and_exit_chat">Clear and Exit Chat</string>
@@ -136,6 +139,7 @@
     <string name="tap_network_error">Network Error</string>
     <string name="tap_waiting_for_network">Waiting for Network</string>
     <string name="tap_active_now">Active now</string>
+    <string name="tap_today">Today</string>
     <string name="tap_yesterday">Yesterday</string>
     <string name="tap_active_recently">Active recently</string>
     <string name="tap_format_s_sent_yesterday_at">Sent yesterday at %s</string>
@@ -234,6 +238,7 @@
     <string name="tap_call">Call</string>
     <string name="tap_send_sms">Send SMS</string>
     <string name="tap_delete">Delete Message</string>
+    <string name="tap_view_profile">View Profile</string>
 
     <!--Products-->
     <string name="tap_price">Price</string>
@@ -245,8 +250,9 @@
     <!--Media-->
     <string name="tap_add_a_caption">Add a caption</string>
     <string name="tap_save_to_gallery">Save to Gallery</string>
-    <string name="tap_save_to_download">Save to Downloads</string>
-    <string name="tap_uploading">Uploading</string>
+    <string name="tap_save_to_downloads">Save to Downloads</string>
+    <string name="tap_uploading">Uploading…</string>
+    <string name="tap_downloading">Downloading…</string>
     <string name="tap_image_saved">Image Saved</string>
     <string name="tap_video_saved">Video Saved</string>
     <string name="tap_format_s_successfully_saved">Successfully saved %s</string>
@@ -308,6 +314,8 @@
     <string name="tap_hint_email_address">e.g example@work.com</string>
     <string name="tap_hint_insert_password">Insert Password</string>
     <string name="tap_hint_insert_name">Insert Name</string>
+    <string name="tap_login_confirmation">Our system will send a verification SMS to %s. The SMS contains 6 digits code to login TapTalk.io application.</string>
+    <string name="tap_login_confirmation_title">Send Verification SMS?</string>
 
     <!--General-->
     <string name="tap_allow">Allow</string>
@@ -324,6 +332,7 @@
     <string name="tap_ok">OK</string>
     <string name="tap_oops">Oops…</string>
     <string name="tap_optional">Optional</string>
+    <string name="tap_optional_brackets">(optional)</string>
     <string name="tap_reply">Reply</string>
     <string name="tap_retry">Retry</string>
     <string name="tap_saving">Saving…</string>
@@ -335,5 +344,6 @@
     <string name="tap_update">Update</string>
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
+    <string name="tap_at">\@</string>
 
 </resources>

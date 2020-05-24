@@ -13,9 +13,10 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Base64;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -26,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 
@@ -135,7 +136,8 @@ public class TAPFileUtils {
                         if (path != null) {
                             return path;
                         }
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                    }
                 }
 
                 // Path could not be retrieved using ContentResolver, therefore copy file to accessible cache using streams
@@ -188,7 +190,13 @@ public class TAPFileUtils {
                 return uri.getLastPathSegment();
             } else if (isFileProviderUri(uri)) {
                 // FIXME: 23 January 2019
-                return TAPFileDownloadManager.getInstance().getFileProviderPath(uri);
+                for (String instanceKey : TapTalk.getInstanceKeys()) {
+                    String path = TAPFileDownloadManager.getInstance(instanceKey).getFileProviderPath(uri);
+                    if (null != path && !path.isEmpty()) {
+                        return path;
+                    }
+                }
+                return null;
             }
             return getDataColumn(context, uri, null, null);
         }

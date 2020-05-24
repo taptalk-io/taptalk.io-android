@@ -1,7 +1,8 @@
 package io.taptalk.TapTalk.Data.RecentSearch;
 
 import android.app.Application;
-import android.arch.lifecycle.LiveData;
+
+import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
@@ -11,8 +12,8 @@ public class TAPRecentSearchRepository {
     private TAPRecentSearchDao recentSearchDao;
     private LiveData<List<TAPRecentSearchEntity>> allRecentSearch;
 
-    public TAPRecentSearchRepository(Application application) {
-        TapTalkDatabase db = TapTalkDatabase.getDatabase(application);
+    public TAPRecentSearchRepository(String instanceKey, Application application) {
+        TapTalkDatabase db = TapTalkDatabase.getDatabase(instanceKey, application);
         recentSearchDao = db.recentSearchDao();
         allRecentSearch = recentSearchDao.getAllRecentSearchLive();
     }

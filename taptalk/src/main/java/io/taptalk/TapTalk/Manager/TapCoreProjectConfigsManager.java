@@ -1,9 +1,10 @@
 package io.taptalk.TapTalk.Manager;
 
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
+
+import java.util.HashMap;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
@@ -13,14 +14,32 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 @Keep
 public class TapCoreProjectConfigsManager {
 
-    private static TapCoreProjectConfigsManager instance;
+    private static HashMap<String, TapCoreProjectConfigsManager> instances;
+
+    private String instanceKey = "";
+
+    public TapCoreProjectConfigsManager(String instanceKey) {
+        this.instanceKey = instanceKey;
+    }
 
     public static TapCoreProjectConfigsManager getInstance() {
-        return null == instance ? instance = new TapCoreProjectConfigsManager() : instance;
+        return getInstance("");
+    }
+
+    public static TapCoreProjectConfigsManager getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TapCoreProjectConfigsManager instance = new TapCoreProjectConfigsManager(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
+    }
+
+    private static HashMap<String, TapCoreProjectConfigsManager> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
     }
 
     public void getProjectConfigs(TapCoreProjectConfigsListener listener) {
-        TAPDataManager.getInstance().getProjectConfig(new TAPDefaultDataView<TapConfigs>() {
+        TAPDataManager.getInstance(instanceKey).getProjectConfig(new TAPDefaultDataView<TapConfigs>() {
             @Override
             public void onSuccess(TapConfigs response) {
                 if (null != listener) {

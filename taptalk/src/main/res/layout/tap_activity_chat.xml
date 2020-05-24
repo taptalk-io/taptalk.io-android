@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/tapDefaultBackgroundColor"
+    android:background="@color/tapChatRoomBackgroundColor"
     tools:context="io.taptalk.TapTalk.View.Activity.TapUIChatActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -24,7 +24,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            android:tint="@color/tapIconNavBarBackButton"
+            android:tint="@color/tapIconNavigationBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_room_name"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +50,7 @@
             app:layout_goneMarginStart="?attr/actionBarSize"
             tools:text="Room Name" />
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_room_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
             app:layout_constraintStart_toStartOf="@id/tv_room_name"
             app:layout_constraintTop_toBottomOf="@id/tv_room_name">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_room_online_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -96,9 +96,9 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Active Now" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_room_typing_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -132,10 +132,10 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Typing" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <io.taptalk.TapTalk.Helper.CircleImageView
             android:id="@+id/civ_room_image"
@@ -187,9 +187,9 @@
             app:layout_constraintBottom_toBottomOf="@id/civ_room_image"
             app:layout_constraintEnd_toEndOf="@id/civ_room_image" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_contact_action"
         android:layout_width="match_parent"
         android:layout_height="48dp"
@@ -238,24 +238,24 @@
             android:layout_height="48dp"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
-            android:src="@drawable/tap_ic_demote_admins"
+            android:src="@drawable/tap_ic_dismiss_circle_white"
             android:tint="@color/tapButtonIconPrimaryColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_button_add_to_contacts"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_empty_chat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/fl_chat_composer_and_history"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
         app:layout_constraintTop_toBottomOf="@id/cl_contact_action">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -346,9 +346,9 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_chat_empty_guide"
                 tools:text="@string/tap_format_s_personal_chat_room_empty_guide_content" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/fl_message_list"
@@ -356,8 +356,8 @@
         android:layout_height="0dp"
         android:descendantFocusability="blocksDescendants"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/fl_chat_composer_and_history"
-        app:layout_constraintTop_toBottomOf="@id/cl_contact_action"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
+        app:layout_constraintTop_toBottomOf="@id/fl_connection_status"
         tools:background="@color/tapTransparentCharcoal40">
 
         <io.taptalk.TapTalk.Helper.TAPChatRecyclerView
@@ -385,7 +385,7 @@
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/fl_loading"
+        android:id="@+id/fl_connection_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/cl_contact_action">
@@ -398,7 +398,26 @@
 
     </FrameLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <TextView
+        android:id="@+id/tv_date_indicator"
+        style="@style/tapDateIndicatorTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/tap_bg_date_indicator"
+        android:elevation="2dp"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fl_connection_status"
+        tools:text="Today" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_unread_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -412,7 +431,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cl_contact_action">
+        app:layout_constraintTop_toBottomOf="@+id/fl_connection_status">
 
         <TextView
             android:id="@+id/tv_unread_button_count"
@@ -440,27 +459,31 @@
             app:layout_constraintStart_toEndOf="@id/tv_unread_button_count"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <FrameLayout
-        android:id="@+id/fl_chat_composer_and_history"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_chat_composer_and_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true"
+        android:clipToPadding="false"
+        android:outlineProvider="paddedBounds"
         app:layout_constraintBottom_toTopOf="@id/rv_custom_keyboard">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_chat_composer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
             android:background="@color/tapChatComposerBackgroundColor"
-            android:elevation="2dp"
+            android:clipToPadding="false"
+            android:elevation="6dp"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:visibility="visible">
+            android:outlineProvider="paddedBounds"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_quote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -545,7 +568,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_quote_title"
                     tools:text="In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
                 android:id="@+id/iv_chat_menu_area"
@@ -640,9 +663,9 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_chat_history"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -705,10 +728,10 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_chat_history_content">
 
                 <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/tap_ic_trash_watermelon_red"
+                    android:src="@drawable/tap_ic_delete_red"
                     android:tint="@color/tapButtonIconColor" />
 
                 <TextView
@@ -725,15 +748,16 @@
 
             </LinearLayout>
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_custom_keyboard"
         android:layout_width="match_parent"
         android:layout_height="216dp"
         android:background="@color/tapWhite"
+        android:elevation="6dp"
         android:nestedScrollingEnabled="false"
         android:overScrollMode="never"
         android:visibility="gone"
@@ -747,21 +771,22 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="24dp"
         android:background="@drawable/tap_bg_scroll_to_bottom"
-        android:elevation="4dp"
+        android:elevation="3dp"
         android:padding="15dp"
         android:src="@drawable/tap_ic_scroll_to_bottom_chat"
         android:tint="@color/tapIconChatRoomScrollToBottom"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/fl_chat_composer_and_history"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="1" />
 
     <TextView
         android:id="@+id/tv_badge_unread"
         style="@style/tapChatRoomUnreadBadgeLabelStyle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="24dp"
         android:background="@drawable/tap_bg_chat_room_unread_badge"
-        android:elevation="6dp"
+        android:elevation="4dp"
         android:gravity="center"
         android:minWidth="24dp"
         android:paddingStart="8dp"
@@ -769,10 +794,56 @@
         android:paddingEnd="8dp"
         android:paddingBottom="4dp"
         android:translationY="-14dp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@id/iv_to_bottom"
         app:layout_constraintStart_toStartOf="@id/iv_to_bottom"
         app:layout_constraintTop_toTopOf="@+id/iv_to_bottom"
         tools:text="1" />
 
-</android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:id="@+id/iv_mention_anchor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/tap_bg_scroll_to_bottom"
+        android:elevation="3dp"
+        android:padding="8dp"
+        android:src="@drawable/tap_ic_mention_orange"
+        android:tint="@color/tapIconChatRoomScrollToBottom"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/tv_badge_unread"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="1"
+        app:layout_goneMarginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tv_badge_mention_count"
+        style="@style/tapChatRoomUnreadBadgeLabelStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:background="@drawable/tap_bg_chat_room_unread_badge"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:minWidth="24dp"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp"
+        android:translationY="-14dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/iv_mention_anchor"
+        app:layout_constraintStart_toStartOf="@id/iv_mention_anchor"
+        app:layout_constraintTop_toTopOf="@+id/iv_mention_anchor"
+        tools:text="1" />
+
+    <include
+        layout="@layout/tap_layout_user_mention_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history" />
+
+    <include layout="@layout/tap_layout_popup_loading_screen" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

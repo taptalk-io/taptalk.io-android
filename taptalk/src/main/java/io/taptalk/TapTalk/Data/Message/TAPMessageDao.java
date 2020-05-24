@@ -1,17 +1,18 @@
 package io.taptalk.TapTalk.Data.Message;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.OnConflictStrategy;
-import android.arch.persistence.room.Query;
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+import androidx.room.Query;
 
 import java.util.List;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 @Dao
@@ -61,8 +62,14 @@ public interface TAPMessageDao {
             "group by firstQuery.roomID order by firstQuery.created desc")
     List<TAPMessageEntity> getAllRoomList();
 
+    // TODO: 024, 24 Mar 2020 REMOVE HIDDEN & DELETED ?
     @Query("select * from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID order by created asc")
     List<TAPMessageEntity> getAllUnreadMessagesFromRoom(String userID, String roomID);
+
+    @Query("select * from Message_Table where isRead = 0 and isHidden = 0 and isDeleted = 0 " +
+            "and RoomID like :roomID and userID not like :userID and type in (" + TYPE_TEXT + ", " + TYPE_IMAGE + ", " + TYPE_VIDEO +
+            ") and (body like :filter1 or body like :filter2 or body like :filter3 or body like :filter4 or body like :filter5 or body like :filter6 or body like :filter7 or body like :filter8 or body like :filter9) order by created asc")
+    List<TAPMessageEntity> getAllUnreadMentionsFromRoom(String userID, String filter1, String filter2, String filter3, String filter4, String filter5, String filter6, String filter7, String filter8, String filter9, String roomID);
 
     @Query("select * from (select roomID, max(created) as max_created from Message_Table group by roomID) " +
             "secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created where roomName like :keyword escape '\\' group by firstQuery.roomID order by firstQuery.created desc")

@@ -1,7 +1,5 @@
 package io.taptalk.TapTalk.API.Subscriber;
 
-import android.util.Log;
-
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.API.View.TapView;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPBaseResponse;

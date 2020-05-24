@@ -1,9 +1,9 @@
 package io.taptalk.TapTalk.API.Api;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.HashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -38,26 +38,37 @@ public class TAPApiConnection {
     private static final int MAX_CACHE_STALE_TIME = 60 * 60 * 24;
     private static final int MAX_CACHE_AGE = 60 * 10;
 
+    private static HashMap<String, TAPApiConnection> instances;
+
+    private String instanceKey = "";
     private TAPTalkApiService homingPigeon;
     private TAPTalkSocketService hpSocket;
     private TAPTalkRefreshTokenService hpRefresh;
 
     public ObjectMapper objectMapper;
 
-    private static TAPApiConnection instance;
-
-    public static TAPApiConnection getInstance() {
-        return instance == null ? instance = new TAPApiConnection() : instance;
+    public static TAPApiConnection getInstance(String instanceKey) {
+        if (!getInstances().containsKey(instanceKey)) {
+            TAPApiConnection instance = new TAPApiConnection(instanceKey);
+            getInstances().put(instanceKey, instance);
+        }
+        return getInstances().get(instanceKey);
     }
 
-    private TAPApiConnection() {
+    private static HashMap<String, TAPApiConnection> getInstances() {
+        return null == instances ? instances = new HashMap<>() : instances;
+    }
+
+    private TAPApiConnection(String instanceKey) {
+        this.instanceKey = instanceKey;
         this.objectMapper = TAPUtils.createObjectMapper();
+
         OkHttpClient httpHpClientAccessToken = buildHttpTapClient(NOT_USE_REFRESH_TOKEN);
         OkHttpClient httpHpClientRefreshToken = buildHttpTapClient(USE_REFRESH_TOKEN);
 
-        Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, TAPApiManager.getBaseUrlApi());
-        Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, TAPApiManager.getBaseUrlSocket());
-        Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, TAPApiManager.getBaseUrlApi());
+        Retrofit homingPigeonAdapter = buildApiAdapter(httpHpClientAccessToken, TAPApiManager.getApiBaseUrl(instanceKey));
+        Retrofit hpSocketAdapter = buildApiAdapter(httpHpClientAccessToken, TAPApiManager.getSocketBaseUrl(instanceKey));
+        Retrofit hpRefreshAdapter = buildApiAdapter(httpHpClientRefreshToken, TAPApiManager.getApiBaseUrl(instanceKey));
 
         this.homingPigeon = homingPigeonAdapter.create(TAPTalkApiService.class);
         this.hpSocket = hpSocketAdapter.create(TAPTalkSocketService.class);
@@ -78,13 +89,13 @@ public class TAPApiConnection {
 
     public TAPTalkMultipartApiService getTapMultipart(long timeOutDuration) {
         OkHttpClient httpHpClientMultipartToken = buildHttpTapUploadClient(MULTIPART_CONTENT_TYPE, timeOutDuration);
-        Retrofit tapMultipartAdapter = buildApiAdapter(httpHpClientMultipartToken, TAPApiManager.getBaseUrlApi());
+        Retrofit tapMultipartAdapter = buildApiAdapter(httpHpClientMultipartToken, TAPApiManager.getApiBaseUrl(instanceKey));
         return tapMultipartAdapter.create(TAPTalkMultipartApiService.class);
     }
 
     public TAPTalkDownloadApiService getTapDownload(long timeOutDuration) {
         OkHttpClient httpHpClientDownload = buildHttpTapDownloadClient(NOT_USE_REFRESH_TOKEN, timeOutDuration);
-        Retrofit tapDownloadAdapter = buildApiAdapter(httpHpClientDownload, TAPApiManager.getBaseUrlApi());
+        Retrofit tapDownloadAdapter = buildApiAdapter(httpHpClientDownload, TAPApiManager.getApiBaseUrl(instanceKey));
         return tapDownloadAdapter.create(TAPTalkDownloadApiService.class);
     }
 
@@ -98,13 +109,14 @@ public class TAPApiConnection {
                 .writeTimeout(1, TimeUnit.MINUTES)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
-                .addInterceptor(new TAPHeaderRequestInterceptor(headerAuth))
+                .addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth))
                 .build();
     }
 
     private OkHttpClient buildHttpTapUploadClient(int headerAuth, long timeOutDuration) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ?
+                HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
@@ -112,20 +124,21 @@ public class TAPApiConnection {
                 .writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
                 .addInterceptor(loggingInterceptor)
-                .addInterceptor(new TAPHeaderRequestInterceptor(headerAuth))
+                .addInterceptor(new TAPHeaderRequestInterceptor(instanceKey, headerAuth))
                 .build();
     }
 
     private OkHttpClient buildHttpTapDownloadClient(int headerAuth, long timeOutDuration) {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        loggingInterceptor.setLevel(TapTalk.isLoggingEnabled ?
+                HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
         return new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
                 .connectTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .readTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .writeTimeout(timeOutDuration, TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)
-                .addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(headerAuth))
+                .addNetworkInterceptor(new TAPDownloadHeaderRequestInterceptor(instanceKey, headerAuth))
                 .build();
     }
 
