@@ -10,16 +10,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
@@ -417,7 +407,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private FrameLayout flProgress;
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivImageBody;
-        private  TAPRoundedCornerImageView rcivQuoteImage;
+        private TAPRoundedCornerImageView rcivQuoteImage;
         private ImageView ivMessageStatus;
         private ImageView ivMessageStatusImage;
         //private ImageView ivReply;
@@ -710,7 +700,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Not downloaded
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_white));
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadLeft)));
-                flProgress.setOnClickListener(v -> {});
+                flProgress.setOnClickListener(v -> {
+                });
                 tvMessageStatus.setVisibility(View.GONE);
             } else {
                 // Uploading / Downloading
@@ -1295,8 +1286,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ImageViewCompat.setImageTintList(ivFileIcon, ColorStateList.valueOf(
                         ContextCompat.getColor(itemView.getContext(),
                                 isMessageFromMySelf(item) ?
-                                R.color.tapIconFileRetryUploadDownloadRight :
-                                R.color.tapIconFileRetryUploadDownloadLeft)));
+                                        R.color.tapIconFileRetryUploadDownloadRight :
+                                        R.color.tapIconFileRetryUploadDownloadLeft)));
                 pbProgress.setVisibility(View.GONE);
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 if (isMessageFromMySelf(item)) {
@@ -1953,9 +1944,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             return;
         }
         if (item.getType() != TYPE_TEXT &&
-                    item.getType() != TYPE_IMAGE &&
-                    item.getType() != TYPE_VIDEO &&
-                    item.getType() != TYPE_LOCATION) {
+                item.getType() != TYPE_IMAGE &&
+                item.getType() != TYPE_VIDEO &&
+                item.getType() != TYPE_LOCATION) {
             spaceAppend = "";
         } else if (isMessageFromMySelf(item)) {
             spaceAppend = RIGHT_BUBBLE_SPACE_APPEND;
@@ -1980,18 +1971,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         int i = 1;
         while (i < indexes.size()) {
             String username = body.substring(indexes.get(i - 1) + 1, indexes.get(i));
-                span.setSpan(new ForegroundColorSpan(
-                                ContextCompat.getColor(TapTalk.appContext,
-                                        isMessageFromMySelf(item) ?
-                                                R.color.tapLeftBubbleMessageBodyURLColor :
-                                                R.color.tapRightBubbleMessageBodyURLColor)),
-                        indexes.get(i - 1), indexes.get(i), 0);
-                span.setSpan(new ClickableSpan() {
-                    @Override
-                    public void onClick(@NonNull View view) {
-                        chatListener.onMentionClicked(item, username);
-                    }
-                }, indexes.get(i - 1), indexes.get(i), 0);
+            span.setSpan(new ForegroundColorSpan(
+                            ContextCompat.getColor(TapTalk.appContext,
+                                    isMessageFromMySelf(item) ?
+                                            R.color.tapLeftBubbleMessageBodyURLColor :
+                                            R.color.tapRightBubbleMessageBodyURLColor)),
+                    indexes.get(i - 1), indexes.get(i), 0);
+            span.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(@NonNull View view) {
+                    chatListener.onMentionClicked(item, username);
+                }
+            }, indexes.get(i - 1), indexes.get(i), 0);
             i += 2;
         }
         return span;
