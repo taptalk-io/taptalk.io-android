@@ -117,6 +117,7 @@ public class TAPChatManager {
     private boolean isFileUploadExist;
     private boolean isFinishChatFlow;
     private boolean isNeedToCalledUpdateRoomStatusAPI = true;
+    private boolean isSendMessageDisabled = false; // TODO TEMPORARY FLAG FOR SEND MESSAGE API
     private int pendingRetryAttempt = 0;
     private int maxRetryAttempt = 10;
     private int pendingRetryInterval = 60 * 1000;
@@ -1489,14 +1490,42 @@ public class TAPChatManager {
      * Send message to server
      */
     private void runSendMessageSequence(TAPMessageModel messageModel) {
-        if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
-            waitingResponses.put(messageModel.getLocalID(), messageModel);
 
+        // TODO TEMPORARY FLAG FOR SEND MESSAGE API
+        if (isSendMessageDisabled) {
+            List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
+            if (!chatListenersCopy.isEmpty()) {
+                for (TAPChatListener chatListener : chatListenersCopy) {
+                    TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
+                    chatListener.onSendMessagePending(tempNewMessage);
+                }
+            }
+            return;
+        }
+
+        if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
             // Send message if socket is connected
+            waitingResponses.put(messageModel.getLocalID(), messageModel);
             sendEmit(kSocketNewMessage, messageModel);
         } else {
             // Add message to queue if socket is not connected
             pendingMessages.put(messageModel.getLocalID(), messageModel);
+        }
+    }
+
+    // TODO TEMPORARY METHOD FOR SEND MESSAGE API
+    public void putWaitingForResponseMessage(TAPMessageModel message) {
+        waitingResponses.put(message.getLocalID(), message);
+    }
+    public void putPendingMessage(TAPMessageModel message) {
+        pendingMessages.put(message.getLocalID(), message);
+    }
+    public void sendMessage(TAPMessageModel message) {
+        if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
+            waitingResponses.put(message.getLocalID(), message);
+            sendEmit(kSocketNewMessage, message);
+        } else {
+            pendingMessages.put(message.getLocalID(), message);
         }
     }
 
@@ -1843,6 +1872,14 @@ public class TAPChatManager {
 
     public void setNeedToCalledUpdateRoomStatusAPI(boolean needToCalledUpdateRoomStatusAPI) {
         isNeedToCalledUpdateRoomStatusAPI = needToCalledUpdateRoomStatusAPI;
+    }
+
+    public boolean isSendMessageDisabled() {
+        return isSendMessageDisabled;
+    }
+
+    public void setSendMessageDisabled(boolean sendMessageDisabled) {
+        isSendMessageDisabled = sendMessageDisabled;
     }
 
     private List<String> getReplyMessageLocalIDs() {
