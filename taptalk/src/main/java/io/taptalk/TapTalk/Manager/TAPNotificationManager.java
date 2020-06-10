@@ -147,11 +147,11 @@ public class TAPNotificationManager {
                 .setSmallIcon(TapTalk.getClientAppIcon(instanceKey))
                 .setContentTitle(TapTalk.getClientAppName(instanceKey))
                 .setContentText(summaryContent)
-                .setStyle(new NotificationCompat.InboxStyle()/*.setSummaryText(summaryContent)*/)
+                .setStyle(new NotificationCompat.InboxStyle())
                 .setGroup(NOTIFICATION_GROUP_DEFAULT)
                 .setGroupSummary(true)
                 .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
-                .setContentIntent(addPendingIntentForSummaryNotification(context, aClass))
+                .setContentIntent(addPendingIntentForSummaryNotification(context, TapTalk.getGroupNotificationPendingIntentClass()))
                 .setAutoCancel(true)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE);
     }
