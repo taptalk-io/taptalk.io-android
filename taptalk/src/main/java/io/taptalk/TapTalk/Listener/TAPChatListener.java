@@ -39,6 +39,10 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     }
 
     @Override
+    public void onSendMessagePending(TAPMessageModel message) {
+    }
+
+    @Override
     public void onReplyMessage(TAPMessageModel message) {
     }
 
