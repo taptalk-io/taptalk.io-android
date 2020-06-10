@@ -2010,8 +2010,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void buildAndSendTextMessage() {
-        String message = etChat.getText().toString();
-        if (!TextUtils.isEmpty(message.trim())) {
+        String message = etChat.getText().toString().trim();
+        if (!TextUtils.isEmpty(message)) {
             etChat.setText("");
             messageAdapter.shrinkExpandedBubble();
             TAPChatManager.getInstance(instanceKey).sendTextMessage(message);

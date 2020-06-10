@@ -34,6 +34,7 @@ import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
@@ -158,6 +159,7 @@ public class TAPNotificationManager {
     private PendingIntent addPendingIntentForSummaryNotification(Context context, Class aClass) {
         Intent intent = new Intent(context, aClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(INSTANCE_KEY, instanceKey);
         return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
     }
 
