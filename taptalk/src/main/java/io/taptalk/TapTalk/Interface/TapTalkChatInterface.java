@@ -20,6 +20,8 @@ public interface TapTalkChatInterface {
 
     void onSendMessage(TAPMessageModel message);
 
+    void onSendMessagePending(TAPMessageModel message);
+
     void onReplyMessage(TAPMessageModel message);
 
     void onRetrySendMessage(TAPMessageModel message);
