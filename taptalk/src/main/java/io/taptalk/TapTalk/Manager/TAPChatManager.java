@@ -294,6 +294,10 @@ public class TAPChatManager {
         return roomQueue;
     }
 
+    public boolean hasPendingMessages() {
+        return !waitingResponses.isEmpty() || !pendingMessages.isEmpty();
+    }
+
     /**
      * generate room ID
      */

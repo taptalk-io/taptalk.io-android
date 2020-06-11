@@ -2046,8 +2046,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
             runOnUiThread(() -> {
                 if (vm.getMessagePointer().containsKey(newID)) {
                     // Update message instead of adding when message pointer already contains the same local ID
+                    int index = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID));
                     vm.updateMessagePointer(newMessage);
-                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                    messageAdapter.notifyItemChanged(index);
                     if (TYPE_IMAGE == newMessage.getType() && ownMessage) {
                         TAPFileUploadManager.getInstance(instanceKey).removeUploadProgressMap(newMessage.getLocalID());
                     }
@@ -2089,6 +2090,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 updateMessageDecoration();
             });
             updateFirstVisibleMessageIndex();
+
+            if (null != vm.getPendingAfterResponse() &&
+                    !TAPChatManager.getInstance(instanceKey).hasPendingMessages()) {
+                messageAfterView.onSuccess(vm.getPendingAfterResponse());
+            }
         }
     }
 
@@ -3347,6 +3353,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
+            if (TAPChatManager.getInstance(instanceKey).hasPendingMessages()) {
+                vm.setPendingAfterResponse(response);
+                return;
+            }
+            vm.setPendingAfterResponse(null);
             List<TAPMessageEntity> responseMessages = new ArrayList<>(); // Entities to be saved to database
             List<TAPMessageModel> messageAfterModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
             List<String> unreadMessageIds = new ArrayList<>(); // Results to be marked as read
