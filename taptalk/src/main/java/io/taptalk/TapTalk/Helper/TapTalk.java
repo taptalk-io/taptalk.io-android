@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
@@ -60,6 +59,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
@@ -117,6 +117,7 @@ public class TapTalk implements LifecycleObserver {
     //    private Thread.UncaughtExceptionHandler defaultUEH;
     public TapTalkImplementationType implementationType;
     public String tapTalkUserAgent = "android";
+    private static Class groupPendingIntentClass = TapUIRoomListActivity.class;
 
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
@@ -323,10 +324,11 @@ public class TapTalk implements LifecycleObserver {
 
     public static TapTalk initNewInstance(String instanceKey, Context context, String appKeyID, String appKeySecret, String userAgent, int clientAppIcon, String clientAppName, String appBaseURL, TapTalkImplementationType type, TapListener listener) {
         if (!getTapTalkInstances().containsKey(instanceKey)) {
-            TapTalk instance =  new TapTalk(instanceKey, context, appKeyID, appKeySecret, userAgent, clientAppIcon, clientAppName, appBaseURL, type, listener);
+            TapTalk instance = new TapTalk(instanceKey, context, appKeyID, appKeySecret, userAgent, clientAppIcon, clientAppName, appBaseURL, type, listener);
             getTapTalkInstances().put(instanceKey, instance);
             getInstanceKeys().add(instanceKey);
-            refreshRemoteConfigs(instanceKey, new TapCommonListener() {});
+            refreshRemoteConfigs(instanceKey, new TapCommonListener() {
+            });
         }
         return getTapTalkInstances().get(instanceKey);
     }
@@ -348,6 +350,14 @@ public class TapTalk implements LifecycleObserver {
 
     public static void setLoggingEnabled(boolean enabled) {
         isLoggingEnabled = enabled;
+    }
+
+    public static void setGroupNotificationPendingIntentClass(Class groupNotificationPendingIntentClass) {
+        groupPendingIntentClass = groupNotificationPendingIntentClass;
+    }
+
+    public static Class getGroupNotificationPendingIntentClass() {
+        return groupPendingIntentClass;
     }
 
     public static void setTapTalkCustomUserAgent(String userAgent) {
@@ -518,7 +528,7 @@ public class TapTalk implements LifecycleObserver {
         TAPDataManager.getInstance(instanceKey).deleteAllFromDatabase();
         TAPDataManager.getInstance(instanceKey).deleteAllManagerData();
         TAPApiManager.getInstance(instanceKey).setLoggedOut(true);
-        TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey,false);
+        TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, false);
         TAPChatManager.getInstance(instanceKey).disconnectAfterRefreshTokenExpired();
         getTapTalkInstance(instanceKey).isRefreshTokenExpired = true;
     }
@@ -770,22 +780,22 @@ public class TapTalk implements LifecycleObserver {
                 TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(
                         TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
                         new TAPDefaultDataView<TAPGetUserResponse>() {
-                    @Override
-                    public void onSuccess(TAPGetUserResponse response) {
-                        TAPDataManager.getInstance(instanceKey).saveActiveUser(response.getUser());
-                        listener.onSuccess(SUCCESS_MESSAGE_REFRESH_ACTIVE_USER);
-                    }
+                            @Override
+                            public void onSuccess(TAPGetUserResponse response) {
+                                TAPDataManager.getInstance(instanceKey).saveActiveUser(response.getUser());
+                                listener.onSuccess(SUCCESS_MESSAGE_REFRESH_ACTIVE_USER);
+                            }
 
-                    @Override
-                    public void onError(TAPErrorModel error) {
-                        listener.onError(error.getCode(), error.getMessage());
-                    }
+                            @Override
+                            public void onError(TAPErrorModel error) {
+                                listener.onError(error.getCode(), error.getMessage());
+                            }
 
-                    @Override
-                    public void onError(String errorMessage) {
-                        listener.onError(ERROR_CODE_OTHERS, errorMessage);
-                    }
-                });
+                            @Override
+                            public void onError(String errorMessage) {
+                                listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                            }
+                        });
             } else {
                 listener.onError(ERROR_CODE_ACTIVE_USER_NOT_FOUND, ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND);
             }
@@ -1051,7 +1061,7 @@ public class TapTalk implements LifecycleObserver {
         isForeground = false;
 
         for (Map.Entry<String, TapTalk> entry : getTapTalkInstances().entrySet()) {
-            TAPRoomListViewModel.setShouldNotLoadFromAPI(entry.getValue().instanceKey,false);
+            TAPRoomListViewModel.setShouldNotLoadFromAPI(entry.getValue().instanceKey, false);
             // TODO: 18 Mar 2020
             TAPDataManager.getInstance(entry.getValue().instanceKey).setNeedToQueryUpdateRoomList(true);
             TAPNetworkStateManager.getInstance(entry.getValue().instanceKey).unregisterCallback(TapTalk.appContext);
