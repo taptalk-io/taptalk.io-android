@@ -994,14 +994,20 @@ public class TAPFileUploadManager {
             }).start();
 
             String localID = messageModel.getLocalID();
-            long size = 0L;
-            if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
-                size = ((Number) messageModel.getData().get(SIZE)).longValue();
-            }
-            addUploadProgressMap(localID, 100, size);
-            TAPDataImageModel imageDataModel = TAPDataImageModel.Builder(response.getId(), encodedThumbnail,
-                    response.getMediaType(), response.getSize(), response.getWidth(),
-                    response.getHeight(), response.getCaption());
+            //long size = 0L;
+            //if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
+            //    size = ((Number) messageModel.getData().get(SIZE)).longValue();
+            //}
+            addUploadProgressMap(localID, 100, response.getSize());
+            TAPDataImageModel imageDataModel = TAPDataImageModel.Builder(
+                    response.getId(),
+                    response.getFileURL(),
+                    encodedThumbnail,
+                    response.getMediaType(),
+                    response.getSize(),
+                    response.getWidth(),
+                    response.getHeight(),
+                    response.getCaption());
             HashMap<String, Object> imageDataMap = imageDataModel.toHashMapWithoutFileUri();
             if (null != messageModel.getData()) {
                 messageModel.putData(imageDataMap);
@@ -1030,15 +1036,19 @@ public class TAPFileUploadManager {
                                                    TAPUploadFileResponse response) {
         try {
             String localID = messageModel.getLocalID();
-            long size = 0L;
-            if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
-                size = ((Number) messageModel.getData().get(SIZE)).longValue();
-            }
-            addUploadProgressMap(localID, 100, size);
+            //long size = 0L;
+            //if (null != messageModel.getData() && null != messageModel.getData().get(SIZE)) {
+            //    size = ((Number) messageModel.getData().get(SIZE)).longValue();
+            //}
+            addUploadProgressMap(localID, 100, response.getSize());
 
             TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(roomID, response.getId(), (String) messageModel.getData().get(FILE_URI));
-            TAPDataFileModel fileDataModel = TAPDataFileModel.Builder(response.getId(), fileName,
-                    mimetype, response.getSize());
+            TAPDataFileModel fileDataModel = TAPDataFileModel.Builder(
+                    response.getId(),
+                    response.getFileURL(),
+                    fileName,
+                    mimetype,
+                    response.getSize());
             HashMap<String, Object> fileDataMap = fileDataModel.toHashMap();
             if (null != messageModel.getData()) {
                 messageModel.putData(fileDataMap);
