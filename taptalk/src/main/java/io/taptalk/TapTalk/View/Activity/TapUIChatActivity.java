@@ -834,6 +834,29 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
+        // Show / hide attachment button
+        if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
+        ) {
+            ivButtonAttach.setVisibility(View.GONE);
+            etChat.setPadding(
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6),
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6)
+            );
+        } else {
+            ivButtonAttach.setVisibility(View.VISIBLE);
+            etChat.setPadding(
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6),
+                    TAPUtils.dpToPx(44),
+                    TAPUtils.dpToPx(6)
+            );
+        }
+
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_personal_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(String.format(getString(R.string.tap_format_s_personal_chat_room_empty_guide_content), vm.getRoom().getRoomName()));
@@ -1433,7 +1456,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         //    etChat.requestFocus();
         //}
         TAPUtils.dismissKeyboard(this);
-        TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(attachmentListener);
+        TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(instanceKey, attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 

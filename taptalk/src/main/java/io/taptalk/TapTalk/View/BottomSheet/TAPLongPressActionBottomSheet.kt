@@ -80,7 +80,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ""
         }
 
-        var longPressAdapter = TAPAttachmentAdapter(listOf(), message,
+        var longPressAdapter = TAPAttachmentAdapter(instanceKey, listOf(), message,
                 bottomSheetListener, onClickListener)
         when (longPressType) {
             LongPressType.CHAT_BUBBLE_TYPE -> {
@@ -93,23 +93,23 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 } else if (!message?.sending!!) {
                     when (message?.type) {
                         TYPE_IMAGE -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createImageBubbleLongPressMenu(instanceKey, message),
+                            longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createImageBubbleLongPressMenu(instanceKey, message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_VIDEO -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createVideoBubbleLongPressMenu(instanceKey, message),
+                            longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createVideoBubbleLongPressMenu(instanceKey, message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_FILE -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createFileBubbleLongPressMenu(instanceKey, message),
+                            longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createFileBubbleLongPressMenu(instanceKey, message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_LOCATION -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLocationBubbleLongPressMenu(instanceKey, message),
+                            longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createLocationBubbleLongPressMenu(instanceKey, message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         TYPE_TEXT -> {
-                            longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createTextBubbleLongPressMenu(instanceKey, message),
+                            longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createTextBubbleLongPressMenu(instanceKey, message),
                                     message, bottomSheetListener, onClickListener)
                         }
                         else -> {
@@ -121,23 +121,23 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 }
             }
             LongPressType.EMAIL_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createEmailLongPressMenu(),
+                longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createEmailLongPressMenu(),
                         urlMessage, linkifyResult, bottomSheetListener, onClickListener)
             }
             LongPressType.LINK_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createLinkLongPressMenu(),
+                longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createLinkLongPressMenu(),
                         urlMessage, linkifyResult, bottomSheetListener, onClickListener)
             }
             LongPressType.PHONE_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(TAPAttachmentModel.createPhoneLongPressMenu(),
+                longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createPhoneLongPressMenu(),
                         urlMessage, linkifyResult, bottomSheetListener, onClickListener)
             }
             LongPressType.MENTION_TYPE -> {
                 longPressAdapter = if (linkifyResult.substring(1) == TAPChatManager.getInstance(instanceKey).activeUser.username) {
-                    TAPAttachmentAdapter(TAPAttachmentModel.createCopyLongPressMenu(),
+                    TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createCopyLongPressMenu(),
                             urlMessage, linkifyResult, bottomSheetListener, onClickListener)
                 } else {
-                    TAPAttachmentAdapter(TAPAttachmentModel.createMentionLongPressMenu(),
+                    TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createMentionLongPressMenu(),
                             urlMessage, linkifyResult, bottomSheetListener, onClickListener)
                 }
             }
