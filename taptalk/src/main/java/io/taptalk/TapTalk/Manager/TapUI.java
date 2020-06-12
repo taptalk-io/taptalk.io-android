@@ -74,6 +74,10 @@ public class TapUI {
     private boolean isLogoutButtonVisible;
     private boolean isReadStatusHidden;
     private boolean isConnectionStatusIndicatorHidden;
+    private boolean isDocumentAttachmentDisabled;
+    private boolean isCameraAttachmentDisabled;
+    private boolean isGalleryAttachmentDisabled;
+    private boolean isLocationAttachmentDisabled;
 
     public TapUI(String instanceKey) {
         this.instanceKey = instanceKey;
@@ -514,6 +518,38 @@ public class TapUI {
             return;
         }
         isConnectionStatusIndicatorHidden = !isVisible;
+    }
+
+    public boolean isDocumentAttachmentDisabled() {
+        return isDocumentAttachmentDisabled;
+    }
+
+    public void setDocumentAttachmentDisabled(boolean documentAttachmentDisabled) {
+        isDocumentAttachmentDisabled = documentAttachmentDisabled;
+    }
+
+    public boolean isCameraAttachmentDisabled() {
+        return isCameraAttachmentDisabled;
+    }
+
+    public void setCameraAttachmentDisabled(boolean cameraAttachmentDisabled) {
+        isCameraAttachmentDisabled = cameraAttachmentDisabled;
+    }
+
+    public boolean isGalleryAttachmentDisabled() {
+        return isGalleryAttachmentDisabled;
+    }
+
+    public void setGalleryAttachmentDisabled(boolean galleryAttachmentDisabled) {
+        isGalleryAttachmentDisabled = galleryAttachmentDisabled;
+    }
+
+    public boolean isLocationAttachmentDisabled() {
+        return isLocationAttachmentDisabled;
+    }
+
+    public void setLocationAttachmentDisabled(boolean locationAttachmentDisabled) {
+        isLocationAttachmentDisabled = locationAttachmentDisabled;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {

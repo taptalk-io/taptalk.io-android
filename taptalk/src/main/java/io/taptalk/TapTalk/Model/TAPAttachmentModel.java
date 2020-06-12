@@ -9,6 +9,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
@@ -77,27 +78,33 @@ public class TAPAttachmentModel {
         this.titleIds = titleIds;
     }
 
-    public static List<TAPAttachmentModel> createAttachMenu() {
+    public static List<TAPAttachmentModel> createAttachMenu(String instanceKey) {
         List<Integer> imageResIds = new ArrayList<>(), titleResIds = new ArrayList<>(), ids = new ArrayList<>();
         // TODO: 31 January 2019 TEMPORARILY DISABLED AUDIO AND CONTACT FROM ATTACHMENT
 
-        imageResIds.add(R.drawable.tap_ic_documents_white);
-        titleResIds.add(R.string.tap_document);
-        ids.add(ATTACH_DOCUMENT);
+        if (!TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled()) {
+            imageResIds.add(R.drawable.tap_ic_documents_white);
+            titleResIds.add(R.string.tap_document);
+            ids.add(ATTACH_DOCUMENT);
+        }
 
-        imageResIds.add(R.drawable.tap_ic_camera_orange);
-        titleResIds.add(R.string.tap_camera);
-        ids.add(ATTACH_CAMERA);
+        if (!TapUI.getInstance(instanceKey).isCameraAttachmentDisabled()) {
+            imageResIds.add(R.drawable.tap_ic_camera_orange);
+            titleResIds.add(R.string.tap_camera);
+            ids.add(ATTACH_CAMERA);
+        }
 
-        imageResIds.add(R.drawable.tap_ic_gallery_orange);
-        titleResIds.add(R.string.tap_gallery);
-        ids.add(ATTACH_GALLERY);
+        if (!TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled()) {
+            imageResIds.add(R.drawable.tap_ic_gallery_orange);
+            titleResIds.add(R.string.tap_gallery);
+            ids.add(ATTACH_GALLERY);
+        }
 
 //        imageResIds.add(R.drawable.tap_ic_audio_pumpkin_orange);
 //        titleResIds.add(R.string.audio);
 //        ids.add(ATTACH_AUDIO);
 
-        if (Places.isInitialized()) {
+        if (Places.isInitialized() && !TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()) {
             imageResIds.add(R.drawable.tap_ic_location_orange);
             titleResIds.add(R.string.tap_location);
             ids.add(ATTACH_LOCATION);

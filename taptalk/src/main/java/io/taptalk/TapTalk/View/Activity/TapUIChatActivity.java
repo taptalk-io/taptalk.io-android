@@ -834,6 +834,29 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
+        // Show / hide attachment button
+        if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
+        ) {
+            ivButtonAttach.setVisibility(View.GONE);
+            etChat.setPadding(
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6),
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6)
+            );
+        } else {
+            ivButtonAttach.setVisibility(View.VISIBLE);
+            etChat.setPadding(
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6),
+                    TAPUtils.dpToPx(44),
+                    TAPUtils.dpToPx(6)
+            );
+        }
+
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_personal_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(String.format(getString(R.string.tap_format_s_personal_chat_room_empty_guide_content), vm.getRoom().getRoomName()));
@@ -1433,7 +1456,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         //    etChat.requestFocus();
         //}
         TAPUtils.dismissKeyboard(this);
-        TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(attachmentListener);
+        TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(instanceKey, attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 
@@ -2046,8 +2069,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
             runOnUiThread(() -> {
                 if (vm.getMessagePointer().containsKey(newID)) {
                     // Update message instead of adding when message pointer already contains the same local ID
+                    int index = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID));
                     vm.updateMessagePointer(newMessage);
-                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                    messageAdapter.notifyItemChanged(index);
                     if (TYPE_IMAGE == newMessage.getType() && ownMessage) {
                         TAPFileUploadManager.getInstance(instanceKey).removeUploadProgressMap(newMessage.getLocalID());
                     }
@@ -2089,6 +2113,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 updateMessageDecoration();
             });
             updateFirstVisibleMessageIndex();
+
+            if (null != vm.getPendingAfterResponse() &&
+                    !TAPChatManager.getInstance(instanceKey).hasPendingMessages()) {
+                messageAfterView.onSuccess(vm.getPendingAfterResponse());
+            }
         }
     }
 
@@ -3347,6 +3376,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
+            if (TAPChatManager.getInstance(instanceKey).hasPendingMessages()) {
+                vm.setPendingAfterResponse(response);
+                return;
+            }
+            vm.setPendingAfterResponse(null);
             List<TAPMessageEntity> responseMessages = new ArrayList<>(); // Entities to be saved to database
             List<TAPMessageModel> messageAfterModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
             List<String> unreadMessageIds = new ArrayList<>(); // Results to be marked as read

@@ -245,7 +245,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun showProfilePicturePickerBottomSheet() {
         TAPUtils.dismissKeyboard(this@TAPRegisterActivity)
-        TAPAttachmentBottomSheet(true, profilePicturePickerListener).show(supportFragmentManager, "")
+        TAPAttachmentBottomSheet(instanceKey, true, profilePicturePickerListener).show(supportFragmentManager, "")
     }
 
     private fun removeProfilePicture() {

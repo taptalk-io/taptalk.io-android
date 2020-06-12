@@ -262,7 +262,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun showProfilePicturePickerBottomSheet() {
         TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
-        TAPAttachmentBottomSheet(true, profilePicturePickerListener).show(supportFragmentManager, "")
+        TAPAttachmentBottomSheet(instanceKey, true, profilePicturePickerListener).show(supportFragmentManager, "")
     }
 
     private fun removeProfilePicture() {
