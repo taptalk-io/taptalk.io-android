@@ -1339,8 +1339,10 @@ public class TAPChatManager {
         List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
         if (!chatListenersCopy.isEmpty()) {
             for (TAPChatListener chatListener : chatListenersCopy) {
-                TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
-                chatListener.onSendMessage(tempNewMessage);
+                if (null != chatListener) {
+                    TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
+                    chatListener.onSendMessage(tempNewMessage);
+                }
             }
         }
     }
@@ -1502,8 +1504,10 @@ public class TAPChatManager {
             List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
             if (!chatListenersCopy.isEmpty()) {
                 for (TAPChatListener chatListener : chatListenersCopy) {
-                    TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
-                    chatListener.onSendMessagePending(tempNewMessage);
+                    if (null != chatListener) {
+                        TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
+                        chatListener.onSendMessagePending(tempNewMessage);
+                    }
                 }
             }
             return;
@@ -1715,13 +1719,15 @@ public class TAPChatManager {
                 ((null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))
                         || (newMessage.getRoom().getRoomID().equals(openRoom)))) {
             for (TAPChatListener chatListener : chatListenersCopy) {
-                TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-                if (kSocketNewMessage.equals(eventName))
-                    chatListener.onReceiveMessageInActiveRoom(tempNewMessage);
-                else if (kSocketUpdateMessage.equals(eventName))
-                    chatListener.onUpdateMessageInActiveRoom(tempNewMessage);
-                else if (kSocketDeleteMessage.equals(eventName))
-                    chatListener.onDeleteMessageInActiveRoom(tempNewMessage);
+                if (null != chatListener) {
+                    TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
+                    if (kSocketNewMessage.equals(eventName))
+                        chatListener.onReceiveMessageInActiveRoom(tempNewMessage);
+                    else if (kSocketUpdateMessage.equals(eventName))
+                        chatListener.onUpdateMessageInActiveRoom(tempNewMessage);
+                    else if (kSocketDeleteMessage.equals(eventName))
+                        chatListener.onDeleteMessageInActiveRoom(tempNewMessage);
+                }
             }
         }
         // Receive message outside active room (not in room List)
@@ -1733,13 +1739,15 @@ public class TAPChatManager {
                 TAPNotificationManager.getInstance(instanceKey).createAndShowInAppNotification(TapTalk.appContext, newMessage);
             }
             for (TAPChatListener chatListener : chatListenersCopy) {
-                TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-                if (kSocketNewMessage.equals(eventName))
-                    chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
-                else if (kSocketUpdateMessage.equals(eventName))
-                    chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
-                else if (kSocketDeleteMessage.equals(eventName))
-                    chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+                if (null != chatListener) {
+                    TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
+                    if (kSocketNewMessage.equals(eventName))
+                        chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
+                    else if (kSocketUpdateMessage.equals(eventName))
+                        chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
+                    else if (kSocketDeleteMessage.equals(eventName))
+                        chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+                }
             }
         }
         // Receive message outside active room (in room List)
@@ -1751,13 +1759,15 @@ public class TAPChatManager {
                 TAPNotificationManager.getInstance(instanceKey).createAndShowInAppNotification(TapTalk.appContext, newMessage);
             }
             for (TAPChatListener chatListener : chatListenersCopy) {
-                TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-                if (kSocketNewMessage.equals(eventName))
-                    chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
-                else if (kSocketUpdateMessage.equals(eventName))
-                    chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
-                else if (kSocketDeleteMessage.equals(eventName))
-                    chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+                if (null != chatListener) {
+                    TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
+                    if (kSocketNewMessage.equals(eventName))
+                        chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
+                    else if (kSocketUpdateMessage.equals(eventName))
+                        chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
+                    else if (kSocketDeleteMessage.equals(eventName))
+                        chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+                }
             }
         }
 
@@ -1913,7 +1923,9 @@ public class TAPChatManager {
         new Thread(() -> {
             List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
             for (TAPChatListener chatListener : chatListenersCopy) {
-                chatListener.onReadMessage(roomID);
+                if (null != chatListener) {
+                    chatListener.onReadMessage(roomID);
+                }
             }
         }).start();
     }
