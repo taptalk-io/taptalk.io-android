@@ -55,8 +55,8 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
-import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
@@ -1351,8 +1351,10 @@ public class TAPChatManager {
         List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
         if (!chatListenersCopy.isEmpty() && isNotifyChatListener) {
             for (TAPChatListener chatListener : chatListenersCopy) {
-                TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
-                chatListener.onSendMessage(tempNewMessage);
+                if (null != chatListener) {
+                    TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
+                    chatListener.onSendMessage(tempNewMessage);
+                }
             }
         }
         runSendMessageSequence(messageModel);
@@ -1521,9 +1523,11 @@ public class TAPChatManager {
     public void putWaitingForResponseMessage(TAPMessageModel message) {
         waitingResponses.put(message.getLocalID(), message);
     }
+
     public void putPendingMessage(TAPMessageModel message) {
         pendingMessages.put(message.getLocalID(), message);
     }
+
     public void sendMessage(TAPMessageModel message) {
         if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
             waitingResponses.put(message.getLocalID(), message);
