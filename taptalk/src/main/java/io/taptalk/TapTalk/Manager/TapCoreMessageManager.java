@@ -141,6 +141,7 @@ public class TapCoreMessageManager {
             }
             TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
         }
+        getCoreMessageListeners().remove(listener);
         getCoreMessageListeners().add(listener);
     }
 

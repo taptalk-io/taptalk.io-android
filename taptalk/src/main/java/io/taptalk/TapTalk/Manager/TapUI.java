@@ -119,6 +119,7 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
+        getRoomListListeners().remove(listener);
         getRoomListListeners().add(listener);
     }
 
@@ -137,6 +138,7 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
+        getChatRoomListeners().remove(listener);
         getChatRoomListeners().add(listener);
     }
 
@@ -155,6 +157,7 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
+        getCustomKeyboardListeners().remove(listener);
         getCustomKeyboardListeners().add(listener);
     }
 

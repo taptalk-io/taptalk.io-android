@@ -237,6 +237,7 @@ public class TAPChatManager {
     };
 
     public void addChatListener(TAPChatListener chatListener) {
+        chatListeners.remove(chatListener);
         chatListeners.add(chatListener);
     }
 
