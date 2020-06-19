@@ -67,7 +67,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
         if (isImagePickerBottomSheet) {
-            setItems(createImagePickerMenu(), false);
+            setItems(createImagePickerMenu(instanceKey), false);
         } else {
             setItems(createAttachMenu(instanceKey), false);
         }

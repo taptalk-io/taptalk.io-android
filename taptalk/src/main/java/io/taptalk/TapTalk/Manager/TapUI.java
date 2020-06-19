@@ -78,6 +78,18 @@ public class TapUI {
     private boolean isCameraAttachmentDisabled;
     private boolean isGalleryAttachmentDisabled;
     private boolean isLocationAttachmentDisabled;
+    private boolean isReplyMessageMenuDisabled;
+    private boolean isForwardMessageMenuDisabled;
+    private boolean isCopyMessageMenuDisabled;
+    private boolean isDeleteMessageMenuDisabled;
+    private boolean isSaveMediaToGalleryMenuDisabled;
+    private boolean isSaveDocumentMenuDisabled;
+    private boolean isOpenLinkMenuDisabled;
+    private boolean isComposeEmailMenuDisabled;
+    private boolean isDialNumberMenuDisabled;
+    private boolean isSendSMSMenuDisabled;
+    private boolean isViewProfileMenuDisabled;
+    private boolean isSendMessageMenuDisabled;
 
     public TapUI(String instanceKey) {
         this.instanceKey = instanceKey;
@@ -550,6 +562,102 @@ public class TapUI {
 
     public void setLocationAttachmentDisabled(boolean locationAttachmentDisabled) {
         isLocationAttachmentDisabled = locationAttachmentDisabled;
+    }
+
+    public boolean isReplyMessageMenuDisabled() {
+        return isReplyMessageMenuDisabled;
+    }
+
+    public void setReplyMessageMenuDisabled(boolean replyMessageMenuDisabled) {
+        isReplyMessageMenuDisabled = replyMessageMenuDisabled;
+    }
+
+    public boolean isForwardMessageMenuDisabled() {
+        return isForwardMessageMenuDisabled;
+    }
+
+    public void setForwardMessageMenuDisabled(boolean forwardMessageMenuDisabled) {
+        isForwardMessageMenuDisabled = forwardMessageMenuDisabled;
+    }
+
+    public boolean isCopyMessageMenuDisabled() {
+        return isCopyMessageMenuDisabled;
+    }
+
+    public void setCopyMessageMenuDisabled(boolean copyMessageMenuDisabled) {
+        isCopyMessageMenuDisabled = copyMessageMenuDisabled;
+    }
+
+    public boolean isDeleteMessageMenuDisabled() {
+        return isDeleteMessageMenuDisabled;
+    }
+
+    public void setDeleteMessageMenuDisabled(boolean deleteMessageMenuDisabled) {
+        isDeleteMessageMenuDisabled = deleteMessageMenuDisabled;
+    }
+
+    public boolean isSaveMediaToGalleryMenuDisabled() {
+        return isSaveMediaToGalleryMenuDisabled;
+    }
+
+    public void setSaveMediaToGalleryMenuDisabled(boolean saveMediaToGalleryMenuDisabled) {
+        isSaveMediaToGalleryMenuDisabled = saveMediaToGalleryMenuDisabled;
+    }
+
+    public boolean isSaveDocumentMenuDisabled() {
+        return isSaveDocumentMenuDisabled;
+    }
+
+    public void setSaveDocumentMenuDisabled(boolean saveDocumentMenuDisabled) {
+        isSaveDocumentMenuDisabled = saveDocumentMenuDisabled;
+    }
+
+    public boolean isOpenLinkMenuDisabled() {
+        return isOpenLinkMenuDisabled;
+    }
+
+    public void setOpenLinkMenuDisabled(boolean openLinkMenuDisabled) {
+        isOpenLinkMenuDisabled = openLinkMenuDisabled;
+    }
+
+    public boolean isComposeEmailMenuDisabled() {
+        return isComposeEmailMenuDisabled;
+    }
+
+    public void setComposeEmailMenuDisabled(boolean composeEmailMenuDisabled) {
+        isComposeEmailMenuDisabled = composeEmailMenuDisabled;
+    }
+
+    public boolean isDialNumberMenuDisabled() {
+        return isDialNumberMenuDisabled;
+    }
+
+    public void setDialNumberMenuDisabled(boolean dialNumberMenuDisabled) {
+        isDialNumberMenuDisabled = dialNumberMenuDisabled;
+    }
+
+    public boolean isSendSMSMenuDisabled() {
+        return isSendSMSMenuDisabled;
+    }
+
+    public void setSendSMSMenuDisabled(boolean sendSMSMenuDisabled) {
+        isSendSMSMenuDisabled = sendSMSMenuDisabled;
+    }
+
+    public boolean isViewProfileMenuDisabled() {
+        return isViewProfileMenuDisabled;
+    }
+
+    public void setViewProfileMenuDisabled(boolean viewProfileMenuDisabled) {
+        isViewProfileMenuDisabled = viewProfileMenuDisabled;
+    }
+
+    public boolean isSendMessageMenuDisabled() {
+        return isSendMessageMenuDisabled;
+    }
+
+    public void setSendMessageMenuDisabled(boolean sendMessageMenuDisabled) {
+        isSendMessageMenuDisabled = sendMessageMenuDisabled;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
