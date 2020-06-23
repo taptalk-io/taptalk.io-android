@@ -65,6 +65,7 @@ public class TAPRoomModel implements Parcelable {
 
     public TAPRoomModel(TAPMessageEntity messageEntity) {
         this.roomID = messageEntity.getRoomID();
+        this.xcRoomID = messageEntity.getXcRoomID();
         this.roomName = messageEntity.getRoomName();
         this.roomType = null == messageEntity.getRoomType() ? TYPE_PERSONAL : messageEntity.getRoomType();
         this.roomImage = TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {

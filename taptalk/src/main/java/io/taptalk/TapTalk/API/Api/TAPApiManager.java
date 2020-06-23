@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -288,9 +289,12 @@ public class TAPApiManager {
                     } else if (UNAUTHORIZED == response.getStatus() &&
                             lastRefreshToken.equals(TAPDataManager.getInstance(instanceKey).getRefreshToken())) {
                         AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Refresh Token Failed", response.getError().getCode(), response.getError().getMessage());
-                        TapTalk.clearAllTapTalkData();
-                        for (TapListener listener : TapTalk.getTapTalkListeners()) {
-                            listener.onTapTalkRefreshTokenExpired();
+                        TapTalk.clearAllTapTalkData(instanceKey);
+                        List<TapListener> tapListeners = TapTalk.getTapTalkListeners(instanceKey);
+                        if (null != tapListeners && !tapListeners.isEmpty()) {
+                            for (TapListener listener : tapListeners) {
+                                listener.onTapTalkRefreshTokenExpired();
+                            }
                         }
                     } else {
                         Observable.error(new TAPAuthException(response.getError().getMessage()));

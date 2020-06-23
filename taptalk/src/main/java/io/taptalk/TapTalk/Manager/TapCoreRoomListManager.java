@@ -27,7 +27,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 
 @Keep
 public class TapCoreRoomListManager {
-    
+
     private static HashMap<String, TapCoreRoomListManager> instances;
 
     private String instanceKey = "";
@@ -84,15 +84,7 @@ public class TapCoreRoomListManager {
                         }
                     }
                     if (userIds.size() > 0) {
-                        TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
-                            @Override
-                            public void onSuccess(TAPGetMultipleUserResponse response) {
-                                if (null == response || response.getUsers().isEmpty()) {
-                                    return;
-                                }
-                                new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers())).start();
-                            }
-                        });
+                        TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
                     }
                     TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                         @Override
@@ -168,15 +160,7 @@ public class TapCoreRoomListManager {
                         }
                     }
                     if (userIds.size() > 0) {
-                        TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
-                            @Override
-                            public void onSuccess(TAPGetMultipleUserResponse response) {
-                                if (null == response || response.getUsers().isEmpty()) {
-                                    return;
-                                }
-                                new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers())).start();
-                            }
-                        });
+                        TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
                     }
                     TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                         @Override
@@ -293,13 +277,58 @@ public class TapCoreRoomListManager {
                     TAPDataManager.getInstance(instanceKey).getMessageRoomListAndUnread(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), new TAPDefaultDataView<TAPGetRoomListResponse>() {
                         @Override
                         public void onSuccess(TAPGetRoomListResponse response) {
-                            super.onSuccess(response);
-                            List<TAPRoomListModel> roomListModel = new ArrayList<>();
-                            for (TAPMessageEntity e : entities) {
-                                roomListModel.add(TAPRoomListModel.buildWithLastMessage(TAPChatManager.getInstance(instanceKey).convertToModel(e)));
-                            }
-                            if (null != listener) {
-                                listener.onSuccess(roomListModel);
+                            if (response.getMessages().size() > 0) {
+                                List<TAPRoomListModel> roomListModel = new ArrayList<>();
+                                List<TAPMessageEntity> tempMessage = new ArrayList<>();
+                                List<TAPMessageModel> deliveredMessages = new ArrayList<>();
+                                List<String> userIds = new ArrayList<>();
+                                for (HashMap<String, Object> messageMap : response.getMessages()) {
+                                    try {
+                                        TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
+                                        TAPMessageEntity entity = TAPChatManager.getInstance(instanceKey).convertToEntity(message);
+                                        tempMessage.add(entity);
+                                        roomListModel.add(TAPRoomListModel.buildWithLastMessage(message));
+
+                                        // Save undelivered messages to list
+                                        if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
+                                            deliveredMessages.add(message);
+                                        }
+
+                                        if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+                                            // User is self, get other user data from API
+                                            userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
+                                        } else {
+                                            // Save user data to contact manager
+                                            TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
+                                        }
+                                        if (null != message.getIsDeleted() && message.getIsDeleted()) {
+                                            TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
+                                        }
+                                    } catch (Exception e) {
+                                        if (null != listener) {
+                                            listener.onError(ERROR_CODE_OTHERS, e.getMessage());
+                                        }
+                                    }
+                                }
+
+                                // Trigger listener callback
+                                if (null != listener) {
+                                    listener.onSuccess(roomListModel);
+                                }
+
+                                // Update status to delivered
+                                if (deliveredMessages.size() > 0) {
+                                    TAPMessageStatusManager.getInstance(instanceKey).updateMessageStatusToDelivered(deliveredMessages);
+                                }
+
+                                // Get updated other user data from API
+                                if (userIds.size() > 0) {
+                                    TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
+                                }
+
+                                // Save message to database
+                                TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
+                                });
                             }
                         }
 
@@ -328,4 +357,14 @@ public class TapCoreRoomListManager {
             }
         });
     }
+
+    private TAPDefaultDataView<TAPGetMultipleUserResponse> getMultipleUserView = new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
+        @Override
+        public void onSuccess(TAPGetMultipleUserResponse response) {
+            if (null == response || response.getUsers().isEmpty()) {
+                return;
+            }
+            new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers())).start();
+        }
+    };
 }

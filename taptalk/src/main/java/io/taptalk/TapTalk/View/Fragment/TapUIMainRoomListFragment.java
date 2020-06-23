@@ -99,7 +99,7 @@ public class TapUIMainRoomListFragment extends Fragment {
     public void onBackPressed() {
         switch (state) {
             case STATE_ROOM_LIST:
-                if (fRoomList.isSelecting()) {
+                if (null != fRoomList && fRoomList.isSelecting()) {
                     fRoomList.cancelSelection();
                 } else if (null != getActivity()) {
                     getActivity().finish();

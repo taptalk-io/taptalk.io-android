@@ -174,6 +174,7 @@ public class TAPConnectionManager {
     }
 
     public void addSocketListener(TapTalkSocketInterface listener) {
+        socketListeners.remove(listener);
         socketListeners.add(listener);
     }
 
