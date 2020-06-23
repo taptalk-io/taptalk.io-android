@@ -388,6 +388,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     protected void onResume() {
         super.onResume();
         TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
+        TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
         etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
 
@@ -408,6 +409,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance(instanceKey).deleteActiveRoom();
+        TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
     }
 
     @Override
@@ -429,7 +431,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPBroadcastManager.unregister(this, broadcastReceiver);
         TAPChatManager.getInstance(instanceKey).updateUnreadCountInRoomList(TAPChatManager.getInstance(instanceKey).getOpenRoom());
         TAPChatManager.getInstance(instanceKey).setOpenRoom(null); // Reset open room
-        TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
         TAPConnectionManager.getInstance(instanceKey).removeSocketListener(socketListener);
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
         TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
@@ -590,7 +591,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void initRoom() {
         if (initViewModel()) {
             initView();
-            initHelper();
             initListener();
             cancelNotificationWhenEnterRoom();
             //registerBroadcastManager();
@@ -834,6 +834,29 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
+        // Show / hide attachment button
+        if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
+            TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
+        ) {
+            ivButtonAttach.setVisibility(View.GONE);
+            etChat.setPadding(
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6),
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6)
+            );
+        } else {
+            ivButtonAttach.setVisibility(View.VISIBLE);
+            etChat.setPadding(
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6),
+                    TAPUtils.dpToPx(44),
+                    TAPUtils.dpToPx(6)
+            );
+        }
+
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getRoomType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_personal_chat_room_empty_guide_title), vm.getRoom().getRoomName())));
             tvProfileDescription.setText(String.format(getString(R.string.tap_format_s_personal_chat_room_empty_guide_content), vm.getRoom().getRoomName()));
@@ -906,10 +929,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivMentionAnchor.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
             clUnreadButton.setBackground(getDrawable(R.drawable.tap_bg_white_rounded_8dp_ripple));
         }
-    }
-
-    private void initHelper() {
-        TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
     }
 
     private void initListener() {
@@ -1433,7 +1452,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         //    etChat.requestFocus();
         //}
         TAPUtils.dismissKeyboard(this);
-        TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(attachmentListener);
+        TAPAttachmentBottomSheet attachBottomSheet = new TAPAttachmentBottomSheet(instanceKey, attachmentListener);
         attachBottomSheet.show(getSupportFragmentManager(), "");
     }
 
@@ -2013,7 +2032,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         String message = etChat.getText().toString().trim();
         if (!TextUtils.isEmpty(message)) {
             etChat.setText("");
-            messageAdapter.shrinkExpandedBubble();
             TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
             // Updated 2020/04/23
             //rvMessageList.scrollToPosition(0);
@@ -2046,8 +2064,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
             runOnUiThread(() -> {
                 if (vm.getMessagePointer().containsKey(newID)) {
                     // Update message instead of adding when message pointer already contains the same local ID
+                    int index = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID));
                     vm.updateMessagePointer(newMessage);
-                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID)));
+                    messageAdapter.notifyItemChanged(index);
                     if (TYPE_IMAGE == newMessage.getType() && ownMessage) {
                         TAPFileUploadManager.getInstance(instanceKey).removeUploadProgressMap(newMessage.getLocalID());
                     }
@@ -2089,6 +2108,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 updateMessageDecoration();
             });
             updateFirstVisibleMessageIndex();
+
+            if (null != vm.getPendingAfterResponse() &&
+                    !TAPChatManager.getInstance(instanceKey).hasPendingMessages()) {
+                messageAfterView.onSuccess(vm.getPendingAfterResponse());
+            }
         }
     }
 
@@ -3347,6 +3371,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private TAPDefaultDataView<TAPGetMessageListByRoomResponse> messageAfterView = new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
         @Override
         public void onSuccess(TAPGetMessageListByRoomResponse response) {
+            if (TAPChatManager.getInstance(instanceKey).hasPendingMessages()) {
+                vm.setPendingAfterResponse(response);
+                return;
+            }
+            vm.setPendingAfterResponse(null);
             List<TAPMessageEntity> responseMessages = new ArrayList<>(); // Entities to be saved to database
             List<TAPMessageModel> messageAfterModels = new ArrayList<>(); // Results from Api that are not present in recyclerView
             List<String> unreadMessageIds = new ArrayList<>(); // Results to be marked as read

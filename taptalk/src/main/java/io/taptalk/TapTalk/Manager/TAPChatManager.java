@@ -55,8 +55,8 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TAPUserRoleModel;
-import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
@@ -237,6 +237,7 @@ public class TAPChatManager {
     };
 
     public void addChatListener(TAPChatListener chatListener) {
+        chatListeners.remove(chatListener);
         chatListeners.add(chatListener);
     }
 
@@ -292,6 +293,10 @@ public class TAPChatManager {
             }
         }
         return roomQueue;
+    }
+
+    public boolean hasPendingMessages() {
+        return !waitingResponses.isEmpty() || !pendingMessages.isEmpty();
     }
 
     /**
@@ -1335,8 +1340,10 @@ public class TAPChatManager {
         List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
         if (!chatListenersCopy.isEmpty()) {
             for (TAPChatListener chatListener : chatListenersCopy) {
-                TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
-                chatListener.onSendMessage(tempNewMessage);
+                if (null != chatListener) {
+                    TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
+                    chatListener.onSendMessage(tempNewMessage);
+                }
             }
         }
     }
@@ -1347,8 +1354,10 @@ public class TAPChatManager {
         List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
         if (!chatListenersCopy.isEmpty() && isNotifyChatListener) {
             for (TAPChatListener chatListener : chatListenersCopy) {
-                TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
-                chatListener.onSendMessage(tempNewMessage);
+                if (null != chatListener) {
+                    TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
+                    chatListener.onSendMessage(tempNewMessage);
+                }
             }
         }
         runSendMessageSequence(messageModel);
@@ -1496,8 +1505,10 @@ public class TAPChatManager {
             List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
             if (!chatListenersCopy.isEmpty()) {
                 for (TAPChatListener chatListener : chatListenersCopy) {
-                    TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
-                    chatListener.onSendMessagePending(tempNewMessage);
+                    if (null != chatListener) {
+                        TAPMessageModel tempNewMessage = messageModel.copyMessageModel();
+                        chatListener.onSendMessagePending(tempNewMessage);
+                    }
                 }
             }
             return;
@@ -1517,9 +1528,11 @@ public class TAPChatManager {
     public void putWaitingForResponseMessage(TAPMessageModel message) {
         waitingResponses.put(message.getLocalID(), message);
     }
+
     public void putPendingMessage(TAPMessageModel message) {
         pendingMessages.put(message.getLocalID(), message);
     }
+
     public void sendMessage(TAPMessageModel message) {
         if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
             waitingResponses.put(message.getLocalID(), message);
@@ -1606,10 +1619,12 @@ public class TAPChatManager {
 
     private void insertToList(Map<String, TAPMessageModel> hashMap) {
         try {
+            List<TAPMessageEntity> messagesToInsert = new ArrayList<>();
             for (Map.Entry<String, TAPMessageModel> message : hashMap.entrySet()) {
-                saveMessages.add(convertToEntity(message.getValue()));
+                messagesToInsert.add(convertToEntity(message.getValue()));
             }
-        } catch (ConcurrentModificationException e) { // FIXME: 20 Dec 2019
+            saveMessages.addAll(messagesToInsert);
+        } catch (ConcurrentModificationException e) {
             e.printStackTrace();
         }
     }
@@ -1707,13 +1722,15 @@ public class TAPChatManager {
                 ((null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))
                         || (newMessage.getRoom().getRoomID().equals(openRoom)))) {
             for (TAPChatListener chatListener : chatListenersCopy) {
-                TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-                if (kSocketNewMessage.equals(eventName))
-                    chatListener.onReceiveMessageInActiveRoom(tempNewMessage);
-                else if (kSocketUpdateMessage.equals(eventName))
-                    chatListener.onUpdateMessageInActiveRoom(tempNewMessage);
-                else if (kSocketDeleteMessage.equals(eventName))
-                    chatListener.onDeleteMessageInActiveRoom(tempNewMessage);
+                if (null != chatListener) {
+                    TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
+                    if (kSocketNewMessage.equals(eventName))
+                        chatListener.onReceiveMessageInActiveRoom(tempNewMessage);
+                    else if (kSocketUpdateMessage.equals(eventName))
+                        chatListener.onUpdateMessageInActiveRoom(tempNewMessage);
+                    else if (kSocketDeleteMessage.equals(eventName))
+                        chatListener.onDeleteMessageInActiveRoom(tempNewMessage);
+                }
             }
         }
         // Receive message outside active room (not in room List)
@@ -1725,13 +1742,15 @@ public class TAPChatManager {
                 TAPNotificationManager.getInstance(instanceKey).createAndShowInAppNotification(TapTalk.appContext, newMessage);
             }
             for (TAPChatListener chatListener : chatListenersCopy) {
-                TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-                if (kSocketNewMessage.equals(eventName))
-                    chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
-                else if (kSocketUpdateMessage.equals(eventName))
-                    chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
-                else if (kSocketDeleteMessage.equals(eventName))
-                    chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+                if (null != chatListener) {
+                    TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
+                    if (kSocketNewMessage.equals(eventName))
+                        chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
+                    else if (kSocketUpdateMessage.equals(eventName))
+                        chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
+                    else if (kSocketDeleteMessage.equals(eventName))
+                        chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+                }
             }
         }
         // Receive message outside active room (in room List)
@@ -1743,13 +1762,15 @@ public class TAPChatManager {
                 TAPNotificationManager.getInstance(instanceKey).createAndShowInAppNotification(TapTalk.appContext, newMessage);
             }
             for (TAPChatListener chatListener : chatListenersCopy) {
-                TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-                if (kSocketNewMessage.equals(eventName))
-                    chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
-                else if (kSocketUpdateMessage.equals(eventName))
-                    chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
-                else if (kSocketDeleteMessage.equals(eventName))
-                    chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+                if (null != chatListener) {
+                    TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
+                    if (kSocketNewMessage.equals(eventName))
+                        chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
+                    else if (kSocketUpdateMessage.equals(eventName))
+                        chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
+                    else if (kSocketDeleteMessage.equals(eventName))
+                        chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+                }
             }
         }
 
@@ -1905,7 +1926,9 @@ public class TAPChatManager {
         new Thread(() -> {
             List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
             for (TAPChatListener chatListener : chatListenersCopy) {
-                chatListener.onReadMessage(roomID);
+                if (null != chatListener) {
+                    chatListener.onReadMessage(roomID);
+                }
             }
         }).start();
     }

@@ -22,6 +22,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
@@ -54,6 +55,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private String tappedMessageLocalID;
     private String lastUnreadMessageLocalID;
     private Integer quoteAction;
+    private TAPGetMessageListByRoomResponse pendingAfterResponse;
     private long lastTimestamp = 0;
     private int initialUnreadCount, numUsers, containerAnimationState, firstVisibleItemIndex;
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
@@ -285,6 +287,14 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.quotedMessage = quotedMessage;
         this.quoteAction = quoteAction;
         TAPChatManager.getInstance(instanceKey).setQuotedMessage(quotedMessage, quoteAction);
+    }
+
+    public TAPGetMessageListByRoomResponse getPendingAfterResponse() {
+        return pendingAfterResponse;
+    }
+
+    public void setPendingAfterResponse(TAPGetMessageListByRoomResponse pendingAfterResponse) {
+        this.pendingAfterResponse = pendingAfterResponse;
     }
 
     public String getTappedMessageLocalID() {

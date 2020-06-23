@@ -45,7 +45,6 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.R;
 
@@ -227,7 +226,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             clContainer.setOnClickListener(v -> TapUIChatActivity.start(
                     itemView.getContext(),
-                    ((TAPBaseActivity) itemView.getContext()).instanceKey,
+                    instanceKey,
                     message.getRoomID(),
                     message.getRoomName(),
                     // TODO: 18 October 2018 REMOVE CHECK
@@ -387,7 +386,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             clContainer.setOnClickListener(v -> {
                 if (null == roomListInterface) {
                     // Open chat room
-                    TapUIChatActivity.start(itemView.getContext(), ((TAPBaseActivity) itemView.getContext()).instanceKey, room);
+                    TapUIChatActivity.start(itemView.getContext(), instanceKey, room);
                     TAPRecentSearchEntity recentItem = TAPRecentSearchEntity.Builder(item);
                     TAPDataManager.getInstance(instanceKey).insertToDatabase(recentItem);
                 } else {

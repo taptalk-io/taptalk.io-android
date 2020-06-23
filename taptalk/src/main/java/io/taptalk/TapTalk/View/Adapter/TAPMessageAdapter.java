@@ -149,7 +149,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private static final String TAG = TAPMessageAdapter.class.getSimpleName();
     private String instanceKey = "";
     private TAPChatListener chatListener;
-    private TAPMessageModel expandedBubble, highlightedMessage;
+    private List<TAPMessageModel> pendingAnimationMessages, animatingMessages;
+    private TAPMessageModel highlightedMessage;
     private TAPUserModel myUserModel;
     private Map<String, List<Integer>> messageMentionIndexes;
     private Drawable bubbleOverlayLeft, bubbleOverlayRight;
@@ -168,6 +169,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         this.chatListener = chatListener;
         this.glide = glide;
         this.messageMentionIndexes = messageMentionIndexes;
+        pendingAnimationMessages = new ArrayList<>();
+        animatingMessages = new ArrayList<>();
     }
 
     @NonNull
@@ -351,7 +354,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (!item.isAnimating()) {
+            if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
             }
             tvMessageTimestamp.setText(item.getMessageStatusText());
@@ -466,7 +469,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (!item.isAnimating()) {
+            if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, null);
             }
             tvMessageTimestamp.setText(item.getMessageStatusText());
@@ -831,7 +834,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (!item.isAnimating()) {
+            if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, null);
             }
 
@@ -1223,7 +1226,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (!item.isAnimating()) {
+            if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
             }
             tvMessageTimestamp.setText(item.getMessageStatusText());
@@ -1454,7 +1457,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == mapData) {
                 return;
             }
-            if (!item.isAnimating()) {
+            if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
             }
             tvMessageTimestamp.setText(item.getMessageStatusText());
@@ -1716,7 +1719,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            super.onBind(item, position);
             markMessageAsRead(item, myUserModel);
         }
     }
@@ -1752,7 +1754,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            if (!item.isAnimating()) {
+            if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, null, null, civAvatar, tvAvatarLabel, tvUserName);
             }
             markMessageAsRead(item, myUserModel);
@@ -1776,7 +1778,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                       @Nullable ImageView ivMessageStatus,
                                       @Nullable ImageView ivMessageStatusImage,
                                       @Nullable ImageView ivSending) {
-        item.setNeedAnimateSend(true);
+        pendingAnimationMessages.add(item);
         flBubble.setTranslationX(initialTranslationX);
         if (null != ivSending) {
             ivSending.setTranslationX(0);
@@ -2336,15 +2338,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     private void animateSend(TAPMessageModel item, FrameLayout flBubble,
                              ImageView ivSending, ImageView ivMessageStatus) {
-        if (!item.isNeedAnimateSend()) {
+        if (!pendingAnimationMessages.contains(item)) {
             // Set bubble state to post-animation
             flBubble.setTranslationX(0);
             ivMessageStatus.setTranslationX(0);
             ivSending.setAlpha(0f);
         } else {
             // Animate bubble
-            item.setNeedAnimateSend(false);
-            item.setAnimating(true);
+            pendingAnimationMessages.remove(item);
+            animatingMessages.add(item);
             flBubble.setTranslationX(initialTranslationX);
             ivSending.setTranslationX(0);
             ivSending.setTranslationY(0);
@@ -2360,7 +2362,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         .setInterpolator(new AccelerateInterpolator(0.5f))
                         .withEndAction(() -> {
                             ivSending.setAlpha(0f);
-                            item.setAnimating(false);
+                            animatingMessages.remove(item);
                             if ((null != item.getIsRead() && item.getIsRead()) ||
                                     (null != item.getDelivered() && item.getDelivered())) {
                                 notifyItemChanged(getItems().indexOf(item));
@@ -2540,14 +2542,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public void removeMessage(TAPMessageModel message) {
         removeItem(message);
-    }
-
-    public void shrinkExpandedBubble() {
-        if (null == expandedBubble) {
-            return;
-        }
-        expandedBubble.setExpanded(false);
-        notifyItemChanged(getItems().indexOf(expandedBubble));
     }
 
     public void highlightMessage(TAPMessageModel message) {
