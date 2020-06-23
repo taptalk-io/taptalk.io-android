@@ -55,23 +55,26 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createImagePickerMenu;
 
 public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
 
+    private String instanceKey = "";
     private TAPAttachmentListener attachmentListener;
     private View.OnClickListener onClickListener;
     private String messageToCopy = "";
     private String linkifyResult = "";
     private TAPMessageModel message;
 
-    public TAPAttachmentAdapter(boolean isImagePickerBottomSheet, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public TAPAttachmentAdapter(String instanceKey, boolean isImagePickerBottomSheet, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        this.instanceKey = instanceKey;
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
         if (isImagePickerBottomSheet) {
-            setItems(createImagePickerMenu(), false);
+            setItems(createImagePickerMenu(instanceKey), false);
         } else {
-            setItems(createAttachMenu(), false);
+            setItems(createAttachMenu(instanceKey), false);
         }
     }
 
-    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, String messageToCopy, String linkifyResult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, String messageToCopy, String linkifyResult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        this.instanceKey = instanceKey;
         setItems(items);
         this.attachmentListener = attachmentListener;
         this.messageToCopy = messageToCopy;
@@ -79,7 +82,8 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         this.linkifyResult = linkifyResult;
     }
 
-    public TAPAttachmentAdapter(List<TAPAttachmentModel> items, TAPMessageModel message, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, TAPMessageModel message, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        this.instanceKey = instanceKey;
         setItems(items);
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;

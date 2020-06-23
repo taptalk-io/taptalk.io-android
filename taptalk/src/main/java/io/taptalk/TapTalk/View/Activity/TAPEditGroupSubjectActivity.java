@@ -360,7 +360,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     private void showProfilePicturePickerBottomSheet() {
         TAPUtils.dismissKeyboard(this);
         TAPUtils.animateClickButton(llChangeGroupPicture, 0.95f);
-        new TAPAttachmentBottomSheet(true, profilePicturePickerListener).show(getSupportFragmentManager(), "");
+        new TAPAttachmentBottomSheet(instanceKey, true, profilePicturePickerListener).show(getSupportFragmentManager(), "");
     }
 
     private void validateAndCreateGroup() {

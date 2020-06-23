@@ -53,7 +53,7 @@ public class TAPNotificationManager {
     private static final String TAG = TAPNotificationManager.class.getSimpleName();
     private static HashMap<String, TAPNotificationManager> instances;
     private static Map<String, List<TAPMessageModel>> notificationMessagesMap;
-    private String instanceKey = ""; // TODO: 18 Mar 2020
+    private String instanceKey = "";
     private boolean isRoomListAppear;
 
     public TAPNotificationManager(String instanceKey) {

@@ -101,7 +101,6 @@ public class TAPMessageModel implements Parcelable {
     @JsonProperty("target")
     private TAPMessageTargetModel target;
     @JsonIgnore private String messageStatusText;
-    @JsonIgnore private boolean isExpanded, isNeedAnimateSend, isAnimating;
 
     public TAPMessageModel(@Nullable String messageID,
                            @NonNull String localID,
@@ -427,30 +426,6 @@ public class TAPMessageModel implements Parcelable {
         return messageStatusText;
     }
 
-    public boolean isExpanded() {
-        return isExpanded;
-    }
-
-    public void setExpanded(boolean expanded) {
-        isExpanded = expanded;
-    }
-
-    public boolean isNeedAnimateSend() {
-        return isNeedAnimateSend;
-    }
-
-    public void setNeedAnimateSend(boolean sendAnimateFinished) {
-        isNeedAnimateSend = sendAnimateFinished;
-    }
-
-    public boolean isAnimating() {
-        return isAnimating;
-    }
-
-    public void setAnimating(boolean animating) {
-        isAnimating = animating;
-    }
-
     public TAPMessageModel updateMessageStatus(TAPMessageModel model) {
         if (null != model && null != model.isDeleted && (null == this.isDeleted || !this.isDeleted))
             this.isDeleted = model.getIsDeleted();
@@ -613,9 +588,6 @@ public class TAPMessageModel implements Parcelable {
         dest.writeString(this.action);
         dest.writeParcelable(this.target, flags);
         dest.writeString(this.messageStatusText);
-        dest.writeByte(this.isExpanded ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.isNeedAnimateSend ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.isAnimating ? (byte) 1 : (byte) 0);
     }
 
     protected TAPMessageModel(Parcel in) {
@@ -643,9 +615,6 @@ public class TAPMessageModel implements Parcelable {
         this.action = in.readString();
         this.target = in.readParcelable(TAPMessageTargetModel.class.getClassLoader());
         this.messageStatusText = in.readString();
-        this.isExpanded = in.readByte() != 0;
-        this.isNeedAnimateSend = in.readByte() != 0;
-        this.isAnimating = in.readByte() != 0;
     }
 
     public static final Creator<TAPMessageModel> CREATOR = new Creator<TAPMessageModel>() {

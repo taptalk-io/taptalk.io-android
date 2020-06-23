@@ -97,6 +97,7 @@ public class TAPNetworkStateManager {
     }
 
     public void addNetworkListener(TapTalkNetworkInterface listener) {
+        listeners.remove(listener);
         listeners.add(listener);
     }
 

@@ -14,6 +14,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 
@@ -21,6 +22,9 @@ public class TAPDataFileModel implements Parcelable {
     @Nullable
     @JsonProperty("fileID")
     private String fileID;
+    @Nullable
+    @JsonProperty("fileURL")
+    private String fileURL;
     @Nullable
     @JsonProperty("fileName")
     private String fileName;
@@ -34,8 +38,9 @@ public class TAPDataFileModel implements Parcelable {
     @JsonProperty("fileUri")
     private String fileUri;
 
-    public TAPDataFileModel(@Nullable String fileID, @Nullable String fileName, @Nullable String mediaType, @Nullable Number size) {
+    public TAPDataFileModel(@Nullable String fileID, @Nullable String fileURL, @Nullable String fileName, @Nullable String mediaType, @Nullable Number size) {
         this.fileID = fileID;
+        this.fileURL = fileURL;
         this.fileName = fileName;
         this.mediaType = mediaType;
         this.size = size;
@@ -50,13 +55,14 @@ public class TAPDataFileModel implements Parcelable {
     public TAPDataFileModel() {
     }
 
-    public static TAPDataFileModel Builder(String fileID, String fileName,
+    public static TAPDataFileModel Builder(String fileID, String fileURL, String fileName,
                                            String mediaType, Number size) {
-        return new TAPDataFileModel(fileID, fileName, mediaType, size);
+        return new TAPDataFileModel(fileID, fileURL, fileName, mediaType, size);
     }
 
     public TAPDataFileModel(HashMap<String, Object> imageDataMap) {
         this.fileID = (String) imageDataMap.get(FILE_ID);
+        this.fileURL = (String) imageDataMap.get(FILE_URL);
         this.fileName = (String) imageDataMap.get(FILE_NAME);
         this.mediaType = (String) imageDataMap.get(MEDIA_TYPE);
         this.fileUri = (String) imageDataMap.get(FILE_URI);
@@ -74,6 +80,15 @@ public class TAPDataFileModel implements Parcelable {
 
     public void setFileID(@Nullable String fileID) {
         this.fileID = fileID;
+    }
+
+    @Nullable
+    public String getFileURL() {
+        return fileURL;
+    }
+
+    public void setFileURL(@Nullable String fileURL) {
+        this.fileURL = fileURL;
     }
 
     @Nullable
@@ -120,19 +135,23 @@ public class TAPDataFileModel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.fileID);
+        dest.writeString(this.fileURL);
         dest.writeString(this.fileName);
         dest.writeString(this.mediaType);
         dest.writeSerializable(this.size);
+        dest.writeString(this.fileUri);
     }
 
     protected TAPDataFileModel(Parcel in) {
         this.fileID = in.readString();
+        this.fileURL = in.readString();
         this.fileName = in.readString();
         this.mediaType = in.readString();
         this.size = (Number) in.readSerializable();
+        this.fileUri = in.readString();
     }
 
-    public static final Parcelable.Creator<TAPDataFileModel> CREATOR = new Parcelable.Creator<TAPDataFileModel>() {
+    public static final Creator<TAPDataFileModel> CREATOR = new Creator<TAPDataFileModel>() {
         @Override
         public TAPDataFileModel createFromParcel(Parcel source) {
             return new TAPDataFileModel(source);

@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -32,7 +33,7 @@ public class TAPShowQRFragment extends Fragment {
     private ImageView ivQRCode;
     private Button btnScanQRCode;
 
-    private TAPBaseActivity activity;
+    private Activity activity;
 
     public TAPShowQRFragment() {
     }
@@ -47,7 +48,7 @@ public class TAPShowQRFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        this.activity = (TAPBaseActivity) context;
+        this.activity = (Activity) context;
     }
 
     @Override
@@ -68,8 +69,10 @@ public class TAPShowQRFragment extends Fragment {
         btnScanQRCode = view.findViewById(R.id.btn_scan_qr_code);
 
         try {
-            bitmap = encodeAsBitmap("id:" + TAPChatManager.getInstance(activity.instanceKey).getActiveUser().getUserID());
-            ivQRCode.setImageBitmap(bitmap);
+            if (activity instanceof TAPBaseActivity) {
+                bitmap = encodeAsBitmap("id:" + TAPChatManager.getInstance(((TAPBaseActivity) activity).instanceKey).getActiveUser().getUserID());
+                ivQRCode.setImageBitmap(bitmap);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
