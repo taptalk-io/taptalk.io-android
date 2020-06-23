@@ -1718,7 +1718,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
-            super.onBind(item, position);
             markMessageAsRead(item, myUserModel);
         }
     }
