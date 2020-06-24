@@ -70,7 +70,11 @@ public class TapTalkDialog extends Dialog {
         if (context instanceof Activity && ((Activity) context).isFinishing()) {
             return;
         }
-        super.show();
+        try {
+            super.show();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 
     private class OnClickListener implements View.OnClickListener {
