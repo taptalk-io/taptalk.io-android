@@ -1951,7 +1951,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void checkChatRoomLocked(TAPMessageModel message) {
-        if (null != message && message.getRoom().isLocked()) {
+        if (null == message || null == message.getRoom()) {
+            return;
+        }
+        if (message.getRoom().isLocked()) {
             lockChatRoom();
         } else {
             clChatComposer.setVisibility(View.VISIBLE);
