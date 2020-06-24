@@ -413,7 +413,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private FrameLayout flProgress;
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivImageBody;
-        private  TAPRoundedCornerImageView rcivQuoteImage;
+        private TAPRoundedCornerImageView rcivQuoteImage;
         private ImageView ivMessageStatus;
         private ImageView ivMessageStatusImage;
         //private ImageView ivReply;
