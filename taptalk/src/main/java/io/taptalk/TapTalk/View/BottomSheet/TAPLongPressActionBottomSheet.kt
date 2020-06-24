@@ -37,6 +37,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.linkifyResult = linkifyResult
     }
 
+    constructor(longPressType: LongPressType, message: TAPMessageModel, urlMessage: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener) {
+        this.longPressType = longPressType
+        this.message = message
+        this.urlMessage = urlMessage
+        this.bottomSheetListener = bottomSheetListener
+        this.linkifyResult = linkifyResult
+    }
+
     constructor(longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener) {
         this.longPressType = longPressType
         this.message = message
@@ -52,6 +60,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     companion object {
         fun newInstance(longPressType: LongPressType, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
             val fragment = TAPLongPressActionBottomSheet(longPressType, url, linkifyResult, bottomSheetListener)
+            val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(longPressType: LongPressType, message: TAPMessageModel, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(longPressType, message, url, linkifyResult, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
             return fragment
@@ -190,7 +205,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 if (menus.isEmpty()) {
                     dismiss()
                 } else {
-                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus,
+                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message,
                             urlMessage, linkifyResult, bottomSheetListener, onClickListener)
                 }
             }
