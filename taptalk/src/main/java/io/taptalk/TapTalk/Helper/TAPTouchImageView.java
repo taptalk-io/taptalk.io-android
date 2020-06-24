@@ -212,9 +212,13 @@ public class TAPTouchImageView extends androidx.appcompat.widget.AppCompatImageV
         PointF topLeft = transformCoordTouchToBitmap(0, 0, true);
         PointF bottomRight = transformCoordTouchToBitmap(viewWidth, viewHeight, true);
 
-        float w = getDrawable().getIntrinsicWidth();
-        float h = getDrawable().getIntrinsicHeight();
-        return new RectF(topLeft.x / w, topLeft.y / h, bottomRight.x / w, bottomRight.y / h);
+        try {
+            float w = getDrawable().getIntrinsicWidth();
+            float h = getDrawable().getIntrinsicHeight();
+            return new RectF(topLeft.x / w, topLeft.y / h, bottomRight.x / w, bottomRight.y / h);
+        } catch (Exception e) {
+            return new RectF(0, 0, 0, 0);
+        }
     }
 
     /**
@@ -1074,20 +1078,24 @@ public class TAPTouchImageView extends androidx.appcompat.widget.AppCompatImageV
      * @return Coordinates of the point touched, in the coordinate system of the original drawable.
      */
     private PointF transformCoordTouchToBitmap(float x, float y, boolean clipToBitmap) {
-        matrix.getValues(m);
-        float origW = getDrawable().getIntrinsicWidth();
-        float origH = getDrawable().getIntrinsicHeight();
-        float transX = m[Matrix.MTRANS_X];
-        float transY = m[Matrix.MTRANS_Y];
-        float finalX = ((x - transX) * origW) / getImageWidth();
-        float finalY = ((y - transY) * origH) / getImageHeight();
+        try {
+            matrix.getValues(m);
+            float origW = getDrawable().getIntrinsicWidth();
+            float origH = getDrawable().getIntrinsicHeight();
+            float transX = m[Matrix.MTRANS_X];
+            float transY = m[Matrix.MTRANS_Y];
+            float finalX = ((x - transX) * origW) / getImageWidth();
+            float finalY = ((y - transY) * origH) / getImageHeight();
 
-        if (clipToBitmap) {
-            finalX = Math.min(Math.max(finalX, 0), origW);
-            finalY = Math.min(Math.max(finalY, 0), origH);
+            if (clipToBitmap) {
+                finalX = Math.min(Math.max(finalX, 0), origW);
+                finalY = Math.min(Math.max(finalY, 0), origH);
+            }
+
+            return new PointF(finalX, finalY);
+        } catch (Exception e) {
+            return new PointF(0, 0);
         }
-
-        return new PointF(finalX, finalY);
     }
 
     /**
@@ -1099,14 +1107,18 @@ public class TAPTouchImageView extends androidx.appcompat.widget.AppCompatImageV
      * @return Coordinates of the point in the view's coordinate system.
      */
     private PointF transformCoordBitmapToTouch(float bx, float by) {
-        matrix.getValues(m);
-        float origW = getDrawable().getIntrinsicWidth();
-        float origH = getDrawable().getIntrinsicHeight();
-        float px = bx / origW;
-        float py = by / origH;
-        float finalX = m[Matrix.MTRANS_X] + getImageWidth() * px;
-        float finalY = m[Matrix.MTRANS_Y] + getImageHeight() * py;
-        return new PointF(finalX, finalY);
+        try {
+            matrix.getValues(m);
+            float origW = getDrawable().getIntrinsicWidth();
+            float origH = getDrawable().getIntrinsicHeight();
+            float px = bx / origW;
+            float py = by / origH;
+            float finalX = m[Matrix.MTRANS_X] + getImageWidth() * px;
+            float finalY = m[Matrix.MTRANS_Y] + getImageHeight() * py;
+            return new PointF(finalX, finalY);
+        } catch (Exception e) {
+            return new PointF(0, 0);
+        }
     }
 
     /**
