@@ -359,7 +359,7 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public TAPMessageModel generateDateSeparator(Context context, TAPMessageModel message) {
         return TAPMessageModel.Builder(
-                TAPTimeFormatter.getInstance().dateStampString(context, message.getCreated()),
+                TAPTimeFormatter.dateStampString(context, message.getCreated()),
                 getRoom(),
                 TYPE_DATE_SEPARATOR,
                 message.getCreated() - 1,

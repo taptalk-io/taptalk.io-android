@@ -195,7 +195,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             // Set message timestamp
             // TODO: 17 October 2018 PROCESS DATE OUTSIDE BIND
-            tvMessageTime.setText(TAPTimeFormatter.getInstance().durationString(message.getCreated()));
+            tvMessageTime.setText(TAPTimeFormatter.durationString(message.getCreated()));
 
             // Change Status Message Icon
             // Message is read
