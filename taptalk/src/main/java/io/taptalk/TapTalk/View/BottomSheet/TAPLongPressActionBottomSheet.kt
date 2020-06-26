@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
@@ -15,6 +16,7 @@ import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
+import java.lang.IllegalStateException
 
 class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
@@ -37,6 +39,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.linkifyResult = linkifyResult
     }
 
+    constructor(longPressType: LongPressType, message: TAPMessageModel, urlMessage: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener) {
+        this.longPressType = longPressType
+        this.message = message
+        this.urlMessage = urlMessage
+        this.bottomSheetListener = bottomSheetListener
+        this.linkifyResult = linkifyResult
+    }
+
     constructor(longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener) {
         this.longPressType = longPressType
         this.message = message
@@ -52,6 +62,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     companion object {
         fun newInstance(longPressType: LongPressType, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
             val fragment = TAPLongPressActionBottomSheet(longPressType, url, linkifyResult, bottomSheetListener)
+            val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(longPressType: LongPressType, message: TAPMessageModel, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(longPressType, message, url, linkifyResult, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
             return fragment
@@ -93,24 +110,55 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 } else if (!message?.sending!!) {
                     when (message?.type) {
                         TYPE_IMAGE -> {
-                            longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createImageBubbleLongPressMenu(instanceKey, message),
-                                    message, bottomSheetListener, onClickListener)
+                            val menus =
+                                    TAPAttachmentModel.createImageBubbleLongPressMenu(instanceKey, message)
+                            if (menus.isEmpty()) {
+                                dismiss()
+                            } else {
+                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus,
+                                        message, bottomSheetListener, onClickListener
+                                )
+                            }
                         }
                         TYPE_VIDEO -> {
-                            longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createVideoBubbleLongPressMenu(instanceKey, message),
-                                    message, bottomSheetListener, onClickListener)
+                            val menus =
+                                    TAPAttachmentModel.createVideoBubbleLongPressMenu(instanceKey, message)
+                            if (menus.isEmpty()) {
+                                dismiss()
+                            } else {
+                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus,
+                                        message, bottomSheetListener, onClickListener)
+                            }
                         }
                         TYPE_FILE -> {
-                            longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createFileBubbleLongPressMenu(instanceKey, message),
-                                    message, bottomSheetListener, onClickListener)
+                            val menus =
+                                    TAPAttachmentModel.createFileBubbleLongPressMenu(instanceKey, message)
+                            if (menus.isEmpty()) {
+                                dismiss()
+                            } else {
+                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus,
+                                        message, bottomSheetListener, onClickListener)
+                            }
                         }
                         TYPE_LOCATION -> {
-                            longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createLocationBubbleLongPressMenu(instanceKey, message),
-                                    message, bottomSheetListener, onClickListener)
+                            val menus =
+                                    TAPAttachmentModel.createLocationBubbleLongPressMenu(instanceKey, message)
+                            if (menus.isEmpty()) {
+                                dismiss()
+                            } else {
+                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus,
+                                        message, bottomSheetListener, onClickListener)
+                            }
                         }
                         TYPE_TEXT -> {
-                            longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createTextBubbleLongPressMenu(instanceKey, message),
-                                    message, bottomSheetListener, onClickListener)
+                            val menus =
+                                    TAPAttachmentModel.createTextBubbleLongPressMenu(instanceKey, message)
+                            if (menus.isEmpty()) {
+                                dismiss()
+                            } else {
+                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus,
+                                        message, bottomSheetListener, onClickListener)
+                            }
                         }
                         else -> {
                             dismiss()
@@ -121,23 +169,45 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 }
             }
             LongPressType.EMAIL_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createEmailLongPressMenu(),
-                        urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                val menus =
+                        TAPAttachmentModel.createEmailLongPressMenu(instanceKey)
+                if (menus.isEmpty()) {
+                    dismiss()
+                } else {
+                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus,
+                            urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                }
             }
             LongPressType.LINK_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createLinkLongPressMenu(),
-                        urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                val menus =
+                        TAPAttachmentModel.createLinkLongPressMenu(instanceKey)
+                if (menus.isEmpty()) {
+                    dismiss()
+                } else {
+                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus,
+                            urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                }
             }
             LongPressType.PHONE_TYPE -> {
-                longPressAdapter = TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createPhoneLongPressMenu(),
-                        urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                val menus =
+                        TAPAttachmentModel.createPhoneLongPressMenu(instanceKey)
+                if (menus.isEmpty()) {
+                    dismiss()
+                } else {
+                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus,
+                            urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                }
             }
             LongPressType.MENTION_TYPE -> {
-                longPressAdapter = if (linkifyResult.substring(1) == TAPChatManager.getInstance(instanceKey).activeUser.username) {
-                    TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createCopyLongPressMenu(),
-                            urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                val menus = if (linkifyResult.substring(1) == TAPChatManager.getInstance(instanceKey).activeUser.username) {
+                    TAPAttachmentModel.createCopyLongPressMenu(instanceKey)
                 } else {
-                    TAPAttachmentAdapter(instanceKey, TAPAttachmentModel.createMentionLongPressMenu(),
+                    TAPAttachmentModel.createMentionLongPressMenu(instanceKey)
+                }
+                if (menus.isEmpty()) {
+                    dismiss()
+                } else {
+                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message,
                             urlMessage, linkifyResult, bottomSheetListener, onClickListener)
                 }
             }
@@ -145,5 +215,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         rv_long_press.adapter = longPressAdapter
         rv_long_press.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rv_long_press.setHasFixedSize(true)
+    }
+
+    override fun show(manager: FragmentManager, tag: String?) {
+        try {
+            super.show(manager, tag)
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+        }
     }
 }

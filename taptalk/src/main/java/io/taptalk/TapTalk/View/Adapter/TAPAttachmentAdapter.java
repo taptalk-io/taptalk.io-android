@@ -67,7 +67,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
         if (isImagePickerBottomSheet) {
-            setItems(createImagePickerMenu(), false);
+            setItems(createImagePickerMenu(instanceKey), false);
         } else {
             setItems(createAttachMenu(instanceKey), false);
         }
@@ -77,6 +77,17 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         this.instanceKey = instanceKey;
         setItems(items);
         this.attachmentListener = attachmentListener;
+        this.messageToCopy = messageToCopy;
+        this.onClickListener = onClickListener;
+        this.linkifyResult = linkifyResult;
+    }
+
+    // Mention long press menu
+    public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, TAPMessageModel message, String messageToCopy, String linkifyResult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        this.instanceKey = instanceKey;
+        setItems(items);
+        this.attachmentListener = attachmentListener;
+        this.message = message;
         this.messageToCopy = messageToCopy;
         this.onClickListener = onClickListener;
         this.linkifyResult = linkifyResult;

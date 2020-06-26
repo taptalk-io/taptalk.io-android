@@ -388,6 +388,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     protected void onResume() {
         super.onResume();
         TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
+        TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
         etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft());
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
 
@@ -408,6 +409,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         saveDraftToManager();
         sendTypingEmit(false);
         TAPChatManager.getInstance(instanceKey).deleteActiveRoom();
+        TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
     }
 
     @Override
@@ -429,7 +431,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPBroadcastManager.unregister(this, broadcastReceiver);
         TAPChatManager.getInstance(instanceKey).updateUnreadCountInRoomList(TAPChatManager.getInstance(instanceKey).getOpenRoom());
         TAPChatManager.getInstance(instanceKey).setOpenRoom(null); // Reset open room
-        TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
         TAPConnectionManager.getInstance(instanceKey).removeSocketListener(socketListener);
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
         TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
@@ -590,7 +591,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void initRoom() {
         if (initViewModel()) {
             initView();
-            initHelper();
             initListener();
             cancelNotificationWhenEnterRoom();
             //registerBroadcastManager();
@@ -929,10 +929,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivMentionAnchor.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
             clUnreadButton.setBackground(getDrawable(R.drawable.tap_bg_white_rounded_8dp_ripple));
         }
-    }
-
-    private void initHelper() {
-        TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
     }
 
     private void initListener() {
@@ -1955,7 +1951,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void checkChatRoomLocked(TAPMessageModel message) {
-        if (null != message && message.getRoom().isLocked()) {
+        if (null == message || null == message.getRoom()) {
+            return;
+        }
+        if (message.getRoom().isLocked()) {
             lockChatRoom();
         } else {
             clChatComposer.setVisibility(View.VISIBLE);
@@ -2036,7 +2035,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         String message = etChat.getText().toString().trim();
         if (!TextUtils.isEmpty(message)) {
             etChat.setText("");
-            messageAdapter.shrinkExpandedBubble();
             TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
             // Updated 2020/04/23
             //rvMessageList.scrollToPosition(0);
@@ -3018,8 +3016,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case LongPressMention:
-                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE)) {
-                        TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(MENTION_TYPE, intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
+                    if (null != intent.getStringExtra(URL_MESSAGE) && null != intent.getStringExtra(COPY_MESSAGE) && null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
+                        TAPLongPressActionBottomSheet mentionBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(MENTION_TYPE, intent.getParcelableExtra(MESSAGE), intent.getStringExtra(COPY_MESSAGE), intent.getStringExtra(URL_MESSAGE), attachmentListener);
                         mentionBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }

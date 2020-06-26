@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -41,7 +42,11 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
 
     @Override
     protected void onBind(TAPMessageModel item, int position) {
-        // TODO: 13 November 2019 MARK MESSAGE READ HERE?
+        // TODO MARK MESSAGE AS READ AUTOMATICALLY ON BIND
+        //if (itemView.getContext() instanceof TAPBaseActivity) {
+        //    String instanceKey = ((TAPBaseActivity) itemView.getContext()).instanceKey;
+        //    markMessageAsRead(item, TAPChatManager.getInstance(instanceKey).getActiveUser());
+        //}
     }
 
     protected void onMessageSending(TAPMessageModel message) {
@@ -65,28 +70,28 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
     }
 
     protected void markMessageAsRead(TAPMessageModel item, TAPUserModel myUserModel) {
+        String instanceKey = "";
+        if (itemView.getContext() instanceof TAPBaseActivity) {
+            instanceKey = ((TAPBaseActivity) itemView.getContext()).instanceKey;
+        }
         if (!myUserModel.getUserID().equals(item.getUser().getUserID()) &&
                 (null == item.getIsRead() || !item.getIsRead()) &&
                 (null != item.getSending() && !item.getSending()) &&
-                !TAPMessageStatusManager.getInstance(
-                        ((TAPBaseActivity) itemView.getContext()).instanceKey)
+                !TAPMessageStatusManager.getInstance(instanceKey)
                         .getReadMessageQueue().contains(item.getMessageID()) &&
-                !TAPMessageStatusManager.getInstance(
-                        ((TAPBaseActivity) itemView.getContext()).instanceKey)
+                !TAPMessageStatusManager.getInstance(instanceKey)
                         .getMessagesMarkedAsRead().contains(item.getMessageID())
         ) {
             item.updateReadMessage();
+            String finalInstanceKey = instanceKey;
             new Thread(() -> {
-                TAPMessageStatusManager.getInstance(
-                        ((TAPBaseActivity) itemView.getContext()).instanceKey)
+                TAPMessageStatusManager.getInstance(finalInstanceKey)
                         .addUnreadListByOne(item.getRoom().getRoomID());
                 if (TAPUtils.isActiveUserMentioned(item, myUserModel)) {
-                    TAPMessageStatusManager.getInstance(
-                            ((TAPBaseActivity) itemView.getContext()).instanceKey)
+                    TAPMessageStatusManager.getInstance(finalInstanceKey)
                             .addUnreadMentionByOne(item.getRoom().getRoomID());
                 }
-                TAPMessageStatusManager.getInstance(
-                        ((TAPBaseActivity) itemView.getContext()).instanceKey)
+                TAPMessageStatusManager.getInstance(finalInstanceKey)
                         .addReadMessageQueue(item.getMessageID());
             }).start();
         }
@@ -107,7 +112,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
         }
     }
 
-    protected void setLinkDetection(Context context, TextView tvMessageBody) {
+    protected void setLinkDetection(Context context, TAPMessageModel message, TextView tvMessageBody) {
         TAPBetterLinkMovementMethod movementMethod = TAPBetterLinkMovementMethod.newInstance()
                 .setOnLinkClickListener((textView, url, originalText) -> {
                     if (null != url && url.contains("mailto:")) {
@@ -143,6 +148,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                     } else if (null != url && url.contains("@")) {
                         // Mention
                         Intent intent = new Intent(LongPressMention);
+                        intent.putExtra(MESSAGE, message);
                         intent.putExtra(URL_MESSAGE, url);
                         intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);

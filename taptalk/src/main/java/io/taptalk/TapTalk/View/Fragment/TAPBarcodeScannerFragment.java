@@ -43,7 +43,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
     private CameraSource cameraSource;
     private BarcodeDetector barcodeDetector;
 
-    private TAPBaseActivity activity;
+    private Activity activity;
 
     public interface ScanListener {
         void onScanSuccess(String textValue);
@@ -63,7 +63,7 @@ public class TAPBarcodeScannerFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        this.activity = (TAPBaseActivity) context;
+        this.activity = (Activity) context;
     }
 
     @Override
@@ -86,8 +86,8 @@ public class TAPBarcodeScannerFragment extends Fragment {
                 .build();
 
         ScanListener scanListener = (String textValue) -> {
-            if (!activity.isFinishing()) {
-                TAPScanResultActivity.start(activity, activity.instanceKey, textValue);
+            if (!activity.isFinishing() && activity instanceof TAPBaseActivity) {
+                TAPScanResultActivity.start(activity, ((TAPBaseActivity) activity).instanceKey, textValue);
                 activity.finish();
             }
         };

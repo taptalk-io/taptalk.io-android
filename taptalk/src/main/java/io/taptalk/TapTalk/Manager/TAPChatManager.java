@@ -237,6 +237,7 @@ public class TAPChatManager {
     };
 
     public void addChatListener(TAPChatListener chatListener) {
+        chatListeners.remove(chatListener);
         chatListeners.add(chatListener);
     }
 
@@ -1618,10 +1619,12 @@ public class TAPChatManager {
 
     private void insertToList(Map<String, TAPMessageModel> hashMap) {
         try {
+            List<TAPMessageEntity> messagesToInsert = new ArrayList<>();
             for (Map.Entry<String, TAPMessageModel> message : hashMap.entrySet()) {
-                saveMessages.add(convertToEntity(message.getValue()));
+                messagesToInsert.add(convertToEntity(message.getValue()));
             }
-        } catch (ConcurrentModificationException e) { // FIXME: 20 Dec 2019
+            saveMessages.addAll(messagesToInsert);
+        } catch (ConcurrentModificationException e) {
             e.printStackTrace();
         }
     }

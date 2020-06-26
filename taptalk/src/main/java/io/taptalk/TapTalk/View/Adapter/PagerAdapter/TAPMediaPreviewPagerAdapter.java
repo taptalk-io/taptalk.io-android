@@ -98,7 +98,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                 ivImagePreview.setOnClickListener(v ->
                         TAPVideoPlayerActivity.start(
                                 context,
-                                ((TAPBaseActivity) context).instanceKey,
+                                instanceKey,
                                 mediaPreview.getUri()));
                 if (null != mediaPreview.isSizeExceedsLimit() && mediaPreview.isSizeExceedsLimit()) {
                     etCaption.setVisibility(View.GONE);
@@ -108,7 +108,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                     tvErrorTitle.setText(String.format(context.getString(R.string.tap_format_s_error_exceed_upload_limit),
                             TAPUtils.getStringSizeLengthFile(
                                     TAPFileUploadManager.getInstance(
-                                            ((TAPBaseActivity) context).instanceKey)
+                                            instanceKey)
                                             .getMaxFileUploadSize())));
                 } else {
                     etCaption.setVisibility(View.VISIBLE);
