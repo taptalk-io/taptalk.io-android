@@ -162,9 +162,9 @@ public class TAPFileDownloadManager {
         } else if (null != message.getData() && null != message.getData().get(MEDIA_TYPE)) {
             String mimeType = (String) message.getData().get(MEDIA_TYPE);
             String extension = null == mimeType ? "" : mimeType.substring(mimeType.lastIndexOf("/") + 1);
-            filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS") + "." + extension;
+            filename = TAPTimeFormatter.formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS") + "." + extension;
         } else {
-            filename = TAPTimeFormatter.getInstance().formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
+            filename = TAPTimeFormatter.formatTime(message.getCreated(), "yyyyMMdd_HHmmssSSS");
         }
         return filename;
     }
@@ -474,7 +474,7 @@ public class TAPFileDownloadManager {
     public void writeImageFileToDisk(Context context, Long timestamp, Bitmap bitmap, String mimeType, TapTalkActionInterface listener) {
         new Thread(() -> {
             String imageFormat = mimeType.equals(IMAGE_PNG) ? ".png" : ".jpeg";
-            String filename = TAPTimeFormatter.getInstance().formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
+            String filename = TAPTimeFormatter.formatTime(timestamp, "yyyyMMdd_HHmmssSSS") + imageFormat;
             File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey));
             dir.mkdirs();
 

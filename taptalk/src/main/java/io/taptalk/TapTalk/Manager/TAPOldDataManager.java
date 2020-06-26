@@ -37,24 +37,22 @@ public class TAPOldDataManager {
     public void startAutoCleanProcess() {
         new Thread(() -> {
             long currentTimestamp = System.currentTimeMillis();
-            boolean isOverOneWeek = TAPTimeFormatter.getInstance().isOverOneWeek(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp());
+            boolean isOverOneWeek = TAPTimeFormatter.isOverOneWeek(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp());
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "Start auto clean process: " + (TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists() && isOverOneWeek));
-                Log.d(TAG, "Last auto clean time: " + TAPTimeFormatter.getInstance().formatTime(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp(), "yyyy MMM dd - HH:mm:ss"));
+                Log.d(TAG, "Last auto clean time: " + TAPTimeFormatter.formatTime(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp(), "yyyy MMM dd - HH:mm:ss"));
             }
 
-            // TODO TEST
-//            if (TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists() && isOverOneWeek) {
+            if (TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists() && isOverOneWeek) {
                 TAPDataManager.getInstance(instanceKey).getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
                     @Override
                     public void onSelectFinished(List<TAPMessageEntity> entities) {
-                        Log.e(TAG, "Start auto clean process onSelectFinished: " + entities.size());
                         autoCleanProcessFromRoomQueryResult(entities, currentTimestamp);
                     }
                 });
-//            } else if (!TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists()) {
-//                TAPDataManager.getInstance(instanceKey).saveLastDeleteTimestamp(currentTimestamp);
-//            }
+            } else if (!TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists()) {
+                TAPDataManager.getInstance(instanceKey).saveLastDeleteTimestamp(currentTimestamp);
+            }
         }).start();
     }
 
@@ -73,12 +71,12 @@ public class TAPOldDataManager {
     private void autoCleanProcessFromRoomQueryResult(List<TAPMessageEntity> entities, long currentTimestamp) {
         for (TAPMessageEntity roomEntity : entities) {
             try {
+                // Delay to prevent OutOfMemoryError: pthread_create
                 Thread.sleep(200L);
             } catch (InterruptedException e) {
-                Log.e(TAG, "autoCleanProcessFromRoomQueryResult: thread sleep exception " + e.getMessage());
                 e.printStackTrace();
             }
-            final long[] maxCreatedTimestamp = {TAPTimeFormatter.getInstance().oneMonthAgoTimeStamp(currentTimestamp)};
+            final long[] maxCreatedTimestamp = {TAPTimeFormatter.oneMonthAgoTimeStamp(currentTimestamp)};
             // Check messages in existing rooms
             TAPDataManager.getInstance(instanceKey).getMinCreatedOfUnreadMessage(roomEntity.getRoomID(), new TAPDatabaseListener<Long>() {
                 @Override
@@ -91,7 +89,6 @@ public class TAPOldDataManager {
                         public void onSelectFinished(List<TAPMessageEntity> entities) {
                             if (null != entities && MAX_ITEMS_PER_PAGE < entities.size()) {
                                 // Delete messages and files if room has more than 50 messages
-                                Log.e(TAG, "onSelectFinished: " + roomEntity.getRoomID() + " - " + entities.size());
                                 if (entities.get(MAX_ITEMS_PER_PAGE).getCreated() < maxCreatedTimestamp[0]) {
                                     maxCreatedTimestamp[0] = entities.get(MAX_ITEMS_PER_PAGE).getCreated();
                                 }
@@ -99,13 +96,11 @@ public class TAPOldDataManager {
                                     @Override
                                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                                         for (TAPMessageEntity message : entities) {
-                                            Log.e(TAG, "onSelectFinished: deletePhysicalFile " + roomEntity.getRoomID() + " - " + message.getBody());
                                             TAPDataManager.getInstance(instanceKey).deletePhysicalFile(message);
                                         }
                                         TAPDataManager.getInstance(instanceKey).deleteRoomMessageBeforeTimestamp(roomEntity.getRoomID(), maxCreatedTimestamp[0], new TAPDatabaseListener() {
                                             @Override
                                             public void onDeleteFinished() {
-                                                Log.e(TAG, "onDeleteFinished: " + roomEntity.getRoomID());
                                             }
                                         });
                                     }

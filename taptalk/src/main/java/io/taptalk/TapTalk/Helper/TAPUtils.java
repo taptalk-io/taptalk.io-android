@@ -523,7 +523,7 @@ public class TAPUtils {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (intent.resolveActivity(activity.getPackageManager()) != null) {
                 try {
-                    String filename = TAPTimeFormatter.getInstance().formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
+                    String filename = TAPTimeFormatter.formatTime(System.currentTimeMillis(), "yyyyMMdd_HHmmssSSS");
                     File dir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                     File image = File.createTempFile(filename, ".jpeg", dir);
                     Uri imageUri = FileProvider.getUriForFile(activity, FILEPROVIDER_AUTHORITY, image);
