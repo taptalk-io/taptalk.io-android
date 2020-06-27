@@ -159,7 +159,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
         caption = (String) message.getData().get(CAPTION);
         mimeType = (String) message.getData().get(MEDIA_TYPE);
         title = message.getUser().getName();
-        messageStatus = TAPTimeFormatter.getInstance().durationChatString(TapTalk.appContext, message.getCreated());
+        messageStatus = TAPTimeFormatter.durationChatString(TapTalk.appContext, message.getCreated());
     }
 
     @SuppressLint("ClickableViewAccessibility")

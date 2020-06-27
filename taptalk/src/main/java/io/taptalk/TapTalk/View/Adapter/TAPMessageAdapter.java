@@ -354,6 +354,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
             }
@@ -365,7 +368,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             checkAndAnimateHighlight(item, ivBubbleHighlight);
 
             markMessageAsRead(item, myUserModel);
-            setLinkDetection(itemView.getContext(), tvMessageBody);
+            setLinkDetection(itemView.getContext(), item, tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
@@ -410,7 +413,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private FrameLayout flProgress;
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivImageBody;
-        private  TAPRoundedCornerImageView rcivQuoteImage;
+        private TAPRoundedCornerImageView rcivQuoteImage;
         private ImageView ivMessageStatus;
         private ImageView ivMessageStatusImage;
         //private ImageView ivReply;
@@ -469,6 +472,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, null);
             }
@@ -483,7 +489,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             fixBubbleMarginForGroupRoom(item, flBubble);
 
             markMessageAsRead(item, myUserModel);
-            setLinkDetection(itemView.getContext(), tvMessageBody);
+            setLinkDetection(itemView.getContext(), item, tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivImageBody, item);
 
@@ -588,7 +594,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setBottomRightRadius(0);
                 //tvMessageBody.setText(imageCaption);
                 setMessageBodyText(tvMessageBody, item, imageCaption);
-                setLinkDetection(itemView.getContext(), tvMessageBody);
+                setLinkDetection(itemView.getContext(), item, tvMessageBody);
                 tvMessageBody.setVisibility(View.VISIBLE);
                 llTimestampIconImage.setVisibility(View.GONE);
                 tvMessageTimestamp.setVisibility(View.VISIBLE);
@@ -833,6 +839,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, null);
             }
@@ -848,7 +857,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             fixBubbleMarginForGroupRoom(item, flBubble);
 
             markMessageAsRead(item, myUserModel);
-            setLinkDetection(itemView.getContext(), tvMessageBody);
+            setLinkDetection(itemView.getContext(), item, tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
 
@@ -931,7 +940,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivVideoThumbnail.setBottomRightRadius(0);
                 //tvMessageBody.setText(videoCaption);
                 setMessageBodyText(tvMessageBody, item, videoCaption);
-                setLinkDetection(itemView.getContext(), tvMessageBody);
+                setLinkDetection(itemView.getContext(), item, tvMessageBody);
                 tvMessageBody.setVisibility(View.VISIBLE);
                 llTimestampIconImage.setVisibility(View.GONE);
                 tvMessageTimestamp.setVisibility(View.VISIBLE);
@@ -1225,6 +1234,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
             }
@@ -1453,7 +1465,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         @Override
         protected void onBind(TAPMessageModel item, int position) {
             HashMap<String, Object> mapData = item.getData();
-            if (null == mapData) {
+            if (null == item || null == mapData) {
                 return;
             }
             if (!animatingMessages.contains(item)) {
@@ -1584,6 +1596,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             if (null != item.getData())
                 items = TAPUtils.convertObject(item.getData().get("items")
                         , new TypeReference<List<TAPProductModel>>() {
@@ -1621,6 +1636,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             if (null != item.getAction()) {
                 String systemMessageAction = item.getAction() != null ?
                         item.getAction() : "";
@@ -1665,6 +1683,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             markMessageAsRead(item, myUserModel);
             tvDateSeparator.setText(item.getBody());
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
@@ -1685,6 +1706,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             tvLogMessage.setText(TAPUtils.toJsonString(item));
             //tvLogMessage.setText(item.getBody());
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
@@ -1703,6 +1727,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             if (null == ivLoadingProgress.getAnimation()) {
                 TAPUtils.rotateAnimateInfinitely(itemView.getContext(), ivLoadingProgress);
             }
@@ -1718,6 +1745,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             markMessageAsRead(item, myUserModel);
         }
     }
@@ -1730,6 +1760,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             markMessageAsRead(item, myUserModel);
             // TODO: 28 June 2019 CHECK MESSAGE STATUS FOR DELETED MESSAGE
         }
@@ -1753,6 +1786,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         @Override
         protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
             if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, null, null, civAvatar, tvAvatarLabel, tvUserName);
             }

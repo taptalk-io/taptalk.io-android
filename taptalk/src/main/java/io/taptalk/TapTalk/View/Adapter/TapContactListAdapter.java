@@ -110,7 +110,6 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                 // Load profile picture
                 Glide.with(itemView.getContext())
                         .load(user.getAvatarURL().getThumbnail())
-                        .apply(new RequestOptions().centerCrop())
                         .listener(new RequestListener<Drawable>() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

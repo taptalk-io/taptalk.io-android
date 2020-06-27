@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
@@ -15,6 +16,7 @@ import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
+import java.lang.IllegalStateException
 
 class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
@@ -37,6 +39,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.linkifyResult = linkifyResult
     }
 
+    constructor(longPressType: LongPressType, message: TAPMessageModel, urlMessage: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener) {
+        this.longPressType = longPressType
+        this.message = message
+        this.urlMessage = urlMessage
+        this.bottomSheetListener = bottomSheetListener
+        this.linkifyResult = linkifyResult
+    }
+
     constructor(longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener) {
         this.longPressType = longPressType
         this.message = message
@@ -52,6 +62,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     companion object {
         fun newInstance(longPressType: LongPressType, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
             val fragment = TAPLongPressActionBottomSheet(longPressType, url, linkifyResult, bottomSheetListener)
+            val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(longPressType: LongPressType, message: TAPMessageModel, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(longPressType, message, url, linkifyResult, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
             return fragment
@@ -190,7 +207,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 if (menus.isEmpty()) {
                     dismiss()
                 } else {
-                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus,
+                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message,
                             urlMessage, linkifyResult, bottomSheetListener, onClickListener)
                 }
             }
@@ -198,5 +215,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         rv_long_press.adapter = longPressAdapter
         rv_long_press.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rv_long_press.setHasFixedSize(true)
+    }
+
+    override fun show(manager: FragmentManager, tag: String?) {
+        try {
+            super.show(manager, tag)
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+        }
     }
 }

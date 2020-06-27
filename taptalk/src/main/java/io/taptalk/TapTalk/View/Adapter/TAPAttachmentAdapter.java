@@ -82,6 +82,17 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         this.linkifyResult = linkifyResult;
     }
 
+    // Mention long press menu
+    public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, TAPMessageModel message, String messageToCopy, String linkifyResult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        this.instanceKey = instanceKey;
+        setItems(items);
+        this.attachmentListener = attachmentListener;
+        this.message = message;
+        this.messageToCopy = messageToCopy;
+        this.onClickListener = onClickListener;
+        this.linkifyResult = linkifyResult;
+    }
+
     public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, TAPMessageModel message, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         this.instanceKey = instanceKey;
         setItems(items);
