@@ -1408,43 +1408,49 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void showNormalKeyboard() {
-        rvCustomKeyboard.setVisibility(View.GONE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_burger_menu_ripple));
-        } else {
-            ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_burger_menu));
-        }
-        ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_burger_white));
-        ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
-        //etChat.requestFocus();
-        TAPUtils.showKeyboard(this, etChat);
+        runOnUiThread(() -> {
+            rvCustomKeyboard.setVisibility(View.GONE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_burger_menu_ripple));
+            } else {
+                ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_burger_menu));
+            }
+            ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_burger_white));
+            ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
+            //etChat.requestFocus();
+            TAPUtils.showKeyboard(this, etChat);
+        });
     }
 
     private void showCustomKeyboard() {
-        TAPUtils.dismissKeyboard(this);
-        etChat.clearFocus();
-        new Handler().postDelayed(() -> {
-            rvCustomKeyboard.setVisibility(View.VISIBLE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_show_keyboard_ripple));
-            } else {
-                ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_show_keyboard));
-            }
-            ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_keyboard_white));
-            ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerShowKeyboard));
-        }, 150L);
+        runOnUiThread(() -> {
+            TAPUtils.dismissKeyboard(this);
+            etChat.clearFocus();
+            new Handler().postDelayed(() -> {
+                rvCustomKeyboard.setVisibility(View.VISIBLE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_show_keyboard_ripple));
+                } else {
+                    ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_show_keyboard));
+                }
+                ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_keyboard_white));
+                ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerShowKeyboard));
+            }, 150L);
+        });
     }
 
     private void hideKeyboards() {
-        rvCustomKeyboard.setVisibility(View.GONE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_burger_menu_ripple));
-        } else {
-            ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_burger_menu));
-        }
-        ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_burger_white));
-        ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
-        TAPUtils.dismissKeyboard(this);
+        runOnUiThread(() -> {
+            rvCustomKeyboard.setVisibility(View.GONE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ivButtonChatMenu.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_burger_menu_ripple));
+            } else {
+                ivButtonChatMenu.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_chat_composer_burger_menu));
+            }
+            ivChatMenu.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_ic_burger_white));
+            ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
+            TAPUtils.dismissKeyboard(this);
+        });
     }
 
     private void openAttachMenu() {
@@ -1787,7 +1793,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     // Previously callApiGetGroupData
     private void getRoomDataFromApi() {
-        new Thread(() -> TAPDataManager.getInstance(instanceKey).getChatRoomData(vm.getRoom().getRoomID(), new TAPDefaultDataView<TAPCreateRoomResponse>() {
+        TAPDataManager.getInstance(instanceKey).getChatRoomData(vm.getRoom().getRoomID(), new TAPDefaultDataView<TAPCreateRoomResponse>() {
             @Override
             public void onSuccess(TAPCreateRoomResponse response) {
                 vm.setRoom(response.getRoom());
@@ -1818,46 +1824,44 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }).start();
                 }
             }
-        })).start();
+        });
     }
 
     private void callApiGetUserByUserID() {
-        new Thread(() -> {
-            if (TAPChatManager.getInstance(instanceKey).isNeedToCalledUpdateRoomStatusAPI() &&
-                    TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(this))
-                TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(vm.getOtherUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
-                    @Override
-                    public void onSuccess(TAPGetUserResponse response) {
-                        TAPUserModel userResponse = response.getUser();
-                        TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
-                        TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(userResponse);
-                        setChatRoomStatus(onlineStatus);
-                        TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(false);
+        if (TAPChatManager.getInstance(instanceKey).isNeedToCalledUpdateRoomStatusAPI() &&
+                TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(this)) {
+            TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(vm.getOtherUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
+                @Override
+                public void onSuccess(TAPGetUserResponse response) {
+                    TAPUserModel userResponse = response.getUser();
+                    TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
+                    TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(userResponse);
+                    setChatRoomStatus(onlineStatus);
+                    TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(false);
 
-                        if (null == vm.getOtherUserModel()) {
-                            vm.setOtherUserModel(response.getUser());
-                            initRoom();
-                        }
-
-                        if (!TAPDataManager.getInstance(instanceKey).isChatRoomContactActionDismissed(vm.getRoom().getRoomID()) &&
-                                (null == vm.getOtherUserModel().getIsContact() || vm.getOtherUserModel().getIsContact() == 0)) {
-                            clContactAction.setVisibility(View.VISIBLE);
-                        } else {
-                            clContactAction.setVisibility(View.GONE);
-                        }
+                    if (null == vm.getOtherUserModel()) {
+                        vm.setOtherUserModel(response.getUser());
+                        initRoom();
                     }
 
-                    @Override
-                    public void onError(TAPErrorModel error) {
-                        if (null != error.getCode() && error.getCode().equals(String.valueOf(USER_NOT_FOUND))) {
-                            showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
-                        }
+                    if (!TAPDataManager.getInstance(instanceKey).isChatRoomContactActionDismissed(vm.getRoom().getRoomID()) &&
+                            (null == vm.getOtherUserModel().getIsContact() || vm.getOtherUserModel().getIsContact() == 0)) {
+                        clContactAction.setVisibility(View.VISIBLE);
+                    } else {
+                        clContactAction.setVisibility(View.GONE);
                     }
-                });
-            else if (null == vm.getOtherUserModel()) {
-                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
-            }
-        }).start();
+                }
+
+                @Override
+                public void onError(TAPErrorModel error) {
+                    if (null != error.getCode() && error.getCode().equals(String.valueOf(USER_NOT_FOUND))) {
+                        showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+                    }
+                }
+            });
+        } else if (null == vm.getOtherUserModel()) {
+            showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+        }
     }
 
     // For mentioned user data
@@ -1911,43 +1915,41 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void showChatAsHistory(String message) {
-        if (null != clChatHistory) {
-            runOnUiThread(() -> clChatHistory.setVisibility(View.VISIBLE));
-        }
-        if (null != tvChatHistoryContent) {
-            runOnUiThread(() -> tvChatHistoryContent.setText(message));
-        }
-        if (null != clChatComposer) {
-            runOnUiThread(() -> {
-                TAPUtils.dismissKeyboard(TapUIChatActivity.this);
-                rvCustomKeyboard.setVisibility(View.GONE);
-                clChatComposer.setVisibility(View.INVISIBLE);
-                etChat.clearFocus();
-            });
-        }
-
-        if (null != vRoomImage) {
-            vRoomImage.setClickable(false);
-        }
-
-        if (null != llButtonDeleteChat) {
-            llButtonDeleteChat.setOnClickListener(llDeleteGroupClickListener);
-        }
+        runOnUiThread(() -> {
+            if (null != clChatHistory) {
+                clChatHistory.setVisibility(View.VISIBLE);
+            }
+            if (null != tvChatHistoryContent) {
+                tvChatHistoryContent.setText(message);
+            }
+            if (null != clChatComposer) {
+                    TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                    rvCustomKeyboard.setVisibility(View.GONE);
+                    clChatComposer.setVisibility(View.INVISIBLE);
+                    etChat.clearFocus();
+            }
+            if (null != vRoomImage) {
+                vRoomImage.setClickable(false);
+            }
+            if (null != llButtonDeleteChat) {
+                llButtonDeleteChat.setOnClickListener(llDeleteGroupClickListener);
+            }
+        });
     }
 
     private void showDefaultChatEditText() {
-        if (null != clChatHistory) {
-            runOnUiThread(() -> clChatHistory.setVisibility(View.GONE));
-        }
-
-        if (null != clChatComposer) {
-            clChatComposer.setVisibility(View.VISIBLE);
-        }
-
-        if (null != civRoomImage) {
-            vRoomImage.setClickable(true);
-        }
-        hideKeyboards();
+        runOnUiThread(() -> {
+            if (null != clChatHistory) {
+                clChatHistory.setVisibility(View.GONE);
+            }
+            if (null != clChatComposer) {
+                clChatComposer.setVisibility(View.VISIBLE);
+            }
+            if (null != civRoomImage) {
+                vRoomImage.setClickable(true);
+            }
+            hideKeyboards();
+        });
     }
 
     private void checkChatRoomLocked(TAPMessageModel message) {
@@ -1957,7 +1959,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (message.getRoom().isLocked()) {
             lockChatRoom();
         } else {
-            clChatComposer.setVisibility(View.VISIBLE);
+            runOnUiThread(() -> clChatComposer.setVisibility(View.VISIBLE));
+
         }
     }
 
