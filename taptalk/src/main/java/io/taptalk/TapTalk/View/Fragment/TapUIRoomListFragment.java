@@ -60,6 +60,7 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -174,6 +175,23 @@ public class TapUIRoomListFragment extends Fragment {
         // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
         updateQueryRoomListFromBackground();
         addNetworkListener();
+        openTapTalkSocketWhenNeeded();
+    }
+
+    private void openTapTalkSocketWhenNeeded() {
+        // TODO: 28/06/20 If connection mode is connect_on_demand == open socket connection
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+            TapTalk.connect(new TapCommonListener() {
+            });
+        }
+    }
+
+    private void closeTapTalkSocketWhenNeeded() {
+        // TODO: 28/06/20 If connection mode is connect_on_demand == close socket connection
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+            TapTalk.connect(new TapCommonListener() {
+            });
+        }
     }
 
     @Override
@@ -187,6 +205,7 @@ public class TapUIRoomListFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         TAPBroadcastManager.unregister(activity, roomListBroadcastReceiver);
+        closeTapTalkSocketWhenNeeded();
     }
 
     @Override
@@ -555,7 +574,7 @@ public class TapUIRoomListFragment extends Fragment {
                 showNewChatButton();
 
                 if (!TAPRoomListViewModel.isShouldNotLoadFromAPI(instanceKey)) {
-                    TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey,true);
+                    TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
                     fetchDataFromAPI();
                 }
             });

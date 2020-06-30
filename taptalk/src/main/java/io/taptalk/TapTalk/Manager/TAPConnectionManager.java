@@ -166,7 +166,7 @@ public class TAPConnectionManager {
         TapTalkNetworkInterface networkListener = () -> {
             if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable() &&
                     (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.NOT_CONNECTED ||
-                    TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED)) {
+                            TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.DISCONNECTED)) {
                 TAPDataManager.getInstance(instanceKey).validateAccessToken(validateAccessView);
             }
         };
@@ -281,7 +281,7 @@ public class TAPConnectionManager {
                     TAPDataManager.getInstance(instanceKey).validateAccessToken(validateAccessView);
                 }
             }
-        }, 100);
+        }, 1000);
     }
 
     public void reconnectOnly() {
@@ -346,8 +346,16 @@ public class TAPConnectionManager {
         public void onSuccess(TAPErrorModel response) {
             if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
                 reconnectOnly();
-            } else if (TapTalk.isAutoConnectEnabled(instanceKey) && NOT_CONNECTED == connectionStatus) {
-                connect();
+            } else if (TapTalk.getTapTalkSocketConnectionMode() == TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON && NOT_CONNECTED == connectionStatus) {
+                connect(new TapCommonInterface() {
+                    @Override
+                    public void onSuccess(String successMessage) {
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                    }
+                });
             }
         }
     };

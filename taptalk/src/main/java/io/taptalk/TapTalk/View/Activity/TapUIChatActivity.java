@@ -27,6 +27,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -88,6 +89,7 @@ import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -115,6 +117,7 @@ import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter;
@@ -122,7 +125,6 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
-import io.taptalk.TapTalk.R;
 
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
@@ -137,6 +139,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.FROM_NOTIF;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
@@ -363,6 +366,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         Intent intent = new Intent(context, TapUIChatActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         intent.putExtra(ROOM, roomModel);
+        intent.putExtra(FROM_NOTIF, true);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
     }
@@ -401,6 +405,27 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() == 0 && TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
             fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
+        checkInitSocket();
+    }
+
+    private void checkInitSocket() {
+        // TODO: 28/06/20 Connect to socket if FROM_NOTIF is true and Connection Mode is ON_DEMAND
+        if (getIntent().getBooleanExtra(FROM_NOTIF, false) && TapTalk.getTapTalkSocketConnectionMode() == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+            if (!TapTalk.isConnected()) {
+                TapTalk.connect(new TapCommonListener() {
+                    @Override
+                    public void onSuccess(String successMessage) {
+                        super.onSuccess(successMessage);
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                        super.onError(errorCode, errorMessage);
+                        Log.e(TAG, errorMessage);
+                    }
+                });
+            }
+        }
     }
 
     @Override
@@ -435,6 +460,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
         TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
         TAPFileDownloadManager.getInstance(instanceKey).clearFailedDownloads(); // Remove failed download list from active room
+
+        // TODO: 28/06/20 Disconnect Socket if Connection Status Mode is ON_DEMAND and FROM_NOTIF is true
+        if (getIntent().getBooleanExtra(FROM_NOTIF, false) && TapTalk.getTapTalkSocketConnectionMode() == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+            if (TapTalk.isConnected()) {
+                TapTalk.disconnect();
+            }
+        }
     }
 
     @Override
@@ -836,9 +868,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         // Show / hide attachment button
         if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
-            TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
-            TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
-            TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
+                TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
+                TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
+                TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
         ) {
             ivButtonAttach.setVisibility(View.GONE);
             etChat.setPadding(
@@ -915,7 +947,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivToBottom.setOnClickListener(v -> scrollToBottom());
         ivMentionAnchor.setOnClickListener(v -> scrollToMessage(vm.getUnreadMentions().entrySet().iterator().next().getValue().getLocalID()));
         flMessageList.setOnClickListener(v -> chatListener.onOutsideClicked());
-        flLoading.setOnClickListener(v -> {});
+        flLoading.setOnClickListener(v -> {
+        });
 
 //        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
 //        if (null == vm.getRoom().getGroupParticipants()) {
