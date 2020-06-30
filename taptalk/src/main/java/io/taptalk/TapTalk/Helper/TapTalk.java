@@ -902,6 +902,16 @@ public class TapTalk implements LifecycleObserver {
                 .show();
     }
 
+    public static void saveFirebaseToken(String token) {
+        saveFirebaseToken("", token);
+    }
+
+    public static void saveFirebaseToken(String instanceKey, String token) {
+        if (!TAPDataManager.getInstance(instanceKey).checkFirebaseToken(token)) {
+            TAPDataManager.getInstance(instanceKey).saveFirebaseToken(token);
+        }
+    }
+
     /**
      * =============================================================================================
      * LANGUAGE
