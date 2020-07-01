@@ -27,6 +27,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -2071,6 +2072,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (vm.getMessagePointer().containsKey(newID)) {
                     // Update message instead of adding when message pointer already contains the same local ID
                     int index = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(newID));
+                    Log.e(TAG, "updateMessage index: " + index);
+                    Log.e(TAG, "updateMessage old message: " + TAPUtils.toJsonString(vm.getMessagePointer().get(newID)));
+                    Log.e(TAG, "updateMessage new message: " + TAPUtils.toJsonString(newMessage));
                     vm.updateMessagePointer(newMessage);
                     messageAdapter.notifyItemChanged(index);
                     if (TYPE_IMAGE == newMessage.getType() && ownMessage) {
@@ -2095,6 +2099,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
 
                     // Add new message
+                    Log.e(TAG, "updateMessage add new message: " + TAPUtils.toJsonString(newMessage));
                     runOnUiThread(() -> messageAdapter.addMessage(newMessage));
                     vm.addMessagePointer(newMessage);
                     if (vm.isOnBottom() && !ownMessage) {
