@@ -5,7 +5,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -203,7 +202,13 @@ public class TAPApiManager {
                     if (isRefreshTokenRunning) {
                         return raiseApiRefreshTokenRunningException();
                     } else {
-                        return raiseApiSessionExpiredException(br);
+                        TapTalk.clearAllTapTalkData();
+                        List<TapListener> tapListeners = TapTalk.getTapTalkListeners(instanceKey);
+                        if (null != tapListeners && !tapListeners.isEmpty()) {
+                            for (TapListener listener : tapListeners) {
+                                listener.onTapTalkRefreshTokenExpired();
+                            }
+                        }
                     }
                 }
             } else {
@@ -212,7 +217,13 @@ public class TAPApiManager {
                     if (isRefreshTokenRunning) {
                         return raiseApiRefreshTokenRunningException();
                     } else {
-                        return raiseApiSessionExpiredException(br);
+                        TapTalk.clearAllTapTalkData();
+                        List<TapListener> tapListeners = TapTalk.getTapTalkListeners(instanceKey);
+                        if (null != tapListeners && !tapListeners.isEmpty()) {
+                            for (TapListener listener : tapListeners) {
+                                listener.onTapTalkRefreshTokenExpired();
+                            }
+                        }
                     }
                 }
             }
