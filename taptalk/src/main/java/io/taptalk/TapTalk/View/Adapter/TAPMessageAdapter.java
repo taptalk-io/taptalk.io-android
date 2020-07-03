@@ -115,6 +115,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
@@ -536,6 +537,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String imageCaption = (String) item.getData().get(CAPTION);
             String fileID = (String) item.getData().get(FILE_ID);
 
+            if (null == imageUrl || imageUrl.isEmpty()) {
+                imageUrl = (String) item.getData().get(URL);
+            }
+
             if (((null != item.getQuote() &&
                     null != item.getQuote().getTitle() &&
                     !item.getQuote().getTitle().isEmpty()) ||
@@ -613,12 +618,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             }
 
-            if (null != widthDimension && null != heightDimension) {
-                if (0 == widthDimension.intValue() || 0 == heightDimension.intValue()) {
-                    rcivImageBody.setImageDimensions(TAPUtils.dpToPx(252), TAPUtils.dpToPx(252));
-                } else {
-                    rcivImageBody.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
-                }
+            if (null != widthDimension && null != heightDimension && 0 != widthDimension.intValue() && 0 != heightDimension.intValue()) {
+                rcivImageBody.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
+            } else {
+                rcivImageBody.setImageDimensions(TAPUtils.dpToPx(252), TAPUtils.dpToPx(252));
             }
 
             // Load thumbnail when download is not in progress
