@@ -202,13 +202,14 @@ public class TAPApiManager {
                     if (isRefreshTokenRunning) {
                         return raiseApiRefreshTokenRunningException();
                     } else {
-                        TapTalk.clearAllTapTalkData();
-                        List<TapListener> tapListeners = TapTalk.getTapTalkListeners(instanceKey);
-                        if (null != tapListeners && !tapListeners.isEmpty()) {
-                            for (TapListener listener : tapListeners) {
-                                listener.onTapTalkRefreshTokenExpired();
-                            }
-                        }
+                        return raiseApiSessionExpiredException(br);
+//                        TapTalk.clearAllTapTalkData();
+//                        List<TapListener> tapListeners = TapTalk.getTapTalkListeners(instanceKey);
+//                        if (null != tapListeners && !tapListeners.isEmpty()) {
+//                            for (TapListener listener : tapListeners) {
+//                                listener.onTapTalkRefreshTokenExpired();
+//                            }
+//                        }
                     }
                 }
             } else {
@@ -217,13 +218,7 @@ public class TAPApiManager {
                     if (isRefreshTokenRunning) {
                         return raiseApiRefreshTokenRunningException();
                     } else {
-                        TapTalk.clearAllTapTalkData();
-                        List<TapListener> tapListeners = TapTalk.getTapTalkListeners(instanceKey);
-                        if (null != tapListeners && !tapListeners.isEmpty()) {
-                            for (TapListener listener : tapListeners) {
-                                listener.onTapTalkRefreshTokenExpired();
-                            }
-                        }
+                        return raiseApiSessionExpiredException(br);
                     }
                 }
             }
