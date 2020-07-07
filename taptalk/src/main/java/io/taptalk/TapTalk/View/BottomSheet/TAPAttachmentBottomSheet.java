@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -65,5 +66,14 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
         recyclerView.setAdapter(new TAPAttachmentAdapter(instanceKey, isImagePickerBottomSheet, attachmentListener, onClickListener));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
+    }
+
+    @Override
+    public void show(@NonNull FragmentManager manager, @Nullable String tag) {
+        try {
+            super.show(manager, tag);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
     }
 }

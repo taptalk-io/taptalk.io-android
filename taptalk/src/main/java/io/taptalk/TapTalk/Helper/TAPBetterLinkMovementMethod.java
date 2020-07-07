@@ -446,7 +446,7 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
                     originalText = text;
                 }
                 return new ClickableSpanWithText(span, text, originalText);
-            } catch (IndexOutOfBoundsException e) {
+            } catch (Exception e) {
                 return null;
             }
         }

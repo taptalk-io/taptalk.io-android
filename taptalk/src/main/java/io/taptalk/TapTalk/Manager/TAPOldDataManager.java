@@ -37,10 +37,10 @@ public class TAPOldDataManager {
     public void startAutoCleanProcess() {
         new Thread(() -> {
             long currentTimestamp = System.currentTimeMillis();
-            boolean isOverOneWeek = TAPTimeFormatter.getInstance().isOverOneWeek(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp());
+            boolean isOverOneWeek = TAPTimeFormatter.isOverOneWeek(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp());
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "Start auto clean process: " + (TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists() && isOverOneWeek));
-                Log.d(TAG, "Last auto clean time: " + TAPTimeFormatter.getInstance().formatTime(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp(), "yyyy MMM dd - HH:mm:ss"));
+                Log.d(TAG, "Last auto clean time: " + TAPTimeFormatter.formatTime(TAPDataManager.getInstance(instanceKey).getLastDeleteTimestamp(), "yyyy MMM dd - HH:mm:ss"));
             }
 
             if (TAPDataManager.getInstance(instanceKey).isLastDeleteTimestampExists() && isOverOneWeek) {
@@ -70,7 +70,13 @@ public class TAPOldDataManager {
 
     private void autoCleanProcessFromRoomQueryResult(List<TAPMessageEntity> entities, long currentTimestamp) {
         for (TAPMessageEntity roomEntity : entities) {
-            final long[] maxCreatedTimestamp = {TAPTimeFormatter.getInstance().oneMonthAgoTimeStamp(currentTimestamp)};
+            try {
+                // Delay to prevent OutOfMemoryError: pthread_create
+                Thread.sleep(200L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            final long[] maxCreatedTimestamp = {TAPTimeFormatter.oneMonthAgoTimeStamp(currentTimestamp)};
             // Check messages in existing rooms
             TAPDataManager.getInstance(instanceKey).getMinCreatedOfUnreadMessage(roomEntity.getRoomID(), new TAPDatabaseListener<Long>() {
                 @Override
@@ -95,7 +101,6 @@ public class TAPOldDataManager {
                                         TAPDataManager.getInstance(instanceKey).deleteRoomMessageBeforeTimestamp(roomEntity.getRoomID(), maxCreatedTimestamp[0], new TAPDatabaseListener() {
                                             @Override
                                             public void onDeleteFinished() {
-
                                             }
                                         });
                                     }

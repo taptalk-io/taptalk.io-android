@@ -28,9 +28,7 @@ public class TapFirebaseMessagingService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
         for (String instanceKey : TapTalk.getInstanceKeys()) {
-            if (!TAPDataManager.getInstance(instanceKey).checkFirebaseToken(s)) {
-                TAPDataManager.getInstance(instanceKey).saveFirebaseToken(s);
-            }
+            TapTalk.saveFirebaseToken(instanceKey, s);
         }
     }
 }

@@ -17,7 +17,7 @@ public class TAPRoomListModel {
     public TAPRoomListModel(TAPMessageModel lastMessage, int unreadCount) {
         this.lastMessage = lastMessage;
         this.unreadCount = unreadCount;
-        this.lastMessageTimestamp = TAPTimeFormatter.getInstance().durationString(lastMessage.getCreated());
+        this.lastMessageTimestamp = TAPTimeFormatter.durationString(lastMessage.getCreated());
 
         TAPRoomModel room = lastMessage.getRoom();
         if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
@@ -30,7 +30,7 @@ public class TAPRoomListModel {
     public static TAPRoomListModel buildWithLastMessage(TAPMessageModel lastMessage) {
         TAPRoomListModel roomListModel = new TAPRoomListModel();
         roomListModel.setLastMessage(lastMessage);
-        roomListModel.setLastMessageTimestamp(TAPTimeFormatter.getInstance().durationString(lastMessage.getCreated()));
+        roomListModel.setLastMessageTimestamp(TAPTimeFormatter.durationString(lastMessage.getCreated()));
 
         TAPRoomModel room = lastMessage.getRoom();
         if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty() && null != TapTalk.appContext) {
@@ -60,7 +60,7 @@ public class TAPRoomListModel {
     }
 
     public void setLastMessageTimestamp(long timestamp) {
-        setLastMessageTimestamp(TAPTimeFormatter.getInstance().durationString(lastMessage.getCreated()));
+        setLastMessageTimestamp(TAPTimeFormatter.durationString(lastMessage.getCreated()));
     }
 
     public int getUnreadCount() {

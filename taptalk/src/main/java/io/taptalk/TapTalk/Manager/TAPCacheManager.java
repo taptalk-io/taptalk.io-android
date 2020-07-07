@@ -122,11 +122,11 @@ public class TAPCacheManager {
     }
 
     private void addBitmapDrawableToDiskCache(String key, BitmapDrawable bitmapDrawable) {
-        if (null == key || null == diskLruCache) {
-            return;
-        }
         // Also add to disk cache
         new Thread(() -> {
+            if (null == key || null == diskLruCache) {
+                return;
+            }
             if (diskLruCache.getBitmapDrawable(context, key) == null) {
                 diskLruCache.put(key, bitmapDrawable);
             }
@@ -148,10 +148,10 @@ public class TAPCacheManager {
     }
 
     public void removeFromCache(String key) {
-        if (null == key || null == diskLruCache) {
-            return;
-        }
         new Thread(() -> {
+            if (null == key || null == diskLruCache) {
+                return;
+            }
             getMemoryCache().remove(key);
             diskLruCache.remove(key);
         }).start();
@@ -165,10 +165,10 @@ public class TAPCacheManager {
     }
 
     public void clearCache() {
-        if (null == diskLruCache) {
-            return;
-        }
         new Thread(() -> {
+            if (null == diskLruCache) {
+                return;
+            }
             getMemoryCache().evictAll();
             diskLruCache.clearCache();
             diskLruCache = null;

@@ -79,7 +79,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
             ImageViewCompat.setImageTintList(holder.ivFileImage, ColorStateList.valueOf(ContextCompat.getColor(mContext, R.color.tapColorPrimary)));
             holder.ivFileImage.setAlpha(0.7f);
         } else {
-            Glide.with(holder.itemView.getContext()).load(currentFile).apply(new RequestOptions().centerCrop()).into(holder.ivFileImage);
+            Glide.with(holder.itemView.getContext()).load(currentFile).into(holder.ivFileImage);
             ImageViewCompat.setImageTintList(holder.ivFileImage, null);
             holder.ivFileImage.setAlpha(1.0f);
         }
