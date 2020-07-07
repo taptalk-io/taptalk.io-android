@@ -74,7 +74,6 @@ public class TapUserMentionListAdapter extends TAPBaseAdapter<TAPUserModel, TAPB
                 // Load profile picture
                 Glide.with(itemView.getContext())
                         .load(item.getAvatarURL().getThumbnail())
-                        .apply(new RequestOptions().centerCrop())
                         .listener(new RequestListener<Drawable>() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

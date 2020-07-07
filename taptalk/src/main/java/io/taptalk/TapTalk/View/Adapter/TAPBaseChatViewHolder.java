@@ -112,7 +112,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
         }
     }
 
-    protected void setLinkDetection(Context context, TextView tvMessageBody) {
+    protected void setLinkDetection(Context context, TAPMessageModel message, TextView tvMessageBody) {
         TAPBetterLinkMovementMethod movementMethod = TAPBetterLinkMovementMethod.newInstance()
                 .setOnLinkClickListener((textView, url, originalText) -> {
                     if (null != url && url.contains("mailto:")) {
@@ -148,6 +148,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
                     } else if (null != url && url.contains("@")) {
                         // Mention
                         Intent intent = new Intent(LongPressMention);
+                        intent.putExtra(MESSAGE, message);
                         intent.putExtra(URL_MESSAGE, url);
                         intent.putExtra(COPY_MESSAGE, originalText);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);

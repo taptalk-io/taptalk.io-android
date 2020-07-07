@@ -61,6 +61,9 @@
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPRegisterActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="io.moselo.SampleApps.Activity.TAPCountryListActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

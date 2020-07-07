@@ -14,12 +14,6 @@ import io.taptalk.TapTalk.R;
 
 public class TAPTimeFormatter {
 
-    private static TAPTimeFormatter instance;
-
-    public static TAPTimeFormatter getInstance() {
-        return null == instance ? instance = new TAPTimeFormatter() : instance;
-    }
-
     private static final List<Long> times = Arrays.asList(
             TimeUnit.DAYS.toMillis(365),
             TimeUnit.DAYS.toMillis(30),
@@ -29,7 +23,7 @@ public class TAPTimeFormatter {
             TimeUnit.MINUTES.toMillis(1),
             TimeUnit.SECONDS.toMillis(1));
 
-    public String durationString(long timestamp) {
+    public static String durationString(long timestamp) {
         long timeGap;
         long timeNow = Calendar.getInstance().getTimeInMillis();
         timeGap = timeNow - timestamp;
@@ -57,7 +51,7 @@ public class TAPTimeFormatter {
         }
     }
 
-    public String durationChatString(Context context, long timestamp) {
+    public static String durationChatString(Context context, long timestamp) {
         long timeGap;
         long timeNow = Calendar.getInstance().getTimeInMillis();
         timeGap = timeNow - timestamp;
@@ -84,7 +78,7 @@ public class TAPTimeFormatter {
         }
     }
 
-    public String dateStampString(Context context, long timestamp) {
+    public static String dateStampString(Context context, long timestamp) {
         long timeGap;
         long timeNow = Calendar.getInstance().getTimeInMillis();
         timeGap = timeNow - timestamp;
@@ -110,7 +104,7 @@ public class TAPTimeFormatter {
         }
     }
 
-    public String getLastActivityString(Context context, long timestamp) {
+    public static String getLastActivityString(Context context, long timestamp) {
         long timeGap;
         long timeNow = Calendar.getInstance().getTimeInMillis();
         timeGap = timeNow - timestamp;
@@ -162,31 +156,31 @@ public class TAPTimeFormatter {
         }
     }
 
-    public String formatTime(long timestamp, String pattern) {
+    public static String formatTime(long timestamp, String pattern) {
         SimpleDateFormat timeSdf = new SimpleDateFormat(pattern, Locale.getDefault());
         return timeSdf.format(timestamp);
     }
 
-    public String formatClock(long timestamp) {
+    public static String formatClock(long timestamp) {
         SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return timeSdf.format(timestamp);
     }
 
-    public String formatDate(long timestamp) {
+    public static String formatDate(long timestamp) {
         SimpleDateFormat timeSdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         return timeSdf.format(timestamp);
     }
 
-    public String formatDay(long timestamp) {
+    public static String formatDay(long timestamp) {
         SimpleDateFormat timeSdf = new SimpleDateFormat("EEE", Locale.getDefault());
         return timeSdf.format(timestamp);
     }
 
-    public boolean isOverOneWeek(long timestamp) {
+    public static boolean isOverOneWeek(long timestamp) {
         return (System.currentTimeMillis() - timestamp) >= (times.get(2));
     }
 
-    public long oneMonthAgoTimeStamp(long currentTimestamp) {
+    public static long oneMonthAgoTimeStamp(long currentTimestamp) {
         return currentTimestamp - times.get(1);
     }
 }

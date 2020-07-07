@@ -18,6 +18,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/tap_cfp_ic_folder"
         android:tint="@color/tapColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"

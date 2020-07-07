@@ -285,7 +285,7 @@ public class TAPConnectionManager {
                     TAPDataManager.getInstance(instanceKey).validateAccessToken(validateAccessView);
                 }
             }
-        }, 100);
+        }, 1000);
     }
 
     public void reconnectOnly() {
