@@ -48,8 +48,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
 
 public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
@@ -154,7 +154,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
             Log.e(TAG, getString(R.string.tap_error_load_image_detail));
             return;
         }
-        fileUrl = (String) message.getData().get(FILE_URL);
+        fileUrl = (String) message.getData().get(URL);
         fileID = (String) message.getData().get(FILE_ID);
         caption = (String) message.getData().get(CAPTION);
         mimeType = (String) message.getData().get(MEDIA_TYPE);

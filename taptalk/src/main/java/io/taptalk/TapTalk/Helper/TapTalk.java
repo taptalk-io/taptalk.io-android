@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
@@ -102,6 +103,8 @@ public class TapTalk implements LifecycleObserver {
     public static String mixpanelToken = "";
     public static boolean isForeground;
     public static boolean isLoggingEnabled = false;
+    private static Thread.UncaughtExceptionHandler defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+    private static boolean handleMessageIfAppsCrashing = true;
 
     private String instanceKey = "";
     private Map<String, String> coreConfigs;
@@ -114,7 +117,6 @@ public class TapTalk implements LifecycleObserver {
     private int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
     private boolean isRefreshTokenExpired, /*isAutoConnectDisabled,*/ isAutoContactSyncDisabled;
     private boolean listenerInit = false;
-    //    private Thread.UncaughtExceptionHandler defaultUEH;
     public TapTalkImplementationType implementationType;
     public TapTalkSocketConnectionMode socketConnectionMode = TapTalkSocketConnectionMode.ALWAYS_ON;
     public String tapTalkUserAgent = "android";
@@ -171,17 +173,6 @@ public class TapTalk implements LifecycleObserver {
     public static ArrayList<String> getInstanceKeys() {
         return null == instanceKeys ? instanceKeys = new ArrayList<>() : instanceKeys;
     }
-
-//    private static Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
-//        @Override
-//        public void uncaughtException(Thread thread, Throwable throwable) {
-//            TAPChatManager.getInstance(instanceKey).saveIncomingMessageAndDisconnect();
-//            TAPContactManager.getInstance(instanceKey).saveUserDataMapToDatabase();
-//            TAPFileDownloadManager.getInstance(instanceKey).saveFileProviderPathToPreference();
-//            TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUriToPreference();
-//            defaultUEH.uncaughtException(thread, throwable);
-//        }
-//    };
 
     public TapTalk(
             String instanceKey,
@@ -365,7 +356,6 @@ public class TapTalk implements LifecycleObserver {
 
     public static boolean checkTapTalkInitialized() {
         if (getTapTalkInstances().isEmpty()) {
-//            Log.e(TAG, ERROR_MESSAGE_INIT_TAPTALK);
             return false;
         }
         return true;
@@ -925,6 +915,16 @@ public class TapTalk implements LifecycleObserver {
                 .show();
     }
 
+    public static void saveFirebaseToken(String token) {
+        saveFirebaseToken("", token);
+    }
+
+    public static void saveFirebaseToken(String instanceKey, String token) {
+        if (!TAPDataManager.getInstance(instanceKey).checkFirebaseToken(token)) {
+            TAPDataManager.getInstance(instanceKey).saveFirebaseToken(token);
+        }
+    }
+
     /**
      * =============================================================================================
      * LANGUAGE
@@ -1069,14 +1069,17 @@ public class TapTalk implements LifecycleObserver {
             TAPFileDownloadManager.getInstance(entry.getValue().instanceKey).getFileProviderPathFromPreference();
             TAPFileDownloadManager.getInstance(entry.getValue().instanceKey).getFileMessageUriFromPreference();
 
-            Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-//                Log.e(TAG, "App Crashing");
-                TAPChatManager.getInstance(entry.getValue().instanceKey).saveIncomingMessageAndDisconnect();
-                TAPContactManager.getInstance(entry.getValue().instanceKey).saveUserDataMapToDatabase();
-                TAPFileDownloadManager.getInstance(entry.getValue().instanceKey).saveFileProviderPathToPreference();
-                TAPFileDownloadManager.getInstance(entry.getValue().instanceKey).saveFileMessageUriToPreference();
-                System.exit(0);
-            });
+            if (handleMessageIfAppsCrashing) {
+                Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+                    TAPChatManager.getInstance(entry.getValue().instanceKey).saveIncomingMessageAndDisconnect();
+                    TAPContactManager.getInstance(entry.getValue().instanceKey).saveUserDataMapToDatabase();
+                    TAPFileDownloadManager.getInstance(entry.getValue().instanceKey).saveFileProviderPathToPreference();
+                    TAPFileDownloadManager.getInstance(entry.getValue().instanceKey).saveFileMessageUriToPreference();
+                    System.exit(0);
+                });
+            } else {
+                Thread.setDefaultUncaughtExceptionHandler(defaultUEH);
+            }
         }
     }
 
@@ -1085,7 +1088,6 @@ public class TapTalk implements LifecycleObserver {
 
         for (Map.Entry<String, TapTalk> entry : getTapTalkInstances().entrySet()) {
             TAPRoomListViewModel.setShouldNotLoadFromAPI(entry.getValue().instanceKey, false);
-            // TODO: 18 Mar 2020
             TAPDataManager.getInstance(entry.getValue().instanceKey).setNeedToQueryUpdateRoomList(true);
             TAPNetworkStateManager.getInstance(entry.getValue().instanceKey).unregisterCallback(TapTalk.appContext);
             TAPChatManager.getInstance(entry.getValue().instanceKey).updateMessageWhenEnterBackground();
@@ -1108,6 +1110,10 @@ public class TapTalk implements LifecycleObserver {
         if (!getTapTalkInstances().isEmpty()) {
             handleAppToForeground();
         }
+    }
+
+    public static void allowTapTalkHandleMessageIfAppsCrashing(boolean handle) {
+        handleMessageIfAppsCrashing = handle;
     }
 }
 

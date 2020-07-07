@@ -446,6 +446,7 @@ public class TAPMessageModel implements Parcelable {
         if (null != model.messageID && !"".equals(model.messageID))
             this.messageID = model.getMessageID();
         if (!"".equals(model.localID)) this.localID = model.getLocalID();
+        if (!"".equals(model.filterID)) this.filterID = model.getFilterID();
         if (null != model.body && !"".equals(model.body)) this.body = model.getBody();
         if (null != model.room) this.room = model.getRoom();
         this.type = model.getType();
