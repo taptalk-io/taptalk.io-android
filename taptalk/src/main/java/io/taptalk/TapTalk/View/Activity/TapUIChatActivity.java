@@ -409,7 +409,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void checkInitSocket() {
         // TODO: 28/06/20 Connect to socket if FROM_NOTIF is true and Connection Mode is ON_DEMAND
-        if (getIntent().getBooleanExtra(FROM_NOTIF, false) && TapTalk.getTapTalkSocketConnectionMode() == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+        if (TapTalk.getTapTalkSocketConnectionMode() == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
             if (!TapTalk.isConnected()) {
                 TapTalk.connect(new TapCommonListener() {
                     @Override
@@ -1044,7 +1044,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //                    !TAPChatManager.getInstance(instanceKey).getOpenRoom()
 //                            .equals(message.getRoom().getRoomID()) ||
                     null == vm.getRoom() ||
-                    !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())
+                            !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())
             ) {
                 return;
             }
@@ -2008,10 +2008,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvChatHistoryContent.setText(message);
             }
             if (null != clChatComposer) {
-                    TAPUtils.dismissKeyboard(TapUIChatActivity.this);
-                    rvCustomKeyboard.setVisibility(View.GONE);
-                    clChatComposer.setVisibility(View.INVISIBLE);
-                    etChat.clearFocus();
+                TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                rvCustomKeyboard.setVisibility(View.GONE);
+                clChatComposer.setVisibility(View.INVISIBLE);
+                etChat.clearFocus();
             }
             if (null != vRoomImage) {
                 vRoomImage.setClickable(false);
