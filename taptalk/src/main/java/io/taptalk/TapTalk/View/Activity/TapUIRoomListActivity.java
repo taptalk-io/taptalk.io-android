@@ -7,7 +7,6 @@ import android.os.Bundle;
 import com.orhanobut.hawk.Hawk;
 
 import io.taptalk.TapTalk.Helper.TAPAutoStartPermission;
-import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
@@ -95,14 +94,13 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
             Hawk.put(AUTO_START_PERMISSION, true);
         }
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (TapTalk.getTapTalkSocketConnectionMode() == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
-            if (TapTalk.isConnected()) {
-                TapTalk.disconnect();
-            }
-        }
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+//            if (TapTalk.isConnected(instanceKey)) {
+//                TapTalk.disconnect(instanceKey);
+//            }
+//        }
+//    }
 }

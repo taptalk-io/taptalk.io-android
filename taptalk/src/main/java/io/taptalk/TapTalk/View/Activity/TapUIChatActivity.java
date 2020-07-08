@@ -409,9 +409,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void checkInitSocket() {
         // TODO: 28/06/20 Connect to socket if FROM_NOTIF is true and Connection Mode is ON_DEMAND
-        if (TapTalk.getTapTalkSocketConnectionMode() == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
-            if (!TapTalk.isConnected()) {
-                TapTalk.connect(new TapCommonListener() {
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+            if (!TapTalk.isConnected(instanceKey)) {
+                TapTalk.connect(instanceKey, new TapCommonListener() {
                     @Override
                     public void onSuccess(String successMessage) {
                         super.onSuccess(successMessage);
@@ -461,9 +461,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPFileDownloadManager.getInstance(instanceKey).clearFailedDownloads(); // Remove failed download list from active room
 
         // TODO: 28/06/20 Disconnect Socket if Connection Status Mode is ON_DEMAND and FROM_NOTIF is true
-        if (getIntent().getBooleanExtra(FROM_NOTIF, false) && TapTalk.getTapTalkSocketConnectionMode() == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
-            if (TapTalk.isConnected()) {
-                TapTalk.disconnect();
+        if (getIntent().getBooleanExtra(FROM_NOTIF, false) && TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+            if (TapTalk.isConnected(instanceKey)) {
+                TapTalk.disconnect(instanceKey);
             }
         }
     }
