@@ -346,7 +346,7 @@ public class TAPConnectionManager {
         public void onSuccess(TAPErrorModel response) {
             if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
                 reconnectOnly();
-            } else if (TapTalk.getTapTalkSocketConnectionMode() == TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON && NOT_CONNECTED == connectionStatus) {
+            } else if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON && NOT_CONNECTED == connectionStatus) {
                 connect(new TapCommonInterface() {
                     @Override
                     public void onSuccess(String successMessage) {
