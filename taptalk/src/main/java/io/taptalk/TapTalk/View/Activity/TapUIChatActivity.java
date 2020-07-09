@@ -139,7 +139,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.FROM_NOTIF;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
@@ -147,6 +146,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.SOCKET_CONNECTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
@@ -313,24 +313,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
      */
 
     public static void start(Context context, String instanceKey, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        start(context, instanceKey, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, null);
+        start(context, instanceKey, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, null, TapTalk.isConnected(instanceKey));
     }
 
     public static void start(Context context, String instanceKey, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
-        start(context, instanceKey, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
+        start(context, instanceKey, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID, TapTalk.isConnected(instanceKey));
     }
 
     // Open chat room from notification
     public static void start(Context context, String instanceKey, TAPRoomModel roomModel) {
-        start(context, instanceKey, roomModel, null, null);
+        start(context, instanceKey, roomModel, null, null, TapTalk.isConnected(instanceKey));
     }
 
-    // Open chat room from notification
+    // Open chat room from Room List
     public static void start(Context context, String instanceKey, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser) {
-        start(context, instanceKey, roomModel, typingUser, null);
+        start(context, instanceKey, roomModel, typingUser, null, TapTalk.isConnected(instanceKey));
     }
 
-    public static void start(Context context, String instanceKey, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
+    public static void start(Context context, String instanceKey, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID, boolean isConnected) {
         if (TYPE_PERSONAL == roomModel.getRoomType() &&
                 TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(
                         TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomModel.getRoomID()))) {
@@ -354,6 +354,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
+        intent.putExtra(SOCKET_CONNECTED, isConnected);
         context.startActivity(intent);
         if (context instanceof Activity) {
             Activity activity = (Activity) context;
@@ -366,7 +367,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         Intent intent = new Intent(context, TapUIChatActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         intent.putExtra(ROOM, roomModel);
-        intent.putExtra(FROM_NOTIF, true);
+        intent.putExtra(SOCKET_CONNECTED, TapTalk.isConnected(instanceKey));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
     }
@@ -408,7 +409,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void checkInitSocket() {
-        // TODO: 28/06/20 Connect to socket if FROM_NOTIF is true and Connection Mode is ON_DEMAND
         if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
             if (!TapTalk.isConnected(instanceKey)) {
                 TapTalk.connect(instanceKey, new TapCommonListener() {
@@ -460,8 +460,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
         TAPFileDownloadManager.getInstance(instanceKey).clearFailedDownloads(); // Remove failed download list from active room
 
-        // TODO: 28/06/20 Disconnect Socket if Connection Status Mode is ON_DEMAND and FROM_NOTIF is true
-        if (getIntent().getBooleanExtra(FROM_NOTIF, false) && TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+        // TODO: 09/07/20 Disconnect if last activity socket is not connected
+        if (!getIntent().getBooleanExtra(SOCKET_CONNECTED, false) && TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
             if (TapTalk.isConnected(instanceKey)) {
                 TapTalk.disconnect(instanceKey);
             }
