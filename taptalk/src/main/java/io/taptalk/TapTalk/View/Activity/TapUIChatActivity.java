@@ -410,7 +410,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void checkInitSocket() {
         if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
-            if (!TapTalk.isConnected(instanceKey)) {
+            if (!TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
                 TapTalk.connect(instanceKey, new TapCommonListener() {
                     @Override
                     public void onSuccess(String successMessage) {

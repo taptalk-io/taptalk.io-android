@@ -183,7 +183,7 @@ public class TapUIRoomListFragment extends Fragment {
 
     private void openTapTalkSocketWhenNeeded() {
         if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND &&
-                !TapTalk.isConnected(instanceKey)) {
+                !TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
             TapTalk.connect(instanceKey, new TapCommonListener() {
             });
         }
@@ -1157,7 +1157,7 @@ public class TapUIRoomListFragment extends Fragment {
             socketListener = new TAPSocketListener() {
                 @Override
                 public void onSocketDisconnected() {
-                    if (!TapTalk.isConnected(instanceKey)) {
+                    if (!TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
                         TapTalk.connect(instanceKey, new TapCommonListener() {
                             @Override
                             public void onSuccess(String successMessage) {
