@@ -1157,8 +1157,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     vm.getRoom().getRoomType() != TYPE_PERSONAL ||
                     !vm.getOtherUserID().equals(onlineStatus.getUser().getUserID())
             ) {
-                setChatRoomStatus(onlineStatus);
+                return;
             }
+            setChatRoomStatus(onlineStatus);
         }
 
         @Override
