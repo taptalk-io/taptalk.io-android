@@ -477,7 +477,7 @@ public class TapTalk implements LifecycleObserver {
             @Override
             public void onSuccess(TAPCommonResponse response) {
                 clearAllTapTalkData(instanceKey);
-                for (TapListener listener : getTapTalkListeners()) {
+                for (TapListener listener : getTapTalkListeners(instanceKey)) {
                     listener.onUserLogout();
                 }
                 Intent intent = new Intent(CLEAR_ROOM_LIST);
@@ -487,7 +487,7 @@ public class TapTalk implements LifecycleObserver {
             @Override
             public void onError(TAPErrorModel error) {
                 clearAllTapTalkData(instanceKey);
-                for (TapListener listener : getTapTalkListeners()) {
+                for (TapListener listener : getTapTalkListeners(instanceKey)) {
                     listener.onUserLogout();
                 }
                 Intent intent = new Intent(CLEAR_ROOM_LIST);
@@ -497,7 +497,7 @@ public class TapTalk implements LifecycleObserver {
             @Override
             public void onError(String errorMessage) {
                 clearAllTapTalkData(instanceKey);
-                for (TapListener listener : getTapTalkListeners()) {
+                for (TapListener listener : getTapTalkListeners(instanceKey)) {
                     listener.onUserLogout();
                 }
                 Intent intent = new Intent(CLEAR_ROOM_LIST);
