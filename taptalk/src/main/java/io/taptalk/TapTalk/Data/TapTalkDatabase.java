@@ -35,23 +35,25 @@ public abstract class TapTalkDatabase extends RoomDatabase {
         if (null == getDatabases().get(instanceKey)) {
 //            SafeHelperFactory factory = SafeHelperFactory.fromUser(
 //                    Editable.Factory.getInstance().newEditable(DB_ENCRYPT_PASS));
-            String prefix = "";
-            if (null != instanceKey && !instanceKey.isEmpty()) {
-                prefix = instanceKey + "_";
-            }
-            TapTalkDatabase database = Room.databaseBuilder(
-                    context,
-                    TapTalkDatabase.class,
-                    prefix + DATABASE_NAME)
-                    .addMigrations(MIGRATION_1_2)
-                    .addMigrations(MIGRATION_2_3)
-                    .addMigrations(MIGRATION_3_4)
-                    .addMigrations(MIGRATION_4_5)
-                    .addMigrations(MIGRATION_5_6)
-                    .addMigrations(MIGRATION_6_7)
+            synchronized (TapTalkDatabase.class) {
+                String prefix = "";
+                if (null != instanceKey && !instanceKey.isEmpty()) {
+                    prefix = instanceKey + "_";
+                }
+                TapTalkDatabase database = Room.databaseBuilder(
+                        context,
+                        TapTalkDatabase.class,
+                        prefix + DATABASE_NAME)
+                        .addMigrations(MIGRATION_1_2)
+                        .addMigrations(MIGRATION_2_3)
+                        .addMigrations(MIGRATION_3_4)
+                        .addMigrations(MIGRATION_4_5)
+                        .addMigrations(MIGRATION_5_6)
+                        .addMigrations(MIGRATION_6_7)
 //                    .openHelperFactory(factory)
-                    .build();
-            getDatabases().put(instanceKey, database);
+                        .build();
+                getDatabases().put(instanceKey, database);
+            }
         }
         return getDatabases().get(instanceKey);
     }
