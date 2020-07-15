@@ -42,6 +42,15 @@ public class TAPMyContactRepository {
         }).start();
     }
 
+    public void checkContactListAndInsert(List<TAPUserModel> userModels) {
+        new Thread(() -> {
+            for (TAPUserModel userModel : userModels) {
+                userModel.checkAndSetContact(myContactDao.checkUserInMyContacts(userModel.getUserID()));
+            }
+            myContactDao.insert(userModels);
+        }).start();
+    }
+
     public void getUserWithXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
         new Thread(() -> {
             TAPUserModel userModel = myContactDao.checkUserWithXcUserID(xcUserID);
