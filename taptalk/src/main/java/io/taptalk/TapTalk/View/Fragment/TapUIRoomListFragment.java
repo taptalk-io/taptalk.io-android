@@ -889,7 +889,7 @@ public class TapUIRoomListFragment extends Fragment {
                 if (deliveredMessages.size() > 0) {
                     TAPMessageStatusManager.getInstance(instanceKey).updateMessageStatusToDelivered(deliveredMessages);
                 }
-                
+
                 // Save message to database
                 TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                     @Override
@@ -933,7 +933,7 @@ public class TapUIRoomListFragment extends Fragment {
                 return;
             }
             // TODO: 22/07/20 Multiple Call and Insert to Contact Table
-            new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers(), 8)).start();
+            new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers())).start();
         }
     };
 
