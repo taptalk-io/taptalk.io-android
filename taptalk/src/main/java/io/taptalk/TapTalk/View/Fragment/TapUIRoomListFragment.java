@@ -555,7 +555,7 @@ public class TapUIRoomListFragment extends Fragment {
                 showNewChatButton();
 
                 if (!TAPRoomListViewModel.isShouldNotLoadFromAPI(instanceKey)) {
-                    TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey,true);
+                    TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
                     fetchDataFromAPI();
                 }
             });
@@ -842,6 +842,7 @@ public class TapUIRoomListFragment extends Fragment {
                 List<TAPMessageModel> deliveredMessages = new ArrayList<>();
                 List<String> userIds = new ArrayList<>();
                 TAPMessageModel updateProfileSystemMessage = null;
+                List<TAPUserModel> userModels = new ArrayList<>();
                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                     try {
                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
@@ -858,7 +859,7 @@ public class TapUIRoomListFragment extends Fragment {
                             userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                         } else {
                             // Save user data to contact manager
-                            TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
+                            userModels.add(message.getUser());
                         }
                         if (null != message.getIsDeleted() && message.getIsDeleted()) {
                             TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
@@ -876,6 +877,8 @@ public class TapUIRoomListFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
+                // TODO: 22/07/20 Multiple Call and Insert to Contact Table
+//                TAPContactManager.getInstance(instanceKey).updateUserData(userModels,7);
 
                 if (null != updateProfileSystemMessage) {
                     // Update room detail if update room system message exists in API result
@@ -886,12 +889,7 @@ public class TapUIRoomListFragment extends Fragment {
                 if (deliveredMessages.size() > 0) {
                     TAPMessageStatusManager.getInstance(instanceKey).updateMessageStatusToDelivered(deliveredMessages);
                 }
-
-                // Get updated other user data from API
-                if (userIds.size() > 0) {
-                    TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
-                }
-
+                
                 // Save message to database
                 TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                     @Override
@@ -934,32 +932,57 @@ public class TapUIRoomListFragment extends Fragment {
             if (null == response || response.getUsers().isEmpty()) {
                 return;
             }
-            new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers())).start();
+            // TODO: 22/07/20 Multiple Call and Insert to Contact Table
+            new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers(), 8)).start();
         }
     };
 
     private TAPDatabaseListener<TAPMessageEntity> dbListener = new TAPDatabaseListener<TAPMessageEntity>() {
+//        @Deprecated
+//        @Override
+//        public void onSelectFinished(List<TAPMessageEntity> entities) {
+//            List<TAPRoomListModel> messageModels = new ArrayList<>();
+//            vm.getRoomPointer().clear();
+//            int count = 0;
+//            int limit = 10;
+//            for (TAPMessageEntity entity : entities) {
+//                TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+//                TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
+//                messageModels.add(roomModel);
+//                vm.addRoomPointer(roomModel);
+//                if (++count % limit == 0) {
+//                    vm.setRoomList(messageModels);
+//                    activity.runOnUiThread(() -> adapter.setItems(vm.getRoomList()));
+//                    limit = limit * 2;
+//                }
+//            }
+//
+//            vm.setRoomList(messageModels);
+//            reloadLocalDataAndUpdateUILogic(false);
+//            calculateBadgeCount();
+//        }
+
         @Override
-        public void onSelectFinished(List<TAPMessageEntity> entities) {
+        public void onSelectFinishedWithUnreadCount(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             vm.getRoomPointer().clear();
             int count = 0; // FIXME Count to load room list every 10 items
-            int limit = 10;
-            // Convert entity to model
+            int limit = 25;
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
-                // Get unread count and unread mentions
-                TAPDataManager.getInstance(instanceKey).getUnreadCountPerRoom(entity.getRoomID(), dbListener);
+                if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
+                    vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
+                    vm.getRoomPointer().get(entity.getRoomID()).setUnreadMentions(mentionMap.get(entity.getRoomID()));
+                }
                 if (++count % limit == 0) {
                     vm.setRoomList(messageModels);
                     activity.runOnUiThread(() -> adapter.setItems(vm.getRoomList()));
                     limit = limit * 2;
                 }
             }
-
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
             calculateBadgeCount();
@@ -1020,10 +1043,11 @@ public class TapUIRoomListFragment extends Fragment {
     };
 
     private void updateQueryRoomListFromBackground() {
-        if (TAPDataManager.getInstance(instanceKey).isNeedToQueryUpdateRoomList()) {
-            runFullRefreshSequence();
-            TAPDataManager.getInstance(instanceKey).setNeedToQueryUpdateRoomList(false);
-        }
+        // TODO: 15/07/20 FIX HERE COMMENT HERE
+//        if (TAPDataManager.getInstance(instanceKey).isNeedToQueryUpdateRoomList()) {
+//            runFullRefreshSequence();
+//            TAPDataManager.getInstance(instanceKey).setNeedToQueryUpdateRoomList(false);
+//        }
     }
 
     private void addNetworkListener() {

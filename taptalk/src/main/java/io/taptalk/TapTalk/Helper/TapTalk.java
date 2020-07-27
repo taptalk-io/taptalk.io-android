@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
@@ -418,6 +417,7 @@ public class TapTalk implements LifecycleObserver {
                         }
                     }).start();
 
+                    // TODO: 21/07/20 CHECK HERE
                     new Thread(() -> TAPDataManager.getInstance(instanceKey).getMyContactListFromAPI(new TAPDefaultDataView<TAPContactResponse>() {
                         @Override
                         public void onSuccess(TAPContactResponse response) {
@@ -425,7 +425,7 @@ public class TapTalk implements LifecycleObserver {
                             for (TAPContactModel contact : response.getContacts()) {
                                 userModels.add(contact.getUser().setUserAsContact());
                             }
-                            TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(userModels);
+                            // TODO: 22/07/20 Multiple Call and Insert to Contact Table
                             TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
                         }
                     })).start();

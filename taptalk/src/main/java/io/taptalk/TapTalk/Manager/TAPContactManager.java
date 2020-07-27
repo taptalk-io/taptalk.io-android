@@ -32,7 +32,9 @@ public class TAPContactManager {
 
             @Override
             public void onSocketDisconnected() {
-                saveUserDataMapToDatabase();
+                // TODO: 20/07/20 FIX HERE
+                // TODO: 27/07/20 USE TO UPDATE DATABASE WHEN EXIT APPS
+//                saveUserDataMapToDatabase();
             }
         });
     }
@@ -78,9 +80,6 @@ public class TAPContactManager {
     }
 
     public void updateUserData(List<TAPUserModel> users) {
-//        for (TAPUserModel user : users) {
-//            updateUserData(user);
-//        }
         List<TAPUserModel> usersToSave = new ArrayList<>();
         for (TAPUserModel user : users) {
             String myUserId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
@@ -122,7 +121,9 @@ public class TAPContactManager {
     }
 
     public void loadAllUserDataFromDatabase() {
-        TAPDataManager.getInstance(instanceKey).getAllUserData(getAllUserDataListener);
+        if (null == userDataMapByUsername && null == userDataMap) {
+            TAPDataManager.getInstance(instanceKey).getAllUserData(getAllUserDataListener);
+        }
     }
 
     public void saveUserDataMapToDatabase() {
