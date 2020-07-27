@@ -854,6 +854,7 @@ public class TapUIRoomListFragment extends Fragment {
                             deliveredMessages.add(message);
                         }
 
+                        // Update Contact
                         if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                             // User is self, get other user data from API
                             userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
@@ -861,6 +862,7 @@ public class TapUIRoomListFragment extends Fragment {
                             // Save user data to contact manager
                             userModels.add(message.getUser());
                         }
+
                         if (null != message.getIsDeleted() && message.getIsDeleted()) {
                             TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
                         }
@@ -877,8 +879,8 @@ public class TapUIRoomListFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                // TODO: 22/07/20 Multiple Call and Insert to Contact Table
-//                TAPContactManager.getInstance(instanceKey).updateUserData(userModels,7);
+                // TODO: 27/07/20 FIX HERE --> Check flow if this code is needed!
+//                TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
 
                 if (null != updateProfileSystemMessage) {
                     // Update room detail if update room system message exists in API result
@@ -926,16 +928,15 @@ public class TapUIRoomListFragment extends Fragment {
         }
     };
 
-    private TAPDefaultDataView<TAPGetMultipleUserResponse> getMultipleUserView = new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
-        @Override
-        public void onSuccess(TAPGetMultipleUserResponse response) {
-            if (null == response || response.getUsers().isEmpty()) {
-                return;
-            }
-            // TODO: 22/07/20 Multiple Call and Insert to Contact Table
-            new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers())).start();
-        }
-    };
+//    private TAPDefaultDataView<TAPGetMultipleUserResponse> getMultipleUserView = new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
+//        @Override
+//        public void onSuccess(TAPGetMultipleUserResponse response) {
+//            if (null == response || response.getUsers().isEmpty()) {
+//                return;
+//            }
+//            new Thread(() -> TAPContactManager.getInstance(instanceKey).updateUserData(response.getUsers())).start();
+//        }
+//    };
 
     private TAPDatabaseListener<TAPMessageEntity> dbListener = new TAPDatabaseListener<TAPMessageEntity>() {
 //        @Deprecated
@@ -1043,7 +1044,7 @@ public class TapUIRoomListFragment extends Fragment {
     };
 
     private void updateQueryRoomListFromBackground() {
-        // TODO: 15/07/20 FIX HERE COMMENT HERE
+        // TODO: 27/07/20 FIX HERE --> Check flow if this code is needed!
 //        if (TAPDataManager.getInstance(instanceKey).isNeedToQueryUpdateRoomList()) {
 //            runFullRefreshSequence();
 //            TAPDataManager.getInstance(instanceKey).setNeedToQueryUpdateRoomList(false);

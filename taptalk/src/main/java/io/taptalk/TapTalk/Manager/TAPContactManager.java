@@ -24,19 +24,18 @@ public class TAPContactManager {
     private TAPContactManager(String instanceKey) {
         this.instanceKey = instanceKey;
         //loadAllUserDataFromDatabase();
-        TAPConnectionManager.getInstance(instanceKey).addSocketListener(new TAPSocketListener() {
+        // TODO: 27/07/20 FIX HERE --> onSocketDisconnected - saveUserDataMapToDatabase() function commented
+//        TAPConnectionManager.getInstance(instanceKey).addSocketListener(new TAPSocketListener() {
+////            @Override
+////            public void onSocketConnected() {
+////                //loadAllUserDataFromDatabase();
+////            }
+//
 //            @Override
-//            public void onSocketConnected() {
-//                //loadAllUserDataFromDatabase();
+//            public void onSocketDisconnected() {
+////                saveUserDataMapToDatabase();
 //            }
-
-            @Override
-            public void onSocketDisconnected() {
-                // TODO: 20/07/20 FIX HERE
-                // TODO: 27/07/20 USE TO UPDATE DATABASE WHEN EXIT APPS
-//                saveUserDataMapToDatabase();
-            }
-        });
+//        });
     }
 
     public static TAPContactManager getInstance(String instanceKey) {
