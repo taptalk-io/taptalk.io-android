@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
@@ -425,7 +424,6 @@ public class TapTalk implements LifecycleObserver {
                             for (TAPContactModel contact : response.getContacts()) {
                                 userModels.add(contact.getUser().setUserAsContact());
                             }
-                            TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(userModels);
                             TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
                         }
                     })).start();
@@ -477,7 +475,7 @@ public class TapTalk implements LifecycleObserver {
             @Override
             public void onSuccess(TAPCommonResponse response) {
                 clearAllTapTalkData(instanceKey);
-                for (TapListener listener : getTapTalkListeners()) {
+                for (TapListener listener : getTapTalkListeners(instanceKey)) {
                     listener.onUserLogout();
                 }
                 Intent intent = new Intent(CLEAR_ROOM_LIST);
@@ -487,7 +485,7 @@ public class TapTalk implements LifecycleObserver {
             @Override
             public void onError(TAPErrorModel error) {
                 clearAllTapTalkData(instanceKey);
-                for (TapListener listener : getTapTalkListeners()) {
+                for (TapListener listener : getTapTalkListeners(instanceKey)) {
                     listener.onUserLogout();
                 }
                 Intent intent = new Intent(CLEAR_ROOM_LIST);
@@ -497,7 +495,7 @@ public class TapTalk implements LifecycleObserver {
             @Override
             public void onError(String errorMessage) {
                 clearAllTapTalkData(instanceKey);
-                for (TapListener listener : getTapTalkListeners()) {
+                for (TapListener listener : getTapTalkListeners(instanceKey)) {
                     listener.onUserLogout();
                 }
                 Intent intent = new Intent(CLEAR_ROOM_LIST);
