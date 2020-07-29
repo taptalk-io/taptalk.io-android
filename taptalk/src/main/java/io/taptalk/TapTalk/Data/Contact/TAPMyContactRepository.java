@@ -44,6 +44,7 @@ public class TAPMyContactRepository {
 
     public void checkContactListAndInsert(List<TAPUserModel> userModels) {
         new Thread(() -> {
+            // TODO: 27/07/20 FIX HERE --> Because of looping calling Database
             for (TAPUserModel userModel : userModels) {
                 userModel.checkAndSetContact(myContactDao.checkUserInMyContacts(userModel.getUserID()));
             }

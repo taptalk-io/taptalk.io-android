@@ -6,6 +6,8 @@ import java.util.Map;
 public interface TapTalkDatabaseInterface<T> {
     void onSelectFinished(List<T> entities);
 
+    void onSelectFinishedWithUnreadCount(List<T> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount);
+
     void onSelectFinished(T entity);
 
     void onInsertFinished();
