@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -368,6 +369,12 @@ public class TAPDatabaseManager {
     public void checkContactAndInsert(TAPUserModel userModel) {
         if (null != myContactRepository)
             myContactRepository.checkContactAndInsert(userModel);
+        else throw new IllegalStateException("My Contact Repository was not initialized");
+    }
+
+    public void checkContactListAndInsert(List<TAPUserModel> userModels) {
+        if (null != myContactRepository)
+            myContactRepository.checkContactListAndInsert(userModels);
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
