@@ -48,4 +48,9 @@ public abstract class TAPDatabaseListener<T> implements TapTalkDatabaseInterface
     @Override
     public void onInsertFailed(String errorMessage) {
     }
+
+    @Override
+    public void onSelectFinishedWithUnreadCount(List<T> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
+
+    }
 }

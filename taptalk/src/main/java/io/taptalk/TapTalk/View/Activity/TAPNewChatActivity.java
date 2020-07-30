@@ -48,9 +48,9 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Adapter.TapContactListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPContactListViewModel;
-import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
@@ -546,13 +546,8 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                 new Thread(() -> {
                     List<TAPUserModel> users = new ArrayList<>();
                     for (TAPContactModel contact : response.getContacts()) {
-                        TAPUserModel contactUserModel = contact.getUser().setUserAsContact();
-                        users.add(contactUserModel);
-                        TAPContactManager.getInstance(instanceKey).addUserMapByPhoneNumber(contactUserModel);
-                        TAPContactManager.getInstance(instanceKey).updateUserData(contactUserModel);
+                        users.add(contact.getUser().setUserAsContact());
                     }
-
-                    TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(users);
                     TAPContactManager.getInstance(instanceKey).updateUserData(users);
                     permissionCheckAndSyncContactList();
                 }).start();
