@@ -978,12 +978,6 @@ public class TAPDataManager {
     public void checkContactAndInsertToDatabase(TAPUserModel userModel) {
         TAPDatabaseManager.getInstance(instanceKey).checkContactAndInsert(userModel);
     }
-
-    // Set isContact value to 0 or 1 then insert user model to database
-    public void checkContactListAndInsertToDatabase(List<TAPUserModel> userModels) {
-        TAPDatabaseManager.getInstance(instanceKey).checkContactListAndInsert(userModels);
-    }
-
     public void getUserWithXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance(instanceKey).getUserWithXcUserID(xcUserID, listener);
     }
