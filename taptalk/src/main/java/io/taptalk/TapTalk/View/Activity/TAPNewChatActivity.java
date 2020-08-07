@@ -358,15 +358,17 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void showSyncContactPermissionDialog() {
-        runOnUiThread(() -> new TapTalkDialog.Builder(TAPNewChatActivity.this)
-                .setTitle(getString(R.string.tap_contact_access))
-                .setMessage(getString(R.string.tap_sync_contact_description))
-                .setCancelable(false)
-                .setPrimaryButtonTitle(getString(R.string.tap_allow))
-                .setPrimaryButtonListener(v -> ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT))
-                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                .setSecondaryButtonListener(true, v -> flSync.setVisibility(View.VISIBLE))
-                .show());
+        if (!isFinishing()) {
+            runOnUiThread(() -> new TapTalkDialog.Builder(TAPNewChatActivity.this)
+                    .setTitle(getString(R.string.tap_contact_access))
+                    .setMessage(getString(R.string.tap_sync_contact_description))
+                    .setCancelable(false)
+                    .setPrimaryButtonTitle(getString(R.string.tap_allow))
+                    .setPrimaryButtonListener(v -> ActivityCompat.requestPermissions(TAPNewChatActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, PERMISSION_READ_CONTACT))
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setSecondaryButtonListener(true, v -> flSync.setVisibility(View.VISIBLE))
+                    .show());
+        }
     }
 
     private void openQRScanner() {
@@ -473,8 +475,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                                     users.add(contact);
                                 }
                             }
-                            TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(users);
-                            TAPContactManager.getInstance(instanceKey).updateUserData(users);
+                            TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(users);
                             runOnUiThread(() -> {
                                 //stopSyncLoading();
                                 flSync.setVisibility(View.GONE);
@@ -548,7 +549,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                     for (TAPContactModel contact : response.getContacts()) {
                         users.add(contact.getUser().setUserAsContact());
                     }
-                    TAPContactManager.getInstance(instanceKey).updateUserData(users);
+                    TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(users);
                     permissionCheckAndSyncContactList();
                 }).start();
             } catch (Exception e) {

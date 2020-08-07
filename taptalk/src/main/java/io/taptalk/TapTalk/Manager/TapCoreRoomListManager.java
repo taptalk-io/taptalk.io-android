@@ -18,6 +18,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
+import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
@@ -63,6 +64,7 @@ public class TapCoreRoomListManager {
                 if (response.getMessages().size() > 0) {
                     List<TAPMessageEntity> tempMessage = new ArrayList<>();
                     List<String> userIds = new ArrayList<>();
+                    List<TAPUserModel> userModels = new ArrayList<>();
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
@@ -72,7 +74,7 @@ public class TapCoreRoomListManager {
                             if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                                 userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                             } else {
-                                TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
+                                userModels.add(message.getUser());
                             }
                             if (null != message.getIsDeleted() && message.getIsDeleted()) {
                                 TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
@@ -83,6 +85,9 @@ public class TapCoreRoomListManager {
                             }
                         }
                     }
+
+                    TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
+
                     if (userIds.size() > 0) {
                         TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
                     }
@@ -139,6 +144,7 @@ public class TapCoreRoomListManager {
                 if (response.getMessages().size() > 0) {
                     List<TAPMessageEntity> tempMessage = new ArrayList<>();
                     List<String> userIds = new ArrayList<>();
+                    List<TAPUserModel> userModels = new ArrayList<>();
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
@@ -148,7 +154,7 @@ public class TapCoreRoomListManager {
                             if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                                 userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                             } else {
-                                TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
+                                userModels.add(message.getUser());
                             }
                             if (null != message.getIsDeleted() && message.getIsDeleted()) {
                                 TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
@@ -159,6 +165,7 @@ public class TapCoreRoomListManager {
                             }
                         }
                     }
+                    TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
                     if (userIds.size() > 0) {
                         TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
                     }
@@ -282,6 +289,7 @@ public class TapCoreRoomListManager {
                                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
                                 List<TAPMessageModel> deliveredMessages = new ArrayList<>();
                                 List<String> userIds = new ArrayList<>();
+                                List<TAPUserModel> userModels = new ArrayList<>();
                                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                                     try {
                                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
@@ -299,7 +307,7 @@ public class TapCoreRoomListManager {
                                             userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                                         } else {
                                             // Save user data to contact manager
-                                            TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
+                                            userModels.add(message.getUser());
                                         }
                                         if (null != message.getIsDeleted() && message.getIsDeleted()) {
                                             TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
@@ -310,6 +318,7 @@ public class TapCoreRoomListManager {
                                         }
                                     }
                                 }
+                                TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
 
                                 // Trigger listener callback
                                 if (null != listener) {

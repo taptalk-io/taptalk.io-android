@@ -258,7 +258,9 @@ public class TapTalk implements LifecycleObserver {
             tapListeners.add(tapListener);
         }
 
-        TAPContactManager.getInstance(instanceKey).loadAllUserDataFromDatabase();
+        if (TapTalk.isAuthenticated(instanceKey)) {
+            TAPContactManager.getInstance(instanceKey).loadAllUserDataFromDatabase();
+        }
 
         if (null != TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable() &&
                 TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
@@ -447,7 +449,7 @@ public class TapTalk implements LifecycleObserver {
                             for (TAPContactModel contact : response.getContacts()) {
                                 userModels.add(contact.getUser().setUserAsContact());
                             }
-                            TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
+                            TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(userModels);
                         }
                     })).start();
 
