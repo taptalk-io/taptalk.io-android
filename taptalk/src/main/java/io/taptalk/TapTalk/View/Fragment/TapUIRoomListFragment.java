@@ -556,7 +556,6 @@ public class TapUIRoomListFragment extends Fragment {
                 showNewChatButton();
 
                 if (!TAPRoomListViewModel.isShouldNotLoadFromAPI(instanceKey)) {
-                    TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
                     fetchDataFromAPI();
                 }
             });
@@ -915,6 +914,7 @@ public class TapUIRoomListFragment extends Fragment {
             }
 
             calculateBadgeCount();
+            TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
 
         @Override
