@@ -187,6 +187,7 @@ public class TapUIRoomListFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         TAPBroadcastManager.unregister(activity, roomListBroadcastReceiver);
+        TAPDataManager.getInstance(instanceKey).unsubscribeRoomListAndUnreadApi();
     }
 
     @Override
