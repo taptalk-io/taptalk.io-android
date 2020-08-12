@@ -103,7 +103,10 @@ public class TAPDataManager {
 
     private String instanceKey = "";
     private TAPDefaultSubscriber validateSub;
+    private TAPDefaultSubscriber roomListAndUnreadSub;
+
     private boolean isNeedToQueryUpdateRoomList;
+    private TAPDefaultSubscriber contactListSubs;
 
     public static TAPDataManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
@@ -978,6 +981,7 @@ public class TAPDataManager {
     public void checkContactAndInsertToDatabase(TAPUserModel userModel) {
         TAPDatabaseManager.getInstance(instanceKey).checkContactAndInsert(userModel);
     }
+
     public void getUserWithXcUserID(String xcUserID, TAPDatabaseListener<TAPUserModel> listener) {
         TAPDatabaseManager.getInstance(instanceKey).getUserWithXcUserID(xcUserID, listener);
     }
@@ -1054,8 +1058,7 @@ public class TAPDataManager {
             if (null != validateSub) {
                 validateSub.unsubscribe();
             }
-            TAPApiManager.getInstance(instanceKey).validateAccessToken(
-                    validateSub = new TAPDefaultSubscriber<>(view));
+            TAPApiManager.getInstance(instanceKey).validateAccessToken(validateSub = new TAPDefaultSubscriber<>(view));
         }
     }
 
@@ -1064,7 +1067,12 @@ public class TAPDataManager {
     }
 
     public void getMessageRoomListAndUnread(String userID, TAPDefaultDataView<TAPGetRoomListResponse> view) {
-        TAPApiManager.getInstance(instanceKey).getRoomList(userID, new TAPDefaultSubscriber<>(view));
+        if (null != roomListAndUnreadSub) roomListAndUnreadSub.unsubscribe();
+        TAPApiManager.getInstance(instanceKey).getRoomList(userID, roomListAndUnreadSub = new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unsubscribeRoomListAndUnreadApi() {
+        if (null != roomListAndUnreadSub) roomListAndUnreadSub.unsubscribe();
     }
 
     public void getNewAndUpdatedMessage(TAPDefaultDataView<TAPGetRoomListResponse> view) {
@@ -1104,7 +1112,12 @@ public class TAPDataManager {
     }
 
     public void getMyContactListFromAPI(TAPDefaultDataView<TAPContactResponse> view) {
-        TAPApiManager.getInstance(instanceKey).getMyContactListFromAPI(new TAPDefaultSubscriber<>(view));
+        if (null != contactListSubs) contactListSubs.unsubscribe();
+        TAPApiManager.getInstance(instanceKey).getMyContactListFromAPI(contactListSubs = new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unsubsribeContactListFromAPI() {
+        if (null != contactListSubs) contactListSubs.unsubscribe();
     }
 
     public void addContactApi(String userID, TAPDefaultDataView<TAPAddContactResponse> view) {
