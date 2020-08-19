@@ -117,11 +117,13 @@ public class TAPFileUtils {
 //                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
 //                return getDataColumn(context, contentUri, null, null);
 
-                final String id = DocumentsContract.getDocumentId(uri);
+                String id = DocumentsContract.getDocumentId(uri);
 
                 if (id != null && id.startsWith("raw:")) {
                     return id.substring(4);
                 }
+                id = id.replaceAll("[^\\d.]", "");
+
 
                 String[] contentUriPrefixesToTry = new String[]{
                         "content://downloads/public_downloads",
