@@ -54,10 +54,6 @@ public class TAPConnectionManager {
     private ConnectionStatus connectionStatus = NOT_CONNECTED;
     private List<TapTalkSocketInterface> socketListeners;
     private TAPSocketMessageListener socketMessageListener;
-
-
-    private int expectedConnectionStatus = 0;
-
     private int reconnectAttempt;
     private final long RECONNECT_DELAY = 500;
 
@@ -204,9 +200,6 @@ public class TAPConnectionManager {
     }
 
     public void connect() {
-        if (CONNECTING == connectionStatus) {
-            expectedConnectionStatus = 1;
-        }
         if ((DISCONNECTED == connectionStatus || NOT_CONNECTED == connectionStatus) && TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext)) {
             try {
                 webSocketUri = new URI(getWebSocketEndpoint());
@@ -216,7 +209,6 @@ public class TAPConnectionManager {
                 connectionStatus = CONNECTING;
                 triggerOnSocketConnectingListener();
                 webSocketClient.connect();
-                checkSocketQueue(1);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -245,27 +237,11 @@ public class TAPConnectionManager {
         }
     }
 
-    public void checkSocketQueue(int socketStatus) {
-//        if (socketStatus == expectedConnectionStatus) {
-//            expectedConnectionStatus = 0;
-//        } else {
-//            if (-1 == expectedConnectionStatus) {
-//                close();
-//            } else {
-//                connect();
-//            }
-//        }
-    }
-
     public void close(ConnectionStatus connectionStatus) {
-        if (CONNECTING == connectionStatus) {
-            expectedConnectionStatus = -1;
-        }
         if (CONNECTED == this.connectionStatus || CONNECTING == this.connectionStatus) {
             try {
                 this.connectionStatus = connectionStatus == NOT_CONNECTED ? connectionStatus : DISCONNECTED;
                 webSocketClient.close();
-                checkSocketQueue(-1);
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             }
@@ -277,9 +253,6 @@ public class TAPConnectionManager {
     }
 
     public void close(int code) {
-        if (CONNECTING == connectionStatus) {
-            expectedConnectionStatus = -1;
-        }
         if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
             try {
                 connectionStatus = DISCONNECTED;
