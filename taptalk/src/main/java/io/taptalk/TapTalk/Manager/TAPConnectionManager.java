@@ -246,15 +246,15 @@ public class TAPConnectionManager {
     }
 
     public void checkSocketQueue(int socketStatus) {
-        if (socketStatus == expectedConnectionStatus) {
-            expectedConnectionStatus = 0;
-        } else {
-            if (-1 == expectedConnectionStatus) {
-                close();
-            } else {
-                connect();
-            }
-        }
+//        if (socketStatus == expectedConnectionStatus) {
+//            expectedConnectionStatus = 0;
+//        } else {
+//            if (-1 == expectedConnectionStatus) {
+//                close();
+//            } else {
+//                connect();
+//            }
+//        }
     }
 
     public void close(ConnectionStatus connectionStatus) {
