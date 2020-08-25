@@ -79,7 +79,7 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind:2.10.3"
 
     //GMS
-    implementation 'com.google.android.gms:play-services-vision:20.1.0'
+    implementation 'com.google.android.gms:play-services-vision:20.1.1'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.libraries.places:places:2.3.0'
 
@@ -109,8 +109,8 @@ dependencies {
     implementation "com.orhanobut:hawk:2.0.1"
 
     //Firebase
-    implementation 'com.google.firebase:firebase-core:17.4.3'
-    implementation 'com.google.firebase:firebase-messaging:20.2.1'
+    implementation 'com.google.firebase:firebase-core:17.5.0'
+    implementation 'com.google.firebase:firebase-messaging:20.2.4'
 
     //Chrome Custom Tab
     implementation 'androidx.browser:browser:1.2.0'
