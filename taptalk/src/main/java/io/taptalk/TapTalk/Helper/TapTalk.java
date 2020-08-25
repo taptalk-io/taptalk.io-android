@@ -141,10 +141,10 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void setTapTalkSocketConnectionMode(TapTalkSocketConnectionMode mode) {
-        setTapTalkSocketConnectionMode(mode, "");
+        setTapTalkSocketConnectionMode("", mode);
     }
 
-    public static void setTapTalkSocketConnectionMode(TapTalkSocketConnectionMode mode, String instanceKey) {
+    public static void setTapTalkSocketConnectionMode(String instanceKey, TapTalkSocketConnectionMode mode) {
         getTapTalkInstance(instanceKey).socketConnectionMode = mode;
     }
 
