@@ -235,7 +235,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 if (response.isRegistered) {
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success")
-                    TapTalk.authenticateWithAuthTicket((activity as TAPBaseActivity).instanceKey, response.ticket, false, object : TapCommonListener() {
+                    TapTalk.authenticateWithAuthTicket((activity as TAPBaseActivity).instanceKey, response.ticket, true, object : TapCommonListener() {
                         override fun onSuccess(successMessage: String) {
                             AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
                             AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Authenticate TapTalk.io Success")

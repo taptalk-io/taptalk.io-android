@@ -114,7 +114,8 @@ public class TapTalk implements LifecycleObserver {
     private TAPChatListener chatListener;
     private String clientAppName = "";
     private int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
-    private boolean isRefreshTokenExpired, /*isAutoConnectDisabled,*/ isAutoContactSyncDisabled;
+    private boolean isRefreshTokenExpired, /*isAutoConnectDisabled,*/
+            isAutoContactSyncDisabled;
     private boolean listenerInit = false;
     public TapTalkImplementationType implementationType;
     public TapTalkSocketConnectionMode socketConnectionMode = TapTalkSocketConnectionMode.ALWAYS_ON;
@@ -455,7 +456,7 @@ public class TapTalk implements LifecycleObserver {
 
                     TAPDataManager.getInstance(instanceKey).saveActiveUser(response.getUser());
                     TAPApiManager.getInstance(instanceKey).setLoggedOut(false);
-                    if (connectOnSuccess) {
+                    if (connectOnSuccess && TapTalk.getTapTalkSocketConnectionMode(instanceKey) != TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {
                         TAPConnectionManager.getInstance(instanceKey).connect();
                     }
                     listener.onSuccess(SUCCESS_MESSAGE_AUTHENTICATE);
