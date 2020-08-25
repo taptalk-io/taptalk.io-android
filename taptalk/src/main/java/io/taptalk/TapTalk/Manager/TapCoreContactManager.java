@@ -190,8 +190,7 @@ public class TapCoreContactManager {
                         users.add(contact);
                     }
                 }
-                TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(users);
-                TAPContactManager.getInstance(instanceKey).updateUserData(users);
+                TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(users);
             }
 
             @Override
