@@ -27,6 +27,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -88,6 +89,7 @@ import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -115,6 +117,7 @@ import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Adapter.TAPCustomKeyboardAdapter;
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter;
 import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter;
@@ -122,7 +125,6 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
-import io.taptalk.TapTalk.R;
 
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
@@ -144,6 +146,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.SOCKET_CONNECTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
@@ -310,24 +313,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
      */
 
     public static void start(Context context, String instanceKey, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor) {
-        start(context, instanceKey, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, null);
+        start(context, instanceKey, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, null, TapTalk.isConnected(instanceKey));
     }
 
     public static void start(Context context, String instanceKey, String roomID, String roomName, TAPImageURL roomImage, int roomType, String roomColor, String jumpToMessageLocalID) {
-        start(context, instanceKey, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID);
+        start(context, instanceKey, TAPRoomModel.Builder(roomID, roomName, roomType, roomImage, roomColor), null, jumpToMessageLocalID, TapTalk.isConnected(instanceKey));
     }
 
     // Open chat room from notification
     public static void start(Context context, String instanceKey, TAPRoomModel roomModel) {
-        start(context, instanceKey, roomModel, null, null);
+        start(context, instanceKey, roomModel, null, null, TapTalk.isConnected(instanceKey));
     }
 
-    // Open chat room from notification
+    // Open chat room from Room List
     public static void start(Context context, String instanceKey, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser) {
-        start(context, instanceKey, roomModel, typingUser, null);
+        start(context, instanceKey, roomModel, typingUser, null, TapTalk.isConnected(instanceKey));
     }
 
-    public static void start(Context context, String instanceKey, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID) {
+    public static void start(Context context, String instanceKey, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID, boolean isConnected) {
         if (TYPE_PERSONAL == roomModel.getRoomType() &&
                 TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(
                         TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomModel.getRoomID()))) {
@@ -351,6 +354,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
+        intent.putExtra(SOCKET_CONNECTED, isConnected);
         context.startActivity(intent);
         if (context instanceof Activity) {
             Activity activity = (Activity) context;
@@ -363,6 +367,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         Intent intent = new Intent(context, TapUIChatActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
         intent.putExtra(ROOM, roomModel);
+        intent.putExtra(SOCKET_CONNECTED, TapTalk.isConnected(instanceKey));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_ONE_SHOT);
     }
@@ -400,6 +405,26 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (vm.isInitialAPICallFinished() && vm.getMessageModels().size() == 0 && TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapTalk.appContext)) {
             fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
+        checkInitSocket();
+    }
+
+    private void checkInitSocket() {
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {
+            if (!TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
+                TapTalk.connect(instanceKey, new TapCommonListener() {
+                    @Override
+                    public void onSuccess(String successMessage) {
+                        super.onSuccess(successMessage);
+                    }
+
+                    @Override
+                    public void onError(String errorCode, String errorMessage) {
+                        super.onError(errorCode, errorMessage);
+                        Log.e(TAG, errorMessage);
+                    }
+                });
+            }
+        }
     }
 
     @Override
@@ -434,6 +459,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
         TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
         TAPFileDownloadManager.getInstance(instanceKey).clearFailedDownloads(); // Remove failed download list from active room
+
+        // TODO: 09/07/20 Disconnect if last activity socket is not connected
+        if (!getIntent().getBooleanExtra(SOCKET_CONNECTED, false) && TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {
+            if (TapTalk.isConnected(instanceKey)) {
+                TapTalk.disconnect(instanceKey);
+            }
+        }
     }
 
     @Override
@@ -833,9 +865,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         // Show / hide attachment button
         if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
-            TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
-            TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
-            TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
+                TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
+                TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
+                TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
         ) {
             ivButtonAttach.setVisibility(View.GONE);
             etChat.setPadding(
@@ -912,7 +944,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivToBottom.setOnClickListener(v -> scrollToBottom());
         ivMentionAnchor.setOnClickListener(v -> scrollToMessage(vm.getUnreadMentions().entrySet().iterator().next().getValue().getLocalID()));
         flMessageList.setOnClickListener(v -> chatListener.onOutsideClicked());
-        flLoading.setOnClickListener(v -> {});
+        flLoading.setOnClickListener(v -> {
+        });
 
 //        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
 //        if (null == vm.getRoom().getGroupParticipants()) {
@@ -1011,7 +1044,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //                    !TAPChatManager.getInstance(instanceKey).getOpenRoom()
 //                            .equals(message.getRoom().getRoomID()) ||
                     null == vm.getRoom() ||
-                    !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())
+                            !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())
             ) {
                 return;
             }
@@ -1975,10 +2008,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvChatHistoryContent.setText(message);
             }
             if (null != clChatComposer) {
-                    TAPUtils.dismissKeyboard(TapUIChatActivity.this);
-                    rvCustomKeyboard.setVisibility(View.GONE);
-                    clChatComposer.setVisibility(View.INVISIBLE);
-                    etChat.clearFocus();
+                TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                rvCustomKeyboard.setVisibility(View.GONE);
+                clChatComposer.setVisibility(View.INVISIBLE);
+                etChat.clearFocus();
             }
             if (null != vRoomImage) {
                 vRoomImage.setClickable(false);

@@ -60,9 +60,12 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPSocketListener;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
@@ -101,6 +104,7 @@ public class TapUIRoomListFragment extends Fragment {
     private String instanceKey = "";
     private Activity activity;
     private TapUIMainRoomListFragment mainRoomListFragment;
+    private TAPSocketListener socketListener;
 
     private ConstraintLayout clActionBar, clButtonSearch, clSelection;
     private FrameLayout flSetupContainer;
@@ -174,6 +178,22 @@ public class TapUIRoomListFragment extends Fragment {
         // TODO: 18 Feb 2020 DATABASE FIRST QUERY CALLED TWICE WHEN CLOSING APP (NOT KILLED)
         updateQueryRoomListFromBackground();
         addNetworkListener();
+        openTapTalkSocketWhenNeeded();
+    }
+
+    private void openTapTalkSocketWhenNeeded() {
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED &&
+                !TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
+            TapTalk.connect(instanceKey, new TapCommonListener() {
+            });
+        }
+    }
+
+    private void closeTapTalkSocketWhenNeeded() {
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED
+                && TapTalk.isConnected(instanceKey)) {
+            TapTalk.disconnect(instanceKey);
+        }
     }
 
     @Override
@@ -186,7 +206,9 @@ public class TapUIRoomListFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        removeSocketListener();
         TAPBroadcastManager.unregister(activity, roomListBroadcastReceiver);
+        closeTapTalkSocketWhenNeeded();
         TAPDataManager.getInstance(instanceKey).unsubscribeRoomListAndUnreadApi();
     }
 
@@ -283,6 +305,7 @@ public class TapUIRoomListFragment extends Fragment {
                 TapUIRoomListFragment.this.hideSelectionActionBar();
             }
         };
+        addSocketListener();
     }
 
     private void bindViews(View view) {
@@ -1157,5 +1180,33 @@ public class TapUIRoomListFragment extends Fragment {
             }
             vm.setLastBadgeCount(vm.getRoomBadgeCount());
         }
+    }
+
+    private void addSocketListener() {
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {
+            socketListener = new TAPSocketListener() {
+                @Override
+                public void onSocketDisconnected() {
+                    if (!TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
+                        TapTalk.connect(instanceKey, new TapCommonListener() {
+                            @Override
+                            public void onSuccess(String successMessage) {
+                                super.onSuccess(successMessage);
+                            }
+
+                            @Override
+                            public void onError(String errorCode, String errorMessage) {
+                                super.onError(errorCode, errorMessage);
+                            }
+                        });
+                    }
+                }
+            };
+            TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener);
+        }
+    }
+
+    private void removeSocketListener() {
+        TAPConnectionManager.getInstance(instanceKey).removeSocketListener(socketListener);
     }
 }

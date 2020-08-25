@@ -146,6 +146,8 @@ public class TAPDefaultConstant {
         public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
         public static final String CLOSE_ACTIVITY = "kTAPCloseActivity";
         public static final String IS_NON_PARTICIPANT_USER_PROFILE = "kTAPIsNotParticipantUserProfile";
+        public static final String FROM_NOTIF = "kTAPFromNotification";
+        public static final String SOCKET_CONNECTED = "kSocketConnected";
     }
 
     public static final class RequestCode {

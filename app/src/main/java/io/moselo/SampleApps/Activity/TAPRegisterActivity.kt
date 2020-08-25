@@ -812,7 +812,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun onSuccess(response: TAPRegisterResponse?) {
             AnalyticsManager.getInstance(instanceKey).identifyUser()
             AnalyticsManager.getInstance(instanceKey).trackEvent("Register Success")
-            TapTalk.authenticateWithAuthTicket(instanceKey,response?.ticket ?: "", true,
+            TapTalk.authenticateWithAuthTicket(instanceKey,response?.ticket ?: "", false,
                     object : TapCommonListener() {
                         override fun onSuccess(successMessage: String?) {
                             AnalyticsManager.getInstance(instanceKey).identifyUser()
@@ -833,7 +833,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
                                     .setPrimaryButtonTitle(getString(R.string.tap_retry))
                                     .setPrimaryButtonListener(true) {
                                         TapTalk.authenticateWithAuthTicket(instanceKey,response?.ticket
-                                                ?: "", true, this)
+                                                ?: "", false, this)
                                     }
                                     .setCancelable(false)
                                     .show()
