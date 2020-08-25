@@ -409,7 +409,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void checkInitSocket() {
-        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {
             if (!TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
                 TapTalk.connect(instanceKey, new TapCommonListener() {
                     @Override
@@ -461,7 +461,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPFileDownloadManager.getInstance(instanceKey).clearFailedDownloads(); // Remove failed download list from active room
 
         // TODO: 09/07/20 Disconnect if last activity socket is not connected
-        if (!getIntent().getBooleanExtra(SOCKET_CONNECTED, false) && TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
+        if (!getIntent().getBooleanExtra(SOCKET_CONNECTED, false) && TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {
             if (TapTalk.isConnected(instanceKey)) {
                 TapTalk.disconnect(instanceKey);
             }

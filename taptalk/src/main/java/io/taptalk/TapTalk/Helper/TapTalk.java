@@ -136,7 +136,7 @@ public class TapTalk implements LifecycleObserver {
     public enum TapTalkSocketConnectionMode {
         ALWAYS_ON,
         ALWAYS_OFF,
-        CONNECT_ON_DEMAND;
+        CONNECT_IF_NEEDED
     }
 
     public static void setTapTalkSocketConnectionMode(TapTalkSocketConnectionMode mode) {

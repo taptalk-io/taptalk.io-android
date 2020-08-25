@@ -94,13 +94,4 @@ public class TapUIRoomListActivity extends TAPBaseActivity {
             Hawk.put(AUTO_START_PERMISSION, true);
         }
     }
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_ON_DEMAND) {
-//            if (TapTalk.isConnected(instanceKey)) {
-//                TapTalk.disconnect(instanceKey);
-//            }
-//        }
-//    }
 }
