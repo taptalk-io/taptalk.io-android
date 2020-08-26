@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
-        public static final int kDatabaseVersion = 7;
+        public static final int kDatabaseVersion = 8;
         public static final String DATABASE_NAME = "message_database";
     }
 
@@ -87,7 +87,7 @@ public class TAPDefaultConstant {
         public static final String ITEMS = "items";
         public static final String FILE_ID = "fileID";
         public static final String FILE_NAME = "fileName";
-        public static final String FILE_URL = "fileURL";
+        public static final String FILE_URL = "url";
         public static final String URL = "url";
         public static final String IMAGE_URL = "imageURL";
         public static final String MEDIA_TYPE = "mediaType";
@@ -146,6 +146,8 @@ public class TAPDefaultConstant {
         public static final String JUMP_TO_MESSAGE = "kTAPJumpToMessage";
         public static final String CLOSE_ACTIVITY = "kTAPCloseActivity";
         public static final String IS_NON_PARTICIPANT_USER_PROFILE = "kTAPIsNotParticipantUserProfile";
+        public static final String FROM_NOTIF = "kTAPFromNotification";
+        public static final String SOCKET_CONNECTED = "kSocketConnected";
     }
 
     public static final class RequestCode {

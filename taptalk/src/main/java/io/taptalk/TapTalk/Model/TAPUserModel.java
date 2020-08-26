@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Entity(tableName = "MyContact", indices = @Index("isContact"))
+@Entity(tableName = "MyContact")
 public class TAPUserModel implements Parcelable {
 
     @PrimaryKey

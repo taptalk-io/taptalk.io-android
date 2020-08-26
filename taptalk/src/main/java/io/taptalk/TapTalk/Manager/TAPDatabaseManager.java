@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 

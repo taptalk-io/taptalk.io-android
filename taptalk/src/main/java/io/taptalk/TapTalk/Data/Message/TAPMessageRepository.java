@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.Data.Message;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -146,35 +145,58 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public TAPMessageEntity generateMessageEntity(TAPMessageEntityWithUnreadCount room) {
+        return new TAPMessageEntity(room.getMessageID(), room.getLocalID(), room.getFilterID(),
+                room.getBody(), room.getRecipientID(), room.getType(), room.getCreated(),
+                room.getData(), room.getQuote(), room.getReplyTo(),
+                room.getForwardFrom(), room.getUpdated(), room.getDeleted(),
+                room.getIsRead(), room.getDelivered(),
+                room.getHidden(), room.getIsDeleted(),
+                room.getSending(), room.getFailedSend(), room.getRoomID(),
+                room.getXcRoomID(), room.getRoomName(), room.getRoomColor(),
+                room.getRoomType(), room.getRoomImage(),
+                room.getRoomLocked(), room.getRoomDeleted(),
+                room.getRoomLockedTimestamp(), room.getRoomDeletedTimestamp(),
+                room.getUserID(), room.getXcUserID(), room.getUserFullName(),
+                room.getUsername(), room.getUserImage(), room.getUserEmail(),
+                room.getUserPhone(), room.getUserRole(), room.getLastLogin(),
+                room.getLastActivity(), room.getRequireChangePassword(),
+                room.getUserCreated(), room.getUserUpdated(), room.getUserDeleted(),
+                room.getAction(), room.getTarget());
+    }
+
     public void getRoomList(String myID, String username, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, final TAPDatabaseListener listener) {
         new Thread(() -> {
+            List<TAPMessageEntityWithUnreadCount> allRooms = messageDao.getAllRoomListWithUnreadCount(myID,
+                    generateMentionFilter(username, 0),
+                    generateMentionFilter(username, 1),
+                    generateMentionFilter(username, 2),
+                    generateMentionFilter(username, 3),
+                    generateMentionFilter(username, 4),
+                    generateMentionFilter(username, 5),
+                    generateMentionFilter(username, 6),
+                    generateMentionFilter(username, 7),
+                    generateMentionFilter(username, 8)
+            );
+            List<TAPMessageEntity> entities = new ArrayList<>();
+            Map<String, Integer> unreadMap = new LinkedHashMap<>();
+            Map<String, Integer> mentionMap = new LinkedHashMap<>();
+            for (TAPMessageEntityWithUnreadCount entity : allRooms) {
+                entities.add(generateMessageEntity(entity));
+                unreadMap.put(entity.getRoomID(), entity.getUnreadCount());
+                mentionMap.put(entity.getRoomID(), entity.getUnreadMentionCount());
+            }
+
             try {
                 if (0 < saveMessages.size()) {
                     messageDao.insert(saveMessages);
                     TAPChatManager.getInstance(instanceKey).clearSaveMessages();
                 }
-                List<TAPMessageEntity> entities = messageDao.getAllRoomList();
-
                 if (isCheckUnreadFirst && entities.size() > 0) {
-                    Map<String, Integer> unreadMap = new LinkedHashMap<>();
-                    Map<String, Integer> mentionMap = new LinkedHashMap<>();
-                    for (TAPMessageEntity entity : entities) {
-                        unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
-                        mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
-                                myID,
-                                generateMentionFilter(username, 0),
-                                generateMentionFilter(username, 1),
-                                generateMentionFilter(username, 2),
-                                generateMentionFilter(username, 3),
-                                generateMentionFilter(username, 4),
-                                generateMentionFilter(username, 5),
-                                generateMentionFilter(username, 6),
-                                generateMentionFilter(username, 7),
-                                generateMentionFilter(username, 8),
-                                entity.getRoomID()).size());
-                    }
                     listener.onSelectedRoomList(entities, unreadMap, mentionMap);
-                } else listener.onSelectFinished(entities);
+                } else {
+                    listener.onSelectFinishedWithUnreadCount(entities, unreadMap, mentionMap);
+                }
             } catch (Exception e) {
                 listener.onSelectFailed(e.getMessage());
             }
@@ -280,29 +302,29 @@ public class TAPMessageRepository {
 
     public void getRoomList(String myID, String username, boolean isCheckUnreadFirst, final TAPDatabaseListener listener) {
         new Thread(() -> {
-            List<TAPMessageEntity> entities = messageDao.getAllRoomList();
-
+            List<TAPMessageEntityWithUnreadCount> allRooms = messageDao.getAllRoomListWithUnreadCount(myID,
+                    generateMentionFilter(username, 0),
+                    generateMentionFilter(username, 1),
+                    generateMentionFilter(username, 2),
+                    generateMentionFilter(username, 3),
+                    generateMentionFilter(username, 4),
+                    generateMentionFilter(username, 5),
+                    generateMentionFilter(username, 6),
+                    generateMentionFilter(username, 7),
+                    generateMentionFilter(username, 8)
+            );
+            List<TAPMessageEntity> entities = new ArrayList<>();
+            Map<String, Integer> unreadMap = new LinkedHashMap<>();
+            Map<String, Integer> mentionMap = new LinkedHashMap<>();
+            for (TAPMessageEntityWithUnreadCount entity : allRooms) {
+                entities.add(generateMessageEntity(entity));
+                unreadMap.put(entity.getRoomID(), entity.getUnreadCount());
+                mentionMap.put(entity.getRoomID(), entity.getUnreadMentionCount());
+            }
             if (isCheckUnreadFirst && entities.size() > 0) {
-                Map<String, Integer> unreadMap = new LinkedHashMap<>();
-                Map<String, Integer> mentionMap = new LinkedHashMap<>();
-                for (TAPMessageEntity entity : entities) {
-                    unreadMap.put(entity.getRoomID(), messageDao.getUnreadCount(myID, entity.getRoomID()));
-                    mentionMap.put(entity.getRoomID(), messageDao.getAllUnreadMentionsFromRoom(
-                            myID,
-                            generateMentionFilter(username, 0),
-                            generateMentionFilter(username, 1),
-                            generateMentionFilter(username, 2),
-                            generateMentionFilter(username, 3),
-                            generateMentionFilter(username, 4),
-                            generateMentionFilter(username, 5),
-                            generateMentionFilter(username, 6),
-                            generateMentionFilter(username, 7),
-                            generateMentionFilter(username, 8),
-                            entity.getRoomID()).size());
-                }
                 listener.onSelectedRoomList(entities, unreadMap, mentionMap);
             } else {
-                listener.onSelectFinished(entities);
+                listener.onSelectFinishedWithUnreadCount(entities, unreadMap, mentionMap);
             }
         }).start();
     }

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public class TAPContactManager {
@@ -24,17 +23,18 @@ public class TAPContactManager {
     private TAPContactManager(String instanceKey) {
         this.instanceKey = instanceKey;
         //loadAllUserDataFromDatabase();
-        TAPConnectionManager.getInstance(instanceKey).addSocketListener(new TAPSocketListener() {
+        // TODO: 27/07/20 FIX HERE --> onSocketDisconnected - saveUserDataMapToDatabase() function commented
+//        TAPConnectionManager.getInstance(instanceKey).addSocketListener(new TAPSocketListener() {
+////            @Override
+////            public void onSocketConnected() {
+////                //loadAllUserDataFromDatabase();
+////            }
+//
 //            @Override
-//            public void onSocketConnected() {
-//                //loadAllUserDataFromDatabase();
+//            public void onSocketDisconnected() {
+////                saveUserDataMapToDatabase();
 //            }
-
-            @Override
-            public void onSocketDisconnected() {
-                saveUserDataMapToDatabase();
-            }
-        });
+//        });
     }
 
     public static TAPContactManager getInstance(String instanceKey) {
@@ -77,10 +77,47 @@ public class TAPContactManager {
         }
     }
 
-    public void updateUserData(List<TAPUserModel> users) {
-        for (TAPUserModel user : users) {
-            updateUserData(user);
+    public void saveContactListToDatabase(List<TAPUserModel> userModels) {
+        saveUserDataToMap(userModels);
+        TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(userModels);
+    }
+
+    private void saveUserDataToMap(List<TAPUserModel> userModels) {
+        userDataMap = new HashMap<>();
+        userDataMapByUsername = new HashMap<>();
+        for (TAPUserModel userModel : userModels) {
+            userDataMap.put(userModel.getUserID(), userModel);
+            userDataMapByUsername.put(userModel.getUsername(), userModel);
         }
+    }
+
+    public void updateUserData(List<TAPUserModel> users) {
+        List<TAPUserModel> usersToSave = new ArrayList<>();
+        String myUserId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+        for (TAPUserModel user : users) {
+            String otherUserId = user.getUserID();
+            TAPUserModel otherUser = getUserDataMap().get(otherUserId);
+            // Check otherUser is not active user
+            if (!otherUserId.equals(myUserId)) {
+                if (null == otherUser) {
+                    // New User
+                    // Add new user to map
+                    // Save user to database
+                    user.checkAndSetContact(0);
+                    getUserDataMap().put(otherUserId, user);
+                    getUserDataMapByUsername().put(user.getUsername(), user);
+                    usersToSave.add(user);
+                } else if (null != otherUser.getUpdated() && null != user.getUpdated() && otherUser.getUpdated() <= user.getUpdated()) {
+                    // Existing User
+                    // Update user data in map
+                    // Save user to database
+                    otherUser.updateValue(user);
+                    usersToSave.add(user);
+                }
+            }
+        }
+//        saveUserDatasToDatabase(usersToSave);
+        TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(usersToSave);
     }
 
     public void removeFromContacts(String userID) {
@@ -95,14 +132,16 @@ public class TAPContactManager {
     }
 
     public void loadAllUserDataFromDatabase() {
-        TAPDataManager.getInstance(instanceKey).getAllUserData(getAllUserDataListener);
+        if (null == userDataMapByUsername && null == userDataMap) {
+            TAPDataManager.getInstance(instanceKey).getAllUserData(getAllUserDataListener);
+        }
     }
 
     public void saveUserDataMapToDatabase() {
         TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(convertUserDataToList(getUserDataMap()));
     }
 
-    private HashMap<String, TAPUserModel> getUserDataMap() {
+    public HashMap<String, TAPUserModel> getUserDataMap() {
         return null == userDataMap ? userDataMap = new HashMap<>() : userDataMap;
     }
 
