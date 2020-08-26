@@ -54,7 +54,7 @@
     <TextView
         android:id="@+id/tv_full_name"
         style="@style/tapRoomListNameStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
@@ -77,12 +77,12 @@
         android:layout_height="24dp"
         android:scaleType="fitStart"
         android:src="@drawable/tap_ic_mute_grey"
-        android:tint="@color/tapIconRoomListMuted"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@id/tv_last_message_time"
         app:layout_constraintStart_toEndOf="@id/tv_full_name"
         app:layout_constraintTop_toTopOf="@+id/tv_full_name"
-        app:layout_constraintWidth_min="24dp" />
+        app:layout_constraintWidth_min="24dp"
+        app:tint="@color/tapIconRoomListMuted" />
 
     <ImageView
         android:id="@+id/iv_personal_room_typing_indicator"
@@ -121,7 +121,6 @@
         android:ellipsize="end"
         android:gravity="start"
         android:maxLines="2"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/iv_badge_mention"
         app:layout_constraintStart_toEndOf="@id/iv_group_room_typing_indicator"
         app:layout_constraintTop_toBottomOf="@id/tv_full_name"
