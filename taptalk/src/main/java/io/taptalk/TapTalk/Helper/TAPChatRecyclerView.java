@@ -30,10 +30,14 @@ public class TAPChatRecyclerView extends RecyclerView {
 
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        int delta = b - t - this.oldHeight;
-        this.oldHeight = b - t;
-        if (delta < 0) {
-            this.scrollBy(0, -delta);
+        try {
+            int delta = b - t - this.oldHeight;
+            this.oldHeight = b - t;
+            if (delta < 0) {
+                this.scrollBy(0, -delta);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -46,7 +50,7 @@ public class TAPChatRecyclerView extends RecyclerView {
     }
 
     public void setupSwipeHelper(Context context, TAPSwipeReplyCallback.SwipeReplyInterface swipeReplyInterface) {
-        swipeHelper = new ItemTouchHelper( new TAPSwipeReplyCallback(context, swipeReplyInterface));
+        swipeHelper = new ItemTouchHelper(new TAPSwipeReplyCallback(context, swipeReplyInterface));
         swipeHelper.attachToRecyclerView(this);
     }
 
