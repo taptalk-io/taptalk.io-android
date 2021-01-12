@@ -390,7 +390,7 @@
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
 
-    <style name="tapRightBubbleMessageBodyStyle" parent="tapFontFamilyRegular">
+    <style name="tapRightBubbleMessageBodyStyle" parent="tapFontFamilyMedium">
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapRightBubbleMessageBodyColor</item>
         <item name="android:textColorLink">@color/tapRightBubbleMessageBodyURLColor</item>
@@ -409,7 +409,7 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="tapRightBubbleDeletedMessageBodyStyle" parent="tapFontFamilyRegular">
+    <style name="tapRightBubbleDeletedMessageBodyStyle" parent="tapFontFamilyMedium">
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapRightBubbleDeletedMessageBodyColor</item>
         <item name="android:textSize">16sp</item>
@@ -433,7 +433,7 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="tapRightBubbleQuoteContentStyle" parent="tapFontFamilyRegular">
+    <style name="tapRightBubbleQuoteContentStyle" parent="tapFontFamilyMedium">
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapRightBubbleQuoteContentColor</item>
         <item name="android:textSize">12sp</item>
@@ -459,7 +459,7 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="tapRightFileBubbleInfoStyle" parent="tapFontFamilyRegular">
+    <style name="tapRightFileBubbleInfoStyle" parent="tapFontFamilyMedium">
         <item name="android:letterSpacing">0.01</item>
         <item name="android:textColor">@color/tapRightFileBubbleInfoColor</item>
         <item name="android:textSize">14sp</item>
@@ -484,7 +484,7 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="tapRightBubbleMessageTimestampStyle" parent="tapFontFamilyRegular">
+    <style name="tapRightBubbleMessageTimestampStyle" parent="tapFontFamilyMedium">
         <item name="android:textColor">@color/tapRightBubbleMessageTimestampColor</item>
         <item name="android:textSize">12sp</item>
     </style>
