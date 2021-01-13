@@ -107,8 +107,8 @@
                 android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"
                 android:adjustViewBounds="true"
-                android:maxWidth="252dp"
-                android:maxHeight="292dp"
+                android:maxWidth="230dp"
+                android:maxHeight="294dp"
                 android:src="@drawable/tap_bg_grey_e4"
                 android:transitionName="@string/tap_transition_view_image"
                 app:cornerRadius="12dp"
@@ -119,8 +119,8 @@
                 app:layout_constraintTop_toBottomOf="@id/cl_forwarded_quote"
                 app:layout_goneMarginBottom="4dp"
                 app:layout_goneMarginTop="4dp"
-                app:minHeight="176dp"
-                app:minWidth="152dp"
+                app:minHeight="98dp"
+                app:minWidth="76dp"
                 app:topRightRadius="2dp"
                 tools:src="@drawable/tap_ic_setup_success_green" />
 
