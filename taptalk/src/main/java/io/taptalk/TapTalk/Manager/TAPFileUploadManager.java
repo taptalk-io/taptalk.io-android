@@ -670,6 +670,16 @@ public class TAPFileUploadManager {
                         mimeType, uploadCallbacks, uploadView);
     }
 
+    public void uploadImageOnly(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
+        TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(context, uri, IMAGE_MAX_DIMENSION, bitmap -> {
+            String mimeType = TAPUtils.getImageMimeType(context, uri);
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            String mimeTypeExtension = mime.getExtensionFromMimeType(mimeType);
+            File imageFile = TAPUtils.createTempFile(context, mimeTypeExtension, bitmap);
+            TAPDataManager.getInstance(instanceKey).uploadImage(null, imageFile, "", "", mimeType, uploadCallback, view);
+        });
+    }
+
     private void callVideoUploadAPI(Context context, String roomID, TAPMessageModel messageModel,
                                     File videoFile, String mimeType, TAPDataImageModel videoData) {
         String localID = messageModel.getLocalID();
