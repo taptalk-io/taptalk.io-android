@@ -18,6 +18,7 @@
 
     <application
         android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
 
         <service
@@ -74,24 +75,24 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPMapActivity"
-            android:windowSoftInputMode="adjustNothing"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TapUIChatActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPScanResultActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPEditGroupSubjectActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPMediaPreviewActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity"
             android:launchMode="singleTask"

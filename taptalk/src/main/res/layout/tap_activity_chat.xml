@@ -609,7 +609,7 @@
                 android:background="@drawable/tap_bg_chat_composer_text_field"
                 android:hint="@string/tap_send_a_message"
                 android:inputType="textMultiLine|textCapSentences"
-                android:maxHeight="75dp"
+                android:maxHeight="120dp"
                 android:minHeight="36dp"
                 android:paddingStart="12dp"
                 android:paddingLeft="12dp"
