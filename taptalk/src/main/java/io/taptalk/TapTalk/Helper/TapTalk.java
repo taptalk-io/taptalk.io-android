@@ -863,6 +863,7 @@ public class TapTalk implements LifecycleObserver {
         } else {
             showBackgroundNotification(instanceKey, message);
         }
+        TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPChatManager.getInstance(instanceKey).convertToEntity(message));
     }
 
     private static void identifyMessageAndShowNotification(String instanceKey, TAPMessageModel message) {
