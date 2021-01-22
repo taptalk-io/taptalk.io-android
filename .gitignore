@@ -16,3 +16,5 @@
 /captures
 .externalNativeBuild
 app/signing.properties
+app/release/app-release.apk
+app/release/output-metadata.json
