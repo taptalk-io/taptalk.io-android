@@ -73,24 +73,27 @@
 ## for DexGuard only
 ##-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 #
+
+#noinspection ShrinkerUnresolvedReference
+
 -keepattributes *Annotation*
 -keepattributes EnclosingMethod
 -keepattributes InnerClasses
--keep class com.google.firebase.quickstart.database.viewholder. {
+-keep class com.google.firebase.quickstart.database.viewholder.** {
     *;
 }
 
--keepclassmembers class com.google.firebase.quickstart.database.models. {
+-keepclassmembers class com.google.firebase.quickstart.database.models.** {
     *;
 }
 -keep public class com.google.android.gms.* { public *; }
 -dontwarn com.google.android.gms.
 -keep public class * extends java.lang.Exception
--keep class com.crashlytics. { *; }
+-keep class com.crashlytics.** { *; }
 -dontwarn com.crashlytics.
 
--keep class okio. { *; }
--keepnames class okio. { *; }
+-keep class okio.** { *; }
+-keepnames class okio.** { *; }
 -dontwarn okio.**
 
 #-ignorewarnings -keep class * { public private *; }
@@ -160,9 +163,10 @@
     long consumerIndex;
 }
 -keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    #noinspection ShrinkerUnresolvedReference
     long producerNode;
     long consumerNode;
 }
 
--keep class com.orhanobut.hawk. { *; }
--keepnames class com.orhanobut.hawk. { *; }
+-keep class com.orhanobut.hawk.** { *; }
+-keepnames class com.orhanobut.hawk.** { *; }
