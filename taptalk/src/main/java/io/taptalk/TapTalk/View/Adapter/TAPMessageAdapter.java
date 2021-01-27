@@ -2261,9 +2261,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent.setText(quote.getContent());
             String quoteImageURL = quote.getImageURL();
             String quoteFileID = quote.getFileID();
-            if (null != quoteImageURL && !quoteImageURL.isEmpty() &&
-                    (quote.getFileType().equals(String.valueOf(TYPE_IMAGE)) ||
-                            quote.getFileType().equals(IMAGE))) {
+            if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
                 // Get quote image from URL
                 glide.load(quoteImageURL).into(rcivQuoteImage);
                 ImageViewCompat.setImageTintList(rcivQuoteImage, null);

@@ -77,6 +77,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_CAPTION_LENGTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
@@ -1455,7 +1456,7 @@ public class TAPChatManager {
         TAPUserModel dummyUserWithName = new TAPUserModel();
         dummyUserWithName.setName(quoteTitle);
         HashMap<String, Object> quoteData = new HashMap<>();
-        quoteData.put("imageURL", null == quoteImageURL ? "" : quoteImageURL);
+        quoteData.put(IMAGE_URL, null == quoteImageURL ? "" : quoteImageURL);
         // Dummy message model for quote
         TAPMessageModel dummyMessage = TAPMessageModel.Builder(
                 null == quoteContent ? "" : quoteContent, new TAPRoomModel(),
