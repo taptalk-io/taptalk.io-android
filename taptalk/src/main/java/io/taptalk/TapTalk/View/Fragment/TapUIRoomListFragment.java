@@ -394,6 +394,7 @@ public class TapUIRoomListFragment extends Fragment {
                 }
             }
         };
+        rvContactList.instanceKey = instanceKey;
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(llm);
         rvContactList.setHasFixedSize(true);

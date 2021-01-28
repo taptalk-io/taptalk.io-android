@@ -13,6 +13,8 @@ import static android.view.MotionEvent.ACTION_UP;
 
 public class TAPChatRecyclerView extends RecyclerView {
 
+    public String instanceKey;
+
     private ItemTouchHelper swipeHelper;
     private int oldHeight;
 
@@ -50,7 +52,7 @@ public class TAPChatRecyclerView extends RecyclerView {
     }
 
     public void setupSwipeHelper(Context context, TAPSwipeReplyCallback.SwipeReplyInterface swipeReplyInterface) {
-        swipeHelper = new ItemTouchHelper(new TAPSwipeReplyCallback(context, swipeReplyInterface));
+        swipeHelper = new ItemTouchHelper(new TAPSwipeReplyCallback(instanceKey, context, swipeReplyInterface));
         swipeHelper.attachToRecyclerView(this);
     }
 

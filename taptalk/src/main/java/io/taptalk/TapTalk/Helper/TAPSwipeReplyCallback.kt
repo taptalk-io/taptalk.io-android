@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.*
+import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPBaseChatViewHolder
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
@@ -21,6 +22,7 @@ import kotlin.math.abs
 import kotlin.math.min
 
 class TAPSwipeReplyCallback(
+        private val instanceKey: String,
         private val context: Context,
         private val swipeReplyInterface: SwipeReplyInterface) :
         ItemTouchHelper.Callback() {
@@ -42,6 +44,10 @@ class TAPSwipeReplyCallback(
     }
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+        if (TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled) {
+            // Reply menu disabled from TapUI
+            return 0
+        }
         if (viewHolder is TAPMessageAdapter.DeletedVH) {
             // Disable swipe for deleted messages
             return 0

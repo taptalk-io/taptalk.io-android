@@ -814,6 +814,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         };
         messageLayoutManager.setStackFromEnd(true);
+        rvMessageList.instanceKey = instanceKey;
         rvMessageList.setAdapter(messageAdapter);
         rvMessageList.setLayoutManager(messageLayoutManager);
         rvMessageList.setHasFixedSize(false);
