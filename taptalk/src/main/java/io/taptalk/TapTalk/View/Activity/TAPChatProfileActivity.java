@@ -1,15 +1,11 @@
 package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,10 +19,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,12 +28,6 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.google.android.material.appbar.AppBarLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,6 +47,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
@@ -69,9 +58,9 @@ import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel;
-import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_ADD_TO_CONTACTS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_BLOCK;
@@ -87,7 +76,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.ME
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_ROOM_SEARCH_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_SEND_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_VIEW_MEMBERS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
@@ -435,16 +423,18 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 //// Personal chat room
 
                 // Add to contacts
-                TAPUserModel contact = TAPContactManager.getInstance(instanceKey).getUserData(
-                        TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm.getRoom().getRoomID()));
-                if (null == contact || null == contact.getIsContact() || contact.getIsContact() == 0) {
-                    TapChatProfileItemModel menuAddToContact = new TapChatProfileItemModel(
-                            MENU_ADD_TO_CONTACTS,
-                            getString(R.string.tap_add_to_contacts),
-                            R.drawable.tap_ic_add_circle_orange,
-                            R.color.tapIconGroupMemberProfileMenuAddToContacts,
-                            R.style.tapChatProfileMenuLabelStyle);
-                    menuItems.add(menuAddToContact);
+                if (!TapUI.getInstance(instanceKey).isAddContactDisabled() && TapUI.getInstance(instanceKey).isAddToContactsButtonInChatProfileVisible()) {
+                    TAPUserModel contact = TAPContactManager.getInstance(instanceKey).getUserData(
+                            TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(vm.getRoom().getRoomID()));
+                    if (null == contact || null == contact.getIsContact() || contact.getIsContact() == 0) {
+                        TapChatProfileItemModel menuAddToContact = new TapChatProfileItemModel(
+                                MENU_ADD_TO_CONTACTS,
+                                getString(R.string.tap_add_to_contacts),
+                                R.drawable.tap_ic_add_circle_orange,
+                                R.color.tapIconGroupMemberProfileMenuAddToContacts,
+                                R.style.tapChatProfileMenuLabelStyle);
+                        menuItems.add(menuAddToContact);
+                    }
                 }
 
                 if (getIntent().getBooleanExtra(IS_NON_PARTICIPANT_USER_PROFILE, false)) {
@@ -535,15 +525,17 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
             //// Group chat member profile
 
             // Add to contacts
-            TAPUserModel contact = TAPContactManager.getInstance(instanceKey).getUserData(vm.getGroupMemberUser().getUserID());
-            if (null == contact || null == contact.getIsContact() || contact.getIsContact() == 0) {
-                TapChatProfileItemModel menuAddToContact = new TapChatProfileItemModel(
-                        MENU_ADD_TO_CONTACTS,
-                        getString(R.string.tap_add_to_contacts),
-                        R.drawable.tap_ic_add_circle_orange,
-                        R.color.tapIconGroupMemberProfileMenuAddToContacts,
-                        R.style.tapChatProfileMenuLabelStyle);
-                menuItems.add(menuAddToContact);
+            if (!TapUI.getInstance(instanceKey).isAddContactDisabled() && TapUI.getInstance(instanceKey).isAddToContactsButtonInChatProfileVisible()) {
+                TAPUserModel contact = TAPContactManager.getInstance(instanceKey).getUserData(vm.getGroupMemberUser().getUserID());
+                if (null == contact || null == contact.getIsContact() || contact.getIsContact() == 0) {
+                    TapChatProfileItemModel menuAddToContact = new TapChatProfileItemModel(
+                            MENU_ADD_TO_CONTACTS,
+                            getString(R.string.tap_add_to_contacts),
+                            R.drawable.tap_ic_add_circle_orange,
+                            R.color.tapIconGroupMemberProfileMenuAddToContacts,
+                            R.style.tapChatProfileMenuLabelStyle);
+                    menuItems.add(menuAddToContact);
+                }
             }
 
             // Send message

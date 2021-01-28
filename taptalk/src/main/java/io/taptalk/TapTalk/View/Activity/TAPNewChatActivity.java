@@ -176,6 +176,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
 
         getWindow().setBackgroundDrawable(null);
 
+        if (TapUI.getInstance(instanceKey).isAddContactDisabled()) {
+            ivButtonSearch.setVisibility(View.INVISIBLE);
+        }
+
         adapter = new TapContactListAdapter(instanceKey, vm.getSeparatedContactList(), contactListListener);
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -207,14 +211,16 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     }
 
     private void setupMenuButtons() {
-        if (TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
+        if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
+                TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
             TapContactListModel menuAddNewContact = new TapContactListModel(
                     MENU_ID_ADD_NEW_CONTACT,
                     getString(R.string.tap_new_contact),
                     R.drawable.tap_ic_new_contact_orange);
             vm.getMenuButtonList().add(menuAddNewContact);
         }
-        if (TapUI.getInstance(instanceKey).isScanQRMenuButtonVisible()) {
+        if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
+                TapUI.getInstance(instanceKey).isScanQRMenuButtonVisible()) {
             TapContactListModel menuScanQRCode = new TapContactListModel(
                     MENU_ID_SCAN_QR_CODE,
                     getString(R.string.tap_scan_qr_code),

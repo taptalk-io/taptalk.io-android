@@ -124,7 +124,9 @@ public class TapUISearchChatFragment extends Fragment {
         ivButtonClearText = view.findViewById(R.id.iv_button_clear_text);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        boolean isContactAvailable = TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible() || TapUI.getInstance(instanceKey).isScanQRMenuButtonVisible();
+        boolean isContactAvailable = !TapUI.getInstance(instanceKey).isAddContactDisabled() &&
+                (TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible() ||
+                        TapUI.getInstance(instanceKey).isScanQRMenuButtonVisible());
         boolean isGroupChatAvailable = TapUI.getInstance(instanceKey).isNewGroupMenuButtonVisible();
 
         if (isContactAvailable && isGroupChatAvailable) {

@@ -423,7 +423,8 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
             vm.setNeedToCallGetUserApi(false);
             if (vm.getAdapterItems().isEmpty()) {
                 tvInfoEmptyContact.setText(getString(R.string.tap_contact_list_empty));
-                if (TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
+                if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
+                        TapUI.getInstance(instanceKey).isNewContactMenuButtonVisible()) {
                     tvButtonEmptyContact.setText(getString(R.string.tap_add_new_contact));
                     tvButtonEmptyContact.setVisibility(View.VISIBLE);
                     llEmptyContact.setOnClickListener(v -> openNewContactActivity());

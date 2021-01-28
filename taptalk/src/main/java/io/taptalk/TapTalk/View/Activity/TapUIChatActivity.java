@@ -1931,7 +1931,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         initRoom();
                     }
 
-                    if (!TAPDataManager.getInstance(instanceKey).isChatRoomContactActionDismissed(vm.getRoom().getRoomID()) &&
+                    if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
+                            TapUI.getInstance(instanceKey).isAddToContactsButtonInChatRoomVisible() &&
+                            !TAPDataManager.getInstance(instanceKey).isChatRoomContactActionDismissed(vm.getRoom().getRoomID()) &&
                             (null == vm.getOtherUserModel().getIsContact() || vm.getOtherUserModel().getIsContact() == 0)) {
                         clContactAction.setVisibility(View.VISIBLE);
                     } else {
