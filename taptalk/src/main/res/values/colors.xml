@@ -24,6 +24,11 @@
     <color name="tapDefaultNavBarBackgroundColor">@color/tapWhite</color>
     <color name="tapDefaultBackgroundColor">@color/tapWhiteF3</color>
 
+    <color name="tapDefaultRightBubbleBackgroundColor">@color/tapOrangeBubble</color>
+    <color name="tapDefaultRightBubbleDarkBackgroundColor">@color/tapOrangeBubbleDark</color>
+    <color name="tapDefaultLeftBubbleBackgroundColor">@color/tapWhite</color>
+    <color name="tapDefaultLeftBubbleDarkBackgroundColor">@color/tapWhiteF3</color>
+
     <color name="tapTextFieldCursorColor">@color/tapColorPrimary</color>
     <color name="tapTextFieldBorderActiveColor">@color/tapColorPrimary</color>
     <color name="tapTextFieldBorderInactiveColor">@color/tapGreyDc</color>
@@ -51,20 +56,20 @@
     <color name="tapUnreadBadgeInactiveBackgroundColor">@color/tapGrey9b</color>
 
     <color name="tapChatComposerBackgroundColor">@color/tapWhite</color>
-    <color name="tapQuoteLayoutDecorationBackgroundColor">@color/tapWhite</color>
-    <color name="tapRightBubbleBackgroundColor">@color/tapOrangeBubble</color>
-    <color name="tapLeftBubbleBackgroundColor">@color/tapWhite</color>
+    <color name="tapQuoteLayoutDecorationBackgroundColor">@color/tapColorPrimaryExtraLight</color>
+    <color name="tapRightBubbleBackgroundColor">@color/tapDefaultRightBubbleBackgroundColor</color>
+    <color name="tapLeftBubbleBackgroundColor">@color/tapDefaultLeftBubbleBackgroundColor</color>
     <color name="tapRightBubbleHighlightBackgroundColor">#665eecff</color>
     <color name="tapLeftBubbleHighlightBackgroundColor">#665eecff</color>
-    <color name="tapRightBubbleQuoteBackgroundColor">@color/tapOrangeBubbleDark</color>
-    <color name="tapLeftBubbleQuoteBackgroundColor">@color/tapWhiteF3</color>
-    <color name="tapRightFileButtonBackgroundColor">@color/tapOrangeBubbleDark</color>
-    <color name="tapLeftFileButtonBackgroundColor">@color/tapOrangeBubble</color>
+    <color name="tapRightBubbleQuoteBackgroundColor">@color/tapDefaultRightBubbleDarkBackgroundColor</color>
+    <color name="tapLeftBubbleQuoteBackgroundColor">@color/tapDefaultLeftBubbleDarkBackgroundColor</color>
+    <color name="tapRightFileButtonBackgroundColor">@color/tapDefaultRightBubbleDarkBackgroundColor</color>
+    <color name="tapLeftFileButtonBackgroundColor">@color/tapDefaultRightBubbleBackgroundColor</color>
     <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
     <color name="tapDateIndicatorBackgroundColor">@color/tapWhite</color>
     <color name="tapUnreadIdentifierBackgroundColor">@color/tapPumpkinOrange10</color>
     <color name="tapLeftFileProgressBackgroundColor">@color/tapWhite</color>
-    <color name="tapRightFileProgressBackgroundColor">@color/tapOrangeBubble</color>
+    <color name="tapRightFileProgressBackgroundColor">@color/tapDefaultRightBubbleBackgroundColor</color>
     <color name="tapDeletedChatRoomInfoBackgroundColor">@color/tapParchment</color>
     <color name="tapChatRoomBackgroundColor">@color/tapDefaultBackgroundColor</color> <!--*-->
 
