@@ -370,7 +370,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
 
             // Show mention badge
-            if (item.getRoomMentionCount() > 0) {
+            if (!TapUI.getInstance(instanceKey).isMentionUsernameDisabled() && item.getRoomMentionCount() > 0) {
                 ivBadgeMention.setVisibility(View.VISIBLE);
             } else {
                 ivBadgeMention.setVisibility(View.GONE);

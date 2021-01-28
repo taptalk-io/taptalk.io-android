@@ -81,6 +81,7 @@ public class TapUI {
     private boolean isSendSMSMenuDisabled;
     private boolean isViewProfileMenuDisabled;
     private boolean isSendMessageMenuDisabled;
+    private boolean isMentionUsernameDisabled;
 
     public TapUI(String instanceKey) {
         this.instanceKey = instanceKey;
@@ -652,6 +653,14 @@ public class TapUI {
 
     public void setSendMessageMenuDisabled(boolean sendMessageMenuDisabled) {
         isSendMessageMenuDisabled = sendMessageMenuDisabled;
+    }
+
+    public boolean isMentionUsernameDisabled() {
+        return isMentionUsernameDisabled;
+    }
+
+    public void setMentionUsernameDisabled(boolean mentionUsernameDisabled) {
+        isMentionUsernameDisabled = mentionUsernameDisabled;
     }
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {

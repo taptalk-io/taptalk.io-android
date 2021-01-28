@@ -391,7 +391,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Show mention badge
-            if (item.getUnreadMentions() > 0) {
+            if (!TapUI.getInstance(instanceKey).isMentionUsernameDisabled() && item.getUnreadMentions() > 0) {
                 ivBadgeMention.setVisibility(View.VISIBLE);
             } else {
                 ivBadgeMention.setVisibility(View.GONE);

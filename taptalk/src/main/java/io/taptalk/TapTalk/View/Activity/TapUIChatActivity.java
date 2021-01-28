@@ -1334,7 +1334,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void updateMentionCount() {
         runOnUiThread(() -> {
-            if (vm.getUnreadMentionCount() > 0) {
+            if (!TapUI.getInstance(instanceKey).isMentionUsernameDisabled() && vm.getUnreadMentionCount() > 0) {
                 tvBadgeMentionCount.setText(String.valueOf(vm.getUnreadMentionCount()));
                 tvBadgeMentionCount.setVisibility(View.VISIBLE);
                 if (View.VISIBLE != ivMentionAnchor.getVisibility()) {
@@ -2389,18 +2389,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Get unread mentions
-        TAPDataManager.getInstance(instanceKey).getAllUnreadMentionsFromRoom(vm.getRoom().getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
-            @Override
-            public void onSelectFinished(List<TAPMessageEntity> entities) {
-                if (!entities.isEmpty()) {
-                    for (TAPMessageEntity entity : entities) {
-                        TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
-                        vm.addUnreadMention(model);
+        if (!TapUI.getInstance(instanceKey).isMentionUsernameDisabled()) {
+            TAPDataManager.getInstance(instanceKey).getAllUnreadMentionsFromRoom(vm.getRoom().getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
+                @Override
+                public void onSelectFinished(List<TAPMessageEntity> entities) {
+                    if (!entities.isEmpty()) {
+                        for (TAPMessageEntity entity : entities) {
+                            TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+                            vm.addUnreadMention(model);
+                        }
+                        updateMentionCount();
                     }
-                    updateMentionCount();
                 }
-            }
-        });
+            });
+        }
     }
 
     private void showUnreadButton(@Nullable TAPMessageModel unreadIndicator) {
@@ -2624,7 +2626,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     };
 
     private void checkAndSearchUserMentionList() {
-        if (vm.getRoomParticipantsByUsername().isEmpty()) {
+        if (TapUI.getInstance(instanceKey).isMentionUsernameDisabled() || vm.getRoomParticipantsByUsername().isEmpty()) {
             hideUserMentionList();
             return;
         }
@@ -2678,7 +2680,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void updateMessageMentionIndexes(TAPMessageModel message) {
         vm.getMessageMentionIndexes().remove(message.getLocalID());
-        if (vm.getRoom().getRoomType() == TYPE_PERSONAL) {
+        if (TapUI.getInstance(instanceKey).isMentionUsernameDisabled() || vm.getRoom().getRoomType() == TYPE_PERSONAL) {
             return;
         }
         String originalText;
@@ -2778,7 +2780,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void checkAndHighlightTypedText() {
-        if (vm.getRoomParticipantsByUsername().isEmpty()) {
+        if (TapUI.getInstance(instanceKey).isMentionUsernameDisabled() || vm.getRoomParticipantsByUsername().isEmpty()) {
             hideUserMentionList();
             return;
         }
