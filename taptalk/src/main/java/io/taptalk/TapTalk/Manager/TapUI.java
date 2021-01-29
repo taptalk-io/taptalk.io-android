@@ -115,6 +115,12 @@ public class TapUI {
         return null == instances ? instances = new HashMap<>() : instances;
     }
 
+    /**
+     * ==========================================================================================
+     * LISTENERS
+     * ==========================================================================================
+     */
+
     private List<TapUIRoomListListener> getRoomListListeners() {
         return null == tapUIRoomListListeners ? tapUIRoomListListeners = new ArrayList<>() : tapUIRoomListListeners;
     }
@@ -171,6 +177,12 @@ public class TapUI {
         }
         getCustomKeyboardListeners().remove(listener);
     }
+
+    /**
+     * ==========================================================================================
+     * ACTIVITY / FRAGMENT
+     * ==========================================================================================
+     */
 
     public TapUIMainRoomListFragment getRoomListFragment() {
         if (!TapTalk.checkTapTalkInitialized()) {
@@ -430,6 +442,12 @@ public class TapUI {
         this.currentForegroundTapTalkActivity = currentForegroundTapTalkActivity;
     }
 
+    /**
+     * ==========================================================================================
+     * CHAT UI FEATURES
+     * ==========================================================================================
+     */
+
     public Boolean isAllTapTalkActivityActionBarEnabled() {
         return isAllActivityActionBarEnabled;
     }
@@ -579,11 +597,11 @@ public class TapUI {
         return isReadStatusHidden;
     }
 
-    public void setReadStatusHidden(boolean isReadStatusHidden) {
+    public void setReadStatusVisible(boolean isReadStatusVisible) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        this.isReadStatusHidden = isReadStatusHidden;
+        this.isReadStatusHidden = !isReadStatusVisible;
     }
 
     public boolean isConnectionStatusIndicatorVisible() {
@@ -607,11 +625,11 @@ public class TapUI {
         return isDocumentAttachmentDisabled;
     }
 
-    public void setDocumentAttachmentDisabled(boolean documentAttachmentDisabled) {
+    public void setDocumentAttachmentEnabled(boolean documentAttachmentEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isDocumentAttachmentDisabled = documentAttachmentDisabled;
+        isDocumentAttachmentDisabled = !documentAttachmentEnabled;
     }
 
     public boolean isCameraAttachmentDisabled() {
@@ -621,11 +639,11 @@ public class TapUI {
         return isCameraAttachmentDisabled;
     }
 
-    public void setCameraAttachmentDisabled(boolean cameraAttachmentDisabled) {
+    public void setCameraAttachmentEnabled(boolean cameraAttachmentEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isCameraAttachmentDisabled = cameraAttachmentDisabled;
+        isCameraAttachmentDisabled = !cameraAttachmentEnabled;
     }
 
     public boolean isGalleryAttachmentDisabled() {
@@ -635,11 +653,11 @@ public class TapUI {
         return isGalleryAttachmentDisabled;
     }
 
-    public void setGalleryAttachmentDisabled(boolean galleryAttachmentDisabled) {
+    public void setGalleryAttachmentEnabled(boolean galleryAttachmentEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isGalleryAttachmentDisabled = galleryAttachmentDisabled;
+        isGalleryAttachmentDisabled = !galleryAttachmentEnabled;
     }
 
     public boolean isLocationAttachmentDisabled() {
@@ -649,11 +667,11 @@ public class TapUI {
         return isLocationAttachmentDisabled;
     }
 
-    public void setLocationAttachmentDisabled(boolean locationAttachmentDisabled) {
+    public void setLocationAttachmentEnabled(boolean locationAttachmentEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isLocationAttachmentDisabled = locationAttachmentDisabled;
+        isLocationAttachmentDisabled = !locationAttachmentEnabled;
     }
 
     public boolean isReplyMessageMenuDisabled() {
@@ -663,11 +681,11 @@ public class TapUI {
         return isReplyMessageMenuDisabled;
     }
 
-    public void setReplyMessageMenuDisabled(boolean replyMessageMenuDisabled) {
+    public void setReplyMessageMenuEnabled(boolean replyMessageMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isReplyMessageMenuDisabled = replyMessageMenuDisabled;
+        isReplyMessageMenuDisabled = !replyMessageMenuEnabled;
     }
 
     public boolean isForwardMessageMenuDisabled() {
@@ -677,11 +695,11 @@ public class TapUI {
         return isForwardMessageMenuDisabled;
     }
 
-    public void setForwardMessageMenuDisabled(boolean forwardMessageMenuDisabled) {
+    public void setForwardMessageMenuEnabled(boolean forwardMessageMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isForwardMessageMenuDisabled = forwardMessageMenuDisabled;
+        isForwardMessageMenuDisabled = !forwardMessageMenuEnabled;
     }
 
     public boolean isCopyMessageMenuDisabled() {
@@ -691,11 +709,11 @@ public class TapUI {
         return isCopyMessageMenuDisabled;
     }
 
-    public void setCopyMessageMenuDisabled(boolean copyMessageMenuDisabled) {
+    public void setCopyMessageMenuEnabled(boolean copyMessageMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isCopyMessageMenuDisabled = copyMessageMenuDisabled;
+        isCopyMessageMenuDisabled = !copyMessageMenuEnabled;
     }
 
     public boolean isDeleteMessageMenuDisabled() {
@@ -705,11 +723,11 @@ public class TapUI {
         return isDeleteMessageMenuDisabled;
     }
 
-    public void setDeleteMessageMenuDisabled(boolean deleteMessageMenuDisabled) {
+    public void setDeleteMessageMenuEnabled(boolean deleteMessageMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isDeleteMessageMenuDisabled = deleteMessageMenuDisabled;
+        isDeleteMessageMenuDisabled = !deleteMessageMenuEnabled;
     }
 
     public boolean isSaveMediaToGalleryMenuDisabled() {
@@ -719,11 +737,11 @@ public class TapUI {
         return isSaveMediaToGalleryMenuDisabled;
     }
 
-    public void setSaveMediaToGalleryMenuDisabled(boolean saveMediaToGalleryMenuDisabled) {
+    public void setSaveMediaToGalleryMenuEnabled(boolean saveMediaToGalleryMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isSaveMediaToGalleryMenuDisabled = saveMediaToGalleryMenuDisabled;
+        isSaveMediaToGalleryMenuDisabled = !saveMediaToGalleryMenuEnabled;
     }
 
     public boolean isSaveDocumentMenuDisabled() {
@@ -733,11 +751,11 @@ public class TapUI {
         return isSaveDocumentMenuDisabled;
     }
 
-    public void setSaveDocumentMenuDisabled(boolean saveDocumentMenuDisabled) {
+    public void setSaveDocumentMenuEnabled(boolean saveDocumentMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isSaveDocumentMenuDisabled = saveDocumentMenuDisabled;
+        isSaveDocumentMenuDisabled = !saveDocumentMenuEnabled;
     }
 
     public boolean isOpenLinkMenuDisabled() {
@@ -747,11 +765,11 @@ public class TapUI {
         return isOpenLinkMenuDisabled;
     }
 
-    public void setOpenLinkMenuDisabled(boolean openLinkMenuDisabled) {
+    public void setOpenLinkMenuEnabled(boolean openLinkMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isOpenLinkMenuDisabled = openLinkMenuDisabled;
+        isOpenLinkMenuDisabled = !openLinkMenuEnabled;
     }
 
     public boolean isComposeEmailMenuDisabled() {
@@ -761,11 +779,11 @@ public class TapUI {
         return isComposeEmailMenuDisabled;
     }
 
-    public void setComposeEmailMenuDisabled(boolean composeEmailMenuDisabled) {
+    public void setComposeEmailMenuEnabled(boolean composeEmailMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isComposeEmailMenuDisabled = composeEmailMenuDisabled;
+        isComposeEmailMenuDisabled = !composeEmailMenuEnabled;
     }
 
     public boolean isDialNumberMenuDisabled() {
@@ -775,11 +793,11 @@ public class TapUI {
         return isDialNumberMenuDisabled;
     }
 
-    public void setDialNumberMenuDisabled(boolean dialNumberMenuDisabled) {
+    public void setDialNumberMenuEnabled(boolean dialNumberMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isDialNumberMenuDisabled = dialNumberMenuDisabled;
+        isDialNumberMenuDisabled = !dialNumberMenuEnabled;
     }
 
     public boolean isSendSMSMenuDisabled() {
@@ -789,11 +807,11 @@ public class TapUI {
         return isSendSMSMenuDisabled;
     }
 
-    public void setSendSMSMenuDisabled(boolean sendSMSMenuDisabled) {
+    public void setSendSMSMenuEnabled(boolean sendSMSMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isSendSMSMenuDisabled = sendSMSMenuDisabled;
+        isSendSMSMenuDisabled = !sendSMSMenuEnabled;
     }
 
     public boolean isViewProfileMenuDisabled() {
@@ -803,11 +821,11 @@ public class TapUI {
         return isViewProfileMenuDisabled;
     }
 
-    public void setViewProfileMenuDisabled(boolean viewProfileMenuDisabled) {
+    public void setViewProfileMenuEnabled(boolean viewProfileMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isViewProfileMenuDisabled = viewProfileMenuDisabled;
+        isViewProfileMenuDisabled = !viewProfileMenuEnabled;
     }
 
     public boolean isSendMessageMenuDisabled() {
@@ -817,11 +835,11 @@ public class TapUI {
         return isSendMessageMenuDisabled;
     }
 
-    public void setSendMessageMenuDisabled(boolean sendMessageMenuDisabled) {
+    public void setSendMessageMenuEnabled(boolean sendMessageMenuEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isSendMessageMenuDisabled = sendMessageMenuDisabled;
+        isSendMessageMenuDisabled = !sendMessageMenuEnabled;
     }
 
     public boolean isMentionUsernameDisabled() {
@@ -831,11 +849,11 @@ public class TapUI {
         return isMentionUsernameDisabled;
     }
 
-    public void setMentionUsernameDisabled(boolean mentionUsernameDisabled) {
+    public void setMentionUsernameEnabled(boolean mentionUsernameEnabled) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isMentionUsernameDisabled = mentionUsernameDisabled;
+        isMentionUsernameDisabled = !mentionUsernameEnabled;
     }
 
     public boolean isAddToContactsButtonInChatRoomVisible() {
@@ -867,12 +885,24 @@ public class TapUI {
     }
 
     public boolean isAddContactDisabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
         return isAddContactDisabled;
     }
 
-    public void setAddContactDisabled(boolean addContactDisabled) {
-        isAddContactDisabled = addContactDisabled;
+    public void setAddContactEnabled(boolean addContactEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isAddContactDisabled = !addContactEnabled;
     }
+
+    /**
+     * ==========================================================================================
+     * CUSTOM BUBBLE
+     * ==========================================================================================
+     */
 
     public void addCustomBubble(TAPBaseCustomBubble baseCustomBubble) {
         if (!TapTalk.checkTapTalkInitialized()) {
@@ -880,6 +910,12 @@ public class TapUI {
         }
         TAPCustomBubbleManager.getInstance(instanceKey).addCustomBubbleMap(baseCustomBubble);
     }
+
+    /**
+     * ==========================================================================================
+     * NON-PUBLIC METHODS
+     * ==========================================================================================
+     */
 
     void triggerSearchChatBarTapped(Activity activity, TapUIMainRoomListFragment mainRoomListFragment) {
         if (getRoomListListeners().isEmpty() && null != mainRoomListFragment) {
