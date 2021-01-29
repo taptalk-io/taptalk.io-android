@@ -158,6 +158,7 @@ public class TapUIRoomListFragment extends Fragment {
         bindViews(view);
         initView();
         viewLoadedSequence();
+        TapUI.getInstance(instanceKey).setCurrentTapTalkRoomListFragment(this);
         TAPBroadcastManager.register(activity, roomListBroadcastReceiver,
                 REFRESH_TOKEN_RENEWED,
                 RELOAD_PROFILE_PICTURE,
@@ -181,21 +182,6 @@ public class TapUIRoomListFragment extends Fragment {
         openTapTalkSocketWhenNeeded();
     }
 
-    private void openTapTalkSocketWhenNeeded() {
-        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED &&
-                !TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
-            TapTalk.connect(instanceKey, new TapCommonListener() {
-            });
-        }
-    }
-
-    private void closeTapTalkSocketWhenNeeded() {
-        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED
-                && TapTalk.isConnected(instanceKey)) {
-            TapTalk.disconnect(instanceKey);
-        }
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -210,6 +196,14 @@ public class TapUIRoomListFragment extends Fragment {
         TAPBroadcastManager.unregister(activity, roomListBroadcastReceiver);
         closeTapTalkSocketWhenNeeded();
         TAPDataManager.getInstance(instanceKey).unsubscribeRoomListAndUnreadApi();
+        TapUI.getInstance(instanceKey).setCurrentTapTalkRoomListFragment(null);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
+        TapTalk.getTapTalkInstance(instanceKey).putGlobalChatListener();
     }
 
     @Override
@@ -220,13 +214,6 @@ public class TapUIRoomListFragment extends Fragment {
             TAPNotificationManager.getInstance(instanceKey).setRoomListAppear(true);
             updateQueryRoomListFromBackground();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
-        TapTalk.getTapTalkInstance(instanceKey).putGlobalChatListener();
     }
 
     private void initViewModel() {
@@ -419,6 +406,21 @@ public class TapUIRoomListFragment extends Fragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != getContext()) {
             ivButtonNewChat.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_start_new_chat_button_ripple));
+        }
+    }
+
+    private void openTapTalkSocketWhenNeeded() {
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED &&
+                !TapTalk.isConnected(instanceKey) && TapTalk.isForeground) {
+            TapTalk.connect(instanceKey, new TapCommonListener() {
+            });
+        }
+    }
+
+    private void closeTapTalkSocketWhenNeeded() {
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED
+                && TapTalk.isConnected(instanceKey)) {
+            TapTalk.disconnect(instanceKey);
         }
     }
 

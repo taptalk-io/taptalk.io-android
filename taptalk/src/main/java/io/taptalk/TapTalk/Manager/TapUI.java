@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
+import io.taptalk.TapTalk.View.Fragment.TapUIRoomListFragment;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
@@ -53,6 +55,13 @@ public class TapUI {
     private List<TapUIRoomListListener> tapUIRoomListListeners;
     private List<TapUIChatRoomListener> tapUIChatRoomListeners;
     private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
+
+    private TapUIRoomListFragment currentTapTalkRoomListFragment;
+    private TapUIChatActivity currentTapTalkChatActivity;
+    private AppCompatActivity currentForegroundTapTalkActivity;
+
+    private Boolean isAllActivityActionBarEnabled = null;
+    private Boolean isChatActivityActionBarEnabled = null;
 
     private boolean isSearchChatBarHidden;
     private boolean isCloseRoomListButtonVisible;
@@ -377,6 +386,64 @@ public class TapUI {
             }
         }
         openChatRoomWithRoomModel(context, roomModel);
+    }
+
+    public TapUIRoomListFragment getCurrentTapTalkRoomListFragment() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return null;
+        }
+        return currentTapTalkRoomListFragment;
+    }
+
+    public void setCurrentTapTalkRoomListFragment(TapUIRoomListFragment currentTapTalkRoomListFragment) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        this.currentTapTalkRoomListFragment = currentTapTalkRoomListFragment;
+    }
+
+    public TapUIChatActivity getCurrentTapTalkChatActivity() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return null;
+        }
+        return currentTapTalkChatActivity;
+    }
+
+    public void setCurrentTapTalkChatActivity(TapUIChatActivity currentTapTalkChatActivity) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        this.currentTapTalkChatActivity = currentTapTalkChatActivity;
+    }
+
+    public AppCompatActivity getCurrentForegroundTapTalkActivity() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return null;
+        }
+        return currentForegroundTapTalkActivity;
+    }
+
+    public void setCurrentForegroundTapTalkActivity(AppCompatActivity currentForegroundTapTalkActivity) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        this.currentForegroundTapTalkActivity = currentForegroundTapTalkActivity;
+    }
+
+    public Boolean isAllTapTalkActivityActionBarEnabled() {
+        return isAllActivityActionBarEnabled;
+    }
+
+    public void setAllTapTalkActivityActionBarEnabled(boolean allActivityActionBarEnabled) {
+        isAllActivityActionBarEnabled = allActivityActionBarEnabled;
+    }
+
+    public Boolean isTapTalkChatActivityActionBarEnabled() {
+        return isChatActivityActionBarEnabled;
+    }
+
+    public void setTapTalkChatActivityActionBarEnabled(boolean chatActivityActionBarEnabled) {
+        isChatActivityActionBarEnabled = chatActivityActionBarEnabled;
     }
 
     public boolean isSearchChatBarVisible() {
