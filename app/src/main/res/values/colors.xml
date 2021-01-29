@@ -13,9 +13,4 @@
 
     <color name="tapColorSuccess">@color/tapAppleGreen</color>
     <color name="tapColorError">@color/tapWatermelonRed</color>
-
-    <color name="tapDefaultRightBubbleBackgroundColor">@color/tapBrightBlue</color>
-    <color name="tapDefaultRightBubbleDarkBackgroundColor">@color/tapBubbleBlue</color>
-    <color name="tapDefaultLeftBubbleBackgroundColor">@color/tapBrightRed</color>
-    <color name="tapDefaultLeftBubbleDarkBackgroundColor">@color/tapRed</color>
 </resources>
