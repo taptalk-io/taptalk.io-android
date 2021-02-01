@@ -22,12 +22,12 @@ class TAPWebBrowserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_web_browser)
-        var url: String = intent.getStringExtra(EXTRA_URL)
+        val url: String = intent.getStringExtra(EXTRA_URL) ?: ""
 
         iv_close_btn.setOnClickListener { v: View? ->
             run {
                 finish()
-                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
             }
         }
 
@@ -66,8 +66,8 @@ class TAPWebBrowserActivity : AppCompatActivity() {
         webView.loadUrl(url)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             android.R.id.home -> {
                 onBackPressed()
                 return true
@@ -81,7 +81,7 @@ class TAPWebBrowserActivity : AppCompatActivity() {
             webView.goBack()
         } else {
             super.onBackPressed()
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
         }
     }
 }

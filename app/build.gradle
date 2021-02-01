@@ -5,13 +5,13 @@ apply from: "${rootProject.rootDir}/environment.properties"
 
 android {
     def globalConfig = rootProject.extensions.getByName("ext")
-    compileSdkVersion 29
+    compileSdkVersion 30
     defaultConfig {
         applicationId "io.taptalk.TapTalkSample"
         minSdkVersion 16
-        targetSdkVersion 29
-        versionCode 57
-        versionName "1.2.9"
+        targetSdkVersion 30
+        versionCode 58
+        versionName "1.2.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }

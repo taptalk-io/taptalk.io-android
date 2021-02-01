@@ -703,15 +703,14 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private val uploadBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            val action = intent?.action
-            when (action) {
+            when (intent?.action) {
                 UploadProgressLoading -> {
                     pb_profile_picture_progress.progress = intent.getIntExtra(UploadProgress, 0)
                     pb_profile_picture_progress.visibility = View.VISIBLE
                 }
                 UploadProgressFinish -> {
                     val updatedUserModel = intent.getParcelableExtra<TAPUserModel>(K_USER)
-                    vm.currentProfilePicture = updatedUserModel.avatarURL.thumbnail
+                    vm.currentProfilePicture = updatedUserModel?.avatarURL?.thumbnail
                     if (updatedUserModel?.userID == vm.myUserModel.userID) {
                         vm.isUploadingProfilePicture = false
                         enableEditing()

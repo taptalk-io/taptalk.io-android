@@ -891,9 +891,9 @@ public class TAPUtils {
         CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
         intentBuilder.setToolbarColor(ContextCompat.getColor(activity, R.color.tapColorPrimary));
         intentBuilder.setShowTitle(true);
-        intentBuilder.setStartAnimations(activity, R.anim.tap_slide_left, R.anim.tap_stay);
+        intentBuilder.setStartAnimations(activity, R.anim.tap_slide_up, R.anim.tap_stay);
         intentBuilder.setExitAnimations(activity, R.anim.tap_stay,
-                R.anim.tap_slide_right);
+                R.anim.tap_slide_down);
 
         TAPCustomTabActivityHelper.openCustomTab(activity,
                 intentBuilder.build(), Uri.parse(url), (activity1, uri) -> {
