@@ -1922,14 +1922,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
             TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(vm.getOtherUserID(), new TAPDefaultDataView<TAPGetUserResponse>() {
                 @Override
                 public void onSuccess(TAPGetUserResponse response) {
-                    TAPUserModel userResponse = response.getUser();
-                    TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
-                    TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(userResponse);
+                    TAPContactManager.getInstance(instanceKey).updateUserData(response.getUser());
+                    TAPUserModel updatedContact = TAPContactManager.getInstance(instanceKey).getUserData(response.getUser().getUserID());
+                    TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(updatedContact);
                     setChatRoomStatus(onlineStatus);
                     TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(false);
 
                     if (null == vm.getOtherUserModel()) {
-                        vm.setOtherUserModel(response.getUser());
+                        vm.setOtherUserModel(updatedContact);
                         initRoom();
                     }
 
