@@ -64,6 +64,7 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -2904,66 +2905,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     };
 
-    private void mergeSort(List<TAPMessageModel> messages, int sortDirection) {
-        int messageListSize = messages.size();
-
-        if (messageListSize < 2) {
-            return;
-        }
-
-        int leftListSize = messageListSize / 2;
-        int rightListSize = messageListSize - leftListSize;
-        List<TAPMessageModel> leftList = new ArrayList<>(leftListSize);
-        List<TAPMessageModel> rightList = new ArrayList<>(rightListSize);
-
-        for (int index = 0; index < leftListSize; index++)
-            leftList.add(index, messages.get(index));
-
-        for (int index = leftListSize; index < messageListSize; index++)
-            rightList.add((index - leftListSize), messages.get(index));
-
-        mergeSort(leftList, sortDirection);
-        mergeSort(rightList, sortDirection);
-
-        merge(messages, leftList, rightList, leftListSize, rightListSize, sortDirection);
-    }
-
-    private void merge(List<TAPMessageModel> messagesAll, List<TAPMessageModel> leftList, List<TAPMessageModel> rightList, int leftSize, int rightSize, int sortDirection) {
-        int indexLeft = 0, indexRight = 0, indexCombine = 0;
-
-        while (indexLeft < leftSize && indexRight < rightSize) {
-            if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() < rightList.get(indexRight).getCreated()) {
-                messagesAll.set(indexCombine, leftList.get(indexLeft));
-                indexLeft += 1;
-                indexCombine += 1;
-            } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() >= rightList.get(indexRight).getCreated()) {
-                messagesAll.set(indexCombine, rightList.get(indexRight));
-                indexRight += 1;
-                indexCombine += 1;
-            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() > rightList.get(indexRight).getCreated()) {
-                messagesAll.set(indexCombine, leftList.get(indexLeft));
-                indexLeft += 1;
-                indexCombine += 1;
-            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() <= rightList.get(indexRight).getCreated()) {
-                messagesAll.set(indexCombine, rightList.get(indexRight));
-                indexRight += 1;
-                indexCombine += 1;
-            }
-        }
-
-        while (indexLeft < leftSize) {
-            messagesAll.set(indexCombine, leftList.get(indexLeft));
-            indexLeft += 1;
-            indexCombine += 1;
-        }
-
-        while (indexRight < rightSize) {
-            messagesAll.set(indexCombine, rightList.get(indexRight));
-            indexRight += 1;
-            indexCombine += 1;
-        }
-    }
-
     private void showLoadingPopup() {
         runOnUiThread(() -> {
             ivLoadingPopup.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white));
@@ -3609,7 +3550,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             // Insert new messages to first index
             messageAdapter.addMessage(0, messageAfterModels, false);
             // Sort adapter items according to timestamp
-            mergeSort(messageAdapter.getItems(), ASCENDING);
+            TAPUtils.mergeSort(messageAdapter.getItems(), ASCENDING);
 
             String previousDate = "";
             TAPMessageModel previousMessage = null;
@@ -3643,7 +3584,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //                // Insert new messages to first index
 //                messageAdapter.addMessage(0, messageAfterModels, false);
 //                // Sort adapter items according to timestamp
-//                mergeSort(messageAdapter.getItems(), ASCENDING);
+//                TAPUtils.mergeSort(messageAdapter.getItems(), ASCENDING);
                 showUnreadButton(vm.getUnreadIndicator());
                 updateMentionCount();
 
@@ -3796,7 +3737,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             state = response.getHasMore() ? STATE.LOADED : STATE.DONE;
 
             // Sort adapter items according to timestamp
-            mergeSort(messageBeforeModels, ASCENDING);
+            TAPUtils.mergeSort(messageBeforeModels, ASCENDING);
 
             String previousDate = "";
             TAPMessageModel previousMessage = null;
@@ -3946,7 +3887,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             state = response.getHasMore() ? STATE.LOADED : STATE.DONE;
 
             // Sort adapter items according to timestamp
-            mergeSort(messageBeforeModels, ASCENDING);
+            TAPUtils.mergeSort(messageBeforeModels, ASCENDING);
 
             String previousDate = "";
             TAPMessageModel previousMessage = null;

@@ -123,6 +123,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 
 public class TAPUtils {
 
@@ -1177,5 +1179,65 @@ public class TAPUtils {
                 text.startsWith("@" + activeUser.getUsername()) && text.contains("@" + activeUser.getUsername() + " ") ||
                 text.startsWith("@" + activeUser.getUsername()) && text.contains("@" + activeUser.getUsername() + "\n") ||
                 text.equals("@" + activeUser.getUsername());
+    }
+
+    public static void mergeSort(List<TAPMessageModel> messages, int sortDirection) {
+        int messageListSize = messages.size();
+
+        if (messageListSize < 2) {
+            return;
+        }
+
+        int leftListSize = messageListSize / 2;
+        int rightListSize = messageListSize - leftListSize;
+        List<TAPMessageModel> leftList = new ArrayList<>(leftListSize);
+        List<TAPMessageModel> rightList = new ArrayList<>(rightListSize);
+
+        for (int index = 0; index < leftListSize; index++)
+            leftList.add(index, messages.get(index));
+
+        for (int index = leftListSize; index < messageListSize; index++)
+            rightList.add((index - leftListSize), messages.get(index));
+
+        mergeSort(leftList, sortDirection);
+        mergeSort(rightList, sortDirection);
+
+        merge(messages, leftList, rightList, leftListSize, rightListSize, sortDirection);
+    }
+
+    private static void merge(List<TAPMessageModel> messagesAll, List<TAPMessageModel> leftList, List<TAPMessageModel> rightList, int leftSize, int rightSize, int sortDirection) {
+        int indexLeft = 0, indexRight = 0, indexCombine = 0;
+
+        while (indexLeft < leftSize && indexRight < rightSize) {
+            if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() < rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, leftList.get(indexLeft));
+                indexLeft += 1;
+                indexCombine += 1;
+            } else if (DESCENDING == sortDirection && leftList.get(indexLeft).getCreated() >= rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, rightList.get(indexRight));
+                indexRight += 1;
+                indexCombine += 1;
+            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() > rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, leftList.get(indexLeft));
+                indexLeft += 1;
+                indexCombine += 1;
+            } else if (ASCENDING == sortDirection && leftList.get(indexLeft).getCreated() <= rightList.get(indexRight).getCreated()) {
+                messagesAll.set(indexCombine, rightList.get(indexRight));
+                indexRight += 1;
+                indexCombine += 1;
+            }
+        }
+
+        while (indexLeft < leftSize) {
+            messagesAll.set(indexCombine, leftList.get(indexLeft));
+            indexLeft += 1;
+            indexCombine += 1;
+        }
+
+        while (indexRight < rightSize) {
+            messagesAll.set(indexCombine, rightList.get(indexRight));
+            indexRight += 1;
+            indexCombine += 1;
+        }
     }
 }
