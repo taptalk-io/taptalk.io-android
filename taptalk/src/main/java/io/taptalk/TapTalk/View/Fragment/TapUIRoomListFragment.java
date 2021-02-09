@@ -74,8 +74,10 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TapUI;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
+import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
@@ -165,6 +167,7 @@ public class TapUIRoomListFragment extends Fragment {
                 RELOAD_ROOM_LIST,
                 CLEAR_ROOM_LIST_BADGE,
                 CLEAR_ROOM_LIST);
+        checkAndUpdateContactList();
     }
 
     @Override
@@ -1211,5 +1214,25 @@ public class TapUIRoomListFragment extends Fragment {
 
     private void removeSocketListener() {
         TAPConnectionManager.getInstance(instanceKey).removeSocketListener(socketListener);
+    }
+
+    // FIXME: GET CONTACT LIST FROM SERVER ONCE AT APPLICATION START TO FIX DATABASE CONTACT 
+    private void checkAndUpdateContactList() {
+        if (TAPDataManager.getInstance(instanceKey).isContactListUpdated()) {
+            return;
+        }
+
+        new Thread(() -> TAPDataManager.getInstance(instanceKey).getMyContactListFromAPI(new TAPDefaultDataView<TAPContactResponse>() {
+            @Override
+            public void onSuccess(TAPContactResponse response) {
+                List<TAPUserModel> userModels = new ArrayList<>();
+                for (TAPContactModel contact : response.getContacts()) {
+                    TAPUserModel contactUser = contact.getUser().setUserAsContact();
+                    userModels.add(contactUser);
+                }
+                TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(userModels);
+                TAPDataManager.getInstance(instanceKey).setContactListUpdated();
+            }
+        })).start();
     }
 }

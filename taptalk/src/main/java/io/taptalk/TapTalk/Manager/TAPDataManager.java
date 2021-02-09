@@ -73,6 +73,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_CONTACT_LIST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
@@ -227,6 +228,7 @@ public class TAPDataManager {
         removeContactSyncPermissionAsked();
         removeContactSyncAllowedByUser();
         removeChatRoomContactActionDismissed();
+        removeContactListUpdated();
     }
 
     /**
@@ -705,6 +707,22 @@ public class TAPDataManager {
                 }
             }
         }
+    }
+
+    // FIXME: GET CONTACT LIST FROM SERVER ONCE AT APPLICATION START TO FIX DATABASE CONTACT
+    /**
+     * CONTACT LIST UPDATE
+     */
+    public void setContactListUpdated() {
+        saveLongTimestampPreference(K_IS_CONTACT_LIST_UPDATED, System.currentTimeMillis());
+    }
+
+    public Boolean isContactListUpdated() {
+        return checkPreferenceKeyAvailable(K_IS_CONTACT_LIST_UPDATED);
+    }
+
+    private void removeContactListUpdated() {
+        removePreference(K_IS_CONTACT_LIST_UPDATED);
     }
 
     /**

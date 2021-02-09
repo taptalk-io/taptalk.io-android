@@ -136,7 +136,7 @@ public class TAPConnectionManager {
                 if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
                     connectionStatus = DISCONNECTED;
                 }
-                TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
+                TAPChatManager.getInstance(instanceKey).setNeedToCallUpdateRoomStatusAPI(true);
                 List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
                 if (null != socketListeners && !socketListenersCopy.isEmpty() && code != CLOSE_FOR_RECONNECT_CODE) {
                     for (TapTalkSocketInterface listener : socketListenersCopy) {
@@ -151,7 +151,7 @@ public class TAPConnectionManager {
                 if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
                     connectionStatus = DISCONNECTED;
                 }
-                TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
+                TAPChatManager.getInstance(instanceKey).setNeedToCallUpdateRoomStatusAPI(true);
                 List<TapTalkSocketInterface> socketListenersCopy = new ArrayList<>(socketListeners);
                 if (null != socketListeners && !socketListenersCopy.isEmpty()) {
                     for (TapTalkSocketInterface listener : socketListenersCopy)

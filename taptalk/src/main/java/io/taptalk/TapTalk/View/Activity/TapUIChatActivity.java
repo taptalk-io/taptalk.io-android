@@ -64,7 +64,6 @@ import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -198,7 +197,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_ADD_PARTICIPANT;
@@ -460,7 +458,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
         TAPConnectionManager.getInstance(instanceKey).removeSocketListener(socketListener);
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
-        TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
+        TAPChatManager.getInstance(instanceKey).setNeedToCallUpdateRoomStatusAPI(true);
         TAPFileDownloadManager.getInstance(instanceKey).clearFailedDownloads(); // Remove failed download list from active room
 
         // TODO: 09/07/20 Disconnect if last activity socket is not connected
@@ -1928,11 +1926,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPUserModel updatedContact = TAPContactManager.getInstance(instanceKey).getUserData(response.getUser().getUserID());
                     TAPOnlineStatusModel onlineStatus = TAPOnlineStatusModel.Builder(updatedContact);
                     setChatRoomStatus(onlineStatus);
-                    TAPChatManager.getInstance(instanceKey).setNeedToCalledUpdateRoomStatusAPI(false);
+                    TAPChatManager.getInstance(instanceKey).setNeedToCallUpdateRoomStatusAPI(false);
 
                     if (null == vm.getOtherUserModel()) {
                         vm.setOtherUserModel(updatedContact);
                         initRoom();
+                    } else {
+                        vm.setOtherUserModel(updatedContact);
                     }
 
                     if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&

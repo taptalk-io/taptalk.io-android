@@ -408,9 +408,13 @@ public class TAPUserModel implements Parcelable {
         this.isPhoneVerified = userModel.getPhoneVerified();
         this.countryID = userModel.getCountryID();
         this.countryCallingCode = userModel.getCountryCallingCode();
-        //if (null != this.isContact && this.isContact != 1) {
         if (null == this.isContact || this.isContact != 1) {
-            this.isContact = userModel.isContact;
+            // Update if user is not already a contact
+            if (null == userModel.isContact) {
+                this.isContact = 0;
+            } else {
+                this.isContact = userModel.isContact;
+            }
         }
     }
 

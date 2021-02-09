@@ -448,9 +448,11 @@ public class TapTalk implements LifecycleObserver {
                         public void onSuccess(TAPContactResponse response) {
                             List<TAPUserModel> userModels = new ArrayList<>();
                             for (TAPContactModel contact : response.getContacts()) {
-                                userModels.add(contact.getUser().setUserAsContact());
+                                TAPUserModel contactUser = contact.getUser().setUserAsContact();
+                                userModels.add(contactUser);
                             }
                             TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(userModels);
+                            TAPDataManager.getInstance(instanceKey).setContactListUpdated();
                         }
                     })).start();
 
@@ -1094,7 +1096,7 @@ public class TapTalk implements LifecycleObserver {
             TAPNetworkStateManager.getInstance(entry.getValue().instanceKey).unregisterCallback(TapTalk.appContext);
             TAPChatManager.getInstance(entry.getValue().instanceKey).updateMessageWhenEnterBackground();
             TAPMessageStatusManager.getInstance(entry.getValue().instanceKey).updateMessageStatusWhenAppToBackground();
-            TAPChatManager.getInstance(entry.getValue().instanceKey).setNeedToCalledUpdateRoomStatusAPI(true);
+            TAPChatManager.getInstance(entry.getValue().instanceKey).setNeedToCallUpdateRoomStatusAPI(true);
             TAPFileDownloadManager.getInstance(entry.getValue().instanceKey).saveFileProviderPathToPreference();
             TAPFileDownloadManager.getInstance(entry.getValue().instanceKey).saveFileMessageUriToPreference();
         }

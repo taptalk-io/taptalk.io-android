@@ -1892,7 +1892,7 @@ public class TAPChatManager {
         return isNeedToCalledUpdateRoomStatusAPI;
     }
 
-    public void setNeedToCalledUpdateRoomStatusAPI(boolean needToCalledUpdateRoomStatusAPI) {
+    public void setNeedToCallUpdateRoomStatusAPI(boolean needToCalledUpdateRoomStatusAPI) {
         isNeedToCalledUpdateRoomStatusAPI = needToCalledUpdateRoomStatusAPI;
     }
 
