@@ -1070,6 +1070,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
                 return;
             }
+            TAPChatManager.getInstance(instanceKey).triggerActiveUserSendMessage(TapUIChatActivity.this, message, vm.getRoom());
             addNewMessage(message);
             hideQuoteLayout();
             hideUnreadButton();

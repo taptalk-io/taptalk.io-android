@@ -1,12 +1,10 @@
 package io.taptalk.TapTalk.Listener;
 
 import android.app.Activity;
-import android.content.Intent;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import io.taptalk.TapTalk.Interface.TapUIChatRoomInterface;
@@ -16,13 +14,7 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
-import io.taptalk.TapTalk.R;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 @Keep
@@ -35,6 +27,11 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
 
     public TapUIChatRoomListener(String instanceKey) {
         this.instanceKey = instanceKey;
+    }
+
+    @Override
+    public void onTapTalkActiveUserSendMessage(Activity activity, TAPMessageModel messageModel, TAPRoomModel room) {
+
     }
 
     @Override

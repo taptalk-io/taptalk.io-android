@@ -1993,6 +1993,10 @@ public class TAPChatManager {
         TapUI.getInstance(instanceKey).triggerNewChatButtonTapped(activity);
     }
 
+    public void triggerActiveUserSendMessage(Activity activity, TAPMessageModel messageModel, TAPRoomModel room) {
+        TapUI.getInstance(instanceKey).triggerActiveUserSendMessage(activity, messageModel, room);
+    }
+
     public void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
         TapUI.getInstance(instanceKey).triggerChatRoomProfileButtonTapped(activity, room, user);
     }

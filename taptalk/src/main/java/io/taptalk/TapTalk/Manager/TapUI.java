@@ -965,6 +965,18 @@ public class TapUI {
         }
     }
 
+    void triggerActiveUserSendMessage(Activity activity, TAPMessageModel messageModel, TAPRoomModel room) {
+        if (getChatRoomListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatRoomListener listener : getChatRoomListeners()) {
+            if (null != listener) {
+                listener.onTapTalkActiveUserSendMessage(activity, messageModel, room);
+            }
+        }
+    }
+
     void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
         if (room.getRoomType() == TYPE_TRANSACTION) {
             return;
