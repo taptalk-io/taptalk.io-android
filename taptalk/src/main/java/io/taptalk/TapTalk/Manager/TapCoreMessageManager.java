@@ -427,7 +427,7 @@ public class TapCoreMessageManager {
             return;
         }
         List<TAPMessageModel> messageList = new ArrayList<>();
-        TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, new TAPDatabaseListener<TAPMessageEntity>() {
+        TAPDataManager.getInstance(instanceKey).getAllMessagesInRoomFromDatabase(roomID, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
                 List<TAPMessageModel> models = new ArrayList<>();
@@ -437,14 +437,8 @@ public class TapCoreMessageManager {
                 }
                 messageList.addAll(models);
 
-                if (models.size() >= MAX_ITEMS_PER_PAGE) {
-                    // Load older messages from database
-                    long lastTimestamp = models.get(models.size() - 1).getCreated();
-                    TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, this, lastTimestamp);
-                } else {
-                    if (null != listener) {
-                        listener.onSuccess(messageList);
-                    }
+                if (null != listener) {
+                    listener.onSuccess(messageList);
                 }
             }
 
@@ -595,7 +589,7 @@ public class TapCoreMessageManager {
             return;
         }
         HashMap<String, TAPMessageModel> messageMap = new HashMap<>();
-        List<TAPMessageModel> messageList = new ArrayList<>();
+        List<TAPMessageModel> allMessages = new ArrayList<>();
         List<TAPMessageModel> olderMessages = new ArrayList<>();
         List<TAPMessageModel> newerMessages = new ArrayList<>();
 
@@ -606,14 +600,14 @@ public class TapCoreMessageManager {
                 if (null != listener) {
                     listener.onGetLocalMessagesCompleted(messages);
                 }
-                messageList.addAll(messages);
+                allMessages.addAll(messages);
                 for (TAPMessageModel message : messages) {
                     messageMap.put(message.getLocalID(), message);
                 }
 
                 long lastTimestamp;
-                if (0 < messageList.size()) {
-                    lastTimestamp = messageList.get(messageList.size() - 1).getCreated();
+                if (0 < allMessages.size()) {
+                    lastTimestamp = allMessages.get(allMessages.size() - 1).getCreated();
                 } else {
                     lastTimestamp = System.currentTimeMillis();
                 }
@@ -629,7 +623,7 @@ public class TapCoreMessageManager {
                             }
                             messageMap.put(message.getLocalID(), message);
                         }
-                        messageList.addAll(filteredMessages);
+                        allMessages.addAll(filteredMessages);
                         olderMessages.addAll(filteredMessages);
 
                         if (hasMoreData) {
@@ -640,8 +634,8 @@ public class TapCoreMessageManager {
                             // Fetch newer messages from API
                             long lastUpdateTimestamp = TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(roomID);
                             long minCreatedTimestamp = 0L;
-                            if (messageList.size() > 0) {
-                                minCreatedTimestamp = messageList.get(0).getCreated();
+                            if (allMessages.size() > 0) {
+                                minCreatedTimestamp = allMessages.get(0).getCreated();
                             }
                             getNewerMessagesAfterTimestamp(roomID, minCreatedTimestamp, lastUpdateTimestamp, new TapCoreGetMessageListener() {
                                 @Override
@@ -653,11 +647,11 @@ public class TapCoreMessageManager {
                                         }
                                         messageMap.put(message.getLocalID(), message);
                                     }
-                                    messageList.addAll(filteredMessages);
+                                    allMessages.addAll(filteredMessages);
                                     newerMessages.addAll(filteredMessages);
-                                    TAPUtils.mergeSort(messageList, ASCENDING);
+                                    TAPUtils.mergeSort(allMessages, ASCENDING);
                                     if (null != listener) {
-                                        listener.onGetAllMessagesCompleted(messageList, olderMessages, newerMessages);
+                                        listener.onGetAllMessagesCompleted(allMessages, olderMessages, newerMessages);
                                     }
                                 }
                             });
