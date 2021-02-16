@@ -123,6 +123,10 @@ public class TapCoreChatRoomManager {
         }
     }
 
+    public TAPRoomModel getActiveChatRoom() {
+        return TAPChatManager.getInstance(instanceKey).getActiveRoom();
+    }
+
     public void getPersonalChatRoom(TAPUserModel recipientUser, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
