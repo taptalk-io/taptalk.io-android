@@ -25,6 +25,7 @@ public class TAPRoomListViewModel extends AndroidViewModel {
     private int roomBadgeCount;
     private int lastBadgeCount;
     private boolean isSelecting;
+    private boolean isFetchingMessageListAndUnread;
     private boolean isDoneFirstSetup = false;
     private boolean isDoneFirstApiSetup = false;
 
@@ -106,6 +107,14 @@ public class TAPRoomListViewModel extends AndroidViewModel {
 
     public void setSelecting(boolean selecting) {
         isSelecting = selecting;
+    }
+
+    public boolean isFetchingMessageListAndUnread() {
+        return isFetchingMessageListAndUnread;
+    }
+
+    public void setFetchingMessageListAndUnread(boolean fetchingMessageListAndUnread) {
+        isFetchingMessageListAndUnread = fetchingMessageListAndUnread;
     }
 
     public String getMyUserID() {

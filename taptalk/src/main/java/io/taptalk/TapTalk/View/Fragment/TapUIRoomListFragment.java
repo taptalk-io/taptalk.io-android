@@ -555,6 +555,7 @@ public class TapUIRoomListFragment extends Fragment {
             TAPDataManager.getInstance(instanceKey).getNewAndUpdatedMessage(roomListView);
         } else {
             // Call on first load
+            vm.setFetchingMessageListAndUnread(true);
             TAPDataManager.getInstance(instanceKey).getMessageRoomListAndUnread(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), roomListView);
         }
     }
@@ -571,8 +572,7 @@ public class TapUIRoomListFragment extends Fragment {
                     adapter.addRoomList(vm.getRoomList());
                     rvContactList.scrollToPosition(0);
                     llRoomEmpty.setVisibility(View.GONE);
-                    if (!vm.isDoneFirstApiSetup()) {
-                        vm.setDoneFirstApiSetup(true);
+                    if (vm.isDoneFirstApiSetup()) {
                         TAPDataManager.getInstance(instanceKey).setRoomListSetupFinished();
                         showChatRoomSetupSuccess();
                     }
@@ -935,12 +935,15 @@ public class TapUIRoomListFragment extends Fragment {
                 });
             } else {
                 reloadLocalDataAndUpdateUILogic(true);
-                if (!vm.isDoneFirstApiSetup()) {
-                    vm.setDoneFirstApiSetup(true);
-                    TAPDataManager.getInstance(instanceKey).setRoomListSetupFinished();
-                    showChatRoomSetupSuccess();
-                }
             }
+
+            if (vm.isFetchingMessageListAndUnread() && !vm.isDoneFirstApiSetup()) {
+                vm.setDoneFirstApiSetup(true);
+                TAPDataManager.getInstance(instanceKey).setRoomListSetupFinished();
+                showChatRoomSetupSuccess();
+            }
+
+            vm.setFetchingMessageListAndUnread(false);
 
             calculateBadgeCount();
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
@@ -959,6 +962,8 @@ public class TapUIRoomListFragment extends Fragment {
                 flSetupContainer.setVisibility(View.GONE);
                 showNewChatButton();
             }
+
+            vm.setFetchingMessageListAndUnread(false);
         }
     };
 
