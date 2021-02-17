@@ -634,6 +634,6 @@ public class TAPNewChatActivity extends TAPBaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        TAPDataManager.getInstance(instanceKey).unsubsribeContactListFromAPI();
+        TAPDataManager.getInstance(instanceKey).unsubscribeContactListFromAPI();
     }
 }

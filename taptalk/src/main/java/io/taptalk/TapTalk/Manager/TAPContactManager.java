@@ -58,11 +58,14 @@ public class TAPContactManager {
     }
 
     public void updateUserData(TAPUserModel user) {
+        if (null == user) {
+            return;
+        }
         String myUserId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
         String incomingUserId = user.getUserID();
         TAPUserModel existingUser = getUserDataMap().get(incomingUserId);
         if (!incomingUserId.equals(myUserId) && null == existingUser) {
-            // Add new user to map
+            // Add new user to map and save to database
             user.checkAndSetContact(0);
             getUserDataMap().put(incomingUserId, user);
             getUserDataMapByUsername().put(user.getUsername(), user);
@@ -71,10 +74,34 @@ public class TAPContactManager {
                 null != existingUser.getUpdated() &&
                 null != user.getUpdated() &&
                 existingUser.getUpdated() <= user.getUpdated()) {
-            // Update user data in map
+            // Update existing user data in map and save to database
             existingUser.updateValue(user);
-            saveUserDataToDatabase(user);
+            saveUserDataToDatabase(existingUser);
         }
+    }
+
+    public void updateUserData(List<TAPUserModel> users) {
+        List<TAPUserModel> usersToSave = new ArrayList<>();
+        String myUserId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+        for (TAPUserModel user : users) {
+            String otherUserId = user.getUserID();
+            TAPUserModel otherUser = getUserDataMap().get(otherUserId);
+            // Check otherUser is not active user
+            if (!otherUserId.equals(myUserId)) {
+                if (null == otherUser) {
+                    // Add new user to map and save to database
+                    user.checkAndSetContact(0);
+                    getUserDataMap().put(otherUserId, user);
+                    getUserDataMapByUsername().put(user.getUsername(), user);
+                    usersToSave.add(user);
+                } else if (null != otherUser.getUpdated() && null != user.getUpdated() && otherUser.getUpdated() <= user.getUpdated()) {
+                    // Update existing user data in map and save to database
+                    otherUser.updateValue(user);
+                    usersToSave.add(otherUser);
+                }
+            }
+        }
+        TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(usersToSave);
     }
 
     public void saveContactListToDatabase(List<TAPUserModel> userModels) {
@@ -89,35 +116,6 @@ public class TAPContactManager {
             userDataMap.put(userModel.getUserID(), userModel);
             userDataMapByUsername.put(userModel.getUsername(), userModel);
         }
-    }
-
-    public void updateUserData(List<TAPUserModel> users) {
-        List<TAPUserModel> usersToSave = new ArrayList<>();
-        String myUserId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
-        for (TAPUserModel user : users) {
-            String otherUserId = user.getUserID();
-            TAPUserModel otherUser = getUserDataMap().get(otherUserId);
-            // Check otherUser is not active user
-            if (!otherUserId.equals(myUserId)) {
-                if (null == otherUser) {
-                    // New User
-                    // Add new user to map
-                    // Save user to database
-                    user.checkAndSetContact(0);
-                    getUserDataMap().put(otherUserId, user);
-                    getUserDataMapByUsername().put(user.getUsername(), user);
-                    usersToSave.add(user);
-                } else if (null != otherUser.getUpdated() && null != user.getUpdated() && otherUser.getUpdated() <= user.getUpdated()) {
-                    // Existing User
-                    // Update user data in map
-                    // Save user to database
-                    otherUser.updateValue(user);
-                    usersToSave.add(user);
-                }
-            }
-        }
-//        saveUserDatasToDatabase(usersToSave);
-        TAPDataManager.getInstance(instanceKey).insertMyContactToDatabase(usersToSave);
     }
 
     public void removeFromContacts(String userID) {

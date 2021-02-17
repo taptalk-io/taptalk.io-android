@@ -1134,7 +1134,7 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).getMyContactListFromAPI(contactListSubs = new TAPDefaultSubscriber<>(view));
     }
 
-    public void unsubsribeContactListFromAPI() {
+    public void unsubscribeContactListFromAPI() {
         if (null != contactListSubs) contactListSubs.unsubscribe();
     }
 

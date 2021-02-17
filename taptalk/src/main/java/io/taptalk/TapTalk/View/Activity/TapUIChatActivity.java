@@ -1940,7 +1940,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
                             TapUI.getInstance(instanceKey).isAddToContactsButtonInChatRoomVisible() &&
                             !TAPDataManager.getInstance(instanceKey).isChatRoomContactActionDismissed(vm.getRoom().getRoomID()) &&
-                            (null == vm.getOtherUserModel().getIsContact() || vm.getOtherUserModel().getIsContact() == 0)) {
+                            (null == updatedContact.getIsContact() || updatedContact.getIsContact() == 0)) {
                         clContactAction.setVisibility(View.VISIBLE);
                     } else {
                         clContactAction.setVisibility(View.GONE);
@@ -1975,17 +1975,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
             @Override
             public void onSuccess(TAPGetUserResponse response) {
-                TAPUserModel userResponse = response.getUser();
-                TAPContactManager.getInstance(instanceKey).updateUserData(userResponse);
+                TAPContactManager.getInstance(instanceKey).updateUserData(response.getUser());
+                TAPUserModel updatedContact = TAPContactManager.getInstance(instanceKey).getUserData(response.getUser().getUserID());
                 if (!isCanceled) {
                     hideLoadingPopup();
                     if (null == message) {
                         // Open chat room if message is null (from send message menu)
-                        TapUI.getInstance().openChatRoomWithOtherUser(TapUIChatActivity.this, userResponse);
+                        TapUI.getInstance().openChatRoomWithOtherUser(TapUIChatActivity.this, updatedContact);
                         closeActivity();
                     } else {
                         // Open profile if message is not null (from mention tap/view profile menu)
-                        TAPChatManager.getInstance(instanceKey).triggerUserMentionTapped(TapUIChatActivity.this, message, userResponse, false);
+                        TAPChatManager.getInstance(instanceKey).triggerUserMentionTapped(TapUIChatActivity.this, message, updatedContact, false);
                     }
                 }
             }
