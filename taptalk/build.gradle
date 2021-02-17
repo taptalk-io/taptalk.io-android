@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 59
-        versionName "1.2.11"
+        versionCode 60
+        versionName "1.2.12"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -20,27 +20,27 @@ android {
             debuggable false
             consumerProguardFiles 'proguard-rules.pro'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField 'String', 'VERSION_NAME', "\"1.2.11\""
+            buildConfigField 'String', 'VERSION_NAME', "\"1.2.12\""
         }
         staging {
             minifyEnabled true
             debuggable true
-            buildConfigField 'String', 'VERSION_NAME', "\"1.2.11-STAGING\""
+            buildConfigField 'String', 'VERSION_NAME', "\"1.2.12-STAGING\""
         }
         stagingUpload {
             minifyEnabled true
             debuggable false
-            buildConfigField 'String', 'VERSION_NAME', "\"1.2.11-STAGING\""
+            buildConfigField 'String', 'VERSION_NAME', "\"1.2.12-STAGING\""
         }
         dev {
             minifyEnabled true
             debuggable true
-            buildConfigField 'String', 'VERSION_NAME', "\"1.2.11-DEV\""
+            buildConfigField 'String', 'VERSION_NAME', "\"1.2.12-DEV\""
         }
         devUpload {
             minifyEnabled true
             debuggable false
-            buildConfigField 'String', 'VERSION_NAME', "\"1.2.11-DEV\""
+            buildConfigField 'String', 'VERSION_NAME', "\"1.2.12-DEV\""
         }
     }
 
