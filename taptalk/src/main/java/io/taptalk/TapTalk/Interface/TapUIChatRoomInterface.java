@@ -12,9 +12,9 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public interface TapUIChatRoomInterface {
-    void onTapTalkChatRoomOpened(Activity activity, TAPRoomModel room);
+    void onTapTalkChatRoomOpened(Activity activity, TAPRoomModel room, @Nullable TAPUserModel otherUser);
 
-    void onTapTalkChatRoomClosed(Activity activity, TAPRoomModel room);
+    void onTapTalkChatRoomClosed(Activity activity, TAPRoomModel room, @Nullable TAPUserModel otherUser);
 
     void onTapTalkActiveUserSendMessage(Activity activity, TAPMessageModel messageModel, TAPRoomModel room);
 

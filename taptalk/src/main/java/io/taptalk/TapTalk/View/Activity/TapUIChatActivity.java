@@ -386,7 +386,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         bindViews();
         initRoom();
         registerBroadcastManager();
-        TAPChatManager.getInstance(instanceKey).triggerChatRoomOpened(this, vm.getRoom());
+        TAPChatManager.getInstance(instanceKey).triggerChatRoomOpened(this, vm.getRoom(), vm.getOtherUserModel());
     }
 
     @Override
@@ -461,7 +461,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vm.getLastActivityHandler().removeCallbacks(lastActivityRunnable); // Stop offline timer
         TAPChatManager.getInstance(instanceKey).setNeedToCallUpdateRoomStatusAPI(true);
         TAPFileDownloadManager.getInstance(instanceKey).clearFailedDownloads(); // Remove failed download list from active room
-        TAPChatManager.getInstance(instanceKey).triggerChatRoomClosed(this, vm.getRoom());
+        TAPChatManager.getInstance(instanceKey).triggerChatRoomClosed(this, vm.getRoom(), vm.getOtherUserModel());
 
         // TODO: 09/07/20 Disconnect if last activity socket is not connected
         if (!getIntent().getBooleanExtra(SOCKET_CONNECTED, false) && TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.CONNECT_IF_NEEDED) {

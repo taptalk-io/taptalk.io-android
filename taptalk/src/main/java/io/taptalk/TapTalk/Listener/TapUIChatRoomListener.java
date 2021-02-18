@@ -30,12 +30,12 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
     }
 
     @Override
-    public void onTapTalkChatRoomOpened(Activity activity, TAPRoomModel room) {
+    public void onTapTalkChatRoomOpened(Activity activity, TAPRoomModel room, @Nullable TAPUserModel otherUser) {
 
     }
 
     @Override
-    public void onTapTalkChatRoomClosed(Activity activity, TAPRoomModel room) {
+    public void onTapTalkChatRoomClosed(Activity activity, TAPRoomModel room, @Nullable TAPUserModel otherUser) {
 
     }
 

@@ -965,26 +965,26 @@ public class TapUI {
         }
     }
 
-    void triggerChatRoomOpened(Activity activity, TAPRoomModel room) {
+    void triggerChatRoomOpened(Activity activity, TAPRoomModel room, @Nullable TAPUserModel otherUser) {
         if (getChatRoomListeners().isEmpty()) {
             return;
         }
 
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             if (null != listener) {
-                listener.onTapTalkChatRoomOpened(activity, room);
+                listener.onTapTalkChatRoomOpened(activity, room, otherUser);
             }
         }
     }
 
-    void triggerChatRoomClosed(Activity activity, TAPRoomModel room) {
+    void triggerChatRoomClosed(Activity activity, TAPRoomModel room, @Nullable TAPUserModel otherUser) {
         if (getChatRoomListeners().isEmpty()) {
             return;
         }
 
         for (TapUIChatRoomListener listener : getChatRoomListeners()) {
             if (null != listener) {
-                listener.onTapTalkChatRoomClosed(activity, room);
+                listener.onTapTalkChatRoomClosed(activity, room, otherUser);
             }
         }
     }
