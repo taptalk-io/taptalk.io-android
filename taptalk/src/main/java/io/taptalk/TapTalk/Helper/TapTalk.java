@@ -111,7 +111,6 @@ public class TapTalk implements LifecycleObserver {
     private Map<String, String> customConfigs;
     private List<TapListener> tapListeners = new ArrayList<>();
     private TapTalkScreenOrientation screenOrientation = TapTalkOrientationDefault;
-    private TAPChatListener chatListener;
     private String clientAppName = "";
     private int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
     private boolean isRefreshTokenExpired, /*isAutoConnectDisabled,*/
@@ -265,7 +264,7 @@ public class TapTalk implements LifecycleObserver {
 
         if (null != TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable() &&
                 TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
-            initListener();
+            addChatListener();
         }
 
         if (!listenerInit) {
@@ -277,38 +276,39 @@ public class TapTalk implements LifecycleObserver {
         mixpanelToken = analyticsKey;
     }
 
-    private void initListener() {
-        chatListener = new TAPChatListener() {
-            @Override
-            public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount(instanceKey);
-            }
+    private TAPChatListener chatListener = new TAPChatListener() {
+        @Override
+        public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
+            updateApplicationBadgeCount(instanceKey);
+        }
 
-            @Override
-            public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount(instanceKey);
-            }
+        @Override
+        public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
+            updateApplicationBadgeCount(instanceKey);
+        }
 
-            @Override
-            public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount(instanceKey);
-            }
+        @Override
+        public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
+            updateApplicationBadgeCount(instanceKey);
+        }
 
-            @Override
-            public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount(instanceKey);
-            }
+        @Override
+        public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
+            updateApplicationBadgeCount(instanceKey);
+        }
 
-            @Override
-            public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount(instanceKey);
-            }
+        @Override
+        public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
+            updateApplicationBadgeCount(instanceKey);
+        }
 
-            @Override
-            public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
-                updateApplicationBadgeCount(instanceKey);
-            }
-        };
+        @Override
+        public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
+            updateApplicationBadgeCount(instanceKey);
+        }
+    };
+
+    private void addChatListener() {
         TAPChatManager.getInstance(instanceKey).addChatListener(chatListener);
     }
 

@@ -1685,7 +1685,7 @@ public class TAPChatManager {
         TAPMessageModel newMessage = TAPEncryptorManager.getInstance().decryptMessage(newMessageMap);
 
         // TODO: 28 Jan 2020 TEMPORARY SOCKET MESSAGE LOG
-        if (TapTalk.getTapTalkInstance(instanceKey).isLoggingEnabled) {
+        if (TapTalk.isLoggingEnabled) {
             Log.d(TAG, "receiveMessageFromSocket: " + TAPUtils.toJsonString(newMessage));
         }
 
@@ -1717,11 +1717,13 @@ public class TAPChatManager {
         // Query Unread Message
         //TAPNotificationManager.getInstance(instanceKey).updateUnreadCount();
 
-        // Receive message in active room
         List<TAPChatListener> chatListenersCopy = new ArrayList<>(chatListeners);
+
+        // Receive message in active room
         if (!chatListenersCopy.isEmpty() &&
                 ((null != activeRoom && newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))
-                        || (newMessage.getRoom().getRoomID().equals(openRoom)))) {
+                        || (newMessage.getRoom().getRoomID().equals(openRoom)))
+        ) {
             for (TAPChatListener chatListener : chatListenersCopy) {
                 if (null != chatListener) {
                     TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
@@ -1734,43 +1736,49 @@ public class TAPChatManager {
                 }
             }
         }
-        // Receive message outside active room (not in room List)
-        else if (!TAPNotificationManager.getInstance(instanceKey).isRoomListAppear() && !chatListenersCopy.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
+        // Receive message outside active room (not in room list)
+        else if (!TAPNotificationManager.getInstance(instanceKey).isRoomListAppear() &&
+                (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))
+        ) {
             if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
                     null != newMessage.getHidden() && !newMessage.getHidden() && null != newMessage.getIsDeleted()
                     && !newMessage.getIsDeleted()) {
                 // Show notification for new messages from other users
                 TAPNotificationManager.getInstance(instanceKey).createAndShowInAppNotification(TapTalk.appContext, newMessage);
             }
-            for (TAPChatListener chatListener : chatListenersCopy) {
-                if (null != chatListener) {
-                    TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-                    if (kSocketNewMessage.equals(eventName))
-                        chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
-                    else if (kSocketUpdateMessage.equals(eventName))
-                        chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
-                    else if (kSocketDeleteMessage.equals(eventName))
-                        chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+            if (!chatListenersCopy.isEmpty()) {
+                for (TAPChatListener chatListener : chatListenersCopy) {
+                    if (null != chatListener) {
+                        TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
+                        if (kSocketNewMessage.equals(eventName))
+                            chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
+                        else if (kSocketUpdateMessage.equals(eventName))
+                            chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
+                        else if (kSocketDeleteMessage.equals(eventName))
+                            chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+                    }
                 }
             }
         }
-        // Receive message outside active room (in room List)
-        else if (!chatListenersCopy.isEmpty() && (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID()))) {
+        // Receive message outside active room (in room list)
+        else if (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
             if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
                     null != newMessage.getHidden() && !newMessage.getHidden() && null != newMessage.getIsDeleted()
                     && !newMessage.getIsDeleted()) {
                 // Show notification for new messages from other users
                 TAPNotificationManager.getInstance(instanceKey).createAndShowInAppNotification(TapTalk.appContext, newMessage);
             }
-            for (TAPChatListener chatListener : chatListenersCopy) {
-                if (null != chatListener) {
-                    TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
-                    if (kSocketNewMessage.equals(eventName))
-                        chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
-                    else if (kSocketUpdateMessage.equals(eventName))
-                        chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
-                    else if (kSocketDeleteMessage.equals(eventName))
-                        chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+            if (!chatListenersCopy.isEmpty()) {
+                for (TAPChatListener chatListener : chatListenersCopy) {
+                    if (null != chatListener) {
+                        TAPMessageModel tempNewMessage = newMessage.copyMessageModel();
+                        if (kSocketNewMessage.equals(eventName))
+                            chatListener.onReceiveMessageInOtherRoom(tempNewMessage);
+                        else if (kSocketUpdateMessage.equals(eventName))
+                            chatListener.onUpdateMessageInOtherRoom(tempNewMessage);
+                        else if (kSocketDeleteMessage.equals(eventName))
+                            chatListener.onDeleteMessageInOtherRoom(tempNewMessage);
+                    }
                 }
             }
         }
