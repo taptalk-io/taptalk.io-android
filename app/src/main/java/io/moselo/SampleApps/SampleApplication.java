@@ -60,6 +60,10 @@ public class SampleApplication extends MultiDexApplication {
         TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
         TapUI.getInstance(INSTANCE_KEY).setLogoutButtonVisible(true);
         TapUI.getInstance(INSTANCE_KEY).setConnectionStatusIndicatorVisible(false);
+
+        if (BuildConfig.DEBUG) {
+            TapUI.getInstance(INSTANCE_KEY).setCloseButtonInRoomListVisible(true);
+        }
     }
 
     TapListener tapListener = new TapListener(INSTANCE_KEY) {

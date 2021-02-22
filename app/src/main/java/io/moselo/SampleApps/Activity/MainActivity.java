@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
+import io.taptalk.TapTalkSample.BuildConfig;
 import io.taptalk.TapTalkSample.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,7 +20,11 @@ public class MainActivity extends AppCompatActivity {
         String instanceKey = "";
 
         if (TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
-            TapUIRoomListActivity.start(MainActivity.this, instanceKey);
+            if (BuildConfig.DEBUG) {
+                TapDevLandingActivity.Companion.start(this, instanceKey);
+            } else {
+                TapUIRoomListActivity.start(MainActivity.this, instanceKey);
+            }
         } else {
             TAPLoginActivity.start(MainActivity.this, instanceKey, false);
         }

@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.moselo.SampleApps.Activity.TAPRegisterActivity
+import io.moselo.SampleApps.Activity.TapDevLandingActivity
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -27,6 +28,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
+import io.taptalk.TapTalkSample.BuildConfig
 import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
@@ -270,7 +272,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             activity?.runOnUiThread {
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveMyCountryCode(countryCallingCode)
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveMyCountryFlagUrl(countryFlagUrl)
-                TapUIRoomListActivity.start(context, (activity as TAPBaseActivity).instanceKey)
+                if (BuildConfig.DEBUG) {
+                    TapDevLandingActivity.start(context, (activity as TAPBaseActivity).instanceKey)
+                } else {
+                    TapUIRoomListActivity.start(context, (activity as TAPBaseActivity).instanceKey)
+                }
                 activity?.finish()
             }
         }

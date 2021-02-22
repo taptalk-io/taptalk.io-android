@@ -14,6 +14,7 @@ import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalk.ViewModel.TAPLoginViewModel;
+import io.taptalk.TapTalkSample.BuildConfig;
 import io.taptalk.TapTalkSample.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
@@ -64,7 +65,11 @@ public class TAPLoginActivity extends TAPBaseActivity {
             switch (requestCode) {
                 case REGISTER:
                     TAPApiManager.getInstance(instanceKey).setLoggedOut(false);
-                    TapUIRoomListActivity.start(TAPLoginActivity.this, instanceKey);
+                    if (BuildConfig.DEBUG) {
+                        TapDevLandingActivity.Companion.start(TAPLoginActivity.this, instanceKey);
+                    } else {
+                        TapUIRoomListActivity.start(TAPLoginActivity.this, instanceKey);
+                    }
                     finish();
                     break;
             }

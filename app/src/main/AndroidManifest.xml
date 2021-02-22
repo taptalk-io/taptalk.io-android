@@ -50,20 +50,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPLandingActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPLoginActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPRegisterActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPCountryListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="io.moselo.SampleApps.Activity.TapDevLandingActivity"
             android:screenOrientation="portrait" />
     </application>
 

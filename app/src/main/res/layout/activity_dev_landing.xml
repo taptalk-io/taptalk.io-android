@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tapDefaultBackgroundColor"
+    tools:context="io.moselo.SampleApps.Activity.TapDevLandingActivity">
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/tap_bg_white_rounded_8dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_taptalk_logo"
+        app:layout_constraintBottom_toTopOf="@id/tv_get_started"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <TextView
+        android:id="@+id/tv_get_started"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="Get Started"
+        android:textColor="@color/tapColorTextDark"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@id/ll_button_open_chat"
+        app:layout_constraintTop_toBottomOf="@id/iv_logo" />
+
+    <LinearLayout
+        android:id="@+id/ll_button_open_chat"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/tap_bg_button_active_ripple"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="32dp"
+        android:paddingLeft="32dp"
+        android:paddingEnd="32dp"
+        android:paddingRight="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_get_started">
+
+        <ImageView
+            android:id="@+id/iv_button_launch_live_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/tap_ic_chevron_right_grey"
+            android:tint="@color/tapWhite" />
+
+        <TextView
+            android:id="@+id/tv_button_launch_live_chat"
+            style="@style/tapButtonLabelStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:gravity="center"
+            android:text="Open Chat" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
