@@ -20,7 +20,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -407,7 +406,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clForwardedQuote;
         private ConstraintLayout clQuote;
         private ConstraintLayout clForwarded;
-        private LinearLayout llTimestampIconImage;
+        private ConstraintLayout clTimestampIconImage;
         private FrameLayout flBubble;
         private FrameLayout flProgress;
         private CircleImageView civAvatar;
@@ -440,7 +439,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clForwardedQuote = itemView.findViewById(R.id.cl_forwarded_quote); // Container for quote and forwarded layouts
             clQuote = itemView.findViewById(R.id.cl_quote);
             clForwarded = itemView.findViewById(R.id.cl_forwarded);
-            llTimestampIconImage = itemView.findViewById(R.id.ll_timestamp_icon_image);
+            clTimestampIconImage = itemView.findViewById(R.id.cl_timestamp_icon_image);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             flProgress = itemView.findViewById(R.id.fl_progress);
             rcivImageBody = itemView.findViewById(R.id.rciv_image);
@@ -599,7 +598,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 setMessageBodyText(tvMessageBody, item, imageCaption);
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
                 tvMessageBody.setVisibility(View.VISIBLE);
-                llTimestampIconImage.setVisibility(View.GONE);
+                clTimestampIconImage.setVisibility(View.GONE);
                 tvMessageTimestamp.setVisibility(View.VISIBLE);
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.VISIBLE);
@@ -609,7 +608,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(13));
                 rcivImageBody.setBottomRightRadius(TAPUtils.dpToPx(13));
                 tvMessageBody.setVisibility(View.GONE);
-                llTimestampIconImage.setVisibility(View.VISIBLE);
+                clTimestampIconImage.setVisibility(View.VISIBLE);
                 tvMessageTimestamp.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.GONE);
@@ -773,7 +772,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clForwardedQuote;
         private ConstraintLayout clQuote;
         private ConstraintLayout clForwarded;
-        private LinearLayout llTimestampIconImage;
+        private ConstraintLayout clTimestampIconImage;
         private FrameLayout flBubble;
         private FrameLayout flProgress;
         private CircleImageView civAvatar;
@@ -808,7 +807,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clForwardedQuote = itemView.findViewById(R.id.cl_forwarded_quote); // Container for quote and forwarded layouts
             clQuote = itemView.findViewById(R.id.cl_quote);
             clForwarded = itemView.findViewById(R.id.cl_forwarded);
-            llTimestampIconImage = itemView.findViewById(R.id.ll_timestamp_icon_image);
+            clTimestampIconImage = itemView.findViewById(R.id.cl_timestamp_icon_image);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             flProgress = itemView.findViewById(R.id.fl_progress);
             rcivVideoThumbnail = itemView.findViewById(R.id.rciv_image);
@@ -943,7 +942,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 setMessageBodyText(tvMessageBody, item, videoCaption);
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
                 tvMessageBody.setVisibility(View.VISIBLE);
-                llTimestampIconImage.setVisibility(View.GONE);
+                clTimestampIconImage.setVisibility(View.GONE);
                 tvMessageTimestamp.setVisibility(View.VISIBLE);
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.VISIBLE);
@@ -953,7 +952,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(13));
                 rcivVideoThumbnail.setBottomRightRadius(TAPUtils.dpToPx(13));
                 tvMessageBody.setVisibility(View.GONE);
-                llTimestampIconImage.setVisibility(View.VISIBLE);
+                clTimestampIconImage.setVisibility(View.VISIBLE);
                 tvMessageTimestamp.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.GONE);
