@@ -20,6 +20,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -406,7 +407,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clForwardedQuote;
         private ConstraintLayout clQuote;
         private ConstraintLayout clForwarded;
-        private ConstraintLayout clTimestampIconImage;
+        private LinearLayout llTimestampIconImage;
         private FrameLayout flBubble;
         private FrameLayout flProgress;
         private CircleImageView civAvatar;
@@ -439,7 +440,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clForwardedQuote = itemView.findViewById(R.id.cl_forwarded_quote); // Container for quote and forwarded layouts
             clQuote = itemView.findViewById(R.id.cl_quote);
             clForwarded = itemView.findViewById(R.id.cl_forwarded);
-            clTimestampIconImage = itemView.findViewById(R.id.cl_timestamp_icon_image);
+            llTimestampIconImage = itemView.findViewById(R.id.ll_timestamp_icon_image);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             flProgress = itemView.findViewById(R.id.fl_progress);
             rcivImageBody = itemView.findViewById(R.id.rciv_image);
@@ -483,7 +484,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             setProgress(item);
-            setImageData(item);
+            setImageData(item, position);
             fixBubbleMarginForGroupRoom(item, flBubble);
 
             markMessageAsRead(item, myUserModel);
@@ -522,7 +523,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
         }
 
-        private void setImageData(TAPMessageModel item) {
+        private void setImageData(TAPMessageModel item, int position) {
             if (null == item.getData()) {
                 return;
             }
@@ -537,46 +538,63 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == imageUrl || imageUrl.isEmpty()) {
                 imageUrl = (String) item.getData().get(URL);
             }
-
-            if (((null != item.getQuote() &&
-                    null != item.getQuote().getTitle() &&
-                    !item.getQuote().getTitle().isEmpty()) ||
-                    (null != item.getForwardFrom() &&
-                            null != item.getForwardFrom().getFullname() &&
-                            !item.getForwardFrom().getFullname().isEmpty())) &&
-                    null != widthDimension &&
-                    null != heightDimension) {
-                // Fix layout when quote/forward exists
-                float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
-                // Set image width to maximum
-                rcivImageBody.getLayoutParams().width = 0;
-                if (imageRatio > (float) rcivImageBody.getMaxWidth() / (float) rcivImageBody.getMinHeight()) {
-                    // Set minimum height if image width exceeds limit
-                    rcivImageBody.getLayoutParams().height = rcivImageBody.getMinHeight();
-                } else if (imageRatio < (float) rcivImageBody.getMaxHeight() / (float) rcivImageBody.getMaxWidth()) {
-                    // Set maximum height if image height exceeds limit
-                    rcivImageBody.getLayoutParams().height = rcivImageBody.getMaxHeight();
-                } else {
-                    // Set default image height
-                    rcivImageBody.getLayoutParams().height = (int) (rcivImageBody.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
+            rcivImageBody.post(() -> {
+                if (position == getAdapterPosition()) {
+                    if (((null != item.getQuote() &&
+                            null != item.getQuote().getTitle() &&
+                            !item.getQuote().getTitle().isEmpty()) ||
+                            (null != item.getForwardFrom() &&
+                                    null != item.getForwardFrom().getFullname() &&
+                                    !item.getForwardFrom().getFullname().isEmpty())) &&
+                            null != widthDimension &&
+                            null != heightDimension) {
+                        // Fix layout when quote/forward exists
+                        float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
+                        // Set image width to maximum
+                        rcivImageBody.getLayoutParams().width = 0;
+                        if (imageRatio > (float) rcivImageBody.getMaxWidth() / (float) rcivImageBody.getMinHeight()) {
+                            // Set minimum height if image width exceeds limit
+                            rcivImageBody.getLayoutParams().height = rcivImageBody.getMinHeight();
+                        } else if (imageRatio < (float) rcivImageBody.getMaxHeight() / (float) rcivImageBody.getMaxWidth()) {
+                            // Set maximum height if image height exceeds limit
+                            rcivImageBody.getLayoutParams().height = rcivImageBody.getMaxHeight();
+                        } else {
+                            // Set default image height
+                            rcivImageBody.getLayoutParams().height = (int) (rcivImageBody.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
+                        }
+                        rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        rcivImageBody.setTopLeftRadius(0);
+                        rcivImageBody.setTopRightRadius(0);
+                        clForwardedQuote.setVisibility(View.VISIBLE);
+                    } else if (rcivImageBody.getWidth() < (llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12))) {
+                        // Image width may not be smaller than timestamp width
+                        rcivImageBody.getLayoutParams().width = llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12);
+                        rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                        rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        if (isMessageFromMySelf(item)) {
+                            rcivImageBody.setTopLeftRadius(TAPUtils.dpToPx(13));
+                            rcivImageBody.setTopRightRadius(TAPUtils.dpToPx(2));
+                        } else {
+                            rcivImageBody.setTopLeftRadius(TAPUtils.dpToPx(2));
+                            rcivImageBody.setTopRightRadius(TAPUtils.dpToPx(13));
+                        }
+                        clForwardedQuote.setVisibility(View.GONE);
+                    } else {
+                        // Set default image size
+                        rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+                        rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                        rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        if (isMessageFromMySelf(item)) {
+                            rcivImageBody.setTopLeftRadius(TAPUtils.dpToPx(13));
+                            rcivImageBody.setTopRightRadius(TAPUtils.dpToPx(2));
+                        } else {
+                            rcivImageBody.setTopLeftRadius(TAPUtils.dpToPx(2));
+                            rcivImageBody.setTopRightRadius(TAPUtils.dpToPx(13));
+                        }
+                        clForwardedQuote.setVisibility(View.GONE);
+                    }
                 }
-                rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                rcivImageBody.setTopLeftRadius(0);
-                rcivImageBody.setTopRightRadius(0);
-                clForwardedQuote.setVisibility(View.VISIBLE);
-            } else {
-                rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
-                rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                if (isMessageFromMySelf(item)) {
-                    rcivImageBody.setTopLeftRadius(TAPUtils.dpToPx(13));
-                    rcivImageBody.setTopRightRadius(TAPUtils.dpToPx(2));
-                } else {
-                    rcivImageBody.setTopLeftRadius(TAPUtils.dpToPx(2));
-                    rcivImageBody.setTopRightRadius(TAPUtils.dpToPx(13));
-                }
-                clForwardedQuote.setVisibility(View.GONE);
-            }
+            });
 
             if (null == thumbnail) {
                 thumbnail = new BitmapDrawable(
@@ -598,7 +616,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 setMessageBodyText(tvMessageBody, item, imageCaption);
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
                 tvMessageBody.setVisibility(View.VISIBLE);
-                clTimestampIconImage.setVisibility(View.GONE);
+                llTimestampIconImage.setVisibility(View.GONE);
                 tvMessageTimestamp.setVisibility(View.VISIBLE);
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.VISIBLE);
@@ -608,7 +626,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(13));
                 rcivImageBody.setBottomRightRadius(TAPUtils.dpToPx(13));
                 tvMessageBody.setVisibility(View.GONE);
-                clTimestampIconImage.setVisibility(View.VISIBLE);
+                llTimestampIconImage.setVisibility(View.VISIBLE);
                 tvMessageTimestamp.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.GONE);
@@ -772,7 +790,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clForwardedQuote;
         private ConstraintLayout clQuote;
         private ConstraintLayout clForwarded;
-        private ConstraintLayout clTimestampIconImage;
+        private LinearLayout llTimestampIconImage;
         private FrameLayout flBubble;
         private FrameLayout flProgress;
         private CircleImageView civAvatar;
@@ -807,7 +825,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clForwardedQuote = itemView.findViewById(R.id.cl_forwarded_quote); // Container for quote and forwarded layouts
             clQuote = itemView.findViewById(R.id.cl_quote);
             clForwarded = itemView.findViewById(R.id.cl_forwarded);
-            clTimestampIconImage = itemView.findViewById(R.id.cl_timestamp_icon_image);
+            llTimestampIconImage = itemView.findViewById(R.id.ll_timestamp_icon_image);
             flBubble = itemView.findViewById(R.id.fl_bubble);
             flProgress = itemView.findViewById(R.id.fl_progress);
             rcivVideoThumbnail = itemView.findViewById(R.id.rciv_image);
@@ -942,7 +960,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 setMessageBodyText(tvMessageBody, item, videoCaption);
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
                 tvMessageBody.setVisibility(View.VISIBLE);
-                clTimestampIconImage.setVisibility(View.GONE);
+                llTimestampIconImage.setVisibility(View.GONE);
                 tvMessageTimestamp.setVisibility(View.VISIBLE);
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.VISIBLE);
@@ -952,7 +970,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(13));
                 rcivVideoThumbnail.setBottomRightRadius(TAPUtils.dpToPx(13));
                 tvMessageBody.setVisibility(View.GONE);
-                clTimestampIconImage.setVisibility(View.VISIBLE);
+                llTimestampIconImage.setVisibility(View.VISIBLE);
                 tvMessageTimestamp.setVisibility(View.GONE);
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.GONE);
