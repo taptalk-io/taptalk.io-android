@@ -73,7 +73,6 @@
                 layout="@layout/tap_layout_quote_bubble_right"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@id/cl_file"
                 app:layout_constraintTop_toBottomOf="@id/cl_forwarded" />
 
@@ -81,8 +80,8 @@
                 android:id="@+id/cl_file"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginTop="4dp"
+                app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -101,12 +100,12 @@
                     <ProgressBar
                         android:id="@+id/pb_progress"
                         style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:layout_gravity="center"
                         android:indeterminate="false"
                         android:max="100"
-                        android:progressDrawable="@drawable/tap_file_circular_progress_white"
+                        android:progressDrawable="@drawable/tap_file_circular_progress_primary"
                         tools:progress="65" />
 
                     <ImageView
@@ -114,7 +113,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        tools:src="@drawable/tap_ic_download_white" />
+                        app:tint="@color/tapIconFileUploadDownloadRight"
+                        tools:src="@drawable/tap_ic_download_orange" />
 
                 </FrameLayout>
 
@@ -180,10 +180,12 @@
                 style="@style/tapRightBubbleMessageTimestampStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:layout_marginEnd="2dp"
                 android:layout_marginRight="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/iv_message_status"
+                app:layout_constraintTop_toBottomOf="@id/cl_file"
                 app:layout_goneMarginEnd="0dp"
                 app:layout_goneMarginRight="0dp"
                 tools:text="17:05" />
@@ -237,11 +239,11 @@
         android:layout_marginBottom="5dp"
         android:alpha="0"
         android:src="@drawable/tap_ic_sending_grey"
-        android:tint="@color/tapIconRoomListMessageSending"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@id/fl_bubble" />
+        app:layout_constraintStart_toEndOf="@id/fl_bubble"
+        app:tint="@color/tapIconRoomListMessageSending" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

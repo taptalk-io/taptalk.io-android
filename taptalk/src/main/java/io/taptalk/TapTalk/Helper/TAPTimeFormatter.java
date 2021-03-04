@@ -65,16 +65,15 @@ public class TAPTimeFormatter {
         midnightFromSendTime.set(Calendar.SECOND, 0);
         midnightFromSendTime.set(Calendar.MILLISECOND, 0);
         midnightTimeGap = midnightFromSendTime.getTimeInMillis() - timestamp;
-        String sentAt = context.getString(R.string.tap_sent_at);
 
         if (timestamp == 0) {
             return "";
         } else if (midnightTimeGap > timeGap) {
-            return String.format("%s %s", sentAt, formatClock(timestamp));
+            return String.format("%s • %s", context.getString(R.string.tap_today), formatClock(timestamp));
         } else if ((TAPTimeFormatter.times.get(3)) + midnightTimeGap > timeGap) {
-            return String.format(context.getString(R.string.tap_format_s_sent_yesterday_at), formatClock(timestamp));
+            return String.format("%s • %s", context.getString(R.string.tap_yesterday), formatClock(timestamp));
         } else {
-            return String.format("%s %s %s", sentAt, formatDate(timestamp), formatClock(timestamp));
+            return String.format("%s • %s", formatTime(timestamp, "dd/MM/yy"), formatClock(timestamp));
         }
     }
 

@@ -518,7 +518,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                     pbProgress.setProgress(0);
                     clContainer.setOnClickListener(v -> chatProfileInterface.onMediaClicked(message, rcivThumbnail, isMediaReady));
                     tvMediaInfo.setText(videoSize);
-                    ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_white));
+                    ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_orange));
                     ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadLeft)));
                 } else {
                     // Media is downloading

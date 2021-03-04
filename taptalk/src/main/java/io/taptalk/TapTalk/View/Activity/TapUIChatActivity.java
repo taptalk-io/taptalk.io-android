@@ -2565,26 +2565,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
-                    && s.length() > 0 && s.toString().trim().length() > 0) {
+            if (s.length() > 0 && s.toString().trim().length() > 0) {
                 // Hide chat menu and enable send button when EditText is filled
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_ripple));
+                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_ripple));
                 } else {
                     ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
                 }
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
                 checkAndSearchUserMentionList();
                 //checkAndHighlightTypedText();
-            } else if (null != TapUIChatActivity.this.getCurrentFocus() && TapUIChatActivity.this.getCurrentFocus().getId() == etChat.getId()
-                    && s.length() > 0) {
+            } else if (s.length() > 0) {
                 // Hide chat menu but keep send button disabled if trimmed text is empty
                 ivChatMenu.setVisibility(View.GONE);
                 ivButtonChatMenu.setVisibility(View.GONE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_inactive_ripple));
+                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive_ripple));
                 } else {
                     ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
                 }
@@ -2609,7 +2607,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (vm.getQuoteAction() == FORWARD) {
                     // Enable send button if message to forward exists
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_ripple));
+                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_ripple));
                     } else {
                         ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
                     }
@@ -2617,7 +2615,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 } else {
                     // Disable send button
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ivButtonSend.setImageDrawable(getDrawable(R.drawable.tap_bg_chat_composer_send_inactive_ripple));
+                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive_ripple));
                     } else {
                         ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
                     }

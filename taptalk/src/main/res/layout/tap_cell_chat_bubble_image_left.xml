@@ -195,7 +195,7 @@
                 android:paddingEnd="6dp"
                 android:paddingBottom="10dp"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"
                 app:layout_constraintTop_toBottomOf="@id/rciv_image"
@@ -206,12 +206,14 @@
                 style="@style/tapLeftBubbleMessageTimestampStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_message_body"
                 tools:text="17:05" />
 
             <LinearLayout
@@ -262,6 +264,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/fl_bubble"
         app:layout_constraintTop_toBottomOf="@id/fl_bubble"

@@ -229,7 +229,7 @@ public class TAPAttachmentModel {
                     (TAPCacheManager.getInstance(TapTalk.appContext).containsCache(fileID) ||
                             null != messageData.get(FILE_URL))) {
                 // Save to gallery
-                imageResIds.add(R.drawable.tap_ic_save_orange);
+                imageResIds.add(R.drawable.tap_ic_download_orange);
                 titleResIds.add(R.string.tap_save_to_gallery);
                 ids.add(LONG_PRESS_SAVE_IMAGE_GALLERY);
             }
@@ -276,7 +276,7 @@ public class TAPAttachmentModel {
             if (!TapUI.getInstance(instanceKey).isSaveMediaToGalleryMenuDisabled() &&
                     TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(messageModel)) {
                 // Save to gallery
-                imageResIds.add(R.drawable.tap_ic_save_orange);
+                imageResIds.add(R.drawable.tap_ic_download_orange);
                 titleResIds.add(R.string.tap_save_to_gallery);
                 ids.add(LONG_PRESS_SAVE_IMAGE_GALLERY);
             }
@@ -316,7 +316,7 @@ public class TAPAttachmentModel {
             if (!TapUI.getInstance(instanceKey).isSaveDocumentMenuDisabled() &&
                     TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(messageModel)) {
                 // Save to downloads
-                imageResIds.add(R.drawable.tap_ic_save_orange);
+                imageResIds.add(R.drawable.tap_ic_download_orange);
                 titleResIds.add(R.string.tap_save_to_downloads);
                 ids.add(LONG_PRESS_SAVE_DOWNLOADS);
             }

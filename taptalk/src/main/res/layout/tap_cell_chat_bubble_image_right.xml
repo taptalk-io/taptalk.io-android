@@ -187,7 +187,7 @@
                 android:paddingEnd="6dp"
                 android:paddingBottom="10dp"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="@id/rciv_image"
                 app:layout_constraintStart_toStartOf="@id/rciv_image"
                 app:layout_constraintTop_toBottomOf="@id/rciv_image"
@@ -202,6 +202,8 @@
                 android:layout_marginRight="2dp"
                 android:layout_marginBottom="10dp"
                 android:visibility="gone"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toTopOf="@id/tv_message_body"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/iv_message_status"
                 app:layout_goneMarginEnd="0dp"
@@ -297,11 +299,11 @@
         android:layout_marginBottom="5dp"
         android:alpha="0"
         android:src="@drawable/tap_ic_sending_grey"
-        android:tint="@color/tapIconRoomListMessageSending"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@id/fl_bubble" />
+        app:layout_constraintStart_toEndOf="@id/fl_bubble"
+        app:tint="@color/tapIconRoomListMessageSending" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

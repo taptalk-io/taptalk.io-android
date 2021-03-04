@@ -2,7 +2,6 @@ package io.taptalk.TapTalk.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,31 +10,22 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Helper.TapTalk;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LEFT_BUBBLE_SPACE_APPEND;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RIGHT_BUBBLE_SPACE_APPEND;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 /**
  * If this class has more attribute, don't forget to add it to copyMessageModel function
@@ -208,8 +198,8 @@ public class TAPMessageModel implements Parcelable {
 
     public void updateMessageStatusText() {
         if (created > 0L) {
-            //messageStatusText = TAPTimeFormatter.durationChatString(TapTalk.appContext, created);
-            messageStatusText = TAPTimeFormatter.formatClock(created);
+            messageStatusText = TAPTimeFormatter.durationChatString(TapTalk.appContext, created);
+//            messageStatusText = TAPTimeFormatter.formatClock(created);
         }
     }
 

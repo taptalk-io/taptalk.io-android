@@ -68,12 +68,12 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
-            android:src="@drawable/tap_ic_save_orange"
-            android:tint="@color/tapIconSaveImage"
+            android:src="@drawable/tap_ic_download_orange"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_title"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconSaveImage" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

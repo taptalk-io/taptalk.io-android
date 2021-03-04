@@ -103,7 +103,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LEFT_BUBBLE_SPACE_APPEND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
@@ -130,7 +129,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RIGHT_BUBBLE_SPACE_APPEND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.CREATE_ROOM;
@@ -710,7 +708,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     && null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID()))
                     || null != TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID())) {
                 // Not downloaded
-                ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_white));
+                ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_orange));
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadLeft)));
                 flProgress.setOnClickListener(v -> {});
                 tvMessageStatus.setVisibility(View.GONE);
@@ -1047,7 +1045,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
                     ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileRetryUploadDownloadLeft)));
                 } else {
-                    ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_white));
+                    ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_orange));
                     ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadLeft)));
                 }
                 pbProgress.setVisibility(View.GONE);
@@ -1292,9 +1290,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String key = TAPUtils.getUriKeyFromMessage(item);
             fileUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item.getRoom().getRoomID(), key);
 
-            String space = isMessageFromMySelf(item) ? RIGHT_BUBBLE_SPACE_APPEND : LEFT_BUBBLE_SPACE_APPEND;
+//            String space = isMessageFromMySelf(item) ? RIGHT_BUBBLE_SPACE_APPEND : LEFT_BUBBLE_SPACE_APPEND;
             tvFileName.setText(TAPUtils.getFileDisplayName(item));
-            tvFileInfoDummy.setText(String.format("%s%s", TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item), space));
+//            tvFileInfoDummy.setText(String.format("%s%s", TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item), space));
+            tvFileInfoDummy.setText(TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item));
 
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Message failed to send
@@ -1340,7 +1339,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                             R.color.tapIconFileRetryUploadDownloadLeft)));
                 } else {
                     tvMessageStatus.setText(item.getMessageStatusText());
-                    ivFileIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_white));
+                    ivFileIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_orange));
                     ImageViewCompat.setImageTintList(ivFileIcon, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadLeft)));
                     ImageViewCompat.setImageTintList(ivFileIcon, ColorStateList.valueOf(
                             ContextCompat.getColor(itemView.getContext(),
@@ -1970,7 +1969,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private void setMessageBodyText(TextView tvMessageBody, TAPMessageModel item, String body) {
-        String originalText, spaceAppend;
+        String originalText;
+        String spaceAppend = "";
         if (item.getType() == TYPE_TEXT) {
             originalText = item.getBody();
         } else if ((item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO) && null != item.getData()) {
@@ -1983,16 +1983,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         if (null == originalText) {
             return;
         }
-        if (item.getType() != TYPE_TEXT &&
-                    item.getType() != TYPE_IMAGE &&
-                    item.getType() != TYPE_VIDEO &&
-                    item.getType() != TYPE_LOCATION) {
-            spaceAppend = "";
-        } else if (isMessageFromMySelf(item)) {
-            spaceAppend = RIGHT_BUBBLE_SPACE_APPEND;
-        } else {
-            spaceAppend = LEFT_BUBBLE_SPACE_APPEND;
-        }
+//        if (item.getType() != TYPE_TEXT &&
+//                    item.getType() != TYPE_IMAGE &&
+//                    item.getType() != TYPE_VIDEO &&
+//                    item.getType() != TYPE_LOCATION) {
+//            spaceAppend = "";
+//        } else if (isMessageFromMySelf(item)) {
+//            spaceAppend = RIGHT_BUBBLE_SPACE_APPEND;
+//        } else {
+//            spaceAppend = LEFT_BUBBLE_SPACE_APPEND;
+//        }
         // Check for mentions
         SpannableString span = generateMentionSpan(item, body, spaceAppend);
         if (null != span) {
