@@ -670,7 +670,7 @@ public class TAPFileUploadManager {
                         mimeType, uploadCallbacks, uploadView);
     }
 
-    public void uploadImageOnly(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
+    public void uploadImage(Context context, Uri uri, ProgressRequestBody.UploadCallbacks uploadCallback, TAPDefaultDataView<TAPUploadFileResponse> view) {
         TAPFileUploadManager.getInstance(instanceKey).createAndResizeImageFile(context, uri, IMAGE_MAX_DIMENSION, bitmap -> {
             String mimeType = TAPUtils.getImageMimeType(context, uri);
             MimeTypeMap mime = MimeTypeMap.getSingleton();
