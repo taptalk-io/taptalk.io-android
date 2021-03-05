@@ -563,34 +563,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             rcivImageBody.getLayoutParams().height = (int) (rcivImageBody.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
                         }
                         rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        rcivImageBody.setTopLeftRadius(0);
-                        rcivImageBody.setTopRightRadius(0);
                         clForwardedQuote.setVisibility(View.VISIBLE);
                     } else if (rcivImageBody.getWidth() < (llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12))) {
                         // Image width may not be smaller than timestamp width
                         rcivImageBody.getLayoutParams().width = llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12);
                         rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
                         rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        if (isMessageFromMySelf(item)) {
-                            rcivImageBody.setTopLeftRadius(TAPUtils.dpToPx(13));
-                            rcivImageBody.setTopRightRadius(TAPUtils.dpToPx(2));
-                        } else {
-                            rcivImageBody.setTopLeftRadius(TAPUtils.dpToPx(2));
-                            rcivImageBody.setTopRightRadius(TAPUtils.dpToPx(13));
-                        }
                         clForwardedQuote.setVisibility(View.GONE);
                     } else {
                         // Set default image size
                         rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
                         rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
                         rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        if (isMessageFromMySelf(item)) {
-                            rcivImageBody.setTopLeftRadius(TAPUtils.dpToPx(13));
-                            rcivImageBody.setTopRightRadius(TAPUtils.dpToPx(2));
-                        } else {
-                            rcivImageBody.setTopLeftRadius(TAPUtils.dpToPx(2));
-                            rcivImageBody.setTopRightRadius(TAPUtils.dpToPx(13));
-                        }
                         clForwardedQuote.setVisibility(View.GONE);
                     }
                 }
@@ -871,7 +855,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
-            setVideoProgress(item);
+            setVideoProgress(item, position);
             fixBubbleMarginForGroupRoom(item, flBubble);
 
             markMessageAsRead(item, myUserModel);
@@ -883,7 +867,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
-        private void setVideoProgress(TAPMessageModel item) {
+        private void setVideoProgress(TAPMessageModel item, int position) {
             if (null == item.getData()) {
                 return;
             }
@@ -900,45 +884,47 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(localID);
             videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item.getRoom().getRoomID(), key);
 
-            if (((null != item.getQuote() &&
-                    null != item.getQuote().getTitle() &&
-                    !item.getQuote().getTitle().isEmpty()) ||
-                    (null != item.getForwardFrom() &&
-                            null != item.getForwardFrom().getFullname() &&
-                            !item.getForwardFrom().getFullname().isEmpty())) &&
-                    null != widthDimension &&
-                    null != heightDimension) {
-                // Fix layout when quote/forward exists
-                float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
-                // Set image width to maximum
-                rcivVideoThumbnail.getLayoutParams().width = 0;
-                if (imageRatio > (float) rcivVideoThumbnail.getMaxWidth() / (float) rcivVideoThumbnail.getMinHeight()) {
-                    // Set minimum height if image width exceeds limit
-                    rcivVideoThumbnail.getLayoutParams().height = rcivVideoThumbnail.getMinHeight();
-                } else if (imageRatio < (float) rcivVideoThumbnail.getMaxHeight() / (float) rcivVideoThumbnail.getMaxWidth()) {
-                    // Set maximum height if image height exceeds limit
-                    rcivVideoThumbnail.getLayoutParams().height = rcivVideoThumbnail.getMaxHeight();
-                } else {
-                    // Set default image height
-                    rcivVideoThumbnail.getLayoutParams().height = (int) (rcivVideoThumbnail.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
+            rcivVideoThumbnail.post(() -> {
+                if (position == getAdapterPosition()) {
+                    if (((null != item.getQuote() &&
+                            null != item.getQuote().getTitle() &&
+                            !item.getQuote().getTitle().isEmpty()) ||
+                            (null != item.getForwardFrom() &&
+                                    null != item.getForwardFrom().getFullname() &&
+                                    !item.getForwardFrom().getFullname().isEmpty())) &&
+                            null != widthDimension &&
+                            null != heightDimension) {
+                        // Fix layout when quote/forward exists
+                        float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
+                        // Set image width to maximum
+                        rcivVideoThumbnail.getLayoutParams().width = 0;
+                        if (imageRatio > (float) rcivVideoThumbnail.getMaxWidth() / (float) rcivVideoThumbnail.getMinHeight()) {
+                            // Set minimum height if image width exceeds limit
+                            rcivVideoThumbnail.getLayoutParams().height = rcivVideoThumbnail.getMinHeight();
+                        } else if (imageRatio < (float) rcivVideoThumbnail.getMaxHeight() / (float) rcivVideoThumbnail.getMaxWidth()) {
+                            // Set maximum height if image height exceeds limit
+                            rcivVideoThumbnail.getLayoutParams().height = rcivVideoThumbnail.getMaxHeight();
+                        } else {
+                            // Set default image height
+                            rcivVideoThumbnail.getLayoutParams().height = (int) (rcivVideoThumbnail.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
+                        }
+                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        clForwardedQuote.setVisibility(View.VISIBLE);
+                    } else if (rcivVideoThumbnail.getWidth() < (llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12))) {
+                        // Thumbnail width may not be smaller than timestamp width
+                        rcivVideoThumbnail.getLayoutParams().width = llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12);
+                        rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        clForwardedQuote.setVisibility(View.GONE);
+                    } else {
+                        // Set default thumbnail size
+                        rcivVideoThumbnail.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+                        rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        clForwardedQuote.setVisibility(View.GONE);
+                    }
                 }
-                rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                rcivVideoThumbnail.setTopLeftRadius(0);
-                rcivVideoThumbnail.setTopRightRadius(0);
-                clForwardedQuote.setVisibility(View.VISIBLE);
-            } else {
-                rcivVideoThumbnail.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
-                rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                rcivVideoThumbnail.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                if (isMessageFromMySelf(item)) {
-                    rcivVideoThumbnail.setTopLeftRadius(TAPUtils.dpToPx(13));
-                    rcivVideoThumbnail.setTopRightRadius(TAPUtils.dpToPx(2));
-                } else {
-                    rcivVideoThumbnail.setTopLeftRadius(TAPUtils.dpToPx(2));
-                    rcivVideoThumbnail.setTopRightRadius(TAPUtils.dpToPx(13));
-                }
-                clForwardedQuote.setVisibility(View.GONE);
-            }
+            });
 
             if (null == thumbnail) {
                 thumbnail = new BitmapDrawable(
