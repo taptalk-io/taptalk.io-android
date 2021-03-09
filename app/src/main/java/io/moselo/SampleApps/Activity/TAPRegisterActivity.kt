@@ -196,8 +196,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
         et_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         et_retype_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
 
-        et_password.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
-        et_retype_password.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
+//        et_password.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
+//        et_retype_password.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
 
         // Set mobile number & disable editing
         tv_country_code.text = "+" + vm.countryCallingCode
@@ -457,7 +457,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             ImageViewCompat.setImageTintList(button, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapIconViewPasswordInactive)))
         }
-        editText.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
+//        editText.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
         editText.setSelection(cursorPosition)
     }
 
