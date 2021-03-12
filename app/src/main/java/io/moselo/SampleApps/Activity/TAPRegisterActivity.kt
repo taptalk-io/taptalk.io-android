@@ -186,7 +186,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
         // Obtain text field style attributes
         val typedArray = obtainStyledAttributes(R.style.tapFormTextFieldStyle, R.styleable.TextAppearance)
-        vm.fontResourceId = typedArray.getResourceId(R.styleable.TextAppearance_android_fontFamily, -1)
         vm.textFieldFontColor = typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1)
         vm.textFieldFontColorHint = typedArray.getColor(R.styleable.TextAppearance_android_textColorHint, -1)
 
@@ -195,9 +194,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
         // Set password field input type and typeface
         et_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         et_retype_password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-
-//        et_password.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
-//        et_retype_password.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
 
         // Set mobile number & disable editing
         tv_country_code.text = "+" + vm.countryCallingCode
@@ -457,7 +453,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
             editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             ImageViewCompat.setImageTintList(button, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapIconViewPasswordInactive)))
         }
-//        editText.typeface = ResourcesCompat.getFont(this, vm.fontResourceId)
         editText.setSelection(cursorPosition)
     }
 
