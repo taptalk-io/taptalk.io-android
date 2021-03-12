@@ -701,7 +701,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Failed to send
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
-                ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileRetryUploadDownloadLeft)));
+                ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileRetryUploadDownloadWhite)));
                 flProgress.setOnClickListener(v -> resendMessage(item));
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 tvMessageStatus.setVisibility(View.VISIBLE);
@@ -710,13 +710,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     || null != TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID())) {
                 // Not downloaded
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_orange));
-                ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadLeft)));
+                ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadWhite)));
                 flProgress.setOnClickListener(v -> {});
                 tvMessageStatus.setVisibility(View.GONE);
             } else {
                 // Uploading / Downloading
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
-                ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileCancelUploadDownloadLeft)));
+                ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileCancelUploadDownloadWhite)));
                 flProgress.setOnClickListener(v -> TAPDataManager.getInstance(instanceKey)
                         .cancelUploadImage(itemView.getContext(), item.getLocalID()));
                 if (isMessageFromMySelf(item) && null != item.getSending() && item.getSending()) {
@@ -984,7 +984,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 tvMediaInfo.setText(size == null ? "" : TAPUtils.getStringSizeLengthFile(size.longValue()));
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
-                ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileRetryUploadDownloadLeft)));
+                ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileRetryUploadDownloadWhite)));
                 pbProgress.setVisibility(View.GONE);
                 tvMessageStatus.setVisibility(View.VISIBLE);
                 if (isMessageFromMySelf(item)) {
@@ -1046,10 +1046,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvMediaInfo.setText(String.format("%s%s%s", videoSize, (videoSize.isEmpty() || videoDuration.isEmpty()) ? "" : " - ", videoDuration));
                 if (TAPFileDownloadManager.getInstance(instanceKey).getFailedDownloads().contains(item.getLocalID())) {
                     ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
-                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileRetryUploadDownloadLeft)));
+                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileRetryUploadDownloadWhite)));
                 } else {
                     ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_orange));
-                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadLeft)));
+                    ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadWhite)));
                 }
                 pbProgress.setVisibility(View.GONE);
                 tvMessageStatus.setVisibility(View.GONE);
@@ -1057,7 +1057,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 // File is downloading or uploading
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
-                ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileCancelUploadDownloadLeft)));
+                ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileCancelUploadDownloadWhite)));
                 pbProgress.setVisibility(View.VISIBLE);
                 pbProgress.setMax(100);
                 if (null != uploadProgressPercent) {
@@ -1305,8 +1305,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ImageViewCompat.setImageTintList(ivFileIcon, ColorStateList.valueOf(
                         ContextCompat.getColor(itemView.getContext(),
                                 isMessageFromMySelf(item) ?
-                                R.color.tapIconFileRetryUploadDownloadRight :
-                                R.color.tapIconFileRetryUploadDownloadLeft)));
+                                R.color.tapIconFileRetryUploadDownloadPrimary :
+                                R.color.tapIconFileRetryUploadDownloadWhite)));
                 pbProgress.setVisibility(View.GONE);
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 if (isMessageFromMySelf(item)) {
@@ -1324,8 +1324,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ImageViewCompat.setImageTintList(ivFileIcon, ColorStateList.valueOf(
                         ContextCompat.getColor(itemView.getContext(),
                                 isMessageFromMySelf(item) ?
-                                        R.color.tapIconFileRight :
-                                        R.color.tapIconFileLeft)));
+                                        R.color.tapIconFilePrimary :
+                                        R.color.tapIconFileWhite)));
                 pbProgress.setVisibility(View.GONE);
                 flFileIcon.setOnClickListener(v -> openFile(item));
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
@@ -1338,17 +1338,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ImageViewCompat.setImageTintList(ivFileIcon, ColorStateList.valueOf(
                             ContextCompat.getColor(itemView.getContext(),
                                     isMessageFromMySelf(item) ?
-                                            R.color.tapIconFileRetryUploadDownloadRight :
-                                            R.color.tapIconFileRetryUploadDownloadLeft)));
+                                            R.color.tapIconFileRetryUploadDownloadPrimary :
+                                            R.color.tapIconFileRetryUploadDownloadWhite)));
                 } else {
                     tvMessageStatus.setText(item.getMessageStatusText());
                     ivFileIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_orange));
-                    ImageViewCompat.setImageTintList(ivFileIcon, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadLeft)));
+                    ImageViewCompat.setImageTintList(ivFileIcon, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadWhite)));
                     ImageViewCompat.setImageTintList(ivFileIcon, ColorStateList.valueOf(
                             ContextCompat.getColor(itemView.getContext(),
                                     isMessageFromMySelf(item) ?
-                                            R.color.tapIconFileUploadDownloadRight :
-                                            R.color.tapIconFileUploadDownloadLeft)));
+                                            R.color.tapIconFileUploadDownloadPrimary :
+                                            R.color.tapIconFileUploadDownloadWhite)));
                 }
                 pbProgress.setVisibility(View.GONE);
                 flFileIcon.setOnClickListener(v -> downloadFile(item));
@@ -1358,8 +1358,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ImageViewCompat.setImageTintList(ivFileIcon, ColorStateList.valueOf(
                         ContextCompat.getColor(itemView.getContext(),
                                 isMessageFromMySelf(item) ?
-                                        R.color.tapIconFileCancelUploadDownloadRight :
-                                        R.color.tapIconFileCancelUploadDownloadLeft)));
+                                        R.color.tapIconFileCancelUploadDownloadPrimary :
+                                        R.color.tapIconFileCancelUploadDownloadWhite)));
                 pbProgress.setMax(100);
                 pbProgress.setProgressDrawable(ContextCompat.getDrawable(itemView.getContext(),
                         isMessageFromMySelf(item) ?

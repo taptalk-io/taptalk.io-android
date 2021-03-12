@@ -113,7 +113,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        app:tint="@color/tapIconFileUploadDownloadRight"
+                        app:tint="@color/tapIconFileUploadDownloadPrimary"
                         tools:src="@drawable/tap_ic_download_orange" />
 
                 </FrameLayout>
