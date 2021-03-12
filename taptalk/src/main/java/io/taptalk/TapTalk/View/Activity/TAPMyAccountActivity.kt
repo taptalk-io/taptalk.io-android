@@ -223,7 +223,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         // Obtain text field style attributes
         val textFieldArray = obtainStyledAttributes(R.style.tapFormTextFieldStyle, R.styleable.TextAppearance)
-        vm.fontResourceId = textFieldArray.getResourceId(R.styleable.TextAppearance_android_fontFamily, -1)
         vm.textFieldFontColor = textFieldArray.getColor(R.styleable.TextAppearance_android_textColor, -1)
         vm.textFieldFontColorHint = textFieldArray.getColor(R.styleable.TextAppearance_android_textColorHint, -1)
         textFieldArray.recycle()
