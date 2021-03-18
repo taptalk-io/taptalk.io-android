@@ -30,7 +30,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_PICK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM;
-import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM_BOTTOM;
 
 public class TAPCountryListActivity extends AppCompatActivity {
     private ImageView ivCloseBtn, ivSearchIcon, ivSearchClose;
@@ -139,24 +138,7 @@ public class TAPCountryListActivity extends AppCompatActivity {
                 }
 
                 TAPCountryRecycleItem countryRecycleItem = new TAPCountryRecycleItem();
-                if ((countryCounter == countryListSize - 1 || (0 < countryList.get(countryCounter + 1).getCommonName().length() &&
-                        (countryList.get(countryCounter + 1).getCommonName().charAt(0) != countryInitial
-                                || !countryList.get(countryCounter + 1).getCommonName().toLowerCase().contains(searchKeyword.toLowerCase()))))
-                        && choosenCountryID == entry.getCountryID()) {
-                    countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM_BOTTOM);
-                    countryRecycleItem.setCountryListItem(entry);
-                    countryRecycleItem.setCountryInitial(countryInitial);
-                    countryRecycleItem.setSelected(true);
-                    countryItem.add(countryRecycleItem);
-                } else if (countryCounter == countryListSize - 1 || (0 < countryList.get(countryCounter + 1).getCommonName().length() &&
-                        (countryList.get(countryCounter + 1).getCommonName().charAt(0) != countryInitial
-                                || !countryList.get(countryCounter + 1).getCommonName().toLowerCase().contains(searchKeyword.toLowerCase())))) {
-                    countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM_BOTTOM);
-                    countryRecycleItem.setCountryListItem(entry);
-                    countryRecycleItem.setCountryInitial(countryInitial);
-                    countryRecycleItem.setSelected(false);
-                    countryItem.add(countryRecycleItem);
-                } else if (choosenCountryID == entry.getCountryID()) {
+                if (choosenCountryID == entry.getCountryID()) {
                     countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM);
                     countryRecycleItem.setCountryListItem(entry);
                     countryRecycleItem.setCountryInitial(countryInitial);

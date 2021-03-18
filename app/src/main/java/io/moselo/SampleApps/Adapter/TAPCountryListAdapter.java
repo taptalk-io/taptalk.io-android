@@ -40,13 +40,11 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
     public TAPBaseViewHolder<TAPCountryRecycleItem> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         switch (TAPCountryRecycleItem.RecyclerItemType.values()[i]) {
             case COUNTRY_ITEM:
-                return new CountryItemViewHolder(false, viewGroup, R.layout.tap_country_recycle_item);
+                return new CountryItemViewHolder(viewGroup, R.layout.tap_country_recycle_item);
             case COUNTRY_INITIAL:
                 return new CountryInitialViewHolder(viewGroup, R.layout.tap_country_initial_recycle_item); // TODO: 21 November 2019 USE CELL SECTION TITLE?
-            case COUNTRY_ITEM_BOTTOM:
-                return new CountryItemViewHolder(true, viewGroup, R.layout.tap_country_recycle_item);
             default:
-                return new CountryItemViewHolder(false, viewGroup, R.layout.tap_country_recycle_item);
+                return new CountryItemViewHolder(viewGroup, R.layout.tap_country_recycle_item);
         }
     }
 
@@ -71,16 +69,11 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
     }
 
     public class CountryItemViewHolder extends TAPBaseViewHolder<TAPCountryRecycleItem> {
-        boolean isBottom;
-        private View vListBottomLine, vLine;
         private TextView tvCountryName;
         private ImageView ivCountryChoosen, ivCountryFlag;
 
-        protected CountryItemViewHolder(boolean isBottom, ViewGroup parent, int itemLayoutId) {
+        protected CountryItemViewHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
-            this.isBottom = isBottom;
-            vListBottomLine = itemView.findViewById(R.id.v_list_bottom_line);
-            vLine = itemView.findViewById(R.id.v_line);
             tvCountryName = itemView.findViewById(R.id.tv_country_name);
             ivCountryChoosen = itemView.findViewById(R.id.iv_country_choosen);
             ivCountryFlag = itemView.findViewById(R.id.iv_country_flag);
@@ -88,13 +81,6 @@ public class TAPCountryListAdapter extends TAPBaseAdapter<TAPCountryRecycleItem,
 
         @Override
         protected void onBind(TAPCountryRecycleItem item, int position) {
-            if (isBottom) {
-                vListBottomLine.setVisibility(View.VISIBLE);
-                vLine.setVisibility(View.GONE);
-            } else {
-                vListBottomLine.setVisibility(View.GONE);
-                vLine.setVisibility(View.VISIBLE);
-            }
             tvCountryName.setText(item.getCountryListItem().getCommonName());
 
             Glide.with(itemView).load(item.getCountryListItem().getFlagIconUrl()).into(ivCountryFlag);

@@ -2,7 +2,7 @@ package io.taptalk.TapTalk.Model;
 
 public class TAPCountryRecycleItem {
     public enum RecyclerItemType {
-        COUNTRY_INITIAL, COUNTRY_ITEM, COUNTRY_ITEM_BOTTOM
+        COUNTRY_INITIAL, COUNTRY_ITEM
     }
 
     private RecyclerItemType recyclerItemType;
