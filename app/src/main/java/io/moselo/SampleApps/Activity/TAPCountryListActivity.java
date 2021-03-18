@@ -74,8 +74,12 @@ public class TAPCountryListActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        TAPUtils.dismissKeyboard(this);
-        super.onBackPressed();
+        if (etSearch.getVisibility() == View.VISIBLE) {
+            hideSearchBar();
+        } else {
+            TAPUtils.dismissKeyboard(this);
+            super.onBackPressed();
+        }
     }
 
     private void initPassingIntentData() {
@@ -103,7 +107,7 @@ public class TAPCountryListActivity extends AppCompatActivity {
         });
 
         ivSearchClose.setOnClickListener(view -> {
-            hideSearchBar();
+            etSearch.setText("");
         });
 
         initAdapter();

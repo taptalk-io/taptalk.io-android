@@ -247,7 +247,7 @@
     <color name="tapActionSheetDefaultLabelColor">@color/tapColorTextDark</color>
     <color name="tapActionSheetDestructiveLabelColor">@color/tapColorError</color>
 
-    <color name="tapSectionHeaderLabelColor">@color/tapColorPrimary</color>
+    <color name="tapSectionHeaderLabelColor">@color/tapGrey9b</color>
     <color name="tapSharedMediaTitleLabelColor">@color/tapColorPrimary</color>
 
     <color name="tapContactListNameColor">@color/tapColorTextDark</color>
