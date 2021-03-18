@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
@@ -30,7 +33,8 @@ import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.CO
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM_BOTTOM;
 
 public class TAPCountryListActivity extends AppCompatActivity {
-    private TextView tvCloseBtn;
+    private ImageView ivCloseBtn, ivSearchIcon, ivSearchClose;
+    private TextView tvToolbarTitle;
     private EditText etSearch;
     private FastScrollRecyclerView rvCountryList;
     private List<TAPCountryListItem> countryList;
@@ -69,6 +73,12 @@ public class TAPCountryListActivity extends AppCompatActivity {
         initView();
     }
 
+    @Override
+    public void onBackPressed() {
+        TAPUtils.dismissKeyboard(this);
+        super.onBackPressed();
+    }
+
     private void initPassingIntentData() {
         try {
             countryList = getIntent().getParcelableArrayListExtra(COUNTRY_LIST);
@@ -79,12 +89,24 @@ public class TAPCountryListActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        tvCloseBtn = findViewById(R.id.tv_close_btn);
+        ivCloseBtn = findViewById(R.id.iv_close_btn);
         etSearch = findViewById(R.id.et_search);
         rvCountryList = findViewById(R.id.rv_country_list);
+        tvToolbarTitle = findViewById(R.id.tv_toolbar_title);
+        ivSearchClose = findViewById(R.id.iv_search_close);
+        ivSearchIcon = findViewById(R.id.iv_search_icon);
 
-        tvCloseBtn.setOnClickListener(v -> onBackPressed());
+        ivCloseBtn.setOnClickListener(v -> onBackPressed());
         etSearch.addTextChangedListener(searchTextWatcher);
+
+        ivSearchIcon.setOnClickListener(view -> {
+            showSeachBar();
+        });
+
+        ivSearchClose.setOnClickListener(view -> {
+            hideSearchBar();
+        });
+        ivSearchClose.setEnabled(false);
 
         initAdapter();
     }
@@ -162,6 +184,23 @@ public class TAPCountryListActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
+    private void showSeachBar() {
+        ivSearchIcon.setVisibility(View.INVISIBLE);
+        ivSearchIcon.setEnabled(false);
+        etSearch.setVisibility(View.VISIBLE);
+        TAPUtils.showKeyboard(this, etSearch);
+        tvToolbarTitle.setVisibility(View.GONE);
+    }
+
+    private void hideSearchBar() {
+        etSearch.setText("");
+        etSearch.setVisibility(View.GONE);
+        ivSearchIcon.setVisibility(View.VISIBLE);
+        ivSearchIcon.setEnabled(true);
+        TAPUtils.dismissKeyboard(this, etSearch);
+        tvToolbarTitle.setVisibility(View.VISIBLE);
+    }
+
     private TextWatcher searchTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -170,6 +209,13 @@ public class TAPCountryListActivity extends AppCompatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (etSearch.getText().toString().isEmpty()) {
+                ivSearchClose.setVisibility(View.INVISIBLE);
+                ivSearchClose.setEnabled(false);
+            }else {
+                ivSearchClose.setVisibility(View.VISIBLE);
+                ivSearchClose.setEnabled(true);
+            }
             searchCountry(etSearch.getText().toString());
         }
 
