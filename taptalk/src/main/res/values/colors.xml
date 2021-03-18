@@ -222,6 +222,7 @@
     <color name="tapClickableLabelColor">@color/tapColorPrimary</color>
     <color name="tapClickableDestructiveLabelColor">@color/tapColorError</color>
     <color name="tapButtonLabelColor">@color/tapColorTextLight</color>
+    <color name="tapButtonInactiveLabelColor">@color/tapTransparentBlack1940</color>
     <color name="tapInfoLabelTitleColor">@color/tapColorTextDark</color>
     <color name="tapInfoLabelSubtitleColor">@color/tapColorTextDark</color>
     <color name="tapInfoLabelBodyColor">@color/tapColorTextDark</color>
