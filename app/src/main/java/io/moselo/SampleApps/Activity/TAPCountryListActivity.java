@@ -106,7 +106,6 @@ public class TAPCountryListActivity extends AppCompatActivity {
         ivSearchClose.setOnClickListener(view -> {
             hideSearchBar();
         });
-        ivSearchClose.setEnabled(false);
 
         initAdapter();
     }
@@ -210,11 +209,9 @@ public class TAPCountryListActivity extends AppCompatActivity {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (etSearch.getText().toString().isEmpty()) {
-                ivSearchClose.setVisibility(View.INVISIBLE);
-                ivSearchClose.setEnabled(false);
+                ivSearchClose.setVisibility(View.GONE);
             }else {
                 ivSearchClose.setVisibility(View.VISIBLE);
-                ivSearchClose.setEnabled(true);
             }
             searchCountry(etSearch.getText().toString());
         }
