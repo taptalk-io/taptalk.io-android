@@ -122,6 +122,12 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="tapButtonInactiveLabelStyle" parent="tapFontFamilyBold">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/tapButtonInactiveLabelColor</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="tapInfoLabelTitleStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing" tools:targetApi="lollipop">-0.02</item>
         <item name="android:lineSpacingExtra">6sp</item>
