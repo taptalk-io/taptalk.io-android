@@ -154,21 +154,12 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun attemptLogin() {
-        TapTalkDialog.Builder(context)
-                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
-                .setTitle(getString(R.string.tap_login_confirmation_title))
-                .setMessage(getString(R.string.tap_login_confirmation, defaultCallingCode + checkAndEditPhoneNumber()))
-                .setPrimaryButtonTitle(getString(R.string.tap_send))
-                .setPrimaryButtonListener(true) {
-                    disableContinueButton()
-                    if (isVisible) {
-                        TAPUtils.dismissKeyboard(activity)
-                        showProgress()
-                        checkNumberAndCallAPI()
-                    }
-                }
-                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                .show()
+        disableContinueButton()
+        if (isVisible) {
+            TAPUtils.dismissKeyboard(activity)
+            showProgress()
+            checkNumberAndCallAPI()
+        }
     }
 
     private fun enableCountryPicker() {
