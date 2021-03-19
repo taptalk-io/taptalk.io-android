@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class TAPCountryListActivity extends AppCompatActivity {
     private ImageView ivCloseBtn, ivSearchIcon, ivSearchClose;
     private TextView tvToolbarTitle;
     private EditText etSearch;
+    private ConstraintLayout clEmptyState;
     private FastScrollRecyclerView rvCountryList;
     private List<TAPCountryListItem> countryList;
     private TAPCountryListAdapter adapter;
@@ -61,7 +63,8 @@ public class TAPCountryListActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra(K_COUNTRY_PICK, country);
         setResult(RESULT_OK, intent);
-        onBackPressed();
+        TAPUtils.dismissKeyboard(this);
+        finish();
     };
 
     @Override
@@ -98,6 +101,8 @@ public class TAPCountryListActivity extends AppCompatActivity {
         tvToolbarTitle = findViewById(R.id.tv_toolbar_title);
         ivSearchClose = findViewById(R.id.iv_search_close);
         ivSearchIcon = findViewById(R.id.iv_search_icon);
+        clEmptyState = findViewById(R.id.cl_empty_state);
+
 
         ivCloseBtn.setOnClickListener(v -> onBackPressed());
         etSearch.addTextChangedListener(searchTextWatcher);
@@ -167,6 +172,12 @@ public class TAPCountryListActivity extends AppCompatActivity {
             adapter.setItems(setupDataForRecycler(countryKeyword));
         }
         adapter.notifyDataSetChanged();
+
+        if (adapter.getItems().size() == 0) {
+            showEmptyState();
+        } else {
+            hideEmptyState();
+        }
     }
 
     private void showSeachBar() {
@@ -184,6 +195,16 @@ public class TAPCountryListActivity extends AppCompatActivity {
         ivSearchIcon.setEnabled(true);
         TAPUtils.dismissKeyboard(this, etSearch);
         tvToolbarTitle.setVisibility(View.VISIBLE);
+    }
+
+    private void showEmptyState() {
+        clEmptyState.setVisibility(View.VISIBLE);
+        rvCountryList.setVisibility(View.GONE);
+    }
+
+    private void hideEmptyState() {
+        clEmptyState.setVisibility(View.GONE);
+        rvCountryList.setVisibility(View.VISIBLE);
     }
 
     private TextWatcher searchTextWatcher = new TextWatcher() {
