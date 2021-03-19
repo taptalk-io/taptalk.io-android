@@ -34,9 +34,9 @@
     <color name="tapTextFieldBorderInactiveColor">@color/tapGreyDc</color>
     <color name="tapTextFieldBorderErrorColor">@color/tapColorError</color>
 
-    <color name="tapButtonInactiveBackgroundGradientLightColor">@color/tapGreyCe</color>
-    <color name="tapButtonInactiveBackgroundGradientDarkColor">@color/tapGrey9b</color>
-    <color name="tapButtonInactiveBorderColor">@color/tapGreyCe</color>
+    <color name="tapButtonInactiveBackgroundGradientLightColor">@color/tapTransparentBlack1910</color>
+    <color name="tapButtonInactiveBackgroundGradientDarkColor">@color/tapTransparentBlack1910</color>
+    <color name="tapButtonInactiveBorderColor">@color/tapTransparentWhite</color>
     <color name="tapButtonActiveBackgroundGradientLightColor">@color/tapColorPrimaryLight</color>
     <color name="tapButtonActiveBackgroundGradientDarkColor">@color/tapColorPrimary</color>
     <color name="tapButtonActiveBorderColor">@color/tapColorPrimary</color>
@@ -247,7 +247,7 @@
     <color name="tapActionSheetDefaultLabelColor">@color/tapColorTextDark</color>
     <color name="tapActionSheetDestructiveLabelColor">@color/tapColorError</color>
 
-    <color name="tapSectionHeaderLabelColor">@color/tapColorPrimary</color>
+    <color name="tapSectionHeaderLabelColor">@color/tapGrey9b</color>
     <color name="tapSharedMediaTitleLabelColor">@color/tapColorPrimary</color>
 
     <color name="tapContactListNameColor">@color/tapColorTextDark</color>
