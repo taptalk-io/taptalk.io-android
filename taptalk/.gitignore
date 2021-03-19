@@ -1,5 +1,6 @@
 *.iml
 .gradle
+/environment.properties
 /local.properties
 /.idea/caches/build_file_checksums.ser
 /.idea/caches/gradle_models.ser
