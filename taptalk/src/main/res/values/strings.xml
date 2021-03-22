@@ -175,6 +175,9 @@
     <string name="tap_room_list_empty">It seems like you don’t have any chats to show, but don’t worry! Your chat list will grow once you</string>
     <string name="tap_no_countries_found">No Countries Found</string>
     <string name="tap_try_a_different_search">Try a different search.</string>
+    <string name="tap_not_working_try_below">Not working? Try below</string>
+    <string name="tap_send_via_sms">Send via SMS</string>
+    <string name="tap_format_ss_to">%s to %s</string>
 
     <!--Success/Error Message-->
     <string name="tap_error">Error</string>
@@ -347,5 +350,7 @@
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
     <string name="tap_at">\@</string>
+    <string name="tap_sms">SMS</string>
+    <string name="tap_whatsapp">WhatsApp</string>
 
 </resources>

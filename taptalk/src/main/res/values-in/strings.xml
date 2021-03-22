@@ -345,5 +345,7 @@
     <string name="tap_you">Anda</string>
     <string name="tap_over_99">99+</string>
     <string name="tap_at">\@</string>
+    <string name="tap_sms">SMS</string>
+    <string name="tap_whatsapp">WhatsApp</string>
 
 </resources>
