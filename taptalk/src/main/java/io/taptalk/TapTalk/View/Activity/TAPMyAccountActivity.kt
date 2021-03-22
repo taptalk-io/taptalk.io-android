@@ -637,7 +637,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             } else {
                 info.versionCode
             }
-            tv_version_code.text = String.format("%s(%s)", versionName, versionNumber)
+            tv_version_code.text = String.format("V %s(%s)", versionName, versionNumber)
         }catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
