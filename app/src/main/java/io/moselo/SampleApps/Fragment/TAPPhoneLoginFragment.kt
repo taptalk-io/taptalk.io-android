@@ -197,16 +197,16 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
         if (defaultCountryID == loginViewModel.countryID
                 && checkAndEditPhoneNumber() == loginViewModel.phoneNumber
                 && currentOTPTimestampLength <= maxTime) {
-            requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true)
+            requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true, loginViewModel.channel)
         } else {
-            TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), object : TAPDefaultDataView<TAPLoginOTPResponse>() {
+            TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), "", object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", defaultCallingCode + checkAndEditPhoneNumber())
                     additional.put("countryCode", defaultCountryID.toString())
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Request OTP Success", additional)
                     super.onSuccess(response)
-                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess)
+                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel)
                 }
 
                 override fun onError(error: TAPErrorModel) {
@@ -243,17 +243,17 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     }
 
     private val requestOTPInterface = object : TAPRequestOTPInterface {
-        override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean) {
+        override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String) {
             if (isVisible) {
                 stopAndHideProgress()
-                if (activity is TAPLoginActivity) {
-                    try {
-                        val phoneNumber = "+$phone"
-                        val loginActivity = activity as TAPLoginActivity
-                        loginActivity.setLastLoginData(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode)
-                        loginActivity.showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode, countryFlagUrl)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    if (activity is TAPLoginActivity) {
+                        try {
+                            val phoneNumber = "+$phone"
+                            val loginActivity = activity as TAPLoginActivity
+                            loginActivity.setLastLoginData(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode, channel)
+                            loginActivity.showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode, countryFlagUrl, channel)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                     }
                 }
             }
