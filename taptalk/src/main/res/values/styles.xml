@@ -748,6 +748,12 @@
         <item name="android:padding">0dp</item>
     </style>
 
+    <style name="tapVersionCodeTextStyle" parent="tapFontFamilyRegular">
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.02</item>
+        <item name="android:textColor">@color/tapVersionCodeTextColor</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <!--<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />-->
 
     <!--<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />-->
