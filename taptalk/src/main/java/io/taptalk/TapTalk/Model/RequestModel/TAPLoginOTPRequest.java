@@ -6,11 +6,13 @@ public class TAPLoginOTPRequest {
     @JsonProperty("method") private String method;
     @JsonProperty("countryID") private int countryID;
     @JsonProperty("phone") private String phone;
+    @JsonProperty("channel") private String channel;
 
-    public TAPLoginOTPRequest(String method, int countryID, String phone) {
+    public TAPLoginOTPRequest(String method, int countryID, String phone, String channel) {
         this.method = method;
         this.countryID = countryID;
         this.phone = phone;
+        this.channel = channel;
     }
 
     public TAPLoginOTPRequest() {
@@ -39,4 +41,8 @@ public class TAPLoginOTPRequest {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
+    public String getChannel() { return channel; }
+
+    public void setChannel(String channel) { this.channel = channel; }
 }

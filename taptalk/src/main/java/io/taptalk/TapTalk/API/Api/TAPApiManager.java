@@ -272,8 +272,8 @@ public class TAPApiManager {
         execute(homingPigeon.getAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getAuthTicket()), subscriber);
     }
 
-    public void requestOTPLogin(String loginMethod, int countryID, String phone, Subscriber<TAPBaseResponse<TAPLoginOTPResponse>> subscriber) {
-        TAPLoginOTPRequest request = new TAPLoginOTPRequest(loginMethod, countryID, phone);
+    public void requestOTPLogin(String loginMethod, int countryID, String phone, String channel, Subscriber<TAPBaseResponse<TAPLoginOTPResponse>> subscriber) {
+        TAPLoginOTPRequest request = new TAPLoginOTPRequest(loginMethod, countryID, phone, channel);
         execute(homingPigeon.requestOTPLogin(request), subscriber);
     }
 

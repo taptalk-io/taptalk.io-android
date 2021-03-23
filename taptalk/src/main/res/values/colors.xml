@@ -343,11 +343,11 @@
 
     <color name="tapCountryListLabelColor">@color/tapColorTextDark</color>
 
-    <color name="tapLoginVerificationInfoLabelColor">@color/tapColorTextDark</color>
-    <color name="tapLoginVerificationPhoneNumberLabelColor">@color/tapColorTextDark</color>
+    <color name="tapLoginVerificationInfoLabelColor">@color/tapTransparentBlack1980</color>
+    <color name="tapLoginVerificationPhoneNumberLabelColor">@color/tapTransparentBlack1980</color>
     <color name="tapLoginVerificationStatusCountdownLabelColor">@color/tapColorTextMedium</color>
     <color name="tapLoginVerificationStatusLoadingLabelColor">@color/tapColorPrimary</color>
-    <color name="tapLoginVerificationStatusSuccessLabelColor">@color/tapColorSuccess</color>
+    <color name="tapLoginVerificationStatusSuccessLabelColor">@color/tapVibrantGreen</color>
 
     <color name="tapVideoPlayerTimeLabelColor">@color/tapTransparentWhite60</color>
 
@@ -465,6 +465,7 @@
     <color name="tapTransparentBlack1920">#33191919</color>
     <color name="tapTransparentBlack1940">#66191919</color>
     <color name="tapTransparentBlack1960">#99191919</color>
+    <color name="tapTransparentBlack1980">#CC191919</color>
     <color name="tapTransparentBlack4770">#b3474747</color>
 
 </resources>
