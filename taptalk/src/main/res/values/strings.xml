@@ -173,7 +173,7 @@
     <string name="tap_guide_username">Username is always required.\nMust be between 4–32 characters.\nCan only contain a–z, 0–9, underscores, and dot.\nCan\'t start with number or underscore or dot.\nCan\'t end with underscore or dot.\nCan\'t contain consecutive underscores, consecutive dot, underscore followed with dot, and otherwise.</string>
     <string name="tap_guide_password">Password must contain at least one lowercase, uppercase, special character, and a number.</string>
     <string name="tap_room_list_empty">It seems like you don’t have any chats to show, but don’t worry! Your chat list will grow once you</string>
-    <string name="tap_no_countries_found">No Countries Found</string>
+    <string name="tap_no_countries_found">No countries found</string>
     <string name="tap_try_a_different_search">Try a different search.</string>
     <string name="tap_not_working_try_below">Not working? Try below</string>
     <string name="tap_send_via_sms">Send via SMS</string>

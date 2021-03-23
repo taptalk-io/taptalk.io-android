@@ -351,6 +351,8 @@
 
     <color name="tapVideoPlayerTimeLabelColor">@color/tapTransparentWhite60</color>
 
+    <color name="tapVersionCodeTextColor">@color/tapTransparentBlack1940</color>
+
     <!--Default Avatar Background Colors-->
     <color name="tapDefaultAvatarBackgroundColor1">#f99181</color>
     <color name="tapDefaultAvatarBackgroundColor2">#a914db</color>
