@@ -248,6 +248,7 @@
                 android:alpha="0"
                 android:inputType="numberSigned"
                 android:maxLength="6"
+                android:cursorVisible="false"
                 tools:background="@color/tapBrightBlue" />
 
         </FrameLayout>
@@ -413,5 +414,9 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <include
+        android:id="@+id/popup_loading"
+        layout="@layout/tap_layout_popup_loading_screen"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
