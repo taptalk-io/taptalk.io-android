@@ -9,6 +9,9 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.moselo.SampleApps.Activity.TAPRegisterActivity
@@ -45,6 +48,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     var countryCallingCode = ""
     var countryFlagUrl = ""
     var isOtpInvalid = false
+    var isFromBtnSendViaSMS = false //to check for update UI if call otp request from button send via sms
     var channel = "sms" //to check channel otp type sended
 
     companion object {
@@ -147,7 +151,9 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         }
 
         ll_btn_send_via_sms.setOnClickListener {
-            //call send otp via sms
+            isFromBtnSendViaSMS = true
+            showPopupLoading(getString(R.string.tap_loading))
+            showRequestingOTPLoading()
             TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(countryID, phoneNumber, "sms", object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
                     val additional = HashMap<String, String>()
@@ -177,6 +183,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
     private val requestOTPInterface: TAPRequestOTPInterface = object : TAPRequestOTPInterface {
         override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String) {
+            if (succeess) {
                 val loginActivity = activity as TAPLoginActivity
                 this@TAPLoginVerificationFragment.otpID = otpID
                 loginActivity.vm.otpID = otpID
@@ -184,10 +191,32 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 loginActivity.vm.otpKey = otpKey
                 resendOtpSuccessMessage()
 
+                //update UI based on channel
+                if (isFromBtnSendViaSMS) {
+                    hidePopupLoading()
+                    this@TAPLoginVerificationFragment.channel = channel
+                    setTextandImageBasedOnOTPMethod(channel)
+                    isFromBtnSendViaSMS = false
+                }
+
                 Handler().postDelayed({ setAndStartTimer(waitTime) }, 2000)
+            } else {
+                tv_otp_timer.visibility = View.GONE
+                ll_loading_otp.visibility = View.GONE
+                ll_request_otp_again.visibility = View.VISIBLE
+                if (isFromBtnSendViaSMS) {
+                    hidePopupLoading()
+                    isFromBtnSendViaSMS = false
+                }
+                showDialog(getString(R.string.tap_error), getString(R.string.tap_error_we_are_experiencing_some_issues))
+            }
         }
 
         override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
+            if (isFromBtnSendViaSMS) {
+                hidePopupLoading()
+                isFromBtnSendViaSMS = false
+            }
             showDialog(getString(R.string.tap_error), errorMessage ?: generalErrorMessage)
         }
     }
@@ -231,6 +260,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     tv_otp_timer.visibility = View.GONE
                     ll_loading_otp.visibility = View.GONE
                     ll_request_otp_again.visibility = View.VISIBLE
+                    //show button send via sms if timer finish and from whatsapp otp
+                    if (channel == "whatsapp") {
+                        ll_btn_send_via_sms.visibility = View.VISIBLE
+                        tv_not_working.visibility = View.VISIBLE
+                    }
                 }
 
                 override fun onTick(millisUntilFinished: Long) {
@@ -274,6 +308,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         cancelTimer()
         TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).verifyOTPLogin(otpID, otpKey, et_otp_code.text.toString(), object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
             override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
+                et_otp_code.isEnabled = true
                 if (response.isRegistered) {
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success")
@@ -293,14 +328,17 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success and Continue Register")
                     verifyOTPInterface.verifyOTPSuccessToRegister()
                 }
+
             }
 
             override fun onError(error: TAPErrorModel) {
+                et_otp_code.isEnabled = true
                 AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Login Failed", error.code, error.message)
                 verifyOTPInterface.verifyOTPFailed(error.message, error.code)
             }
 
             override fun onError(errorMessage: String) {
+                et_otp_code.isEnabled = true
                 verifyOTPInterface.verifyOTPFailed(errorMessage, "400")
             }
         })
@@ -349,11 +387,21 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             tv_otp_filled_4.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
             tv_otp_filled_5.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
             tv_otp_filled_6.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
+
             ll_request_otp_again.visibility = View.VISIBLE
             ll_loading_otp.visibility = View.GONE
             tv_otp_timer.visibility = View.GONE
 
+            if (channel == "whatsapp") {
+                ll_btn_send_via_sms.visibility = View.VISIBLE
+                tv_not_working.visibility = View.VISIBLE
+            }
+
             isOtpInvalid = true
+            et_otp_code.requestFocus()
+            TAPUtils.showKeyboard(activity, et_otp_code)
+
+
         }
     }
 
@@ -384,15 +432,6 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         }
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            if (isOtpInvalid) {
-                tv_otp_filled_1.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                tv_otp_filled_2.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                tv_otp_filled_3.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                tv_otp_filled_4.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                tv_otp_filled_5.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                tv_otp_filled_6.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                isOtpInvalid = false
-            }
             when (s?.length) {
                 1 -> {
                     v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
@@ -449,15 +488,26 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     tv_otp_filled_6.text = ""
                 }
                 5 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
+                    if (isOtpInvalid) {
+                        tv_otp_filled_1.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        tv_otp_filled_2.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        tv_otp_filled_3.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        tv_otp_filled_4.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        tv_otp_filled_5.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        tv_otp_filled_6.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        et_otp_code.setText("")
+                        isOtpInvalid = false
+                    } else {
+                        v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
 
-                    tv_otp_filled_5.text = String.format("%s", s[4])
-                    tv_otp_filled_6.text = ""
+                        tv_otp_filled_5.text = String.format("%s", s[4])
+                        tv_otp_filled_6.text = ""
+                    }
                 }
                 6 -> {
 
@@ -510,14 +560,13 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         ll_loading_otp.visibility = View.VISIBLE
         tv_loading_otp.text = resources.getText(R.string.tap_verifying_otp)
         TAPUtils.rotateAnimateInfinitely(context, iv_progress_otp)
+        et_otp_code.isEnabled = false
     }
 
     private fun setTextandImageBasedOnOTPMethod(channel: String) {
         if (channel == "whatsapp") {
             iv_otp_method.setImageResource(R.drawable.tap_ic_whatsapp)
             tv_method_and_phonenumber.text = String.format(getString(R.string.tap_format_ss_to), getString(R.string.tap_whatsapp), phoneNumberWithCode)
-            tv_not_working.visibility = View.VISIBLE
-            ll_btn_send_via_sms.visibility = View.VISIBLE
         } else {
             iv_otp_method.setImageResource(R.drawable.tap_ic_sms_orange)
             iv_otp_method.setColorFilter(ContextCompat.getColor(context!!, R.color.tapBlack19))
@@ -525,5 +574,19 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             tv_not_working.visibility = View.GONE
             ll_btn_send_via_sms.visibility = View.GONE
         }
+    }
+
+    private fun showPopupLoading(message: String) {
+        activity?.runOnUiThread {
+            popup_loading.findViewById<ImageView>(R.id.iv_loading_image).setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == popup_loading.findViewById<ImageView>(R.id.iv_loading_image).animation)
+                TAPUtils.rotateAnimateInfinitely(context, popup_loading.findViewById<ImageView>(R.id.iv_loading_image))
+            popup_loading.findViewById<TextView>(R.id.tv_loading_text)?.text = message
+            popup_loading.findViewById<FrameLayout>(R.id.popup_loading).visibility = View.VISIBLE
+        }
+    }
+
+    private fun hidePopupLoading() {
+        popup_loading.findViewById<FrameLayout>(R.id.popup_loading).visibility = View.GONE
     }
 }
