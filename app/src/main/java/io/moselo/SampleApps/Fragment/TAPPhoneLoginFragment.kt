@@ -246,6 +246,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
         override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String) {
             if (isVisible) {
                 stopAndHideProgress()
+                if (succeess) {
                     if (activity is TAPLoginActivity) {
                         try {
                             val phoneNumber = "+$phone"
@@ -254,7 +255,11 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                             loginActivity.showOTPVerification(otpID, otpKey, checkAndEditPhoneNumber(), phoneNumber, defaultCountryID, defaultCallingCode, countryFlagUrl, channel)
                         } catch (e: Exception) {
                             e.printStackTrace()
+                        }
                     }
+                }else {
+                    enableContinueButton()
+                    showDialog(getString(R.string.tap_error), getString(R.string.tap_error_we_are_experiencing_some_issues))
                 }
             }
         }
