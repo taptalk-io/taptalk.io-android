@@ -11,8 +11,9 @@ public class TAPLoginOTPResponse {
     @JsonProperty("codeLength") private int codeLength;
     @JsonProperty("channel") private String channel;
     @JsonProperty("whatsAppFailureReason") private String whatsAppFailureReason;
+    @JsonProperty("nextRequestSeconds") private int nextRequestSeconds;
 
-    public TAPLoginOTPResponse(boolean success, String message, String phoneWithCode, long otpID, String otpKey, int codeLength, String channel, String whatsAppFailureReason) {
+    public TAPLoginOTPResponse(boolean success, String message, String phoneWithCode, long otpID, String otpKey, int codeLength, String channel, String whatsAppFailureReason, int nextRequestSeconds) {
         this.success = success;
         this.message = message;
         this.phoneWithCode = phoneWithCode;
@@ -21,6 +22,7 @@ public class TAPLoginOTPResponse {
         this.codeLength = codeLength;
         this.channel = channel;
         this.whatsAppFailureReason = whatsAppFailureReason;
+        this.nextRequestSeconds = nextRequestSeconds;
     }
 
     public TAPLoginOTPResponse() {
@@ -81,4 +83,8 @@ public class TAPLoginOTPResponse {
     public String getWhatsAppFailureReason() { return whatsAppFailureReason; }
 
     public void setWhatsAppFailureReason(String whatsAppFailureReason) { this.whatsAppFailureReason = whatsAppFailureReason; }
+
+    public int getNextRequestSeconds() { return nextRequestSeconds; }
+
+    public void setNextRequestSeconds(int nextRequestSeconds) { this.nextRequestSeconds = nextRequestSeconds; }
 }
