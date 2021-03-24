@@ -51,6 +51,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     var isOtpInvalid = false //to check state UI OTP invalid
     var isFromBtnSendViaSMS = false //to check for update UI if call otp request from button send via sms
     var channel = "sms" //to check channel otp type sended
+    var isTimerFinished = false; //to check if timer already finished
 
     companion object {
         //Arguments Data
@@ -217,6 +218,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 if (isFromBtnSendViaSMS) {
                     hidePopupLoading()
                     isFromBtnSendViaSMS = false
+                } else {
+                    if (channel == "whatsapp") {
+                        ll_btn_send_via_sms.visibility = View.VISIBLE
+                        tv_not_working.visibility = View.VISIBLE
+                    }
                 }
                 showDialog(getString(R.string.tap_currently_unavailable), message)
             }
@@ -226,7 +232,15 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             if (isFromBtnSendViaSMS) {
                 hidePopupLoading()
                 isFromBtnSendViaSMS = false
+            } else {
+                if (channel == "whatsapp") {
+                    ll_btn_send_via_sms.visibility = View.VISIBLE
+                    tv_not_working.visibility = View.VISIBLE
+                }
             }
+            tv_otp_timer.visibility = View.GONE
+            ll_loading_otp.visibility = View.GONE
+            ll_request_otp_again.visibility = View.VISIBLE
             showDialog(getString(R.string.tap_currently_unavailable), errorMessage ?: getString(R.string.tap_error_we_are_experiencing_some_issues))
         }
     }
@@ -275,6 +289,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                         ll_btn_send_via_sms.visibility = View.VISIBLE
                         tv_not_working.visibility = View.VISIBLE
                     }
+                    isTimerFinished = true;
                 }
 
                 override fun onTick(millisUntilFinished: Long) {
@@ -306,6 +321,10 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             if (this.waitTime == waitTime) {
                 (activity as TAPLoginActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
                 (activity as TAPLoginActivity).vm.waitTimeRequestOtp = (waitTime / 1000).toInt()
+            }
+            
+            if (isTimerFinished) {
+                isTimerFinished = false
             }
         }
     }
@@ -399,7 +418,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             tv_otp_filled_6.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
 
             ll_loading_otp.visibility = View.GONE
-            tv_otp_timer.visibility = View.VISIBLE
+            if (isTimerFinished) {
+                ll_request_otp_again.visibility = View.VISIBLE
+            } else {
+                tv_otp_timer.visibility = View.VISIBLE
+            }
 
 
             isOtpInvalid = true
