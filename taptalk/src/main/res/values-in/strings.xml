@@ -310,7 +310,7 @@
     <string name="tap_select_country">Pilih negara</string>
     <string name="tap_hint_username">misal user_1234</string>
     <string name="tap_hint_calling_code">+62</string>
-    <string name="tap_hint_phone_number">82212345678</string>
+    <string name="tap_hint_phone_number">12345678910</string>
     <string name="tap_hint_email_address">misal example@work.com</string>
     <string name="tap_hint_insert_password">Masukkan Kata Sandi</string>
     <string name="tap_hint_insert_name">Masukkan Nama</string>
