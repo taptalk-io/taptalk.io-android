@@ -218,6 +218,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 if (isFromBtnSendViaSMS) {
                     hidePopupLoading()
                     isFromBtnSendViaSMS = false
+                } else {
+                    if (channel == "whatsapp") {
+                        ll_btn_send_via_sms.visibility = View.VISIBLE
+                        tv_not_working.visibility = View.VISIBLE
+                    }
                 }
                 showDialog(getString(R.string.tap_currently_unavailable), message)
             }
@@ -227,7 +232,15 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             if (isFromBtnSendViaSMS) {
                 hidePopupLoading()
                 isFromBtnSendViaSMS = false
+            } else {
+                if (channel == "whatsapp") {
+                    ll_btn_send_via_sms.visibility = View.VISIBLE
+                    tv_not_working.visibility = View.VISIBLE
+                }
             }
+            tv_otp_timer.visibility = View.GONE
+            ll_loading_otp.visibility = View.GONE
+            ll_request_otp_again.visibility = View.VISIBLE
             showDialog(getString(R.string.tap_currently_unavailable), errorMessage ?: getString(R.string.tap_error_we_are_experiencing_some_issues))
         }
     }
