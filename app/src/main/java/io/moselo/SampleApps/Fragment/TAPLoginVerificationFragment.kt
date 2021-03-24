@@ -40,7 +40,6 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             ?: ""
     var otpTimer: CountDownTimer? = null
 
-    // TODO: 3/23/2021 temp change wait Time to 30s for testing
     var waitTime = 30L * 1000
     var phoneNumber = "0"
     var phoneNumberWithCode = "0"
@@ -49,7 +48,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     var countryID = 0
     var countryCallingCode = ""
     var countryFlagUrl = ""
-    var isOtpInvalid = false
+    var isOtpInvalid = false //to check state UI OTP invalid
     var isFromBtnSendViaSMS = false //to check for update UI if call otp request from button send via sms
     var channel = "sms" //to check channel otp type sended
 
@@ -126,6 +125,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
         ll_request_otp_again.setOnClickListener {
             showRequestingOTPLoading()
+            //hide button send via sms
+            if (channel == "whatsapp") {
+                tv_not_working.visibility = View.GONE
+                ll_btn_send_via_sms.visibility = View.GONE
+            }
             TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(countryID, phoneNumber, channel, object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
                     super.onSuccess(response)
@@ -312,7 +316,6 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
     private fun verifyOTP() {
         showVerifyingOTPLoading()
-        cancelTimer()
         TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).verifyOTPLogin(otpID, otpKey, et_otp_code.text.toString(), object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
             override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
                 et_otp_code.isEnabled = true
@@ -395,14 +398,9 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             tv_otp_filled_5.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
             tv_otp_filled_6.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
 
-            ll_request_otp_again.visibility = View.VISIBLE
             ll_loading_otp.visibility = View.GONE
-            tv_otp_timer.visibility = View.GONE
+            tv_otp_timer.visibility = View.VISIBLE
 
-            if (channel == "whatsapp") {
-                ll_btn_send_via_sms.visibility = View.VISIBLE
-                tv_not_working.visibility = View.VISIBLE
-            }
 
             isOtpInvalid = true
             et_otp_code.requestFocus()
@@ -441,12 +439,12 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             when (s?.length) {
                 1 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
                     v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
 
                     tv_otp_filled_1.text = String.format("%s", s[0])
                     tv_otp_filled_2.text = ""
@@ -456,12 +454,12 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     tv_otp_filled_6.text = ""
                 }
                 2 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
                     v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
 
                     tv_otp_filled_2.text = String.format("%s", s[1])
                     tv_otp_filled_3.text = ""
@@ -470,12 +468,12 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     tv_otp_filled_6.text = ""
                 }
                 3 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
                     v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
 
                     tv_otp_filled_3.text = String.format("%s", s[2])
                     tv_otp_filled_4.text = ""
@@ -483,12 +481,12 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     tv_otp_filled_6.text = ""
                 }
                 4 -> {
-                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                    v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
                     v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
 
                     tv_otp_filled_4.text = String.format("%s", s[3])
                     tv_otp_filled_5.text = ""
@@ -505,11 +503,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                         et_otp_code.setText("")
                         isOtpInvalid = false
                     } else {
-                        v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                        v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                        v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                        v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                        v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                        v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                        v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                        v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                        v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                        v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
                         v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
 
                         tv_otp_filled_5.text = String.format("%s", s[4])
@@ -524,11 +522,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 }
                 else -> {
                     v_pointer_1.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorPrimary))
-                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
+                    v_pointer_2.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_3.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_4.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_5.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
+                    v_pointer_6.setBackgroundColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapTransparentBlack1940))
 
                     tv_otp_filled_1.text = ""
                     tv_otp_filled_2.text = ""
