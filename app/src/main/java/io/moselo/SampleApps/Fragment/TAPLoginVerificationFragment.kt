@@ -63,8 +63,9 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         val kCountryCallingCode = "CountryCallingCode"
         val kCountryFlagUrl = "CountryFlagUrl"
         val kChannel = "Channel"
+        val kWaitTime = "kWaitTime"
 
-        fun getInstance(otpID: Long, otpKey: String, phoneNumber: String, phoneNumberWithCode: String, countryID: Int, countryCallingCode: String, countryFlagUrl: String, channel: String): TAPLoginVerificationFragment {
+        fun getInstance(otpID: Long, otpKey: String, phoneNumber: String, phoneNumberWithCode: String, countryID: Int, countryCallingCode: String, countryFlagUrl: String, channel: String, waitTime: Int): TAPLoginVerificationFragment {
             val instance = TAPLoginVerificationFragment()
             val args = Bundle()
             args.putString(kPhoneNumberWithCode, phoneNumberWithCode)
@@ -75,6 +76,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             args.putString(kCountryCallingCode, countryCallingCode)
             args.putString(kCountryFlagUrl, countryFlagUrl)
             args.putString(kChannel, channel)
+            args.putLong(kWaitTime, waitTime * 1000L)
             instance.arguments = args
             return instance
         }
@@ -110,6 +112,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         countryID = arguments?.getInt(kCountryID) ?: 0
         countryCallingCode = arguments?.getString(kCountryCallingCode, "") ?: ""
         countryFlagUrl = arguments?.getString(kCountryFlagUrl, "") ?: ""
+        waitTime = arguments?.getLong(kWaitTime, 30L * 1000) ?: 30L * 1000
         setTextandImageBasedOnOTPMethod(channel)
 
         TAPUtils.animateClickButton(iv_back_button, 0.95f)
@@ -130,7 +133,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     additional.put("phoneNumber", phoneNumber)
                     additional.put("countryCode", countryID.toString())
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Resend OTP Success", additional)
-                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel)
+                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds)
                 }
 
                 override fun onError(error: TAPErrorModel) {
@@ -163,7 +166,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     additional.put("countryCode", countryID.toString())
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Request OTP Success", additional)
                     super.onSuccess(response)
-                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel)
+                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds)
                 }
 
                 override fun onError(error: TAPErrorModel) {
@@ -184,7 +187,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     }
 
     private val requestOTPInterface: TAPRequestOTPInterface = object : TAPRequestOTPInterface {
-        override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String) {
+        override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String, message: String, nextRequestSeconds: Int) {
             if (succeess) {
                 val loginActivity = activity as TAPLoginActivity
                 this@TAPLoginVerificationFragment.otpID = otpID
@@ -201,6 +204,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     isFromBtnSendViaSMS = false
                 }
 
+                waitTime = nextRequestSeconds * 1000L
                 Handler().postDelayed({ setAndStartTimer(waitTime) }, 2000)
             } else {
                 tv_otp_timer.visibility = View.GONE
@@ -210,7 +214,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     hidePopupLoading()
                     isFromBtnSendViaSMS = false
                 }
-                showDialog(getString(R.string.tap_error), getString(R.string.tap_error_we_are_experiencing_some_issues))
+                showDialog(getString(R.string.tap_currently_unavailable), message)
             }
         }
 
@@ -219,7 +223,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 hidePopupLoading()
                 isFromBtnSendViaSMS = false
             }
-            showDialog(getString(R.string.tap_error), errorMessage ?: generalErrorMessage)
+            showDialog(getString(R.string.tap_currently_unavailable), errorMessage ?: getString(R.string.tap_error_we_are_experiencing_some_issues))
         }
     }
 
@@ -297,6 +301,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
             if (this.waitTime == waitTime) {
                 (activity as TAPLoginActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
+                (activity as TAPLoginActivity).vm.waitTimeRequestOtp = (waitTime / 1000).toInt()
             }
         }
     }
