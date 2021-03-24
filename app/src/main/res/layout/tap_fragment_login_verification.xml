@@ -75,17 +75,18 @@
                 <LinearLayout
                     android:id="@+id/ll_otp_1"
                     android:layout_width="24dp"
-                    android:layout_height="26dp"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/tv_otp_filled_1"
                         android:layout_width="wrap_content"
-                        android:layout_height="24dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold"
                         android:textColor="@color/tapColorTextDark"
                         android:letterSpacing="-0.03"
+                        android:textSize="20sp"
                         tools:text="1"
                         tools:targetApi="lollipop" />
 
@@ -93,15 +94,16 @@
                         android:id="@+id/v_pointer_1"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
+                        android:layout_marginTop="4dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapColorTextDark" />
+                        android:background="@color/tapTransparentBlack1940" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_otp_2"
                     android:layout_width="24dp"
-                    android:layout_height="26dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
                     android:layout_marginStart="25dp"
                     android:orientation="vertical">
@@ -109,11 +111,12 @@
                     <TextView
                         android:id="@+id/tv_otp_filled_2"
                         android:layout_width="wrap_content"
-                        android:layout_height="24dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold"
                         android:textColor="@color/tapColorTextDark"
                         android:letterSpacing="-0.03"
+                        android:textSize="20sp"
                         tools:text="1"
                         tools:targetApi="lollipop"/>
 
@@ -121,15 +124,16 @@
                         android:id="@+id/v_pointer_2"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
+                        android:layout_marginTop="4dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapColorTextDark" />
+                        android:background="@color/tapTransparentBlack1940" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_otp_3"
                     android:layout_width="24dp"
-                    android:layout_height="26dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
                     android:layout_marginStart="25dp"
                     android:orientation="vertical">
@@ -137,11 +141,12 @@
                     <TextView
                         android:id="@+id/tv_otp_filled_3"
                         android:layout_width="wrap_content"
-                        android:layout_height="24dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold"
                         android:textColor="@color/tapColorTextDark"
                         android:letterSpacing="-0.03"
+                        android:textSize="20sp"
                         tools:text="1"
                         tools:targetApi="lollipop"/>
 
@@ -149,15 +154,16 @@
                         android:id="@+id/v_pointer_3"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
+                        android:layout_marginTop="4dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapColorTextDark" />
+                        android:background="@color/tapTransparentBlack1940" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_otp_4"
                     android:layout_width="24dp"
-                    android:layout_height="26dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
                     android:layout_marginStart="25dp"
                     android:orientation="vertical">
@@ -165,11 +171,12 @@
                     <TextView
                         android:id="@+id/tv_otp_filled_4"
                         android:layout_width="wrap_content"
-                        android:layout_height="24dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold"
                         android:textColor="@color/tapColorTextDark"
                         android:letterSpacing="-0.03"
+                        android:textSize="20sp"
                         tools:text="1"
                         tools:targetApi="lollipop"/>
 
@@ -177,15 +184,16 @@
                         android:id="@+id/v_pointer_4"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
+                        android:layout_marginTop="4dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapColorTextDark" />
+                        android:background="@color/tapTransparentBlack1940" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_otp_5"
                     android:layout_width="24dp"
-                    android:layout_height="26dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
                     android:layout_marginStart="25dp"
                     android:orientation="vertical">
@@ -193,11 +201,12 @@
                     <TextView
                         android:id="@+id/tv_otp_filled_5"
                         android:layout_width="wrap_content"
-                        android:layout_height="24dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold"
                         android:textColor="@color/tapColorTextDark"
                         android:letterSpacing="-0.03"
+                        android:textSize="20sp"
                         tools:text="1"
                         tools:targetApi="lollipop"/>
 
@@ -205,15 +214,16 @@
                         android:id="@+id/v_pointer_5"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
+                        android:layout_marginTop="4dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapColorTextDark" />
+                        android:background="@color/tapTransparentBlack1940" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/ll_otp_6"
                     android:layout_width="24dp"
-                    android:layout_height="26dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
                     android:layout_marginStart="25dp"
                     android:orientation="vertical">
@@ -221,11 +231,12 @@
                     <TextView
                         android:id="@+id/tv_otp_filled_6"
                         android:layout_width="wrap_content"
-                        android:layout_height="24dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:textStyle="bold"
                         android:textColor="@color/tapColorTextDark"
                         android:letterSpacing="-0.03"
+                        android:textSize="20sp"
                         tools:text="1"
                         tools:targetApi="lollipop"/>
 
@@ -233,8 +244,9 @@
                         android:id="@+id/v_pointer_6"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
+                        android:layout_marginTop="4dp"
                         android:layout_gravity="center_horizontal"
-                        android:background="@color/tapColorTextDark" />
+                        android:background="@color/tapTransparentBlack1940" />
 
                 </LinearLayout>
 
