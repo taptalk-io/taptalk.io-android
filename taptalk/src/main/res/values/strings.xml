@@ -206,7 +206,7 @@
     <string name="tap_error_could_not_find_file">Could not find file</string>
     <string name="tap_error_redownload_file">We could not find this file in your storage, would you like to download it?</string>
     <string name="tap_error_invalid_otp">Invalid OTP, please try again</string>
-    <string name="tap_error_invalid_full_name">Invalid full name</string>
+    <string name="tap_error_invalid_full_name">Invalid Full Name</string>
     <string name="tap_error_invalid_username">Invalid Username</string>
     <string name="tap_error_username_length">Username\'s length must be 4–32 characters</string>
     <string name="tap_error_username_exists">Username already exists</string>
