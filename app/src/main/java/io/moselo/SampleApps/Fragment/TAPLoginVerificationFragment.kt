@@ -126,11 +126,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
         ll_request_otp_again.setOnClickListener {
             showRequestingOTPLoading()
-            //hide button send via sms
-            if (channel == "whatsapp") {
-                tv_not_working.visibility = View.GONE
-                ll_btn_send_via_sms.visibility = View.GONE
-            }
+            hideBtnSendViaSMS()
             TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(countryID, phoneNumber, channel, object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
                     super.onSuccess(response)
@@ -210,19 +206,15 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 }
 
                 waitTime = nextRequestSeconds * 1000L
-                Handler().postDelayed({ setAndStartTimer(waitTime) }, 2000)
+                setAndStartTimer(waitTime)
+                Handler().postDelayed({ showTimer() }, 2000)
             } else {
-                tv_otp_timer.visibility = View.GONE
-                ll_loading_otp.visibility = View.GONE
-                ll_request_otp_again.visibility = View.VISIBLE
+                showRequestAgain()
                 if (isFromBtnSendViaSMS) {
                     hidePopupLoading()
                     isFromBtnSendViaSMS = false
                 } else {
-                    if (channel == "whatsapp") {
-                        ll_btn_send_via_sms.visibility = View.VISIBLE
-                        tv_not_working.visibility = View.VISIBLE
-                    }
+                    showBtnSendViaSMS()
                 }
                 showDialog(getString(R.string.tap_currently_unavailable), message)
             }
@@ -233,14 +225,9 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 hidePopupLoading()
                 isFromBtnSendViaSMS = false
             } else {
-                if (channel == "whatsapp") {
-                    ll_btn_send_via_sms.visibility = View.VISIBLE
-                    tv_not_working.visibility = View.VISIBLE
-                }
+                showBtnSendViaSMS()
             }
-            tv_otp_timer.visibility = View.GONE
-            ll_loading_otp.visibility = View.GONE
-            ll_request_otp_again.visibility = View.VISIBLE
+            showRequestAgain()
             showDialog(getString(R.string.tap_currently_unavailable), errorMessage ?: getString(R.string.tap_error_we_are_experiencing_some_issues))
         }
     }
@@ -249,6 +236,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         clearOTPEditText()
         ll_request_otp_again.visibility = View.GONE
         ll_loading_otp.visibility = View.GONE
+        tv_otp_timer.visibility = View.GONE
         ll_otp_sent.visibility = View.VISIBLE
         iv_progress_otp.clearAnimation()
     }
@@ -257,75 +245,67 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         val lastLoginTimestamp = (activity as TAPLoginActivity).vm.lastLoginTimestamp
         if (0L != lastLoginTimestamp && (System.currentTimeMillis() - lastLoginTimestamp) < waitTime) {
             // Resume timer with remaining time
+            showTimer()
             setAndStartTimer(waitTime - (System.currentTimeMillis() - lastLoginTimestamp))
         } else if (null != otpTimer) {
             // Finish timer
             otpTimer!!.onFinish()
         } else {
             // Start timer from beginning
+            showTimer()
             setAndStartTimer(waitTime)
         }
     }
 
     private fun setAndStartTimer(waitTime: Long) {
-        if (null != tv_didnt_receive_and_invalid && null != tv_otp_timer && null != ll_request_otp_again
-                && null != ll_loading_otp && null != ll_otp_sent && null != iv_progress_otp) {
+
+        if (null != tv_didnt_receive_and_invalid) {
             tv_didnt_receive_and_invalid.text = resources.getText(R.string.tap_didnt_receive_the_6_digit_otp)
             tv_didnt_receive_and_invalid.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorTextDark))
-            tv_otp_timer.visibility = View.VISIBLE
-            ll_request_otp_again.visibility = View.GONE
-            ll_loading_otp.visibility = View.GONE
-            ll_otp_sent.visibility = View.GONE
-            iv_progress_otp.clearAnimation()
-            otpTimer?.cancel()
+        }
 
-            otpTimer = object : CountDownTimer(waitTime, 1000) {
-                override fun onFinish() {
-                    tv_otp_timer.visibility = View.GONE
-                    ll_loading_otp.visibility = View.GONE
-                    ll_request_otp_again.visibility = View.VISIBLE
-                    //show button send via sms if timer finish and from whatsapp otp
-                    if (channel == "whatsapp") {
-                        ll_btn_send_via_sms.visibility = View.VISIBLE
-                        tv_not_working.visibility = View.VISIBLE
-                    }
-                    isTimerFinished = true;
-                }
+        otpTimer?.cancel()
 
-                override fun onTick(millisUntilFinished: Long) {
-                    val timeLeft = millisUntilFinished / 1000
-                    val minuteLeft = timeLeft / 60
-                    val secondLeft = timeLeft - (60 * (timeLeft / 60))
-                    when (minuteLeft) {
-                        0L -> {
-                            try {
-                                if (10 > secondLeft) tv_otp_timer.text = "Wait 0:0$secondLeft"
-                                else tv_otp_timer.text = "Wait 0:$secondLeft"
-                            } catch (e: Exception) {
-                                cancelTimer()
-                                e.printStackTrace()
-                            }
+        otpTimer = object : CountDownTimer(waitTime, 1000) {
+            override fun onFinish() {
+                showRequestAgain()
+                showBtnSendViaSMS()
+                isTimerFinished = true;
+            }
+
+            override fun onTick(millisUntilFinished: Long) {
+                val timeLeft = millisUntilFinished / 1000
+                val minuteLeft = timeLeft / 60
+                val secondLeft = timeLeft - (60 * (timeLeft / 60))
+                when (minuteLeft) {
+                    0L -> {
+                        try {
+                            if (10 > secondLeft) tv_otp_timer.text = "Wait 0:0$secondLeft"
+                            else tv_otp_timer.text = "Wait 0:$secondLeft"
+                        } catch (e: Exception) {
+                            cancelTimer()
+                            e.printStackTrace()
                         }
-                        else -> {
-                            try {
-                                tv_otp_timer.text = "Wait $minuteLeft:$secondLeft"
-                            } catch (e: Exception) {
-                                cancelTimer()
-                                e.printStackTrace()
-                            }
+                    }
+                    else -> {
+                        try {
+                            tv_otp_timer.text = "Wait $minuteLeft:$secondLeft"
+                        } catch (e: Exception) {
+                            cancelTimer()
+                            e.printStackTrace()
                         }
                     }
                 }
-            }.start()
+            }
+        }.start()
 
-            if (this.waitTime == waitTime) {
-                (activity as TAPLoginActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
-                (activity as TAPLoginActivity).vm.waitTimeRequestOtp = (waitTime / 1000).toInt()
-            }
-            
-            if (isTimerFinished) {
-                isTimerFinished = false
-            }
+        if (this.waitTime == waitTime) {
+            (activity as TAPLoginActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
+            (activity as TAPLoginActivity).vm.waitTimeRequestOtp = (waitTime / 1000).toInt()
+        }
+
+        if (isTimerFinished) {
+            isTimerFinished = false
         }
     }
 
@@ -417,14 +397,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             tv_otp_filled_5.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
             tv_otp_filled_6.setTextColor(ContextCompat.getColor(TapTalk.appContext, R.color.tapColorError))
 
-            ll_loading_otp.visibility = View.GONE
             if (isTimerFinished) {
-                ll_request_otp_again.visibility = View.VISIBLE
+                showRequestAgain()
             } else {
-                tv_otp_timer.visibility = View.VISIBLE
+                showTimer()
             }
-
-
             isOtpInvalid = true
             et_otp_code.requestFocus()
             TAPUtils.showKeyboard(activity, et_otp_code)
@@ -573,6 +550,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun showRequestingOTPLoading() {
+        ll_otp_sent.visibility = View.GONE
         ll_request_otp_again.visibility = View.GONE
         tv_otp_timer.visibility = View.GONE
         iv_progress_otp.clearAnimation()
@@ -582,6 +560,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun showVerifyingOTPLoading() {
+        ll_otp_sent.visibility = View.GONE
         ll_request_otp_again.visibility = View.GONE
         tv_otp_timer.visibility = View.GONE
         iv_progress_otp.clearAnimation()
@@ -599,8 +578,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             iv_otp_method.setImageResource(R.drawable.tap_ic_sms_orange)
             iv_otp_method.setColorFilter(ContextCompat.getColor(context!!, R.color.tapBlack19))
             tv_method_and_phonenumber.text = String.format(getString(R.string.tap_format_ss_to), getString(R.string.tap_sms), phoneNumberWithCode)
-            tv_not_working.visibility = View.GONE
-            ll_btn_send_via_sms.visibility = View.GONE
+            hideBtnSendViaSMS()
         }
     }
 
@@ -616,5 +594,35 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
     private fun hidePopupLoading() {
         popup_loading.findViewById<FrameLayout>(R.id.popup_loading).visibility = View.GONE
+    }
+
+    private fun showTimer() {
+        if (null != tv_otp_timer && null != ll_request_otp_again
+                && null != ll_loading_otp && null != ll_otp_sent && null != iv_progress_otp) {
+            tv_otp_timer.visibility = View.VISIBLE
+            ll_request_otp_again.visibility = View.GONE
+            ll_loading_otp.visibility = View.GONE
+            ll_otp_sent.visibility = View.GONE
+            iv_progress_otp.clearAnimation()
+        }
+    }
+
+    private fun showRequestAgain() {
+        ll_request_otp_again.visibility = View.VISIBLE
+        tv_otp_timer.visibility = View.GONE
+        ll_loading_otp.visibility = View.GONE
+        ll_otp_sent.visibility = View.GONE
+    }
+
+    private fun showBtnSendViaSMS() {
+        if (channel == "whatsapp") {
+            ll_btn_send_via_sms.visibility = View.VISIBLE
+            tv_not_working.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideBtnSendViaSMS() {
+        tv_not_working.visibility = View.GONE
+        ll_btn_send_via_sms.visibility = View.GONE
     }
 }
