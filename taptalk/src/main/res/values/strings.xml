@@ -206,8 +206,8 @@
     <string name="tap_error_could_not_find_file">Could not find file</string>
     <string name="tap_error_redownload_file">We could not find this file in your storage, would you like to download it?</string>
     <string name="tap_error_invalid_otp">Invalid OTP, please try again</string>
-    <string name="tap_error_invalid_full_name">Invalid full name</string>
-    <string name="tap_error_invalid_username">Invalid username</string>
+    <string name="tap_error_invalid_full_name">Invalid Full Name</string>
+    <string name="tap_error_invalid_username">Invalid Username</string>
     <string name="tap_error_username_length">Username\'s length must be 4–32 characters</string>
     <string name="tap_error_username_exists">Username already exists</string>
     <string name="tap_error_unable_to_verify_username">Unable to verify username, please check your connection and try again</string>
@@ -315,7 +315,8 @@
     <string name="tap_retype_password">Retype Password</string>
     <string name="tap_search_for_country">Search for country</string>
     <string name="tap_select_country">Select Country</string>
-    <string name="tap_hint_username">e.g user_1234</string>
+    <string name="tap_hint_fullname">e.g Bernama</string>
+    <string name="tap_hint_username">e.g user1234_</string>
     <string name="tap_hint_calling_code">+62</string>
     <string name="tap_hint_phone_number">12345678910</string>
     <string name="tap_hint_email_address">e.g example@work.com</string>
@@ -323,6 +324,8 @@
     <string name="tap_hint_insert_name">Insert Name</string>
     <string name="tap_login_confirmation">Our system will send a verification SMS to %s. The SMS contains 6 digits code to log in to TapTalk application.</string>
     <string name="tap_login_confirmation_title">Send Verification SMS?</string>
+    <string name="tap_discard_changes">Discard Changes</string>
+    <string name="tap_unsaved_progress_description">You have unsaved progress on this page. Are you sure you want to discard your progress?</string>
 
     <!--General-->
     <string name="tap_allow">Allow</string>

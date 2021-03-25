@@ -86,15 +86,15 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="tapFormErrorInfoLabelStyle" parent="tapFontFamilyRegular">
+    <style name="tapFormErrorInfoLabelStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
         <item name="android:lineSpacingExtra">6sp</item>
         <item name="android:textColor">@color/tapFormErrorInfoLabelColor</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="tapFormTextFieldStyle" parent="tapFontFamilyRegular">
-        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.02</item>
         <item name="android:textColor">@color/tapFormTextFieldColor</item>
         <item name="android:textColorHint">@color/tapFormTextFieldPlaceholderColor</item>
         <item name="android:textSize">16sp</item>

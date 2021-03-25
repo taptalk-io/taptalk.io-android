@@ -97,9 +97,9 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val textCount = /*s?.length ?: 0*/ checkAndEditPhoneNumber().length + defaultCallingCode.length
+                val textCount = /*s?.length ?: 0*/ checkAndEditPhoneNumber().length
                 when (textCount) {
-                    in 7..15 -> {
+                    in 4..15 -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_active_ripple)
                         } else {

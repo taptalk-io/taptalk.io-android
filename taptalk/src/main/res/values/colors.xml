@@ -31,7 +31,7 @@
 
     <color name="tapTextFieldCursorColor">@color/tapColorPrimary</color>
     <color name="tapTextFieldBorderActiveColor">@color/tapColorPrimary</color>
-    <color name="tapTextFieldBorderInactiveColor">@color/tapGreyDc</color>
+    <color name="tapTextFieldBorderInactiveColor">@color/tapTransparentBlack1910</color>
     <color name="tapTextFieldBorderErrorColor">@color/tapColorError</color>
 
     <color name="tapButtonInactiveBackgroundGradientLightColor">@color/tapTransparentBlack1910</color>
@@ -215,10 +215,10 @@
     <color name="tapNavBarTitleLabelColor">@color/tapColorTextDark</color>
     <color name="tapNavBarButtonLabelColor">@color/tapColorPrimary</color>
     <color name="tapFormLabelColor">@color/tapColorTextDark</color>
-    <color name="tapFormDescriptionLabelColor">@color/tapColorTextDark</color>
+    <color name="tapFormDescriptionLabelColor">@color/tapTransparentBlack1980</color>
     <color name="tapFormErrorInfoLabelColor">@color/tapColorError</color>
     <color name="tapFormTextFieldColor">@color/tapColorTextDark</color>
-    <color name="tapFormTextFieldPlaceholderColor">@color/tapColorTextMedium</color>
+    <color name="tapFormTextFieldPlaceholderColor">@color/tapTransparentBlack1940</color>
     <color name="tapClickableLabelColor">@color/tapColorPrimary</color>
     <color name="tapClickableDestructiveLabelColor">@color/tapColorError</color>
     <color name="tapButtonLabelColor">@color/tapColorTextLight</color>
