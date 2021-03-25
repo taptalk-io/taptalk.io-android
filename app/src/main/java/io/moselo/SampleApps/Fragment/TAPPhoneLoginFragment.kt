@@ -46,7 +46,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     private val oneDayAgoTimestamp: Long = 24 * 60 * 60 * 1000
     private var countryHashMap = mutableMapOf<String, TAPCountryListItem>()
     private var countryListitems = arrayListOf<TAPCountryListItem>()
-    private val maxTime = 120L * 1000
+    private var maxTime = 120L * 1000
     private var countryFlagUrl = ""
 
     companion object {
@@ -244,6 +244,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
     private val requestOTPInterface = object : TAPRequestOTPInterface {
         override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String, message: String, nextRequestSeconds: Int) {
+            maxTime = nextRequestSeconds * 1000L
             if (isVisible) {
                 stopAndHideProgress()
                 if (succeess) {
