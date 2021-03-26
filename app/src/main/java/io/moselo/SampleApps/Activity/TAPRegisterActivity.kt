@@ -486,7 +486,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun disableEditing() {
         iv_button_back.setOnClickListener(null)
-        civ_profile_picture.setOnClickListener(null)
         ll_change_profile_picture.setOnClickListener(null)
         fl_remove_profile_picture.setOnClickListener(null)
         fl_button_continue.setOnClickListener(null)
@@ -513,7 +512,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun enableEditing() {
         iv_button_back.setOnClickListener { onBackPressed() }
-        civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         fl_button_continue.setOnClickListener { register() }
@@ -853,6 +851,8 @@ class TAPRegisterActivity : TAPBaseActivity() {
             if (TAPNetworkStateManager.getInstance("").hasNetworkConnection(this@TAPRegisterActivity)) {
                 showErrorDialog(throwable?.message ?: getString(R.string.tap_error_message_general))
             } else {
+                vm.isUpdatingProfile = false
+                enableEditing()
                 TAPUtils.showNoInternetErrorDialog(this@TAPRegisterActivity)
             }
         }
