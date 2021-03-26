@@ -193,10 +193,13 @@ public class TAPContactManager {
     }
 
     public String convertPhoneNumber(String phone) {
-        if (phone.contains("*") || phone.contains("#") || phone.contains(";") || phone.contains(",") || phone.isEmpty()) {
+        if (phone == null || phone.contains("*") || phone.contains("#") || phone.contains(";") || phone.contains(",") || phone.isEmpty()) {
             return "";
         }
         String tempPhone = phone.replaceAll("[^\\d]", "");
+        if (tempPhone.isEmpty()) {
+            return "";
+        }
         String prefix = tempPhone.substring(0, getMyCountryCode().length());
 
         if ('0' == tempPhone.charAt(0)) {
