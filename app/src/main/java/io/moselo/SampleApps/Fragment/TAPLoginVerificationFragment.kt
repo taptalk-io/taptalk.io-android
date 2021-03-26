@@ -26,6 +26,7 @@ import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
 import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.AnalyticsManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
@@ -224,7 +225,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 } else {
                     showBtnSendViaSMS()
                 }
-                showDialog(getString(R.string.tap_currently_unavailable), message)
+                showDialog(getString(R.string.tap_error), message)
             }
         }
 
@@ -236,7 +237,12 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 showBtnSendViaSMS()
             }
             showRequestAgain()
-            showDialog(getString(R.string.tap_currently_unavailable), errorMessage ?: getString(R.string.tap_error_we_are_experiencing_some_issues))
+            if (TAPNetworkStateManager.getInstance("").hasNetworkConnection(context)) {
+                showDialog(getString(R.string.tap_error), errorMessage
+                        ?: getString(R.string.tap_error_we_are_experiencing_some_issues))
+            }else {
+                TAPUtils.showNoInternetErrorDialog(context)
+            }
         }
     }
 

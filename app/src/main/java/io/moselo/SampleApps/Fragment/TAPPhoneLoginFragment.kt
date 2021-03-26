@@ -25,6 +25,7 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Manager.AnalyticsManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse
 import io.taptalk.TapTalk.Model.TAPCountryListItem
@@ -237,7 +238,11 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
 
         override fun onRequestFailed(errorMessage: String?, errorCode: String?) {
             enableContinueButton()
-            showDialog(getString(R.string.tap_error), errorMessage ?: generalErrorMessage)
+            if (TAPNetworkStateManager.getInstance("").hasNetworkConnection(context)) {
+                showDialog(getString(R.string.tap_error), errorMessage ?: generalErrorMessage)
+            } else {
+                TAPUtils.showNoInternetErrorDialog(context)
+            }
         }
     }
 

@@ -43,6 +43,7 @@ import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.AnalyticsManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
@@ -849,7 +850,11 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onError(throwable: Throwable?) {
-            showErrorDialog(throwable?.message ?: getString(R.string.tap_error_message_general))
+            if (TAPNetworkStateManager.getInstance("").hasNetworkConnection(this@TAPRegisterActivity)) {
+                showErrorDialog(throwable?.message ?: getString(R.string.tap_error_message_general))
+            } else {
+                TAPUtils.showNoInternetErrorDialog(this@TAPRegisterActivity)
+            }
         }
     }
 
