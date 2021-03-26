@@ -168,7 +168,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
         if (defaultCountryID == loginViewModel.countryID
                 && checkAndEditPhoneNumber() == loginViewModel.phoneNumber
                 && currentOTPTimestampLength <= maxTime) {
-            requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true, loginViewModel.channel, "", loginViewModel.waitTimeRequestOtp)
+            requestOTPInterface.onRequestSuccess(loginViewModel.otpID, loginViewModel.otpKey, loginViewModel.phoneNumberWithCode.replaceFirst("+", ""), true, loginViewModel.channel, "", loginViewModel.waitTimeRequestOtp, "")
         } else {
             TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(defaultCountryID, checkAndEditPhoneNumber(), "", object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
@@ -177,7 +177,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                     additional.put("countryCode", defaultCountryID.toString())
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Request OTP Success", additional)
                     super.onSuccess(response)
-                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds)
+                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds, response.whatsAppFailureReason)
                 }
 
                 override fun onError(error: TAPErrorModel) {
@@ -214,7 +214,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     }
 
     private val requestOTPInterface = object : TAPRequestOTPInterface {
-        override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String, message: String, nextRequestSeconds: Int) {
+        override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String, message: String, nextRequestSeconds: Int, whatsAppFailureReason: String) {
             maxTime = nextRequestSeconds * 1000L
             if (isVisible) {
                 stopAndHideProgress()
@@ -231,7 +231,11 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                     }
                 }else {
                     enableContinueButton()
-                    showDialog(getString(R.string.tap_error), message)
+                    if (whatsAppFailureReason == "") {
+                        showDialog(getString(R.string.tap_error), message)
+                    } else {
+                        showDialog(getString(R.string.tap_currently_unavailable), getString(R.string.tap_error_we_are_experiencing_some_issues))
+                    }
                 }
             }
         }
@@ -242,6 +246,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                 showDialog(getString(R.string.tap_error), errorMessage ?: generalErrorMessage)
             } else {
                 TAPUtils.showNoInternetErrorDialog(context)
+                stopAndHideProgress()
             }
         }
     }

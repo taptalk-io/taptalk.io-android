@@ -136,7 +136,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     additional.put("phoneNumber", phoneNumber)
                     additional.put("countryCode", countryID.toString())
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Resend OTP Success", additional)
-                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds)
+                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds, response.whatsAppFailureReason)
                 }
 
                 override fun onError(error: TAPErrorModel) {
@@ -172,7 +172,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     additional.put("countryCode", countryID.toString())
                     AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Request OTP Success", additional)
                     super.onSuccess(response)
-                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds)
+                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds, response.whatsAppFailureReason)
                 }
 
                 override fun onError(error: TAPErrorModel) {
@@ -195,7 +195,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     }
 
     private val requestOTPInterface: TAPRequestOTPInterface = object : TAPRequestOTPInterface {
-        override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String, message: String, nextRequestSeconds: Int) {
+        override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String, message: String, nextRequestSeconds: Int, whatsAppFailureReason: String) {
             if (succeess) {
                 val loginActivity = activity as TAPLoginActivity
                 this@TAPLoginVerificationFragment.otpID = otpID
@@ -225,7 +225,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 } else {
                     showBtnSendViaSMS()
                 }
-                showDialog(getString(R.string.tap_error), message)
+                if (whatsAppFailureReason == "") {
+                    showDialog(getString(R.string.tap_error), message)
+                } else {
+                    showDialog(getString(R.string.tap_currently_unavailable), getString(R.string.tap_error_we_are_experiencing_some_issues))
+                }
             }
         }
 
