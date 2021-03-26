@@ -130,6 +130,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(countryID, phoneNumber, channel, object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
                     super.onSuccess(response)
+                    et_otp_code.isEnabled = true
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", phoneNumber)
                     additional.put("countryCode", countryID.toString())
@@ -139,6 +140,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
                 override fun onError(error: TAPErrorModel) {
                     super.onError(error)
+                    et_otp_code.isEnabled = true
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", phoneNumber)
                     additional.put("countryCode", countryID.toString())
@@ -147,6 +149,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 }
 
                 override fun onError(errorMessage: String) {
+                    et_otp_code.isEnabled = true
                     requestOTPInterface.onRequestFailed(errorMessage, "400")
                 }
             })
@@ -162,6 +165,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             showRequestingOTPLoading()
             TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(countryID, phoneNumber, "sms", object : TAPDefaultDataView<TAPLoginOTPResponse>() {
                 override fun onSuccess(response: TAPLoginOTPResponse) {
+                    et_otp_code.isEnabled = true
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", phoneNumberWithCode)
                     additional.put("countryCode", countryID.toString())
@@ -171,6 +175,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 }
 
                 override fun onError(error: TAPErrorModel) {
+                    et_otp_code.isEnabled = true
                     super.onError(error)
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", phoneNumberWithCode)
@@ -180,6 +185,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 }
 
                 override fun onError(errorMessage: String?) {
+                    et_otp_code.isEnabled = true
                     super.onError(errorMessage)
                     requestOTPInterface.onRequestFailed(errorMessage, "400")
                 }
@@ -207,6 +213,8 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
                 waitTime = nextRequestSeconds * 1000L
                 setAndStartTimer(waitTime)
+                et_otp_code.requestFocus()
+                TAPUtils.showKeyboard(activity, et_otp_code)
                 Handler().postDelayed({ showTimer() }, 2000)
             } else {
                 showRequestAgain()
@@ -377,7 +385,10 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                         countryCallingCode,
                         countryFlagUrl,
                         phoneNumber)
-                (activity as TAPLoginActivity).initFirstPage()
+                //set phonenumber and countryID in viewmodel to default state
+                (activity as TAPLoginActivity).vm.phoneNumber = "0"
+                (activity as TAPLoginActivity).vm.countryID = 0
+                activity?.onBackPressed()
             }
         }
 
@@ -557,6 +568,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         ll_loading_otp.visibility = View.VISIBLE
         tv_loading_otp.text = resources.getText(R.string.tap_requesting_otp)
         TAPUtils.rotateAnimateInfinitely(context, iv_progress_otp)
+        et_otp_code.isEnabled = false
     }
 
     private fun showVerifyingOTPLoading() {
