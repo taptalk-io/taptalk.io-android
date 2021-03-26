@@ -48,6 +48,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     private var countryListitems = arrayListOf<TAPCountryListItem>()
     private var maxTime = 120L * 1000
     private var countryFlagUrl = ""
+    private var previousPhoneNumber = "0"
 
     companion object {
         fun getInstance(): TAPPhoneLoginFragment {
@@ -82,44 +83,13 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                         countryHashMap.get(countryIsoCode)?.flagIconUrl ?: "")
             }
         } else {
-            setCountry(defaultCountryID, defaultCallingCode, "")
+            setCountry(defaultCountryID, defaultCallingCode, countryFlagUrl)
         }
         initView()
     }
 
     private fun initView() {
-        et_phone_number.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val textCount = /*s?.length ?: 0*/ checkAndEditPhoneNumber().length
-                when (textCount) {
-                    in 4..15 -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_active_ripple)
-                        } else {
-                            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_active)
-                        }
-                        fl_continue_btn.setOnClickListener { attemptLogin() }
-                        fl_continue_btn.isClickable = true
-                    }
-                    else -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_inactive_ripple)
-                        } else {
-                            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_inactive)
-                        }
-                        fl_continue_btn.setOnClickListener(null)
-                        fl_continue_btn.isClickable = false
-                    }
-                }
-            }
-        })
+        et_phone_number.addTextChangedListener(phoneNumberTextWatcher)
 
         et_phone_number.setOnEditorActionListener { v, actionId, event ->
             when (v?.length() ?: 0) {
@@ -364,6 +334,18 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                         val item = data?.getParcelableExtra<TAPCountryListItem>(TAPDefaultConstant.K_COUNTRY_PICK)
                         val callingCode: String = item?.callingCode ?: ""
                         setCountry(item?.countryID ?: 0, callingCode, item?.flagIconUrl ?: "")
+                        val textCount = callingCode.length + checkAndEditPhoneNumber().length
+                        when {
+                            textCount > 15 -> {
+                                et_phone_number.setText("")
+                            }
+                            textCount in 7..15 -> {
+                                changeButtonContinueStateEnabled()
+                            }
+                            else -> {
+                                changeButtonContinueStateDisabled()
+                            }
+                        }
                     }
                 }
             }
@@ -380,5 +362,51 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
         if ("" != flagIconUrl)
             Glide.with(this).load(flagIconUrl).into(iv_country_flag)
         else iv_country_flag.setImageResource(R.drawable.tap_ic_default_flag)
+    }
+
+    private fun changeButtonContinueStateEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_active_ripple)
+        } else {
+            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_active)
+        }
+        fl_continue_btn.setOnClickListener { attemptLogin() }
+        fl_continue_btn.isClickable = true
+    }
+
+    private fun changeButtonContinueStateDisabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_inactive_ripple)
+        } else {
+            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_inactive)
+        }
+        fl_continue_btn.setOnClickListener(null)
+        fl_continue_btn.isClickable = false
+    }
+
+    private val phoneNumberTextWatcher = object : TextWatcher{
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            previousPhoneNumber = p0.toString()
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            val textCount = /*s?.length ?: 0*/ checkAndEditPhoneNumber().length + defaultCallingCode.length
+            if (textCount >= 7) {
+                changeButtonContinueStateEnabled()
+            } else if (textCount < 7) {
+                changeButtonContinueStateDisabled()
+            }
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
+            val textCount = /*s?.length ?: 0*/ checkAndEditPhoneNumber().length + defaultCallingCode.length
+            if (textCount > 15) {
+                et_phone_number.removeTextChangedListener(this)
+                et_phone_number.setText(previousPhoneNumber)
+                et_phone_number.addTextChangedListener(this)
+                et_phone_number.setSelection(et_phone_number.length())
+            }
+        }
+
     }
 }
