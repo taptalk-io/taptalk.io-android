@@ -215,7 +215,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
         fl_container.setOnClickListener { clearAllFocus() }
         cl_form_container.setOnClickListener { clearAllFocus() }
         iv_button_back.setOnClickListener { onBackPressed() }
-        civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         iv_view_password.setOnClickListener { togglePasswordVisibility(et_password, iv_view_password) }
