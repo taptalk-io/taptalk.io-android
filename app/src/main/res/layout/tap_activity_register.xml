@@ -192,7 +192,7 @@
                 android:background="@drawable/tap_bg_text_field_inactive"
                 android:hint="@string/tap_hint_fullname"
                 android:imeOptions="actionNext"
-                android:inputType="textCapWords"
+                android:inputType="textCapSentences"
                 android:maxLines="1"
                 android:padding="15dp"
                 android:textCursorDrawable="@drawable/tap_cursor_color"
