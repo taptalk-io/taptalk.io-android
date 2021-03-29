@@ -168,7 +168,7 @@
     <string name="tap_warning_files_may_not_be_sent">Some files may not be sent</string>
     <string name="tap_format_s_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
     <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
-    <string name="tap_guide_enter_otp">Enter the 6 digit OTP we’ve sent to</string>
+    <string name="tap_guide_enter_otp">Enter the 6 digit OTP we’ve sent by</string>
     <string name="tap_didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
     <string name="tap_guide_username">Username is always required.\nMust be between 4–32 characters.\nCan only contain a–z, 0–9, underscores, and dot.\nCan\'t start with number or underscore or dot.\nCan\'t end with underscore or dot.\nCan\'t contain consecutive underscores, consecutive dot, underscore followed with dot, and otherwise.</string>
     <string name="tap_guide_password">Password must contain at least one lowercase, uppercase, special character, and a number.</string>
