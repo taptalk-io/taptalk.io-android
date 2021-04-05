@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -22,9 +23,13 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.R;
@@ -319,17 +324,67 @@ public class TAPFileUtils {
                 column
         };
 
+        InputStream inputStream;
+        OutputStream outputStream;
+
         try (Cursor cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 final int index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(index);
             }
+        }catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            // Path could not be retrieved using ContentResolver, therefore copy file to accessible cache using streams
+            String fileName = getFileName(context, uri);
+            File cacheDir = getShareCacheDir(context);
+            File file = new File(cacheDir, fileName);
+            String destinationPath = null;
+            if (file != null) {
+                destinationPath = file.getAbsolutePath();
+                saveFileFromUri(context, uri, destinationPath);
+            }
+
+            return destinationPath;
+//
+//            File file = new File(context.getCacheDir(), uri.getLastPathSegment());
+//            String filePath = file.getAbsolutePath();
+
+//            try {
+//                ParcelFileDescriptor parcelFileDescriptor = context.getContentResolver().openFileDescriptor(uri,"r");
+//                if (parcelFileDescriptor == null)
+//                    return null;
+//
+//                FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+//                inputStream = new FileInputStream(fileDescriptor);
+//                outputStream = new FileOutputStream(destinationPath);
+//                int read;
+//
+//                byte[] bytes = new byte[4096];
+//                while ((read = inputStream.read(bytes))  != -1) {
+//                    outputStream.write(bytes, 0, read);
+//                }
+//
+//                inputStream.close();
+//                outputStream.close();
+//
+//                return destinationPath;
+//            } catch (IOException ioException) {
+//                ioException.printStackTrace();
+//            }
         }
         return null;
     }
 
     public static File getDocumentCacheDir(@NonNull Context context) {
         File dir = new File(context.getCacheDir(), DOCUMENTS_DIR);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+    public static File getShareCacheDir(@NonNull Context context) {
+        File dir = new File(context.getCacheDir(), "share");
         if (!dir.exists()) {
             dir.mkdirs();
         }
