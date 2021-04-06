@@ -324,9 +324,6 @@ public class TAPFileUtils {
                 column
         };
 
-        InputStream inputStream;
-        OutputStream outputStream;
-
         try (Cursor cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 final int index = cursor.getColumnIndexOrThrow(column);
@@ -336,6 +333,7 @@ public class TAPFileUtils {
             e.printStackTrace();
             // Path could not be retrieved using ContentResolver, therefore copy file to accessible cache using streams
             String fileName = getFileName(context, uri);
+            //
             File cacheDir = getShareCacheDir(context);
             File file = new File(cacheDir, fileName);
             String destinationPath = null;
@@ -345,32 +343,6 @@ public class TAPFileUtils {
             }
 
             return destinationPath;
-//
-//            File file = new File(context.getCacheDir(), uri.getLastPathSegment());
-//            String filePath = file.getAbsolutePath();
-
-//            try {
-//                ParcelFileDescriptor parcelFileDescriptor = context.getContentResolver().openFileDescriptor(uri,"r");
-//                if (parcelFileDescriptor == null)
-//                    return null;
-//
-//                FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-//                inputStream = new FileInputStream(fileDescriptor);
-//                outputStream = new FileOutputStream(destinationPath);
-//                int read;
-//
-//                byte[] bytes = new byte[4096];
-//                while ((read = inputStream.read(bytes))  != -1) {
-//                    outputStream.write(bytes, 0, read);
-//                }
-//
-//                inputStream.close();
-//                outputStream.close();
-//
-//                return destinationPath;
-//            } catch (IOException ioException) {
-//                ioException.printStackTrace();
-//            }
         }
         return null;
     }
