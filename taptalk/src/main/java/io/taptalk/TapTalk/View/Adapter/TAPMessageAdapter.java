@@ -1410,6 +1410,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     public class LocationVH extends TAPBaseChatViewHolder {
 
         private ConstraintLayout clContainer;
+        private ConstraintLayout clBubbleTop;
         private ConstraintLayout clForwardedQuote;
         private ConstraintLayout clQuote;
         private ConstraintLayout clForwarded;
@@ -1458,6 +1459,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             mapView.onCreate(new Bundle());
 
             if (bubbleType == TYPE_BUBBLE_LOCATION_LEFT) {
+                clBubbleTop = itemView.findViewById(R.id.cl_bubble_top);
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
                 tvUserName = itemView.findViewById(R.id.tv_user_name);
@@ -1489,6 +1491,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     mapView.setOutlineProvider(null);
                 }
+                if (null != clBubbleTop) {
+                    clBubbleTop.setVisibility(View.VISIBLE);
+                }
                 clForwardedQuote.setVisibility(View.VISIBLE);
                 //vMapBorder.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_stroke_e4e4e4_1dp_insettop_insetbottom_1dp));
             } else {
@@ -1498,6 +1503,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     TAPUtils.clipToRoundedRectangle(mapView, TAPUtils.dpToPx(12), TAPUtils.ClipType.TOP_RIGHT);
                     //vMapBorder.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_rounded_1dp_8dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp));
+                }
+                if (null != clBubbleTop) {
+                    if (tvUserName.getVisibility() == View.VISIBLE) {
+                        clBubbleTop.setVisibility(View.VISIBLE);
+                    } else {
+                        clBubbleTop.setVisibility(View.GONE);
+                    }
                 }
                 clForwardedQuote.setVisibility(View.GONE);
             }

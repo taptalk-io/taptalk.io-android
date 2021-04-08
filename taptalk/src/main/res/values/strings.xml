@@ -168,11 +168,16 @@
     <string name="tap_warning_files_may_not_be_sent">Some files may not be sent</string>
     <string name="tap_format_s_warning_video_size_exceeds_limit_wont_be_sent">Video thumbnails that are marked with the ‘ ! ‘ icon have exceeded the %s upload limit and won’t be sent.</string>
     <string name="tap_enter_your_mobile_number_to_continue">Enter your mobile number to continue</string>
-    <string name="tap_guide_enter_otp">Enter the 6 digit OTP we’ve sent to</string>
+    <string name="tap_guide_enter_otp">Enter the 6 digit OTP we’ve sent by</string>
     <string name="tap_didnt_receive_the_6_digit_otp">Didn’t receive the 6 digit OTP?</string>
     <string name="tap_guide_username">Username is always required.\nMust be between 4–32 characters.\nCan only contain a–z, 0–9, underscores, and dot.\nCan\'t start with number or underscore or dot.\nCan\'t end with underscore or dot.\nCan\'t contain consecutive underscores, consecutive dot, underscore followed with dot, and otherwise.</string>
     <string name="tap_guide_password">Password must contain at least one lowercase, uppercase, special character, and a number.</string>
     <string name="tap_room_list_empty">It seems like you don’t have any chats to show, but don’t worry! Your chat list will grow once you</string>
+    <string name="tap_no_countries_found">No countries found</string>
+    <string name="tap_try_a_different_search">Try a different search.</string>
+    <string name="tap_not_working_try_below">Not working? Try below</string>
+    <string name="tap_send_via_sms">Send via SMS</string>
+    <string name="tap_format_ss_to">%s to %s</string>
 
     <!--Success/Error Message-->
     <string name="tap_error">Error</string>
@@ -201,8 +206,8 @@
     <string name="tap_error_could_not_find_file">Could not find file</string>
     <string name="tap_error_redownload_file">We could not find this file in your storage, would you like to download it?</string>
     <string name="tap_error_invalid_otp">Invalid OTP, please try again</string>
-    <string name="tap_error_invalid_full_name">Invalid full name</string>
-    <string name="tap_error_invalid_username">Invalid username</string>
+    <string name="tap_error_invalid_full_name">Invalid Full Name</string>
+    <string name="tap_error_invalid_username">Invalid Username</string>
     <string name="tap_error_username_length">Username\'s length must be 4–32 characters</string>
     <string name="tap_error_username_exists">Username already exists</string>
     <string name="tap_error_unable_to_verify_username">Unable to verify username, please check your connection and try again</string>
@@ -215,6 +220,8 @@
     <string name="tap_error_could_not_find_message">Could not find message.</string>
     <string name="tap_error_assign_another_admin">Please assign another admin before leaving.</string>
     <string name="tap_error_active_user_is_null">Could not find active user data. Please make sure the client app is authenticated.</string>
+    <string name="tap_error_we_are_experiencing_some_issues">We are experiencing some issues, please try again later.</string>
+    <string name="tap_currently_unavailable">Currently unavailable</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
@@ -308,14 +315,17 @@
     <string name="tap_retype_password">Retype Password</string>
     <string name="tap_search_for_country">Search for country</string>
     <string name="tap_select_country">Select Country</string>
-    <string name="tap_hint_username">e.g user_1234</string>
+    <string name="tap_hint_fullname">e.g Bernama</string>
+    <string name="tap_hint_username">e.g user1234</string>
     <string name="tap_hint_calling_code">+62</string>
-    <string name="tap_hint_phone_number">82212345678</string>
+    <string name="tap_hint_phone_number">12345678910</string>
     <string name="tap_hint_email_address">e.g example@work.com</string>
     <string name="tap_hint_insert_password">Insert Password</string>
     <string name="tap_hint_insert_name">Insert Name</string>
     <string name="tap_login_confirmation">Our system will send a verification SMS to %s. The SMS contains 6 digits code to log in to TapTalk application.</string>
     <string name="tap_login_confirmation_title">Send Verification SMS?</string>
+    <string name="tap_discard_changes">Discard Changes</string>
+    <string name="tap_unsaved_progress_description">You have unsaved progress on this page. Are you sure you want to discard your progress?</string>
 
     <!--General-->
     <string name="tap_allow">Allow</string>
@@ -345,5 +355,7 @@
     <string name="tap_you">You</string>
     <string name="tap_over_99">99+</string>
     <string name="tap_at">\@</string>
+    <string name="tap_sms">SMS</string>
+    <string name="tap_whatsapp">WhatsApp</string>
 
 </resources>

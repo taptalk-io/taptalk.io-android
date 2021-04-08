@@ -211,6 +211,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tv_country_code.text = "+" + vm.myUserModel.countryCallingCode
         et_mobile_number.setText(vm.myUserModel.phoneNumber)
         et_email_address.setText(vm.myUserModel.email)
+        setTextVersionApp()
 
         iv_button_close.setOnClickListener { onBackPressed() }
         fl_container.setOnClickListener { clearAllFocus() }
@@ -621,6 +622,25 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 .setPrimaryButtonTitle(getString(R.string.tap_ok))
                 .setPrimaryButtonListener {}
                 .show()
+    }
+
+    private fun setTextVersionApp() {
+        try {
+            val manager = packageManager
+            val info = manager.getPackageInfo(
+                    packageName, 0
+            )
+
+            val versionName = info.versionName
+            val versionNumber = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                info.longVersionCode
+            } else {
+                info.versionCode
+            }
+            tv_version_code.text = String.format("V %s(%s)", versionName, versionNumber)
+        }catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
     }
 
     private val fullNameWatcher = object : TextWatcher {

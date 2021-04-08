@@ -1059,8 +1059,8 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).getAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void requestOTPLogin(int countryID, String phone, TAPDefaultDataView<TAPLoginOTPResponse> view) {
-        TAPApiManager.getInstance(instanceKey).requestOTPLogin("phone", countryID, phone, new TAPDefaultSubscriber<>(view));
+    public void requestOTPLogin(int countryID, String phone, String channel, TAPDefaultDataView<TAPLoginOTPResponse> view) {
+        TAPApiManager.getInstance(instanceKey).requestOTPLogin("phone", countryID, phone, channel, new TAPDefaultSubscriber<>(view));
     }
 
     public void verifyOTPLogin(long otpID, String otpKey, String otpCode, TAPDefaultDataView<TAPLoginOTPVerifyResponse> view) {

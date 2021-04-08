@@ -107,7 +107,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_forwarded_quote"
-                app:layout_goneMarginTop="4dp"
+                app:layout_goneMarginTop="10dp"
                 app:topLeftRadius="8dp"
                 app:topRightRadius="1dp"
                 tools:background="@color/tapCreamWhite" />

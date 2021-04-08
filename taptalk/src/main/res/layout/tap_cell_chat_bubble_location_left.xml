@@ -137,6 +137,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_bubble_top"
+                app:layout_goneMarginTop="10dp"
                 app:topLeftRadius="1dp"
                 app:topRightRadius="8dp"
                 tools:background="@color/tapCreamWhite" />

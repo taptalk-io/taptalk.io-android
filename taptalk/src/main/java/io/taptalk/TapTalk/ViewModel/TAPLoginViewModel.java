@@ -8,8 +8,9 @@ import androidx.lifecycle.AndroidViewModel;
 public class TAPLoginViewModel extends AndroidViewModel {
 
     private long otpID = 0L, lastLoginTimestamp = 0L;
-    private String otpKey = "", phoneNumber = "0", phoneNumberWithCode = "0", countryCallingID = "62";
+    private String otpKey = "", phoneNumber = "0", phoneNumberWithCode = "0", countryCallingID = "62", channel = "sms";
     private int countryID = 0;
+    private int waitTimeRequestOtp = 0;
 
     public TAPLoginViewModel(@NonNull Application application) {
         super(application);
@@ -71,12 +72,21 @@ public class TAPLoginViewModel extends AndroidViewModel {
         this.countryID = countryID;
     }
 
-    public void setLastLoginData(Long otpID, String otpKey, String phoneNumber, String phoneNumberWithCode, int countryID, String countryCallingID) {
+    public String getChannel() { return channel; }
+
+    public void setChannel(String channel) { this.channel = channel; }
+
+    public int getWaitTimeRequestOtp() { return waitTimeRequestOtp; }
+
+    public void setWaitTimeRequestOtp(int waitTimeRequestOtp) { this.waitTimeRequestOtp = waitTimeRequestOtp; }
+
+    public void setLastLoginData(Long otpID, String otpKey, String phoneNumber, String phoneNumberWithCode, int countryID, String countryCallingID, String channel) {
         setOtpID(otpID);
         setOtpKey(otpKey);
         setPhoneNumber(phoneNumber);
         setPhoneNumberWithCode(phoneNumberWithCode);
         setCountryID(countryID);
         setCountryCallingID(countryCallingID);
+        setChannel(channel);
     }
 }

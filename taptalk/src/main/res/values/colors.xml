@@ -31,12 +31,12 @@
 
     <color name="tapTextFieldCursorColor">@color/tapColorPrimary</color>
     <color name="tapTextFieldBorderActiveColor">@color/tapColorPrimary</color>
-    <color name="tapTextFieldBorderInactiveColor">@color/tapGreyDc</color>
+    <color name="tapTextFieldBorderInactiveColor">@color/tapTransparentBlack1910</color>
     <color name="tapTextFieldBorderErrorColor">@color/tapColorError</color>
 
-    <color name="tapButtonInactiveBackgroundGradientLightColor">@color/tapGreyCe</color>
-    <color name="tapButtonInactiveBackgroundGradientDarkColor">@color/tapGrey9b</color>
-    <color name="tapButtonInactiveBorderColor">@color/tapGreyCe</color>
+    <color name="tapButtonInactiveBackgroundGradientLightColor">@color/tapTransparentBlack1910</color>
+    <color name="tapButtonInactiveBackgroundGradientDarkColor">@color/tapTransparentBlack1910</color>
+    <color name="tapButtonInactiveBorderColor">@color/tapTransparentWhite</color>
     <color name="tapButtonActiveBackgroundGradientLightColor">@color/tapColorPrimaryLight</color>
     <color name="tapButtonActiveBackgroundGradientDarkColor">@color/tapColorPrimary</color>
     <color name="tapButtonActiveBorderColor">@color/tapColorPrimary</color>
@@ -215,13 +215,14 @@
     <color name="tapNavBarTitleLabelColor">@color/tapColorTextDark</color>
     <color name="tapNavBarButtonLabelColor">@color/tapColorPrimary</color>
     <color name="tapFormLabelColor">@color/tapColorTextDark</color>
-    <color name="tapFormDescriptionLabelColor">@color/tapColorTextDark</color>
+    <color name="tapFormDescriptionLabelColor">@color/tapTransparentBlack1980</color>
     <color name="tapFormErrorInfoLabelColor">@color/tapColorError</color>
     <color name="tapFormTextFieldColor">@color/tapColorTextDark</color>
-    <color name="tapFormTextFieldPlaceholderColor">@color/tapColorTextMedium</color>
+    <color name="tapFormTextFieldPlaceholderColor">@color/tapTransparentBlack1940</color>
     <color name="tapClickableLabelColor">@color/tapColorPrimary</color>
     <color name="tapClickableDestructiveLabelColor">@color/tapColorError</color>
     <color name="tapButtonLabelColor">@color/tapColorTextLight</color>
+    <color name="tapButtonInactiveLabelColor">@color/tapTransparentBlack1940</color>
     <color name="tapInfoLabelTitleColor">@color/tapColorTextDark</color>
     <color name="tapInfoLabelSubtitleColor">@color/tapColorTextDark</color>
     <color name="tapInfoLabelBodyColor">@color/tapColorTextDark</color>
@@ -246,7 +247,7 @@
     <color name="tapActionSheetDefaultLabelColor">@color/tapColorTextDark</color>
     <color name="tapActionSheetDestructiveLabelColor">@color/tapColorError</color>
 
-    <color name="tapSectionHeaderLabelColor">@color/tapColorPrimary</color>
+    <color name="tapSectionHeaderLabelColor">@color/tapGrey9b</color>
     <color name="tapSharedMediaTitleLabelColor">@color/tapColorPrimary</color>
 
     <color name="tapContactListNameColor">@color/tapColorTextDark</color>
@@ -342,13 +343,15 @@
 
     <color name="tapCountryListLabelColor">@color/tapColorTextDark</color>
 
-    <color name="tapLoginVerificationInfoLabelColor">@color/tapColorTextDark</color>
-    <color name="tapLoginVerificationPhoneNumberLabelColor">@color/tapColorTextDark</color>
+    <color name="tapLoginVerificationInfoLabelColor">@color/tapTransparentBlack1980</color>
+    <color name="tapLoginVerificationPhoneNumberLabelColor">@color/tapTransparentBlack1980</color>
     <color name="tapLoginVerificationStatusCountdownLabelColor">@color/tapColorTextMedium</color>
     <color name="tapLoginVerificationStatusLoadingLabelColor">@color/tapColorPrimary</color>
-    <color name="tapLoginVerificationStatusSuccessLabelColor">@color/tapColorSuccess</color>
+    <color name="tapLoginVerificationStatusSuccessLabelColor">@color/tapVibrantGreen</color>
 
     <color name="tapVideoPlayerTimeLabelColor">@color/tapTransparentWhite60</color>
+
+    <color name="tapVersionCodeTextColor">@color/tapTransparentBlack1940</color>
 
     <!--Default Avatar Background Colors-->
     <color name="tapDefaultAvatarBackgroundColor1">#f99181</color>
@@ -462,6 +465,7 @@
     <color name="tapTransparentBlack1920">#33191919</color>
     <color name="tapTransparentBlack1940">#66191919</color>
     <color name="tapTransparentBlack1960">#99191919</color>
+    <color name="tapTransparentBlack1980">#CC191919</color>
     <color name="tapTransparentBlack4770">#b3474747</color>
 
 </resources>

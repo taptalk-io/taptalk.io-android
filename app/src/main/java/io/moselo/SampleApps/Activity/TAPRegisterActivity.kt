@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -42,6 +43,7 @@ import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.AnalyticsManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCheckUsernameResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
@@ -114,6 +116,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     override fun onBackPressed() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
+            return
+        }
+        if (et_full_name.text.isNotEmpty() || et_username.text.isNotEmpty() || et_email_address.text.isNotEmpty() ) {
+            showPopupDiscardChanges()
             return
         }
         super.onBackPressed()
@@ -210,7 +216,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
         fl_container.setOnClickListener { clearAllFocus() }
         cl_form_container.setOnClickListener { clearAllFocus() }
         iv_button_back.setOnClickListener { onBackPressed() }
-        civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         iv_view_password.setOnClickListener { togglePasswordVisibility(et_password, iv_view_password) }
@@ -218,9 +223,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
         et_retype_password.setOnEditorActionListener { v, a, e -> fl_button_continue.callOnClick() }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            sv_register.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
-        }
+        sv_register.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
 
         // TODO TEMPORARILY REMOVED PASSWORD
         tv_label_password.visibility = View.GONE
@@ -268,17 +271,17 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (et_full_name.text.isNotEmpty() && et_full_name.text.matches(Regex("[A-Za-z ]*"))) {
             // Valid full name
             vm.formCheck[indexFullName] = stateValid
-            tv_label_full_name_error.visibility = View.GONE
+            ll_full_name_error.visibility = View.GONE
             updateEditTextBackground(et_full_name, hasFocus)
         } else if (et_full_name.text.isEmpty()) {
             // Not filled
             vm.formCheck[indexFullName] = stateEmpty
-            tv_label_full_name_error.visibility = View.GONE
+            ll_full_name_error.visibility = View.GONE
             updateEditTextBackground(et_full_name, hasFocus)
         } else {
             // Invalid full name
             vm.formCheck[indexFullName] = stateInvalid
-            tv_label_full_name_error.visibility = View.VISIBLE
+            ll_full_name_error.visibility = View.VISIBLE
             et_full_name.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
         }
         checkContinueButtonAvailability()
@@ -296,7 +299,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             AnalyticsManager.getInstance(instanceKey).trackEvent("Username Empty")
             // Not filled
             vm.formCheck[indexUsername] = stateEmpty
-            tv_label_username_error.visibility = View.GONE
+            ll_username_error.visibility = View.GONE
             updateEditTextBackground(et_username, hasFocus)
             checkContinueButtonAvailability()
         } else {
@@ -308,7 +311,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             } else {
                 tv_label_username_error.text = getString(R.string.tap_error_username_length)
             }
-            tv_label_username_error.visibility = View.VISIBLE
+            ll_username_error.visibility = View.VISIBLE
             et_username.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
             checkContinueButtonAvailability()
         }
@@ -318,19 +321,19 @@ class TAPRegisterActivity : TAPBaseActivity() {
         if (et_email_address.text.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(et_email_address.text).matches()) {
             // Valid email address
             vm.formCheck[indexEmail] = stateValid
-            tv_label_email_address_error.visibility = View.GONE
+            ll_email_address_error.visibility = View.GONE
             updateEditTextBackground(et_email_address, hasFocus)
         } else if (et_email_address.text.isEmpty()) {
             // Not filled
             AnalyticsManager.getInstance(instanceKey).trackEvent("Email Empty")
             vm.formCheck[indexEmail] = stateEmpty
-            tv_label_email_address_error.visibility = View.GONE
+            ll_email_address_error.visibility = View.GONE
             updateEditTextBackground(et_email_address, hasFocus)
         } else {
             AnalyticsManager.getInstance(instanceKey).trackEvent("Email Invalid")
             // Invalid email address
             vm.formCheck[indexEmail] = stateInvalid
-            tv_label_email_address_error.visibility = View.VISIBLE
+            ll_email_address_error.visibility = View.VISIBLE
             et_email_address.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
         }
         checkContinueButtonAvailability()
@@ -483,7 +486,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun disableEditing() {
         iv_button_back.setOnClickListener(null)
-        civ_profile_picture.setOnClickListener(null)
         ll_change_profile_picture.setOnClickListener(null)
         fl_remove_profile_picture.setOnClickListener(null)
         fl_button_continue.setOnClickListener(null)
@@ -510,7 +512,6 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private fun enableEditing() {
         iv_button_back.setOnClickListener { onBackPressed() }
-        civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         fl_button_continue.setOnClickListener { register() }
@@ -547,6 +548,22 @@ class TAPRegisterActivity : TAPBaseActivity() {
         finish()
     }
 
+    private fun showPopupDiscardChanges(){
+        TapTalkDialog.Builder(this)
+                .setTitle(String.format("%s?",getString(R.string.tap_discard_changes)))
+                .setMessage(getString(R.string.tap_unsaved_progress_description))
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_discard_changes))
+                .setPrimaryButtonListener {
+                    finish()
+                    overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right)
+                }
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setSecondaryButtonListener(true){}
+                .show()
+    }
+
     private val profilePicturePickerListener = object : TAPAttachmentListener(instanceKey) {
 
         override fun onCameraSelected() {
@@ -560,16 +577,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private val fullNameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = TAPUtils.dpToPx(4).toFloat()
-            }
             if (vm.formCheck[indexFullName] != stateInvalid) {
                 view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
             }
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = 0f
-            }
             if (vm.formCheck[indexFullName] != stateInvalid) {
                 updateEditTextBackground(et_full_name, hasFocus)
             }
@@ -578,16 +589,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private val usernameFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = TAPUtils.dpToPx(4).toFloat()
-            }
             if (vm.formCheck[indexUsername] != stateInvalid) {
                 view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
             }
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = 0f
-            }
             if (vm.formCheck[indexUsername] != stateInvalid) {
                 updateEditTextBackground(et_username, hasFocus)
             }
@@ -596,16 +601,10 @@ class TAPRegisterActivity : TAPBaseActivity() {
 
     private val emailAddressFocusListener = View.OnFocusChangeListener { view, hasFocus ->
         if (hasFocus) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = TAPUtils.dpToPx(4).toFloat()
-            }
             if (vm.formCheck[indexEmail] != stateInvalid) {
                 view.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_active)
             }
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                view.elevation = 0f
-            }
             if (vm.formCheck[indexEmail] != stateInvalid) {
                 updateEditTextBackground(et_email_address, hasFocus)
             }
@@ -759,7 +758,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         override fun onSuccess(response: TAPCheckUsernameResponse?) {
             if (response?.exists == false) {
                 vm.formCheck[indexUsername] = stateValid
-                tv_label_username_error.visibility = View.GONE
+                ll_username_error.visibility = View.GONE
                 updateEditTextBackground(et_username, et_username.hasFocus())
             } else {
                 setErrorResult(getString(R.string.tap_error_username_exists))
@@ -782,19 +781,24 @@ class TAPRegisterActivity : TAPBaseActivity() {
         private fun setErrorResult(message: String) {
             vm.formCheck[indexUsername] = stateInvalid
             tv_label_username_error.text = message
-            tv_label_username_error.visibility = View.VISIBLE
+            ll_username_error.visibility = View.VISIBLE
             et_username.background = ContextCompat.getDrawable(this@TAPRegisterActivity, R.drawable.tap_bg_text_field_error)
         }
     }
 
     private val scrollViewListener = ViewTreeObserver.OnScrollChangedListener {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            when (sv_register.scrollY) {
-                0 ->
-                    fl_action_bar.elevation = 0f
-                else ->
-                    fl_action_bar.elevation = TAPUtils.dpToPx(2).toFloat()
-            }
+        val scrollBounds = Rect()
+        sv_register.getHitRect(scrollBounds)
+        if (tv_title.getLocalVisibleRect(scrollBounds)) {
+            tv_action_bar_title.visibility = View.GONE
+        } else {
+            tv_action_bar_title.visibility = View.VISIBLE
+        }
+        when (sv_register.scrollY) {
+            0 ->
+                v_separator.visibility = View.GONE
+            else ->
+                v_separator.visibility = View.VISIBLE
         }
     }
 
@@ -844,7 +848,13 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onError(throwable: Throwable?) {
-            showErrorDialog(throwable?.message ?: getString(R.string.tap_error_message_general))
+            if (TAPNetworkStateManager.getInstance("").hasNetworkConnection(this@TAPRegisterActivity)) {
+                showErrorDialog(throwable?.message ?: getString(R.string.tap_error_message_general))
+            } else {
+                vm.isUpdatingProfile = false
+                enableEditing()
+                TAPUtils.showNoInternetErrorDialog(this@TAPRegisterActivity)
+            }
         }
     }
 

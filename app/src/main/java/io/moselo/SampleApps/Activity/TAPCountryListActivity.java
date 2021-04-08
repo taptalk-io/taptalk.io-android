@@ -5,15 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
@@ -27,11 +31,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_PICK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM;
-import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_ITEM_BOTTOM;
 
 public class TAPCountryListActivity extends AppCompatActivity {
-    private TextView tvCloseBtn;
+    private ImageView ivCloseBtn, ivSearchIcon, ivSearchClose;
+    private TextView tvToolbarTitle;
     private EditText etSearch;
+    private ConstraintLayout clEmptyState;
     private FastScrollRecyclerView rvCountryList;
     private List<TAPCountryListItem> countryList;
     private TAPCountryListAdapter adapter;
@@ -58,7 +63,8 @@ public class TAPCountryListActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra(K_COUNTRY_PICK, country);
         setResult(RESULT_OK, intent);
-        onBackPressed();
+        TAPUtils.dismissKeyboard(this);
+        finish();
     };
 
     @Override
@@ -67,6 +73,16 @@ public class TAPCountryListActivity extends AppCompatActivity {
         setContentView(R.layout.tap_activity_country_list);
         initPassingIntentData();
         initView();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (etSearch.getVisibility() == View.VISIBLE) {
+            hideSearchBar();
+        } else {
+            TAPUtils.dismissKeyboard(this);
+            super.onBackPressed();
+        }
     }
 
     private void initPassingIntentData() {
@@ -79,12 +95,25 @@ public class TAPCountryListActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        tvCloseBtn = findViewById(R.id.tv_close_btn);
+        ivCloseBtn = findViewById(R.id.iv_close_btn);
         etSearch = findViewById(R.id.et_search);
         rvCountryList = findViewById(R.id.rv_country_list);
+        tvToolbarTitle = findViewById(R.id.tv_toolbar_title);
+        ivSearchClose = findViewById(R.id.iv_search_close);
+        ivSearchIcon = findViewById(R.id.iv_search_icon);
+        clEmptyState = findViewById(R.id.cl_empty_state);
 
-        tvCloseBtn.setOnClickListener(v -> onBackPressed());
+
+        ivCloseBtn.setOnClickListener(v -> onBackPressed());
         etSearch.addTextChangedListener(searchTextWatcher);
+
+        ivSearchIcon.setOnClickListener(view -> {
+            showSearchBar();
+        });
+
+        ivSearchClose.setOnClickListener(view -> {
+            etSearch.setText("");
+        });
 
         initAdapter();
     }
@@ -101,56 +130,62 @@ public class TAPCountryListActivity extends AppCompatActivity {
     }
 
     private List<TAPCountryRecycleItem> setupDataForRecycler(String searchKeyword) {
-        List<TAPCountryRecycleItem> countryItem = new ArrayList<>();
+        List<TAPCountryRecycleItem> filteredCountries = new ArrayList<>();
         int countryListSize = countryList.size();
-        for (int countryCounter = 0; countryCounter < countryListSize; countryCounter++) {
-            TAPCountryListItem entry = countryList.get(countryCounter);
 
-            if (entry.getCommonName().toLowerCase().contains(searchKeyword.toLowerCase())) {
-                char countryInitial = entry.getCommonName().charAt(0);
-                if (0 == countryItem.size() ||
-                        (0 < countryList.get(countryCounter - 1).getCommonName().length() &&
-                                countryList.get(countryCounter - 1).getCommonName().charAt(0) != countryInitial)) {
+        for (int counter = 0; counter < countryListSize; counter++) {
+            TAPCountryListItem country = countryList.get(counter);
+
+            if (country.getCommonName().toLowerCase().contains(searchKeyword.toLowerCase())) {
+                char countryInitial = country.getCommonName().charAt(0);
+                if (searchKeyword.isEmpty() &&
+                    (counter == 0 ||
+                    (0 < countryList.get(counter - 1).getCommonName().length() &&
+                    countryList.get(counter - 1).getCommonName().charAt(0) != countryInitial))
+                ) {
                     TAPCountryRecycleItem countryRecycleFirstInitial = new TAPCountryRecycleItem();
                     countryRecycleFirstInitial.setRecyclerItemType(COUNTRY_INITIAL);
                     countryRecycleFirstInitial.setCountryInitial(countryInitial);
-                    countryItem.add(countryRecycleFirstInitial);
+                    filteredCountries.add(countryRecycleFirstInitial);
                 }
 
                 TAPCountryRecycleItem countryRecycleItem = new TAPCountryRecycleItem();
-                if ((countryCounter == countryListSize - 1 || (0 < countryList.get(countryCounter + 1).getCommonName().length() &&
-                        (countryList.get(countryCounter + 1).getCommonName().charAt(0) != countryInitial
-                                || !countryList.get(countryCounter + 1).getCommonName().toLowerCase().contains(searchKeyword.toLowerCase()))))
-                        && choosenCountryID == entry.getCountryID()) {
-                    countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM_BOTTOM);
-                    countryRecycleItem.setCountryListItem(entry);
-                    countryRecycleItem.setCountryInitial(countryInitial);
-                    countryRecycleItem.setSelected(true);
-                    countryItem.add(countryRecycleItem);
-                } else if (countryCounter == countryListSize - 1 || (0 < countryList.get(countryCounter + 1).getCommonName().length() &&
-                        (countryList.get(countryCounter + 1).getCommonName().charAt(0) != countryInitial
-                                || !countryList.get(countryCounter + 1).getCommonName().toLowerCase().contains(searchKeyword.toLowerCase())))) {
-                    countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM_BOTTOM);
-                    countryRecycleItem.setCountryListItem(entry);
-                    countryRecycleItem.setCountryInitial(countryInitial);
-                    countryRecycleItem.setSelected(false);
-                    countryItem.add(countryRecycleItem);
-                } else if (choosenCountryID == entry.getCountryID()) {
+                if (choosenCountryID == country.getCountryID()) {
                     countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM);
-                    countryRecycleItem.setCountryListItem(entry);
+                    countryRecycleItem.setCountryListItem(country);
                     countryRecycleItem.setCountryInitial(countryInitial);
                     countryRecycleItem.setSelected(true);
-                    countryItem.add(countryRecycleItem);
+                    filteredCountries.add(countryRecycleItem);
                 } else {
                     countryRecycleItem.setRecyclerItemType(COUNTRY_ITEM);
-                    countryRecycleItem.setCountryListItem(entry);
+                    countryRecycleItem.setCountryListItem(country);
                     countryRecycleItem.setCountryInitial(countryInitial);
                     countryRecycleItem.setSelected(false);
-                    countryItem.add(countryRecycleItem);
+                    filteredCountries.add(countryRecycleItem);
                 }
             }
         }
-        return countryItem;
+
+        if (!searchKeyword.isEmpty()) {
+            List<TAPCountryRecycleItem> filteredCountriesCopy = new ArrayList<>(filteredCountries);
+            int initialCount = 0;
+            for (int counter = 0; counter < filteredCountriesCopy.size(); counter++) {
+                TAPCountryRecycleItem country = filteredCountriesCopy.get(counter);
+                char countryInitial = country.getCountryInitial();
+                if (counter == 0 ||
+                    (0 < filteredCountriesCopy.get(counter - 1).getCountryListItem().getCommonName().length() &&
+                    filteredCountriesCopy.get(counter - 1).getCountryListItem().getCommonName().charAt(0) != countryInitial)
+                ) {
+                    TAPCountryRecycleItem countryRecycleFirstInitial = new TAPCountryRecycleItem();
+                    countryRecycleFirstInitial.setRecyclerItemType(COUNTRY_INITIAL);
+                    countryRecycleFirstInitial.setCountryInitial(countryInitial);
+                    filteredCountries.add(counter + initialCount, countryRecycleFirstInitial);
+                    initialCount++;
+                }
+            }
+        }
+
+        return filteredCountries;
     }
 
     private void searchCountry(String countryKeyword) {
@@ -160,6 +195,39 @@ public class TAPCountryListActivity extends AppCompatActivity {
             adapter.setItems(setupDataForRecycler(countryKeyword));
         }
         adapter.notifyDataSetChanged();
+
+        if (adapter.getItems().size() == 0) {
+            showEmptyState();
+        } else {
+            hideEmptyState();
+        }
+    }
+
+    private void showSearchBar() {
+        ivSearchIcon.setVisibility(View.INVISIBLE);
+        ivSearchIcon.setEnabled(false);
+        etSearch.setVisibility(View.VISIBLE);
+        TAPUtils.showKeyboard(this, etSearch);
+        tvToolbarTitle.setVisibility(View.GONE);
+    }
+
+    private void hideSearchBar() {
+        etSearch.setText("");
+        etSearch.setVisibility(View.GONE);
+        ivSearchIcon.setVisibility(View.VISIBLE);
+        ivSearchIcon.setEnabled(true);
+        TAPUtils.dismissKeyboard(this, etSearch);
+        tvToolbarTitle.setVisibility(View.VISIBLE);
+    }
+
+    private void showEmptyState() {
+        clEmptyState.setVisibility(View.VISIBLE);
+        rvCountryList.setVisibility(View.GONE);
+    }
+
+    private void hideEmptyState() {
+        clEmptyState.setVisibility(View.GONE);
+        rvCountryList.setVisibility(View.VISIBLE);
     }
 
     private TextWatcher searchTextWatcher = new TextWatcher() {
@@ -170,6 +238,11 @@ public class TAPCountryListActivity extends AppCompatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (etSearch.getText().toString().isEmpty()) {
+                ivSearchClose.setVisibility(View.GONE);
+            }else {
+                ivSearchClose.setVisibility(View.VISIBLE);
+            }
             searchCountry(etSearch.getText().toString());
         }
 

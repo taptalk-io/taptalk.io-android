@@ -24,8 +24,8 @@
         style="@style/tapTitleLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="64dp"
         android:text="@string/tap_welcome"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,8 +36,8 @@
         style="@style/tapFormLabelStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:text="@string/tap_enter_your_mobile_number_to_continue"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,23 +57,26 @@
             android:id="@+id/ll_country_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:background="@drawable/tap_bg_text_field_inactive"
             android:orientation="horizontal"
-            android:padding="15dp">
+            android:paddingStart="16dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="12dp">
 
             <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="28dp"
+                android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
                 android:clipToPadding="true"
                 app:cardCornerRadius="2dp">
 
                 <ImageView
                     android:id="@+id/iv_country_flag"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:src="@drawable/tap_ic_default_flag" />
 
             </androidx.cardview.widget.CardView>
@@ -83,20 +86,20 @@
                 style="@style/tapFormTextFieldStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 tools:text="+62" />
 
             <ImageView
                 android:id="@+id/iv_loading_progress_country"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 android:src="@drawable/tap_ic_loading_progress_circle_white"
-                android:tint="@color/tapIconLoadingProgressPrimary"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:tint="@color/tapIconLoadingProgressPrimary" />
 
         </LinearLayout>
 
@@ -104,8 +107,8 @@
             android:id="@+id/fl_phone_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:background="@drawable/tap_bg_text_field_inactive">
@@ -120,7 +123,10 @@
                 android:imeOptions="actionSend"
                 android:inputType="numberSigned"
                 android:maxLines="1"
-                android:padding="13dp"
+                android:paddingStart="16dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="12dp"
                 android:textCursorDrawable="@drawable/tap_cursor_color"
                 tools:ignore="TextFields" />
 
@@ -152,8 +158,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/tap_ic_loading_progress_circle_white"
-            android:tint="@color/tapIconLoadingProgressWhite"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:tint="@color/tapIconLoadingProgressWhite" />
 
     </FrameLayout>
 
