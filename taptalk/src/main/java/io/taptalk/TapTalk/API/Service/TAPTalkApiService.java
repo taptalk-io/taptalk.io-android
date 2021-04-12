@@ -61,7 +61,7 @@ public interface TAPTalkApiService {
     @POST("auth/access_token/request")
     Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> getAccessToken(@Header("Authorization") String authTicket);
 
-    @POST("client/login/request_otp")
+    @POST("client/login/request_otp/v1_6")
     Observable<TAPBaseResponse<TAPLoginOTPResponse>> requestOTPLogin(@Body TAPLoginOTPRequest request);
 
     @POST("client/login/verify_otp")
