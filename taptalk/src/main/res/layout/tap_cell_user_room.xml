@@ -12,6 +12,16 @@
     android:minHeight="70dp"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/v_selected"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="@drawable/tap_bg_circle_primary_icon"
+        app:layout_constraintStart_toStartOf="@id/civ_avatar"
+        app:layout_constraintEnd_toEndOf="@id/civ_avatar"
+        app:layout_constraintTop_toTopOf="@id/civ_avatar"
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar" />
+
     <io.taptalk.TapTalk.Helper.CircleImageView
         android:id="@+id/civ_avatar"
         android:layout_width="52dp"
@@ -28,6 +38,23 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0"
         tools:src="@drawable/tap_bg_circle_9b9b9b" />
+
+    <ImageView
+        android:id="@+id/iv_selected"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:src="@drawable/tap_ic_rounded_check"
+        android:scaleType="center"
+        android:background="@drawable/tap_bg_circle_primary_icon"
+        app:layout_constraintEnd_toEndOf="@id/civ_avatar"
+        app:layout_constraintBottom_toBottomOf="@id/civ_avatar" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/g_selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="iv_selected, v_selected"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tv_avatar_label"
