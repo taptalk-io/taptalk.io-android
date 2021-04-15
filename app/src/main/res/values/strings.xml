@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TapTalk</string>
+    <string name="add_message_dots">Add message…</string>
 </resources>
