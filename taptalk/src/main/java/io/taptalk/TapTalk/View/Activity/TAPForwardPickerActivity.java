@@ -170,6 +170,11 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     private void setRecentChatsFromDatabase() {
         TAPDataManager.getInstance(instanceKey).getRoomList(false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
+            public void onSelectFinishedWithUnreadCount(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
+                onSelectFinished(entities);
+            }
+
+            @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
                 if (null != entities && entities.size() > 0) {
                     TAPSearchChatModel recentTitleItem = new TAPSearchChatModel(SECTION_TITLE);
