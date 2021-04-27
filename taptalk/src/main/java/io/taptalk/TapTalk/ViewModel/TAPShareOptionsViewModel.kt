@@ -21,16 +21,14 @@ class TAPShareOptionsViewModel(application: Application, instanceKey: String?): 
     }
 
     var roomList: List<TAPRoomListModel>? = ArrayList()
-    var selectedRoomList: List<TAPRoomListModel>? = ArrayList()
     var roomPointer: MutableMap<String, TAPRoomListModel>? = LinkedHashMap()
-//    var selectedRooms: MutableMap<String, TAPRoomListModel>? = LinkedHashMap()
+    var selectedRooms: MutableMap<String, TAPRoomListModel>? = LinkedHashMap()
     var isSelecting = false
 
 //    var recentSearchList: LiveData<List<TAPRecentSearchEntity>>? = TAPDataManager.getInstance(instanceKey).recentSearchLive
     var searchRoomResults: List<TAPRoomListModel>? = ArrayList()
     var recentSearches: List<TAPRoomListModel>? = ArrayList()
     var searchRoomPointer: MutableMap<String, TAPRoomModel>? = LinkedHashMap()
-//    var selectedMessage: TAPMessageModel? = null
     var searchKeyword: String? = null
     var pendingSearch: String? = null
     var searchState: Int? = 0
@@ -40,20 +38,12 @@ class TAPShareOptionsViewModel(application: Application, instanceKey: String?): 
     val STATE_SEARCHING = 2
     val STATE_PENDING = 3
 
-    fun addRoomList(roomList: List<TAPRoomListModel>?) {
-        roomList?.toMutableList()?.addAll(roomList)
-    }
-
-    fun clearRoomList() {
-        roomList?.toMutableList()?.clear()
-    }
-
     fun addRoomPointer(roomModel: TAPRoomListModel) {
         roomPointer!![roomModel.lastMessage.room.roomID] = roomModel
     }
 
     fun getSelectedCount(): Int? {
-        return selectedRoomList?.size
+        return selectedRooms?.size
     }
 
     fun setSearchResults(searchResults: List<TAPRoomListModel>) {
