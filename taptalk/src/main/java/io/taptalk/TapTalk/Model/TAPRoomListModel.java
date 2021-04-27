@@ -13,12 +13,27 @@ public class TAPRoomListModel {
     private int unreadCount;
     private int unreadMentions;
     private int defaultAvatarBackgroundColor; // Save default color in model to prevent lag on bind
+    private boolean isSelected = false;
+    private String title;
+    public enum Type { SELECTABLE_ROOM, SELECTABLE_CONTACT, SECTION }
+    private Type type;
 
     public TAPRoomListModel(TAPMessageModel lastMessage, int unreadCount) {
         this.lastMessage = lastMessage;
         this.unreadCount = unreadCount;
         this.lastMessageTimestamp = TAPTimeFormatter.durationString(lastMessage.getCreated());
 
+        TAPRoomModel room = lastMessage.getRoom();
+        if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
+            if (null != TapTalk.appContext) {
+                defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getRoomName());
+            }
+        }
+    }
+
+    public TAPRoomListModel(Type type) {
+        this.type = type;
+        this.lastMessage = new TAPMessageModel();
         TAPRoomModel room = lastMessage.getRoom();
         if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
             if (null != TapTalk.appContext) {
@@ -122,5 +137,29 @@ public class TAPRoomListModel {
 
         TAPUserModel firstTypingUser = getTypingUsers().entrySet().iterator().next().getValue();
         return firstTypingUser.getName().split(" ")[0];
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }
