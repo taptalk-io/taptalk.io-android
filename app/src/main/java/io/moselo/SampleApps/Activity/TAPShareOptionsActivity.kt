@@ -1,9 +1,12 @@
 package io.moselo.SampleApps.Activity
 
 import android.content.Intent
+import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -12,15 +15,17 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Recycler
+import androidx.recyclerview.widget.RecyclerView.*
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.moselo.SampleApps.Adapter.TAPShareOptionsAdapter
+import io.moselo.SampleApps.Adapter.TAPShareOptionsSelectedAdapter
 import io.moselo.SampleApps.SampleApplication
-import io.moselo.SampleApps.`interface`.TAPShareOptionsInterface
+import io.moselo.SampleApps.listener.TAPShareOptionsInterface
 import io.taptalk.TapTalk.API.Api.TAPApiManager
+import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TAPFileUtils
@@ -30,13 +35,10 @@ import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager
-import io.taptalk.TapTalk.Model.TAPMessageModel
-import io.taptalk.TapTalk.Model.TAPRoomListModel
-import io.taptalk.TapTalk.Model.TAPRoomModel
+import io.taptalk.TapTalk.Model.*
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity
-import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel
-import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel.TAPRoomListViewModelFactory
+import io.taptalk.TapTalk.ViewModel.TAPShareOptionsViewModel
 import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.activity_share_options.*
 import java.io.File
@@ -45,8 +47,11 @@ import java.util.*
 class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private var roomModel: TAPRoomModel? = null
-    private var vm: TAPRoomListViewModel? = null
+    private var vm: TAPShareOptionsViewModel? = null
     private var adapter: TAPShareOptionsAdapter? = null
+    private var selectedAdapter: TAPShareOptionsSelectedAdapter? = null
+    private var searchAdapter: TAPShareOptionsAdapter? = null
+//    private var searchAdapter: TapContactListAdapter? = null
     private lateinit var glide: RequestManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,34 +59,49 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         setContentView(R.layout.activity_share_options)
 
         vm = ViewModelProvider(this,
-                TAPRoomListViewModelFactory(
+                TAPShareOptionsViewModel.TAPShareOptionsViewModelFactory(
                         application, instanceKey))
-                .get(TAPRoomListViewModel::class.java)
+                .get(TAPShareOptionsViewModel::class.java)
         glide = Glide.with(this)
         instanceKey = SampleApplication.INSTANCE_KEY
-        adapter = TAPShareOptionsAdapter(instanceKey, vm!!.roomList, glide, roomListener)
+        adapter = TAPShareOptionsAdapter(instanceKey, vm?.roomList!!, glide, roomListener)
+//        selectedAdapter = TAPShareOptionsSelectedAdapter( vm?.selectedRooms!!.values.toList(), roomListener)
+//        selectedAdapter = TAPShareOptionsSelectedAdapter( vm?.selectedRoomList!!, roomListener)
+        searchAdapter = TAPShareOptionsAdapter(instanceKey, vm?.searchRoomResults!!, glide, roomListener)
 
-        val llm = object : LinearLayoutManager(this, VERTICAL, false) {
-            override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
-                try {
-                    super.onLayoutChildren(recycler, state)
-                } catch (e: IndexOutOfBoundsException) {
-                    e.printStackTrace()
-                }
-            }
-        }
+        val llm = LinearLayoutManager(this, VERTICAL, false)
         rv_room_list.adapter = adapter
         rv_room_list.layoutManager = llm
         rv_room_list.setHasFixedSize(true)
         OverScrollDecoratorHelper.setUpOverScroll(rv_room_list, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
         val messageAnimator = rv_room_list.itemAnimator as SimpleItemAnimator
         messageAnimator.supportsChangeAnimations = false
-        btn_send_message.setOnClickListener { handleIntentData(intent, roomModel) }
+
+//        val selectedLlm = LinearLayoutManager(this, HORIZONTAL, false)
+//        rv_selected.adapter = selectedAdapter
+//        rv_selected.layoutManager = selectedLlm
+//        rv_selected.setHasFixedSize(true)
+//        OverScrollDecoratorHelper.setUpOverScroll(rv_selected, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL)
+//        val animator = rv_selected.itemAnimator as SimpleItemAnimator
+//        animator.supportsChangeAnimations = false
+
         TAPDataManager.getInstance(instanceKey).getRoomList(false, listener)
+        et_search.addTextChangedListener(searchTextWatcher)
+//        et_search.setOnEditorActionListener(searchEditorListener)
+        btn_send_message.setOnClickListener { handleIntentData(intent, roomModel) }
         iv_close_btn.setOnClickListener { onBackPressed() }
+        iv_search_icon.setOnClickListener { showSearchBar() }
+        iv_button_clear_text.setOnClickListener { et_search.setText("") }
     }
 
-    // TODO: 20/04/21 handle onbackpressed MU
+    override fun onBackPressed() {
+        if (vm!!.isSelecting) {
+            showToolbar()
+        } else {
+            super.onBackPressed()
+            overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_right)
+        }
+    }
 
     private val listener = object: TAPDatabaseListener<TAPMessageEntity>(){
 
@@ -91,6 +111,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
             for (entity in entities!!) {
                 val model = TAPChatManager.getInstance(instanceKey).convertToModel(entity)
                 val roomModel = TAPRoomListModel.buildWithLastMessage(model)
+                roomModel.type = TAPRoomListModel.Type.SELECTABLE_ROOM
                 messageModels.add(roomModel)
                 vm?.addRoomPointer(roomModel)
             }
@@ -102,7 +123,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private fun reloadLocalDataAndUpdateUILogic() {
         runOnUiThread {
             if (null != adapter) {
-                if (0 == vm!!.roomList.size) {
+                if (0 == vm!!.roomList?.size) {
                     // Room list is empty
                     tv_empty_room.visibility = View.VISIBLE
                     rv_room_list.visibility = View.GONE
@@ -116,9 +137,221 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         }
     }
 
+    private val roomSearchListener: TAPDatabaseListener<TAPMessageEntity> = object : TAPDatabaseListener<TAPMessageEntity>() {
+        override fun onSelectedRoomList(entities: List<TAPMessageEntity>, unreadMap: Map<String, Int>, mentionMap: Map<String, Int>) {
+            if (vm?.searchState == vm?.STATE_PENDING && vm?.pendingSearch?.isNotEmpty()!!) {
+                vm?.searchState = vm?.STATE_IDLE
+                startSearch(vm?.pendingSearch)
+                return
+            } else if (vm?.searchState != vm?.STATE_SEARCHING) {
+                return
+            }
+            if (entities.isNotEmpty()) {
+                val groupSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
+                // TODO: 23/04/21 set section title MU
+                // TODO: 26/04/21 separate group and contact logic MU
+                groupSectionTitle.title = getString(R.string.groups)
+                vm?.addSearchResult(groupSectionTitle)
+                for (entity in entities) {
+                    val myId = TAPChatManager.getInstance(instanceKey).activeUser.userID
+                    // Exclude active user's own room
+                    if (entity.roomID != TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId)) {
+                        val result = TAPRoomListModel()
+                        // Convert message to room model
+                        val room = TAPRoomModel.Builder(entity)
+                        val unreadCount = unreadMap[room.roomID]
+                        if (null != unreadCount) {
+                            room.unreadCount = unreadCount
+                        }
+                        result.lastMessage.room = room
+                        result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
+//                        val mentionCount = mentionMap[room.roomID]
+//                        if (null != mentionCount) {
+//                            result.roomMentionCount = mentionCount
+//                        }
+                        vm?.addSearchResult(result)
+                    }
+                }
+                runOnUiThread {
+                    adapter?.setItems(vm?.searchRoomResults!!, false)
+                    TAPDataManager.getInstance(instanceKey).searchContactsByName(vm?.searchKeyword, contactSearchListener)
+                }
+            } else {
+                TAPDataManager.getInstance(instanceKey).searchContactsByName(vm?.searchKeyword, contactSearchListener)
+            }
+        }
+    }
+
+    private val contactSearchListener: TAPDatabaseListener<TAPUserModel> = object : TAPDatabaseListener<TAPUserModel>() {
+        override fun onSelectFinished(entities: List<TAPUserModel>) {
+            if (vm?.searchState == vm?.STATE_PENDING && vm?.pendingSearch?.isNotEmpty()!!) {
+                vm?.searchState = vm?.STATE_IDLE
+                startSearch(vm?.pendingSearch)
+                return
+            } else if (vm?.searchState != vm?.STATE_SEARCHING) {
+                return
+            }
+            if (entities.isNotEmpty()) {
+                if (vm?.searchRoomResults?.size == 0) {
+                    val sectionTitleChatsAndContacts = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
+                    sectionTitleChatsAndContacts.title = getString(R.string.tap_chats_and_contacts)
+                    vm?.addSearchResult(sectionTitleChatsAndContacts)
+                }
+                for (contact in entities) {
+                    val result = TAPRoomListModel(TAPRoomListModel.Type.SELECTABLE_ROOM)
+                    // Convert contact to room model
+                    val room = TAPRoomModel(
+                            TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).activeUser.userID, contact.userID),
+                            contact.name,
+                            RoomType.TYPE_PERSONAL,
+                            contact.avatarURL,  /* SET DEFAULT ROOM COLOR*/
+                            ""
+                    )
+                    // Check if result already contains contact from chat room query
+                    if (!vm?.resultContainsRoom(room.roomID)!!) {
+                        result.lastMessage.room = room
+                        vm?.addSearchResult(result)
+                    }
+                }
+//                vm?.searchRoomResults?.get(vm?.searchRoomResults?.size!! - 1)?.isLastInSection = true
+            }
+        }
+    }
+
+    private val searchTextWatcher: TextWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            et_search.removeTextChangedListener(this)
+//            TAPDataManager.getInstance(instanceKey).cancelUserSearchApiCall()
+//            hideGlobalSearchLoading()
+//            searchTimer.cancel()
+            if (s.isEmpty()) {
+                vm?.pendingSearch = ""
+                iv_button_clear_text.visibility = View.GONE
+//                updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim { it <= ' ' })
+            } else {
+//                searchTimer.start()
+                iv_button_clear_text.visibility = View.VISIBLE
+            }
+            startSearch(et_search.text.toString())
+            et_search.addTextChangedListener(this)
+        }
+
+        override fun afterTextChanged(s: Editable) {}
+    }
+
+//    private val searchEditorListener = OnEditorActionListener { textView, i, keyEvent ->
+//        // TODO: 25/04/21 get search contact
+////        updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim { it <= ' ' })
+////        TAPDataManager.getInstance(instanceKey).cancelUserSearchApiCall()
+////        TAPDataManager.getInstance(instanceKey).getUserByUsernameFromApi(et_search.getText().toString(), true, getUserView)
+//
+//        TAPDataManager.getInstance(instanceKey).searchAllRoomsFromDatabase(vm?.searchKeyword, roomSearchListener)
+//        TAPUtils.dismissKeyboard(this)
+//        true
+//    }
+//
+//    private val searchTimer: CountDownTimer = object : CountDownTimer(300L, 100L) {
+//        override fun onTick(millisUntilFinished: Long) {}
+//        override fun onFinish() {
+////            updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim { it <= ' ' })
+//        }
+//    }
+
+    private fun showToolbar() {
+        vm?.isSelecting = false
+        TAPUtils.dismissKeyboard(this)
+        tv_toolbar_title.visibility = View.VISIBLE
+        et_search.visibility = View.GONE
+        et_search.setText("")
+        iv_search_icon.visibility = View.VISIBLE
+        (cl_toolbar.background as TransitionDrawable).reverseTransition(TAPDefaultConstant.SHORT_ANIMATION_TIME)
+        rv_room_list.adapter = adapter
+    }
+
+    private fun showSearchBar() {
+        vm?.isSelecting = true
+        tv_toolbar_title.visibility = View.GONE
+        et_search.visibility = View.VISIBLE
+        iv_search_icon.visibility = View.GONE
+        TAPUtils.showKeyboard(this, et_search)
+        (cl_toolbar.background as TransitionDrawable).startTransition(TAPDefaultConstant.SHORT_ANIMATION_TIME)
+        startSearch(et_search.text.toString())
+        rv_room_list.adapter = searchAdapter
+    }
+
+    private fun startSearch(keyword: String?) {
+        vm!!.clearSearchResults()
+        vm?.searchKeyword = keyword?.toLowerCase(Locale.getDefault())?.trim { it <= ' ' }
+//        adapter?.setSearchKeyword(vm?.searchKeyword)
+        if (vm?.searchState == vm!!.STATE_RECENT_SEARCHES || vm?.searchState == vm!!.STATE_IDLE) {
+            // Search with keyword
+            vm?.searchState = vm!!.STATE_SEARCHING
+            TAPDataManager.getInstance(instanceKey).searchAllRoomsFromDatabase(vm?.searchKeyword, roomSearchListener)
+            iv_button_clear_text.visibility = View.VISIBLE
+        } else {
+            // Set search as pending
+            vm?.pendingSearch = vm?.searchKeyword
+            vm?.searchState = vm!!.STATE_PENDING
+        }
+    }
+
+    private fun showSelectedRecipients() {
+        g_selected_rooms.visibility = View.VISIBLE
+        selectedAdapter = TAPShareOptionsSelectedAdapter( vm?.selectedRooms!!.values.toList(), roomListener)
+        val selectedLlm = LinearLayoutManager(this, HORIZONTAL, false)
+        rv_selected.adapter = selectedAdapter
+        rv_selected.layoutManager = selectedLlm
+        rv_selected.setHasFixedSize(true)
+        OverScrollDecoratorHelper.setUpOverScroll(rv_selected, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL)
+        val animator = rv_selected.itemAnimator as SimpleItemAnimator
+        animator.supportsChangeAnimations = false
+
+    }
+
     private val roomListener = object : TAPShareOptionsInterface {
-        override fun onRoomSelected(v: View?, item: TAPRoomListModel?, position: Int) {
-            handleIntentData(intent, item?.lastMessage?.room)
+        // TODO: 26/04/21 select-deselect UI check logic & set text MU
+        override fun onRoomSelected(item: TAPRoomListModel?) {
+            val roomID = item?.lastMessage?.room?.roomID
+            if (!vm!!.selectedRooms?.containsKey(roomID)!!) {
+                vm!!.selectedRooms!![roomID!!] = item
+                if (g_selected_rooms.visibility == View.GONE) {
+                    showSelectedRecipients()
+                }
+                val recipients = vm?.selectedRooms?.size
+                if (recipients!! > 1) {
+                    tv_toolbar_title.text = String.format(getString(R.string.df_recipients), recipients)
+                    tv_selected.text = String.format(getString(R.string.selected_df_recipients), recipients)
+                } else if (vm?.selectedRooms?.size!! == 1) {
+                    tv_toolbar_title.text = getString(R.string.one_recipient)
+                    tv_selected.text = getString(R.string.selected_one_recipient)
+                }
+                selectedAdapter?.items = vm?.selectedRooms!!.values.toList()
+                rv_selected.scrollToPosition(recipients - 1)
+                adapter?.notifyDataSetChanged()
+            }
+        }
+
+        override fun onRoomDeselected(item: TAPRoomListModel?, position: Int) {
+            val roomID = item?.lastMessage?.room?.roomID
+            if (vm!!.selectedRooms?.containsKey(roomID)!!) {
+                vm!!.selectedRooms!!.remove(roomID)
+                if (vm!!.selectedRooms!!.isEmpty()) {
+                    g_selected_rooms.visibility = View.GONE
+                    tv_toolbar_title.text = getString(R.string.select_chat)
+                }
+
+                val recipients = vm?.selectedRooms?.size
+                if (recipients!! > 1) {
+                    tv_toolbar_title.text = String.format(getString(R.string.df_recipients), recipients)
+                    tv_selected.text = String.format(getString(R.string.selected_df_recipients), recipients)
+                } else if (vm?.selectedRooms?.size!! == 1) {
+                    tv_toolbar_title.text = getString(R.string.one_recipient)
+                    tv_selected.text = getString(R.string.selected_one_recipient)
+                }
+                selectedAdapter?.items = vm?.selectedRooms!!.values.toList()
+                adapter?.notifyDataSetChanged()
+            }
         }
 
         override fun onMultipleRoomSelected(v: View?, item: TAPRoomListModel?, position: Int): Boolean {
@@ -144,14 +377,23 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private fun onRoomSelected(item: TAPRoomListModel?, position: Int) {
         val roomID = item?.lastMessage?.room?.roomID
-        if (!vm!!.selectedRooms.containsKey(roomID)) {
+        if (!vm!!.selectedRooms?.containsKey(roomID)!!) {
             // Room selected
-            vm!!.selectedRooms[roomID] = item
+            vm!!.selectedRooms!![roomID!!] = item
         } else {
             // Room deselected
-            vm!!.selectedRooms.remove(roomID)
+            vm!!.selectedRooms?.remove(roomID)
         }
         adapter?.notifyItemChanged(position)
+//        val roomID = item?.lastMessage?.room?.roomID
+//        if (!vm!!.selectedRoomList?.contains(item)!!) {
+//            // Room selected
+//            vm!!.selectedRoomList?.toMutableList()?.add(item!!)
+//        } else {
+//            // Room deselected
+//            vm!!.selectedRoomList?.toMutableList()?.remove(item)
+//        }
+//        adapter?.notifyItemChanged(position)
     }
 
     private fun handleIntentData(intent: Intent, roomModel: TAPRoomModel?) {
@@ -324,11 +566,11 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         if (null == popup_loading.findViewById<ImageView>(R.id.iv_loading_image).animation)
             TAPUtils.rotateAnimateInfinitely(this, popup_loading.findViewById<ImageView>(R.id.iv_loading_image))
         popup_loading.findViewById<TextView>(R.id.tv_loading_text)?.text = message
-        popup_loading.findViewById<FrameLayout>(R.id.popup_loading).visibility = View.VISIBLE
+        popup_loading.findViewById<FrameLayout>(R.id.fl_loading).visibility = View.VISIBLE
     }
 
     private fun hidePopupLoading() {
-        popup_loading.findViewById<FrameLayout>(R.id.popup_loading).visibility = View.GONE
+        popup_loading.findViewById<FrameLayout>(R.id.fl_loading).visibility = View.GONE
     }
 
     fun deleteCache() {
