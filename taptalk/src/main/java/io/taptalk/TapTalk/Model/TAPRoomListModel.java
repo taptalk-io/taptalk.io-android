@@ -35,7 +35,11 @@ public class TAPRoomListModel {
         this.type = type;
         this.lastMessage = new TAPMessageModel();
         TAPRoomModel room = lastMessage.getRoom();
-        if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
+        if (null == room) {
+            if (null != TapTalk.appContext) {
+                defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, "");
+            }
+        } else if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
             if (null != TapTalk.appContext) {
                 defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getRoomName());
             }

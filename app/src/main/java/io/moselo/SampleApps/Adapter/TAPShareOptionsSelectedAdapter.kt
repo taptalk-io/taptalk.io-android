@@ -39,18 +39,18 @@ class TAPShareOptionsSelectedAdapter(list: List<TAPRoomListModel>, private val l
         private val tvAvatarLabel: TextView = itemView.findViewById(R.id.tv_avatar_label)
         private val tvFullName: TextView = itemView.findViewById(R.id.tv_full_name)
         override fun onBind(item: TAPRoomListModel, position: Int) {
-            val user = item.lastMessage.user ?: return
-            if (null != user.avatarURL && user.avatarURL.thumbnail.isNotEmpty()) {
+            val room = item.lastMessage.room ?: return
+            if (null != room.roomImage && room.roomImage!!.thumbnail.isNotEmpty()) {
                 Glide.with(itemView.context)
-                        .load(user.avatarURL.thumbnail)
+                        .load(room.roomImage!!.thumbnail)
                         .listener(object : RequestListener<Drawable?> {
                             override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
                                 // Show initial
                                 if (itemView.context is Activity) {
                                     (itemView.context as Activity).runOnUiThread {
-                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, user.name)))
+                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, room.roomName)))
                                         civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
-                                        tvAvatarLabel.text = TAPUtils.getInitials(user.name, 2)
+                                        tvAvatarLabel.text = TAPUtils.getInitials(room.roomName, 2)
                                         tvAvatarLabel.visibility = View.VISIBLE
                                     }
                                 }
@@ -67,14 +67,14 @@ class TAPShareOptionsSelectedAdapter(list: List<TAPRoomListModel>, private val l
             } else {
                 // Show initial
                 Glide.with(itemView.context).clear(civAvatar)
-                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, user.name)))
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, room.roomName)))
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
-                tvAvatarLabel.text = TAPUtils.getInitials(user.name, 2)
+                tvAvatarLabel.text = TAPUtils.getInitials(room.roomName, 2)
                 tvAvatarLabel.visibility = View.VISIBLE
             }
 
             // Set name
-            val fullName = user.name
+            val fullName = room.roomName
             if (fullName.contains(" ")) {
                 tvFullName.text = fullName.substring(0, fullName.indexOf(' '))
             } else {
