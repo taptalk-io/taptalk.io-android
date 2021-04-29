@@ -87,7 +87,6 @@ class TAPShareOptionsSelectedAdapter(list: List<TAPRoomListModel>, private val l
             ivAvatarIcon.background = ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_remove_item)
             ivAvatarIcon.visibility = View.VISIBLE
             itemView.setOnClickListener {
-                item.isSelected = false
                 listener.onRoomDeselected(item, position)
                 notifyItemChanged(position)
             }

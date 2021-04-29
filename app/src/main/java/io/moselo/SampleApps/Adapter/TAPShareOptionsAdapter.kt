@@ -35,8 +35,9 @@ import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPBaseAdapter
+import io.taptalk.TapTalk.ViewModel.TAPShareOptionsViewModel
 
-class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListModel>, val glide: RequestManager, private val listener: TAPShareOptionsInterface): TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>>() {
+class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListModel>, private val vm: TAPShareOptionsViewModel, val glide: RequestManager, private val listener: TAPShareOptionsInterface): TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>>() {
 
     init {
         items = list
@@ -272,22 +273,19 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
                 ivBadgeMention.visibility = View.GONE
             }
 
-            if (item.isSelected) {
+            if (vm.selectedRooms!!.containsKey(room.roomID)) {
                 gSelected.visibility = View.VISIBLE
+                itemView.setOnClickListener {
+                    listener.onRoomDeselected(item, position)
+                    notifyItemChanged(adapterPosition)
+                }
             } else {
                 gSelected.visibility = View.GONE
-            }
-
-            itemView.setOnClickListener {
-                item.isSelected = !item.isSelected
-                if (!item.isSelected) {
-                    listener.onRoomDeselected(item, position)
-                } else {
+                itemView.setOnClickListener {
                     listener.onRoomSelected(item)
+                    notifyItemChanged(adapterPosition)
                 }
-                notifyItemChanged(adapterPosition)
             }
-//            itemView.setOnLongClickListener { listener.onMultipleRoomSelected(itemView, item, position) }
         }
     }
 
@@ -300,19 +298,19 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
         private val tvUsername: TextView = itemView.findViewById(R.id.tv_username)
         private val vSeparator: View = itemView.findViewById(R.id.v_separator)
         override fun onBind(item: TAPRoomListModel, position: Int) {
-            val user = item.lastMessage.user ?: return
-            if (null != user.avatarURL && !user.avatarURL.thumbnail.isEmpty()) {
+            val room = item.lastMessage.room ?: return
+            if (null != room.roomImage && room.roomImage!!.thumbnail.isNotEmpty()) {
                 // Load profile picture
                 Glide.with(itemView.context)
-                        .load(user.avatarURL.thumbnail)
+                        .load(room.roomImage!!.thumbnail)
                         .listener(object : RequestListener<Drawable?> {
                             override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
                                 // Show initial
                                 if (itemView.context is Activity) {
                                     (itemView.context as Activity).runOnUiThread {
-                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, user.name)))
+                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, room.roomName)))
                                         civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
-                                        tvAvatarLabel.text = TAPUtils.getInitials(user.name, 2)
+                                        tvAvatarLabel.text = TAPUtils.getInitials(room.roomName, 2)
                                         tvAvatarLabel.visibility = View.VISIBLE
                                     }
                                 }
@@ -329,23 +327,19 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
             } else {
                 // Show initial
                 Glide.with(itemView.context).clear(civAvatar)
-                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, user.name)))
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, room.roomName)))
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
-                tvAvatarLabel.text = TAPUtils.getInitials(user.name, 2)
+                tvAvatarLabel.text = TAPUtils.getInitials(room.roomName, 2)
                 tvAvatarLabel.visibility = View.VISIBLE
             }
 
             // Change avatar icon and background
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE
 
-            // Set name and username
-            tvFullName.text = user.name
-            if (null != user.username && user.username!!.isNotEmpty()) {
-                tvUsername.text = String.format("@%s", user.username)
-                tvUsername.visibility = View.VISIBLE
-            } else {
-                tvUsername.visibility = View.GONE
-            }
+            // Set name
+            tvFullName.text = room.roomName
+            tvUsername.visibility = View.GONE
+            ivSelection.visibility = View.VISIBLE
 
             // Remove separator on last item
 //            if (position == getItemCount() - 1 || getItemAt(position + 1).getType() != item.type) {
@@ -354,43 +348,22 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
 //                vSeparator.visibility = View.VISIBLE
 //            }
 
-            // Show/hide selection
-            if (item.type == TAPRoomListModel.Type.SELECTABLE_CONTACT && item.isSelected) {
+            if (vm.selectedRooms!!.containsKey(room.roomID)) {
                 ivSelection.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_circle_active))
                 ImageViewCompat.setImageTintList(ivSelection, ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionActive)))
-                ivSelection.visibility = View.VISIBLE
-            } else if (item.type == TAPRoomListModel.Type.SELECTABLE_CONTACT) {
+                itemView.setOnClickListener {
+                    listener.onRoomDeselected(item, position)
+                    notifyItemChanged(adapterPosition)
+                }
+            } else {
                 ivSelection.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_circle_inactive))
                 ImageViewCompat.setImageTintList(ivSelection, ColorStateList.valueOf(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconCircleSelectionInactive)))
-                tvUsername.text = String.format("@%s", user.username)
-                ivSelection.visibility = View.VISIBLE
-            } else {
-                ivSelection.visibility = View.GONE
-            }
-            itemView.setOnClickListener { onContactClicked(item, position) }
-        }
-
-        private fun onContactClicked(item: TAPRoomListModel, position: Int) {
-            val user = item.lastMessage.user ?: return
-            when (item.type) {
-//                TapContactListModel.TYPE_DEFAULT_CONTACT_LIST -> if (null != listener) {
-//                    listener.onContactTapped(item)
-//                }
-                TAPRoomListModel.Type.SELECTABLE_CONTACT -> {
-                    item.isSelected = !item.isSelected
-//                    if (user.userID == myID) {
-//                        return
-//                    } else
-                    if (item.isSelected) {
-                        listener.onRoomSelected(item)
-                    } else {
-                        listener.onRoomDeselected(item, position)
-                    }
+                itemView.setOnClickListener {
+                    listener.onRoomSelected(item)
                     notifyItemChanged(adapterPosition)
                 }
             }
         }
-
     }
 
     class SectionTitleViewHolder internal constructor(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPRoomListModel>(parent, itemLayoutId) {

@@ -13,7 +13,6 @@ public class TAPRoomListModel {
     private int unreadCount;
     private int unreadMentions;
     private int defaultAvatarBackgroundColor; // Save default color in model to prevent lag on bind
-    private boolean isSelected = false;
     private String title;
     public enum Type { SELECTABLE_ROOM, SELECTABLE_CONTACT, SECTION }
     private Type type;
@@ -141,14 +140,6 @@ public class TAPRoomListModel {
 
         TAPUserModel firstTypingUser = getTypingUsers().entrySet().iterator().next().getValue();
         return firstTypingUser.getName().split(" ")[0];
-    }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        isSelected = selected;
     }
 
     public String getTitle() {
