@@ -47,7 +47,7 @@
             android:layout_height="match_parent"
             android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_search_for_contacts"
-            android:imeOptions="actionSearch"
+            android:imeOptions="actionDone"
             android:inputType="text"
             android:maxLines="1"
             android:paddingStart="16dp"
@@ -86,6 +86,18 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintTop_toBottomOf="@id/cl_toolbar"
+        app:layout_constraintBottom_toBottomOf="@id/v_separator"
+        tools:listitem="@layout/tap_cell_user_contact"
+        android:visibility="gone"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_room_list"
         android:layout_width="match_parent"
@@ -105,7 +117,7 @@
         android:visibility="gone"
         style="@style/tapInfoLabelTitleStyle"
         app:layout_constraintTop_toBottomOf="@id/cl_toolbar"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toTopOf="@id/v_separator"/>
 
     <include
         android:id="@+id/popup_loading"
