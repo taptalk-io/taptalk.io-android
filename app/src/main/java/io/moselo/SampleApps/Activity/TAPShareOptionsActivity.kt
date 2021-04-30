@@ -458,12 +458,11 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private fun handleIntentData(intent: Intent) {
         val selectedRooms = vm?.selectedRooms
-        // TODO: 21/04/21 handle multiple chat rooms MU
         if (selectedRooms!!.isNotEmpty()) {
+            val caption = et_caption.text.toString()
             when (intent.action) {
                 Intent.ACTION_SEND -> {
                     val data = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
-                    val caption = et_caption.text.toString()
                     for (roomListModel in selectedRooms.values) {
                         when {
                             intent.type == "text/plain" -> {
@@ -480,22 +479,24 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                             }
                         }
                     }
-                    onShareFinished(selectedRooms)
                 }
                 Intent.ACTION_SEND_MULTIPLE -> {
-                    when {
-                        intent.type?.startsWith("image/") == true -> {
-                            handleSendMultipleImages(intent)
-                        }
-                        intent.type?.startsWith("video/") == true -> {
-                            handleSendMultipleVideos(intent)
-                        }
-                        else -> {
-                            handleSendMultipleFiles(intent)
+                    for (roomListModel in selectedRooms.values) {
+                        when {
+                            intent.type?.startsWith("image/") == true -> {
+                                handleSendMultipleImages(intent, roomListModel.lastMessage.room, caption)
+                            }
+                            intent.type?.startsWith("video/") == true -> {
+                                handleSendMultipleVideos(intent, roomListModel.lastMessage.room, caption)
+                            }
+                            else -> {
+                                handleSendMultipleFiles(intent, roomListModel.lastMessage.room, caption)
+                            }
                         }
                     }
                 }
             }
+            onShareFinished(selectedRooms)
         }
     }
 
@@ -524,28 +525,44 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         }
     }
 
-    private fun handleSendMultipleImages(intent: Intent) {
+    private fun handleSendMultipleImages(intent: Intent, roomModel: TAPRoomModel?, caption: String) {
+        var firstCaption: String = caption
         val images = intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
         if (images != null) {
             for (item in images) {
-//                runOnUiThread {
-//                    showPopupLoading(getString(R.string.tap_loading))
-//                }
-                // TODO: 13/04/21 caption for first image only MU
-//                TapCoreMessageManager.getInstance().sendImageMessage(item as? Uri, "", roomModel, object : TapCoreSendMessageListener() { })
+                TapCoreMessageManager.getInstance().sendImageMessage(item as? Uri, firstCaption, roomModel, object : TapCoreSendMessageListener() { })
+                if (firstCaption.isNotEmpty()) {
+                    firstCaption = ""
+                }
             }
         }
     }
 
-    private fun handleSendMultipleVideos(intent: Intent) {
-        intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)?.let {
-            // TODO: 21/04/21 handle multiple videos MU
+    private fun handleSendMultipleVideos(intent: Intent, roomModel: TAPRoomModel?, caption: String) {
+        var firstCaption: String = caption
+        val video = intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
+        if (video != null) {
+            for (item in video) {
+                TapCoreMessageManager.getInstance().sendVideoMessage(item as? Uri, firstCaption, roomModel, object : TapCoreSendMessageListener() {})
+                if (firstCaption.isNotEmpty()) {
+                    firstCaption = ""
+                }
+            }
         }
     }
 
-    private fun handleSendMultipleFiles(intent: Intent) {
-        intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)?.let {
-            // TODO: 21/04/21 handle multiple files MU
+    private fun handleSendMultipleFiles(intent: Intent, roomModel: TAPRoomModel?, caption: String) {
+        var firstCaption: String = caption
+        val filUri = intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
+        if (filUri != null) {
+            for (item in filUri) {
+                val file = File(TAPFileUtils.getInstance().getFilePath(this, item as? Uri))
+                if (firstCaption.isNotEmpty()) {
+                    TapCoreMessageManager.getInstance().sendTextMessage(firstCaption, roomModel, object : TapCoreSendMessageListener() {})
+                    firstCaption = ""
+                }
+                TapCoreMessageManager.getInstance().sendFileMessage(file, roomModel, object : TapCoreSendMessageListener() {})
+            }
         }
     }
 
