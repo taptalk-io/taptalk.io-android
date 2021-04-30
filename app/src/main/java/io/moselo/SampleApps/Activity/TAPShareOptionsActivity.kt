@@ -40,6 +40,7 @@ import io.taptalk.TapTalk.Manager.TapCoreMessageManager
 import io.taptalk.TapTalk.Model.*
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity
+import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
 import io.taptalk.TapTalk.ViewModel.TAPShareOptionsViewModel
 import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.activity_share_options.*
@@ -48,7 +49,6 @@ import java.util.*
 
 class TAPShareOptionsActivity : TAPBaseActivity() {
 
-    private var roomModel: TAPRoomModel? = null
     private var vm: TAPShareOptionsViewModel? = null
     private var adapter: TAPShareOptionsAdapter? = null
     private var selectedAdapter: TAPShareOptionsSelectedAdapter? = null
@@ -69,7 +69,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         adapter = TAPShareOptionsAdapter(instanceKey, vm?.roomList!!, vm!!, glide, roomListener)
 //        selectedAdapter = TAPShareOptionsSelectedAdapter( vm?.selectedRooms!!.values.toList(), roomListener)
 //        selectedAdapter = TAPShareOptionsSelectedAdapter( vm?.selectedRoomList!!, roomListener)
-        searchAdapter = TAPShareOptionsAdapter(instanceKey, vm?.searchRoomResults!!, vm!!,  glide, roomListener)
+        searchAdapter = TAPShareOptionsAdapter(instanceKey, vm?.searchRoomResults!!, vm!!, glide, roomListener)
 
         val llm = LinearLayoutManager(this, VERTICAL, false)
         rv_room_list.adapter = adapter
@@ -96,7 +96,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         TAPDataManager.getInstance(instanceKey).getRoomList(false, listener)
 //        et_search.addTextChangedListener(searchTextWatcher)
 //        et_search.setOnEditorActionListener(searchEditorListener)
-        btn_send_message.setOnClickListener { handleIntentData(intent, roomModel) }
+        btn_send_message.setOnClickListener { handleIntentData(intent) }
         iv_close_btn.setOnClickListener { onBackPressed() }
         iv_search_icon.setOnClickListener { showSearchBar() }
         iv_button_clear_text.setOnClickListener { et_search.setText("") }
@@ -156,8 +156,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 return
             }
             if (entities.isNotEmpty()) {
-                // TODO: 23/04/21 set section title MU
-                // TODO: 26/04/21 separate group and contact logic MU
 //                vm?.addSearchResult(groupSectionTitle)
                 for (entity in entities) {
                     val myId = TAPChatManager.getInstance(instanceKey).activeUser.userID
@@ -359,7 +357,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private fun showSelectedRecipients() {
         g_selected_rooms.visibility = View.VISIBLE
-        selectedAdapter = TAPShareOptionsSelectedAdapter( vm?.selectedRooms!!.values.toList(), roomListener)
+        selectedAdapter = TAPShareOptionsSelectedAdapter(vm?.selectedRooms!!.values.toList(), roomListener)
         val selectedLlm = LinearLayoutManager(this, HORIZONTAL, false)
         rv_selected.adapter = selectedAdapter
         rv_selected.layoutManager = selectedLlm
@@ -371,7 +369,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     }
 
     private val roomListener = object : TAPShareOptionsInterface {
-        // TODO: 26/04/21 select-deselect UI check logic & set text MU
         override fun onRoomSelected(item: TAPRoomListModel?) {
             val roomID = item?.lastMessage?.room?.roomID
             if (!vm!!.selectedRooms?.containsKey(roomID)!!) {
@@ -459,155 +456,83 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 //        adapter?.notifyItemChanged(position)
     }
 
-    private fun handleIntentData(intent: Intent, roomModel: TAPRoomModel?) {
+    private fun handleIntentData(intent: Intent) {
+        val selectedRooms = vm?.selectedRooms
         // TODO: 21/04/21 handle multiple chat rooms MU
-        when(intent.action) {
-            Intent.ACTION_SEND -> {
-                when {
-                    intent.type == "text/plain" -> {
-                        handleTextType(intent, roomModel)
+        if (selectedRooms!!.isNotEmpty()) {
+            when (intent.action) {
+                Intent.ACTION_SEND -> {
+                    val data = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
+                    val caption = et_caption.text.toString()
+                    for (roomListModel in selectedRooms.values) {
+                        when {
+                            intent.type == "text/plain" -> {
+                                handleTextType(intent, roomListModel.lastMessage.room, caption)
+                            }
+                            intent.type?.startsWith("image/") == true -> {
+                                handleImageType(data as Uri, roomListModel.lastMessage.room, caption)
+                            }
+                            intent.type?.startsWith("video/") == true -> {
+                                handleVideoType(data as Uri, roomListModel.lastMessage.room, caption)
+                            }
+                            else -> {
+                                handleFileType(data as Uri, roomListModel.lastMessage.room, caption)
+                            }
+                        }
                     }
-                    intent.type?.startsWith("image/") == true -> {
-                        handleImageType(intent, roomModel)
-                    }
-                    intent.type?.startsWith("video/") == true -> {
-                        handleVideoType(intent, roomModel)
-                    }
-                    else -> {
-                        handleFileType(intent, roomModel)
+                    onShareFinished(selectedRooms)
+                }
+                Intent.ACTION_SEND_MULTIPLE -> {
+                    when {
+                        intent.type?.startsWith("image/") == true -> {
+                            handleSendMultipleImages(intent)
+                        }
+                        intent.type?.startsWith("video/") == true -> {
+                            handleSendMultipleVideos(intent)
+                        }
+                        else -> {
+                            handleSendMultipleFiles(intent)
+                        }
                     }
                 }
             }
-            Intent.ACTION_SEND_MULTIPLE -> {
-                when {
-                    intent.type?.startsWith("image/") == true -> {
-                        handleSendMultipleImages(intent)
-                    }
-                    intent.type?.startsWith("video/") == true -> {
-                        handleSendMultipleVideos(intent)
-                    }
-                    else -> {
-                        handleSendMultipleFiles(intent)
-                    }
-                }
-            }
         }
     }
 
-    private fun handleFileType(intent: Intent, roomModel: TAPRoomModel?) {
-        (intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as? Uri)?.let {
-            val file = File(TAPFileUtils.getInstance().getFilePath(this, it))
-            TapCoreMessageManager.getInstance().sendFileMessage(file, roomModel, object : TapCoreSendMessageListener() {
-                override fun onStart(message: TAPMessageModel?) {
-                    super.onStart(message)
-                    runOnUiThread {
-                        showPopupLoading(getString(R.string.tap_loading))
-                    }
-                }
-
-                override fun onSuccess(message: TAPMessageModel?) {
-                    super.onSuccess(message)
-                    runOnUiThread {
-                        hidePopupLoading()
-                        deleteCache()
-                    }
-                }
-            })
-        }
+    private fun handleFileType(uri: Uri, roomModel: TAPRoomModel?, caption: String) {
+        val file = File(TAPFileUtils.getInstance().getFilePath(this, uri))
+        TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+        TapCoreMessageManager.getInstance().sendFileMessage(file, roomModel, object : TapCoreSendMessageListener() {})
     }
 
-    private fun handleVideoType(intent: Intent, roomModel: TAPRoomModel?) {
-        (intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as? Uri)?.let {
-            TapCoreMessageManager.getInstance().sendVideoMessage(it, "share video", roomModel, object : TapCoreSendMessageListener() {
-                override fun onStart(message: TAPMessageModel?) {
-                    super.onStart(message)
-                    runOnUiThread {
-                        showPopupLoading(getString(R.string.tap_loading))
-                    }
-                }
-
-                override fun onSuccess(message: TAPMessageModel?) {
-                    super.onSuccess(message)
-                    runOnUiThread {
-                        hidePopupLoading()
-                    }
-                }
-            })
-        }
+    private fun handleVideoType(uri: Uri, roomModel: TAPRoomModel?, caption: String) {
+        TapCoreMessageManager.getInstance().sendVideoMessage(uri, caption, roomModel, object : TapCoreSendMessageListener() {})
     }
 
-    private fun handleImageType(intent: Intent, roomModel: TAPRoomModel?) {
-        (intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as? Uri)?.let {
-            TapCoreMessageManager.getInstance().sendImageMessage(it, "share image", roomModel, object : TapCoreSendMessageListener() {
-                override fun onStart(message: TAPMessageModel?) {
-                    super.onStart(message)
-                    runOnUiThread {
-                        showPopupLoading(getString(R.string.tap_loading))
-                    }
-                }
-
-                override fun onSuccess(message: TAPMessageModel?) {
-                    super.onSuccess(message)
-                    runOnUiThread {
-                        hidePopupLoading()
-                    }
-                }
-            })
-        }
+    private fun handleImageType(uri: Uri, roomModel: TAPRoomModel?, caption: String) {
+        TapCoreMessageManager.getInstance().sendImageMessage(uri, caption, roomModel, object : TapCoreSendMessageListener() {})
     }
 
-    private fun handleTextType(intent: Intent, roomModel: TAPRoomModel?) {
+    private fun handleTextType(intent: Intent, roomModel: TAPRoomModel?, caption: String) {
         if (intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) == null) {
-            //text type with string data
-            intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-                TapCoreMessageManager.getInstance().sendTextMessage(it, roomModel, object : TapCoreSendMessageListener() {
-                    override fun onSuccess(message: TAPMessageModel?) {
-                        super.onSuccess(message)
-                        Toast.makeText(this@TAPShareOptionsActivity, "SUCCES SEND MESSAGE", Toast.LENGTH_SHORT).show()
-                    }
-                })
-            }
+            // text type with string data
+            TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+            TapCoreMessageManager.getInstance().sendTextMessage(intent.getStringExtra(Intent.EXTRA_TEXT), roomModel, object : TapCoreSendMessageListener() {})
         } else {
             // text type with file data
-            handleFileType(intent, roomModel)
+            handleFileType(intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as Uri, roomModel, caption)
         }
-
     }
 
     private fun handleSendMultipleImages(intent: Intent) {
         val images = intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
         if (images != null) {
-            var loadingCounter = 0
             for (item in images) {
-                runOnUiThread {
-                    showPopupLoading(getString(R.string.tap_loading))
-                }
+//                runOnUiThread {
+//                    showPopupLoading(getString(R.string.tap_loading))
+//                }
                 // TODO: 13/04/21 caption for first image only MU
-                TapCoreMessageManager.getInstance().sendImageMessage(item as? Uri, "", roomModel, object : TapCoreSendMessageListener() {
-                    override fun onStart(message: TAPMessageModel?) {
-                        super.onStart(message)
-                    }
-
-                    override fun onSuccess(message: TAPMessageModel?) {
-                        super.onSuccess(message)
-                        loadingCounter++
-                        if (loadingCounter == images.size) {
-                            runOnUiThread {
-                                hidePopupLoading()
-                            }
-                        }
-                    }
-
-                    override fun onError(errorCode: String?, errorMessage: String?) {
-                        super.onError(errorCode, errorMessage)
-                        loadingCounter++
-                        if (loadingCounter == images.size) {
-                            runOnUiThread {
-                                hidePopupLoading()
-                            }
-                        }
-                    }
-                })
+//                TapCoreMessageManager.getInstance().sendImageMessage(item as? Uri, "", roomModel, object : TapCoreSendMessageListener() { })
             }
         }
     }
@@ -621,6 +546,18 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private fun handleSendMultipleFiles(intent: Intent) {
         intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)?.let {
             // TODO: 21/04/21 handle multiple files MU
+        }
+    }
+
+    private fun onShareFinished(list: MutableMap<String, TAPRoomListModel>) {
+        val keys: List<String> = ArrayList(list.keys)
+        finishAffinity()
+        if (list.size > 1) {
+            //open room list
+            TapUIRoomListActivity.start(this, instanceKey)
+        } else if (list.size == 1) {
+            //open chat room
+            TapUIRoomListActivity.start(this, instanceKey, list[keys[0]]?.lastMessage?.room)
         }
     }
 
