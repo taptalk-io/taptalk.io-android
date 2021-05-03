@@ -8,11 +8,7 @@ import android.os.Parcelable
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -54,7 +50,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private var adapter: TAPShareOptionsAdapter? = null
     private var selectedAdapter: TAPShareOptionsSelectedAdapter? = null
     private var searchAdapter: TAPShareOptionsAdapter? = null
-//    private var searchAdapter: TapContactListAdapter? = null
     private lateinit var glide: RequestManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,8 +63,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         glide = Glide.with(this)
         instanceKey = SampleApplication.INSTANCE_KEY
         adapter = TAPShareOptionsAdapter(instanceKey, vm?.roomList!!, vm!!, glide, roomListener)
-//        selectedAdapter = TAPShareOptionsSelectedAdapter( vm?.selectedRooms!!.values.toList(), roomListener)
-//        selectedAdapter = TAPShareOptionsSelectedAdapter( vm?.selectedRoomList!!, roomListener)
         searchAdapter = TAPShareOptionsAdapter(instanceKey, vm?.searchRoomResults!!, vm!!, glide, roomListener)
 
         val llm = LinearLayoutManager(this, VERTICAL, false)
@@ -101,8 +94,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         }
 
         TAPDataManager.getInstance(instanceKey).getRoomList(false, listener)
-//        et_search.addTextChangedListener(searchTextWatcher)
-//        et_search.setOnEditorActionListener(searchEditorListener)
         btn_send_message.setOnClickListener {
             val list = vm?.selectedRooms
             val recipient: String
@@ -181,7 +172,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 return
             }
             if (entities.isNotEmpty()) {
-//                vm?.addSearchResult(groupSectionTitle)
                 for (entity in entities) {
                     val myId = TAPChatManager.getInstance(instanceKey).activeUser.userID
                     // Exclude active user's own room
@@ -198,10 +188,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                         }
                         result.lastMessage.room = room
                         result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
-//                        val mentionCount = mentionMap[room.roomID]
-//                        if (null != mentionCount) {
-//                            result.roomMentionCount = mentionCount
-//                        }
                         if (room.roomType == TYPE_PERSONAL) {
                             if (vm?.personalContacts!!.isEmpty()) {
                                 val personalSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
@@ -217,11 +203,9 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                             }
                             vm?.groupContacts?.add(result)
                         }
-//                        vm?.addSearchResult(result)
                     }
                 }
                 runOnUiThread {
-//                    searchAdapter?.setItems(vm?.searchRoomResults!!, false)
                     tv_empty_room.visibility = View.GONE
                     rv_search_list.visibility = View.VISIBLE
                     TAPDataManager.getInstance(instanceKey).searchContactsByName(vm?.searchKeyword, contactSearchListener)
@@ -248,12 +232,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                     tv_empty_room.visibility = View.GONE
                     rv_search_list.visibility = View.VISIBLE
                 }
-
-//                if (vm?.searchRoomResults?.size == 0) {
-//                    val sectionTitleChatsAndContacts = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
-//                    sectionTitleChatsAndContacts.title = getString(R.string.tap_chats_and_contacts)
-//                    vm?.addSearchResult(sectionTitleChatsAndContacts)
-//                }
                 for (contact in entities) {
                     val result = TAPRoomListModel(TAPRoomListModel.Type.SELECTABLE_CONTACT)
                     // Convert contact to room model
@@ -261,7 +239,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                             TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).activeUser.userID, contact.userID),
                             contact.name,
                             TYPE_PERSONAL,
-                            contact.avatarURL,  /* SET DEFAULT ROOM COLOR*/
+                            contact.avatarURL,
                             ""
                     )
                     // Check if result already contains contact from chat room query
@@ -286,9 +264,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 }
                 runOnUiThread {
                     searchAdapter?.setItems(vm?.getSearchResults(), false)
-//                    searchAdapter = TAPShareOptionsAdapter(instanceKey, vm?.getSearchResults()!!, glide, roomListener)
-//                    rv_search_list.adapter = searchAdapter
-//                searchAdapter?.notifyDataSetChanged()
                 }
             } else {
                 runOnUiThread {
@@ -303,15 +278,10 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             et_search.removeTextChangedListener(this)
-//            TAPDataManager.getInstance(instanceKey).cancelUserSearchApiCall()
-//            hideGlobalSearchLoading()
-//            searchTimer.cancel()
             if (s.isEmpty()) {
                 vm?.pendingSearch = ""
                 iv_button_clear_text.visibility = View.GONE
-//                updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim { it <= ' ' })
             } else {
-//                searchTimer.start()
                 iv_button_clear_text.visibility = View.VISIBLE
             }
             startSearch(et_search.text.toString())
@@ -320,24 +290,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
         override fun afterTextChanged(s: Editable) {}
     }
-
-//    private val searchEditorListener = OnEditorActionListener { textView, i, keyEvent ->
-//        // TODO: 25/04/21 get search contact
-////        updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim { it <= ' ' })
-////        TAPDataManager.getInstance(instanceKey).cancelUserSearchApiCall()
-////        TAPDataManager.getInstance(instanceKey).getUserByUsernameFromApi(et_search.getText().toString(), true, getUserView)
-//
-//        TAPDataManager.getInstance(instanceKey).searchAllRoomsFromDatabase(vm?.searchKeyword, roomSearchListener)
-//        TAPUtils.dismissKeyboard(this)
-//        true
-//    }
-//
-//    private val searchTimer: CountDownTimer = object : CountDownTimer(300L, 100L) {
-//        override fun onTick(millisUntilFinished: Long) {}
-//        override fun onFinish() {
-////            updateFilteredContacts(etSearch.getText().toString().toLowerCase().trim { it <= ' ' })
-//        }
-//    }
 
     private fun showToolbar() {
         vm?.isSelecting = false
@@ -370,12 +322,10 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         vm!!.clearSearchResults()
         vm?.searchKeyword = keyword?.toLowerCase(Locale.getDefault())?.trim { it <= ' ' }
         searchAdapter?.searchKeyword = vm?.searchKeyword!!
-//        adapter?.setSearchKeyword(vm?.searchKeyword)
         if (vm?.searchState == vm!!.STATE_IDLE) {
             // Search with keyword
             vm?.searchState = vm!!.STATE_SEARCHING
             TAPDataManager.getInstance(instanceKey).searchAllRoomsFromDatabase(vm?.searchKeyword, roomSearchListener)
-//            iv_button_clear_text.visibility = View.VISIBLE
         } else {
             // Set search as pending
             vm?.pendingSearch = vm?.searchKeyword
@@ -473,15 +423,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
             vm!!.selectedRooms?.remove(roomID)
         }
         adapter?.notifyItemChanged(position)
-//        val roomID = item?.lastMessage?.room?.roomID
-//        if (!vm!!.selectedRoomList?.contains(item)!!) {
-//            // Room selected
-//            vm!!.selectedRoomList?.toMutableList()?.add(item!!)
-//        } else {
-//            // Room deselected
-//            vm!!.selectedRoomList?.toMutableList()?.remove(item)
-//        }
-//        adapter?.notifyItemChanged(position)
     }
 
     private fun handleIntentData(intent: Intent) {
@@ -604,18 +545,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
             //open chat room
             TapUIRoomListActivity.start(this, instanceKey, list[keys[0]]?.lastMessage?.room)
         }
-    }
-
-    private fun showPopupLoading(message: String) {
-        popup_loading.findViewById<ImageView>(R.id.iv_loading_image).setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
-        if (null == popup_loading.findViewById<ImageView>(R.id.iv_loading_image).animation)
-            TAPUtils.rotateAnimateInfinitely(this, popup_loading.findViewById<ImageView>(R.id.iv_loading_image))
-        popup_loading.findViewById<TextView>(R.id.tv_loading_text)?.text = message
-        popup_loading.findViewById<FrameLayout>(R.id.fl_loading).visibility = View.VISIBLE
-    }
-
-    private fun hidePopupLoading() {
-        popup_loading.findViewById<FrameLayout>(R.id.fl_loading).visibility = View.GONE
     }
 
     fun deleteCache() {

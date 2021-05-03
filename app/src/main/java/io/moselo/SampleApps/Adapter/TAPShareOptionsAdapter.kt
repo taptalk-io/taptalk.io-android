@@ -356,7 +356,6 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
             ivSelection.visibility = View.VISIBLE
 
             // Add full separator on last item
-
             if (position == itemCount - 1) {
                 vSeparatorFull.visibility = View.VISIBLE
             } else {
