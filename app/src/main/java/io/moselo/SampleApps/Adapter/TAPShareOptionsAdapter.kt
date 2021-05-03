@@ -289,15 +289,14 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
         }
     }
 
-    // TODO: 30/04/21 remove bottom line on each list MU
     inner class ContactListViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPRoomListModel>(parent, itemLayoutId) {
         private val civAvatar: CircleImageView = itemView.findViewById(R.id.civ_avatar)
-        private val ivAvatarIcon: ImageView = itemView.findViewById(R.id.iv_avatar_icon)
         private val ivSelection: ImageView = itemView.findViewById(R.id.iv_selection)
         private val tvAvatarLabel: TextView = itemView.findViewById(R.id.tv_avatar_label)
         private val tvFullName: TextView = itemView.findViewById(R.id.tv_full_name)
         private val tvUsername: TextView = itemView.findViewById(R.id.tv_username)
         private val vSeparator: View = itemView.findViewById(R.id.v_separator)
+        private val vSeparatorFull = itemView.findViewById<View?>(R.id.v_separator_full)
         override fun onBind(item: TAPRoomListModel, position: Int) {
             val room = item.lastMessage.room ?: return
             if (null != room.roomImage && room.roomImage!!.thumbnail.isNotEmpty()) {
@@ -339,12 +338,18 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
             tvUsername.visibility = View.GONE
             ivSelection.visibility = View.VISIBLE
 
-            // Remove separator on last item
-//            if (position == getItemCount() - 1 || getItemAt(position + 1).getType() != item.type) {
-//                vSeparator.visibility = View.GONE
-//            } else {
-//                vSeparator.visibility = View.VISIBLE
-//            }
+            // Add full separator on last item
+
+            if (position == itemCount - 1) {
+                vSeparatorFull.visibility = View.VISIBLE
+            } else {
+                if (getItemAt(position + 1).type != item.type) {
+                    vSeparator.visibility = View.GONE
+                } else {
+                    vSeparator.visibility = View.VISIBLE
+                }
+                vSeparatorFull.visibility = View.GONE
+            }
 
             if (vm.selectedRooms!!.containsKey(room.roomID)) {
                 ivSelection.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_circle_active))

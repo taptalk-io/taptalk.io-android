@@ -100,7 +100,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 //        et_search.setOnEditorActionListener(searchEditorListener)
         btn_send_message.setOnClickListener {
             val list = vm?.selectedRooms
-            var recipient = ""
+            val recipient: String
             val keys: List<String> = ArrayList(list?.keys)
             recipient = if (list?.size == 1) {
                 list[keys[0]]!!.lastMessage.room.roomName
@@ -166,7 +166,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         }
     }
 
-    // TODO: 30/04/21 remove bottom line on each list MU
     private val roomSearchListener: TAPDatabaseListener<TAPMessageEntity> = object : TAPDatabaseListener<TAPMessageEntity>() {
         override fun onSelectedRoomList(entities: List<TAPMessageEntity>, unreadMap: Map<String, Int>, mentionMap: Map<String, Int>) {
             if (vm?.searchState == vm?.STATE_PENDING && vm?.pendingSearch?.isNotEmpty()!!) {
