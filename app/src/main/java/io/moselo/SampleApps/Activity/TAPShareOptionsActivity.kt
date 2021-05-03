@@ -1,5 +1,6 @@
 package io.moselo.SampleApps.Activity
 
+import android.Manifest
 import android.content.Intent
 import android.graphics.drawable.TransitionDrawable
 import android.net.Uri
@@ -9,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -95,23 +97,34 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
         TAPDataManager.getInstance(instanceKey).getRoomList(false, listener)
         btn_send_message.setOnClickListener {
-            val list = vm?.selectedRooms
-            val recipient: String
-            val keys: List<String> = ArrayList(list?.keys)
-            recipient = if (list?.size == 1) {
-                list[keys[0]]!!.lastMessage.room.roomName
+            if ((!intent.type?.startsWith("text")!!
+                    || !intent.type?.startsWith("image")!!
+                    || !intent.type?.startsWith("video")!!)
+                    && !TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    ActivityCompat.requestPermissions(
+                            this, arrayOf(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                            TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE)
             } else {
-                String.format(getString(R.string.df_recipients), list?.size)
+                val list = vm?.selectedRooms
+                val recipient: String
+                val keys: List<String> = ArrayList(list?.keys)
+                recipient = if (list?.size == 1) {
+                    list[keys[0]]!!.lastMessage.room.roomName
+                } else {
+                    String.format(getString(R.string.df_recipients), list?.size)
+                }
+                TapTalkDialog.Builder(this)
+                        .setTitle(getString(R.string.tap_send_message))
+                        .setMessage(String.format(getString(R.string.send_this_message_to_sf), recipient))
+                        .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                        .setPrimaryButtonTitle(getString(R.string.tap_send))
+                        .setPrimaryButtonListener { handleIntentData(intent) }
+                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                        .setSecondaryButtonListener { }
+                        .show()
             }
-            TapTalkDialog.Builder(this)
-                    .setTitle(getString(R.string.tap_send_message))
-                    .setMessage(String.format(getString(R.string.send_this_message_to_sf), recipient))
-                    .setDialogType(TapTalkDialog.DialogType.DEFAULT)
-                    .setPrimaryButtonTitle(getString(R.string.tap_send))
-                    .setPrimaryButtonListener { handleIntentData(intent) }
-                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                    .setSecondaryButtonListener { }
-                    .show()
         }
         iv_close_btn.setOnClickListener { onBackPressed() }
         iv_search_icon.setOnClickListener { showSearchBar() }
@@ -537,6 +550,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private fun onShareFinished(list: MutableMap<String, TAPRoomListModel>) {
         val keys: List<String> = ArrayList(list.keys)
+        deleteCache()
         finishAffinity()
         if (list.size > 1) {
             //open room list
