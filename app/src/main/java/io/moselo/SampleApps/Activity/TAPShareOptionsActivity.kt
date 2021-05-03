@@ -32,6 +32,7 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener
@@ -61,7 +62,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share_options)
 
-        // TODO: 30/04/21 handle if user not logged in MU
         vm = ViewModelProvider(this,
                 TAPShareOptionsViewModel.TAPShareOptionsViewModelFactory(
                         application))
@@ -94,6 +94,12 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 TAPUtils.dismissKeyboard(this@TAPShareOptionsActivity)
             }
         })
+
+        // check if user logged in
+        if (!TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
+            TAPLoginActivity.start(this, instanceKey)
+            finish()
+        }
 
         TAPDataManager.getInstance(instanceKey).getRoomList(false, listener)
 //        et_search.addTextChangedListener(searchTextWatcher)
@@ -551,7 +557,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         val images = intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
         if (images != null) {
             for (item in images) {
-                TapCoreMessageManager.getInstance().sendImageMessage(item as? Uri, firstCaption, roomModel, object : TapCoreSendMessageListener() { })
+                TapCoreMessageManager.getInstance().sendImageMessage(item as? Uri, firstCaption, roomModel, object : TapCoreSendMessageListener() {})
                 if (firstCaption.isNotEmpty()) {
                     firstCaption = ""
                 }
