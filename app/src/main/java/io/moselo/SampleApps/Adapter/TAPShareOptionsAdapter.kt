@@ -3,6 +3,9 @@ package io.moselo.SampleApps.Adapter
 import android.app.Activity
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
+import android.os.Build
+import android.text.Html
+import android.text.Html.FROM_HTML_MODE_LEGACY
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -39,6 +42,7 @@ import io.taptalk.TapTalk.ViewModel.TAPShareOptionsViewModel
 
 class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListModel>, private val vm: TAPShareOptionsViewModel, val glide: RequestManager, private val listener: TAPShareOptionsInterface): TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>>() {
 
+    var searchKeyword: String = ""
     init {
         items = list
     }
@@ -333,8 +337,21 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
                 tvAvatarLabel.visibility = View.VISIBLE
             }
 
-            // Set name
-            tvFullName.text = room.roomName
+            // Get highlighted color code
+            val typedArray = itemView.context.obtainStyledAttributes(R.style.tapRoomListNameHighlightedStyle, R.styleable.TextAppearance)
+            val colorCode = Integer.toHexString(typedArray.getColor(R.styleable.TextAppearance_android_textColor, -1)).substring(2)
+            typedArray.recycle()
+
+            // Set room name with highlighted text
+            val roomName = room.roomName
+            val highlightedText = roomName.replace(
+                    "(?i)($searchKeyword)".toRegex(),
+                    String.format(itemView.context.getString(R.string.tap_format_ss_highlighted_string), colorCode, "$1"))
+            tvFullName.text = if (Build.VERSION.SDK_INT > 24) {
+                Html.fromHtml(highlightedText, FROM_HTML_MODE_LEGACY)
+            } else {
+                Html.fromHtml(highlightedText)
+            }
             tvUsername.visibility = View.GONE
             ivSelection.visibility = View.VISIBLE
 

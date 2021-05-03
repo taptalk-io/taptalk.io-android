@@ -32,7 +32,6 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPUtils
-import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener
@@ -245,8 +244,10 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
             vm?.pendingSearch = ""
             vm?.searchState = vm?.STATE_IDLE
             if (entities.isNotEmpty()) {
-                tv_empty_room.visibility = View.GONE
-                rv_search_list.visibility = View.VISIBLE
+                runOnUiThread {
+                    tv_empty_room.visibility = View.GONE
+                    rv_search_list.visibility = View.VISIBLE
+                }
 
 //                if (vm?.searchRoomResults?.size == 0) {
 //                    val sectionTitleChatsAndContacts = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
@@ -298,7 +299,6 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         }
     }
 
-    // TODO: 30/04/21 fix color change on search keyword MU
     private val searchTextWatcher: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -369,6 +369,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private fun startSearch(keyword: String?) {
         vm!!.clearSearchResults()
         vm?.searchKeyword = keyword?.toLowerCase(Locale.getDefault())?.trim { it <= ' ' }
+        searchAdapter?.searchKeyword = vm?.searchKeyword!!
 //        adapter?.setSearchKeyword(vm?.searchKeyword)
         if (vm?.searchState == vm!!.STATE_IDLE) {
             // Search with keyword
