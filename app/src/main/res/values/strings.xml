@@ -8,4 +8,5 @@
     <string name="selected_one_recipient">Selected 1 recipient</string>
     <string name="groups">Groups</string>
     <string name="contacts">Contacts</string>
+    <string name="send_this_message_to_sf">Send this message to %s?</string>
 </resources>

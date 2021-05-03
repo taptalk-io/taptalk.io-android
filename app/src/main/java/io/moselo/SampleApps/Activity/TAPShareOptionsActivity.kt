@@ -32,6 +32,7 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper
 import io.taptalk.TapTalk.Helper.TAPFileUtils
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
@@ -60,6 +61,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share_options)
 
+        // TODO: 30/04/21 handle if user not logged in MU
         vm = ViewModelProvider(this,
                 TAPShareOptionsViewModel.TAPShareOptionsViewModelFactory(
                         application))
@@ -96,7 +98,25 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         TAPDataManager.getInstance(instanceKey).getRoomList(false, listener)
 //        et_search.addTextChangedListener(searchTextWatcher)
 //        et_search.setOnEditorActionListener(searchEditorListener)
-        btn_send_message.setOnClickListener { handleIntentData(intent) }
+        btn_send_message.setOnClickListener {
+            val list = vm?.selectedRooms
+            var recipient = ""
+            val keys: List<String> = ArrayList(list?.keys)
+            recipient = if (list?.size == 1) {
+                list[keys[0]]!!.lastMessage.room.roomName
+            } else {
+                String.format(getString(R.string.df_recipients), list?.size)
+            }
+            TapTalkDialog.Builder(this)
+                    .setTitle(getString(R.string.tap_send_message))
+                    .setMessage(String.format(getString(R.string.send_this_message_to_sf), recipient))
+                    .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                    .setPrimaryButtonTitle(getString(R.string.tap_send))
+                    .setPrimaryButtonListener { handleIntentData(intent) }
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setSecondaryButtonListener { }
+                    .show()
+        }
         iv_close_btn.setOnClickListener { onBackPressed() }
         iv_search_icon.setOnClickListener { showSearchBar() }
         iv_button_clear_text.setOnClickListener { et_search.setText("") }
@@ -146,6 +166,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         }
     }
 
+    // TODO: 30/04/21 remove bottom line on each list MU
     private val roomSearchListener: TAPDatabaseListener<TAPMessageEntity> = object : TAPDatabaseListener<TAPMessageEntity>() {
         override fun onSelectedRoomList(entities: List<TAPMessageEntity>, unreadMap: Map<String, Int>, mentionMap: Map<String, Int>) {
             if (vm?.searchState == vm?.STATE_PENDING && vm?.pendingSearch?.isNotEmpty()!!) {
@@ -272,6 +293,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         }
     }
 
+    // TODO: 30/04/21 fix color change on search keyword MU
     private val searchTextWatcher: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {

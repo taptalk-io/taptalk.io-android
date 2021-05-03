@@ -289,6 +289,7 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
         }
     }
 
+    // TODO: 30/04/21 remove bottom line on each list MU
     inner class ContactListViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPRoomListModel>(parent, itemLayoutId) {
         private val civAvatar: CircleImageView = itemView.findViewById(R.id.civ_avatar)
         private val ivAvatarIcon: ImageView = itemView.findViewById(R.id.iv_avatar_icon)
@@ -332,9 +333,6 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
                 tvAvatarLabel.text = TAPUtils.getInitials(room.roomName, 2)
                 tvAvatarLabel.visibility = View.VISIBLE
             }
-
-            // Change avatar icon and background
-            // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE
 
             // Set name
             tvFullName.text = room.roomName
