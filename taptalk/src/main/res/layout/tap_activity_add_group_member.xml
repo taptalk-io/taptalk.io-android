@@ -172,7 +172,10 @@
             android:id="@+id/rv_group_members"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            android:clipToPadding="false"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"/>
 
         <FrameLayout
             android:id="@+id/fl_button_continue"

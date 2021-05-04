@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
@@ -22,9 +23,13 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.R;
@@ -324,12 +329,34 @@ public class TAPFileUtils {
                 final int index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(index);
             }
+        }catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            // Path could not be retrieved using ContentResolver, therefore copy file to accessible cache using streams
+            String fileName = getFileName(context, uri);
+            //
+            File cacheDir = getShareCacheDir(context);
+            File file = new File(cacheDir, fileName);
+            String destinationPath = null;
+            if (file != null) {
+                destinationPath = file.getAbsolutePath();
+                saveFileFromUri(context, uri, destinationPath);
+            }
+
+            return destinationPath;
         }
         return null;
     }
 
     public static File getDocumentCacheDir(@NonNull Context context) {
         File dir = new File(context.getCacheDir(), DOCUMENTS_DIR);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
+    public static File getShareCacheDir(@NonNull Context context) {
+        File dir = new File(context.getCacheDir(), "share");
         if (!dir.exists()) {
             dir.mkdirs();
         }

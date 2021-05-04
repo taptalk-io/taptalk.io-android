@@ -13,6 +13,9 @@ public class TAPRoomListModel {
     private int unreadCount;
     private int unreadMentions;
     private int defaultAvatarBackgroundColor; // Save default color in model to prevent lag on bind
+    private String title;
+    public enum Type { SELECTABLE_ROOM, SELECTABLE_CONTACT, SECTION }
+    private Type type;
 
     public TAPRoomListModel(TAPMessageModel lastMessage, int unreadCount) {
         this.lastMessage = lastMessage;
@@ -21,6 +24,21 @@ public class TAPRoomListModel {
 
         TAPRoomModel room = lastMessage.getRoom();
         if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
+            if (null != TapTalk.appContext) {
+                defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getRoomName());
+            }
+        }
+    }
+
+    public TAPRoomListModel(Type type) {
+        this.type = type;
+        this.lastMessage = new TAPMessageModel();
+        TAPRoomModel room = lastMessage.getRoom();
+        if (null == room) {
+            if (null != TapTalk.appContext) {
+                defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, "");
+            }
+        } else if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
             if (null != TapTalk.appContext) {
                 defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getRoomName());
             }
@@ -122,5 +140,21 @@ public class TAPRoomListModel {
 
         TAPUserModel firstTypingUser = getTypingUsers().entrySet().iterator().next().getValue();
         return firstTypingUser.getName().split(" ")[0];
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }

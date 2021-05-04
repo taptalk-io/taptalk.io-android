@@ -435,7 +435,10 @@ public class TAPApiManager {
                            Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
         TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(file.length()));
         ProgressRequestBody reqFile = new ProgressRequestBody(file, mimeType, uploadCallback);
-        String extension = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf("."));
+        String extension = "";
+        if (file.getAbsolutePath().contains(".")) {
+            extension = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf("."));
+        }
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)

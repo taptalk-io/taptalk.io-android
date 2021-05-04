@@ -3,4 +3,7 @@
     <external-path
         name="TapTalkFiles"
         path="." />
+    <cache-path
+        name="TapTalkCache"
+        path="."/>
 </paths>
