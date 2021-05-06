@@ -510,7 +510,9 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private fun handleSendMultipleImages(intent: Intent, roomModel: TAPRoomModel?, caption: String) {
         val images = intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
         if (images != null) {
-            TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+            if (caption.isNotEmpty()) {
+                TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+            }
             for (item in images) {
                 TapCoreMessageManager.getInstance().sendImageMessage(item as? Uri, "", roomModel, object : TapCoreSendMessageListener() {})
             }
@@ -520,7 +522,9 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private fun handleSendMultipleVideos(intent: Intent, roomModel: TAPRoomModel?, caption: String) {
         val video = intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
         if (video != null) {
-            TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+            if (caption.isNotEmpty()) {
+                TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+            }
             for (item in video) {
                 TapCoreMessageManager.getInstance().sendVideoMessage(item as? Uri, "", roomModel, object : TapCoreSendMessageListener() {})
             }
