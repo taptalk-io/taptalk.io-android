@@ -713,6 +713,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadWhite)));
                 flProgress.setOnClickListener(v -> {});
                 tvMessageStatus.setVisibility(View.GONE);
+            } else if ((null == TAPFileUploadManager.getInstance(instanceKey).getUploadProgressPercent(item.getLocalID()) || (null != item.getSending() && !item.getSending()))
+                    && null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID())) {
+                // Progress done
+                flProgress.setVisibility(View.GONE);
             } else {
                 // Uploading / Downloading
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
