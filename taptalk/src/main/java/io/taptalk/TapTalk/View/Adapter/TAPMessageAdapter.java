@@ -2316,25 +2316,25 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     }).start();
                 }
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
-                vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
-                tvQuoteContent.setMaxLines(1);
             } else if (quote.getFileType().equals(String.valueOf(TYPE_FILE)) || quote.getFileType().equals(FILE)) {
                 // Load file icon
                 glide.clear(rcivQuoteImage);
                 rcivQuoteImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_documents_white));
-                ImageViewCompat.setImageTintList(rcivQuoteImage, tvQuoteTitle.getTextColors());
+                if (isMessageFromMySelf(item)) {
+                    ImageViewCompat.setImageTintList(rcivQuoteImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapColorPrimary)));
+                    rcivQuoteImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_white));
+                } else {
+                    ImageViewCompat.setImageTintList(rcivQuoteImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapWhite)));
+                    rcivQuoteImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_primary_icon));
+                };
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
-                vQuoteDecoration.setVisibility(View.GONE);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
-                tvQuoteContent.setMaxLines(1);
             } else {
                 // Show no image
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), false);
-                vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
-                tvQuoteContent.setMaxLines(2);
             }
             vQuoteBackground.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
         } else {
