@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
@@ -126,6 +127,12 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                         .show()
             }
         }
+
+        //max caption length is 100 for single image/video
+        if (intent.action == Intent.ACTION_SEND && (intent.type!!.startsWith("image/") || intent.type!!.startsWith("video/"))) {
+            et_caption.filters += InputFilter.LengthFilter(100)
+        }
+
         iv_close_btn.setOnClickListener { onBackPressed() }
         iv_search_icon.setOnClickListener { showSearchBar() }
         iv_button_clear_text.setOnClickListener { et_search.setText("") }
