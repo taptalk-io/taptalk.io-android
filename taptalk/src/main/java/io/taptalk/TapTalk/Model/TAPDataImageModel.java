@@ -26,7 +26,7 @@ public class TAPDataImageModel implements Parcelable {
     @JsonProperty("fileID")
     private String fileID;
     @Nullable
-    @JsonProperty("fileURL")
+    @JsonProperty("url")
     private String fileURL;
     @Nullable
     @JsonProperty("mediaType")

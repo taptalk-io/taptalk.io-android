@@ -634,7 +634,7 @@ public class TAPUtils {
         Number size = (Number) data.get(SIZE);
 
         String displaySize = "", displayExtension = "";
-        if (null != size) {
+        if (null != size && size.longValue() > 0L) {
             displaySize = getStringSizeLengthFile(size.longValue());
         }
         if (null != fileName && fileName.contains(".") && null != size) {
@@ -644,7 +644,15 @@ public class TAPUtils {
         } else if (null != mediaType) {
             displayExtension = mediaType;
         }
-        return String.format("%s %s", displaySize, displayExtension).toUpperCase();
+
+        if (!displaySize.isEmpty() && !displayExtension.isEmpty()) {
+            return String.format("%s %s", displaySize, displayExtension).toUpperCase();
+        } else if (!displayExtension.isEmpty()) {
+            return displayExtension;
+        } else if (!displaySize.isEmpty()) {
+            return displaySize;
+        }
+        return "";
     }
 
     public static String getFileDisplayProgress(TAPMessageModel message, Long progressBytes) {
