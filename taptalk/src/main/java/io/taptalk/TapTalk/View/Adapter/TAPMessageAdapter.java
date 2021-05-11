@@ -538,7 +538,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == imageUrl || imageUrl.isEmpty()) {
                 imageUrl = (String) item.getData().get(URL);
             }
-            rcivImageBody.post(() -> {
+
+            llTimestampIconImage.post(() -> {
                 if (position == getAdapterPosition()) {
                     if (((null != item.getQuote() &&
                             null != item.getQuote().getTitle() &&
@@ -565,8 +566,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         clForwardedQuote.setVisibility(View.VISIBLE);
                     } else if (rcivImageBody.getWidth() < (llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12))) {
-                        // Image width may not be smaller than timestamp width
+                        // Thumbnail width may not be smaller than timestamp width (no caption)
                         rcivImageBody.getLayoutParams().width = llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12);
+                        rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                        rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        clForwardedQuote.setVisibility(View.GONE);
+                    } else if (isMessageFromMySelf(item) && rcivImageBody.getWidth() < (tvMessageTimestamp.getWidth() + ivMessageStatus.getWidth() + TAPUtils.dpToPx(22))) {
+                        // Thumbnail width may not be smaller than timestamp width (with caption, right bubble)
+                        rcivImageBody.getLayoutParams().width = tvMessageTimestamp.getWidth() + ivMessageStatus.getWidth() + TAPUtils.dpToPx(22);
+                        rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                        rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        clForwardedQuote.setVisibility(View.GONE);
+                    } else if (!isMessageFromMySelf(item) && rcivImageBody.getWidth() < (tvMessageTimestamp.getWidth() + TAPUtils.dpToPx(20))) {
+                        // Thumbnail width may not be smaller than timestamp width (with caption, left bubble)
+                        rcivImageBody.getLayoutParams().width = tvMessageTimestamp.getWidth() + tvMessageTimestamp.getWidth() + TAPUtils.dpToPx(20);
                         rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
                         rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         clForwardedQuote.setVisibility(View.GONE);
@@ -594,8 +607,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             if (null != imageCaption && !imageCaption.isEmpty()) {
                 // Show caption
-                rcivImageBody.setBottomLeftRadius(0);
-                rcivImageBody.setBottomRightRadius(0);
+//                rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(2));
+//                rcivImageBody.setBottomRightRadius(TAPUtils.dpToPx(2));
                 //tvMessageBody.setText(imageCaption);
                 setMessageBodyText(tvMessageBody, item, imageCaption);
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
@@ -607,8 +620,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             } else {
                 // Hide caption
-                rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(13));
-                rcivImageBody.setBottomRightRadius(TAPUtils.dpToPx(13));
+//                rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(13));
+//                rcivImageBody.setBottomRightRadius(TAPUtils.dpToPx(13));
                 tvMessageBody.setVisibility(View.GONE);
                 llTimestampIconImage.setVisibility(View.VISIBLE);
                 tvMessageTimestamp.setVisibility(View.GONE);
@@ -617,10 +630,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             }
 
-            if (null != widthDimension && null != heightDimension && 0 != widthDimension.intValue() && 0 != heightDimension.intValue()) {
+            if (null != widthDimension && null != heightDimension && widthDimension.intValue() > 0 && heightDimension.intValue() > 0) {
                 rcivImageBody.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
             } else {
-                rcivImageBody.setImageDimensions(TAPUtils.dpToPx(252), TAPUtils.dpToPx(252));
+                rcivImageBody.setImageDimensions(rcivImageBody.getMaxWidth(), rcivImageBody.getMaxWidth());
             }
 
             // Load thumbnail when download is not in progress
@@ -888,7 +901,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(localID);
             videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item.getRoom().getRoomID(), key);
 
-            rcivVideoThumbnail.post(() -> {
+            llTimestampIconImage.post(() -> {
                 if (position == getAdapterPosition()) {
                     if (((null != item.getQuote() &&
                             null != item.getQuote().getTitle() &&
@@ -915,8 +928,26 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         clForwardedQuote.setVisibility(View.VISIBLE);
                     } else if (rcivVideoThumbnail.getWidth() < (llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12))) {
-                        // Thumbnail width may not be smaller than timestamp width
+                        // Thumbnail width may not be smaller than timestamp width (no caption)
                         rcivVideoThumbnail.getLayoutParams().width = llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12);
+                        rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        clForwardedQuote.setVisibility(View.GONE);
+                    } else if (isMessageFromMySelf(item) && rcivVideoThumbnail.getWidth() < (tvMessageTimestamp.getWidth() + ivMessageStatus.getWidth() + TAPUtils.dpToPx(22))) {
+                        // Thumbnail width may not be smaller than timestamp width (with caption, right bubble)
+                        rcivVideoThumbnail.getLayoutParams().width = tvMessageTimestamp.getWidth() + ivMessageStatus.getWidth() + TAPUtils.dpToPx(22);
+                        rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        clForwardedQuote.setVisibility(View.GONE);
+                    } else if (!isMessageFromMySelf(item) && rcivVideoThumbnail.getWidth() < (tvMessageTimestamp.getWidth() + TAPUtils.dpToPx(20))) {
+                        // Thumbnail width may not be smaller than timestamp width (with caption, left bubble)
+                        rcivVideoThumbnail.getLayoutParams().width = tvMessageTimestamp.getWidth() + tvMessageTimestamp.getWidth() + TAPUtils.dpToPx(20);
+                        rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        clForwardedQuote.setVisibility(View.GONE);
+                    } else if (rcivVideoThumbnail.getWidth() < (tvMediaInfo.getWidth() + TAPUtils.dpToPx(12))) {
+                        // Thumbnail width may not be smaller than media info width
+                        rcivVideoThumbnail.getLayoutParams().width = tvMediaInfo.getWidth() + TAPUtils.dpToPx(12);
                         rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
                         rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         clForwardedQuote.setVisibility(View.GONE);
@@ -944,8 +975,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             if (null != videoCaption && !videoCaption.isEmpty()) {
                 // Show caption
-                rcivVideoThumbnail.setBottomLeftRadius(0);
-                rcivVideoThumbnail.setBottomRightRadius(0);
+//                rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(2));
+//                rcivImageBody.setBottomRightRadius(TAPUtils.dpToPx(2));
                 //tvMessageBody.setText(videoCaption);
                 setMessageBodyText(tvMessageBody, item, videoCaption);
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
@@ -957,8 +988,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             } else {
                 // Hide caption
-                rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(13));
-                rcivVideoThumbnail.setBottomRightRadius(TAPUtils.dpToPx(13));
+//                rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(13));
+//                rcivVideoThumbnail.setBottomRightRadius(TAPUtils.dpToPx(13));
                 tvMessageBody.setVisibility(View.GONE);
                 llTimestampIconImage.setVisibility(View.VISIBLE);
                 tvMessageTimestamp.setVisibility(View.GONE);
@@ -967,16 +998,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             }
 
-            if (null != widthDimension && null != heightDimension) {
+            if (null != widthDimension && null != heightDimension && widthDimension.intValue() > 0 && heightDimension.intValue() > 0) {
                 rcivVideoThumbnail.setImageDimensions(widthDimension.intValue(), heightDimension.intValue());
+            } else {
+                rcivVideoThumbnail.setImageDimensions(rcivVideoThumbnail.getMaxWidth(), rcivVideoThumbnail.getMaxWidth());
             }
 
             // Fix media info text width
-            rcivVideoThumbnail.post(() -> {
-                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) tvMediaInfo.getLayoutParams();
-                params.matchConstraintMaxWidth = rcivVideoThumbnail.getMeasuredWidth() - TAPUtils.dpToPx(16);
-                tvMediaInfo.setLayoutParams(params);
-            });
+//            rcivVideoThumbnail.post(() -> {
+//                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) tvMediaInfo.getLayoutParams();
+//                params.matchConstraintMaxWidth = rcivVideoThumbnail.getMeasuredWidth() - TAPUtils.dpToPx(16);
+//                tvMediaInfo.setLayoutParams(params);
+//            });
 
             // Load thumbnail when download is not in progress
             if (null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID()) || null != dataUri) {
@@ -986,7 +1019,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Message failed to send
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
-                tvMediaInfo.setText(size == null ? "" : TAPUtils.getStringSizeLengthFile(size.longValue()));
+                if (size != null && size.longValue() > 0L) {
+                    tvMediaInfo.setText(TAPUtils.getStringSizeLengthFile(size.longValue()));
+                    tvMediaInfo.setVisibility(View.VISIBLE);
+                } else {
+                    tvMediaInfo.setText("");
+                    tvMediaInfo.setVisibility(View.GONE);
+                }
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileRetryUploadDownloadWhite)));
                 pbProgress.setVisibility(View.GONE);
@@ -1008,7 +1047,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     && null == downloadProgressPercent) && null != videoUri &&
                     TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item))) {
                 // Video has finished downloading or uploading
-                tvMediaInfo.setText(null == duration ? "" : TAPUtils.getMediaDurationString(duration.intValue(), duration.intValue()));
+                if (duration != null && duration.longValue() > 0L) {
+                    tvMediaInfo.setText(TAPUtils.getMediaDurationString(duration.intValue(), duration.intValue()));
+                    tvMediaInfo.setVisibility(View.VISIBLE);
+                } else {
+                    tvMediaInfo.setText("");
+                    tvMediaInfo.setVisibility(View.GONE);
+                }
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_play_white));
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFilePlayMedia)));
                 pbProgress.setVisibility(View.GONE);
@@ -1047,7 +1092,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Video is not downloaded
                 String videoSize = null == size ? "" : TAPUtils.getStringSizeLengthFile(size.longValue());
                 String videoDuration = null == duration ? "" : TAPUtils.getMediaDurationString(duration.intValue(), duration.intValue());
-                tvMediaInfo.setText(String.format("%s%s%s", videoSize, (videoSize.isEmpty() || videoDuration.isEmpty()) ? "" : " - ", videoDuration));
+                if ((size != null && size.longValue() > 0L) || (duration != null && duration.longValue() > 0L)) {
+                    tvMediaInfo.setText(String.format("%s%s%s", videoSize, (videoSize.isEmpty() || videoDuration.isEmpty()) ? "" : " - ", videoDuration));
+                    tvMediaInfo.setVisibility(View.VISIBLE);
+                } else {
+                    tvMediaInfo.setText("");
+                    tvMediaInfo.setVisibility(View.GONE);
+                }
                 if (TAPFileDownloadManager.getInstance(instanceKey).getFailedDownloads().contains(item.getLocalID())) {
                     ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
                     ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileRetryUploadDownloadWhite)));
@@ -1068,6 +1119,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     // Uploading
                     Long uploadProgressBytes = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressBytes(localID);
                     tvMediaInfo.setText(TAPUtils.getFileDisplayProgress(item, uploadProgressBytes));
+                    if (tvMediaInfo.getText().length() > 0) {
+                        tvMediaInfo.setVisibility(View.VISIBLE);
+                    } else {
+                        tvMediaInfo.setVisibility(View.GONE);
+                    }
                     pbProgress.setProgress(uploadProgressPercent);
                     rcivVideoThumbnail.setOnClickListener(v -> cancelUpload(item));
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_sending));
@@ -1075,6 +1131,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     // Downloading
                     Long downloadProgressBytes = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressBytes(localID);
                     tvMediaInfo.setText(TAPUtils.getFileDisplayProgress(item, downloadProgressBytes));
+                    if (tvMediaInfo.getText().length() > 0) {
+                        tvMediaInfo.setVisibility(View.VISIBLE);
+                    } else {
+                        tvMediaInfo.setVisibility(View.GONE);
+                    }
                     pbProgress.setProgress(downloadProgressPercent);
                     rcivVideoThumbnail.setOnClickListener(v -> cancelDownload(item));
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_downloading));
@@ -1534,6 +1595,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return;
             }
             setMessageBodyText(tvMessageBody, item, (String) mapData.get(ADDRESS));
+            if (tvMessageBody.getText().length() == 0) {
+                tvMessageBody.setVisibility(View.GONE);
+            } else {
+                tvMessageBody.setVisibility(View.VISIBLE);
+            }
             mapView.getMapAsync(googleMap -> {
                 Number latitude = (Number) mapData.get(LATITUDE);
                 Number longitude = (Number) mapData.get(LONGITUDE);
