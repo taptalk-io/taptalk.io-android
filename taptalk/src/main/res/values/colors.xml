@@ -57,6 +57,8 @@
 
     <color name="tapChatComposerBackgroundColor">@color/tapWhite</color>
     <color name="tapQuoteLayoutDecorationBackgroundColor">@color/tapColorPrimaryExtraLight</color>
+    <color name="tapRightBubbleQuoteDecorationBackgroundColor">@color/tapWhite</color>
+    <color name="tapLeftBubbleQuoteDecorationBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapRightBubbleBackgroundColor">@color/tapDefaultRightBubbleBackgroundColor</color>
     <color name="tapLeftBubbleBackgroundColor">@color/tapDefaultLeftBubbleBackgroundColor</color>
     <color name="tapRightBubbleHighlightBackgroundColor">#665eecff</color>

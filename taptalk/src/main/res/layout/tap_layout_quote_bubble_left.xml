@@ -4,17 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_quote"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingLeft="0dp"
-    android:paddingStart="0dp"
-    android:paddingEnd="8dp"
-    android:paddingRight="8dp">
+    android:layout_height="wrap_content">
 
     <View
         android:id="@+id/v_quote_decoration"
         android:layout_width="4dp"
         android:layout_height="0dp"
-        android:background="@drawable/tap_bg_quote_decoration"
+        android:background="@drawable/tap_bg_bubble_quote_decoration_left"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -41,6 +37,8 @@
         android:layout_marginStart="10dp"
         app:layout_goneMarginStart="8dp"
         android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:ellipsize="end"
         android:maxLines="1"
         app:layout_constrainedWidth="true"
@@ -65,10 +63,8 @@
         android:layout_marginBottom="12dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:paddingLeft="0dp"
-        android:paddingStart="0dp"
-        android:paddingEnd="8dp"
-        android:paddingRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@id/v_quote_decoration"
         app:layout_constraintEnd_toEndOf="parent"

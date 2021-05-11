@@ -5,18 +5,13 @@
     android:id="@+id/cl_quote"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingLeft="0dp"
-    android:paddingStart="0dp"
-    android:paddingEnd="8dp"
-    android:paddingRight="8dp"
     tools:background="@drawable/tap_bg_bubble_quote_right_4dp">
 
     <View
         android:id="@+id/v_quote_decoration"
         android:layout_width="4dp"
         android:layout_height="0dp"
-        android:background="@drawable/tap_bg_quote_decoration"
-        android:backgroundTint="@color/tapWhite"
+        android:background="@drawable/tap_bg_bubble_quote_decoration_right"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -39,10 +34,11 @@
         style="@style/tapRightBubbleQuoteTitleStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginStart="2dp"
-        app:layout_goneMarginStart="8dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:ellipsize="end"
         android:maxLines="1"
         app:layout_constrainedWidth="true"
@@ -52,6 +48,7 @@
         app:layout_constraintStart_toEndOf="@id/rciv_quote_image"
         app:layout_constraintTop_toTopOf="@id/v_quote_decoration"
         app:layout_constraintVertical_chainStyle="packed"
+        app:layout_goneMarginStart="8dp"
         app:layout_goneMarginTop="0dp"
         tools:text="User Name" />
 
@@ -60,17 +57,14 @@
         style="@style/tapRightBubbleQuoteContentStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
-        android:layout_marginStart="2dp"
-        app:layout_goneMarginStart="8dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="2dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginBottom="12dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:paddingLeft="0dp"
-        android:paddingStart="0dp"
-        android:paddingEnd="8dp"
-        android:paddingRight="8dp"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@id/v_quote_decoration"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,6 +72,7 @@
         app:layout_constraintStart_toEndOf="@id/rciv_quote_image"
         app:layout_constraintTop_toBottomOf="@id/tv_quote_title"
         app:layout_goneMarginBottom="0dp"
+        app:layout_goneMarginStart="8dp"
         tools:text="In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
