@@ -8,6 +8,8 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPMessageTargetModel;
 
 @Entity(tableName = "Message_Table", indices = @Index(value = "roomID"))
@@ -194,6 +196,34 @@ public class TAPMessageEntity {
         this.userDeleted = userDeleted;
         this.action = action;
         this.target = target;
+    }
+
+    public static TAPMessageEntity fromMessageModel(TAPMessageModel messageModel) {
+        return new TAPMessageEntity(
+                messageModel.getMessageID(), messageModel.getLocalID(), messageModel.getFilterID(), messageModel.getBody(),
+                messageModel.getRecipientID(), messageModel.getType(), messageModel.getCreated(),
+                null == messageModel.getData() ? null : TAPUtils.toJsonString(messageModel.getData()),
+                null == messageModel.getQuote() ? null : TAPUtils.toJsonString(messageModel.getQuote()),
+                null == messageModel.getReplyTo() ? null : TAPUtils.toJsonString(messageModel.getReplyTo()),
+                null == messageModel.getForwardFrom() ? null : TAPUtils.toJsonString(messageModel.getForwardFrom()),
+                messageModel.getUpdated(), messageModel.getDeleted(),
+                messageModel.getIsRead(), messageModel.getDelivered(), messageModel.getHidden(), messageModel.getIsDeleted(),
+                messageModel.getSending(), messageModel.getFailedSend(), messageModel.getRoom().getRoomID(),
+                messageModel.getRoom().getXcRoomID(), messageModel.getRoom().getRoomName(),
+                messageModel.getRoom().getRoomColor(), messageModel.getRoom().getRoomType(),
+                TAPUtils.toJsonString(messageModel.getRoom().getRoomImage()),
+                messageModel.getRoom().isLocked(), messageModel.getRoom().isRoomDeleted(),
+                messageModel.getRoom().getLockedTimestamp(), messageModel.getRoom().getDeletedTimestamp(),
+                messageModel.getUser().getUserID(), messageModel.getUser().getXcUserID(),
+                messageModel.getUser().getName(), messageModel.getUser().getUsername(),
+                TAPUtils.toJsonString(messageModel.getUser().getAvatarURL()),
+                messageModel.getUser().getEmail(), messageModel.getUser().getPhoneNumber(),
+                TAPUtils.toJsonString(messageModel.getUser().getUserRole()),
+                messageModel.getUser().getLastLogin(), messageModel.getUser().getLastActivity(),
+                messageModel.getUser().getRequireChangePassword(),
+                messageModel.getUser().getCreated(), messageModel.getUser().getUpdated(),
+                messageModel.getUser().getDeleted(), messageModel.getAction(), messageModel.getTarget()
+        );
     }
 
     @NonNull

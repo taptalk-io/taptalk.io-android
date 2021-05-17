@@ -1111,7 +1111,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         runOnUiThread(() -> rvChatProfile.getViewTreeObserver().removeOnScrollChangedListener(sharedMediaPagingScrollListener));
                     }
                     for (TAPMessageEntity entity : entities) {
-                        TAPMessageModel mediaMessage = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+                        TAPMessageModel mediaMessage = TAPMessageModel.fromMessageEntity(entity);
                         vm.addSharedMedia(mediaMessage);
                         vm.getAdapterItems().add(new TapChatProfileItemModel(mediaMessage));
                     }

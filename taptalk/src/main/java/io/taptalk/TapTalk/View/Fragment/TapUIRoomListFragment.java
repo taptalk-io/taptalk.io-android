@@ -875,7 +875,7 @@ public class TapUIRoomListFragment extends Fragment {
                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                     try {
                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                        TAPMessageEntity entity = TAPChatManager.getInstance(instanceKey).convertToEntity(message);
+                        TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
                         tempMessage.add(entity);
 
                         // Save undelivered messages to list
@@ -986,7 +986,7 @@ public class TapUIRoomListFragment extends Fragment {
 //            int count = 0;
 //            int limit = 10;
 //            for (TAPMessageEntity entity : entities) {
-//                TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+//                TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
 //                TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
 //                messageModels.add(roomModel);
 //                vm.addRoomPointer(roomModel);
@@ -1009,7 +1009,7 @@ public class TapUIRoomListFragment extends Fragment {
             int count = 0; // FIXME Count to load room list every 10 items
             int limit = 25;
             for (TAPMessageEntity entity : entities) {
-                TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+                TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
@@ -1046,7 +1046,7 @@ public class TapUIRoomListFragment extends Fragment {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             vm.getRoomPointer().clear();
             for (TAPMessageEntity entity : entities) {
-                TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+                TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
@@ -1067,7 +1067,7 @@ public class TapUIRoomListFragment extends Fragment {
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             for (TAPMessageEntity entity : entities) {
-                TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+                TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);

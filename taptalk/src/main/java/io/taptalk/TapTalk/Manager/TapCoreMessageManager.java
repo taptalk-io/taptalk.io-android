@@ -483,7 +483,7 @@ public class TapCoreMessageManager {
             public void onSelectFinished(List<TAPMessageEntity> entities) {
                 List<TAPMessageModel> models = new ArrayList<>();
                 for (TAPMessageEntity entity : entities) {
-                    TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+                    TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                     models.add(model);
                 }
                 messageList.addAll(models);
@@ -519,7 +519,7 @@ public class TapCoreMessageManager {
                             try {
                                 TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                                 messageBeforeModels.add(message);
-                                entities.add(TAPChatManager.getInstance(instanceKey).convertToEntity(message));
+                                entities.add(TAPMessageEntity.fromMessageModel(message));
                             } catch (Exception e) {
                                 if (null != listener) {
                                     listener.onError(ERROR_CODE_OTHERS, e.getMessage());
@@ -595,7 +595,7 @@ public class TapCoreMessageManager {
                             try {
                                 TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                                 messageAfterModels.add(message);
-                                entities.add(TAPChatManager.getInstance(instanceKey).convertToEntity(message));
+                                entities.add(TAPMessageEntity.fromMessageModel(message));
 
                                 if (null != message.getUpdated() &&
                                         TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(roomID) < message.getUpdated()) {

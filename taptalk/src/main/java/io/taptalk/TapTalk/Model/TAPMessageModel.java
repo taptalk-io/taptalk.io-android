@@ -9,9 +9,11 @@ import androidx.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.HashMap;
 
+import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
@@ -196,11 +198,180 @@ public class TAPMessageModel implements Parcelable {
         return new TAPMessageModel("0", localID, "", message.getBody(), message.getRoom(), message.getType(), created, message.getUser(), message.getRecipientID(), message.getData(), message.getQuote(), message.getReplyTo(), message.getForwardFrom(), false, true, false, false, false, false, created, null, null, null);
     }
 
+    public static TAPMessageModel fromMessageEntity(TAPMessageEntity messageEntity) {
+        return new TAPMessageModel(
+                messageEntity.getMessageID(),
+                messageEntity.getLocalID(),
+                messageEntity.getFilterID(),
+                messageEntity.getBody(),
+                TAPRoomModel.Builder(messageEntity),
+                messageEntity.getType(),
+                messageEntity.getCreated(),
+                new TAPUserModel(messageEntity.getUserID(), messageEntity.getXcUserID(), messageEntity.getUserFullName(),
+                        TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
+                        }, messageEntity.getUserImage()),
+                        messageEntity.getUsername(), messageEntity.getUserEmail(), messageEntity.getUserPhone(),
+                        TAPUtils.fromJSON(new TypeReference<TAPUserRoleModel>() {
+                        }, messageEntity.getUserRole()),
+                        messageEntity.getLastLogin(), messageEntity.getLastActivity(), messageEntity.getRequireChangePassword(), messageEntity.getUserCreated(),
+                        messageEntity.getUserUpdated(), messageEntity.getUserDeleted()),
+                messageEntity.getRecipientID(),
+                null == messageEntity.getData() ? null : TAPUtils.toHashMap(messageEntity.getData()),
+                null == messageEntity.getQuote() ? null : TAPUtils.fromJSON(new TypeReference<TAPQuoteModel>() {
+                }, messageEntity.getQuote()),
+                null == messageEntity.getReplyTo() ? null : TAPUtils.fromJSON(new TypeReference<TAPReplyToModel>() {
+                }, messageEntity.getReplyTo()),
+                null == messageEntity.getForwardFrom() ? null : TAPUtils.fromJSON(new TypeReference<TAPForwardFromModel>() {
+                }, messageEntity.getForwardFrom()),
+                messageEntity.getIsDeleted(),
+                messageEntity.getSending(),
+                messageEntity.getFailedSend(),
+                messageEntity.getDelivered(),
+                messageEntity.getIsRead(),
+                messageEntity.getHidden(),
+                messageEntity.getUpdated(),
+                messageEntity.getUserDeleted(),
+                messageEntity.getAction(),
+                messageEntity.getTarget());
+    }
+
     public void updateMessageStatusText() {
         if (created > 0L) {
             messageStatusText = TAPTimeFormatter.durationChatString(TapTalk.appContext, created);
 //            messageStatusText = TAPTimeFormatter.formatClock(created);
         }
+    }
+
+    public TAPMessageModel updateMessageStatus(TAPMessageModel model) {
+        if (null != model && null != model.isDeleted && (null == this.isDeleted || !this.isDeleted))
+            this.isDeleted = model.getIsDeleted();
+        if (null != model && null != model.deleted && (null == this.deleted || 0 == this.deleted))
+            this.deleted = model.getDeleted();
+        if (null != model && null != model.isHidden && (null == this.isHidden || !this.isHidden))
+            this.isHidden = model.getHidden();
+        if (null != model && null != model.isDelivered && (null != this.isDelivered && !this.isDelivered))
+            this.isDelivered = model.getDelivered();
+        if (null != model && null != model.isRead && (null != this.isRead && !this.isRead))
+            this.isRead = model.getIsRead();
+
+        return this;
+    }
+
+    public void updateValue(TAPMessageModel model) {
+        // Validate null/empty value from new model
+        if (null != model.messageID && !"".equals(model.messageID))
+            this.messageID = model.getMessageID();
+        if (!"".equals(model.localID)) this.localID = model.getLocalID();
+        if (!"".equals(model.filterID)) this.filterID = model.getFilterID();
+        if (null != model.body && !"".equals(model.body)) this.body = model.getBody();
+        if (null != model.room) this.room = model.getRoom();
+        this.type = model.getType();
+        if (null != model.created && 0L != model.created) this.created = model.getCreated();
+        if (null != model.user) this.user = model.getUser();
+        if (null == this.data && null != model.data) {
+            this.data = model.getData();
+        } else if (null != model.data && (model.type == TYPE_IMAGE || model.type == TYPE_VIDEO) &&
+                (null == model.isSending || !model.isSending) &&
+                (null == model.isFailedSend || !model.isFailedSend)) {
+            this.data.putAll(model.data);
+            this.data.remove(FILE_URI); // Remove file Uri from data if type is image or video
+        } else if (null != model.data) {
+            this.data.putAll(model.data);
+        }
+        if (null != model.getQuote()) this.quote = model.getQuote();
+        if (null != model.getRecipientID() && !"".equals(model.getRecipientID()))
+            this.recipientID = model.getRecipientID();
+        if (null != model.getReplyTo()) this.replyTo = model.getReplyTo();
+        if (null != model.getForwardFrom()) this.forwardFrom = model.getForwardFrom();
+        if (null != model.getIsDeleted() && (null == this.isDeleted || !this.isDeleted))
+            this.isDeleted = model.getIsDeleted();
+        if (null != model.getSending()) this.isSending = model.getSending();
+        if (null != model.getFailedSend()) this.isFailedSend = model.getFailedSend();
+        if (null != model.getUpdated() && 0L < model.getUpdated())
+            this.updated = model.getUpdated();
+        if (null != model.getDeleted() && 0L < model.getDeleted() && (null == this.deleted || 0 == this.deleted))
+            this.deleted = model.getDeleted();
+        if (null != model.getHidden() && (null == this.isHidden || !this.isHidden))
+            this.isHidden = model.getHidden();
+        if (null != model.getDelivered() && (null != this.isDelivered && !this.isDelivered))
+            this.isDelivered = model.getDelivered();
+        if (null != model.getIsRead() && (null != this.isRead && !this.isRead))
+            this.isRead = model.getIsRead();
+        if (null != model.getAction()) this.action = model.getAction();
+        if (null != model.getTarget()) this.target = model.getTarget();
+        updateMessageStatusText();
+        // Update when adding fields to model
+    }
+
+    public void updateReadMessage() {
+        if (null != this.isRead && !this.isRead)
+            this.isRead = true;
+        if (null != this.isDelivered && !this.isDelivered)
+            this.isDelivered = true;
+    }
+
+    public void updateDeliveredMessage() {
+        if (null != this.isDelivered && !this.isDelivered)
+            this.setDelivered(true);
+    }
+
+    public TAPMessageModel copyMessageModel() {
+        if (null != getData()) setData(new HashMap<>(getData()));
+
+        return new TAPMessageModel(
+                getMessageID(),
+                getLocalID(),
+                getFilterID(),
+                getBody(),
+                getRoom(),
+                getType(),
+                getCreated(),
+                getUser(),
+                getRecipientID(),
+                getData(),
+                getQuote(),
+                getReplyTo(),
+                getForwardFrom(),
+                getIsDeleted(),
+                getSending(),
+                getFailedSend(),
+                getDelivered(),
+                getIsRead(),
+                getHidden(),
+                getUpdated(),
+                getDeleted(),
+                getAction(),
+                getTarget());
+        // Update when adding fields to model
+    }
+
+    public HashMap<String, Object> convertToHashMap() {
+        HashMap<String, Object> messageMap = new HashMap<>();
+        messageMap.put("messageID", messageID);
+        messageMap.put("localID", localID);
+        messageMap.put("filterID", filterID);
+        messageMap.put("body", body);
+        messageMap.put("room", room);
+        messageMap.put("type", type);
+        messageMap.put("created", created);
+        messageMap.put("user", user);
+        messageMap.put("recipientID", recipientID);
+        messageMap.put("data", data);
+        messageMap.put("quote", quote);
+        messageMap.put("replyTo", replyTo);
+        messageMap.put("forwardFrom", forwardFrom);
+        messageMap.put("isDeleted", isDeleted);
+        messageMap.put("isSending", isSending);
+        messageMap.put("isFailedSend", isFailedSend);
+        messageMap.put("isDelivered", isDelivered);
+        messageMap.put("isRead", isRead);
+        messageMap.put("isHidden", isHidden);
+        messageMap.put("updated", updated);
+        messageMap.put("deleted", deleted);
+        messageMap.put("action", action);
+        messageMap.put("target", target);
+        // Update when adding fields to model
+        return messageMap;
     }
 
     @Nullable
@@ -414,138 +585,6 @@ public class TAPMessageModel implements Parcelable {
 
     public String getMessageStatusText() {
         return messageStatusText;
-    }
-
-    public TAPMessageModel updateMessageStatus(TAPMessageModel model) {
-        if (null != model && null != model.isDeleted && (null == this.isDeleted || !this.isDeleted))
-            this.isDeleted = model.getIsDeleted();
-        if (null != model && null != model.deleted && (null == this.deleted || 0 == this.deleted))
-            this.deleted = model.getDeleted();
-        if (null != model && null != model.isHidden && (null == this.isHidden || !this.isHidden))
-            this.isHidden = model.getHidden();
-        if (null != model && null != model.isDelivered && (null != this.isDelivered && !this.isDelivered))
-            this.isDelivered = model.getDelivered();
-        if (null != model && null != model.isRead && (null != this.isRead && !this.isRead))
-            this.isRead = model.getIsRead();
-
-        return this;
-    }
-
-    public void updateValue(TAPMessageModel model) {
-        // Validate null/empty value from new model
-        if (null != model.messageID && !"".equals(model.messageID))
-            this.messageID = model.getMessageID();
-        if (!"".equals(model.localID)) this.localID = model.getLocalID();
-        if (!"".equals(model.filterID)) this.filterID = model.getFilterID();
-        if (null != model.body && !"".equals(model.body)) this.body = model.getBody();
-        if (null != model.room) this.room = model.getRoom();
-        this.type = model.getType();
-        if (null != model.created && 0L != model.created) this.created = model.getCreated();
-        if (null != model.user) this.user = model.getUser();
-        if (null == this.data && null != model.data) {
-            this.data = model.getData();
-        } else if (null != model.data && (model.type == TYPE_IMAGE || model.type == TYPE_VIDEO) &&
-                (null == model.isSending || !model.isSending) &&
-                (null == model.isFailedSend || !model.isFailedSend)) {
-            this.data.putAll(model.data);
-            this.data.remove(FILE_URI); // Remove file Uri from data if type is image or video
-        } else if (null != model.data) {
-            this.data.putAll(model.data);
-        }
-        if (null != model.getQuote()) this.quote = model.getQuote();
-        if (null != model.getRecipientID() && !"".equals(model.getRecipientID()))
-            this.recipientID = model.getRecipientID();
-        if (null != model.getReplyTo()) this.replyTo = model.getReplyTo();
-        if (null != model.getForwardFrom()) this.forwardFrom = model.getForwardFrom();
-        if (null != model.getIsDeleted() && (null == this.isDeleted || !this.isDeleted))
-            this.isDeleted = model.getIsDeleted();
-        if (null != model.getSending()) this.isSending = model.getSending();
-        if (null != model.getFailedSend()) this.isFailedSend = model.getFailedSend();
-        if (null != model.getUpdated() && 0L < model.getUpdated())
-            this.updated = model.getUpdated();
-        if (null != model.getDeleted() && 0L < model.getDeleted() && (null == this.deleted || 0 == this.deleted))
-            this.deleted = model.getDeleted();
-        if (null != model.getHidden() && (null == this.isHidden || !this.isHidden))
-            this.isHidden = model.getHidden();
-        if (null != model.getDelivered() && (null != this.isDelivered && !this.isDelivered))
-            this.isDelivered = model.getDelivered();
-        if (null != model.getIsRead() && (null != this.isRead && !this.isRead))
-            this.isRead = model.getIsRead();
-        if (null != model.getAction()) this.action = model.getAction();
-        if (null != model.getTarget()) this.target = model.getTarget();
-        updateMessageStatusText();
-        // Update when adding fields to model
-    }
-
-    public void updateReadMessage() {
-        if (null != this.isRead && !this.isRead)
-            this.isRead = true;
-        if (null != this.isDelivered && !this.isDelivered)
-            this.isDelivered = true;
-    }
-
-    public void updateDeliveredMessage() {
-        if (null != this.isDelivered && !this.isDelivered)
-            this.setDelivered(true);
-    }
-
-    public TAPMessageModel copyMessageModel() {
-        if (null != getData()) setData(new HashMap<>(getData()));
-
-        return new TAPMessageModel(
-                getMessageID(),
-                getLocalID(),
-                getFilterID(),
-                getBody(),
-                getRoom(),
-                getType(),
-                getCreated(),
-                getUser(),
-                getRecipientID(),
-                getData(),
-                getQuote(),
-                getReplyTo(),
-                getForwardFrom(),
-                getIsDeleted(),
-                getSending(),
-                getFailedSend(),
-                getDelivered(),
-                getIsRead(),
-                getHidden(),
-                getUpdated(),
-                getDeleted(),
-                getAction(),
-                getTarget());
-        // Update when adding fields to model
-    }
-
-    public HashMap<String, Object> convertToHashMap() {
-        HashMap<String, Object> messageMap = new HashMap<>();
-        messageMap.put("messageID", messageID);
-        messageMap.put("localID", localID);
-        messageMap.put("filterID", filterID);
-        messageMap.put("body", body);
-        messageMap.put("room", room);
-        messageMap.put("type", type);
-        messageMap.put("created", created);
-        messageMap.put("user", user);
-        messageMap.put("recipientID", recipientID);
-        messageMap.put("data", data);
-        messageMap.put("quote", quote);
-        messageMap.put("replyTo", replyTo);
-        messageMap.put("forwardFrom", forwardFrom);
-        messageMap.put("isDeleted", isDeleted);
-        messageMap.put("isSending", isSending);
-        messageMap.put("isFailedSend", isFailedSend);
-        messageMap.put("isDelivered", isDelivered);
-        messageMap.put("isRead", isRead);
-        messageMap.put("isHidden", isHidden);
-        messageMap.put("updated", updated);
-        messageMap.put("deleted", deleted);
-        messageMap.put("action", action);
-        messageMap.put("target", target);
-        // Update when adding fields to model
-        return messageMap;
     }
 
     @Override

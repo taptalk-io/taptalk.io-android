@@ -317,76 +317,6 @@ public class TAPChatManager {
         return !splitRoomID[0].equals(getActiveUser().getUserID()) ? splitRoomID[0] : splitRoomID[1];
     }
 
-    /**
-     * convert TAPMessageEntity to TAPMessageModel
-     */
-    public TAPMessageModel convertToModel(TAPMessageEntity entity) {
-        return new TAPMessageModel(
-                entity.getMessageID(),
-                entity.getLocalID(),
-                entity.getFilterID(),
-                entity.getBody(),
-                TAPRoomModel.Builder(entity),
-                entity.getType(),
-                entity.getCreated(),
-                new TAPUserModel(entity.getUserID(), entity.getXcUserID(), entity.getUserFullName(),
-                        TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
-                        }, entity.getUserImage()),
-                        entity.getUsername(), entity.getUserEmail(), entity.getUserPhone(),
-                        TAPUtils.fromJSON(new TypeReference<TAPUserRoleModel>() {
-                        }, entity.getUserRole()),
-                        entity.getLastLogin(), entity.getLastActivity(), entity.getRequireChangePassword(), entity.getUserCreated(),
-                        entity.getUserUpdated(), entity.getUserDeleted()),
-                entity.getRecipientID(),
-                null == entity.getData() ? null : TAPUtils.toHashMap(entity.getData()),
-                null == entity.getQuote() ? null : TAPUtils.fromJSON(new TypeReference<TAPQuoteModel>() {
-                }, entity.getQuote()),
-                null == entity.getReplyTo() ? null : TAPUtils.fromJSON(new TypeReference<TAPReplyToModel>() {
-                }, entity.getReplyTo()),
-                null == entity.getForwardFrom() ? null : TAPUtils.fromJSON(new TypeReference<TAPForwardFromModel>() {
-                }, entity.getForwardFrom()),
-                entity.getIsDeleted(),
-                entity.getSending(),
-                entity.getFailedSend(),
-                entity.getDelivered(),
-                entity.getIsRead(),
-                entity.getHidden(),
-                entity.getUpdated(),
-                entity.getUserDeleted(),
-                entity.getAction(), entity.getTarget());
-    }
-
-    /**
-     * convert TAPMessageModel to TAPMessageEntity
-     */
-    public TAPMessageEntity convertToEntity(TAPMessageModel model) {
-        return new TAPMessageEntity(
-                model.getMessageID(), model.getLocalID(), model.getFilterID(), model.getBody(),
-                model.getRecipientID(), model.getType(), model.getCreated(),
-                null == model.getData() ? null : TAPUtils.toJsonString(model.getData()),
-                null == model.getQuote() ? null : TAPUtils.toJsonString(model.getQuote()),
-                null == model.getReplyTo() ? null : TAPUtils.toJsonString(model.getReplyTo()),
-                null == model.getForwardFrom() ? null : TAPUtils.toJsonString(model.getForwardFrom()),
-                model.getUpdated(), model.getDeleted(),
-                model.getIsRead(), model.getDelivered(), model.getHidden(), model.getIsDeleted(),
-                model.getSending(), model.getFailedSend(), model.getRoom().getRoomID(),
-                model.getRoom().getXcRoomID(), model.getRoom().getRoomName(),
-                model.getRoom().getRoomColor(), model.getRoom().getRoomType(),
-                TAPUtils.toJsonString(model.getRoom().getRoomImage()),
-                model.getRoom().isLocked(), model.getRoom().isRoomDeleted(),
-                model.getRoom().getLockedTimestamp(), model.getRoom().getDeletedTimestamp(),
-                model.getUser().getUserID(), model.getUser().getXcUserID(),
-                model.getUser().getName(), model.getUser().getUsername(),
-                TAPUtils.toJsonString(model.getUser().getAvatarURL()),
-                model.getUser().getEmail(), model.getUser().getPhoneNumber(),
-                TAPUtils.toJsonString(model.getUser().getUserRole()),
-                model.getUser().getLastLogin(), model.getUser().getLastActivity(),
-                model.getUser().getRequireChangePassword(),
-                model.getUser().getCreated(), model.getUser().getUpdated(),
-                model.getUser().getDeleted(), model.getAction(), model.getTarget()
-        );
-    }
-
     public void sendMessage(TAPMessageModel message, TapSendMessageInterface listener) {
         if (null != listener) {
             sendMessageListeners.put(message.getLocalID(), listener);
@@ -446,7 +376,7 @@ public class TAPChatManager {
                 String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 // Add entity to list
-                messageEntities.add(convertToEntity(messageModel));
+                messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
 
                 // Send truncated message
                 triggerListenerAndSendMessage(messageModel, true);
@@ -479,7 +409,7 @@ public class TAPChatManager {
                 }
 
                 // Add entity to list
-                //messageEntities.add(convertToEntity(messageModel));
+                //messageEntities.add(TAPMessageEntity.fromMessageModel()(messageModel));
 
                 // Send truncated message
                 triggerListenerAndSendMessage(messageModel, true);
@@ -510,7 +440,7 @@ public class TAPChatManager {
                 String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
                 TAPMessageModel messageModel = createTextMessage(substr, roomModel, getActiveUser());
                 // Add entity to list
-                messageEntities.add(convertToEntity(messageModel));
+                messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
 
                 // save LocalID to list of Reply Local IDs
                 // gunanya adalah untuk ngecek kapan semua reply message itu udah kekirim atau belom
@@ -1622,7 +1552,7 @@ public class TAPChatManager {
         try {
             List<TAPMessageEntity> messagesToInsert = new ArrayList<>();
             for (Map.Entry<String, TAPMessageModel> message : hashMap.entrySet()) {
-                messagesToInsert.add(convertToEntity(message.getValue()));
+                messagesToInsert.add(TAPMessageEntity.fromMessageModel(message.getValue()));
             }
             saveMessages.addAll(messagesToInsert);
         } catch (ConcurrentModificationException e) {

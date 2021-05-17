@@ -239,7 +239,7 @@ public class TAPMessageStatusManager {
                             for (TAPMessageModel messageModel : newMessageModels) {
                                 if (null != messageModel) {
                                     messageModel.updateDeliveredMessage();
-                                    messageEntities.add(TAPChatManager.getInstance(instanceKey).convertToEntity(messageModel));
+                                    messageEntities.add(TAPMessageEntity.fromMessageModel(messageModel));
                                 }
                             }
                             if (!messageEntities.isEmpty()) {

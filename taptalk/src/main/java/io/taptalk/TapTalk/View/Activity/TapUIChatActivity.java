@@ -2401,7 +2401,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 public void onSelectFinished(List<TAPMessageEntity> entities) {
                     if (!entities.isEmpty()) {
                         for (TAPMessageEntity entity : entities) {
-                            TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+                            TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                             vm.addUnreadMention(model);
                         }
                         updateMentionCount();
@@ -3106,7 +3106,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             LinkedHashMap<String, TAPMessageModel> dateSeparators = new LinkedHashMap<>();
             LinkedHashMap<String, Integer> dateSeparatorIndex = new LinkedHashMap<>();
             for (TAPMessageEntity entity : entities) {
-                TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+                TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                 models.add(model);
                 vm.addMessagePointer(model);
 
@@ -3298,7 +3298,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
             for (TAPMessageEntity entity : entities) {
                 if (!vm.getMessagePointer().containsKey(entity.getLocalID())) {
-                    TAPMessageModel model = TAPChatManager.getInstance(instanceKey).convertToModel(entity);
+                    TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                     models.add(model);
                     vm.addMessagePointer(model);
                     updateMessageMentionIndexes(model);
@@ -3506,7 +3506,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                     }
 
-                    responseMessages.add(TAPChatManager.getInstance(instanceKey).convertToEntity(message));
+                    responseMessages.add(TAPMessageEntity.fromMessageModel(message));
                     new Thread(() -> {
                         // Update last updated timestamp in preference (new thread to prevent stutter when scrolling)
                         if (null != message.getUpdated() &&
@@ -3722,7 +3722,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     messageBeforeModels.addAll(addBeforeTextMessage(message));
-                    responseMessages.add(TAPChatManager.getInstance(instanceKey).convertToEntity(message));
+                    responseMessages.add(TAPMessageEntity.fromMessageModel(message));
                     if (allMessagesHidden && (null == message.getHidden() || !message.getHidden())) {
                         allMessagesHidden = false;
                     }
@@ -3875,7 +3875,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 try {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     messageBeforeModels.addAll(addBeforeTextMessage(message));
-                    responseMessages.add(TAPChatManager.getInstance(instanceKey).convertToEntity(message));
+                    responseMessages.add(TAPMessageEntity.fromMessageModel(message));
                     updateMessageMentionIndexes(message);
                 } catch (Exception e) {
                     e.printStackTrace();

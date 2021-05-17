@@ -68,7 +68,7 @@ public class TapCoreRoomListManager {
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                            TAPMessageEntity entity = TAPChatManager.getInstance(instanceKey).convertToEntity(message);
+                            TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
                             tempMessage.add(entity);
 
                             if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
@@ -148,7 +148,7 @@ public class TapCoreRoomListManager {
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                            TAPMessageEntity entity = TAPChatManager.getInstance(instanceKey).convertToEntity(message);
+                            TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
                             tempMessage.add(entity);
 
                             if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
@@ -222,7 +222,7 @@ public class TapCoreRoomListManager {
                 super.onSelectFinished(entities);
                 List<TAPRoomListModel> roomListModel = new ArrayList<>();
                 for (TAPMessageEntity e : entities) {
-                    roomListModel.add(TAPRoomListModel.buildWithLastMessage(TAPChatManager.getInstance(instanceKey).convertToModel(e)));
+                    roomListModel.add(TAPRoomListModel.buildWithLastMessage(TAPMessageModel.fromMessageEntity(e)));
                 }
                 if (null != listener) {
                     listener.onSuccess(roomListModel);
@@ -293,7 +293,7 @@ public class TapCoreRoomListManager {
                                 for (HashMap<String, Object> messageMap : response.getMessages()) {
                                     try {
                                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
-                                        TAPMessageEntity entity = TAPChatManager.getInstance(instanceKey).convertToEntity(message);
+                                        TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
                                         tempMessage.add(entity);
                                         roomListModel.add(TAPRoomListModel.buildWithLastMessage(message));
 

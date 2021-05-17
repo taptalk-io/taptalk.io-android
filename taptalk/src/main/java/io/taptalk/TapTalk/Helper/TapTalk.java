@@ -28,6 +28,7 @@ import java.util.Map;
 import io.taptalk.TapTalk.API.Api.TAPApiManager;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.BuildConfig;
+import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
@@ -865,7 +866,7 @@ public class TapTalk implements LifecycleObserver {
         } else {
             showBackgroundNotification(instanceKey, message);
         }
-        TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPChatManager.getInstance(instanceKey).convertToEntity(message));
+        TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(message));
     }
 
     private static void identifyMessageAndShowNotification(String instanceKey, TAPMessageModel message) {

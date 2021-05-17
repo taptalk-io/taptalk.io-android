@@ -153,7 +153,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
             val messageModels: MutableList<TAPRoomListModel> = ArrayList()
             vm?.roomPointer?.clear()
             for (entity in entities!!) {
-                val model = TAPChatManager.getInstance(instanceKey).convertToModel(entity)
+                val model = TAPMessageModel.fromMessageEntity(entity)
                 val roomModel = TAPRoomListModel.buildWithLastMessage(model)
                 roomModel.type = TAPRoomListModel.Type.SELECTABLE_ROOM
                 messageModels.add(roomModel)
