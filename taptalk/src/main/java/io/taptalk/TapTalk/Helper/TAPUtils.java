@@ -661,7 +661,7 @@ public class TAPUtils {
             return "";
         }
         Number size = (Number) data.get(SIZE);
-        if (null != size) {
+        if (null != size && size.longValue() > 0L) {
             return String.format("%s / %s", getStringSizeLengthFile(progressBytes), getStringSizeLengthFile(size.longValue()));
         } else {
             return getStringSizeLengthFile(progressBytes);
