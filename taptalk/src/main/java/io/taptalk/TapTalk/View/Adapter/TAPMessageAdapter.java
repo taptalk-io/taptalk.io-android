@@ -277,8 +277,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     }
                 case TYPE_PRODUCT:
                     return TYPE_BUBBLE_PRODUCT_LIST;
-//                case TYPE_ORDER_CARD:
-//                    return TYPE_BUBBLE_ORDER_CARD;
                 case TYPE_SYSTEM_MESSAGE:
                     return TYPE_BUBBLE_SYSTEM_MESSAGE;
                 case TYPE_UNREAD_MESSAGE_IDENTIFIER:

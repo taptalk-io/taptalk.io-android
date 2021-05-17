@@ -1684,7 +1684,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                 });
             }
-            // TODO: 6 Dec 2019 HANDLE FILE URL
         }
 
         @Override
@@ -1705,7 +1704,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                 });
             }
-            // TODO: 6 Dec 2019 HANDLE FILE URL
         }
 
         @Override

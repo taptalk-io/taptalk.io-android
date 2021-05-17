@@ -555,7 +555,6 @@ public class TAPFileDownloadManager {
         }
     }
 
-
     private void saveImageToCacheAndSendBroadcast(Context context, String localID, String fileID, Bitmap bitmap) {
         try {
             TAPCacheManager.getInstance(context).addBitmapDrawableToCache(fileID, new BitmapDrawable(context.getResources(), bitmap));

@@ -19,7 +19,7 @@ import java.util.List;
 import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPContactManager;
+import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPAttachmentModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.R;
@@ -27,8 +27,6 @@ import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_AUDIO;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_CAMERA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_CONTACT;
@@ -50,8 +48,6 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_SMS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_VIEW_PROFILE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_CAMERA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_GALLERY;
-import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createAttachMenu;
-import static io.taptalk.TapTalk.Model.TAPAttachmentModel.createImagePickerMenu;
 
 public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
 
@@ -62,15 +58,11 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
     private String linkifyResult = "";
     private TAPMessageModel message;
 
-    public TAPAttachmentAdapter(String instanceKey, boolean isImagePickerBottomSheet, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+    public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         this.instanceKey = instanceKey;
+        setItems(items);
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
-        if (isImagePickerBottomSheet) {
-            setItems(createImagePickerMenu(instanceKey), false);
-        } else {
-            setItems(createAttachMenu(instanceKey), false);
-        }
     }
 
     public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, String messageToCopy, String linkifyResult, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
@@ -100,14 +92,15 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
         this.onClickListener = onClickListener;
         if (null != message) {
             this.message = message;
-            switch (message.getType()) {
-                case TYPE_IMAGE:
-                    // TODO: 4 March 2019 TEMPORARY CLIPBOARD FOR IMAGE
+            switch (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message.getType())) {
+                case TYPE_IMAGE_MESSAGE:
+                case TYPE_VIDEO_MESSAGE:
+                    // TODO: 4 March 2019 TEMPORARY CLIPBOARD FOR IMAGE & VIDEO
                     if (null != message.getData()) {
                         this.messageToCopy = (String) message.getData().get(CAPTION);
                     }
                     break;
-                case TYPE_LOCATION:
+                case TYPE_LOCATION_MESSAGE:
                     if (null != message.getData()) {
                         this.messageToCopy = (String) message.getData().get(ADDRESS);
                     }

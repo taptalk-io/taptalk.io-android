@@ -11,11 +11,24 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.libraries.places.api.Places;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
+import io.taptalk.TapTalk.Manager.TapUI;
+import io.taptalk.TapTalk.Model.TAPAttachmentModel;
 import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter;
 import io.taptalk.TapTalk.R;
+
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_CAMERA;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_DOCUMENT;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_GALLERY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_LOCATION;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_CAMERA;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_GALLERY;
 
 public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
 
@@ -63,7 +76,14 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recyclerView);
 
-        recyclerView.setAdapter(new TAPAttachmentAdapter(instanceKey, isImagePickerBottomSheet, attachmentListener, onClickListener));
+        List<TAPAttachmentModel> attachmentList;
+        if (isImagePickerBottomSheet) {
+            attachmentList = createImagePickerMenu(instanceKey);
+        } else {
+            attachmentList = createAttachMenu(instanceKey);
+        }
+
+        recyclerView.setAdapter(new TAPAttachmentAdapter(instanceKey, attachmentList, attachmentListener, onClickListener));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
     }
@@ -75,5 +95,79 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
+    }
+
+    private List<TAPAttachmentModel> createAttachMenu(String instanceKey) {
+        List<Integer> imageResIds = new ArrayList<>(), titleResIds = new ArrayList<>(), ids = new ArrayList<>();
+        // TODO: 31 January 2019 TEMPORARILY DISABLED AUDIO AND CONTACT FROM ATTACHMENT
+
+        if (!TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled()) {
+            // Attach document
+            imageResIds.add(R.drawable.tap_ic_documents_white);
+            titleResIds.add(R.string.tap_document);
+            ids.add(ATTACH_DOCUMENT);
+        }
+
+        if (!TapUI.getInstance(instanceKey).isCameraAttachmentDisabled()) {
+            // Attach from camera
+            imageResIds.add(R.drawable.tap_ic_camera_orange);
+            titleResIds.add(R.string.tap_camera);
+            ids.add(ATTACH_CAMERA);
+        }
+
+        if (!TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled()) {
+            // Attach from gallery
+            imageResIds.add(R.drawable.tap_ic_gallery_orange);
+            titleResIds.add(R.string.tap_gallery);
+            ids.add(ATTACH_GALLERY);
+        }
+
+//        imageResIds.add(R.drawable.tap_ic_audio_pumpkin_orange);
+//        titleResIds.add(R.string.audio);
+//        ids.add(ATTACH_AUDIO);
+
+        if (Places.isInitialized() && !TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()) {
+            // Attach location
+            imageResIds.add(R.drawable.tap_ic_location_orange);
+            titleResIds.add(R.string.tap_location);
+            ids.add(ATTACH_LOCATION);
+        }
+
+//        imageResIds.add(R.drawable.tap_ic_contact_pumpkin_orange);
+//        titleResIds.add(R.string.contact);
+//        ids.add(ATTACH_CONTACT);
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.size();
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds.get(index), titleResIds.get(index), ids.get(index)));
+        }
+
+        return attachMenus;
+    }
+
+    private List<TAPAttachmentModel> createImagePickerMenu(String instanceKey) {
+        List<Integer> imageResIds = new ArrayList<>(), titleResIds = new ArrayList<>(), ids = new ArrayList<>();
+
+        if (!TapUI.getInstance(instanceKey).isCameraAttachmentDisabled()) {
+            // Take picture from camera
+            imageResIds.add(R.drawable.tap_ic_camera_orange);
+            titleResIds.add(R.string.tap_camera);
+            ids.add(SELECT_PICTURE_CAMERA);
+        }
+
+        if (!TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled()) {
+            // Pick image from gallery
+            imageResIds.add(R.drawable.tap_ic_gallery_orange);
+            titleResIds.add(R.string.tap_gallery);
+            ids.add(SELECT_PICTURE_GALLERY);
+        }
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.size();
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds.get(index), titleResIds.get(index), ids.get(index)));
+        }
+        return attachMenus;
     }
 }

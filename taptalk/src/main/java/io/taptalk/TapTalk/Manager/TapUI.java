@@ -42,6 +42,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_OPEN_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
@@ -55,6 +60,7 @@ public class TapUI {
     private List<TapUIRoomListListener> tapUIRoomListListeners;
     private List<TapUIChatRoomListener> tapUIChatRoomListeners;
     private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
+    private HashMap<Integer, LongPressMenuType> longPressMenuMap;
 
     private TapUIRoomListFragment currentTapTalkRoomListFragment;
     private TapUIChatActivity currentTapTalkChatActivity;
@@ -94,6 +100,15 @@ public class TapUI {
     private boolean isAddToContactsButtonInChatRoomHidden;
     private boolean isAddToContactsButtonInChatProfileHidden;
     private boolean isAddContactDisabled;
+
+    public enum LongPressMenuType {
+        TYPE_TEXT_MESSAGE,
+        TYPE_IMAGE_MESSAGE,
+        TYPE_VIDEO_MESSAGE,
+        TYPE_FILE_MESSAGE,
+        TYPE_LOCATION_MESSAGE,
+        TYPE_NONE,
+    }
 
     public TapUI(String instanceKey) {
         this.instanceKey = instanceKey;
@@ -909,6 +924,39 @@ public class TapUI {
             return;
         }
         TAPCustomBubbleManager.getInstance(instanceKey).addCustomBubbleMap(baseCustomBubble);
+    }
+
+    private HashMap<Integer, LongPressMenuType> generateDefaultLongPressMenuMap() {
+        HashMap<Integer, LongPressMenuType> defaultLongPressMenuMap = new HashMap<>();
+        defaultLongPressMenuMap.put(TYPE_TEXT, LongPressMenuType.TYPE_TEXT_MESSAGE);
+        defaultLongPressMenuMap.put(TYPE_IMAGE, LongPressMenuType.TYPE_IMAGE_MESSAGE);
+        defaultLongPressMenuMap.put(TYPE_VIDEO, LongPressMenuType.TYPE_VIDEO_MESSAGE);
+        defaultLongPressMenuMap.put(TYPE_FILE, LongPressMenuType.TYPE_FILE_MESSAGE);
+        defaultLongPressMenuMap.put(TYPE_LOCATION, LongPressMenuType.TYPE_LOCATION_MESSAGE);
+        return defaultLongPressMenuMap;
+    }
+
+    private HashMap<Integer, LongPressMenuType> getLongPressMenuMap() {
+        if (null == longPressMenuMap) {
+            longPressMenuMap = generateDefaultLongPressMenuMap();
+        }
+        return longPressMenuMap;
+    }
+
+    public LongPressMenuType getLongPressMenuForMessageType(int messageType) {
+        LongPressMenuType longPressMenuType = getLongPressMenuMap().get(messageType);
+        if (null != longPressMenuType) {
+            return  longPressMenuType;
+        }
+        return LongPressMenuType.TYPE_NONE;
+    }
+
+    public void setLongPressMenuForMessageType(int messageType, LongPressMenuType longPressMenuType) {
+        if (Integer.toString(messageType).charAt(0) != '3') {
+            // Return if message type is not custom (starts with 3)
+            return;
+        }
+        getLongPressMenuMap().put(messageType, longPressMenuType);
     }
 
     /**
