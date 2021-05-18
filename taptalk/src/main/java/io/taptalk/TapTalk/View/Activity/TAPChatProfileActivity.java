@@ -490,14 +490,26 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         R.style.tapChatProfileMenuLabelStyle);
                 menuItems.add(menuEditGroup);
 
-                // Delete group
-                TapChatProfileItemModel menuDeleteGroup = new TapChatProfileItemModel(
-                        MENU_DELETE_GROUP,
-                        getString(R.string.tap_delete_group),
-                        R.drawable.tap_ic_delete_red,
-                        R.color.tapIconChatProfileMenuClearChat,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle);
-                menuItems.add(menuDeleteGroup);
+                if (null != vm.getRoom().getGroupParticipants() &&
+                        1 < vm.getRoom().getGroupParticipants().size()) {
+                    // Exit group
+                    TapChatProfileItemModel menuExitGroup = new TapChatProfileItemModel(
+                            MENU_EXIT_GROUP,
+                            getString(R.string.tap_leave_group),
+                            R.drawable.tap_ic_logout_red,
+                            R.color.tapIconChatProfileMenuClearChat,
+                            R.style.tapChatProfileMenuDestructiveLabelStyle);
+                    menuItems.add(menuExitGroup);
+                } else {
+                    // Delete group
+                    TapChatProfileItemModel menuDeleteGroup = new TapChatProfileItemModel(
+                            MENU_DELETE_GROUP,
+                            getString(R.string.tap_delete_group),
+                            R.drawable.tap_ic_delete_red,
+                            R.color.tapIconChatProfileMenuClearChat,
+                            R.style.tapChatProfileMenuDestructiveLabelStyle);
+                    menuItems.add(menuDeleteGroup);
+                }
             } else if (vm.getRoom().getRoomType() == TYPE_GROUP &&
                     null != vm.getRoom().getGroupParticipants() &&
                     1 < vm.getRoom().getGroupParticipants().size()) {
