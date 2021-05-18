@@ -502,16 +502,17 @@ public class TAPFileDownloadManager {
             try {
                 String filename = getFileNameFromMessage(message);
 
-                File dir = new File(TYPE_VIDEO == message.getType() ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey)
-                        : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "");
+                File dir = new File(TYPE_VIDEO == message.getType() ?
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/" + TapTalk.getClientAppName(instanceKey) :
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "");
                 dir.mkdirs();
 
                 File targetFile = new File(dir, filename);
                 targetFile = TAPFileUtils.getInstance().renameDuplicateFile(targetFile);
 
-                if (null != message.getData() && null != message.getData().get(FILE_ID) &&
-                        null != getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID))) {
-                    File sourceFile = new File(getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(), (String) message.getData().get(FILE_ID))));
+                String key = TAPUtils.getUriKeyFromMessage(message);
+                if (!key.isEmpty() && null != getFileMessageUri(message.getRoom().getRoomID(), key)) {
+                    File sourceFile = new File(getFileProviderPath(getFileMessageUri(message.getRoom().getRoomID(), key)));
                     if (sourceFile.exists()) {
                         copyFile(sourceFile, targetFile);
                         scanFile(context, targetFile, TAPUtils.getFileMimeType(targetFile));

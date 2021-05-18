@@ -1159,9 +1159,15 @@ public class TAPUtils {
         if (null == message.getData()) {
             return "";
         }
-        String fileUrl = (String) message.getData().get(FILE_URL);
         String fileID = (String) message.getData().get(FILE_ID);
-        return null != fileUrl ? removeNonAlphaNumeric(fileUrl).toLowerCase() : fileID;
+        if (null != fileID && !fileID.isEmpty()) {
+            return fileID;
+        }
+        String fileUrl = (String) message.getData().get(FILE_URL);
+        if (null != fileUrl && !fileUrl.isEmpty()) {
+            return removeNonAlphaNumeric(fileUrl).toLowerCase();
+        }
+        return "";
     }
 
     public static boolean isActiveUserMentioned(TAPMessageModel message, TAPUserModel activeUser) {

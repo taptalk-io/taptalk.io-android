@@ -1627,11 +1627,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 new Thread(() -> {
                     vm.setPendingDownloadMessage(null);
                     Bitmap bitmap = null;
-                    if (null != message.getData().get(FILE_ID)) {
+                    String fileID = (String) message.getData().get(FILE_ID);
+                    String fileUrl = (String) message.getData().get(FILE_URL);
+                    if (null != fileID && !fileID.isEmpty()) {
                         // Get bitmap from cache
                         bitmap = TAPCacheManager.getInstance(TapTalk.appContext).getBitmapDrawable((String) message.getData().get(FILE_ID)).getBitmap();
-                    } else if (null != message.getData().get(FILE_URL)) {
-                        // Get bitmap from URL
+                    } else if (null != fileUrl && !fileUrl.isEmpty()) {
+                        // Get bitmap from url
                         try {
                             URL imageUrl = new URL((String) message.getData().get(FILE_URL));
                             bitmap = BitmapFactory.decodeStream(imageUrl.openConnection().getInputStream());
@@ -1667,43 +1669,45 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Request storage permission
                 vm.setPendingDownloadMessage(message);
                 ActivityCompat.requestPermissions(TapUIChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO);
-            } else if (null != message.getData() &&
-                    null != message.getData().get(FILE_ID) &&
-                    null != message.getData().get(MEDIA_TYPE) &&
-                    null != message.getData().get(FILE_ID)) {
-                vm.setPendingDownloadMessage(null);
-                TAPFileDownloadManager.getInstance(instanceKey).writeFileToDisk(TapUIChatActivity.this, message, new TapTalkActionInterface() {
-                    @Override
-                    public void onSuccess(String message) {
-                        runOnUiThread(() -> Toast.makeText(TapUIChatActivity.this, message, Toast.LENGTH_SHORT).show());
-                    }
-
-                    @Override
-                    public void onError(String errorMessage) {
-                        runOnUiThread(() -> Toast.makeText(TapUIChatActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
-                    }
-                });
+            } else if (null != message.getData()) {
+                String fileID = (String) message.getData().get(FILE_ID);
+                String fileUrl = (String) message.getData().get(FILE_URL);
+                if (((null != fileID && !fileID.isEmpty()) ||
+                        (null != fileUrl && !fileUrl.isEmpty())) &&
+                        null != message.getData().get(MEDIA_TYPE)
+                ) {
+                    vm.setPendingDownloadMessage(null);
+                    writeFileToDisk(message);
+                }
             }
         }
 
         @Override
         public void onSaveToDownloads(TAPMessageModel message) {
-            if (null != message.getData() &&
-                    null != message.getData().get(FILE_ID) &&
-                    null != message.getData().get(MEDIA_TYPE) &&
-                    null != message.getData().get(FILE_ID)) {
-                TAPFileDownloadManager.getInstance(instanceKey).writeFileToDisk(TapUIChatActivity.this, message, new TapTalkActionInterface() {
-                    @Override
-                    public void onSuccess(String message) {
-                        runOnUiThread(() -> Toast.makeText(TapUIChatActivity.this, message, Toast.LENGTH_SHORT).show());
-                    }
-
-                    @Override
-                    public void onError(String errorMessage) {
-                        runOnUiThread(() -> Toast.makeText(TapUIChatActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
-                    }
-                });
+            if (null != message.getData()) {
+                String fileID = (String) message.getData().get(FILE_ID);
+                String fileUrl = (String) message.getData().get(FILE_URL);
+                if (((null != fileID && !fileID.isEmpty()) ||
+                        (null != fileUrl && !fileUrl.isEmpty())) &&
+                        null != message.getData().get(MEDIA_TYPE)
+                ) {
+                    writeFileToDisk(message);
+                }
             }
+        }
+
+        private void writeFileToDisk(TAPMessageModel message) {
+            TAPFileDownloadManager.getInstance(instanceKey).writeFileToDisk(TapUIChatActivity.this, message, new TapTalkActionInterface() {
+                @Override
+                public void onSuccess(String message) {
+                    runOnUiThread(() -> Toast.makeText(TapUIChatActivity.this, message, Toast.LENGTH_SHORT).show());
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    runOnUiThread(() -> Toast.makeText(TapUIChatActivity.this, errorMessage, Toast.LENGTH_SHORT).show());
+                }
+            });
         }
 
         @Override

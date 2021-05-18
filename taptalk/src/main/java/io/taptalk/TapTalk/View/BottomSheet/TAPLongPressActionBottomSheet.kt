@@ -298,7 +298,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                     ((!fileID.isNullOrEmpty() && TAPCacheManager.getInstance(TapTalk.appContext).containsCache(fileID)) ||
                     null != messageData[MessageData.FILE_URL])
             ) {
-                // Save to gallery
+                // Save image to gallery
                 imageResIds.add(R.drawable.tap_ic_download_orange)
                 titleResIds.add(R.string.tap_save_to_gallery)
                 ids.add(TAPAttachmentModel.LONG_PRESS_SAVE_IMAGE_GALLERY)
@@ -351,10 +351,10 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
             if (!TapUI.getInstance(instanceKey).isSaveMediaToGalleryMenuDisabled &&
                     TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(messageModel)) {
-                // Save to gallery
+                // Save video to gallery
                 imageResIds.add(R.drawable.tap_ic_download_orange)
                 titleResIds.add(R.string.tap_save_to_gallery)
-                ids.add(TAPAttachmentModel.LONG_PRESS_SAVE_IMAGE_GALLERY)
+                ids.add(TAPAttachmentModel.LONG_PRESS_SAVE_VIDEO_GALLERY)
             }
         }
 
