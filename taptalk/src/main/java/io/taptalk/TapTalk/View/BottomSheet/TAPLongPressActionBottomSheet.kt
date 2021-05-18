@@ -19,7 +19,6 @@ import io.taptalk.TapTalk.Manager.TapUI.LongPressMenuType.*
 import io.taptalk.TapTalk.Model.TAPAttachmentModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.R
-import io.taptalk.TapTalk.View.Activity.TapUIChatActivity
 import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
 import java.util.*
@@ -34,18 +33,26 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         MENTION_TYPE
     }
 
-    var longPressType: LongPressType = LongPressType.CHAT_BUBBLE_TYPE
+    private var instanceKey = ""
+    private var longPressType: LongPressType = LongPressType.CHAT_BUBBLE_TYPE
+    private var message: TAPMessageModel? = null
+    private var urlMessage = ""
+    private var linkifyResult = ""
+    private val onClickListener = View.OnClickListener { dismiss() }
+    private var bottomSheetListener: TAPAttachmentListener? = null
 
     constructor() : super()
 
-    constructor(longPressType: LongPressType, urlMessage: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener) {
+    constructor(instanceKey: String, longPressType: LongPressType, urlMessage: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener) {
+        this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.urlMessage = urlMessage
         this.bottomSheetListener = bottomSheetListener
         this.linkifyResult = linkifyResult
     }
 
-    constructor(longPressType: LongPressType, message: TAPMessageModel, urlMessage: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener) {
+    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, urlMessage: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener) {
+        this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.message = message
         this.urlMessage = urlMessage
@@ -53,35 +60,33 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.linkifyResult = linkifyResult
     }
 
-    constructor(longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener) {
+    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener) {
+        this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.message = message
         this.bottomSheetListener = bottomSheetListener
     }
-
-    var message: TAPMessageModel? = null
-    var urlMessage = ""
-    var linkifyResult = ""
-    val onClickListener = View.OnClickListener { dismiss() }
-    var bottomSheetListener: TAPAttachmentListener? = null
-
+    
     companion object {
-        fun newInstance(longPressType: LongPressType, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
-            val fragment = TAPLongPressActionBottomSheet(longPressType, url, linkifyResult, bottomSheetListener)
+        // Chat Bubble
+        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, message, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstance(longPressType: LongPressType, message: TAPMessageModel, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
-            val fragment = TAPLongPressActionBottomSheet(longPressType, message, url, linkifyResult, bottomSheetListener)
+        // Span (email, phone, url)
+        fun newInstance(instanceKey: String, longPressType: LongPressType, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, url, linkifyResult, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
             return fragment
         }
 
-        fun newInstance(longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
-            val fragment = TAPLongPressActionBottomSheet(longPressType, message, bottomSheetListener)
+        // Mention
+        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, url: String, linkifyResult: String, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, message, url, linkifyResult, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
             return fragment
@@ -95,14 +100,6 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val instanceKey = try {
-            val activity = context as TapUIChatActivity
-            activity.instanceKey
-        } catch (e: Exception) {
-            dismiss()
-            return
-        }
 
         if (null == message) {
             dismiss()
@@ -121,7 +118,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 } else if (!message!!.sending!!) {
                     when (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message!!.type)) {
                         TYPE_TEXT_MESSAGE -> {
-                            val menus = createTextBubbleLongPressMenu(instanceKey, message!!)
+                            val menus = createTextBubbleLongPressMenu(message!!)
                             if (menus.isEmpty()) {
                                 dismiss()
                             } else {
@@ -129,7 +126,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                             }
                         }
                         TYPE_IMAGE_MESSAGE -> {
-                            val menus = createImageBubbleLongPressMenu(instanceKey, message!!)
+                            val menus = createImageBubbleLongPressMenu(message!!)
                             if (menus.isEmpty()) {
                                 dismiss()
                             } else {
@@ -137,7 +134,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                             }
                         }
                         TYPE_VIDEO_MESSAGE -> {
-                            val menus = createVideoBubbleLongPressMenu(instanceKey, message!!)
+                            val menus = createVideoBubbleLongPressMenu(message!!)
                             if (menus.isEmpty()) {
                                 dismiss()
                             } else {
@@ -145,7 +142,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                             }
                         }
                         TYPE_FILE_MESSAGE -> {
-                            val menus = createFileBubbleLongPressMenu(instanceKey, message!!)
+                            val menus = createFileBubbleLongPressMenu(message!!)
                             if (menus.isEmpty()) {
                                 dismiss()
                             } else {
@@ -153,7 +150,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                             }
                         }
                         TYPE_LOCATION_MESSAGE -> {
-                            val menus = createLocationBubbleLongPressMenu(instanceKey, message!!)
+                            val menus = createLocationBubbleLongPressMenu(message!!)
                             if (menus.isEmpty()) {
                                 dismiss()
                             } else {
@@ -169,7 +166,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 }
             }
             LongPressType.EMAIL_TYPE -> {
-                val menus = createEmailLongPressMenu(instanceKey)
+                val menus = createEmailLongPressMenu()
                 if (menus.isEmpty()) {
                     dismiss()
                 } else {
@@ -177,7 +174,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 }
             }
             LongPressType.LINK_TYPE -> {
-                val menus = createLinkLongPressMenu(instanceKey)
+                val menus = createLinkLongPressMenu()
                 if (menus.isEmpty()) {
                     dismiss()
                 } else {
@@ -185,7 +182,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 }
             }
             LongPressType.PHONE_TYPE -> {
-                val menus = createPhoneLongPressMenu(instanceKey)
+                val menus = createPhoneLongPressMenu()
                 if (menus.isEmpty()) {
                     dismiss()
                 } else {
@@ -194,9 +191,9 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
             LongPressType.MENTION_TYPE -> {
                 val menus = if (linkifyResult.substring(1) == TAPChatManager.getInstance(instanceKey).activeUser.username) {
-                    createCopyLongPressMenu(instanceKey)
+                    createCopyLongPressMenu()
                 } else {
-                    createMentionLongPressMenu(instanceKey)
+                    createMentionLongPressMenu()
                 }
                 if (menus.isNullOrEmpty()) {
                     dismiss()
@@ -224,7 +221,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         return ArrayList()
     }
 
-    private fun createTextBubbleLongPressMenu(instanceKey: String?, messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+    private fun createTextBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
@@ -272,7 +269,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     }
 
     // TODO: 4 March 2019 TEMPORARILY DISABLED FORWARD
-    private fun createImageBubbleLongPressMenu(instanceKey: String?, messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+    private fun createImageBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
@@ -328,7 +325,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     }
 
     // TODO: 4 March 2019 TEMPORARILY DISABLED FORWARD
-    private fun createVideoBubbleLongPressMenu(instanceKey: String?, messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+    private fun createVideoBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
@@ -381,7 +378,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     }
 
     // TODO: 4 March 2019 TEMPORARILY DISABLED FORWARD
-    private fun createFileBubbleLongPressMenu(instanceKey: String?, messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+    private fun createFileBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
@@ -424,7 +421,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         return attachMenus
     }
 
-    private fun createLocationBubbleLongPressMenu(instanceKey: String?, messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+    private fun createLocationBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
@@ -471,7 +468,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         return attachMenus
     }
 
-    private fun createLinkLongPressMenu(instanceKey: String?): List<TAPAttachmentModel> {
+    private fun createLinkLongPressMenu(): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
@@ -498,7 +495,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         return attachMenus
     }
 
-    private fun createEmailLongPressMenu(instanceKey: String?): List<TAPAttachmentModel> {
+    private fun createEmailLongPressMenu(): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
@@ -525,7 +522,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         return attachMenus
     }
 
-    private fun createPhoneLongPressMenu(instanceKey: String?): List<TAPAttachmentModel> {
+    private fun createPhoneLongPressMenu(): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
@@ -559,7 +556,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         return attachMenus
     }
 
-    private fun createMentionLongPressMenu(instanceKey: String?): List<TAPAttachmentModel>? {
+    private fun createMentionLongPressMenu(): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
         val ids: MutableList<Int> = ArrayList()
@@ -593,7 +590,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         return attachMenus
     }
 
-    private fun createCopyLongPressMenu(instanceKey: String?): List<TAPAttachmentModel> {
+    private fun createCopyLongPressMenu(): List<TAPAttachmentModel> {
         val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
         if (!TapUI.getInstance(instanceKey).isCopyMessageMenuDisabled) {
             // Copy
