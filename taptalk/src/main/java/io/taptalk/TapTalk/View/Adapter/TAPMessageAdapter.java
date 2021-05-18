@@ -2346,13 +2346,24 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String quoteFileID = quote.getFileID();
             if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
                 // Get quote image from URL
-                glide.load(quoteImageURL).into(rcivQuoteImage);
-                ImageViewCompat.setImageTintList(rcivQuoteImage, null);
-                rcivQuoteImage.setBackground(null);
-                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                glide.load(quoteImageURL).listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        rcivQuoteImage.setVisibility(View.GONE);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        ImageViewCompat.setImageTintList(rcivQuoteImage, null);
+                        rcivQuoteImage.setBackground(null);
+                        rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        rcivQuoteImage.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+                }).into(rcivQuoteImage);
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
                 vQuoteDecoration.setVisibility(View.GONE);
-                rcivQuoteImage.setVisibility(View.VISIBLE);
                 tvQuoteContent.setMaxLines(1);
             } else if (quote.getFileType().equals(String.valueOf(TYPE_IMAGE)) ||
                     quote.getFileType().equals(String.valueOf(TYPE_VIDEO)) ||
@@ -2372,15 +2383,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     new Thread(() -> {
                         BitmapDrawable image = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(finalKey);
                         ((Activity) itemView.getContext()).runOnUiThread(() -> {
-                            ImageViewCompat.setImageTintList(rcivQuoteImage, null);
-                            rcivQuoteImage.setImageDrawable(image);
-                            rcivQuoteImage.setBackground(null);
-                            rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            if (null != image) {
+                                ImageViewCompat.setImageTintList(rcivQuoteImage, null);
+                                rcivQuoteImage.setImageDrawable(image);
+                                rcivQuoteImage.setBackground(null);
+                                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                                rcivQuoteImage.setVisibility(View.VISIBLE);
+                            } else {
+                                rcivQuoteImage.setVisibility(View.GONE);
+                            }
                         });
                     }).start();
                 }
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
-                rcivQuoteImage.setVisibility(View.VISIBLE);
             } else if (quote.getFileType().equals(String.valueOf(TYPE_FILE)) || quote.getFileType().equals(FILE)) {
                 // Load file icon
                 glide.clear(rcivQuoteImage);
