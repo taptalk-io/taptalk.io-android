@@ -1478,6 +1478,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clQuote;
         private ConstraintLayout clForwarded;
         private FrameLayout flBubble;
+        private FrameLayout flMapViewContainer;
         private CircleImageView civAvatar;
         private TAPRoundedCornerImageView rcivQuoteImage;
         private ImageView ivMessageStatus;
@@ -1505,6 +1506,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clQuote = itemView.findViewById(R.id.cl_quote);
             clForwarded = itemView.findViewById(R.id.cl_forwarded);
             flBubble = itemView.findViewById(R.id.fl_bubble);
+            flMapViewContainer = itemView.findViewById(R.id.fl_map_view_container);
             rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
             ivBubbleHighlight = itemView.findViewById(R.id.iv_bubble_highlight);
             //ivReply = itemView.findViewById(R.id.iv_reply);
@@ -1577,6 +1579,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 clForwardedQuote.setVisibility(View.GONE);
             }
             setMapData(item);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                int clipDrawableRes = isMessageFromMySelf(item) ? R.drawable.tap_bg_bubble_media_clip_mask_right : R.drawable.tap_bg_bubble_media_clip_mask_left;
+                flMapViewContainer.setBackground(ContextCompat.getDrawable(itemView.getContext(), clipDrawableRes));
+                flMapViewContainer.setClipToOutline(true);
+            }
 
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);

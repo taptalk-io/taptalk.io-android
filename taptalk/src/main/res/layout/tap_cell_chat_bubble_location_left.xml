@@ -126,30 +126,35 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/map_view"
-                android:layout_width="244dp"
-                android:layout_height="170dp"
+            <FrameLayout
+                android:id="@+id/fl_map_view_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:clickable="false"
                 app:layout_constraintBottom_toTopOf="@id/tv_message_body"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_bubble_top"
-                app:layout_goneMarginTop="10dp"
-                app:topLeftRadius="1dp"
-                app:topRightRadius="8dp"
-                tools:background="@color/tapCreamWhite" />
+                app:layout_goneMarginTop="10dp">
+
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/map_view"
+                    android:layout_width="244dp"
+                    android:layout_height="170dp"
+                    android:clickable="false"
+                    tools:background="@color/tapCreamWhite" />
+
+            </FrameLayout>
 
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/tap_ic_location_pin_orange"
-                app:layout_constraintBottom_toBottomOf="@id/map_view"
-                app:layout_constraintEnd_toEndOf="@id/map_view"
-                app:layout_constraintStart_toStartOf="@id/map_view"
-                app:layout_constraintTop_toTopOf="@id/map_view"
+                app:layout_constraintBottom_toBottomOf="@id/fl_map_view_container"
+                app:layout_constraintEnd_toEndOf="@id/fl_map_view_container"
+                app:layout_constraintStart_toStartOf="@id/fl_map_view_container"
+                app:layout_constraintTop_toTopOf="@id/fl_map_view_container"
                 app:layout_constraintVertical_bias="0.385"
                 app:tint="@color/tapIconLocationBubbleMarker" />
 
@@ -157,11 +162,11 @@
                 android:id="@+id/v_map_border"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="@id/map_view"
-                app:layout_constraintEnd_toEndOf="@id/map_view"
+                app:layout_constraintBottom_toBottomOf="@id/fl_map_view_container"
+                app:layout_constraintEnd_toEndOf="@id/fl_map_view_container"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@id/map_view"
-                app:layout_constraintTop_toTopOf="@id/map_view"
+                app:layout_constraintStart_toStartOf="@id/fl_map_view_container"
+                app:layout_constraintTop_toTopOf="@id/fl_map_view_container"
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
@@ -173,9 +178,9 @@
                 android:paddingTop="10dp"
                 android:paddingEnd="6dp"
                 app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp"
-                app:layout_constraintEnd_toEndOf="@id/map_view"
-                app:layout_constraintStart_toStartOf="@id/map_view"
-                app:layout_constraintTop_toBottomOf="@id/map_view"
+                app:layout_constraintEnd_toEndOf="@id/fl_map_view_container"
+                app:layout_constraintStart_toStartOf="@id/fl_map_view_container"
+                app:layout_constraintTop_toBottomOf="@id/fl_map_view_container"
                 tools:text="Jalan Kyai Maja No. 25C, Gunung, Kebayoran Baru, RT.12/RW.2, Gunung, Kby. Baru, Kota Jakarta Selatan, DKI Jakarta 12120" />
 
             <TextView
