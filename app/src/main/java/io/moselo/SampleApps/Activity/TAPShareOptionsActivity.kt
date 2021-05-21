@@ -491,7 +491,9 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private fun handleFileType(uri: Uri, roomModel: TAPRoomModel?, caption: String) {
         val file = File(TAPFileUtils.getInstance().getFilePath(this, uri))
-        TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+        if (caption.isNotEmpty()) {
+            TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+        }
         TapCoreMessageManager.getInstance().sendFileMessage(file, roomModel, object : TapCoreSendMessageListener() {})
     }
 
@@ -506,7 +508,9 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private fun handleTextType(intent: Intent, roomModel: TAPRoomModel?, caption: String) {
         if (intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) == null) {
             // text type with string data
-            TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+            if (caption.isNotEmpty()) {
+                TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+            }
             TapCoreMessageManager.getInstance().sendTextMessage(intent.getStringExtra(Intent.EXTRA_TEXT), roomModel, object : TapCoreSendMessageListener() {})
         } else {
             // text type with file data
