@@ -1562,13 +1562,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 clForwardedQuote.setVisibility(View.VISIBLE);
                 //vMapBorder.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_stroke_e4e4e4_1dp_insettop_insetbottom_1dp));
             } else {
-                if (isMessageFromMySelf(item)) {
-                    TAPUtils.clipToRoundedRectangle(mapView, TAPUtils.dpToPx(12), TAPUtils.ClipType.TOP_LEFT);
-                    //vMapBorder.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_rounded_8dp_1dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp));
-                } else {
-                    TAPUtils.clipToRoundedRectangle(mapView, TAPUtils.dpToPx(12), TAPUtils.ClipType.TOP_RIGHT);
-                    //vMapBorder.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_rounded_1dp_8dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp));
-                }
                 if (null != clBubbleTop) {
                     if (tvUserName.getVisibility() == View.VISIBLE) {
                         clBubbleTop.setVisibility(View.VISIBLE);
