@@ -61,6 +61,7 @@ class TAPShareOptionsViewModel(application: Application): AndroidViewModel(appli
     }
 
     fun getSearchResults(): List<TAPRoomListModel>? {
+        searchRoomResults?.clear()
         searchRoomResults?.addAll(groupContacts!!)
         searchRoomResults?.addAll(personalContacts!!)
         return searchRoomResults
