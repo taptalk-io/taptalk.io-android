@@ -503,7 +503,7 @@ public class TAPUtils {
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
             }
             intent.setType(INTENT_TYPE_ALL);
-            if (intent.resolveActivity(activity.getPackageManager()) != null) {
+            if (intent.resolveActivity(activity.getPackageManager()) != null || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
                 activity.startActivityForResult(Intent.createChooser(intent, GALLERY), requestCode);
             }
         }
