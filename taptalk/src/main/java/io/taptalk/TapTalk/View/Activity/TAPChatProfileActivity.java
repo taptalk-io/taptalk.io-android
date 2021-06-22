@@ -884,7 +884,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 TAPFileDownloadManager.getInstance(instanceKey).downloadImage(TAPChatProfileActivity.this, item);
                 notifyItemChanged(item);
             } else if (item.getType() == TYPE_VIDEO && isMediaReady && null != item.getData()) {
-                Uri videoUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item.getRoom().getRoomID(), (String) item.getData().get(FILE_ID));
+                Uri videoUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item);
                 if (null == videoUri) {
                     // Prompt download
                     String fileID = (String) item.getData().get(FILE_ID);

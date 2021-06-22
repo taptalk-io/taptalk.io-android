@@ -1257,7 +1257,8 @@ public class TAPChatManager {
         if ((messageToForward.getType() == TYPE_VIDEO || messageToForward.getType() == TYPE_FILE) && null != messageToForward.getData()) {
             // Copy file message Uri to destination room
             String key = TAPUtils.getUriKeyFromMessage(messageToForward);
-            TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(room.getRoomID(), key, TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(messageToForward.getRoom().getRoomID(), key));
+            Uri uri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(messageToForward);
+            TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(room.getRoomID(), key, uri);
         }
         return TAPMessageModel.BuilderForwardedMessage(
                 messageToForward,

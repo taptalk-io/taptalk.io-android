@@ -469,7 +469,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                             // Get full-size thumbnail from Uri
                             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                             String dataUri = (String) message.getData().get(FILE_URI);
-                            Uri videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message.getRoom().getRoomID(), fileID);
+                            Uri videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message);
                             try {
                                 retriever.setDataSource(itemView.getContext(), videoUri);
                                 mediaThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
