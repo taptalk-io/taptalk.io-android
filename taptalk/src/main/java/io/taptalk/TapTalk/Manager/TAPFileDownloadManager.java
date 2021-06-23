@@ -283,6 +283,7 @@ public class TAPFileDownloadManager {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return e.getMessage();
             }
             return null;
         }
@@ -301,7 +302,6 @@ public class TAPFileDownloadManager {
         protected void onPostExecute(String result) {
             wakeLock.release();
             if (result != null) {
-                //Log.e("TapFileDownloadManager", "onPostExecute: Download failed");
                 TAPFileDownloadManager.getInstance(instanceKey).setDownloadFailed(message.getLocalID(), ERROR_CODE_OTHERS, appContext.getString(R.string.tap_error_message_general));
             } else {
                 // Remove message from progress map
@@ -313,7 +313,6 @@ public class TAPFileDownloadManager {
 
                 // Send download success broadcast
                 Uri fileProviderUri = FileProvider.getUriForFile(appContext, FILEPROVIDER_AUTHORITY, file);
-                //Log.e("TapFileDownloadManager", "Download Success: " + message.getLocalID() + " " + fileProviderUri + " " + urlString);
                 TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileProviderUri, file.getAbsolutePath());
                 TAPFileDownloadManager.getInstance(instanceKey).scanFile(appContext, file, TAPUtils.getFileMimeType(file));
 
