@@ -1375,7 +1375,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Show image quote
                 vQuoteDecoration.setVisibility(View.GONE);
                 // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
-                Drawable drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.getUriKeyFromMessage(message));
+                Drawable drawable = null;
+                String fileID = (String) message.getData().get(FILE_ID);
+                if (null != fileID && !fileID.isEmpty()) {
+                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
+                }
+                if (null == drawable) {
+                    String fileUrl = (String) message.getData().get(FILE_URL);
+                    if (null != fileUrl && !fileUrl.isEmpty()) {
+                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
+                    }
+                }
                 if (null != drawable) {
                     rcivQuoteImage.setImageDrawable(drawable);
                 } else {

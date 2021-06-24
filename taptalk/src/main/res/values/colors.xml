@@ -25,7 +25,7 @@
     <color name="tapDefaultBackgroundColor">@color/tapWhiteF3</color>
 
     <color name="tapDefaultRightBubbleBackgroundColor">@color/tapOrangeBubble</color>
-    <color name="tapDefaultRightBubbleDarkBackgroundColor">@color/tapOrangeBubbleDark</color>
+    <color name="tapDefaultRightBubbleDarkBackgroundColor">@color/tapTransparentBlack1910</color>
     <color name="tapDefaultLeftBubbleBackgroundColor">@color/tapWhite</color>
     <color name="tapDefaultLeftBubbleDarkBackgroundColor">@color/tapWhiteF3</color>
 

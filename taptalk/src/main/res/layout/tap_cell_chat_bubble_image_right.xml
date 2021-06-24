@@ -111,6 +111,7 @@
                 android:transitionName="@string/tap_transition_view_image"
                 app:cornerRadius="12dp"
                 app:dimensionRatio="0.86"
+                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toTopOf="@id/tv_message_body"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -893,11 +893,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Number heightDimension = (Number) item.getData().get(HEIGHT);
             String videoCaption = (String) item.getData().get(CAPTION);
             String dataUri = (String) item.getData().get(FILE_URI);
-            String key = TAPUtils.getUriKeyFromMessage(item);
 
             Integer uploadProgressPercent = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressPercent(localID);
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(localID);
-            videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item.getRoom().getRoomID(), key);
+            videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item);
 
             llTimestampIconImage.post(() -> {
                 if (position == getAdapterPosition()) {
@@ -1041,8 +1040,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .placeholder(thumbnail)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(rcivVideoThumbnail);
-            } else if ((((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
-                    && null == downloadProgressPercent) && null != videoUri &&
+            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressPercent) && (null != videoUri ||
                     TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item))) {
                 // Video has finished downloading or uploading
                 if (duration != null && duration.longValue() > 0L) {
@@ -1056,9 +1055,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFilePlayMedia)));
                 pbProgress.setVisibility(View.GONE);
                 tvMessageStatus.setVisibility(View.GONE);
-                rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, key, TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item)));
+                rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
                 new Thread(() -> {
-                    BitmapDrawable videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(key);
+                    BitmapDrawable videoThumbnail = null;
+                    String key = "";
+                    String fileID = (String) item.getData().get(FILE_ID);
+                    if (null != fileID && !fileID.isEmpty()) {
+                        key = fileID;
+                        videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(key);
+                    }
+                    if (null == videoThumbnail) {
+                        String fileUrl = (String) item.getData().get(FILE_URL);
+                        if (null != fileUrl && !fileUrl.isEmpty()) {
+                            key = TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase();
+                            videoThumbnail = TAPCacheManager.getInstance(itemView.getContext()).getBitmapDrawable(key);
+                        }
+                    }
                     if (null == videoThumbnail) {
                         // Get full-size thumbnail from Uri
                         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
@@ -1081,7 +1093,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                             .placeholder(thumbnail)
                                             .centerCrop())
                                     .into(rcivVideoThumbnail);
-                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item, key, TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item)));
+                            rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
                         });
                     }
                 }).start();
@@ -1160,12 +1172,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         }
 
-        private void openVideoPlayer(TAPMessageModel message, String key, boolean isPhysicalFileExist) {
+        private void openVideoPlayer(TAPMessageModel message) {
             if (null == message.getData()) {
                 return;
             }
-            Uri videoUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message.getRoom().getRoomID(), key);
-            if (null == videoUri || !isPhysicalFileExist) {
+            Uri videoUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message);
+            if (null == videoUri || !TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(message)) {
                 // Prompt download
                 this.videoUri = null;
                 String fileID = (String) message.getData().get(FILE_ID);
@@ -1353,8 +1365,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String localID = item.getLocalID();
             Integer uploadProgressPercent = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressPercent(localID);
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(localID);
-            String key = TAPUtils.getUriKeyFromMessage(item);
-            fileUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item.getRoom().getRoomID(), key);
+//            String key = TAPUtils.getUriKeyFromMessage(item);
+            fileUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item);
 
 //            String space = isMessageFromMySelf(item) ? RIGHT_BUBBLE_SPACE_APPEND : LEFT_BUBBLE_SPACE_APPEND;
             tvFileName.setText(TAPUtils.getFileDisplayName(item));
@@ -1378,8 +1390,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     flFileIcon.setOnClickListener(v -> downloadFile(item));
                 }
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
-                    && null == downloadProgressPercent) && null != fileUri &&
-                    TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item)) {
+                    && null == downloadProgressPercent) && (null != fileUri ||
+                    TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item))) {
                 // File has finished downloading or uploading
                 tvMessageStatus.setText(item.getMessageStatusText());
                 tvFileInfo.setText(TAPUtils.getFileDisplayInfo(item));
@@ -1562,13 +1574,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 clForwardedQuote.setVisibility(View.VISIBLE);
                 //vMapBorder.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_stroke_e4e4e4_1dp_insettop_insetbottom_1dp));
             } else {
-                if (isMessageFromMySelf(item)) {
-                    TAPUtils.clipToRoundedRectangle(mapView, TAPUtils.dpToPx(12), TAPUtils.ClipType.TOP_LEFT);
-                    //vMapBorder.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_rounded_8dp_1dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp));
-                } else {
-                    TAPUtils.clipToRoundedRectangle(mapView, TAPUtils.dpToPx(12), TAPUtils.ClipType.TOP_RIGHT);
-                    //vMapBorder.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_rounded_1dp_8dp_0dp_0dp_stroke_e4e4e4_1dp_insetbottom_1dp));
-                }
                 if (null != clBubbleTop) {
                     if (tvUserName.getVisibility() == View.VISIBLE) {
                         clBubbleTop.setVisibility(View.VISIBLE);

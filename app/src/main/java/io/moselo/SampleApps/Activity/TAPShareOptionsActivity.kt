@@ -247,48 +247,58 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
             }
             vm?.pendingSearch = ""
             vm?.searchState = vm?.STATE_IDLE
-            if (entities.isNotEmpty()) {
-                runOnUiThread {
-                    tv_empty_room.visibility = View.GONE
-                    rv_search_list.visibility = View.VISIBLE
-                }
-                for (contact in entities) {
-                    val result = TAPRoomListModel(TAPRoomListModel.Type.SELECTABLE_CONTACT)
-                    // Convert contact to room model
-                    val room = TAPRoomModel(
+            when {
+                entities.isNotEmpty() -> {
+                    runOnUiThread {
+                        tv_empty_room.visibility = View.GONE
+                        rv_search_list.visibility = View.VISIBLE
+                    }
+                    for (contact in entities) {
+                        val result = TAPRoomListModel(TAPRoomListModel.Type.SELECTABLE_CONTACT)
+                        // Convert contact to room model
+                        val room = TAPRoomModel(
                             TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).activeUser.userID, contact.userID),
                             contact.name,
                             TYPE_PERSONAL,
                             contact.avatarURL,
                             ""
-                    )
-                    // Check if result already contains contact from chat room query
-                    if (!vm?.resultContainsRoom(room.roomID)!!) {
-                        result.lastMessage.room = room
-                        if (room.roomType == TYPE_PERSONAL) {
-                            if (vm?.personalContacts!!.isEmpty()) {
-                                val personalSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
-                                personalSectionTitle.title = getString(R.string.contacts)
-                                vm?.personalContacts?.add(personalSectionTitle)
+                        )
+                        // Check if result already contains contact from chat room query
+                        if (!vm?.resultContainsRoom(room.roomID)!!) {
+                            result.lastMessage.room = room
+                            if (room.roomType == TYPE_PERSONAL) {
+                                if (vm?.personalContacts!!.isEmpty()) {
+                                    val personalSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
+                                    personalSectionTitle.title = getString(R.string.contacts)
+                                    vm?.personalContacts?.add(personalSectionTitle)
+                                }
+                                vm?.personalContacts?.add(result)
+                            } else if (room.roomType == TYPE_GROUP) {
+                                if (vm?.groupContacts!!.isEmpty()) {
+                                    val groupSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
+                                    groupSectionTitle.title = getString(R.string.groups)
+                                    vm?.groupContacts?.add(groupSectionTitle)
+                                }
+                                vm?.groupContacts?.add(result)
                             }
-                            vm?.personalContacts?.add(result)
-                        } else if (room.roomType == TYPE_GROUP) {
-                            if (vm?.groupContacts!!.isEmpty()) {
-                                val groupSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
-                                groupSectionTitle.title = getString(R.string.groups)
-                                vm?.groupContacts?.add(groupSectionTitle)
-                            }
-                            vm?.groupContacts?.add(result)
                         }
                     }
+                    runOnUiThread {
+                        searchAdapter?.setItems(vm?.getSearchResults(), false)
+                    }
                 }
-                runOnUiThread {
-                    searchAdapter?.setItems(vm?.getSearchResults(), false)
+                vm?.getSearchResults().isNullOrEmpty() -> {
+                    //room and contact list empty
+                    runOnUiThread {
+                        tv_empty_room.visibility = View.VISIBLE
+                        rv_search_list.visibility = View.GONE
+                    }
                 }
-            } else {
-                runOnUiThread {
-                    tv_empty_room.visibility = View.VISIBLE
-                    rv_search_list.visibility = View.GONE
+                else -> {
+                    //room or contact not empty
+                    runOnUiThread {
+                        searchAdapter?.setItems(vm?.getSearchResults(), false)
+                    }
                 }
             }
         }
@@ -491,7 +501,9 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private fun handleFileType(uri: Uri, roomModel: TAPRoomModel?, caption: String) {
         val file = File(TAPFileUtils.getInstance().getFilePath(this, uri))
-        TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+        if (caption.isNotEmpty()) {
+            TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+        }
         TapCoreMessageManager.getInstance().sendFileMessage(file, roomModel, object : TapCoreSendMessageListener() {})
     }
 
@@ -506,7 +518,9 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     private fun handleTextType(intent: Intent, roomModel: TAPRoomModel?, caption: String) {
         if (intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) == null) {
             // text type with string data
-            TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+            if (caption.isNotEmpty()) {
+                TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
+            }
             TapCoreMessageManager.getInstance().sendTextMessage(intent.getStringExtra(Intent.EXTRA_TEXT), roomModel, object : TapCoreSendMessageListener() {})
         } else {
             // text type with file data

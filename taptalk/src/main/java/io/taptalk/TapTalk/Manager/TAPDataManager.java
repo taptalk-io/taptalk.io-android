@@ -55,6 +55,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
@@ -690,8 +691,7 @@ public class TAPDataManager {
             if (null == messageData) {
                 return;
             }
-            Uri fileMessageUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(
-                    message.getRoomID(), (String) messageData.get(FILE_ID));
+            Uri fileMessageUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(TAPMessageModel.fromMessageEntity(message));
             if (null != fileMessageUri && "content".equals(fileMessageUri.getScheme()) &&
                     null != fileMessageUri.getPath() &&
                     fileMessageUri.getPath().contains(TapTalk.getClientAppName(instanceKey))) {

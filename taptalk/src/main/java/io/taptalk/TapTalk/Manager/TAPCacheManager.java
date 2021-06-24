@@ -50,6 +50,9 @@ public class TAPCacheManager {
         memoryCache = new LruCache<String, BitmapDrawable>(cacheSize) {
             @Override
             protected int sizeOf(String key, BitmapDrawable value) {
+                if (null == value || null == value.getBitmap()) {
+                    return 0;
+                }
                 return value.getBitmap().getByteCount() / 1024;
             }
         };
@@ -108,7 +111,7 @@ public class TAPCacheManager {
 
     // Requires Background Thread
     public void addBitmapDrawableToCache(String key, BitmapDrawable bitmapDrawable) {
-        if (null == key) {
+        if (null == key || null == bitmapDrawable) {
             return;
         }
         new Thread(() -> {
