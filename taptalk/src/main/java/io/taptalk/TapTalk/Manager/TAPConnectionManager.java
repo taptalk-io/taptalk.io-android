@@ -49,7 +49,7 @@ public class TAPConnectionManager {
 
     private String instanceKey = "";
     private WebSocketClient webSocketClient;
-    @NonNull private String webSocketEndpoint = "wss://engine.taptalk.io/connect";
+    @NonNull private String webSocketEndpoint = "";
     private URI webSocketUri;
     private ConnectionStatus connectionStatus = NOT_CONNECTED;
     private List<TapTalkSocketInterface> socketListeners;

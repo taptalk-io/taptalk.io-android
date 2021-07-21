@@ -14,7 +14,7 @@
     <color name="tapColorSuccess">@color/tapAppleGreen</color>
     <color name="tapColorError">@color/tapWatermelonRed</color>
 
-    <color name="tapColorPrimaryIcon">@color/tapPumpkinOrange</color>
+    <color name="tapColorPrimaryIcon">@color/tapColorPrimary</color>
     <color name="tapColorWhiteIcon">@color/tapWhite</color>
     <color name="tapColorGrayIcon">@color/tapGrey9b</color>
     <color name="tapColorSuccessIcon">@color/tapAppleGreen</color>
@@ -24,7 +24,7 @@
     <color name="tapDefaultNavBarBackgroundColor">@color/tapWhite</color>
     <color name="tapDefaultBackgroundColor">@color/tapWhiteF3</color>
 
-    <color name="tapDefaultRightBubbleBackgroundColor">@color/tapOrangeBubble</color>
+    <color name="tapDefaultRightBubbleBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapDefaultRightBubbleDarkBackgroundColor">@color/tapTransparentBlack1910</color>
     <color name="tapDefaultLeftBubbleBackgroundColor">@color/tapWhite</color>
     <color name="tapDefaultLeftBubbleDarkBackgroundColor">@color/tapWhiteF3</color>
@@ -69,7 +69,7 @@
     <color name="tapLeftFileButtonBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
     <color name="tapDateIndicatorBackgroundColor">@color/tapWhite</color>
-    <color name="tapUnreadIdentifierBackgroundColor">@color/tapPumpkinOrange10</color>
+    <color name="tapUnreadIdentifierBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapFileProgressBackgroundColorWhite">@color/tapWhite</color>
     <color name="tapFileProgressBackgroundColorPrimary">@color/tapDefaultRightBubbleBackgroundColor</color>
     <color name="tapDeletedChatRoomInfoBackgroundColor">@color/tapParchment</color>

@@ -389,7 +389,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     private String generateWSSBaseURL(String baseURL) {
-        return (baseURL + "/connect").replace("https", "wss");
+        return (baseURL + "/connect").replaceFirst("http", "ws");
     }
 
     private String generateApiBaseURL(String baseURL) {
