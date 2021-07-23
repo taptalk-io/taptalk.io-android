@@ -15,7 +15,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.facebook.stetho.Stetho;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.android.libraries.places.api.Places;
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.installations.FirebaseInstallations;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.NoEncryption;
@@ -427,9 +428,11 @@ public class TapTalk implements LifecycleObserver {
                     new Thread(() -> {
                         if (!TAPDataManager.getInstance(instanceKey).checkFirebaseToken()) {
                             try {
-                                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+//                                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
+                                FirebaseInstallations.getInstance().getId().addOnCompleteListener(task -> {
                                     if (null != task.getResult()) {
-                                        String fcmToken = task.getResult().getToken();
+//                                        String fcmToken = task.getResult().getToken();
+                                        String fcmToken = FirebaseMessaging.getInstance().getToken().getResult();
                                         TAPDataManager.getInstance(instanceKey).registerFcmTokenToServer(fcmToken, new TAPDefaultDataView<TAPCommonResponse>() {
                                         });
                                         TAPDataManager.getInstance(instanceKey).saveFirebaseToken(fcmToken);
