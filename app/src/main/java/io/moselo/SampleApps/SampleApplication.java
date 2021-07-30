@@ -57,7 +57,6 @@ public class SampleApplication extends MultiDexApplication {
                         .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
                         .build());
 
-        TapTalk.initializeGooglePlacesApiKey(BuildConfig.GOOGLE_MAPS_API_KEY);
         TapUI.getInstance(INSTANCE_KEY).setLogoutButtonVisible(true);
         TapUI.getInstance(INSTANCE_KEY).setConnectionStatusIndicatorVisible(false);
 
