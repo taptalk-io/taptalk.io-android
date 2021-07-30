@@ -611,21 +611,18 @@ public class TAPDataManager {
     }
 
     public Boolean checkFirebaseToken(String newFirebaseToken) {
-        if (!checkPreferenceKeyAvailable(K_FIREBASE_TOKEN))
+        if (!checkPreferenceKeyAvailable(K_FIREBASE_TOKEN)) {
             return false;
-        else if (newFirebaseToken.equals(getFirebaseToken())) {
-            return true;
         } else {
-            return false;
+            return newFirebaseToken.equals(getFirebaseToken());
         }
     }
 
     public Boolean checkFirebaseToken() {
-        if (!checkPreferenceKeyAvailable(K_FIREBASE_TOKEN) || null == getFirebaseToken() || "0".equals(getFirebaseToken()))
-            return false;
-        else {
-            return true;
-        }
+        return checkPreferenceKeyAvailable(K_FIREBASE_TOKEN) &&
+                null != getFirebaseToken() &&
+                !getFirebaseToken().isEmpty() &&
+                !"0".equals(getFirebaseToken());
     }
 
     /**

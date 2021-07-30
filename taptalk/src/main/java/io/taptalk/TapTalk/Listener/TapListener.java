@@ -21,6 +21,11 @@ public abstract class TapListener implements TapTalkInterface {
     }
 
     @Override
+    public void onInitializationCompleted(String instanceKey) {
+
+    }
+
+    @Override
     public void onTapTalkRefreshTokenExpired() {
     }
 

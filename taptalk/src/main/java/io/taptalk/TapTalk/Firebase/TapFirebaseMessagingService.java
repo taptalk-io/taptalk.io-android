@@ -10,6 +10,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
+import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 
 @Keep
@@ -36,6 +37,8 @@ public class TapFirebaseMessagingService extends FirebaseMessagingService {
         super.onNewToken(s);
         for (String instanceKey : TapTalk.getInstanceKeys()) {
             TapTalk.saveFirebaseToken(instanceKey, s);
+            TapTalk.updateFirebaseTokenToServer(instanceKey, new TapCommonListener() {
+            });
         }
     }
 }

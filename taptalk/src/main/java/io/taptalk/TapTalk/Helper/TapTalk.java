@@ -348,6 +348,9 @@ public class TapTalk implements LifecycleObserver {
             refreshRemoteConfigs(instanceKey, new TapCommonListener() {
             });
         }
+        if (null != listener) {
+            listener.onInitializationCompleted(instanceKey);
+        }
         return getTapTalkInstances().get(instanceKey);
     }
 
@@ -425,27 +428,8 @@ public class TapTalk implements LifecycleObserver {
                     TAPDataManager.getInstance(instanceKey).saveRefreshTokenExpiry(response.getRefreshTokenExpiry());
                     TAPDataManager.getInstance(instanceKey).saveAccessTokenExpiry(response.getAccessTokenExpiry());
 
-                    new Thread(() -> {
-                        if (!TAPDataManager.getInstance(instanceKey).checkFirebaseToken()) {
-                            try {
-//                                FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(task -> {
-                                FirebaseInstallations.getInstance().getId().addOnCompleteListener(task -> {
-                                    if (null != task.getResult()) {
-//                                        String fcmToken = task.getResult().getToken();
-                                        String fcmToken = FirebaseMessaging.getInstance().getToken().getResult();
-                                        TAPDataManager.getInstance(instanceKey).registerFcmTokenToServer(fcmToken, new TAPDefaultDataView<TAPCommonResponse>() {
-                                        });
-                                        TAPDataManager.getInstance(instanceKey).saveFirebaseToken(fcmToken);
-                                    }
-                                });
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            TAPDataManager.getInstance(instanceKey).registerFcmTokenToServer(TAPDataManager.getInstance(instanceKey).getFirebaseToken(), new TAPDefaultDataView<TAPCommonResponse>() {
-                            });
-                        }
-                    }).start();
+                    updateFirebaseTokenToServer(instanceKey, new TapCommonListener() {
+                    });
 
                     new Thread(() -> TAPDataManager.getInstance(instanceKey).getMyContactListFromAPI(new TAPDefaultDataView<TAPContactResponse>() {
                         @Override
@@ -931,6 +915,89 @@ public class TapTalk implements LifecycleObserver {
         if (!TAPDataManager.getInstance(instanceKey).checkFirebaseToken(token)) {
             TAPDataManager.getInstance(instanceKey).saveFirebaseToken(token);
         }
+    }
+
+    public static void updateFirebaseTokenToServer(TapCommonListener listener) {
+        updateFirebaseTokenToServer("", listener);
+    }
+
+    public static void updateFirebaseTokenToServer(String instanceKey, TapCommonListener listener) {
+        new Thread(() -> {
+            if (!TAPDataManager.getInstance(instanceKey).checkFirebaseToken()) {
+                try {
+                    FirebaseInstallations.getInstance().getId().addOnCompleteListener(task -> {
+                        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(fcmToken -> {
+                            if (null != fcmToken && !fcmToken.isEmpty()) {
+                                TAPDataManager.getInstance(instanceKey).registerFcmTokenToServer(fcmToken, new TAPDefaultDataView<TAPCommonResponse>() {
+                                    @Override
+                                    public void onSuccess(TAPCommonResponse response) {
+                                        if (null != listener) {
+                                            listener.onSuccess("Successfully updated FCM token .");
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(TAPErrorModel error) {
+                                        if (null != listener) {
+                                            listener.onError(ERROR_CODE_OTHERS, error.getMessage());
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(String errorMessage) {
+                                        if (null != listener) {
+                                            listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                                        }
+                                    }
+                                });
+                                TAPDataManager.getInstance(instanceKey).saveFirebaseToken(fcmToken);
+                            } else {
+                                if (null != listener) {
+                                    listener.onError(ERROR_CODE_OTHERS, "FCM Token not found.");
+                                }
+                            }
+                        }).addOnFailureListener(exception -> {
+                            exception.printStackTrace();
+                            if (null != listener) {
+                                listener.onError(ERROR_CODE_OTHERS, exception.getMessage());
+                            }
+                        }).addOnCanceledListener(() -> {
+                            if (null != listener) {
+                                listener.onError(ERROR_CODE_OTHERS, "getToken was cancelled.");
+                            }
+                        });
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (null != listener) {
+                        listener.onError(ERROR_CODE_OTHERS, e.getMessage());
+                    }
+                }
+            } else {
+                TAPDataManager.getInstance(instanceKey).registerFcmTokenToServer(TAPDataManager.getInstance(instanceKey).getFirebaseToken(), new TAPDefaultDataView<TAPCommonResponse>() {
+                    @Override
+                    public void onSuccess(TAPCommonResponse response) {
+                        if (null != listener) {
+                            listener.onSuccess("Successfully updated FCM token .");
+                        }
+                    }
+
+                    @Override
+                    public void onError(TAPErrorModel error) {
+                        if (null != listener) {
+                            listener.onError(ERROR_CODE_OTHERS, error.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        if (null != listener) {
+                            listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 
     /**
