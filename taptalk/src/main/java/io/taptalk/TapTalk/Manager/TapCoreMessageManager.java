@@ -295,6 +295,9 @@ public class TapCoreMessageManager {
     }
 
     public void uploadImage(Context context, Uri uri, TapCoreFileUploadListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         try {
             TAPFileUploadManager.getInstance(instanceKey).uploadImage(context, uri, new ProgressRequestBody.UploadCallbacks() {
                 @Override

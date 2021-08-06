@@ -5,6 +5,7 @@ import androidx.annotation.Keep;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
@@ -55,7 +56,9 @@ public class TapCoreRoomListManager {
 
     public void fetchNewMessageToDatabase(TapCommonListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
-            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPDataManager.getInstance(instanceKey).getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
@@ -99,20 +102,20 @@ public class TapCoreRoomListManager {
                                 messages.add(TAPEncryptorManager.getInstance().decryptMessage(h));
                             }
                             if (null != listener) {
-                                listener.onSuccess("Successfully Update Message");
+                                listener.onSuccess("Successfully updated message.");
                             }
                         }
 
                         @Override
                         public void onInsertFailed(String errorMessage) {
                             if (null != listener) {
-                                listener.onSuccess("Failed Update Message");
+                                listener.onError(ERROR_CODE_OTHERS, "Failed to update message.");
                             }
                         }
                     });
                 } else {
                     if (null != listener) {
-                        listener.onSuccess("Failed Update Message");
+                        listener.onSuccess("No message was updated.");
                     }
                 }
             }
@@ -135,7 +138,9 @@ public class TapCoreRoomListManager {
 
     private void fetchNewMessage(TapCoreGetMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
-            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPDataManager.getInstance(instanceKey).getNewAndUpdatedMessage(new TAPDefaultDataView<TAPGetRoomListResponse>() {
@@ -213,12 +218,19 @@ public class TapCoreRoomListManager {
 
     public void getRoomListFromCache(TapCoreGetRoomListListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
-            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPDataManager.getInstance(instanceKey).getRoomList(TAPChatManager.getInstance(instanceKey).getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
-            public void onSelectFinished(List<TAPMessageEntity> entities) {
+            public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
+                onSelectFinishedWithUnreadCount(entities, unreadMap, mentionCount);
+            }
+
+            @Override
+            public void onSelectFinishedWithUnreadCount(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
                 super.onSelectFinished(entities);
                 List<TAPRoomListModel> roomListModel = new ArrayList<>();
                 for (TAPMessageEntity e : entities) {
@@ -240,7 +252,9 @@ public class TapCoreRoomListManager {
 
     public void getUpdatedRoomList(TapCoreGetRoomListListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
-            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         if (null == TAPChatManager.getInstance(instanceKey).getActiveUser()) {
@@ -251,7 +265,12 @@ public class TapCoreRoomListManager {
         }
         TAPDataManager.getInstance(instanceKey).getRoomList(TAPChatManager.getInstance(instanceKey).getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
-            public void onSelectFinished(List<TAPMessageEntity> entities) {
+            public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
+                onSelectFinishedWithUnreadCount(entities, unreadMap, mentionCount);
+            }
+
+            @Override
+            public void onSelectFinishedWithUnreadCount(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
                 if (entities.size() > 0) {
                     fetchNewMessage(new TapCoreGetMessageListener() {
                         @Override
@@ -338,6 +357,10 @@ public class TapCoreRoomListManager {
                                 // Save message to database
                                 TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                                 });
+                            } else {
+                                if (null != listener) {
+                                    listener.onSuccess(new ArrayList<>());
+                                }
                             }
                         }
 
@@ -367,7 +390,7 @@ public class TapCoreRoomListManager {
         });
     }
 
-    private TAPDefaultDataView<TAPGetMultipleUserResponse> getMultipleUserView = new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
+    private final TAPDefaultDataView<TAPGetMultipleUserResponse> getMultipleUserView = new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
         @Override
         public void onSuccess(TAPGetMultipleUserResponse response) {
             if (null == response || response.getUsers().isEmpty()) {

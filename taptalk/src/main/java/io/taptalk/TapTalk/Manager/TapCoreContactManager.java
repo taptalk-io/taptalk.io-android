@@ -52,7 +52,9 @@ public class TapCoreContactManager {
 
     public void getAllUserContacts(TapCoreGetMultipleContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
-            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPDataManager.getInstance(instanceKey).getMyContactList(new TAPDatabaseListener<TAPUserModel>() {
@@ -74,7 +76,9 @@ public class TapCoreContactManager {
 
     public void getUserDataWithUserID(String userID, TapCoreGetContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
-            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(userID, new TAPDefaultDataView<TAPGetUserResponse>() {
@@ -104,7 +108,9 @@ public class TapCoreContactManager {
 
     public void getUserDataWithXCUserID(String xcUserID, TapCoreGetContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
-            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPDataManager.getInstance(instanceKey).getUserByXcUserIdFromApi(xcUserID, new TAPDefaultDataView<TAPGetUserResponse>() {
@@ -141,7 +147,9 @@ public class TapCoreContactManager {
 
     public void addToTapTalkContactsWithUserID(String userID, TapCoreGetContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
-            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPDataManager.getInstance(instanceKey).addContactApi(userID, new TAPDefaultDataView<TAPAddContactResponse>() {
@@ -172,7 +180,9 @@ public class TapCoreContactManager {
 
     public void addToTapTalkContactsWithPhoneNumber(String phoneNumber, TapCoreGetContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
-            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         List<String> phoneNumberList = new ArrayList<>();
@@ -211,7 +221,9 @@ public class TapCoreContactManager {
 
     public void removeFromTapTalkContacts(String userID, TapCommonListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
-            listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
             return;
         }
         TAPDataManager.getInstance(instanceKey).removeContactApi(userID, new TAPDefaultDataView<TAPCommonResponse>() {
