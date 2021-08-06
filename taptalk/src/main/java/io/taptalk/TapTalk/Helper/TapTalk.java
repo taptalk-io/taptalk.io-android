@@ -3,6 +3,8 @@ package io.taptalk.TapTalk.Helper;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 
 import androidx.annotation.NonNull;
@@ -187,7 +189,7 @@ public class TapTalk implements LifecycleObserver {
             TapTalkImplementationType type,
             @NonNull TapListener tapListener) {
 
-        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+        new Handler(Looper.getMainLooper()).post(() -> ProcessLifecycleOwner.get().getLifecycle().addObserver(TapTalk.this));
 
         if (null == TapTalk.appContext || instanceKey.equals("")) {
             TapTalk.appContext = appContext;
