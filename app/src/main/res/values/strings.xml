@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">TapTalk</string>
+    <string name="app_name" translatable="false">TapTalk</string>
+
+    <!--Share Options-->
     <string name="add_message_dots">Add message…</string>
     <string name="select_chat">Select Chat</string>
     <string name="df_recipients">%d Recipients</string>

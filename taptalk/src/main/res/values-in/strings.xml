@@ -1,6 +1,4 @@
 <resources>
-    <string name="tap_app_name">TapTalk</string>
-
     <!--Title/Menu-->
     <string name="tap_block_user">Blokir Pengguna</string>
     <string name="tap_blocked_list">Daftar Blokir</string>

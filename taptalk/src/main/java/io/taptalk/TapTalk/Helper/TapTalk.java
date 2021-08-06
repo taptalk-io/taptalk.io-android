@@ -537,6 +537,7 @@ public class TapTalk implements LifecycleObserver {
         TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, false);
         TAPChatManager.getInstance(instanceKey).disconnectAfterRefreshTokenExpired();
         getTapTalkInstance(instanceKey).isRefreshTokenExpired = true;
+        disconnect(instanceKey);
     }
 
     /**

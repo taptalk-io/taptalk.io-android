@@ -82,7 +82,7 @@ public class TAPCacheManager {
         new Thread(() -> {
             try {
                 if (null == diskLruCache) {
-                    diskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.tap_app_name)
+                    diskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
                             , DISK_CACHE_SIZE, Bitmap.CompressFormat.WEBP, 100);
                     diskCacheLock.notifyAll(); // Wake any waiting threads
                 }
@@ -98,7 +98,7 @@ public class TAPCacheManager {
             synchronized (diskCacheLock) {
                 try {
                     if (null == diskLruCache) {
-                        diskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.tap_app_name)
+                        diskLruCache = new DiskLruImageCache(context, context.getResources().getString(R.string.app_name)
                                 , DISK_CACHE_SIZE, Bitmap.CompressFormat.JPEG, 100);
                         diskCacheLock.notifyAll(); // Wake any waiting threads
                     }

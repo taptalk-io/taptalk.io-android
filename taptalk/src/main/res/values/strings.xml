@@ -1,5 +1,5 @@
 <resources>
-    <string name="tap_app_name">TapTalk</string>
+    <string name="app_name" translatable="false">TapTalk</string>
 
     <!--Title/Menu-->
     <string name="tap_block_user">Block User</string>
