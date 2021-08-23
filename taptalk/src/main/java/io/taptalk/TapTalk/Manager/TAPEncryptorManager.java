@@ -78,7 +78,7 @@ public class TAPEncryptorManager {
 
     public HashMap<String, Object> encryptMessage(TAPMessageModel messageModel) {
 //        HashMap<String, Object> encryptedMessageMap = TAPUtils.toHashMap(messageModel);
-        HashMap<String, Object> encryptedMessageMap = messageModel.convertToHashMap();
+        HashMap<String, Object> encryptedMessageMap = messageModel.toHashMap();
         try {
             String localID = messageModel.getLocalID();
             // Encrypt message body
@@ -123,8 +123,7 @@ public class TAPEncryptorManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        TAPMessageModel decryptedMessage = TAPUtils.convertObject(messageMap, new TypeReference<TAPMessageModel>() {
-        });
+        TAPMessageModel decryptedMessage = TAPMessageModel.fromHashMap(messageMap);
         if (null != decryptedMessage) {
             decryptedMessage.updateMessageStatusText();
         }

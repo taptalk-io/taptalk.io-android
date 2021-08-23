@@ -345,33 +345,17 @@ public class TAPMessageModel implements Parcelable {
         // Update when adding fields to model
     }
 
-    public HashMap<String, Object> convertToHashMap() {
-        HashMap<String, Object> messageMap = new HashMap<>();
-        messageMap.put("messageID", messageID);
-        messageMap.put("localID", localID);
-        messageMap.put("filterID", filterID);
-        messageMap.put("body", body);
-        messageMap.put("room", room);
-        messageMap.put("type", type);
-        messageMap.put("created", created);
-        messageMap.put("user", user);
-        messageMap.put("recipientID", recipientID);
-        messageMap.put("data", data);
-        messageMap.put("quote", quote);
-        messageMap.put("replyTo", replyTo);
-        messageMap.put("forwardFrom", forwardFrom);
-        messageMap.put("isDeleted", isDeleted);
-        messageMap.put("isSending", isSending);
-        messageMap.put("isFailedSend", isFailedSend);
-        messageMap.put("isDelivered", isDelivered);
-        messageMap.put("isRead", isRead);
-        messageMap.put("isHidden", isHidden);
-        messageMap.put("updated", updated);
-        messageMap.put("deleted", deleted);
-        messageMap.put("action", action);
-        messageMap.put("target", target);
-        // Update when adding fields to model
-        return messageMap;
+    public static TAPMessageModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPMessageModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     @Nullable

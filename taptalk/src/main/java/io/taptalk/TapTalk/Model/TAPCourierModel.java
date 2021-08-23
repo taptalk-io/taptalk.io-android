@@ -1,9 +1,28 @@
 package io.taptalk.TapTalk.Model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
+
 public class TAPCourierModel {
     private String courierType;
     private Long courierCost;
     private TAPImageURL courierLogo;
+
+    public static TAPCourierModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPCourierModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
+    }
 
     public String getCourierType() {
         return courierType;

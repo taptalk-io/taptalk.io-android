@@ -4,6 +4,12 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
+
 public class TAPCustomKeyboardItemModel {
 
     @Nullable private Drawable iconImage;
@@ -21,6 +27,19 @@ public class TAPCustomKeyboardItemModel {
         this.itemID = itemID;
         this.iconURL = iconURL;
         this.itemName = itemName;
+    }
+
+    public static TAPCustomKeyboardItemModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPCustomKeyboardItemModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     @Nullable

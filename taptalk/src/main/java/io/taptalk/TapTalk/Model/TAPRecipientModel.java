@@ -1,5 +1,11 @@
 package io.taptalk.TapTalk.Model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
+
 public class TAPRecipientModel {
     private Integer recipientID;
     private String recipientName;
@@ -9,6 +15,19 @@ public class TAPRecipientModel {
     private String region;
     private String city;
     private String province;
+
+    public static TAPRecipientModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPRecipientModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
+    }
 
     public Integer getRecipientID() {
         return recipientID;

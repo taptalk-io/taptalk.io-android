@@ -1,22 +1,10 @@
 package io.taptalk.TapTalk.Model;
 
-import com.google.android.libraries.places.api.Places;
+import com.fasterxml.jackson.core.type.TypeReference;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Manager.TAPCacheManager;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
-import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
-import io.taptalk.TapTalk.Manager.TapUI;
-import io.taptalk.TapTalk.R;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPAttachmentModel {
     private int icon;
@@ -53,6 +41,19 @@ public class TAPAttachmentModel {
         this.icon = icon;
         this.titleIds = titleIds;
         this.id = id;
+    }
+
+    public static TAPAttachmentModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPAttachmentModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     public int getIcon() {

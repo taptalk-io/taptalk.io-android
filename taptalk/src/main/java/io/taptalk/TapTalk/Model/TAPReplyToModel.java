@@ -4,6 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPReplyToModel implements Parcelable {
     @JsonProperty("messageID") private String messageID;
@@ -34,6 +39,19 @@ public class TAPReplyToModel implements Parcelable {
     }
 
     public TAPReplyToModel() {
+    }
+
+    public static TAPReplyToModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPReplyToModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     public String getMessageID() {

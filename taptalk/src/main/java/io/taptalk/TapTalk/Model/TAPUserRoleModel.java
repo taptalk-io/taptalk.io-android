@@ -7,7 +7,11 @@ import androidx.room.Ignore;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPUserRoleModel implements Parcelable {
     @JsonProperty("code")
@@ -34,6 +38,19 @@ public class TAPUserRoleModel implements Parcelable {
 
     public static TAPUserRoleModel Builder(String userRoleID, String userRoleName) {
         return new TAPUserRoleModel(userRoleID, userRoleName);
+    }
+
+    public static TAPUserRoleModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPUserRoleModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     public String getCode() {

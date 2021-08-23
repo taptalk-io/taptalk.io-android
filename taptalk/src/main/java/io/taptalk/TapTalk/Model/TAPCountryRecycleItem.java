@@ -1,5 +1,11 @@
 package io.taptalk.TapTalk.Model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
+
 public class TAPCountryRecycleItem {
     public enum RecyclerItemType {
         COUNTRY_INITIAL, COUNTRY_ITEM
@@ -9,6 +15,19 @@ public class TAPCountryRecycleItem {
     private TAPCountryListItem countryListItem;
     private char countryInitial;
     private boolean isSelected;
+
+    public static TAPCountryRecycleItem fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPCountryRecycleItem>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
+    }
 
     public RecyclerItemType getRecyclerItemType() {
         return recyclerItemType;

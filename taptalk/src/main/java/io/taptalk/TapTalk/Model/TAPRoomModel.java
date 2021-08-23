@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
@@ -90,6 +91,19 @@ public class TAPRoomModel implements Parcelable {
 
     public static TAPRoomModel Builder(TAPMessageEntity messageEntity) {
         return new TAPRoomModel(messageEntity);
+    }
+
+    public static TAPRoomModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPRoomModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     public String getRoomID() {

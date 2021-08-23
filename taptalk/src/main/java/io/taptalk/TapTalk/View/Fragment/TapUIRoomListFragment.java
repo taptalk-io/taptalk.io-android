@@ -597,7 +597,7 @@ public class TapUIRoomListFragment extends Fragment {
 
         if (null != roomList && null != message.getHidden() && !message.getHidden()) {
             // Received message in an existing room list
-            roomList.setLastMessageTimestamp(message.getCreated());
+            roomList.setLastMessageTimestampWithLong(message.getCreated());
             TAPMessageModel roomLastMessage = roomList.getLastMessage();
 
             if (roomLastMessage.getLocalID().equals(message.getLocalID()) && null != activity) {

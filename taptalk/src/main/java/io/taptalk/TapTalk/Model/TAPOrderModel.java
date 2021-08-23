@@ -1,6 +1,11 @@
 package io.taptalk.TapTalk.Model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
 import java.util.List;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPOrderModel {
 
@@ -19,6 +24,19 @@ public class TAPOrderModel {
     private Long totalPrice;
 
     public TAPOrderModel() {
+    }
+
+    public static TAPOrderModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPOrderModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     public TAPUserModel getCustomer() {

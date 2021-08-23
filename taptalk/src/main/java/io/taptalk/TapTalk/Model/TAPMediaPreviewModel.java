@@ -4,6 +4,12 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
+
 public class TAPMediaPreviewModel implements Parcelable {
     private Uri uri;
     private String caption;
@@ -20,6 +26,19 @@ public class TAPMediaPreviewModel implements Parcelable {
 
     public static TAPMediaPreviewModel Builder(Uri uri, int type, boolean isSelected) {
         return new TAPMediaPreviewModel(uri, type, isSelected);
+    }
+
+    public static TAPMediaPreviewModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPMediaPreviewModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     public Uri getUri() {

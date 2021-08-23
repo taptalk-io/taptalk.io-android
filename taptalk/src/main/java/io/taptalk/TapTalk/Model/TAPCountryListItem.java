@@ -4,6 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPCountryListItem implements Parcelable {
     @JsonProperty("id") private int countryID;
@@ -33,6 +38,19 @@ public class TAPCountryListItem implements Parcelable {
         this.currencyCode = currencyCode;
         this.isEnabled = isEnabled;
         this.isHidden = isHidden;
+    }
+
+    public static TAPCountryListItem fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPCountryListItem>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     public int getCountryID() {

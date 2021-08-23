@@ -4,6 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPQuoteModel implements Parcelable {
     @JsonProperty("title") private String title;
@@ -18,6 +23,19 @@ public class TAPQuoteModel implements Parcelable {
         this.fileID = fileID;
         this.imageURL = imageURL;
         this.fileType = fileType;
+    }
+
+    public static TAPQuoteModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPQuoteModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     public String getTitle() {

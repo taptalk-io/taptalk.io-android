@@ -1,6 +1,11 @@
 package io.taptalk.TapTalk.Model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
+
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 
 public class TAPSearchChatModel {
     public enum Type {
@@ -14,6 +19,19 @@ public class TAPSearchChatModel {
     private TAPUserModel contact;
     private boolean isLastInSection;
     private int roomMentionCount;
+
+    public static TAPSearchChatModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPSearchChatModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
+    }
 
     public TAPSearchChatModel(Type type) {
         this.type = type;

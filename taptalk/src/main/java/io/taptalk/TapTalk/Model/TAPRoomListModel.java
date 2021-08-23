@@ -1,5 +1,8 @@
 package io.taptalk.TapTalk.Model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
@@ -61,6 +64,19 @@ public class TAPRoomListModel {
     public TAPRoomListModel() {
     }
 
+    public static TAPRoomListModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPRoomListModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
+    }
+
     public TAPMessageModel getLastMessage() {
         return lastMessage;
     }
@@ -77,7 +93,7 @@ public class TAPRoomListModel {
         this.lastMessageTimestamp = lastMessageTimestamp;
     }
 
-    public void setLastMessageTimestamp(long timestamp) {
+    public void setLastMessageTimestampWithLong(long timestamp) {
         setLastMessageTimestamp(TAPTimeFormatter.durationString(lastMessage.getCreated()));
     }
 

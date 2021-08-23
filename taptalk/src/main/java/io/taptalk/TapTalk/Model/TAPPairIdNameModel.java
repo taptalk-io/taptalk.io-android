@@ -4,6 +4,11 @@ import androidx.room.Ignore;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
+
+import io.taptalk.TapTalk.Helper.TAPUtils;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
@@ -18,6 +23,19 @@ public class TAPPairIdNameModel {
     }
 
     public TAPPairIdNameModel() {
+    }
+
+    public static TAPPairIdNameModel fromHashMap(HashMap<String, Object> hashMap) {
+        try {
+            return TAPUtils.convertObject(hashMap, new TypeReference<TAPPairIdNameModel>() {
+            });
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public HashMap<String, Object> toHashMap() {
+        return TAPUtils.toHashMap(this);
     }
 
     public String getId() {
