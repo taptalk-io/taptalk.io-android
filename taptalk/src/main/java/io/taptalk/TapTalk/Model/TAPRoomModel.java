@@ -126,6 +126,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #getName()} instead.
      */
     @Deprecated
+    @JsonIgnore
     public String getRoomName() {
         return name;
     }
@@ -138,6 +139,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #setName(String)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setRoomName(String roomName) {
         this.name = roomName;
     }
@@ -150,6 +152,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #getColor()} instead.
      */
     @Deprecated
+    @JsonIgnore
     public String getRoomColor() {
         return color;
     }
@@ -162,6 +165,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #setColor(String)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setRoomColor(String roomColor) {
         this.color = roomColor;
     }
@@ -174,6 +178,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #getType()} instead.
      */
     @Deprecated
+    @JsonIgnore
     public int getRoomType() {
         return type;
     }
@@ -186,6 +191,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #setType(int)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setRoomType(int roomType) {
         this.type = roomType;
     }
@@ -206,6 +212,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #getLockedTime()} instead.
      */
     @Deprecated
+    @JsonIgnore
     public long getLockedTimestamp() {
         return lockedTime;
     }
@@ -218,6 +225,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #setLockedTime(long)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setLockedTimestamp(long lockedTimestamp) {
         this.lockedTime = lockedTimestamp;
     }
@@ -230,6 +238,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #getDeleted()} instead.
      */
     @Deprecated
+    @JsonIgnore
     public long getDeletedTimestamp() {
         return deleted;
     }
@@ -242,6 +251,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #setDeleted(long)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setDeletedTimestamp(long deletedTimestamp) {
         this.deleted = deletedTimestamp;
     }
@@ -262,6 +272,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #isDeleted()} instead.
      */
     @Deprecated
+    @JsonIgnore
     public boolean isRoomDeleted() {
         return isDeleted;
     }
@@ -271,14 +282,15 @@ public class TAPRoomModel implements Parcelable {
     }
 
     /**
-     * @deprecated use {@link #setDeleted(boolean)} instead.
+     * @deprecated use {@link #setIsDeleted(boolean)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setRoomDeleted(boolean roomDeleted) {
         isDeleted = roomDeleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setIsDeleted(boolean deleted) {
         isDeleted = deleted;
     }
 
@@ -286,6 +298,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #getImageURL()} instead.
      */
     @Deprecated
+    @JsonIgnore
     @Nullable
     public TAPImageURL getRoomImage() {
         return imageURL;
@@ -300,6 +313,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #setImageURL(TAPImageURL)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setRoomImage(@Nullable TAPImageURL roomImage) {
         this.imageURL = roomImage;
     }
@@ -312,6 +326,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #getParticipants()} instead.
      */
     @Deprecated
+    @JsonIgnore
     @Nullable
     public List<TAPUserModel> getGroupParticipants() {
         return participants;
@@ -326,6 +341,7 @@ public class TAPRoomModel implements Parcelable {
      * @deprecated use {@link #setParticipants(List)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setGroupParticipants(@Nullable List<TAPUserModel> groupParticipants) {
         this.participants = groupParticipants;
     }

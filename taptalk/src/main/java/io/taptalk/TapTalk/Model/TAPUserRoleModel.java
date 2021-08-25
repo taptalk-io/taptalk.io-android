@@ -7,6 +7,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Ignore;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -69,6 +70,7 @@ public class TAPUserRoleModel implements Parcelable {
      * @deprecated use {@link #getName()} instead.
      */
     @Deprecated
+    @JsonIgnore
     public String getRoleName() {
         return name;
     }
@@ -81,6 +83,7 @@ public class TAPUserRoleModel implements Parcelable {
      * @deprecated use {@link #setName(String)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setRoleName(String roleName) {
         this.name = roleName;
     }
@@ -93,6 +96,7 @@ public class TAPUserRoleModel implements Parcelable {
      * @deprecated use {@link #getIconURL()} instead.
      */
     @Deprecated
+    @JsonIgnore
     public String getRoleIconURL() {
         return iconURL;
     }
@@ -105,6 +109,7 @@ public class TAPUserRoleModel implements Parcelable {
      * @deprecated use {@link #setIconURL(String)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setRoleIconURL(String roleIconURL) {
         this.iconURL = roleIconURL;
     }

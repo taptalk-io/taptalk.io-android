@@ -199,7 +199,7 @@ public class TAPUserModel implements Parcelable {
      * @deprecated use {@link #getFullname()} instead.
      */
     @Deprecated
-    @JsonProperty("fullname")
+    @JsonIgnore
     public String getName() {
         return fullname;
     }
@@ -213,7 +213,7 @@ public class TAPUserModel implements Parcelable {
      * @deprecated use {@link #setFullname(String)} instead.
      */
     @Deprecated
-    @JsonProperty("fullname")
+    @JsonIgnore
     public void setName(String name) {
         this.fullname = name;
     }
@@ -226,6 +226,7 @@ public class TAPUserModel implements Parcelable {
      * @deprecated use {@link #getImageURL()} instead.
      */
     @Deprecated
+    @JsonIgnore
     public TAPImageURL getAvatarURL() {
         return imageURL;
     }
@@ -238,6 +239,7 @@ public class TAPUserModel implements Parcelable {
      * @deprecated use {@link #setImageURL(TAPImageURL)} instead.
      */
     @Deprecated
+    @JsonIgnore
     public void setAvatarURL(TAPImageURL avatarURL) {
         this.imageURL = avatarURL;
     }
@@ -273,7 +275,7 @@ public class TAPUserModel implements Parcelable {
      */
     @Deprecated
     @Nullable
-    @JsonProperty("phone")
+    @JsonIgnore
     public String getPhoneNumber() {
         return phone;
     }
@@ -288,7 +290,7 @@ public class TAPUserModel implements Parcelable {
      * @deprecated use {@link #setPhone(String)} instead.
      */
     @Deprecated
-    @JsonProperty("phone")
+    @JsonIgnore
     public void setPhoneNumber(@Nullable String phoneNumber) {
         this.phone = phoneNumber;
     }
