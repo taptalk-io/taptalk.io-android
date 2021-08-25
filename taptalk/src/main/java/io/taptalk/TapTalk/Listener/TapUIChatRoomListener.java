@@ -73,9 +73,9 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
                             TAPChatManager.getInstance(instanceKey).arrangeRoomId(
                                     TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
                                     user.getUserID()),
-                            user.getName(),
+                            user.getFullname(),
                             TYPE_PERSONAL,
-                            user.getAvatarURL(),
+                            user.getImageURL(),
                             ""), // TODO: 13 Apr 2020 ROOM COLOR
                     user);
         }

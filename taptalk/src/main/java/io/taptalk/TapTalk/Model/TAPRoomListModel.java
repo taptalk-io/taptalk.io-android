@@ -13,8 +13,8 @@ public class TAPRoomListModel {
     private TAPMessageModel lastMessage;
     private String lastMessageTimestamp;
     private LinkedHashMap<String, TAPUserModel> typingUsers;
-    private int unreadCount;
-    private int unreadMentions;
+    private int numberOfUnreadMessages;
+    private int numberOfUnreadMentions;
     private int defaultAvatarBackgroundColor; // Save default color in model to prevent lag on bind
     private String title;
     public enum Type { SELECTABLE_ROOM, SELECTABLE_CONTACT, SECTION }
@@ -22,13 +22,13 @@ public class TAPRoomListModel {
 
     public TAPRoomListModel(TAPMessageModel lastMessage, int unreadCount) {
         this.lastMessage = lastMessage;
-        this.unreadCount = unreadCount;
+        this.numberOfUnreadMessages = unreadCount;
         this.lastMessageTimestamp = TAPTimeFormatter.durationString(lastMessage.getCreated());
 
         TAPRoomModel room = lastMessage.getRoom();
-        if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
+        if (null == room.getImageURL() || room.getImageURL().getThumbnail().isEmpty()) {
             if (null != TapTalk.appContext) {
-                defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getRoomName());
+                defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getName());
             }
         }
     }
@@ -41,9 +41,9 @@ public class TAPRoomListModel {
             if (null != TapTalk.appContext) {
                 defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, "");
             }
-        } else if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty()) {
+        } else if (null == room.getImageURL() || room.getImageURL().getThumbnail().isEmpty()) {
             if (null != TapTalk.appContext) {
-                defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getRoomName());
+                defaultAvatarBackgroundColor = TAPUtils.getRandomColor(TapTalk.appContext, room.getName());
             }
         }
     }
@@ -54,8 +54,8 @@ public class TAPRoomListModel {
         roomListModel.setLastMessageTimestamp(TAPTimeFormatter.durationString(lastMessage.getCreated()));
 
         TAPRoomModel room = lastMessage.getRoom();
-        if (null == room.getRoomImage() || room.getRoomImage().getThumbnail().isEmpty() && null != TapTalk.appContext) {
-            roomListModel.setDefaultAvatarBackgroundColor(TAPUtils.getRandomColor(TapTalk.appContext, room.getRoomName()));
+        if (null == room.getImageURL() || room.getImageURL().getThumbnail().isEmpty() && null != TapTalk.appContext) {
+            roomListModel.setDefaultAvatarBackgroundColor(TAPUtils.getRandomColor(TapTalk.appContext, room.getName()));
         }
 
         return roomListModel;
@@ -94,23 +94,55 @@ public class TAPRoomListModel {
     }
 
     public void setLastMessageTimestampWithLong(long timestamp) {
-        setLastMessageTimestamp(TAPTimeFormatter.durationString(lastMessage.getCreated()));
+        setLastMessageTimestamp(TAPTimeFormatter.durationString(timestamp));
     }
 
+    /**
+     * @deprecated use {@link #getNumberOfUnreadMessages()} instead.
+     */
+    @Deprecated
     public int getUnreadCount() {
-        return unreadCount;
+        return numberOfUnreadMessages;
     }
 
+    public int getNumberOfUnreadMessages() {
+        return numberOfUnreadMessages;
+    }
+
+    /**
+     * @deprecated use {@link #setNumberOfUnreadMessages(int)} instead.
+     */
+    @Deprecated
     public void setUnreadCount(int unreadCount) {
-        this.unreadCount = unreadCount;
+        this.numberOfUnreadMessages = unreadCount;
     }
 
+    public void setNumberOfUnreadMessages(int numberOfUnreadMessages) {
+        this.numberOfUnreadMessages = numberOfUnreadMessages;
+    }
+
+    /**
+     * @deprecated use {@link #getNumberOfUnreadMentions()} instead.
+     */
+    @Deprecated
     public int getUnreadMentions() {
-        return unreadMentions;
+        return numberOfUnreadMentions;
     }
 
+    public int getNumberOfUnreadMentions() {
+        return numberOfUnreadMentions;
+    }
+
+    /**
+     * @deprecated use {@link #setNumberOfUnreadMentions(int)} instead.
+     */
+    @Deprecated
     public void setUnreadMentions(int unreadMentions) {
-        this.unreadMentions = unreadMentions;
+        this.numberOfUnreadMentions = unreadMentions;
+    }
+
+    public void setNumberOfUnreadMentions(int numberOfUnreadMentions) {
+        this.numberOfUnreadMentions = numberOfUnreadMentions;
     }
 
     public int getDefaultAvatarBackgroundColor() {
@@ -155,7 +187,7 @@ public class TAPRoomListModel {
         if (0 >= getTypingUsersSize()) return "";
 
         TAPUserModel firstTypingUser = getTypingUsers().entrySet().iterator().next().getValue();
-        return firstTypingUser.getName().split(" ")[0];
+        return firstTypingUser.getFullname().split(" ")[0];
     }
 
     public String getTitle() {

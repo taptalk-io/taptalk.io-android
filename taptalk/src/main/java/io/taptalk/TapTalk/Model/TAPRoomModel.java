@@ -24,20 +24,20 @@ public class TAPRoomModel implements Parcelable {
     @JsonAlias("id")
     private String roomID;
     @JsonProperty("xcRoomID") private String xcRoomID;
-    @JsonProperty("name") private String roomName;
-    @JsonProperty("color") private String roomColor;
-    @JsonProperty("type") private int roomType;
+    @JsonProperty("name") private String name;
+    @JsonProperty("color") private String color;
+    @JsonProperty("type") private int type;
     @JsonProperty("unreadCount") private int unreadCount;
-    @JsonProperty("lockedTime") private long lockedTimestamp;
-    @JsonProperty("deleted") private long deletedTimestamp;
+    @JsonProperty("lockedTime") private long lockedTime;
+    @JsonProperty("deleted") private long deleted;
     @JsonProperty("isLocked") private boolean isLocked;
-    @JsonProperty("isDeleted") private boolean isRoomDeleted;
+    @JsonProperty("isDeleted") private boolean isDeleted;
     @Nullable
     @JsonProperty("imageURL")
-    private TAPImageURL roomImage;
+    private TAPImageURL imageURL;
     @Nullable
     @JsonIgnore
-    private List<TAPUserModel> groupParticipants;
+    private List<TAPUserModel> participants;
     @Nullable
     @JsonIgnore
     private Integer numOfParticipants;
@@ -47,35 +47,35 @@ public class TAPRoomModel implements Parcelable {
     private List<String> admins;
     @JsonIgnore private boolean isMuted;
 
-    public TAPRoomModel(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor) {
+    public TAPRoomModel(String roomID, String name, int type, TAPImageURL imageURL, String color) {
         this.roomID = null != roomID ? roomID : "";
-        this.roomName = null != roomName ? roomName : "";
-        this.roomType = roomType;
-        this.roomImage = null != roomImage ? roomImage : new TAPImageURL();
-        this.roomColor = null != roomColor ? roomColor : "";
+        this.name = null != name ? name : "";
+        this.type = type;
+        this.imageURL = null != imageURL ? imageURL : new TAPImageURL();
+        this.color = null != color ? color : "";
     }
 
-    public TAPRoomModel(String roomID, String roomName, int roomType, TAPImageURL roomImage, String roomColor, int unreadCount) {
+    public TAPRoomModel(String roomID, String name, int type, TAPImageURL imageURL, String color, int unreadCount) {
         this.roomID = null != roomID ? roomID : "";
-        this.roomName = null != roomName ? roomName : "";
-        this.roomType = roomType;
-        this.roomImage = null != roomImage ? roomImage : new TAPImageURL();
-        this.roomColor = null != roomColor ? roomColor : "";
+        this.name = null != name ? name : "";
+        this.type = type;
+        this.imageURL = null != imageURL ? imageURL : new TAPImageURL();
+        this.color = null != color ? color : "";
         this.unreadCount = unreadCount;
     }
 
     public TAPRoomModel(TAPMessageEntity messageEntity) {
         this.roomID = messageEntity.getRoomID();
         this.xcRoomID = messageEntity.getXcRoomID();
-        this.roomName = messageEntity.getRoomName();
-        this.roomType = null == messageEntity.getRoomType() ? TYPE_PERSONAL : messageEntity.getRoomType();
-        this.roomImage = TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
+        this.name = messageEntity.getRoomName();
+        this.type = null == messageEntity.getRoomType() ? TYPE_PERSONAL : messageEntity.getRoomType();
+        this.imageURL = TAPUtils.fromJSON(new TypeReference<TAPImageURL>() {
         }, messageEntity.getRoomImage());
-        this.roomColor = messageEntity.getRoomColor();
+        this.color = messageEntity.getRoomColor();
         this.isLocked = null == messageEntity.getRoomLocked() ? false : messageEntity.getRoomLocked();
-        this.isRoomDeleted = null == messageEntity.getRoomDeleted() ? false : messageEntity.getRoomDeleted();
-        this.lockedTimestamp = null == messageEntity.getRoomLockedTimestamp() ? 0L : messageEntity.getRoomLockedTimestamp();
-        this.deletedTimestamp = null == messageEntity.getRoomDeletedTimestamp() ? 0L : messageEntity.getRoomDeletedTimestamp();
+        this.isDeleted = null == messageEntity.getRoomDeleted() ? false : messageEntity.getRoomDeleted();
+        this.lockedTime = null == messageEntity.getRoomLockedTimestamp() ? 0L : messageEntity.getRoomLockedTimestamp();
+        this.deleted = null == messageEntity.getRoomDeletedTimestamp() ? 0L : messageEntity.getRoomDeletedTimestamp();
     }
 
     public TAPRoomModel() {
@@ -122,28 +122,76 @@ public class TAPRoomModel implements Parcelable {
         this.xcRoomID = xcRoomID;
     }
 
+    /**
+     * @deprecated use {@link #getName()} instead.
+     */
+    @Deprecated
     public String getRoomName() {
-        return roomName;
+        return name;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @deprecated use {@link #setName(String)} instead.
+     */
+    @Deprecated
     public void setRoomName(String roomName) {
-        this.roomName = roomName;
+        this.name = roomName;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @deprecated use {@link #getColor()} instead.
+     */
+    @Deprecated
     public String getRoomColor() {
-        return roomColor;
+        return color;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    /**
+     * @deprecated use {@link #setColor(String)} instead.
+     */
+    @Deprecated
     public void setRoomColor(String roomColor) {
-        this.roomColor = roomColor;
+        this.color = roomColor;
     }
 
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    /**
+     * @deprecated use {@link #getType()} instead.
+     */
+    @Deprecated
     public int getRoomType() {
-        return roomType;
+        return type;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    /**
+     * @deprecated use {@link #setType(int)} instead.
+     */
+    @Deprecated
     public void setRoomType(int roomType) {
-        this.roomType = roomType;
+        this.type = roomType;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     public int getUnreadCount() {
@@ -154,20 +202,52 @@ public class TAPRoomModel implements Parcelable {
         this.unreadCount = unreadCount;
     }
 
+    /**
+     * @deprecated use {@link #getLockedTime()} instead.
+     */
+    @Deprecated
     public long getLockedTimestamp() {
-        return lockedTimestamp;
+        return lockedTime;
     }
 
+    public long getLockedTime() {
+        return lockedTime;
+    }
+
+    /**
+     * @deprecated use {@link #setLockedTime(long)} instead.
+     */
+    @Deprecated
     public void setLockedTimestamp(long lockedTimestamp) {
-        this.lockedTimestamp = lockedTimestamp;
+        this.lockedTime = lockedTimestamp;
     }
 
+    public void setLockedTime(long lockedTime) {
+        this.lockedTime = lockedTime;
+    }
+
+    /**
+     * @deprecated use {@link #getDeleted()} instead.
+     */
+    @Deprecated
     public long getDeletedTimestamp() {
-        return deletedTimestamp;
+        return deleted;
     }
 
+    public long getDeleted() {
+        return deleted;
+    }
+
+    /**
+     * @deprecated use {@link #setDeleted(long)} instead.
+     */
+    @Deprecated
     public void setDeletedTimestamp(long deletedTimestamp) {
-        this.deletedTimestamp = deletedTimestamp;
+        this.deleted = deletedTimestamp;
+    }
+
+    public void setDeleted(long deleted) {
+        this.deleted = deleted;
     }
 
     public boolean isLocked() {
@@ -178,30 +258,80 @@ public class TAPRoomModel implements Parcelable {
         isLocked = locked;
     }
 
+    /**
+     * @deprecated use {@link #isDeleted()} instead.
+     */
+    @Deprecated
     public boolean isRoomDeleted() {
-        return isRoomDeleted;
+        return isDeleted;
     }
 
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    /**
+     * @deprecated use {@link #setDeleted(boolean)} instead.
+     */
+    @Deprecated
     public void setRoomDeleted(boolean roomDeleted) {
-        isRoomDeleted = roomDeleted;
+        isDeleted = roomDeleted;
     }
 
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    /**
+     * @deprecated use {@link #getImageURL()} instead.
+     */
+    @Deprecated
     @Nullable
     public TAPImageURL getRoomImage() {
-        return roomImage;
-    }
-
-    public void setRoomImage(@Nullable TAPImageURL roomImage) {
-        this.roomImage = roomImage;
+        return imageURL;
     }
 
     @Nullable
-    public List<TAPUserModel> getGroupParticipants() {
-        return groupParticipants;
+    public TAPImageURL getImageURL() {
+        return imageURL;
     }
 
+    /**
+     * @deprecated use {@link #setImageURL(TAPImageURL)} instead.
+     */
+    @Deprecated
+    public void setRoomImage(@Nullable TAPImageURL roomImage) {
+        this.imageURL = roomImage;
+    }
+
+    public void setImageURL(@Nullable TAPImageURL imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    /**
+     * @deprecated use {@link #getParticipants()} instead.
+     */
+    @Deprecated
+    @Nullable
+    public List<TAPUserModel> getGroupParticipants() {
+        return participants;
+    }
+
+    @Nullable
+    public List<TAPUserModel> getParticipants() {
+        return participants;
+    }
+
+    /**
+     * @deprecated use {@link #setParticipants(List)} instead.
+     */
+    @Deprecated
     public void setGroupParticipants(@Nullable List<TAPUserModel> groupParticipants) {
-        this.groupParticipants = groupParticipants;
+        this.participants = groupParticipants;
+    }
+
+    public void setParticipants(@Nullable List<TAPUserModel> participants) {
+        this.participants = participants;
     }
 
     @Nullable
@@ -239,16 +369,16 @@ public class TAPRoomModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.roomID);
         dest.writeString(this.xcRoomID);
-        dest.writeString(this.roomName);
-        dest.writeString(this.roomColor);
-        dest.writeInt(this.roomType);
+        dest.writeString(this.name);
+        dest.writeString(this.color);
+        dest.writeInt(this.type);
         dest.writeInt(this.unreadCount);
-        dest.writeLong(this.lockedTimestamp);
-        dest.writeLong(this.deletedTimestamp);
+        dest.writeLong(this.lockedTime);
+        dest.writeLong(this.deleted);
         dest.writeByte(this.isLocked ? (byte) 1 : (byte) 0);
-        dest.writeByte(this.isRoomDeleted ? (byte) 1 : (byte) 0);
-        dest.writeParcelable(this.roomImage, flags);
-        dest.writeTypedList(this.groupParticipants);
+        dest.writeByte(this.isDeleted ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(this.imageURL, flags);
+        dest.writeTypedList(this.participants);
         dest.writeValue(this.numOfParticipants);
         dest.writeStringList(this.admins);
         dest.writeByte(this.isMuted ? (byte) 1 : (byte) 0);
@@ -257,16 +387,16 @@ public class TAPRoomModel implements Parcelable {
     protected TAPRoomModel(Parcel in) {
         this.roomID = in.readString();
         this.xcRoomID = in.readString();
-        this.roomName = in.readString();
-        this.roomColor = in.readString();
-        this.roomType = in.readInt();
+        this.name = in.readString();
+        this.color = in.readString();
+        this.type = in.readInt();
         this.unreadCount = in.readInt();
-        this.lockedTimestamp = in.readLong();
-        this.deletedTimestamp = in.readLong();
+        this.lockedTime = in.readLong();
+        this.deleted = in.readLong();
         this.isLocked = in.readByte() != 0;
-        this.isRoomDeleted = in.readByte() != 0;
-        this.roomImage = in.readParcelable(TAPImageURL.class.getClassLoader());
-        this.groupParticipants = in.createTypedArrayList(TAPUserModel.CREATOR);
+        this.isDeleted = in.readByte() != 0;
+        this.imageURL = in.readParcelable(TAPImageURL.class.getClassLoader());
+        this.participants = in.createTypedArrayList(TAPUserModel.CREATOR);
         this.numOfParticipants = (Integer) in.readValue(Integer.class.getClassLoader());
         this.admins = in.createStringArrayList();
         this.isMuted = in.readByte() != 0;

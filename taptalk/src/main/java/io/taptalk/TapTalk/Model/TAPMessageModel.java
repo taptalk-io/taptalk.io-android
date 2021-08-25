@@ -160,7 +160,7 @@ public class TAPMessageModel implements Parcelable {
             quoteTitle = TAPUtils.getFileDisplayName(quotedMessage);
             quoteContent = TAPUtils.getFileDisplayInfo(quotedMessage);
         } else {
-            quoteTitle = quotedMessage.getUser().getName();
+            quoteTitle = quotedMessage.getUser().getFullname();
             quoteContent = quotedMessage.getBody();
         }
         String quoteFileID = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(FILE_ID);
@@ -186,7 +186,7 @@ public class TAPMessageModel implements Parcelable {
         String localID = TAPUtils.generateRandomString(32);
         TAPForwardFromModel forwardFrom;
         if (null == messageToForward.getForwardFrom() || null == messageToForward.getForwardFrom().getFullname() || messageToForward.getForwardFrom().getFullname().isEmpty()) {
-            forwardFrom = new TAPForwardFromModel(messageToForward.getUser().getUserID(), messageToForward.getUser().getXcUserID(), messageToForward.getUser().getName(), messageToForward.getMessageID(), messageToForward.getLocalID());
+            forwardFrom = new TAPForwardFromModel(messageToForward.getUser().getUserID(), messageToForward.getUser().getXcUserID(), messageToForward.getUser().getFullname(), messageToForward.getMessageID(), messageToForward.getLocalID());
         } else {
             forwardFrom = messageToForward.getForwardFrom();
         }

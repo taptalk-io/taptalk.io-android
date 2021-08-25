@@ -28,7 +28,6 @@ import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.View.Activity.TAPBaseActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter;
@@ -209,7 +208,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
                         for (TAPUserModel user : roomParticipants) {
                             if (null != user.getUsername() &&
                                     !user.getUsername().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUsername()) &&
-                                    (user.getName().toLowerCase().contains(keyword) ||
+                                    (user.getFullname().toLowerCase().contains(keyword) ||
                                             user.getUsername().toLowerCase().contains(keyword))) {
                                 // Add result if name/username matches and not self
                                 searchResult.add(user);

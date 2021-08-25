@@ -124,17 +124,17 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             TAPUserModel user = null;
             TAPRoomModel group = null;
 
-            if (room.getRoomType() == TYPE_PERSONAL) {
+            if (room.getType() == TYPE_PERSONAL) {
                 user = TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()));
-            } else if (room.getRoomType() == TYPE_GROUP || room.getRoomType() == TYPE_TRANSACTION) {
+            } else if (room.getType() == TYPE_GROUP || room.getType() == TYPE_TRANSACTION) {
                 group = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(room.getRoomID());
             }
 
             // Set room image
             if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
-                    null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
+                    null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                 // Load user avatar
-                glide.load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         // Show initial
@@ -142,7 +142,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                             ((Activity) itemView.getContext()).runOnUiThread(() -> {
                                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(item.getDefaultAvatarBackgroundColor()));
                                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                                tvAvatarLabel.setText(TAPUtils.getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
+                                tvAvatarLabel.setText(TAPUtils.getInitials(room.getName(), room.getType() == TYPE_PERSONAL ? 2 : 1));
                                 tvAvatarLabel.setVisibility(View.VISIBLE);
                             });
                         }
@@ -156,15 +156,15 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 }).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
-            } else if (null != group && !group.isRoomDeleted() && null != group.getRoomImage() &&
-                    !group.getRoomImage().getThumbnail().isEmpty()) {
+            } else if (null != group && !group.isDeleted() && null != group.getImageURL() &&
+                    !group.getImageURL().getThumbnail().isEmpty()) {
                 // Load group image
-                glide.load(group.getRoomImage().getThumbnail()).into(civAvatar);
+                glide.load(group.getImageURL().getThumbnail()).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
-            } else if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
+            } else if (null != room.getImageURL() && !room.getImageURL().getThumbnail().isEmpty()) {
                 // Load room image
-                glide.load(room.getRoomImage().getThumbnail()).into(civAvatar);
+                glide.load(room.getImageURL().getThumbnail()).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
@@ -172,7 +172,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 glide.clear(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(item.getDefaultAvatarBackgroundColor()));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                tvAvatarLabel.setText(TAPUtils.getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
+                tvAvatarLabel.setText(TAPUtils.getInitials(room.getName(), room.getType() == TYPE_PERSONAL ? 2 : 1));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
@@ -189,7 +189,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // TODO: 7 September 2018 SET AVATAR ICON ACCORDING TO USER ROLE / CHECK IF ROOM IS GROUP
             clContainer.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.tapWhite));
             //ivAvatarIcon.setImageDrawable(resource.getDrawable(R.drawable.tap_ic_verified));
-            if (room.getRoomType() == TYPE_GROUP) {
+            if (room.getType() == TYPE_GROUP) {
                 ivAvatarIcon.setVisibility(View.VISIBLE);
                 glide.load(R.drawable.tap_ic_group_icon).into(ivAvatarIcon);
             } else {
@@ -208,13 +208,13 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
             // Set room name
             if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
-                    null != user.getName() && !user.getName().isEmpty()) {
-                tvFullName.setText(user.getName());
-            } else if (null != group && !group.isRoomDeleted() && null != group.getRoomName() &&
-                    !group.getRoomName().isEmpty()) {
-                tvFullName.setText(group.getRoomName());
+                    null != user.getFullname() && !user.getFullname().isEmpty()) {
+                tvFullName.setText(user.getFullname());
+            } else if (null != group && !group.isDeleted() && null != group.getName() &&
+                    !group.getName().isEmpty()) {
+                tvFullName.setText(group.getName());
             } else {
-                tvFullName.setText(room.getRoomName());
+                tvFullName.setText(room.getName());
             }
 
             // Set last message timestamp
@@ -227,7 +227,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 //                tvGroupSenderName.setVisibility(View.GONE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
 //                ivGroupRoomTypingIndicator.setVisibility(View.GONE);
-            } else if (0 < item.getTypingUsersSize() && TYPE_PERSONAL == item.getLastMessage().getRoom().getRoomType()) {
+            } else if (0 < item.getTypingUsersSize() && TYPE_PERSONAL == item.getLastMessage().getRoom().getType()) {
                 // Set message to Typing
                 tvLastMessage.setText(itemView.getContext().getString(R.string.tap_typing));
 //                tvGroupSenderName.setVisibility(View.GONE);
@@ -239,7 +239,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 //typingAnimationTimer.start();
                 //typingIndicatorTimeOutTimer.cancel();
                 //typingIndicatorTimeOutTimer.start();
-            } else if (1 == item.getTypingUsersSize() && TYPE_PERSONAL != item.getLastMessage().getRoom().getRoomType()) {
+            } else if (1 == item.getTypingUsersSize() && TYPE_PERSONAL != item.getLastMessage().getRoom().getType()) {
                 // Set message to typing
                 String typingStatus = String.format(itemView.getContext().getString(R.string.tap_format_s_typing_single), item.getFirstTypingUserName());
 //                tvGroupSenderName.setText(typingStatus);
@@ -257,7 +257,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 if (null == ivPersonalRoomTypingIndicator.getDrawable()) {
                     glide.load(R.raw.gif_typing_indicator).into(ivPersonalRoomTypingIndicator);
                 }
-            } else if (1 < item.getTypingUsersSize() && TYPE_PERSONAL != item.getLastMessage().getRoom().getRoomType()) {
+            } else if (1 < item.getTypingUsersSize() && TYPE_PERSONAL != item.getLastMessage().getRoom().getType()) {
                 // Set message to multiple users typing
                 String typingStatus = String.format(itemView.getContext().getString(R.string.tap_format_d_people_typing), item.getTypingUsersSize());
 //                tvGroupSenderName.setText(typingStatus);
@@ -305,11 +305,11 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 //                tvGroupSenderName.setVisibility(View.GONE);
                 ivPersonalRoomTypingIndicator.setVisibility(View.GONE);
 //                ivGroupRoomTypingIndicator.setVisibility(View.GONE);
-            } else if (item.getLastMessage().getRoom().getRoomType() != TYPE_PERSONAL) {
+            } else if (item.getLastMessage().getRoom().getType() != TYPE_PERSONAL) {
                 // Show group/channel room with last message
                 String sender = activeUser.getUserID().equals(item.getLastMessage().getUser().getUserID()) ?
                         itemView.getContext().getString(R.string.tap_you) :
-                        TAPUtils.getFirstWordOfString(item.getLastMessage().getUser().getName());
+                        TAPUtils.getFirstWordOfString(item.getLastMessage().getUser().getFullname());
 //                tvLastMessage.setText(item.getLastMessage().getBody());
                 tvLastMessage.setText(String.format("%s: %s", sender, item.getLastMessage().getBody()));
 //                tvGroupSenderName.setText(activeUser.getUserID().equals(item.getLastMessage().getUser().getUserID()) ? itemView.getContext().getString(R.string.tap_you) : item.getLastMessage().getUser().getName());
@@ -376,9 +376,9 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Show unread count
-            int unreadCount = item.getUnreadCount();
+            int unreadCount = item.getNumberOfUnreadMessages();
             if (0 < unreadCount && unreadCount < 100) {
-                tvBadgeUnread.setText(String.valueOf(item.getUnreadCount()));
+                tvBadgeUnread.setText(String.valueOf(item.getNumberOfUnreadMessages()));
                 ivMessageStatus.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             } else if (unreadCount >= 100) {
@@ -391,7 +391,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Show mention badge
-            if (!TapUI.getInstance(instanceKey).isMentionUsernameDisabled() && item.getUnreadMentions() > 0) {
+            if (!TapUI.getInstance(instanceKey).isMentionUsernameDisabled() && item.getNumberOfUnreadMentions() > 0) {
                 ivBadgeMention.setVisibility(View.VISIBLE);
             } else {
                 ivBadgeMention.setVisibility(View.GONE);

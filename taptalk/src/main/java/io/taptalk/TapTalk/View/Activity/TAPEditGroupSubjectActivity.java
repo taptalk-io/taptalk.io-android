@@ -160,7 +160,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
                         TAPImageURL groupImage = new TAPImageURL();
                         groupImage.setThumbnail(vm.getRoomImageUri().toString());
                         groupImage.setFullsize(vm.getRoomImageUri().toString());
-                        vm.getGroupData().setRoomImage(groupImage);
+                        vm.getGroupData().setImageURL(groupImage);
                         //loadGroupImage();
                         loadGroupImage(groupImage.getThumbnail());
                     }
@@ -194,11 +194,11 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down);
         } else {
             Intent intent = new Intent();
-            if (null != vm.getGroupData().getRoomName()) {
-                intent.putExtra(GROUP_NAME, vm.getGroupData().getRoomName());
+            if (null != vm.getGroupData().getName()) {
+                intent.putExtra(GROUP_NAME, vm.getGroupData().getName());
             }
-            if (null != vm.getGroupData().getRoomImage()) {
-                intent.putExtra(GROUP_IMAGE, vm.getGroupData().getRoomImage());
+            if (null != vm.getGroupData().getImageURL()) {
+                intent.putExtra(GROUP_IMAGE, vm.getGroupData().getImageURL());
             }
             if (null != vm.getRoomImageUri()) {
                 intent.putExtra(URI, vm.getRoomImageUri());
@@ -217,19 +217,19 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         if (vm.getGroupAction() == EDIT_GROUP) {
             // Edit group
             vm.setGroupData(getIntent().getParcelableExtra(ROOM));
-            if (null == vm.getGroupData().getRoomImage() || vm.getGroupData().getRoomImage().getThumbnail().isEmpty()) {
+            if (null == vm.getGroupData().getImageURL() || vm.getGroupData().getImageURL().getThumbnail().isEmpty()) {
                 vm.setGroupPictureStartsEmpty(true);
             }
         } else {
             // Create group
-            vm.getGroupData().setRoomName(getIntent().getStringExtra(GROUP_NAME));
-            vm.getGroupData().setRoomImage(getIntent().getParcelableExtra(GROUP_IMAGE));
+            vm.getGroupData().setName(getIntent().getStringExtra(GROUP_NAME));
+            vm.getGroupData().setImageURL(getIntent().getParcelableExtra(GROUP_IMAGE));
             vm.setRoomImageUri(getIntent().getParcelableExtra(URI));
             vm.setMyID(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID());
             vm.setParticipantsIDs(getIntent().getStringArrayListExtra(GROUP_MEMBER_IDS));
             vm.setGroupPictureStartsEmpty(true);
             List<TAPUserModel> groupParticipants = getIntent().getParcelableArrayListExtra(GROUP_MEMBERS);
-            vm.getGroupData().setGroupParticipants(groupParticipants);
+            vm.getGroupData().setParticipants(groupParticipants);
             List<TapContactListModel> contactListModels = new ArrayList<>();
             if (null != groupParticipants) {
                 for (TAPUserModel user : groupParticipants) {
@@ -274,7 +274,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
             ivButtonClose.setOnClickListener(v -> onBackPressed());
             flButtonUpdateGroup.setOnClickListener(v -> validateAndEditGroupDetails());
-            loadGroupImage(null == vm.getGroupData().getRoomImage() ? "" : vm.getGroupData().getRoomImage().getThumbnail());
+            loadGroupImage(null == vm.getGroupData().getImageURL() ? "" : vm.getGroupData().getImageURL().getThumbnail());
         } else {
             // Show create group layout
             tvTitle.setText(R.string.tap_group_subject);
@@ -299,11 +299,11 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             ivButtonBack.setOnClickListener(v -> onBackPressed());
             flButtonCreateGroup.setOnClickListener(v -> validateAndCreateGroup());
             //loadGroupImage();
-            loadGroupImage(null == vm.getGroupData().getRoomImage() ? "" : vm.getGroupData().getRoomImage().getThumbnail());
+            loadGroupImage(null == vm.getGroupData().getImageURL() ? "" : vm.getGroupData().getImageURL().getThumbnail());
         }
 
-        if (null != vm.getGroupData().getRoomName()) {
-            etGroupName.setText(vm.getGroupData().getRoomName());
+        if (null != vm.getGroupData().getName()) {
+            etGroupName.setText(vm.getGroupData().getName());
         }
 
         civGroupImage.setOnClickListener(v -> showProfilePicturePickerBottomSheet());
@@ -318,10 +318,10 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     }
 
     private void loadGroupImage() {
-        if (null == vm.getGroupData().getRoomImage()) {
+        if (null == vm.getGroupData().getImageURL()) {
             return;
         }
-        Glide.with(this).load(vm.getGroupData().getRoomImage().getThumbnail()).listener(new RequestListener<Drawable>() {
+        Glide.with(this).load(vm.getGroupData().getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
             @Override
             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                 runOnUiThread(() -> {
@@ -344,7 +344,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorPrimary)));
             civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
             civGroupImage.setAlpha(0.1f);
-            tvGroupPictureLabel.setText(TAPUtils.getInitials(vm.getGroupData().getRoomName(), 1));
+            tvGroupPictureLabel.setText(TAPUtils.getInitials(vm.getGroupData().getName(), 1));
             tvGroupPictureLabel.setVisibility(View.VISIBLE);
             ivChangeGroupPicture.setVisibility(View.VISIBLE);
         } else {
@@ -365,7 +365,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
     private void validateAndCreateGroup() {
         String groupName = etGroupName.getText().toString().trim();
-        if (!groupName.trim().isEmpty() && null != vm.getGroupData().getGroupParticipants() && vm.getGroupData().getGroupParticipants().size() > 0) {
+        if (!groupName.trim().isEmpty() && null != vm.getGroupData().getParticipants() && vm.getGroupData().getParticipants().size() > 0) {
             TAPDataManager.getInstance(instanceKey).createGroupChatRoom(groupName, vm.getParticipantsIDs(), createGroupRoomView);
         } else {
             Toast.makeText(this, R.string.tap_error_message_group_name_empty, Toast.LENGTH_SHORT).show();
@@ -397,7 +397,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             Toast.makeText(this, R.string.tap_error_message_group_name_empty, Toast.LENGTH_SHORT).show();
             return;
         }
-        vm.getGroupData().setRoomName(groupName);
+        vm.getGroupData().setName(groupName);
         if (vm.isGroupNameChanged()) {
             callUpdateGroupChatAPI();
         } else if (vm.isGroupPictureChanged()) {
@@ -414,12 +414,12 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     }
 
     private void removeGroupPicture() {
-        vm.getGroupData().setRoomImage(null);
+        vm.getGroupData().setImageURL(null);
 
         if (vm.getGroupAction() == EDIT_GROUP) {
-            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getGroupData().getRoomName())));
+            ImageViewCompat.setImageTintList(civGroupImage, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getGroupData().getName())));
             civGroupImage.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
-            tvGroupPictureLabel.setText(TAPUtils.getInitials(vm.getGroupData().getRoomName(), 1));
+            tvGroupPictureLabel.setText(TAPUtils.getInitials(vm.getGroupData().getName(), 1));
             tvGroupPictureLabel.setVisibility(View.VISIBLE);
             checkEditButtonAvailable();
         } else {
@@ -501,14 +501,14 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
                 } else {
                     flButtonCreateGroup.setBackground(ContextCompat.getDrawable(TAPEditGroupSubjectActivity.this, R.drawable.tap_bg_button_active));
                 }
-                vm.getGroupData().setRoomName(s.toString());
+                vm.getGroupData().setName(s.toString());
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     flButtonCreateGroup.setBackground(getDrawable(R.drawable.tap_bg_button_inactive_ripple));
                 } else {
                     flButtonCreateGroup.setBackground(ContextCompat.getDrawable(TAPEditGroupSubjectActivity.this, R.drawable.tap_bg_button_inactive));
                 }
-                vm.getGroupData().setRoomName("");
+                vm.getGroupData().setName("");
             }
         }
 
@@ -526,9 +526,9 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (s.length() > 0 && !s.toString().equals(vm.getGroupData().getRoomName())) {
+            if (s.length() > 0 && !s.toString().equals(vm.getGroupData().getName())) {
                 vm.setGroupNameChanged(true);
-            } else if (s.length() > 0 && s.toString().equals(vm.getGroupData().getRoomName())) {
+            } else if (s.length() > 0 && s.toString().equals(vm.getGroupData().getName())) {
                 vm.setGroupNameChanged(false);
             }
             checkEditButtonAvailable();
@@ -617,7 +617,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
 
         private void updateGroupData(TAPCreateRoomResponse response) {
             vm.setGroupData(response.getRoom());
-            vm.getGroupData().setGroupParticipants(response.getParticipants());
+            vm.getGroupData().setParticipants(response.getParticipants());
             vm.getGroupData().setAdmins(response.getAdmins());
             TAPGroupManager.Companion.getInstance(instanceKey).addGroupData(vm.getGroupData());
         }
@@ -633,7 +633,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
         public void onSuccess(TAPUpdateRoomResponse response) {
             if (null == vm.getRoomImageUri() && null != response.getRoom()) {
                 hideUpdateGroupButtonLoading();
-                vm.getGroupData().setRoomName(response.getRoom().getRoomName());
+                vm.getGroupData().setName(response.getRoom().getName());
                 TAPGroupManager.Companion.getInstance(instanceKey).updateRoomDataNameAndImage(response.getRoom());
                 finishGroupUpdate();
             } else {
@@ -675,7 +675,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
             if (null == response.getRoom()) {
                 return;
             }
-            vm.getGroupData().setRoomImage(response.getRoom().getRoomImage());
+            vm.getGroupData().setImageURL(response.getRoom().getImageURL());
             TAPGroupManager.Companion.getInstance(instanceKey).updateGroupDataFromResponse(response);
 
             if (vm.getGroupAction() == EDIT_GROUP) {

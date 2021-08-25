@@ -295,7 +295,7 @@ public class TAPMessageRepository {
             } else {
                 // Create new room model from user data
                 // TODO: 18 December 2018 DEFINE DEFAULT ROOM COLOR
-                listener.onSelectFinished(new TAPRoomModel(roomID, otherUserModel.getName(), TYPE_PERSONAL, otherUserModel.getAvatarURL(), ""));
+                listener.onSelectFinished(new TAPRoomModel(roomID, otherUserModel.getFullname(), TYPE_PERSONAL, otherUserModel.getImageURL(), ""));
             }
         }).start();
     }

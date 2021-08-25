@@ -33,7 +33,7 @@ public class TapContactListModel implements Parcelable {
 
     // Constructor for default contact list, selectable contact list, or selected group member
     public TapContactListModel(TAPUserModel user, int type) {
-        this.title = user.getName();
+        this.title = user.getFullname();
         this.type = type;
         this.user = user;
     }

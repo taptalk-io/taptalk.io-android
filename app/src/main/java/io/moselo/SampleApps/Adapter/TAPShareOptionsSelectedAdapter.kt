@@ -40,17 +40,17 @@ class TAPShareOptionsSelectedAdapter(list: List<TAPRoomListModel>, private val l
         private val tvFullName: TextView = itemView.findViewById(R.id.tv_full_name)
         override fun onBind(item: TAPRoomListModel, position: Int) {
             val room = item.lastMessage.room ?: return
-            if (null != room.roomImage && room.roomImage!!.thumbnail.isNotEmpty()) {
+            if (null != room.imageURL && room.imageURL!!.thumbnail.isNotEmpty()) {
                 Glide.with(itemView.context)
-                        .load(room.roomImage!!.thumbnail)
+                        .load(room.imageURL!!.thumbnail)
                         .listener(object : RequestListener<Drawable?> {
                             override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
                                 // Show initial
                                 if (itemView.context is Activity) {
                                     (itemView.context as Activity).runOnUiThread {
-                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, room.roomName)))
+                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, room.name)))
                                         civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
-                                        tvAvatarLabel.text = TAPUtils.getInitials(room.roomName, 2)
+                                        tvAvatarLabel.text = TAPUtils.getInitials(room.name, 2)
                                         tvAvatarLabel.visibility = View.VISIBLE
                                     }
                                 }
@@ -67,14 +67,14 @@ class TAPShareOptionsSelectedAdapter(list: List<TAPRoomListModel>, private val l
             } else {
                 // Show initial
                 Glide.with(itemView.context).clear(civAvatar)
-                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, room.roomName)))
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, room.name)))
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
-                tvAvatarLabel.text = TAPUtils.getInitials(room.roomName, 2)
+                tvAvatarLabel.text = TAPUtils.getInitials(room.name, 2)
                 tvAvatarLabel.visibility = View.VISIBLE
             }
 
             // Set name
-            val fullName = room.roomName
+            val fullName = room.name
             if (fullName.contains(" ")) {
                 tvFullName.text = fullName.substring(0, fullName.indexOf(' '))
             } else {

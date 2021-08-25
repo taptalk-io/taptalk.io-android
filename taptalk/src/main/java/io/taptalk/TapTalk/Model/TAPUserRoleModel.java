@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Ignore;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -17,20 +18,23 @@ public class TAPUserRoleModel implements Parcelable {
     @JsonProperty("code")
     @JsonAlias("userRoleID")
     private String code;
-    @JsonProperty("name") private String roleName;
-    @JsonProperty("iconURL") private String roleIconURL;
+    @JsonProperty("name")
+    @ColumnInfo(name = "roleName")
+    private String name;
+    @ColumnInfo(name = "roleIconURL")
+    @JsonProperty("iconURL") private String iconURL;
 
     @Ignore
-    public TAPUserRoleModel(String code, String roleName, String roleIconURL) {
+    public TAPUserRoleModel(String code, String name, String iconURL) {
         this.code = code;
-        this.roleName = roleName;
-        this.roleIconURL = roleIconURL;
+        this.name = name;
+        this.iconURL = iconURL;
     }
 
     @Ignore
-    public TAPUserRoleModel(String code, String roleName) {
+    public TAPUserRoleModel(String code, String name) {
         this.code = code;
-        this.roleName = roleName;
+        this.name = name;
     }
 
     public TAPUserRoleModel() {
@@ -61,20 +65,52 @@ public class TAPUserRoleModel implements Parcelable {
         this.code = code;
     }
 
+    /**
+     * @deprecated use {@link #getName()} instead.
+     */
+    @Deprecated
     public String getRoleName() {
-        return roleName;
+        return name;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @deprecated use {@link #setName(String)} instead.
+     */
+    @Deprecated
     public void setRoleName(String roleName) {
-        this.roleName = roleName;
+        this.name = roleName;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @deprecated use {@link #getIconURL()} instead.
+     */
+    @Deprecated
     public String getRoleIconURL() {
-        return roleIconURL;
+        return iconURL;
     }
 
+    public String getIconURL() {
+        return iconURL;
+    }
+
+    /**
+     * @deprecated use {@link #setIconURL(String)} instead.
+     */
+    @Deprecated
     public void setRoleIconURL(String roleIconURL) {
-        this.roleIconURL = roleIconURL;
+        this.iconURL = roleIconURL;
+    }
+
+    public void setIconURL(String iconURL) {
+        this.iconURL = iconURL;
     }
 
 
@@ -86,14 +122,14 @@ public class TAPUserRoleModel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.code);
-        dest.writeString(this.roleName);
-        dest.writeString(this.roleIconURL);
+        dest.writeString(this.name);
+        dest.writeString(this.iconURL);
     }
 
     protected TAPUserRoleModel(Parcel in) {
         this.code = in.readString();
-        this.roleName = in.readString();
-        this.roleIconURL = in.readString();
+        this.name = in.readString();
+        this.iconURL = in.readString();
     }
 
     public static final Parcelable.Creator<TAPUserRoleModel> CREATOR = new Parcelable.Creator<TAPUserRoleModel>() {

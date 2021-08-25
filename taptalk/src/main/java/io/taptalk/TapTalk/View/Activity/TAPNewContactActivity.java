@@ -226,15 +226,15 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         constraintSet.applyTo(clSearchResult);
 
         // Set avatar
-        if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
-            glide.load(vm.getSearchResult().getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+        if (null != vm.getSearchResult().getImageURL() && !vm.getSearchResult().getImageURL().getThumbnail().isEmpty()) {
+            glide.load(vm.getSearchResult().getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     // Show initial
                     runOnUiThread(() -> {
-                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPNewContactActivity.this, vm.getSearchResult().getName())));
+                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPNewContactActivity.this, vm.getSearchResult().getFullname())));
                         civAvatar.setImageDrawable(ContextCompat.getDrawable(TAPNewContactActivity.this, R.drawable.tap_bg_circle_9b9b9b));
-                        tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getName(), 2));
+                        tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getFullname(), 2));
                         tvAvatarLabel.setVisibility(View.VISIBLE);
                     });
                     return false;
@@ -250,13 +250,13 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         } else {
             // Show initial
             glide.clear(civAvatar);
-            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getSearchResult().getName())));
+            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getSearchResult().getFullname())));
             civAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
-            tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getName(), 2));
+            tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getFullname(), 2));
             tvAvatarLabel.setVisibility(View.VISIBLE);
         }
 
-        tvFullName.setText(vm.getSearchResult().getName());
+        tvFullName.setText(vm.getSearchResult().getFullname());
         tvUsername.setText(vm.getSearchResult().getUsername());
 
         clButtonAction.setOnClickListener(null);
@@ -298,15 +298,15 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         constraintSet.applyTo(clSearchResult);
 
         // Set avatar
-        if (null != vm.getSearchResult().getAvatarURL() && !vm.getSearchResult().getAvatarURL().getThumbnail().isEmpty()) {
-            glide.load(vm.getSearchResult().getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+        if (null != vm.getSearchResult().getImageURL() && !vm.getSearchResult().getImageURL().getThumbnail().isEmpty()) {
+            glide.load(vm.getSearchResult().getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     // Show initial
                     runOnUiThread(() -> {
-                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPNewContactActivity.this, vm.getSearchResult().getName())));
+                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPNewContactActivity.this, vm.getSearchResult().getFullname())));
                         civAvatar.setImageDrawable(ContextCompat.getDrawable(TAPNewContactActivity.this, R.drawable.tap_bg_circle_9b9b9b));
-                        tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getName(), 2));
+                        tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getFullname(), 2));
                         tvAvatarLabel.setVisibility(View.VISIBLE);
                     });
                     return false;
@@ -322,15 +322,15 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         } else {
             // Show initial
             glide.clear(civAvatar);
-            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getSearchResult().getName())));
+            ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(this, vm.getSearchResult().getFullname())));
             civAvatar.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
-            tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getName(), 2));
+            tvAvatarLabel.setText(TAPUtils.getInitials(vm.getSearchResult().getFullname(), 2));
             tvAvatarLabel.setVisibility(View.VISIBLE);
         }
 
         // Set avatar icon
-        if (null != vm.getSearchResult().getUserRole() && !vm.getSearchResult().getUserRole().getRoleIconURL().isEmpty()) {
-            glide.load(vm.getSearchResult().getUserRole().getRoleIconURL()).into(ivAvatarIcon);
+        if (null != vm.getSearchResult().getUserRole() && !vm.getSearchResult().getUserRole().getIconURL().isEmpty()) {
+            glide.load(vm.getSearchResult().getUserRole().getIconURL()).into(ivAvatarIcon);
             ivAvatarIcon.setVisibility(View.VISIBLE);
         } else {
             ivAvatarIcon.setVisibility(View.GONE);
@@ -341,7 +341,7 @@ public class TAPNewContactActivity extends TAPBaseActivity {
         //ivExpertCover.setImageDrawable(getDrawable(R.drawable.moselo_default_cover));
         ivExpertCover.setBackground(null);
 
-        tvFullName.setText(vm.getSearchResult().getName());
+        tvFullName.setText(vm.getSearchResult().getFullname());
         tvUsername.setText(vm.getSearchResult().getUsername());
 
         clButtonAction.setOnClickListener(null);
@@ -383,10 +383,10 @@ public class TAPNewContactActivity extends TAPBaseActivity {
                 this,
                 instanceKey,
                 TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), vm.getSearchResult().getUserID()),
-                vm.getSearchResult().getName(),
-                vm.getSearchResult().getAvatarURL(),
+                vm.getSearchResult().getFullname(),
+                vm.getSearchResult().getImageURL(),
                 1,
-                /* TEMPORARY ROOM COLOR */TAPUtils.getRandomColor(this, vm.getSearchResult().getName()) + "");
+                /* TEMPORARY ROOM COLOR */TAPUtils.getRandomColor(this, vm.getSearchResult().getFullname()) + "");
     }
 
     private void enableInput() {

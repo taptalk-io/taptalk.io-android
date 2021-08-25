@@ -35,7 +35,6 @@ import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_REPLY_REQ_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_TEXT_REPLY;
@@ -182,89 +181,89 @@ public class TAPNotificationManager {
                                     null == tempNotificationListMessage.get(0).getRoom() ? NEW_MESSAGE :
                                             TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(0).getType() ? tempNotificationListMessage.get(0).getBody() :
                                                     TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(0).getType() ? tempNotificationListMessage.get(0).getBody() :
-                                                            TYPE_GROUP == tempNotificationListMessage.get(0).getRoom().getRoomType() ?
-                                                                    tempNotificationListMessage.get(0).getUser().getName() + ": " + tempNotificationListMessage.get(0).getBody() :
+                                                            TYPE_GROUP == tempNotificationListMessage.get(0).getRoom().getType() ?
+                                                                    tempNotificationListMessage.get(0).getUser().getFullname() + ": " + tempNotificationListMessage.get(0).getBody() :
                                                                     tempNotificationListMessage.get(0).getBody(),
                             tempNotificationListMessage.get(0).getCreated(),
-                            tempNotificationListMessage.get(0).getRoom().getRoomName());
+                            tempNotificationListMessage.get(0).getRoom().getName());
                     break;
                 case 2:
                     messageStyle.addMessage(null == tempNotificationListMessage.get(0).getUser() ? NEW_MESSAGE :
                                     null == tempNotificationListMessage.get(0).getRoom() ? NEW_MESSAGE :
                                             TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(0).getType() ? tempNotificationListMessage.get(0).getBody() :
-                                                    TYPE_GROUP == tempNotificationListMessage.get(0).getRoom().getRoomType() ?
-                                                            tempNotificationListMessage.get(0).getUser().getName() + ": " + tempNotificationListMessage.get(0).getBody() :
+                                                    TYPE_GROUP == tempNotificationListMessage.get(0).getRoom().getType() ?
+                                                            tempNotificationListMessage.get(0).getUser().getFullname() + ": " + tempNotificationListMessage.get(0).getBody() :
                                                             tempNotificationListMessage.get(0).getBody(),
                             tempNotificationListMessage.get(0).getCreated(),
-                            tempNotificationListMessage.get(0).getRoom().getRoomName());
+                            tempNotificationListMessage.get(0).getRoom().getName());
                     messageStyle.addMessage(null == tempNotificationListMessage.get(1).getUser() ? NEW_MESSAGE :
                                     null == tempNotificationListMessage.get(1).getRoom() ? NEW_MESSAGE :
                                             TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(1).getType() ? tempNotificationListMessage.get(1).getBody() :
-                                                    TYPE_GROUP == tempNotificationListMessage.get(1).getRoom().getRoomType() ?
-                                                            tempNotificationListMessage.get(1).getUser().getName() + ": " + tempNotificationListMessage.get(1).getBody() :
+                                                    TYPE_GROUP == tempNotificationListMessage.get(1).getRoom().getType() ?
+                                                            tempNotificationListMessage.get(1).getUser().getFullname() + ": " + tempNotificationListMessage.get(1).getBody() :
                                                             tempNotificationListMessage.get(1).getBody(),
                             tempNotificationListMessage.get(1).getCreated(),
-                            tempNotificationListMessage.get(1).getRoom().getRoomName());
+                            tempNotificationListMessage.get(1).getRoom().getName());
                     break;
                 case 3:
                     messageStyle.addMessage(null == tempNotificationListMessage.get(0).getUser() ? NEW_MESSAGE :
                                     null == tempNotificationListMessage.get(0).getRoom() ? NEW_MESSAGE :
                                             TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(0).getType() ? tempNotificationListMessage.get(0).getBody() :
-                                                    TYPE_GROUP == tempNotificationListMessage.get(0).getRoom().getRoomType() ?
-                                                            tempNotificationListMessage.get(0).getUser().getName() + ": " + tempNotificationListMessage.get(0).getBody() :
+                                                    TYPE_GROUP == tempNotificationListMessage.get(0).getRoom().getType() ?
+                                                            tempNotificationListMessage.get(0).getUser().getFullname() + ": " + tempNotificationListMessage.get(0).getBody() :
                                                             tempNotificationListMessage.get(0).getBody(),
                             tempNotificationListMessage.get(0).getCreated(),
-                            tempNotificationListMessage.get(0).getRoom().getRoomName());
+                            tempNotificationListMessage.get(0).getRoom().getName());
                     messageStyle.addMessage(null == tempNotificationListMessage.get(1).getUser() ? NEW_MESSAGE :
                                     null == tempNotificationListMessage.get(1).getRoom() ? NEW_MESSAGE :
                                             TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(1).getType() ? tempNotificationListMessage.get(1).getBody() :
-                                                    TYPE_GROUP == tempNotificationListMessage.get(1).getRoom().getRoomType() ?
-                                                            tempNotificationListMessage.get(1).getUser().getName() + ": " + tempNotificationListMessage.get(1).getBody() :
+                                                    TYPE_GROUP == tempNotificationListMessage.get(1).getRoom().getType() ?
+                                                            tempNotificationListMessage.get(1).getUser().getFullname() + ": " + tempNotificationListMessage.get(1).getBody() :
                                                             tempNotificationListMessage.get(1).getBody(),
                             tempNotificationListMessage.get(1).getCreated(),
-                            tempNotificationListMessage.get(1).getRoom().getRoomName());
+                            tempNotificationListMessage.get(1).getRoom().getName());
                     messageStyle.addMessage(null == tempNotificationListMessage.get(2).getUser() ? NEW_MESSAGE :
                                     null == tempNotificationListMessage.get(2).getRoom() ? NEW_MESSAGE :
                                             TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(2).getType() ? tempNotificationListMessage.get(2).getBody() :
-                                                    TYPE_GROUP == tempNotificationListMessage.get(2).getRoom().getRoomType() ?
-                                                            tempNotificationListMessage.get(2).getUser().getName() + ": " + tempNotificationListMessage.get(2).getBody() :
+                                                    TYPE_GROUP == tempNotificationListMessage.get(2).getRoom().getType() ?
+                                                            tempNotificationListMessage.get(2).getUser().getFullname() + ": " + tempNotificationListMessage.get(2).getBody() :
                                                             tempNotificationListMessage.get(2).getBody(),
                             tempNotificationListMessage.get(2).getCreated(),
-                            tempNotificationListMessage.get(2).getRoom().getRoomName());
+                            tempNotificationListMessage.get(2).getRoom().getName());
                     break;
                 default:
                     messageStyle.addMessage(null == tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getUser() ? NEW_MESSAGE :
                                     null == tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getRoom() ? NEW_MESSAGE :
                                             TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getType() ? tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getBody() :
-                                                    TYPE_GROUP == tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getRoom().getRoomType() ?
-                                                            tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getUser().getName() + ": " + tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getBody() :
+                                                    TYPE_GROUP == tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getRoom().getType() ?
+                                                            tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getUser().getFullname() + ": " + tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getBody() :
                                                             tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getBody(),
                             tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getCreated(),
-                            tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getRoom().getRoomName());
+                            tempNotificationListMessage.get(tempNotificationListMessageSize - 4).getRoom().getName());
                     messageStyle.addMessage(null == tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getUser() ? NEW_MESSAGE :
                                     null == tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getRoom() ? NEW_MESSAGE :
                                             TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getType() ? tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getBody() :
-                                                    TYPE_GROUP == tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getRoom().getRoomType() ?
-                                                            tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getUser().getName() + ": " + tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getBody() :
+                                                    TYPE_GROUP == tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getRoom().getType() ?
+                                                            tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getUser().getFullname() + ": " + tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getBody() :
                                                             tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getBody(),
                             tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getCreated(),
-                            tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getRoom().getRoomName());
+                            tempNotificationListMessage.get(tempNotificationListMessageSize - 3).getRoom().getName());
                     messageStyle.addMessage(null == tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getUser() ? NEW_MESSAGE :
                                     null == tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getRoom() ? NEW_MESSAGE :
                                             TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getType() ? tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getBody() :
-                                                    TYPE_GROUP == tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getRoom().getRoomType() ?
-                                                            tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getUser().getName() + ": " + tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getBody() :
+                                                    TYPE_GROUP == tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getRoom().getType() ?
+                                                            tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getUser().getFullname() + ": " + tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getBody() :
                                                             tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getBody(),
                             tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getCreated(),
-                            tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getRoom().getRoomName());
+                            tempNotificationListMessage.get(tempNotificationListMessageSize - 2).getRoom().getName());
                     messageStyle.addMessage(null == tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getUser() ? NEW_MESSAGE :
                                     null == tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getRoom() ? NEW_MESSAGE :
                                             TYPE_SYSTEM_MESSAGE == tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getType() ? tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getBody() :
-                                                    TYPE_GROUP == tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getRoom().getRoomType() ?
-                                                            tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getUser().getName() + ": " + tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getBody() :
+                                                    TYPE_GROUP == tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getRoom().getType() ?
+                                                            tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getUser().getFullname() + ": " + tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getBody() :
                                                             tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getBody(),
                             tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getCreated(),
-                            tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getRoom().getRoomName());
+                            tempNotificationListMessage.get(tempNotificationListMessageSize - 1).getRoom().getName());
                     break;
             }
         }
@@ -386,12 +385,12 @@ public class TAPNotificationManager {
             TAPNotificationManager.getInstance(instanceKey).addNotificationMessageToMap(notificationMessage);
             if (null != notificationMessage &&
                     null != notificationMessage.getRoom() && null != notificationMessage.getUser() &&
-                    TYPE_GROUP == notificationMessage.getRoom().getRoomType()) {
-                setChatMessage(notificationMessage.getUser().getName() + ": " + notificationMessage.getBody());
-                setChatSender(notificationMessage.getRoom().getRoomName());
+                    TYPE_GROUP == notificationMessage.getRoom().getType()) {
+                setChatMessage(notificationMessage.getUser().getFullname() + ": " + notificationMessage.getBody());
+                setChatSender(notificationMessage.getRoom().getName());
             } else if (null != notificationMessage) {
                 setChatMessage(notificationMessage.getBody());
-                setChatSender(notificationMessage.getRoom().getRoomName());
+                setChatSender(notificationMessage.getRoom().getName());
             }
             return this;
         }

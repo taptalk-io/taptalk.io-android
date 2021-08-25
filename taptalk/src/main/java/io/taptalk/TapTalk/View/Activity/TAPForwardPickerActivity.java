@@ -273,9 +273,9 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                     // TODO: 18 October 2018 LENGKAPIN DATA
                     TAPRoomModel room = new TAPRoomModel(
                             TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), contact.getUserID()),
-                            contact.getName(),
+                            contact.getFullname(),
                             TYPE_PERSONAL,
-                            contact.getAvatarURL(),
+                            contact.getImageURL(),
                             /* SET DEFAULT ROOM COLOR*/""
                     );
                     // Check if result already contains contact from chat room query

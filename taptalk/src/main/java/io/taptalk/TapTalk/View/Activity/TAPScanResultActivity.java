@@ -155,7 +155,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         loadProfilePicture(civTheirContactAvatar, tvContactAvatarLabel, vm.getAddedContactUserModel());
 
-        tvContactFullName.setText(vm.getAddedContactUserModel().getName());
+        tvContactFullName.setText(vm.getAddedContactUserModel().getFullname());
         tvContactUsername.setText(vm.getAddedContactUserModel().getUsername());
 
         animateAddSuccess(vm.getAddedContactUserModel());
@@ -164,8 +164,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
             TapUIChatActivity.start(TAPScanResultActivity.this,
                     instanceKey,
                     TAPChatManager.getInstance(instanceKey).arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getAddedContactUserModel().getUserID()),
-                    vm.getAddedContactUserModel().getName(),
-                    vm.getAddedContactUserModel().getAvatarURL(),
+                    vm.getAddedContactUserModel().getFullname(),
+                    vm.getAddedContactUserModel().getImageURL(),
                     1,
                     ""); // TODO: 20 May 2019 GET ROOM COLOR
             finish();
@@ -185,7 +185,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
         loadProfilePicture(civTheirContactAvatar, tvContactAvatarLabel, userModel);
 
-        tvContactFullName.setText(userModel.getName());
+        tvContactFullName.setText(userModel.getFullname());
         tvContactUsername.setText(userModel.getUsername());
 
         if (vm.getScanResult().equals(vm.getMyUserModel().getUserID())) {
@@ -233,8 +233,8 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                         TAPScanResultActivity.this,
                         instanceKey,
                         TAPChatManager.getInstance(instanceKey).arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getContactModel().getUserID()),
-                        vm.getContactModel().getName(),
-                        vm.getContactModel().getAvatarURL(),
+                        vm.getContactModel().getFullname(),
+                        vm.getContactModel().getImageURL(),
                         1,
                         ""); // TODO: 20 May 2019 GET ROOM COLOR
                 finish();
@@ -290,15 +290,15 @@ public class TAPScanResultActivity extends TAPBaseActivity {
     };
 
     private void loadProfilePicture(CircleImageView imageView, TextView avatarLabel, TAPUserModel userModel) {
-        if (null != userModel.getAvatarURL() && !userModel.getAvatarURL().getThumbnail().isEmpty()) {
-            glide.load(userModel.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+        if (null != userModel.getImageURL() && !userModel.getImageURL().getThumbnail().isEmpty()) {
+            glide.load(userModel.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                     // Show initial
                     runOnUiThread(() -> {
-                        ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPScanResultActivity.this, userModel.getName())));
+                        ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getRandomColor(TAPScanResultActivity.this, userModel.getFullname())));
                         imageView.setImageDrawable(ContextCompat.getDrawable(TAPScanResultActivity.this, R.drawable.tap_bg_circle_9b9b9b));
-                        avatarLabel.setText(TAPUtils.getInitials(userModel.getName(), 2));
+                        avatarLabel.setText(TAPUtils.getInitials(userModel.getFullname(), 2));
                         avatarLabel.setVisibility(View.VISIBLE);
                     });
                     return false;
@@ -314,9 +314,9 @@ public class TAPScanResultActivity extends TAPBaseActivity {
         } else {
             // Show initial
             glide.clear(imageView);
-            ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getRandomColor(this, userModel.getName())));
+            ImageViewCompat.setImageTintList(imageView, ColorStateList.valueOf(TAPUtils.getRandomColor(this, userModel.getFullname())));
             imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_bg_circle_9b9b9b));
-            avatarLabel.setText(TAPUtils.getInitials(userModel.getName(), 2));
+            avatarLabel.setText(TAPUtils.getInitials(userModel.getFullname(), 2));
             avatarLabel.setVisibility(View.VISIBLE);
         }
     }
@@ -341,13 +341,13 @@ public class TAPScanResultActivity extends TAPBaseActivity {
                         TAPScanResultActivity.this,
                         instanceKey,
                         TAPChatManager.getInstance(instanceKey).arrangeRoomId(vm.getMyUserModel().getUserID(), vm.getContactModel().getUserID()),
-                        vm.getContactModel().getName(),
-                        vm.getContactModel().getAvatarURL(),
+                        vm.getContactModel().getFullname(),
+                        vm.getContactModel().getImageURL(),
                         1,
                         ""); // TODO: 20 May 2019 GET ROOM COLOR
                 finish();
             });
-            tvAlreadyContact.setText(Html.fromHtml("<b>" + vm.getContactModel().getName() + "</b> "
+            tvAlreadyContact.setText(Html.fromHtml("<b>" + vm.getContactModel().getFullname() + "</b> "
                     + getResources().getString(R.string.tap_is_already_in_your_contacts)));
             cvResult.animate().alpha(1f).withEndAction(() -> {
                 //llButton.animate().alpha(0f).start();
@@ -406,7 +406,7 @@ public class TAPScanResultActivity extends TAPBaseActivity {
 
     public void animateAddSuccess(TAPUserModel contactModel) {
         runOnUiThread(() -> {
-            tvAddSuccess.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_you_have_added_to_your_contacts), contactModel.getName())));
+            tvAddSuccess.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_you_have_added_to_your_contacts), contactModel.getFullname())));
             loadProfilePicture(civMyUserAvatar, tvMyAvatarLabel, vm.getMyUserModel());
             civMyUserAvatar.setTranslationX(TAPUtils.dpToPx(-291));
             civTheirContactAvatar.setTranslationX(0);

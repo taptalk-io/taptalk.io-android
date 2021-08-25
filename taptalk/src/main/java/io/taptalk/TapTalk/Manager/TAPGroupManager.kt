@@ -73,8 +73,8 @@ class TAPGroupManager(private var instanceKey: String) {
 
     fun updateRoomDataNameAndImage(roomModel: TAPRoomModel) {
         if (checkIsRoomDataAvailable(roomModel.roomID)) {
-            getGroupData(roomModel.roomID)?.roomName = roomModel.roomName
-            getGroupData(roomModel.roomID)?.roomImage = roomModel.roomImage
+            getGroupData(roomModel.roomID)?.name = roomModel.name
+            getGroupData(roomModel.roomID)?.imageURL = roomModel.imageURL
         }
     }
 
@@ -91,9 +91,9 @@ class TAPGroupManager(private var instanceKey: String) {
         val room = response.room
         if (null != room) {
             if (null != response.participants && response.participants!!.isNotEmpty()) {
-                room.groupParticipants = response.participants
+                room.participants = response.participants
             } else {
-                room.groupParticipants = getInstance(instanceKey)?.getGroupData(response.room!!.roomID)?.groupParticipants
+                room.participants = getInstance(instanceKey)?.getGroupData(response.room!!.roomID)?.participants
             }
             if (null != response.admins && response.admins!!.isNotEmpty()) {
                 room.admins = response.admins
@@ -109,7 +109,7 @@ class TAPGroupManager(private var instanceKey: String) {
         val room = response.room
         if (null != room) {
             val existingRoom = getInstance(instanceKey)?.getGroupData(response.room!!.roomID)
-            room.groupParticipants = existingRoom?.groupParticipants
+            room.participants = existingRoom?.participants
             room.admins = existingRoom?.admins
             updateRoomDataNameAndImage(room)
         }

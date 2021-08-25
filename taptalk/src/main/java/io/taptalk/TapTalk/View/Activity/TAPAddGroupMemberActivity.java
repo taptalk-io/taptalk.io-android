@@ -207,7 +207,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                     public void onSelectFinished(List<TAPUserModel> entities) {
                         for (TAPUserModel user : entities) {
                             if (null != user.getUserID() && !user.getUserID().isEmpty() &&
-                                    null != user.getName() && !user.getName().isEmpty()) {
+                                    null != user.getFullname() && !user.getFullname().isEmpty()) {
                                 TapContactListModel filteredContact = new TapContactListModel(user, TYPE_SELECTABLE_CONTACT_LIST);
                                 vm.getContactListPointer().put(user.getUserID(), filteredContact);
                             }

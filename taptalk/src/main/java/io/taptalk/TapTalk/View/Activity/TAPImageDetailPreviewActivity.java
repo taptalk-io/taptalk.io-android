@@ -158,7 +158,7 @@ public class TAPImageDetailPreviewActivity extends TAPBaseActivity {
         fileID = (String) message.getData().get(FILE_ID);
         caption = (String) message.getData().get(CAPTION);
         mimeType = (String) message.getData().get(MEDIA_TYPE);
-        title = message.getUser().getName();
+        title = message.getUser().getFullname();
         messageStatus = TAPTimeFormatter.durationChatString(TapTalk.appContext, message.getCreated());
     }
 

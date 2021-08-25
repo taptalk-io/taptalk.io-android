@@ -294,7 +294,7 @@ public class TAPNewChatActivity extends TAPBaseActivity {
         vm.getAdapterItems().clear();
         for (TapContactListModel contact : vm.getSeparatedContactList()) {
             TAPUserModel user = contact.getUser();
-            if (null != user && (user.getName().toLowerCase().contains(searchKeyword) ||
+            if (null != user && (user.getFullname().toLowerCase().contains(searchKeyword) ||
                     (null != user.getUsername() && user.getUsername().contains(searchKeyword)))) {
                 vm.getAdapterItems().add(contact);
             }
@@ -596,10 +596,10 @@ public class TAPNewChatActivity extends TAPBaseActivity {
                         TAPNewChatActivity.this,
                         instanceKey,
                         TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), user.getUserID()),
-                        user.getName(),
-                        user.getAvatarURL(),
+                        user.getFullname(),
+                        user.getImageURL(),
                         TYPE_PERSONAL,
-                        /* TEMPORARY ROOM COLOR */TAPUtils.getRandomColor(TAPNewChatActivity.this, user.getName()) + "");
+                        /* TEMPORARY ROOM COLOR */TAPUtils.getRandomColor(TAPNewChatActivity.this, user.getFullname()) + "");
             }
         }
 

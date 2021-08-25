@@ -152,7 +152,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         vm = ViewModelProvider(this,
                 TAPRegisterViewModel.TAPRegisterViewModelFactory(application, instanceKey))
                 .get(TAPRegisterViewModel::class.java)
-        vm.currentProfilePicture = vm.myUserModel.avatarURL.thumbnail
+        vm.currentProfilePicture = vm.myUserModel.imageURL.thumbnail
         vm.countryFlagUrl = TAPDataManager.getInstance(instanceKey).myCountryFlagUrl
     }
 
@@ -173,9 +173,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
 
         if (vm.currentProfilePicture.isEmpty()) {
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
+            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname)))
             civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
-            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.name, 2)
+            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
             tv_profile_picture_label.visibility = View.VISIBLE
         } else {
             glide.load(vm.currentProfilePicture)
@@ -183,9 +183,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     .listener(object : RequestListener<Drawable> {
                         override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
                             runOnUiThread {
-                                ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
+                                ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname)))
                                 civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
-                                tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.name, 2)
+                                tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
                                 tv_profile_picture_label.visibility = View.VISIBLE
                             }
                             return false
@@ -206,10 +206,10 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     .apply(RequestOptions().placeholder(R.drawable.tap_ic_default_flag))
                     .into(iv_country_flag)
         }
-        et_full_name.setText(vm.myUserModel.name)
+        et_full_name.setText(vm.myUserModel.fullname)
         et_username.setText(vm.myUserModel.username)
         tv_country_code.text = "+" + vm.myUserModel.countryCallingCode
-        et_mobile_number.setText(vm.myUserModel.phoneNumber)
+        et_mobile_number.setText(vm.myUserModel.phone)
         et_email_address.setText(vm.myUserModel.email)
         setTextVersionApp()
 
@@ -274,9 +274,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (null == imageUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
 
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
+            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname)))
             civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
-            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.name, 2)
+            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
             tv_profile_picture_label.visibility = View.VISIBLE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.GONE
@@ -303,9 +303,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (null == imageUrl) {
             vm.formCheck[indexProfilePicture] = stateEmpty
 
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.name)))
+            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname)))
             glide.load(R.drawable.tap_bg_circle_9b9b9b).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
-            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.name, 2)
+            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
             tv_profile_picture_label.visibility = View.VISIBLE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.GONE
@@ -320,7 +320,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun checkFullName(hasFocus: Boolean) {
-        if (et_full_name.text.toString() == vm.myUserModel.name) {
+        if (et_full_name.text.toString() == vm.myUserModel.fullname) {
             // Unchanged
             vm.formCheck[indexFullName] = stateUnchanged
             tv_label_full_name_error.visibility = View.GONE
@@ -729,7 +729,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 }
                 UploadProgressFinish -> {
                     val updatedUserModel = intent.getParcelableExtra<TAPUserModel>(K_USER)
-                    vm.currentProfilePicture = updatedUserModel?.avatarURL?.thumbnail
+                    vm.currentProfilePicture = updatedUserModel?.imageURL?.thumbnail
                     if (updatedUserModel?.userID == vm.myUserModel.userID) {
                         vm.isUploadingProfilePicture = false
                         enableEditing()

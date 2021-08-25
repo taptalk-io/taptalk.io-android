@@ -1563,7 +1563,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
                     (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty()) ||
-                    (null != tvUserName && View.VISIBLE == tvUserName.getVisibility() && null != item.getRoom() && TYPE_GROUP == item.getRoom().getRoomType())) {
+                    (null != tvUserName && View.VISIBLE == tvUserName.getVisibility() && null != item.getRoom() && TYPE_GROUP == item.getRoom().getType())) {
                 // Fix layout when quote/forward exists
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     mapView.setOutlineProvider(null);
@@ -1665,7 +1665,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             return;
         }
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) flBubble.getLayoutParams();
-        if (item.getRoom().getRoomType() == TYPE_GROUP) {
+        if (item.getRoom().getType() == TYPE_GROUP) {
             // Fix bubble margin on group room
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 params.setMarginEnd(TAPUtils.dpToPx(48));
@@ -2154,7 +2154,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivMessageStatus.setOnClickListener(v -> onStatusImageClicked(item));
         } else {
             // Message from others
-            if (item.getRoom().getRoomType() == TYPE_PERSONAL) {
+            if (item.getRoom().getType() == TYPE_PERSONAL) {
                 // Hide avatar and name for personal room
                 if (null != civAvatar) {
                     civAvatar.setVisibility(View.GONE);
@@ -2168,8 +2168,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 // Load avatar and name for other room types
                 TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(item.getUser().getUserID());
-                if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
-                    glide.load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
+                    glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             if (vh.itemView.getContext() instanceof Activity) {
@@ -2186,8 +2186,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ImageViewCompat.setImageTintList(civAvatar, null);
                     civAvatar.setVisibility(View.VISIBLE);
                     tvAvatarLabel.setVisibility(View.GONE);
-                } else if (null != civAvatar && null != tvAvatarLabel && null != item.getUser().getAvatarURL() && !item.getUser().getAvatarURL().getThumbnail().isEmpty()) {
-                    glide.load(item.getUser().getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                } else if (null != civAvatar && null != tvAvatarLabel && null != item.getUser().getImageURL() && !item.getUser().getImageURL().getThumbnail().isEmpty()) {
+                    glide.load(item.getUser().getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             if (vh.itemView.getContext() instanceof Activity) {
@@ -2208,7 +2208,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     showInitial(vh, item, civAvatar, tvAvatarLabel);
                 }
                 if (null != tvUserName) {
-                    tvUserName.setText(item.getUser().getName());
+                    tvUserName.setText(item.getUser().getFullname());
                     tvUserName.setVisibility(View.VISIBLE);
                 }
                 if (null != civAvatar) {
@@ -2229,9 +2229,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private void showInitial(TAPBaseChatViewHolder vh, TAPMessageModel item,
                              CircleImageView civAvatar, TextView tvAvatarLabel) {
         // Show initial
-        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(vh.itemView.getContext(), item.getUser().getName())));
+        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(vh.itemView.getContext(), item.getUser().getFullname())));
         civAvatar.setImageDrawable(ContextCompat.getDrawable(vh.itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-        tvAvatarLabel.setText(TAPUtils.getInitials(item.getUser().getName(), 2));
+        tvAvatarLabel.setText(TAPUtils.getInitials(item.getUser().getFullname(), 2));
         civAvatar.setVisibility(View.VISIBLE);
         tvAvatarLabel.setVisibility(View.VISIBLE);
     }

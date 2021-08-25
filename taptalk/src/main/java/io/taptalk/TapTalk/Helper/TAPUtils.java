@@ -42,7 +42,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -59,7 +58,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -70,7 +68,6 @@ import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
@@ -78,24 +75,17 @@ import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapContactListModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
-import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.View.Activity.TAPMapActivity;
-import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
-import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE_ALL;
@@ -104,15 +94,12 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.INTENT_TYPE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.OPEN_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.SELECT_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_NAME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
@@ -120,7 +107,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
@@ -329,7 +315,7 @@ public class TAPUtils {
         List<TapContactListModel> filteredContacts = new ArrayList<>();
         for (TAPUserModel contact : contacts) {
             // Check name is not null
-            if (null != contact.getName() && !contact.getName().isEmpty()) {
+            if (null != contact.getFullname() && !contact.getFullname().isEmpty()) {
                 TapContactListModel filteredContact = new TapContactListModel(contact, type);
                 filteredContacts.add(filteredContact);
             }
@@ -338,13 +324,13 @@ public class TAPUtils {
         int size = filteredContacts.size();
         for (int i = 1; i <= size; i++) {
             if (i == size ||
-                    filteredContacts.get(i).getUser().getName().toLowerCase().charAt(0) !=
-                            filteredContacts.get(i - 1).getUser().getName().toLowerCase().charAt(0)) {
+                    filteredContacts.get(i).getUser().getFullname().toLowerCase().charAt(0) !=
+                            filteredContacts.get(i - 1).getUser().getFullname().toLowerCase().charAt(0)) {
                 List<TapContactListModel> contactSubList = filteredContacts.subList(previousInitialIndexStart, i);
-                char initial = contactSubList.get(0).getUser().getName().toLowerCase().charAt(0);
+                char initial = contactSubList.get(0).getUser().getFullname().toLowerCase().charAt(0);
                 //if (Character.isAlphabetic(contactSubList.get(0).getUser().getName().toLowerCase().charAt(0))) {
                 if ((initial >= 'a' && initial <= 'z') || (initial >= 'A' && initial <= 'Z')) { // Character.isAlphabetic not available below API 19
-                    separatedContacts.add(new TapContactListModel(filteredContacts.get(i - 1).getUser().getName().substring(0, 1)));
+                    separatedContacts.add(new TapContactListModel(filteredContacts.get(i - 1).getUser().getFullname().substring(0, 1)));
                     separatedContacts.addAll(contactSubList);
                 } else {
                     nonAlphabeticContacts.addAll(contactSubList);
@@ -1172,7 +1158,7 @@ public class TAPUtils {
 
     public static boolean isActiveUserMentioned(TAPMessageModel message, TAPUserModel activeUser) {
         if (message.getUser().equals(activeUser) ||
-                message.getRoom().getRoomType() == TYPE_PERSONAL ||
+                message.getRoom().getType() == TYPE_PERSONAL ||
                 (message.getType() != TYPE_TEXT &&
                         message.getType() != TYPE_IMAGE &&
                         message.getType() != TYPE_VIDEO) ||

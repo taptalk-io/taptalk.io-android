@@ -20,7 +20,7 @@ class TAPGroupMemberDiffCallback(private val oldList: List<TAPUserModel>,
     }
 
     override fun areContentsTheSame(p0: Int, p1: Int): Boolean {
-        return oldList[p0].name == newList[p1].name
+        return oldList[p0].fullname == newList[p1].fullname
     }
 
 }

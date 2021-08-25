@@ -25,10 +25,10 @@ public class TAPRecentSearchEntity {
     @Ignore
     public TAPRecentSearchEntity(TAPRoomModel roomModel, Long created) {
         this.roomID = roomModel.getRoomID();
-        this.roomName = roomModel.getRoomName();
-        this.roomColor = roomModel.getRoomColor();
-        this.roomType = roomModel.getRoomType();
-        this.roomImage = TAPUtils.toJsonString(roomModel.getRoomImage());
+        this.roomName = roomModel.getName();
+        this.roomColor = roomModel.getColor();
+        this.roomType = roomModel.getType();
+        this.roomImage = TAPUtils.toJsonString(roomModel.getImageURL());
         this.created = created;
     }
 
@@ -41,10 +41,10 @@ public class TAPRecentSearchEntity {
 
         TAPRecentSearchEntity model = new TAPRecentSearchEntity();
         model.setRoomID(room.getRoomID());
-        model.setRoomName(room.getRoomName());
-        model.setRoomColor(room.getRoomColor());
-        model.setRoomType(room.getRoomType());
-        model.setRoomImage(TAPUtils.toJsonString(room.getRoomImage()));
+        model.setRoomName(room.getName());
+        model.setRoomColor(room.getColor());
+        model.setRoomType(room.getType());
+        model.setRoomImage(TAPUtils.toJsonString(room.getImageURL()));
         model.setCreated(System.currentTimeMillis());
         return model;
     }

@@ -101,21 +101,21 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
             }
 
             // Load member avatar
-            if (item?.avatarURL?.thumbnail.isNullOrEmpty()) {
-                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, item?.name)))
+            if (item?.imageURL?.thumbnail.isNullOrEmpty()) {
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, item?.fullname)))
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
-                tvAvatarLabel.text = TAPUtils.getInitials(item?.name, 2)
+                tvAvatarLabel.text = TAPUtils.getInitials(item?.fullname, 2)
                 tvAvatarLabel.visibility = View.VISIBLE
             } else {
                 Glide.with(itemView.context)
-                        .load(item?.avatarURL?.thumbnail)
+                        .load(item?.imageURL?.thumbnail)
                         .listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
                                 if (itemView.context is Activity) {
                                     (itemView.context as Activity).runOnUiThread {
-                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, item?.name)))
+                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.context, item?.fullname)))
                                         civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_bg_circle_9b9b9b))
-                                        tvAvatarLabel.text = TAPUtils.getInitials(item?.name, 2)
+                                        tvAvatarLabel.text = TAPUtils.getInitials(item?.fullname, 2)
                                         tvAvatarLabel.visibility = View.VISIBLE
                                     }
                                 }
@@ -133,7 +133,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
             }
 
             // Set name
-            tvFullName.text = item?.name ?: ""
+            tvFullName.text = item?.fullname ?: ""
             tvUsername.visibility = View.GONE
 
             // Hide separator on last item

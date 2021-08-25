@@ -35,7 +35,7 @@ public class TAPReplyToModel implements Parcelable {
         this.messageType = messageType;
         this.xcUserID = user.getXcUserID();
         this.userID = user.getUserID();
-        this.fullname = user.getName();
+        this.fullname = user.getFullname();
     }
 
     public TAPReplyToModel() {

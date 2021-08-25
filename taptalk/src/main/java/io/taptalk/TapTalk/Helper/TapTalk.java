@@ -873,7 +873,7 @@ public class TapTalk implements LifecycleObserver {
                     return;
                 }
                 if (sender.getXcUserID().equals(userResponse.getXcUserID()) &&
-                        sender.getName().equals(userResponse.getName()) &&
+                        sender.getFullname().equals(userResponse.getFullname()) &&
                         (null == sender.getUsername() ||
                                 sender.getUsername().equals(userResponse.getUsername()))
                 ) {

@@ -430,23 +430,23 @@ public class TapUIRoomListFragment extends Fragment {
     private void reloadProfilePicture() {
         // TODO: 7 May 2019 CHECK IF PROFILE IS HIDDEN
         TAPUserModel user = TAPChatManager.getInstance(instanceKey).getActiveUser();
-        if (null != user && null != user.getAvatarURL()
-                && !user.getAvatarURL().getThumbnail().isEmpty()) {
+        if (null != user && null != user.getImageURL()
+                && !user.getImageURL().getThumbnail().isEmpty()) {
             if (null != getActivity()) {
                 getActivity().runOnUiThread(() -> {
-                    glide.load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                    glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             // Show initial
                             if (null != getActivity()) {
                                 getActivity().runOnUiThread(() -> {
-                                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getRandomColor(getContext(), user.getName())));
+                                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getRandomColor(getContext(), user.getFullname())));
                                     if (null != getContext()) {
                                         civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
                                     }
                                 });
                             }
-                            tvMyAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
+                            tvMyAvatarLabel.setText(TAPUtils.getInitials(user.getFullname(), 2));
                             tvMyAvatarLabel.setVisibility(View.VISIBLE);
                             return false;
                         }
@@ -466,12 +466,12 @@ public class TapUIRoomListFragment extends Fragment {
             if (null != getActivity()) {
                 getActivity().runOnUiThread(() -> {
                     glide.clear(civMyAvatarImage);
-                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getRandomColor(getContext(), user.getName())));
+                    ImageViewCompat.setImageTintList(civMyAvatarImage, ColorStateList.valueOf(TAPUtils.getRandomColor(getContext(), user.getFullname())));
                     if (null != getContext()) {
                         civMyAvatarImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.tap_bg_circle_9b9b9b));
                     }
                     civMyAvatarImage.setVisibility(View.VISIBLE);
-                    tvMyAvatarLabel.setText(TAPUtils.getInitials(user.getName(), 2));
+                    tvMyAvatarLabel.setText(TAPUtils.getInitials(user.getFullname(), 2));
                     tvMyAvatarLabel.setVisibility(View.VISIBLE);
                 });
             }
@@ -619,13 +619,13 @@ public class TapUIRoomListFragment extends Fragment {
                     if (!roomList.getLastMessage().getUser().getUserID().equals(
                             TAPChatManager.getInstance(instanceKey)
                                     .getActiveUser().getUserID())) {
-                        roomList.setUnreadCount(roomList.getUnreadCount() + 1);
+                        roomList.setNumberOfUnreadMessages(roomList.getNumberOfUnreadMessages() + 1);
                     }
 
                     // Show mention badge if user is mentioned
                     if (TAPUtils.isActiveUserMentioned(roomList.getLastMessage(),
                             TAPChatManager.getInstance(instanceKey).getActiveUser())) {
-                        roomList.setUnreadMentions(roomList.getUnreadMentions() + 1);
+                        roomList.setNumberOfUnreadMentions(roomList.getNumberOfUnreadMentions() + 1);
                     }
 
                     // Move room to top
@@ -650,12 +650,12 @@ public class TapUIRoomListFragment extends Fragment {
             if (!newRoomList.getLastMessage().getUser().getUserID()
                     .equals(TAPChatManager.getInstance(instanceKey)
                             .getActiveUser().getUserID())) {
-                newRoomList.setUnreadCount(1);
+                newRoomList.setNumberOfUnreadMessages(1);
             }
 
             if (TAPUtils.isActiveUserMentioned(newRoomList.getLastMessage(),
                     TAPChatManager.getInstance(instanceKey).getActiveUser())) {
-                newRoomList.setUnreadMentions(1);
+                newRoomList.setNumberOfUnreadMentions(1);
             }
 
             vm.addRoomPointer(newRoomList);
@@ -1014,8 +1014,8 @@ public class TapUIRoomListFragment extends Fragment {
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
-                    vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
-                    vm.getRoomPointer().get(entity.getRoomID()).setUnreadMentions(mentionMap.get(entity.getRoomID()));
+                    vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
+                    vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMentions(mentionMap.get(entity.getRoomID()));
                 }
                 if (++count % limit == 0) {
                     vm.setRoomList(messageModels);
@@ -1032,8 +1032,8 @@ public class TapUIRoomListFragment extends Fragment {
         public void onCountedUnreadCount(String roomID, int unreadCount, int mentionCount) {
             try {
                 if (null != activity && vm.getRoomPointer().containsKey(roomID) && null != vm.getRoomPointer().get(roomID)) {
-                    vm.getRoomPointer().get(roomID).setUnreadCount(unreadCount);
-                    vm.getRoomPointer().get(roomID).setUnreadMentions(mentionCount);
+                    vm.getRoomPointer().get(roomID).setNumberOfUnreadMessages(unreadCount);
+                    vm.getRoomPointer().get(roomID).setNumberOfUnreadMentions(mentionCount);
                     activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))));
                 }
             } catch (Exception e) {
@@ -1051,8 +1051,8 @@ public class TapUIRoomListFragment extends Fragment {
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
-                    vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
-                    vm.getRoomPointer().get(entity.getRoomID()).setUnreadMentions(mentionMap.get(entity.getRoomID()));
+                    vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
+                    vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMentions(mentionMap.get(entity.getRoomID()));
                 }
             }
 
@@ -1072,8 +1072,8 @@ public class TapUIRoomListFragment extends Fragment {
                 messageModels.add(roomModel);
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
-                    vm.getRoomPointer().get(entity.getRoomID()).setUnreadCount(unreadMap.get(entity.getRoomID()));
-                    vm.getRoomPointer().get(entity.getRoomID()).setUnreadMentions(mentionMap.get(entity.getRoomID()));
+                    vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
+                    vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMentions(mentionMap.get(entity.getRoomID()));
                 }
             }
             vm.setRoomList(messageModels);
@@ -1104,23 +1104,23 @@ public class TapUIRoomListFragment extends Fragment {
             if (null != getActivity() && null != room) {
                 Integer roomUnreadList = TAPMessageStatusManager.getInstance(instanceKey).getUnreadList().get(roomID);
                 if (null != roomUnreadList) {
-                    if (roomUnreadList <= room.getUnreadCount()) {
+                    if (roomUnreadList <= room.getNumberOfUnreadMessages()) {
                         // Subtract unread count from room
-                        room.setUnreadCount(room.getUnreadCount() - roomUnreadList);
+                        room.setNumberOfUnreadMessages(room.getNumberOfUnreadMessages() - roomUnreadList);
                     } else {
                         // Set room unread count to 0
-                        room.setUnreadCount(0);
+                        room.setNumberOfUnreadMessages(0);
                     }
                     TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
                 }
                 Integer roomUnreadMention = TAPMessageStatusManager.getInstance(instanceKey).getUnreadMention().get(roomID);
                 if (null != roomUnreadMention) {
-                    if (roomUnreadMention <= room.getUnreadMentions()) {
+                    if (roomUnreadMention <= room.getNumberOfUnreadMentions()) {
                         // Subtract unread mention from room
-                        room.setUnreadMentions(room.getUnreadMentions() - roomUnreadMention);
+                        room.setNumberOfUnreadMentions(room.getNumberOfUnreadMentions() - roomUnreadMention);
                     } else {
                         // Set room unread mention to 0
-                        room.setUnreadMentions(0);
+                        room.setNumberOfUnreadMentions(0);
                     }
                     TAPMessageStatusManager.getInstance(instanceKey).clearUnreadMentionPerRoomID(roomID);
                 }
@@ -1165,8 +1165,8 @@ public class TapUIRoomListFragment extends Fragment {
                     case CLEAR_ROOM_LIST_BADGE:
                         TAPRoomListModel room = vm.getRoomPointer().get(roomID);
                         if (null != room) {
-                            room.setUnreadCount(0);
-                            room.setUnreadMentions(0);
+                            room.setNumberOfUnreadMessages(0);
+                            room.setNumberOfUnreadMentions(0);
                             TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
                             TAPMessageStatusManager.getInstance(instanceKey).clearUnreadMentionPerRoomID(roomID);
                         }
@@ -1180,7 +1180,7 @@ public class TapUIRoomListFragment extends Fragment {
         vm.setRoomBadgeCount(0);
         try {
             for (Map.Entry<String, TAPRoomListModel> entry : vm.getRoomPointer().entrySet()) {
-                vm.setRoomBadgeCount(vm.getRoomBadgeCount() + entry.getValue().getUnreadCount());
+                vm.setRoomBadgeCount(vm.getRoomBadgeCount() + entry.getValue().getNumberOfUnreadMessages());
             }
         } catch (ConcurrentModificationException e) { // FIXME: 5 Dec 2019
             e.printStackTrace();

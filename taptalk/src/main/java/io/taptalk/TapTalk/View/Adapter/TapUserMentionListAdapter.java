@@ -16,7 +16,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
@@ -70,19 +69,19 @@ public class TapUserMentionListAdapter extends TAPBaseAdapter<TAPUserModel, TAPB
 
         @Override
         protected void onBind(TAPUserModel item, int position) {
-            if (null != item.getAvatarURL() && !item.getAvatarURL().getThumbnail().isEmpty()) {
+            if (null != item.getImageURL() && !item.getImageURL().getThumbnail().isEmpty()) {
                 // Load profile picture
                 Glide.with(itemView.getContext())
-                        .load(item.getAvatarURL().getThumbnail())
+                        .load(item.getImageURL().getThumbnail())
                         .listener(new RequestListener<Drawable>() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                                 // Show initial
                                 if (itemView.getContext() instanceof Activity) {
                                     ((Activity) itemView.getContext()).runOnUiThread(() -> {
-                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), item.getName())));
+                                        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), item.getFullname())));
                                         civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                                        tvAvatarLabel.setText(TAPUtils.getInitials(item.getName(), 2));
+                                        tvAvatarLabel.setText(TAPUtils.getInitials(item.getFullname(), 2));
                                         tvAvatarLabel.setVisibility(View.VISIBLE);
                                     });
                                 }
@@ -100,14 +99,14 @@ public class TapUserMentionListAdapter extends TAPBaseAdapter<TAPUserModel, TAPB
             } else {
                 // Show initial
                 Glide.with(itemView.getContext()).clear(civAvatar);
-                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), item.getName())));
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), item.getFullname())));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                tvAvatarLabel.setText(TAPUtils.getInitials(item.getName(), 2));
+                tvAvatarLabel.setText(TAPUtils.getInitials(item.getFullname(), 2));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
             // Set name and username
-            tvFullName.setText(item.getName());
+            tvFullName.setText(item.getFullname());
             if (null != item.getUsername() && !item.getUsername().isEmpty()) {
                 tvUsername.setText(String.format("@%s", item.getUsername()));
                 tvUsername.setVisibility(View.VISIBLE);

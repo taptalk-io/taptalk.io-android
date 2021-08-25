@@ -144,9 +144,9 @@ public class TapCoreChatRoomManager {
                     TAPChatManager.getInstance(instanceKey).arrangeRoomId(
                             TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
                             recipientUser.getUserID()),
-                    recipientUser.getName(),
+                    recipientUser.getFullname(),
                     TYPE_PERSONAL,
-                    recipientUser.getAvatarURL(),
+                    recipientUser.getImageURL(),
                     "");
             if (null != listener) {
                 listener.onSuccess(roomModel);

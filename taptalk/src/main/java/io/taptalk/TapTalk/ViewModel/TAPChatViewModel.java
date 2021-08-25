@@ -462,7 +462,7 @@ public class TAPChatViewModel extends AndroidViewModel {
         if (0 >= getGroupTypingSize()) return "";
 
         TAPUserModel firstTypingUser = getGroupTyping().entrySet().iterator().next().getValue();
-        return firstTypingUser.getName().split(" ")[0];
+        return firstTypingUser.getFullname().split(" ")[0];
     }
 
     public boolean isCustomKeyboardEnabled() {

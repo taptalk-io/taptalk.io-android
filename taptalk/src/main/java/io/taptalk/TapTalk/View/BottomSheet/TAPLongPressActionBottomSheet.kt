@@ -234,7 +234,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
-                messageModel.room.roomType != RoomType.TYPE_TRANSACTION
+                messageModel.room.type != RoomType.TYPE_TRANSACTION
         ) {
             // Forward
             imageResIds.add(R.drawable.tap_ic_forward_orange)
@@ -434,7 +434,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
-                messageModel.room.roomType != RoomType.TYPE_TRANSACTION
+                messageModel.room.type != RoomType.TYPE_TRANSACTION
         ) {
             // Forward
             imageResIds.add(R.drawable.tap_ic_forward_orange)

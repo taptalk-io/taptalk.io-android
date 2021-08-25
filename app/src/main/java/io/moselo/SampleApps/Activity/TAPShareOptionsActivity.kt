@@ -112,7 +112,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 val recipient: String
                 val keys: List<String> = ArrayList(list?.keys)
                 recipient = if (list?.size == 1) {
-                    list[keys[0]]!!.lastMessage.room.roomName
+                    list[keys[0]]!!.lastMessage.room.name
                 } else {
                     String.format(getString(R.string.df_recipients), list?.size)
                 }
@@ -208,14 +208,14 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                         }
                         result.lastMessage.room = room
                         result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
-                        if (room.roomType == TYPE_PERSONAL) {
+                        if (room.type == TYPE_PERSONAL) {
                             if (vm?.personalContacts!!.isEmpty()) {
                                 val personalSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
                                 personalSectionTitle.title = getString(R.string.contacts)
                                 vm?.personalContacts?.add(personalSectionTitle)
                             }
                             vm?.personalContacts?.add(result)
-                        } else if (room.roomType == TYPE_GROUP) {
+                        } else if (room.type == TYPE_GROUP) {
                             if (vm?.groupContacts!!.isEmpty()) {
                                 val groupSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
                                 groupSectionTitle.title = getString(R.string.groups)
@@ -258,22 +258,22 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                         // Convert contact to room model
                         val room = TAPRoomModel(
                             TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).activeUser.userID, contact.userID),
-                            contact.name,
+                            contact.fullname,
                             TYPE_PERSONAL,
-                            contact.avatarURL,
+                            contact.imageURL,
                             ""
                         )
                         // Check if result already contains contact from chat room query
                         if (!vm?.resultContainsRoom(room.roomID)!!) {
                             result.lastMessage.room = room
-                            if (room.roomType == TYPE_PERSONAL) {
+                            if (room.type == TYPE_PERSONAL) {
                                 if (vm?.personalContacts!!.isEmpty()) {
                                     val personalSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
                                     personalSectionTitle.title = getString(R.string.contacts)
                                     vm?.personalContacts?.add(personalSectionTitle)
                                 }
                                 vm?.personalContacts?.add(result)
-                            } else if (room.roomType == TYPE_GROUP) {
+                            } else if (room.type == TYPE_GROUP) {
                                 if (vm?.groupContacts!!.isEmpty()) {
                                     val groupSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
                                     groupSectionTitle.title = getString(R.string.groups)

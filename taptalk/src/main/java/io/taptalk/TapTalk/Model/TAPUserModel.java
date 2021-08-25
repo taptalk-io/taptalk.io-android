@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -27,11 +28,14 @@ public class TAPUserModel implements Parcelable {
     @JsonProperty("userID")
     @JsonAlias("id")
     private String userID;
-    @JsonProperty("xcUserID") private String xcUserID;
-    @JsonProperty("fullname") private String name;
+    @JsonProperty("xcUserID")
+    private String xcUserID;
+    @JsonProperty("fullname")
+    @ColumnInfo(name = "name")
+    private String fullname;
     @Embedded
     @JsonProperty("imageURL")
-    private TAPImageURL avatarURL;
+    private TAPImageURL imageURL;
     @Nullable
     @JsonProperty("username")
     private String username;
@@ -40,7 +44,8 @@ public class TAPUserModel implements Parcelable {
     private String email;
     @Nullable
     @JsonProperty("phone")
-    private String phoneNumber;
+    @ColumnInfo(name = "phoneNumber")
+    private String phone;
     @Nullable
     @JsonProperty("phoneWithCode")
     private String phoneWithCode;
@@ -108,17 +113,17 @@ public class TAPUserModel implements Parcelable {
     }
 
     @Ignore
-    public TAPUserModel(String userID, String xcUserID, String name, TAPImageURL avatarURL, @Nullable String username
-            , @Nullable String email, @Nullable String phoneNumber, @Nullable TAPUserRoleModel userRole
+    public TAPUserModel(String userID, String xcUserID, String fullname, TAPImageURL imageURL, @Nullable String username
+            , @Nullable String email, @Nullable String phone, @Nullable TAPUserRoleModel userRole
             , @Nullable Long lastLogin, @Nullable Long lastActivity, @Nullable Boolean requireChangePassword, @Nullable Long created
             , @Nullable Long updated, @Nullable Long deleted) {
         this.userID = userID;
         this.xcUserID = xcUserID;
-        this.name = name;
-        this.avatarURL = avatarURL;
+        this.fullname = fullname;
+        this.imageURL = imageURL;
         this.username = username;
         this.email = email;
-        this.phoneNumber = phoneNumber;
+        this.phone = phone;
         this.userRole = userRole;
         this.lastLogin = lastLogin;
         this.lastActivity = lastActivity;
@@ -129,9 +134,9 @@ public class TAPUserModel implements Parcelable {
     }
 
     @Ignore
-    public TAPUserModel(@NonNull String userID, String name) {
+    public TAPUserModel(@NonNull String userID, String fullname) {
         this.userID = userID;
-        this.name = name;
+        this.fullname = fullname;
     }
 
     public TAPUserModel() {
@@ -190,22 +195,55 @@ public class TAPUserModel implements Parcelable {
         this.xcUserID = xcUserID;
     }
 
+    /**
+     * @deprecated use {@link #getFullname()} instead.
+     */
+    @Deprecated
     @JsonProperty("fullname")
     public String getName() {
-        return name;
+        return fullname;
     }
 
     @JsonProperty("fullname")
+    public String getFullname() {
+        return fullname;
+    }
+
+    /**
+     * @deprecated use {@link #setFullname(String)} instead.
+     */
+    @Deprecated
+    @JsonProperty("fullname")
     public void setName(String name) {
-        this.name = name;
+        this.fullname = name;
     }
 
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    /**
+     * @deprecated use {@link #getImageURL()} instead.
+     */
+    @Deprecated
     public TAPImageURL getAvatarURL() {
-        return avatarURL;
+        return imageURL;
     }
 
+    public TAPImageURL getImageURL() {
+        return imageURL;
+    }
+
+    /**
+     * @deprecated use {@link #setImageURL(TAPImageURL)} instead.
+     */
+    @Deprecated
     public void setAvatarURL(TAPImageURL avatarURL) {
-        this.avatarURL = avatarURL;
+        this.imageURL = avatarURL;
+    }
+
+    public void setImageURL(TAPImageURL imageURL) {
+        this.imageURL = imageURL;
     }
 
     @Nullable
@@ -230,15 +268,34 @@ public class TAPUserModel implements Parcelable {
         this.email = email;
     }
 
+    /**
+     * @deprecated use {@link #getPhone()} instead.
+     */
+    @Deprecated
     @Nullable
     @JsonProperty("phone")
     public String getPhoneNumber() {
-        return phoneNumber;
+        return phone;
+    }
+
+    @Nullable
+    @JsonProperty("phone")
+    public String getPhone() {
+        return phone;
+    }
+
+    /**
+     * @deprecated use {@link #setPhone(String)} instead.
+     */
+    @Deprecated
+    @JsonProperty("phone")
+    public void setPhoneNumber(@Nullable String phoneNumber) {
+        this.phone = phoneNumber;
     }
 
     @JsonProperty("phone")
-    public void setPhoneNumber(@Nullable String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone(@Nullable String phone) {
+        this.phone = phone;
     }
 
     @Nullable
@@ -406,11 +463,11 @@ public class TAPUserModel implements Parcelable {
     public void updateValue(TAPUserModel userModel) {
         this.userID = userModel.getUserID();
         this.xcUserID = userModel.getXcUserID();
-        this.name = userModel.getName();
-        this.avatarURL = userModel.getAvatarURL();
+        this.fullname = userModel.getFullname();
+        this.imageURL = userModel.getImageURL();
         this.username = userModel.getUsername();
         this.email = userModel.getEmail();
-        this.phoneNumber = userModel.getPhoneNumber();
+        this.phone = userModel.getPhone();
         this.phoneWithCode = userModel.getPhoneWithCode();
         this.userRole = userModel.getUserRole();
         this.lastLogin = userModel.getLastLogin();
@@ -444,11 +501,11 @@ public class TAPUserModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.userID);
         dest.writeString(this.xcUserID);
-        dest.writeString(this.name);
-        dest.writeParcelable(this.avatarURL, flags);
+        dest.writeString(this.fullname);
+        dest.writeParcelable(this.imageURL, flags);
         dest.writeString(this.username);
         dest.writeString(this.email);
-        dest.writeString(this.phoneNumber);
+        dest.writeString(this.phone);
         dest.writeString(this.phoneWithCode);
         dest.writeParcelable(this.userRole, flags);
         dest.writeValue(this.lastLogin);
@@ -471,11 +528,11 @@ public class TAPUserModel implements Parcelable {
     protected TAPUserModel(Parcel in) {
         this.userID = in.readString();
         this.xcUserID = in.readString();
-        this.name = in.readString();
-        this.avatarURL = in.readParcelable(TAPImageURL.class.getClassLoader());
+        this.fullname = in.readString();
+        this.imageURL = in.readParcelable(TAPImageURL.class.getClassLoader());
         this.username = in.readString();
         this.email = in.readString();
-        this.phoneNumber = in.readString();
+        this.phone = in.readString();
         this.phoneWithCode = in.readString();
         this.userRole = in.readParcelable(TAPUserRoleModel.class.getClassLoader());
         this.lastLogin = (Long) in.readValue(Long.class.getClassLoader());

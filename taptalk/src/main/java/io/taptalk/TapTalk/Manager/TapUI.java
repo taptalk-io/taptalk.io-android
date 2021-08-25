@@ -296,8 +296,8 @@ public class TapUI {
                     openChatRoom(
                             context,
                             roomID,
-                            response.getUser().getName(),
-                            response.getUser().getAvatarURL(),
+                            response.getUser().getFullname(),
+                            response.getUser().getImageURL(),
                             TYPE_PERSONAL,
                             "");
                     if (null != listener) {
@@ -323,8 +323,8 @@ public class TapUI {
             openChatRoom(
                     context,
                     roomID,
-                    user.getName(),
-                    user.getAvatarURL(),
+                    user.getFullname(),
+                    user.getImageURL(),
                     TYPE_PERSONAL,
                     "");
             if (null != listener) {
@@ -364,8 +364,8 @@ public class TapUI {
                 openChatRoom(
                         context,
                         roomID,
-                        user.getName(),
-                        user.getAvatarURL(),
+                        user.getFullname(),
+                        user.getImageURL(),
                         TYPE_PERSONAL,
                         "");
                 if (null != listener) {
@@ -389,8 +389,8 @@ public class TapUI {
         openChatRoom(
                 context,
                 TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), otherUser.getUserID()),
-                otherUser.getName(),
-                otherUser.getAvatarURL(),
+                otherUser.getFullname(),
+                otherUser.getImageURL(),
                 TYPE_PERSONAL,
                 "");
     }
@@ -1050,22 +1050,22 @@ public class TapUI {
     }
 
     void triggerChatRoomProfileButtonTapped(Activity activity, TAPRoomModel room, @Nullable TAPUserModel user) {
-        if (room.getRoomType() == TYPE_TRANSACTION) {
+        if (room.getType() == TYPE_TRANSACTION) {
             return;
         }
         if (getChatRoomListeners().isEmpty()) {
             TAPChatProfileActivity.start(activity, instanceKey, room, user);
         } else {
             for (TapUIChatRoomListener listener : getChatRoomListeners()) {
-                if (room.getRoomType() == TYPE_PERSONAL) {
+                if (room.getType() == TYPE_PERSONAL) {
                     if (null != listener) {
                         listener.onTapTalkUserProfileButtonTapped(activity, room, user);
                     }
-                } else if (room.getRoomType() == TYPE_GROUP && null != user) {
+                } else if (room.getType() == TYPE_GROUP && null != user) {
                     if (null != listener) {
                         listener.onTapTalkGroupMemberAvatarTapped(activity, room, user);
                     }
-                } else if (room.getRoomType() == TYPE_GROUP) {
+                } else if (room.getType() == TYPE_GROUP) {
                     if (null != listener) {
                         listener.onTapTalkGroupChatProfileButtonTapped(activity, room);
                     }
@@ -1088,9 +1088,9 @@ public class TapUI {
                                 TAPChatManager.getInstance(instanceKey).arrangeRoomId(
                                         TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
                                         user.getUserID()),
-                                user.getName(),
+                                user.getFullname(),
                                 TYPE_PERSONAL,
-                                user.getAvatarURL(),
+                                user.getImageURL(),
                                 ""), // TODO: 13 Apr 2020 ROOM COLOR
                         user,
                         true);

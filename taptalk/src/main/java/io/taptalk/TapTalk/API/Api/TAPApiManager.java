@@ -558,7 +558,7 @@ public class TAPApiManager {
     }
 
     public void deleteChatRoom(TAPRoomModel room, String userID, long accessTokenExpiry, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
-        String checksum = room.getRoomID() + ":" + room.getRoomType() + ":" + userID + ":" + accessTokenExpiry;
+        String checksum = room.getRoomID() + ":" + room.getType() + ":" + userID + ":" + accessTokenExpiry;
         TAPDeleteRoomRequest request = new TAPDeleteRoomRequest(room.getRoomID(), TAPEncryptorManager.getInstance().md5(checksum));
         execute(homingPigeon.deleteChatRoom(request), subscriber);
     }

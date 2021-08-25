@@ -276,25 +276,25 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
 
             TAPUserModel user = null;
             TAPRoomModel group = null;
-            if (room.getRoomType() == TYPE_PERSONAL) {
+            if (room.getType() == TYPE_PERSONAL) {
                 user = TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()));
-            } else if (room.getRoomType() == TYPE_GROUP || room.getRoomType() == TYPE_TRANSACTION) {
+            } else if (room.getType() == TYPE_GROUP || room.getType() == TYPE_TRANSACTION) {
                 group = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(room.getRoomID());
             }
 
             // Load avatar
             if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
-                    null != user.getAvatarURL() && !user.getAvatarURL().getThumbnail().isEmpty()) {
+                    null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                 // Load user avatar
-                glide.load(user.getAvatarURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         // Show initial
                         if (itemView.getContext() instanceof Activity) {
                             ((Activity) itemView.getContext()).runOnUiThread(() -> {
-                                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), room.getRoomName())));
+                                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), room.getName())));
                                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                                tvAvatarLabel.setText(TAPUtils.getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
+                                tvAvatarLabel.setText(TAPUtils.getInitials(room.getName(), room.getType() == TYPE_PERSONAL ? 2 : 1));
                                 tvAvatarLabel.setVisibility(View.VISIBLE);
                             });
                         }
@@ -308,22 +308,22 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
                 }).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
-            } else if (null != group && !group.isRoomDeleted() && null != group.getRoomImage() &&
-                    !group.getRoomImage().getThumbnail().isEmpty()) {
+            } else if (null != group && !group.isDeleted() && null != group.getImageURL() &&
+                    !group.getImageURL().getThumbnail().isEmpty()) {
                 // Load group image
-                glide.load(group.getRoomImage().getThumbnail()).into(civAvatar);
+                glide.load(group.getImageURL().getThumbnail()).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
-            } else if (null != room.getRoomImage() && !room.getRoomImage().getThumbnail().isEmpty()) {
-                glide.load(room.getRoomImage().getThumbnail()).into(civAvatar);
+            } else if (null != room.getImageURL() && !room.getImageURL().getThumbnail().isEmpty()) {
+                glide.load(room.getImageURL().getThumbnail()).into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else {
                 // Show initial
                 glide.clear(civAvatar);
-                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), room.getRoomName())));
+                ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(itemView.getContext(), room.getName())));
                 civAvatar.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-                tvAvatarLabel.setText(TAPUtils.getInitials(room.getRoomName(), room.getRoomType() == TYPE_PERSONAL ? 2 : 1));
+                tvAvatarLabel.setText(TAPUtils.getInitials(room.getName(), room.getType() == TYPE_PERSONAL ? 2 : 1));
                 tvAvatarLabel.setVisibility(View.VISIBLE);
             }
 
@@ -335,12 +335,12 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             // Set room name with highlighted text
             String roomName;
             if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
-                    null != user.getName() && !user.getName().isEmpty()) {
-                roomName = user.getName();
-            } else if (null != group && !group.isRoomDeleted() && null != group.getRoomName() && !group.getRoomName().isEmpty()) {
-                roomName = group.getRoomName();
+                    null != user.getFullname() && !user.getFullname().isEmpty()) {
+                roomName = user.getFullname();
+            } else if (null != group && !group.isDeleted() && null != group.getName() && !group.getName().isEmpty()) {
+                roomName = group.getName();
             } else {
-                roomName = room.getRoomName();
+                roomName = room.getName();
             }
             String highlightedText = roomName.replaceAll(
                     "(?i)(" + searchKeyword + ")",
@@ -348,7 +348,7 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             tvRoomName.setText(Html.fromHtml(highlightedText));
 
             // Set avatar icon
-            if (room.getRoomType() == TYPE_GROUP) {
+            if (room.getType() == TYPE_GROUP) {
                 ivAvatarIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_group_icon));
                 ivAvatarIcon.setVisibility(View.VISIBLE);
             } else {
