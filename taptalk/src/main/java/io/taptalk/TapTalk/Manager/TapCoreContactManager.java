@@ -155,11 +155,17 @@ public class TapCoreContactManager {
         TAPDataManager.getInstance(instanceKey).addContactApi(userID, new TAPDefaultDataView<TAPAddContactResponse>() {
             @Override
             public void onSuccess(TAPAddContactResponse response) {
-                if (null != listener) {
-                    listener.onSuccess(response.getUser());
+                if (null != response.getUser()) {
+                    if (null != listener) {
+                        listener.onSuccess(response.getUser());
+                    }
+                    TAPUserModel newContact = response.getUser().setUserAsContact();
+                    TAPContactManager.getInstance(instanceKey).updateUserData(newContact);
+                } else {
+                    if (null != listener) {
+                        listener.onError(ERROR_CODE_OTHERS, "User already added as contact.");
+                    }
                 }
-                TAPUserModel newContact = response.getUser().setUserAsContact();
-                TAPContactManager.getInstance(instanceKey).updateUserData(newContact);
             }
 
             @Override
@@ -190,17 +196,27 @@ public class TapCoreContactManager {
         TAPDataManager.getInstance(instanceKey).addContactByPhone(phoneNumberList, new TAPDefaultDataView<TAPAddContactByPhoneResponse>() {
             @Override
             public void onSuccess(TAPAddContactByPhoneResponse response) {
-                if (null != listener) {
-                    listener.onSuccess(response.getUsers().get(0));
-                }
-                List<TAPUserModel> users = new ArrayList<>();
-                for (TAPUserModel contact : response.getUsers()) {
-                    if (!contact.getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
-                        contact.setUserAsContact();
-                        users.add(contact);
+                if (null != response && null != response.getUsers() && !response.getUsers().isEmpty()) {
+                    try {
+                        List<TAPUserModel> users = new ArrayList<>();
+                        for (TAPUserModel contact : response.getUsers()) {
+                            if (!contact.getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+                                contact.setUserAsContact();
+                                users.add(contact);
+                            }
+                            if (null != listener) {
+                                listener.onSuccess(contact);
+                            }
+                        }
+                        TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(users);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    if (null != listener) {
+                        listener.onError(ERROR_CODE_OTHERS, "User already added as contact.");
                     }
                 }
-                TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(users);
             }
 
             @Override
