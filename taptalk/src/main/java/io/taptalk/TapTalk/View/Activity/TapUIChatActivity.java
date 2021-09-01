@@ -554,9 +554,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 case SEND_FILE:
                     File tempFile = new File(intent.getStringExtra(RESULT_FILE_PATH));
                     if (null != tempFile) {
-                        if (TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(tempFile.length()))
+                        if (TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(tempFile.length())) {
                             TAPChatManager.getInstance(instanceKey).sendFileMessage(TapUIChatActivity.this, vm.getRoom(), tempFile);
-                        else {
+                        } else {
                             new TapTalkDialog.Builder(TapUIChatActivity.this)
                                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                                     .setTitle(getString(R.string.tap_sorry))
