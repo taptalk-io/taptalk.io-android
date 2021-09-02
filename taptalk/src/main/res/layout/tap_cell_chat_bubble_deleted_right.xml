@@ -118,12 +118,10 @@
         android:layout_marginBottom="5dp"
         android:alpha="0"
         android:src="@drawable/tap_ic_sending_grey"
-        android:tint="@color/tapIconRoomListMessageSending"
         app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@id/fl_bubble" />
+        app:tint="@color/tapIconRoomListMessageSending" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier_top"
