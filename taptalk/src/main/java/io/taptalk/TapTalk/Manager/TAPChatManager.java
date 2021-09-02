@@ -103,12 +103,12 @@ public class TAPChatManager {
     private HashMap<String, HashMap<String, Object>> userInfo;
     private HashMap<String, TapSendMessageInterface> sendMessageListeners;
     private List<TAPChatListener> chatListeners;
-    private List<TAPMessageEntity> saveMessages; //message to be saved
+    private List<TAPMessageEntity> saveMessages; // Message to be saved
     private List<String> replyMessageLocalIDs;
-    private TAPRoomModel activeRoom;
     private TAPUserModel activeUser;
     private ScheduledExecutorService scheduler;
-    private String openRoom;
+    private TAPRoomModel activeRoom; // Will be removed when activity is paused
+    private String openRoom; // (Room ID) Will be kept until activity is destroyed
     private boolean isCheckPendingArraySequenceActive = false;
     private boolean isPendingMessageExist;
     private boolean isFileUploadExist;
@@ -256,16 +256,11 @@ public class TAPChatManager {
 
     public void setActiveRoom(TAPRoomModel room) {
         this.activeRoom = room;
-        //ini kenapa di taro disini karena setiap ada active room otomatis open room nya juga akan diubah
-        //kecuali kalau misalnya active roomnya itu diubah jadi null
-        if (null != room) setOpenRoom(room.getRoomID());
+        if (null != room) {
+            setOpenRoom(room.getRoomID());
+        }
     }
 
-    //Open room itu buat nyimpen roomID apa yang dibuka
-    // Apa bedanya sama activeRoom? bedanya adalah klo active room itu di pause lgsg jd null
-    // kalau open room slama dy belom ke destroy activitynya ga akan jadi null
-    //kegunaannya buat di pake pas reply yang ada di background
-    //ngecekin karena dy trigger onNewMessageFromOtherRoom, jadi kalau roomnya lagi ga di buka jangan di push messagenya ke UI
     public String getOpenRoom() {
         return openRoom;
     }
@@ -282,15 +277,15 @@ public class TAPChatManager {
         this.activeUser = user;
     }
 
-    public Map<String, TAPMessageModel> getMessageQueueInActiveRoom() {
-        Map<String, TAPMessageModel> roomQueue = new LinkedHashMap<>();
-        for (Map.Entry<String, TAPMessageModel> entry : pendingMessages.entrySet()) {
-            if (entry.getValue().getRoom().getRoomID().equals(activeRoom)) {
-                roomQueue.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return roomQueue;
-    }
+//    public Map<String, TAPMessageModel> getMessageQueueInActiveRoom() {
+//        Map<String, TAPMessageModel> roomQueue = new LinkedHashMap<>();
+//        for (Map.Entry<String, TAPMessageModel> entry : pendingMessages.entrySet()) {
+//            if (entry.getValue().getRoom().getRoomID().equals(activeRoom)) {
+//                roomQueue.put(entry.getKey(), entry.getValue());
+//            }
+//        }
+//        return roomQueue;
+//    }
 
     public boolean hasPendingMessages() {
         return !waitingResponses.isEmpty() || !pendingMessages.isEmpty();
@@ -322,6 +317,9 @@ public class TAPChatManager {
     }
 
     public void sendTextMessage(String textMessage) {
+        if (null == activeRoom) {
+            return;
+        }
         sendTextMessageWithRoomModel(textMessage, activeRoom);
     }
 
@@ -492,8 +490,10 @@ public class TAPChatManager {
     /**
      * Construct Product Message Model
      */
-    private TAPMessageModel createProductMessageModel(HashMap<String, Object> product,
-                                                      TAPRoomModel roomModel) {
+    private TAPMessageModel createProductMessageModel(HashMap<String, Object> product, TAPRoomModel roomModel) {
+        if (null == activeRoom) {
+            return null;
+        }
         return TAPMessageModel.Builder(
                 "Product List",
                 roomModel,
@@ -511,30 +511,10 @@ public class TAPChatManager {
      * Construct Location Message Model
      */
     private TAPMessageModel createLocationMessageModel(String address, Double latitude, Double longitude) {
-        if (null == getQuotedMessage()) {
-            return TAPMessageModel.Builder(
-                    TapTalk.appContext.getString(R.string.tap_location_body),
-                    activeRoom,
-                    TYPE_LOCATION,
-                    System.currentTimeMillis(),
-                    activeUser,
-                    TYPE_PERSONAL == activeRoom.getType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
-                    new TAPDataLocationModel(address, latitude, longitude).toHashMap());
-        } else {
-            HashMap<String, Object> data = new TAPDataLocationModel(address, latitude, longitude).toHashMap();
-            if (null != getUserInfo()) {
-                data.put(USER_INFO, getUserInfo());
-            }
-            return TAPMessageModel.BuilderWithQuotedMessage(
-                    TapTalk.appContext.getString(R.string.tap_location_body),
-                    activeRoom,
-                    TYPE_LOCATION,
-                    System.currentTimeMillis(),
-                    activeUser,
-                    TYPE_PERSONAL == activeRoom.getType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
-                    data,
-                    getQuotedMessage());
+        if (null == activeRoom) {
+            return null;
         }
+        return createLocationMessageModel(address, latitude, longitude, activeRoom);
     }
 
     private TAPMessageModel createLocationMessageModel(String address, Double latitude, Double longitude, TAPRoomModel roomModel) {
@@ -716,52 +696,10 @@ public class TAPChatManager {
      * Construct Image Message Model
      */
     private TAPMessageModel createImageMessageModel(Context context, Uri fileUri, String caption) {
-        String imageUri = fileUri.toString();
-        String imagePath = TAPFileUtils.getInstance().getFilePath(context, fileUri);
-        long size = null == imagePath ? 0L : new File(imagePath).length();
-
-        // Get image width and height
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(imagePath, options);
-        int imageWidth;
-        int imageHeight;
-        int orientation = TAPFileUtils.getInstance().getImageOrientation(imagePath);
-        if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            imageWidth = options.outHeight;
-            imageHeight = options.outWidth;
-        } else {
-            imageWidth = options.outWidth;
-            imageHeight = options.outHeight;
+        if (null == activeRoom) {
+            return null;
         }
-
-        // Build message model
-        TAPMessageModel messageModel;
-        if (null == getQuotedMessage()) {
-            messageModel = TAPMessageModel.Builder(
-                    generateImageCaption(caption),
-                    activeRoom,
-                    TYPE_IMAGE,
-                    System.currentTimeMillis(),
-                    activeUser,
-                    TYPE_PERSONAL == activeRoom.getType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
-                    new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, imageUri).toHashMap());
-        } else {
-            HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, imageUri).toHashMap();
-            if (null != getUserInfo()) {
-                data.put(USER_INFO, getUserInfo());
-            }
-            messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                    generateImageCaption(caption),
-                    activeRoom,
-                    TYPE_IMAGE,
-                    System.currentTimeMillis(),
-                    activeUser,
-                    TYPE_PERSONAL == activeRoom.getType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
-                    data,
-                    getQuotedMessage());
-        }
-        return messageModel;
+        return createImageMessageModel(context, fileUri, caption, activeRoom);
     }
 
     private TAPMessageModel createImageMessageModel(Context context, Uri fileUri, String caption, TAPRoomModel roomModel) {
@@ -814,37 +752,10 @@ public class TAPChatManager {
     }
 
     private TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption) {
-        int imageWidth = bitmap.getWidth();
-        int imageHeight = bitmap.getHeight();
-        long size = bitmap.getByteCount();
-
-        // Build message model
-        TAPMessageModel messageModel;
-        if (null == getQuotedMessage()) {
-            messageModel = TAPMessageModel.Builder(
-                    generateImageCaption(caption),
-                    activeRoom,
-                    TYPE_IMAGE,
-                    System.currentTimeMillis(),
-                    activeUser,
-                    TYPE_PERSONAL == activeRoom.getType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
-                    new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, null).toHashMap());
-        } else {
-            HashMap<String, Object> data = new TAPDataImageModel(imageWidth, imageHeight, size, caption, null, null).toHashMap();
-            if (null != getUserInfo()) {
-                data.put(USER_INFO, getUserInfo());
-            }
-            messageModel = TAPMessageModel.BuilderWithQuotedMessage(
-                    generateImageCaption(caption),
-                    activeRoom,
-                    TYPE_IMAGE,
-                    System.currentTimeMillis(),
-                    activeUser,
-                    TYPE_PERSONAL == activeRoom.getType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0",
-                    data,
-                    getQuotedMessage());
+        if (null == activeRoom) {
+            return null;
         }
-        return messageModel;
+        return createImageMessageModel(bitmap, caption, activeRoom);
     }
 
     private TAPMessageModel createImageMessageModel(Bitmap bitmap, String caption, TAPRoomModel roomModel) {
@@ -886,6 +797,9 @@ public class TAPChatManager {
     }
 
     private TAPMessageModel createVideoMessageModel(Context context, Uri fileUri, String caption) {
+        if (null == activeRoom) {
+            return null;
+        }
         return createVideoMessageModel(context, fileUri, caption, activeRoom, null);
     }
 
@@ -1227,7 +1141,7 @@ public class TAPChatManager {
                 room,
                 System.currentTimeMillis(),
                 getActiveUser(),
-                TYPE_PERSONAL == activeRoom.getType() ? getOtherUserIdFromRoom(activeRoom.getRoomID()) : "0");
+                TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0");
     }
 
     private void triggerSendMessageListener(TAPMessageModel messageModel) {
@@ -1261,6 +1175,9 @@ public class TAPChatManager {
      * Message draft
      */
     public void saveMessageToDraft(String message) {
+        if (null == activeRoom) {
+            return;
+        }
         messageDrafts.put(getActiveRoom().getRoomID(), message);
     }
 
@@ -1269,6 +1186,9 @@ public class TAPChatManager {
     }
 
     public String getMessageFromDraft() {
+        if (null == activeRoom) {
+            return "";
+        }
         return messageDrafts.get(getActiveRoom().getRoomID());
     }
 
@@ -1277,6 +1197,9 @@ public class TAPChatManager {
     }
 
     public void removeDraft() {
+        if (null == activeRoom) {
+            return;
+        }
         messageDrafts.remove(getActiveRoom().getRoomID());
     }
 
