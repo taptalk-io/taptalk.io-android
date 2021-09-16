@@ -822,6 +822,15 @@ public class TapTalk implements LifecycleObserver {
                 remoteMessage.getData().get("identifier").equals("io.taptalk.TapTalk");
     }
 
+    public static TAPMessageModel getDecryptedMessageFromTapTalkNotificationRemoteMessage(RemoteMessage remoteMessage) {
+        if (!isTapTalkNotification(remoteMessage)) {
+            return null;
+        }
+        HashMap<String, Object> notificationMap = TAPUtils.fromJSON(new TypeReference<HashMap<String, Object>>() {
+        }, remoteMessage.getData().get("body"));
+        return TAPEncryptorManager.getInstance().decryptMessage(notificationMap);
+    }
+
     public static void handleTapTalkPushNotification(RemoteMessage remoteMessage) {
         handleTapTalkPushNotification("", remoteMessage);
     }
@@ -848,9 +857,7 @@ public class TapTalk implements LifecycleObserver {
     // FIXME: 31 Mar 2020 TEMPORARY FIX TO DETECT BACKGROUND NOTIFICATION INSTANCE
     public static void handleTapTalkPushNotification(String instanceKey, RemoteMessage remoteMessage) {
         TAPNotificationManager.getInstance(instanceKey).updateNotificationMessageMapWhenAppKilled();
-        HashMap<String, Object> notificationMap = TAPUtils.fromJSON(new TypeReference<HashMap<String, Object>>() {
-        }, remoteMessage.getData().get("body"));
-        TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(notificationMap);
+        TAPMessageModel message = getDecryptedMessageFromTapTalkNotificationRemoteMessage(remoteMessage);
         if (getInstanceKeys().size() > 1) {
             identifyMessageAndShowNotification(instanceKey, message);
         } else {
