@@ -441,8 +441,8 @@ public class TapCoreChatRoomManager {
         }
         TAPDataManager.getInstance(instanceKey).deleteChatRoom(groupChatRoomModel, new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
-            public void onSuccess(TAPCommonResponse tapCommonResponse, String localID) {
-                if (tapCommonResponse.getSuccess()) {
+            public void onSuccess(TAPCommonResponse response) {
+                if (response.getSuccess()) {
                     TAPOldDataManager.getInstance(instanceKey).cleanRoomPhysicalData(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
                         @Override
                         public void onDeleteFinished() {
@@ -450,6 +450,7 @@ public class TapCoreChatRoomManager {
                                 @Override
                                 public void onDeleteFinished() {
                                     TAPGroupManager.Companion.getInstance(instanceKey).removeGroupData(groupChatRoomModel.getRoomID());
+                                    TAPGroupManager.Companion.getInstance(instanceKey).setRefreshRoomList(true);
                                     if (null != listener) {
                                         listener.onSuccess(SUCCESS_MESSAGE_DELETE_GROUP);
                                     }
