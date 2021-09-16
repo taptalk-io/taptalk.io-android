@@ -394,7 +394,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         super.onResume();
         TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
         TapUI.getInstance(instanceKey).setCurrentTapTalkChatActivity(this);
-        etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft());
+        etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft(vm.getRoom().getRoomID()));
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
 
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
@@ -1885,9 +1885,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void saveDraftToManager() {
         String draft = etChat.getText().toString();
         if (!draft.isEmpty()) {
-            TAPChatManager.getInstance(instanceKey).saveMessageToDraft(draft);
+            TAPChatManager.getInstance(instanceKey).saveMessageToDraft(vm.getRoom().getRoomID(), draft);
         } else {
-            TAPChatManager.getInstance(instanceKey).removeDraft();
+            TAPChatManager.getInstance(instanceKey).removeDraft(vm.getRoom().getRoomID());
         }
     }
 

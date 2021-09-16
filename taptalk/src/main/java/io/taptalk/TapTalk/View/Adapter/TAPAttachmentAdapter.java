@@ -295,8 +295,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     attachmentListener.onSendMessageSelected(linkifyResult.substring(1));
                     break;
                 case LONG_PRESS_DELETE:
-                    if (null != TAPChatManager.getInstance(instanceKey).getOpenRoom())
-                        attachmentListener.onDeleteMessage(TAPChatManager.getInstance(instanceKey).getOpenRoom(), message);
+                    attachmentListener.onDeleteMessage(message.getRoom().getRoomID(), message);
                     break;
             }
             onClickListener.onClick(itemView);

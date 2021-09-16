@@ -24,11 +24,11 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            android:tint="@color/tapIconNavigationBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_room_name"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconNavigationBarBackButton" />
 
         <TextView
             android:id="@+id/tv_room_name"
@@ -111,11 +111,11 @@
                     android:id="@+id/iv_room_typing_indicator"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:tint="@color/tapColorTextMedium"
                     app:layout_constraintBottom_toBottomOf="@id/tv_room_typing_status"
                     app:layout_constraintEnd_toStartOf="@id/tv_room_typing_status"
                     app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintTop_toTopOf="@id/tv_room_typing_status" />
+                    app:layout_constraintTop_toTopOf="@id/tv_room_typing_status"
+                    app:tint="@color/tapColorTextMedium" />
 
                 <TextView
                     android:id="@+id/tv_room_typing_status"
@@ -239,11 +239,11 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:src="@drawable/tap_ic_dismiss_circle_white"
-            android:tint="@color/tapButtonIconPrimaryColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_button_add_to_contacts"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapButtonIconPrimaryColor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -453,11 +453,11 @@
             android:layout_width="14dp"
             android:layout_height="14dp"
             android:src="@drawable/tap_ic_chevron_up_circle_orange"
-            android:tint="@color/tapIconChatRoomUnreadButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_unread_button_count"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/tapIconChatRoomUnreadButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -500,10 +500,10 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="16dp"
                     android:src="@drawable/tap_ic_close_grey"
-                    android:tint="@color/tapIconChatRoomCancelQuote"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/tapIconChatRoomCancelQuote" />
 
                 <View
                     android:id="@+id/v_quote_decoration"
@@ -591,12 +591,12 @@
                 android:layout_marginEnd="2dp"
                 android:padding="12dp"
                 android:src="@drawable/tap_ic_burger_white"
-                android:tint="@color/tapIconChatComposerBurgerMenu"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/et_chat"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="1.0"
+                app:tint="@color/tapIconChatComposerBurgerMenu" />
 
 
             <EditText
@@ -631,9 +631,9 @@
                 android:layout_height="32dp"
                 android:layout_marginBottom="2dp"
                 android:src="@drawable/tap_ic_attach_grey"
-                android:tint="@color/tapIconChatComposerAttach"
                 app:layout_constraintBottom_toBottomOf="@id/et_chat"
-                app:layout_constraintEnd_toEndOf="@id/et_chat" />
+                app:layout_constraintEnd_toEndOf="@id/et_chat"
+                app:tint="@color/tapIconChatComposerAttach" />
 
             <ImageView
                 android:id="@+id/iv_send_area"
@@ -656,12 +656,12 @@
                 android:layout_marginEnd="2dp"
                 android:padding="12dp"
                 android:src="@drawable/tap_ic_send_white"
-                android:tint="@color/tapIconChatComposerSendInactive"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/et_chat"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="1.0"
+                app:tint="@color/tapIconChatComposerSendInactive" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -670,37 +670,52 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/tapDeletedChatRoomInfoBackgroundColor"
+            android:elevation="6dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <ImageView
-                android:id="@+id/iv_history_icon"
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:src="@drawable/tap_ic_history"
-                android:tint="@color/tapIconDeletedChatRoom"
-                app:layout_constraintBottom_toBottomOf="@id/tv_chat_history_title"
-                app:layout_constraintEnd_toStartOf="@id/tv_chat_history_title"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_chat_room_locked_title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toTopOf="@id/tv_chat_history_content"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_chat_history_title"
-                app:layout_constraintVertical_chainStyle="packed" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tv_chat_history_title"
-                style="@style/tapDeletedChatRoomInfoTitleStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginLeft="4dp"
-                android:layout_marginTop="8dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/tap_this_is_a_chat_history"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iv_history_icon"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed" />
+                <ImageView
+                    android:id="@+id/iv_history_icon"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="4dp"
+                    android:src="@drawable/tap_ic_history"
+                    app:layout_constraintEnd_toStartOf="@id/tv_chat_history_title"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_chat_history_title"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    app:tint="@color/tapIconDeletedChatRoom" />
+
+                <TextView
+                    android:id="@+id/tv_chat_history_title"
+                    style="@style/tapDeletedChatRoomInfoTitleStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
+                    android:gravity="center"
+                    android:text="@string/tap_this_is_a_chat_history"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/iv_history_icon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tv_chat_history_content"
@@ -714,7 +729,7 @@
                 app:layout_constraintBottom_toTopOf="@id/ll_button_delete_chat"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_chat_history_title" />
+                app:layout_constraintTop_toBottomOf="@id/cl_chat_room_locked_title" />
 
             <LinearLayout
                 android:id="@+id/ll_button_delete_chat"
@@ -732,7 +747,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/tap_ic_delete_red"
-                    android:tint="@color/tapButtonIconColor" />
+                    app:tint="@color/tapButtonIconColor" />
 
                 <TextView
                     style="@style/tapButtonLabelStyle"
@@ -774,11 +789,11 @@
         android:elevation="3dp"
         android:padding="15dp"
         android:src="@drawable/tap_ic_scroll_to_bottom_chat"
-        android:tint="@color/tapIconChatRoomScrollToBottom"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cl_chat_composer_and_history"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="1" />
+        app:layout_constraintVertical_bias="1"
+        app:tint="@color/tapIconChatRoomScrollToBottom" />
 
     <TextView
         android:id="@+id/tv_badge_unread"
@@ -811,12 +826,12 @@
         android:elevation="3dp"
         android:padding="8dp"
         android:src="@drawable/tap_ic_mention_orange"
-        android:tint="@color/tapIconChatRoomScrollToBottom"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/tv_badge_unread"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_bias="1"
-        app:layout_goneMarginBottom="16dp" />
+        app:layout_goneMarginBottom="16dp"
+        app:tint="@color/tapIconChatRoomScrollToBottom" />
 
     <TextView
         android:id="@+id/tv_badge_mention_count"

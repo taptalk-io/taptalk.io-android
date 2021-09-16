@@ -268,7 +268,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public TAPMessageModel getQuotedMessage() {
-        return null == quotedMessage ? TAPChatManager.getInstance(instanceKey).getQuotedMessage() : quotedMessage;
+        return null == quotedMessage ? TAPChatManager.getInstance(instanceKey).getQuotedMessage(room.getRoomID()) : quotedMessage;
     }
 
     public int getInitialUnreadCount() {
@@ -280,13 +280,13 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public Integer getQuoteAction() {
-        return null == quoteAction ? null == TAPChatManager.getInstance(instanceKey).getQuoteAction() ? -1 : TAPChatManager.getInstance(instanceKey).getQuoteAction() : quoteAction;
+        return null == quoteAction ? null == TAPChatManager.getInstance(instanceKey).getQuoteAction(room.getRoomID()) ? -1 : TAPChatManager.getInstance(instanceKey).getQuoteAction(room.getRoomID()) : quoteAction;
     }
 
     public void setQuotedMessage(TAPMessageModel quotedMessage, int quoteAction) {
         this.quotedMessage = quotedMessage;
         this.quoteAction = quoteAction;
-        TAPChatManager.getInstance(instanceKey).setQuotedMessage(quotedMessage, quoteAction);
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, quoteAction);
     }
 
     public TAPGetMessageListByRoomResponse getPendingAfterResponse() {

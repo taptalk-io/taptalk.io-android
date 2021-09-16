@@ -223,7 +223,7 @@ public class TAPApiManager {
                 }
             }
         } else {
-            Log.e(TAG, String.format(String.format("[Err %s - %s] %s", br.getStatus(), br.getError().getCode(), br.getError().getMessage()), code));
+            Log.d(TAG, String.format(String.format("[%s - %s] %s", br.getStatus(), br.getError().getCode(), br.getError().getMessage()), code));
             return Observable.just(t);
         }
         return Observable.just(t);
