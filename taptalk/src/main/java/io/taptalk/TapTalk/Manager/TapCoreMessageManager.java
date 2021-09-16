@@ -387,14 +387,17 @@ public class TapCoreMessageManager {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     String action = intent.getAction();
-                    String localID = intent.getStringExtra(DownloadLocalID);
-                    Integer downloadProgressPercent = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(localID);
-                    Long downloadProgressBytes = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressBytes(localID);
                     if (null == action) {
+                        return;
+                    }
+                    String localID = intent.getStringExtra(DownloadLocalID);
+                    if (null == localID || !localID.equals(message.getLocalID())) {
                         return;
                     }
                     switch (action) {
                         case DownloadProgressLoading:
+                            Integer downloadProgressPercent = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(localID);
+                            Long downloadProgressBytes = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressBytes(localID);
                             if (null != downloadProgressPercent && null != downloadProgressBytes) {
                                 if (null != listener) {
                                     listener.onProgress(message, downloadProgressPercent, downloadProgressBytes);
@@ -403,7 +406,11 @@ public class TapCoreMessageManager {
                             break;
                         case DownloadFinish:
                             if (null != listener) {
-                                listener.onSuccess(intent.getParcelableExtra(DownloadedFile));
+                                File downloadedFile = null;
+                                if (null != intent.getExtras()) {
+                                    downloadedFile = (File) intent.getExtras().get(DownloadedFile);
+                                }
+                                listener.onSuccess(downloadedFile);
                             }
                             TAPBroadcastManager.unregister(TapTalk.appContext, this);
                             break;
