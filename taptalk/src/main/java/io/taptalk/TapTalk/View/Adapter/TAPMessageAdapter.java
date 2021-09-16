@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -2357,12 +2358,28 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvQuoteContent.setText(quote.getContent());
             String quoteImageURL = quote.getImageURL();
             String quoteFileID = quote.getFileID();
-            if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
+            if (quote.getFileType().equals(String.valueOf(TYPE_FILE)) || quote.getFileType().equals(FILE)) {
+                // Load file icon
+                glide.clear(rcivQuoteImage);
+                rcivQuoteImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_documents_white));
+                if (isMessageFromMySelf(item)) {
+                    ImageViewCompat.setImageTintList(rcivQuoteImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapColorPrimary)));
+                    rcivQuoteImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_white));
+                } else {
+                    ImageViewCompat.setImageTintList(rcivQuoteImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapWhite)));
+                    rcivQuoteImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_primary_icon));
+                }
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
+                updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+            } else if (null != quoteImageURL && !quoteImageURL.isEmpty()) {
                 // Get quote image from URL
                 glide.load(quoteImageURL).listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), false);
                         rcivQuoteImage.setVisibility(View.GONE);
+                        vQuoteDecoration.setVisibility(View.VISIBLE);
                         return false;
                     }
 
@@ -2372,11 +2389,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         rcivQuoteImage.setBackground(null);
                         rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         rcivQuoteImage.setVisibility(View.VISIBLE);
+                        vQuoteDecoration.setVisibility(View.GONE);
+                        updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
                         return false;
                     }
                 }).into(rcivQuoteImage);
-                updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
-                vQuoteDecoration.setVisibility(View.GONE);
                 tvQuoteContent.setMaxLines(1);
             } else if (quote.getFileType().equals(String.valueOf(TYPE_IMAGE)) ||
                     quote.getFileType().equals(String.valueOf(TYPE_VIDEO)) ||
@@ -2409,20 +2426,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     }).start();
                 }
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
-            } else if (quote.getFileType().equals(String.valueOf(TYPE_FILE)) || quote.getFileType().equals(FILE)) {
-                // Load file icon
-                glide.clear(rcivQuoteImage);
-                rcivQuoteImage.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_documents_white));
-                if (isMessageFromMySelf(item)) {
-                    ImageViewCompat.setImageTintList(rcivQuoteImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapColorPrimary)));
-                    rcivQuoteImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_white));
-                } else {
-                    ImageViewCompat.setImageTintList(rcivQuoteImage, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapWhite)));
-                    rcivQuoteImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_circle_primary_icon));
-                };
-                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER);
-                updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
-                rcivQuoteImage.setVisibility(View.VISIBLE);
             } else {
                 // Show no image
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), false);
