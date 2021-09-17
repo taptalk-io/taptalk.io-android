@@ -211,6 +211,9 @@ public class TapCoreContactManager {
                         TAPContactManager.getInstance(instanceKey).saveContactListToDatabase(users);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        if (null != listener) {
+                            listener.onError(ERROR_CODE_OTHERS, e.getLocalizedMessage());
+                        }
                     }
                 } else {
                     if (null != listener) {
