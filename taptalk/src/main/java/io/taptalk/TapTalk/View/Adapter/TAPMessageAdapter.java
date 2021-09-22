@@ -430,6 +430,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteDecoration;
         private ProgressBar pbProgress;
 
+        private TAPMessageModel obtainedItem;
         private Drawable thumbnail;
 
         ImageVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
@@ -473,6 +474,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == item) {
                 return;
             }
+            obtainedItem = item;
             if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, null);
             }
@@ -538,60 +540,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 imageUrl = (String) item.getData().get(URL);
             }
 
-            llTimestampIconImage.post(() -> {
-                if (position == getAdapterPosition()) {
-                    if (((null != item.getQuote() &&
-                            null != item.getQuote().getTitle() &&
-                            !item.getQuote().getTitle().isEmpty()) ||
-                            (null != item.getForwardFrom() &&
-                                    null != item.getForwardFrom().getFullname() &&
-                                    !item.getForwardFrom().getFullname().isEmpty())) &&
-                            null != widthDimension &&
-                            null != heightDimension) {
-                        // Fix layout when quote/forward exists
-                        float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
-                        // Set image width to maximum
-                        rcivImageBody.getLayoutParams().width = 0;
-                        if (imageRatio > (float) rcivImageBody.getMaxWidth() / (float) rcivImageBody.getMinHeight()) {
-                            // Set minimum height if image width exceeds limit
-                            rcivImageBody.getLayoutParams().height = rcivImageBody.getMinHeight();
-                        } else if (imageRatio < (float) rcivImageBody.getMaxHeight() / (float) rcivImageBody.getMaxWidth()) {
-                            // Set maximum height if image height exceeds limit
-                            rcivImageBody.getLayoutParams().height = rcivImageBody.getMaxHeight();
-                        } else {
-                            // Set default image height
-                            rcivImageBody.getLayoutParams().height = (int) (rcivImageBody.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
-                        }
-                        rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        clForwardedQuote.setVisibility(View.VISIBLE);
-                    } else if (rcivImageBody.getWidth() < (llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12))) {
-                        // Thumbnail width may not be smaller than timestamp width (no caption)
-                        rcivImageBody.getLayoutParams().width = llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12);
-                        rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                        rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        clForwardedQuote.setVisibility(View.GONE);
-                    } else if (isMessageFromMySelf(item) && rcivImageBody.getWidth() < (tvMessageTimestamp.getWidth() + ivMessageStatus.getWidth() + TAPUtils.dpToPx(22))) {
-                        // Thumbnail width may not be smaller than timestamp width (with caption, right bubble)
-                        rcivImageBody.getLayoutParams().width = tvMessageTimestamp.getWidth() + ivMessageStatus.getWidth() + TAPUtils.dpToPx(22);
-                        rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                        rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        clForwardedQuote.setVisibility(View.GONE);
-                    } else if (!isMessageFromMySelf(item) && rcivImageBody.getWidth() < (tvMessageTimestamp.getWidth() + TAPUtils.dpToPx(20))) {
-                        // Thumbnail width may not be smaller than timestamp width (with caption, left bubble)
-                        rcivImageBody.getLayoutParams().width = tvMessageTimestamp.getWidth() + tvMessageTimestamp.getWidth() + TAPUtils.dpToPx(20);
-                        rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                        rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        clForwardedQuote.setVisibility(View.GONE);
-                    } else {
-                        // Set default image size
-                        rcivImageBody.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
-                        rcivImageBody.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                        rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        clForwardedQuote.setVisibility(View.GONE);
-                    }
-                }
-            });
-
             if (null == thumbnail) {
                 thumbnail = new BitmapDrawable(
                         itemView.getContext().getResources(),
@@ -638,6 +586,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             // Load thumbnail when download is not in progress
             if (null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID())) {
                 rcivImageBody.setImageDrawable(thumbnail);
+                fixImageOrVideoViewSize(item, rcivImageBody, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
             }
 
             if (null != imageUrl && !imageUrl.isEmpty()) {
@@ -647,6 +596,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         .apply(new RequestOptions()
                                 .placeholder(thumbnail)
                                 .centerCrop())
+                        .listener(imageBodyListener)
                         .into(rcivImageBody);
                 rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
             } else if (null != fileID && !fileID.isEmpty()) {
@@ -660,6 +610,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                     .apply(new RequestOptions()
                                             .placeholder(thumbnail)
                                             .centerCrop())
+                                    .listener(imageBodyListener)
                                     .into(rcivImageBody);
                             rcivImageBody.setOnClickListener(v -> openImageDetailPreview(item));
                         });
@@ -690,6 +641,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                            flBubble.setForeground(bubbleOverlayLeft);
 //                        }
                         rcivImageBody.setImageDrawable(thumbnail);
+                        fixImageOrVideoViewSize(item, rcivImageBody, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
                     });
                 } else {
                     activity.runOnUiThread(() -> {
@@ -703,11 +655,25 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .apply(new RequestOptions()
                                         .placeholder(thumbnail)
                                         .diskCacheStrategy(DiskCacheStrategy.NONE))
+                                .listener(imageBodyListener)
                                 .into(rcivImageBody);
                     });
                 }
             }
         }
+
+        private RequestListener<Drawable> imageBodyListener = new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                fixImageOrVideoViewSize(obtainedItem, rcivImageBody, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
+                return false;
+            }
+        };
 
         private void setImageViewButtonProgress(TAPMessageModel item) {
             if (null != item.getFailedSend() && item.getFailedSend()) {
@@ -815,6 +781,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteDecoration;
         private ProgressBar pbProgress;
 
+        private TAPMessageModel obtainedItem;
         private Uri videoUri;
         private Drawable thumbnail;
 
@@ -860,6 +827,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == item) {
                 return;
             }
+            obtainedItem = item;
             if (!animatingMessages.contains(item)) {
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, null);
             }
@@ -898,66 +866,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Integer uploadProgressPercent = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressPercent(localID);
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(localID);
             videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item);
-
-            llTimestampIconImage.post(() -> {
-                if (position == getAdapterPosition()) {
-                    if (((null != item.getQuote() &&
-                            null != item.getQuote().getTitle() &&
-                            !item.getQuote().getTitle().isEmpty()) ||
-                            (null != item.getForwardFrom() &&
-                                    null != item.getForwardFrom().getFullname() &&
-                                    !item.getForwardFrom().getFullname().isEmpty())) &&
-                            null != widthDimension &&
-                            null != heightDimension) {
-                        // Fix layout when quote/forward exists
-                        float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
-                        // Set image width to maximum
-                        rcivVideoThumbnail.getLayoutParams().width = 0;
-                        if (imageRatio > (float) rcivVideoThumbnail.getMaxWidth() / (float) rcivVideoThumbnail.getMinHeight()) {
-                            // Set minimum height if image width exceeds limit
-                            rcivVideoThumbnail.getLayoutParams().height = rcivVideoThumbnail.getMinHeight();
-                        } else if (imageRatio < (float) rcivVideoThumbnail.getMaxHeight() / (float) rcivVideoThumbnail.getMaxWidth()) {
-                            // Set maximum height if image height exceeds limit
-                            rcivVideoThumbnail.getLayoutParams().height = rcivVideoThumbnail.getMaxHeight();
-                        } else {
-                            // Set default image height
-                            rcivVideoThumbnail.getLayoutParams().height = (int) (rcivVideoThumbnail.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
-                        }
-                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        clForwardedQuote.setVisibility(View.VISIBLE);
-                    } else if (rcivVideoThumbnail.getWidth() < (llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12))) {
-                        // Thumbnail width may not be smaller than timestamp width (no caption)
-                        rcivVideoThumbnail.getLayoutParams().width = llTimestampIconImage.getWidth() + TAPUtils.dpToPx(12);
-                        rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        clForwardedQuote.setVisibility(View.GONE);
-                    } else if (isMessageFromMySelf(item) && rcivVideoThumbnail.getWidth() < (tvMessageTimestamp.getWidth() + ivMessageStatus.getWidth() + TAPUtils.dpToPx(22))) {
-                        // Thumbnail width may not be smaller than timestamp width (with caption, right bubble)
-                        rcivVideoThumbnail.getLayoutParams().width = tvMessageTimestamp.getWidth() + ivMessageStatus.getWidth() + TAPUtils.dpToPx(22);
-                        rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        clForwardedQuote.setVisibility(View.GONE);
-                    } else if (!isMessageFromMySelf(item) && rcivVideoThumbnail.getWidth() < (tvMessageTimestamp.getWidth() + TAPUtils.dpToPx(20))) {
-                        // Thumbnail width may not be smaller than timestamp width (with caption, left bubble)
-                        rcivVideoThumbnail.getLayoutParams().width = tvMessageTimestamp.getWidth() + tvMessageTimestamp.getWidth() + TAPUtils.dpToPx(20);
-                        rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        clForwardedQuote.setVisibility(View.GONE);
-                    } else if (rcivVideoThumbnail.getWidth() < (tvMediaInfo.getWidth() + TAPUtils.dpToPx(12))) {
-                        // Thumbnail width may not be smaller than media info width
-                        rcivVideoThumbnail.getLayoutParams().width = tvMediaInfo.getWidth() + TAPUtils.dpToPx(12);
-                        rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        clForwardedQuote.setVisibility(View.GONE);
-                    } else {
-                        // Set default thumbnail size
-                        rcivVideoThumbnail.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
-                        rcivVideoThumbnail.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-                        rcivVideoThumbnail.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        clForwardedQuote.setVisibility(View.GONE);
-                    }
-                }
-            });
 
             if (null == thumbnail) {
                 thumbnail = new BitmapDrawable(
@@ -1012,6 +920,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             // Load thumbnail when download is not in progress
             if (null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID()) || null != dataUri) {
                 rcivVideoThumbnail.setImageDrawable(thumbnail);
+                fixImageOrVideoViewSize(item, rcivVideoThumbnail, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
             }
 
             if (null != item.getFailedSend() && item.getFailedSend()) {
@@ -1040,6 +949,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         .apply(new RequestOptions()
                                 .placeholder(thumbnail)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .listener(videoThumbnailListener)
                         .into(rcivVideoThumbnail);
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent) && (null != videoUri ||
@@ -1093,6 +1003,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                     .apply(new RequestOptions()
                                             .placeholder(thumbnail)
                                             .centerCrop())
+                                    .listener(videoThumbnailListener)
                                     .into(rcivVideoThumbnail);
                             rcivVideoThumbnail.setOnClickListener(v -> openVideoPlayer(item));
                         });
@@ -1154,6 +1065,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvMessageStatus.setVisibility(View.VISIBLE);
             }
         }
+
+        private RequestListener<Drawable> videoThumbnailListener = new RequestListener<Drawable>() {
+            @Override
+            public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                fixImageOrVideoViewSize(obtainedItem, rcivVideoThumbnail, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
+                return false;
+            }
+        };
 
         private void downloadVideo(TAPMessageModel item) {
             Intent intent = new Intent(DownloadFile);
@@ -2700,5 +2624,75 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
         this.highlightedMessage = message;
         notifyItemChanged(getItems().indexOf(message));
+    }
+
+    private void fixImageOrVideoViewSize(
+            TAPMessageModel item,
+            TAPRoundedCornerImageView rcivImageBody,
+            LinearLayout llTimestampIconImage,
+            ConstraintLayout clForwardedQuote,
+            TextView tvMessageTimestamp,
+            ImageView ivMessageStatus
+    ) {
+        if (null == item.getData()) {
+            return;
+        }
+        Number widthDimension = (Number) item.getData().get(WIDTH);
+        Number heightDimension = (Number) item.getData().get(HEIGHT);
+
+        int measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        rcivImageBody.measure(measureSpec, measureSpec);
+        llTimestampIconImage.measure(measureSpec, measureSpec);
+
+        if (((null != item.getQuote() &&
+                null != item.getQuote().getTitle() &&
+                !item.getQuote().getTitle().isEmpty()) ||
+                (null != item.getForwardFrom() &&
+                        null != item.getForwardFrom().getFullname() &&
+                        !item.getForwardFrom().getFullname().isEmpty())) &&
+                null != widthDimension &&
+                null != heightDimension
+        ) {
+            // Fix layout when quote/forward exists
+            float imageRatio = widthDimension.floatValue() / heightDimension.floatValue();
+            // Set image width to maximum
+            rcivImageBody.getLayoutParams().width = 0;
+            if (imageRatio > (float) rcivImageBody.getMaxWidth() / (float) rcivImageBody.getMinHeight()) {
+                // Set minimum height if image width exceeds limit
+                rcivImageBody.getLayoutParams().height = rcivImageBody.getMinHeight();
+            } else if (imageRatio < (float) rcivImageBody.getMaxHeight() / (float) rcivImageBody.getMaxWidth()) {
+                // Set maximum height if image height exceeds limit
+                rcivImageBody.getLayoutParams().height = rcivImageBody.getMaxHeight();
+            } else {
+                // Set default image height
+                rcivImageBody.getLayoutParams().height = (int) (rcivImageBody.getMaxWidth() * heightDimension.floatValue() / widthDimension.floatValue());
+            }
+            rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            clForwardedQuote.setVisibility(View.VISIBLE);
+        } else if (rcivImageBody.getMeasuredWidth() < (llTimestampIconImage.getMeasuredWidth() + TAPUtils.dpToPx(12))) {
+            // Thumbnail width may not be smaller than timestamp width (no caption)
+            rcivImageBody.getLayoutParams().width = llTimestampIconImage.getMeasuredWidth() + TAPUtils.dpToPx(12);
+            rcivImageBody.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            clForwardedQuote.setVisibility(View.GONE);
+        } else if (isMessageFromMySelf(item) && rcivImageBody.getMeasuredWidth() < (tvMessageTimestamp.getMeasuredWidth() + ivMessageStatus.getMeasuredWidth() + TAPUtils.dpToPx(22))) {
+            // Thumbnail width may not be smaller than timestamp width (with caption, right bubble)
+            rcivImageBody.getLayoutParams().width = tvMessageTimestamp.getMeasuredWidth() + ivMessageStatus.getMeasuredWidth() + TAPUtils.dpToPx(22);
+            rcivImageBody.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            clForwardedQuote.setVisibility(View.GONE);
+        } else if (!isMessageFromMySelf(item) && rcivImageBody.getMeasuredWidth() < (tvMessageTimestamp.getMeasuredWidth() + TAPUtils.dpToPx(20))) {
+            // Thumbnail width may not be smaller than timestamp width (with caption, left bubble)
+            rcivImageBody.getLayoutParams().width = tvMessageTimestamp.getMeasuredWidth() + tvMessageTimestamp.getMeasuredWidth() + TAPUtils.dpToPx(20);
+            rcivImageBody.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            rcivImageBody.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            clForwardedQuote.setVisibility(View.GONE);
+        } else {
+            // Set default image size
+            rcivImageBody.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            rcivImageBody.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            rcivImageBody.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            clForwardedQuote.setVisibility(View.GONE);
+        }
     }
 }
