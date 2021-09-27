@@ -35,7 +35,7 @@ public abstract class TapUIRoomListListener implements TapUIRoomListInterface {
     @Override
     public void onCloseRoomListTapped(Activity activity) {
         if (null != activity) {
-            activity.onBackPressed();
+            activity.finish();
         }
     }
 

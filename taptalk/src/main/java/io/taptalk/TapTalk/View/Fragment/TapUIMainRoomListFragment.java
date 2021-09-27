@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.R;
 
 public class TapUIMainRoomListFragment extends Fragment {
@@ -102,7 +103,8 @@ public class TapUIMainRoomListFragment extends Fragment {
                 if (null != fRoomList && fRoomList.isSelecting()) {
                     fRoomList.cancelSelection();
                 } else if (null != getActivity()) {
-                    getActivity().finish();
+//                    getActivity().finish();
+                    TAPChatManager.getInstance(instanceKey).triggerCloseRoomListButtonTapped(getActivity());
                 }
                 break;
             case STATE_SEARCH_CHAT:
