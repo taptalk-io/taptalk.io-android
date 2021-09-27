@@ -173,6 +173,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             cl_logout.visibility = View.GONE
         }
 
+        if (TapUI.getInstance(instanceKey).isChangeProfilePictureButtonVisible) {
+            ll_change_profile_picture.visibility = View.VISIBLE
+        } else {
+            ll_change_profile_picture.visibility = View.INVISIBLE
+        }
+
         if (vm.currentProfilePicture.isEmpty()) {
             ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname)))
             civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))

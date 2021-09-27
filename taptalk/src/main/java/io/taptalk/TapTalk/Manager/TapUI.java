@@ -77,6 +77,7 @@ public class TapUI {
     private boolean isNewContactMenuButtonHidden;
     private boolean isScanQRMenuButtonHidden;
     private boolean isNewGroupMenuButtonHidden;
+    private boolean isChangeProfilePictureButtonHidden;
     private boolean isLogoutButtonVisible;
     private boolean isReadStatusHidden;
     private boolean isConnectionStatusIndicatorHidden;
@@ -591,6 +592,14 @@ public class TapUI {
         isNewGroupMenuButtonHidden = !isVisible;
     }
 
+    public boolean isChangeProfilePictureButtonVisible() {
+        return !isChangeProfilePictureButtonHidden;
+    }
+
+    public void setChangeProfilePictureButtonVisible(boolean isVisible) {
+        isChangeProfilePictureButtonHidden = !isVisible;
+    }
+
     public boolean isLogoutButtonVisible() {
         if (!TapTalk.checkTapTalkInitialized()) {
             return false;
@@ -979,7 +988,7 @@ public class TapUI {
 
     void triggerCloseRoomListTapped(Activity activity) {
         if (getRoomListListeners().isEmpty() && null != activity) {
-            activity.onBackPressed();
+            activity.finish();
         } else {
             for (TapUIRoomListListener listener : getRoomListListeners()) {
                 if (null != listener) {
