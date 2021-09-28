@@ -372,13 +372,13 @@ public class TapCoreMessageManager {
     public void downloadMessageFile(TAPMessageModel message, TapCoreFileDownloadListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
-                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+                listener.onError(message, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
             return;
         }
         if (!TAPUtils.hasPermissions(TapTalk.appContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             if (null != listener) {
-                listener.onError(ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE);
+                listener.onError(message, ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE);
             }
         } else {
             TAPFileDownloadManager.getInstance(instanceKey).downloadMessageFile(message);
@@ -410,13 +410,13 @@ public class TapCoreMessageManager {
                                 if (null != intent.getExtras()) {
                                     downloadedFile = (File) intent.getExtras().get(DownloadedFile);
                                 }
-                                listener.onSuccess(downloadedFile);
+                                listener.onSuccess(message, downloadedFile);
                             }
                             TAPBroadcastManager.unregister(TapTalk.appContext, this);
                             break;
                         case DownloadFailed:
                             if (null != listener) {
-                                listener.onError(intent.getStringExtra(DownloadErrorCode), intent.getStringExtra(DownloadErrorMessage));
+                                listener.onError(message, intent.getStringExtra(DownloadErrorCode), intent.getStringExtra(DownloadErrorMessage));
                             }
                             TAPBroadcastManager.unregister(TapTalk.appContext, this);
                             break;

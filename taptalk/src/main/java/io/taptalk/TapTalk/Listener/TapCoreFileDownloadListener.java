@@ -11,12 +11,12 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 public abstract class TapCoreFileDownloadListener implements TapFileDownloadInterface {
 
     @Override
-    public void onSuccess(File file) {
+    public void onSuccess(TAPMessageModel message, File file) {
 
     }
 
     @Override
-    public void onError(String errorCode, String errorMessage) {
+    public void onError(TAPMessageModel message, String errorCode, String errorMessage) {
 
     }
 

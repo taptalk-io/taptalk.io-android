@@ -6,9 +6,9 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 
 
 public interface TapFileDownloadInterface {
-    void onSuccess(File file);
+    void onSuccess(TAPMessageModel message, File file);
 
-    void onError(String errorCode, String errorMessage);
+    void onError(TAPMessageModel message, String errorCode, String errorMessage);
 
     void onProgress(TAPMessageModel tapMessageModel, int percentage, long bytes);
 }
