@@ -175,6 +175,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         if (TapUI.getInstance(instanceKey).isChangeProfilePictureButtonVisible) {
             ll_change_profile_picture.visibility = View.VISIBLE
+            civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+            ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         } else {
             ll_change_profile_picture.visibility = View.INVISIBLE
         }
@@ -223,8 +225,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         iv_button_close.setOnClickListener { onBackPressed() }
         fl_container.setOnClickListener { clearAllFocus() }
         cl_form_container.setOnClickListener { clearAllFocus() }
-        civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         cl_password.setOnClickListener { openChangePasswordPage() }
         cl_logout.setOnClickListener { promptUserLogout() }
