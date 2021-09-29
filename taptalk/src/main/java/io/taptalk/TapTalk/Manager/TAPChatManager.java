@@ -476,7 +476,7 @@ public class TAPChatManager {
             if (null != getUserInfo(room.getRoomID())) {
                 data.put(USER_INFO, getUserInfo(room.getRoomID()));
             }
-            return TAPMessageModel.BuilderWithQuotedMessage(
+            TAPMessageModel messageWithQuote = TAPMessageModel.BuilderWithQuotedMessage(
                     message,
                     room,
                     TYPE_TEXT,
@@ -485,6 +485,8 @@ public class TAPChatManager {
                     data,
                     getQuotedMessages().get(room.getRoomID())
             );
+            setQuotedMessage(room.getRoomID(), null, 0);
+            return messageWithQuote;
         }
     }
 
@@ -524,7 +526,7 @@ public class TAPChatManager {
             if (null != getUserInfo(roomModel.getRoomID())) {
                 data.put(USER_INFO, getUserInfo(roomModel.getRoomID()));
             }
-            return TAPMessageModel.BuilderWithQuotedMessage(
+            TAPMessageModel messageWithQuote = TAPMessageModel.BuilderWithQuotedMessage(
                     TapTalk.appContext.getString(R.string.tap_location_body),
                     roomModel,
                     TYPE_LOCATION,
@@ -533,6 +535,8 @@ public class TAPChatManager {
                     TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
                     data,
                     getQuotedMessage(roomModel.getRoomID()));
+            setQuotedMessage(roomModel.getRoomID(), null, 0);
+            return messageWithQuote;
         }
 
     }
@@ -590,6 +594,7 @@ public class TAPChatManager {
                         TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
                         data,
                         getQuotedMessage(roomModel.getRoomID()));
+                setQuotedMessage(roomModel.getRoomID(), null, 0);
             }
             // Save file Uri
 //        TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), fileUri);
@@ -733,6 +738,7 @@ public class TAPChatManager {
                     TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
                     data,
                     getQuotedMessage(roomModel.getRoomID()));
+            setQuotedMessage(roomModel.getRoomID(), null, 0);
         }
         return messageModel;
     }
@@ -767,6 +773,7 @@ public class TAPChatManager {
                     TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
                     data,
                     getQuotedMessage(roomModel.getRoomID()));
+            setQuotedMessage(roomModel.getRoomID(), null, 0);
         }
         return messageModel;
     }
@@ -827,6 +834,7 @@ public class TAPChatManager {
                         TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
                         data,
                         getQuotedMessage(room.getRoomID()));
+                setQuotedMessage(room.getRoomID(), null, 0);
             }
 //        TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), videoPath);
             return messageModel;
@@ -1109,12 +1117,14 @@ public class TAPChatManager {
             Uri uri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(messageToForward);
             TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(room.getRoomID(), key, uri);
         }
-        return TAPMessageModel.BuilderForwardedMessage(
+        TAPMessageModel messageWithQuote = TAPMessageModel.BuilderForwardedMessage(
                 messageToForward,
                 room,
                 System.currentTimeMillis(),
                 getActiveUser(),
                 TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0");
+        setQuotedMessage(room.getRoomID(), null, 0);
+        return messageWithQuote;
     }
 
     private void triggerSendMessageListener(TAPMessageModel messageModel) {

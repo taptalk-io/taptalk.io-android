@@ -2303,7 +2303,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), false);
                         rcivQuoteImage.setVisibility(View.GONE);
-                        vQuoteDecoration.setVisibility(View.VISIBLE);
                         return false;
                     }
 
@@ -2313,7 +2312,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         rcivQuoteImage.setBackground(null);
                         rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         rcivQuoteImage.setVisibility(View.VISIBLE);
-                        vQuoteDecoration.setVisibility(View.GONE);
                         updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), true);
                         return false;
                     }
