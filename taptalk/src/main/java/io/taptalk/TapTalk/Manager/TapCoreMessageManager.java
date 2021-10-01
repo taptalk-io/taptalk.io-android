@@ -43,13 +43,16 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_DOWNLOAD_CANCELLED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_DOWNLOAD_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_PRODUCT_EMPTY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_DOWNLOAD_CANCELLED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_PRODUCT_EMPTY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadErrorCode;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadErrorMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
@@ -420,12 +423,18 @@ public class TapCoreMessageManager {
                             }
                             TAPBroadcastManager.unregister(TapTalk.appContext, this);
                             break;
+                        case CancelDownload:
+                            if (null != listener) {
+                                listener.onError(message, ERROR_CODE_DOWNLOAD_CANCELLED, ERROR_MESSAGE_DOWNLOAD_CANCELLED);
+                            }
+                            TAPBroadcastManager.unregister(TapTalk.appContext, this);
+                            break;
                     }
                 }
             };
 
             TAPBroadcastManager.register(TapTalk.appContext, downloadProgressReceiver,
-                    DownloadProgressLoading, DownloadFinish, DownloadFailed);
+                    DownloadProgressLoading, DownloadFinish, DownloadFailed, CancelDownload);
         }
     }
 
@@ -433,6 +442,9 @@ public class TapCoreMessageManager {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
+        Intent intent = new Intent(CancelDownload);
+        intent.putExtra(DownloadLocalID, message.getLocalID());
+        LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(message.getLocalID());
     }
 

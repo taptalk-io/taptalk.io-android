@@ -217,7 +217,7 @@ public class TapCoreContactManager {
                     }
                 } else {
                     if (null != listener) {
-                        listener.onError(ERROR_CODE_OTHERS, "User already added as contact.");
+                        listener.onError(ERROR_CODE_OTHERS, "User already added as contact or provided phone number is invalid.");
                     }
                 }
             }
