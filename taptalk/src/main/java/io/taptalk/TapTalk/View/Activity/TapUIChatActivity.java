@@ -2353,9 +2353,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         if (messageLayoutManager.findFirstVisibleItemPosition() > 0) {
                             vm.setOnBottom(false);
                             ivToBottom.setVisibility(View.VISIBLE);
-                            hideUnreadButton();
-                            hideUnreadButtonLoading();
                         }
+                        hideUnreadButton();
+                        hideUnreadButtonLoading();
                         messageAdapter.highlightMessage(message);
                     });
                 });
