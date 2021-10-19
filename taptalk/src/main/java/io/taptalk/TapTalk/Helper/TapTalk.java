@@ -492,26 +492,20 @@ public class TapTalk implements LifecycleObserver {
         TAPDataManager.getInstance(instanceKey).logout(new TAPDefaultDataView<TAPCommonResponse>() {
             @Override
             public void onSuccess(TAPCommonResponse response) {
-                clearAllTapTalkData(instanceKey);
-                for (TapListener listener : getTapTalkListeners(instanceKey)) {
-                    listener.onUserLogout();
-                }
-                Intent intent = new Intent(CLEAR_ROOM_LIST);
-                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                finishLogout();
             }
 
             @Override
             public void onError(TAPErrorModel error) {
-                clearAllTapTalkData(instanceKey);
-                for (TapListener listener : getTapTalkListeners(instanceKey)) {
-                    listener.onUserLogout();
-                }
-                Intent intent = new Intent(CLEAR_ROOM_LIST);
-                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                finishLogout();
             }
 
             @Override
             public void onError(String errorMessage) {
+                finishLogout();
+            }
+
+            private void finishLogout() {
                 clearAllTapTalkData(instanceKey);
                 for (TapListener listener : getTapTalkListeners(instanceKey)) {
                     listener.onUserLogout();

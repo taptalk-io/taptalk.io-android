@@ -831,6 +831,9 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void showChatRoomSetupFailed() {
+        if (!TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
+            return;
+        }
         activity.runOnUiThread(() -> {
             ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_failed_red));
             ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
