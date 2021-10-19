@@ -3525,7 +3525,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     new Thread(() -> {
                         // Update last updated timestamp in preference (new thread to prevent stutter when scrolling)
                         if (null != message.getUpdated() &&
-                                TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()) {
+                                TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(vm.getRoom().getRoomID()) < message.getUpdated()
+                        ) {
                             TAPDataManager.getInstance(instanceKey).saveLastUpdatedMessageTimestamp(vm.getRoom().getRoomID(), message.getUpdated());
                         }
                     }).start();

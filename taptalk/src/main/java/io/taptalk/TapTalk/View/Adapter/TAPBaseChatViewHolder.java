@@ -77,22 +77,17 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
         if (!myUserModel.getUserID().equals(item.getUser().getUserID()) &&
                 (null == item.getIsRead() || !item.getIsRead()) &&
                 (null != item.getSending() && !item.getSending()) &&
-                !TAPMessageStatusManager.getInstance(instanceKey)
-                        .getReadMessageQueue().contains(item.getMessageID()) &&
-                !TAPMessageStatusManager.getInstance(instanceKey)
-                        .getMessagesMarkedAsRead().contains(item.getMessageID())
+                !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(item.getMessageID()) &&
+                !TAPMessageStatusManager.getInstance(instanceKey).getMessagesMarkedAsRead().contains(item.getMessageID())
         ) {
             item.updateReadMessage();
             String finalInstanceKey = instanceKey;
             new Thread(() -> {
-                TAPMessageStatusManager.getInstance(finalInstanceKey)
-                        .addUnreadListByOne(item.getRoom().getRoomID());
+                TAPMessageStatusManager.getInstance(finalInstanceKey).addUnreadListByOne(item.getRoom().getRoomID());
                 if (TAPUtils.isActiveUserMentioned(item, myUserModel)) {
-                    TAPMessageStatusManager.getInstance(finalInstanceKey)
-                            .addUnreadMentionByOne(item.getRoom().getRoomID());
+                    TAPMessageStatusManager.getInstance(finalInstanceKey).addUnreadMentionByOne(item.getRoom().getRoomID());
                 }
-                TAPMessageStatusManager.getInstance(finalInstanceKey)
-                        .addReadMessageQueue(item.getMessageID());
+                TAPMessageStatusManager.getInstance(finalInstanceKey).addReadMessageQueue(item.getMessageID());
             }).start();
         }
     }

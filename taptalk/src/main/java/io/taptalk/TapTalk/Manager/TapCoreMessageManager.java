@@ -501,6 +501,13 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance(instanceKey).sendProductMessageToServer(productHashMap, room, listener);
     }
 
+    public void markMessageAsDelivered(TAPMessageModel message) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPMessageStatusManager.getInstance(instanceKey).updateMessageStatusToDeliveredFromNotification(message);
+    }
+
     public void markMessageAsRead(TAPMessageModel message) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
@@ -636,7 +643,8 @@ public class TapCoreMessageManager {
                                 entities.add(TAPMessageEntity.fromMessageModel(message));
 
                                 if (null != message.getUpdated() &&
-                                        TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(roomID) < message.getUpdated()) {
+                                        TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(roomID) < message.getUpdated()
+                                ) {
                                     TAPDataManager.getInstance(instanceKey).saveLastUpdatedMessageTimestamp(roomID, message.getUpdated());
                                 }
                             } catch (Exception e) {
@@ -644,6 +652,10 @@ public class TapCoreMessageManager {
                                     listener.onError(ERROR_CODE_OTHERS, e.getMessage());
                                 }
                             }
+                        }
+
+                        if (0 < messageAfterModels.size()) {
+                            TAPMessageStatusManager.getInstance(instanceKey).updateMessageStatusToDelivered(messageAfterModels);
                         }
 
                         TAPDataManager.getInstance(instanceKey).insertToDatabase(entities, false, new TAPDatabaseListener<TAPMessageEntity>() {

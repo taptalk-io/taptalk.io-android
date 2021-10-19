@@ -66,6 +66,7 @@ public class TapCoreRoomListManager {
             public void onSuccess(TAPGetRoomListResponse response) {
                 if (response.getMessages().size() > 0) {
                     List<TAPMessageEntity> tempMessage = new ArrayList<>();
+                    List<TAPMessageModel> deliveredMessages = new ArrayList<>();
                     List<String> userIds = new ArrayList<>();
                     List<TAPUserModel> userModels = new ArrayList<>();
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
@@ -74,11 +75,16 @@ public class TapCoreRoomListManager {
                             TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
                             tempMessage.add(entity);
 
+                            if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
+                                deliveredMessages.add(message);
+                            }
+
                             if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                                 userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                             } else {
                                 userModels.add(message.getUser());
                             }
+
                             if (null != message.getIsDeleted() && message.getIsDeleted()) {
                                 TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
                             }
@@ -91,9 +97,14 @@ public class TapCoreRoomListManager {
 
                     TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
 
+                    if (deliveredMessages.size() > 0) {
+                        TAPMessageStatusManager.getInstance(instanceKey).updateMessageStatusToDelivered(deliveredMessages);
+                    }
+
                     if (userIds.size() > 0) {
                         TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
                     }
+
                     TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                         @Override
                         public void onInsertFinished() {
@@ -148,6 +159,7 @@ public class TapCoreRoomListManager {
             public void onSuccess(TAPGetRoomListResponse response) {
                 if (response.getMessages().size() > 0) {
                     List<TAPMessageEntity> tempMessage = new ArrayList<>();
+                    List<TAPMessageModel> deliveredMessages = new ArrayList<>();
                     List<String> userIds = new ArrayList<>();
                     List<TAPUserModel> userModels = new ArrayList<>();
                     for (HashMap<String, Object> messageMap : response.getMessages()) {
@@ -156,11 +168,16 @@ public class TapCoreRoomListManager {
                             TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
                             tempMessage.add(entity);
 
+                            if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
+                                deliveredMessages.add(message);
+                            }
+
                             if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                                 userIds.add(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(message.getRoom().getRoomID()));
                             } else {
                                 userModels.add(message.getUser());
                             }
+
                             if (null != message.getIsDeleted() && message.getIsDeleted()) {
                                 TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
                             }
@@ -171,9 +188,15 @@ public class TapCoreRoomListManager {
                         }
                     }
                     TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
+
+                    if (deliveredMessages.size() > 0) {
+                        TAPMessageStatusManager.getInstance(instanceKey).updateMessageStatusToDelivered(deliveredMessages);
+                    }
+
                     if (userIds.size() > 0) {
                         TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
                     }
+
                     TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
                         @Override
                         public void onInsertFinished() {
@@ -310,7 +333,6 @@ public class TapCoreRoomListManager {
                         @Override
                         public void onSuccess(TAPGetRoomListResponse response) {
                             if (response.getMessages().size() > 0) {
-//                                List<TAPRoomListModel> roomListModel = new ArrayList<>();
                                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
                                 List<TAPMessageModel> deliveredMessages = new ArrayList<>();
                                 List<String> userIds = new ArrayList<>();
@@ -320,7 +342,6 @@ public class TapCoreRoomListManager {
                                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                                         TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
                                         tempMessage.add(entity);
-//                                        roomListModel.add(TAPRoomListModel.buildWithLastMessage(message));
 
                                         // Save undelivered messages to list
                                         if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
@@ -344,11 +365,6 @@ public class TapCoreRoomListManager {
                                     }
                                 }
                                 TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
-
-//                                // Trigger listener callback
-//                                if (null != listener) {
-//                                    listener.onSuccess(roomListModel);
-//                                }
 
                                 // Update status to delivered
                                 if (deliveredMessages.size() > 0) {
