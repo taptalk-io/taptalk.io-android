@@ -200,13 +200,14 @@ public class TAPContactManager {
         if (tempPhone.isEmpty()) {
             return "";
         }
-        String prefix = tempPhone.substring(0, getMyCountryCode().length());
+//        String prefix = tempPhone.substring(0, getMyCountryCode().length());
 
         if ('0' == tempPhone.charAt(0)) {
             tempPhone = tempPhone.replaceFirst("0", getMyCountryCode());
-        } else if (!prefix.equals(getMyCountryCode())) {
-            tempPhone = getMyCountryCode() + tempPhone;
         }
+//        else if (!prefix.equals(getMyCountryCode())) {
+//            tempPhone = getMyCountryCode() + tempPhone;
+//        }
 
         return tempPhone;
     }
