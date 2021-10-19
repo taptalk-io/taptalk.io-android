@@ -225,16 +225,22 @@ public class TapCoreRoomListManager {
         }
         TAPDataManager.getInstance(instanceKey).getRoomList(TAPChatManager.getInstance(instanceKey).getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
-            public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
-                onSelectFinishedWithUnreadCount(entities, unreadMap, mentionCount);
+            public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
+                onSelectFinishedWithUnreadCount(entities, unreadMap, mentionMap);
             }
 
             @Override
-            public void onSelectFinishedWithUnreadCount(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
-                super.onSelectFinished(entities);
+            public void onSelectFinishedWithUnreadCount(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
                 List<TAPRoomListModel> roomListModel = new ArrayList<>();
                 for (TAPMessageEntity e : entities) {
-                    roomListModel.add(TAPRoomListModel.buildWithLastMessage(TAPMessageModel.fromMessageEntity(e)));
+                    TAPRoomListModel roomList = TAPRoomListModel.buildWithLastMessage(TAPMessageModel.fromMessageEntity(e));
+                    if (null != unreadMap && null != unreadMap.get(e.getRoomID())) {
+                        roomList.setNumberOfUnreadMessages(unreadMap.get(e.getRoomID()));
+                    }
+                    else if (null != mentionMap && null != mentionMap.get(e.getRoomID())) {
+                        roomList.setNumberOfUnreadMentions(mentionMap.get(e.getRoomID()));
+                    }
+                    roomListModel.add(roomList);
                 }
                 if (null != listener) {
                     listener.onSuccess(roomListModel);
@@ -265,12 +271,12 @@ public class TapCoreRoomListManager {
         }
         TAPDataManager.getInstance(instanceKey).getRoomList(TAPChatManager.getInstance(instanceKey).getSaveMessages(), false, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
-            public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
-                onSelectFinishedWithUnreadCount(entities, unreadMap, mentionCount);
+            public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
+                onSelectFinishedWithUnreadCount(entities, unreadMap, mentionMap);
             }
 
             @Override
-            public void onSelectFinishedWithUnreadCount(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionCount) {
+            public void onSelectFinishedWithUnreadCount(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
                 if (entities.size() > 0) {
                     fetchNewMessage(new TapCoreGetMessageListener() {
                         @Override
@@ -304,7 +310,7 @@ public class TapCoreRoomListManager {
                         @Override
                         public void onSuccess(TAPGetRoomListResponse response) {
                             if (response.getMessages().size() > 0) {
-                                List<TAPRoomListModel> roomListModel = new ArrayList<>();
+//                                List<TAPRoomListModel> roomListModel = new ArrayList<>();
                                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
                                 List<TAPMessageModel> deliveredMessages = new ArrayList<>();
                                 List<String> userIds = new ArrayList<>();
@@ -314,7 +320,7 @@ public class TapCoreRoomListManager {
                                         TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                                         TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
                                         tempMessage.add(entity);
-                                        roomListModel.add(TAPRoomListModel.buildWithLastMessage(message));
+//                                        roomListModel.add(TAPRoomListModel.buildWithLastMessage(message));
 
                                         // Save undelivered messages to list
                                         if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
@@ -339,10 +345,10 @@ public class TapCoreRoomListManager {
                                 }
                                 TAPContactManager.getInstance(instanceKey).updateUserData(userModels);
 
-                                // Trigger listener callback
-                                if (null != listener) {
-                                    listener.onSuccess(roomListModel);
-                                }
+//                                // Trigger listener callback
+//                                if (null != listener) {
+//                                    listener.onSuccess(roomListModel);
+//                                }
 
                                 // Update status to delivered
                                 if (deliveredMessages.size() > 0) {
@@ -356,6 +362,25 @@ public class TapCoreRoomListManager {
 
                                 // Save message to database
                                 TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
+                                    @Override
+                                    public void onInsertFinished() {
+                                        getRoomListFromCache(new TapCoreGetRoomListListener() {
+                                            @Override
+                                            public void onSuccess(List<TAPRoomListModel> tapRoomListModel) {
+                                                if (null != listener) {
+                                                    // Trigger listener callback
+                                                    listener.onSuccess(tapRoomListModel);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onError(String errorCode, String errorMessage) {
+                                                if (null != listener) {
+                                                    listener.onError(errorCode, errorMessage);
+                                                }
+                                            }
+                                        });
+                                    }
                                 });
                             } else {
                                 if (null != listener) {
