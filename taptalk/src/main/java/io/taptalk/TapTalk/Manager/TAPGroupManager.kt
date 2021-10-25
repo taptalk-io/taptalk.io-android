@@ -93,12 +93,12 @@ class TAPGroupManager(private var instanceKey: String) {
             if (null != response.participants && response.participants!!.isNotEmpty()) {
                 room.participants = response.participants
             } else {
-                room.participants = getInstance(instanceKey)?.getGroupData(response.room!!.roomID)?.participants
+                room.participants = getInstance(instanceKey).getGroupData(response.room!!.roomID)?.participants
             }
             if (null != response.admins && response.admins!!.isNotEmpty()) {
                 room.admins = response.admins
             } else {
-                room.admins = getInstance(instanceKey)?.getGroupData(response.room!!.roomID)?.admins
+                room.admins = getInstance(instanceKey).getGroupData(response.room!!.roomID)?.admins
             }
             addGroupData(room)
         }

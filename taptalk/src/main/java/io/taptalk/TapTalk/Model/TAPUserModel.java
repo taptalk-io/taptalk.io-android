@@ -93,7 +93,6 @@ public class TAPUserModel implements Parcelable {
     @JsonProperty("countryCallingCode")
     private String countryCallingCode;
     @Nullable
-    @JsonIgnore
     private Integer isContact;
     @Nullable
     @Ignore

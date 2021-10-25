@@ -36,13 +36,11 @@ public class TAPRoomModel implements Parcelable {
     @JsonProperty("imageURL")
     private TAPImageURL imageURL;
     @Nullable
-    @JsonIgnore
     private List<TAPUserModel> participants;
     @Nullable
     @JsonIgnore
     private Integer numOfParticipants;
     @Nullable
-    @JsonIgnore
     @JsonProperty("admins")
     private List<String> admins;
     @JsonIgnore private boolean isMuted;
@@ -343,11 +341,16 @@ public class TAPRoomModel implements Parcelable {
     @Deprecated
     @JsonIgnore
     public void setGroupParticipants(@Nullable List<TAPUserModel> groupParticipants) {
-        this.participants = groupParticipants;
+        setParticipants(groupParticipants);
     }
 
     public void setParticipants(@Nullable List<TAPUserModel> participants) {
         this.participants = participants;
+        if (null != participants) {
+            setNumOfParticipants(participants.size());
+        } else {
+            setNumOfParticipants(0);
+        }
     }
 
     @Nullable
