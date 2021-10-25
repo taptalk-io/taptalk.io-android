@@ -790,6 +790,9 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void showChatRoomSettingUp() {
+        if (!TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
+            return;
+        }
         activity.runOnUiThread(() -> {
             ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setting_up_grey));
             ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_circle_white));
@@ -810,6 +813,9 @@ public class TapUIRoomListFragment extends Fragment {
     }
 
     private void showChatRoomSetupSuccess() {
+        if (!TAPDataManager.getInstance(instanceKey).checkAccessTokenAvailable()) {
+            return;
+        }
         activity.runOnUiThread(() -> {
             ivSetupChat.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_setup_success_green));
             ivSetupChatLoading.setImageDrawable(getResources().getDrawable(R.drawable.tap_ic_loading_progress_full_circle_red));
@@ -850,6 +856,7 @@ public class TapUIRoomListFragment extends Fragment {
                 if (null == TAPChatManager.getInstance(instanceKey).getActiveUser()) {
                     return;
                 }
+                vm.setFetchingMessageListAndUnread(true);
                 TAPDataManager.getInstance(instanceKey).getMessageRoomListAndUnread(
                         TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), roomListView);
             });
