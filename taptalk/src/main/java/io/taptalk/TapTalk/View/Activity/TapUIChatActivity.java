@@ -3462,23 +3462,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     } else if (!vm.getMessagePointer().containsKey(newID)) {
                         // Insert new message to list and HashMap
                         messageAfterModels.add(message);
-                        TAPMessageModel messageFromPointer = vm.getMessagePointer().get(message.getLocalID());
-                        if (null != messageFromPointer) {
-                            messageFromPointer = messageFromPointer.copyMessageModel();
-                        }
                         vm.addMessagePointer(message);
-                        if ((null == message.getIsRead() || !message.getIsRead()) &&
-                                (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
-                                // Updated 2020/02/10
-                                (null == message.getHidden() || !message.getHidden()) &&
-                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
-                                //(null == message.getIsDeleted() || !message.getIsDeleted()) &&
-                                //(null == messageFromPointer || null == messageFromPointer.getIsDeleted() || !messageFromPointer.getIsDeleted()) &&
-                                !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(message.getMessageID()) &&
-                                !TAPMessageStatusManager.getInstance(instanceKey).getMessagesMarkedAsRead().contains(message.getMessageID())) {
-                            // Add message ID to pending list if new message has not been read or not in mark read queue
-                            unreadMessageIds.add(message.getMessageID());
-                        }
 
                         if ("".equals(vm.getLastUnreadMessageLocalID())
                                 && (smallestUnreadCreated > message.getCreated() || 0L == smallestUnreadCreated)
@@ -3513,6 +3497,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
 
                     if (null == message.getIsRead() || !message.getIsRead()) {
+//                        TAPMessageModel messageFromPointer = vm.getMessagePointer().get(message.getLocalID());
+//                        if (null != messageFromPointer) {
+//                            messageFromPointer = messageFromPointer.copyMessageModel();
+//                        }
+                        if (!TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID()) &&
+                                (null == message.getHidden() || !message.getHidden()) &&
+//                                (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
+//                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
+                                !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(message.getMessageID()) &&
+                                !TAPMessageStatusManager.getInstance(instanceKey).getMessagesMarkedAsRead().contains(message.getMessageID())
+                        ) {
+                            // Add message ID to pending list if new message has not been read or not in mark read queue
+                            unreadMessageIds.add(message.getMessageID());
+                        }
+
                         if (allUnreadHidden != -1 && null != message.getHidden() && message.getHidden()) {
                             allUnreadHidden = 1;
                         } else {
