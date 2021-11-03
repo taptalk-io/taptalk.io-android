@@ -65,7 +65,7 @@ public class TapCoreRoomListManager {
             @Override
             public void onSuccess(TAPGetRoomListResponse response) {
                 if (response.getMessages().size() > 0) {
-                    List<TAPMessageEntity> tempMessage = new ArrayList<>();
+                    List<TAPMessageEntity> messagesToSave = new ArrayList<>();
                     List<TAPMessageModel> deliveredMessages = new ArrayList<>();
                     List<String> userIds = new ArrayList<>();
                     List<TAPUserModel> userModels = new ArrayList<>();
@@ -73,7 +73,7 @@ public class TapCoreRoomListManager {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                             TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
-                            tempMessage.add(entity);
+                            messagesToSave.add(entity);
 
                             if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
                                 deliveredMessages.add(message);
@@ -105,13 +105,9 @@ public class TapCoreRoomListManager {
                         TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
                     }
 
-                    TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
+                    TAPDataManager.getInstance(instanceKey).insertToDatabase(messagesToSave, false, new TAPDatabaseListener() {
                         @Override
                         public void onInsertFinished() {
-                            List<TAPMessageModel> messages = new ArrayList<>();
-                            for (HashMap<String, Object> h : response.getMessages()) {
-                                messages.add(TAPEncryptorManager.getInstance().decryptMessage(h));
-                            }
                             if (null != listener) {
                                 listener.onSuccess("Successfully updated message.");
                             }
@@ -158,7 +154,8 @@ public class TapCoreRoomListManager {
             @Override
             public void onSuccess(TAPGetRoomListResponse response) {
                 if (response.getMessages().size() > 0) {
-                    List<TAPMessageEntity> tempMessage = new ArrayList<>();
+                    List<TAPMessageModel> resultMessages = new ArrayList<>();
+                    List<TAPMessageEntity> messagesToSave = new ArrayList<>();
                     List<TAPMessageModel> deliveredMessages = new ArrayList<>();
                     List<String> userIds = new ArrayList<>();
                     List<TAPUserModel> userModels = new ArrayList<>();
@@ -166,7 +163,8 @@ public class TapCoreRoomListManager {
                         try {
                             TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                             TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
-                            tempMessage.add(entity);
+                            resultMessages.add(message);
+                            messagesToSave.add(entity);
 
                             if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
                                 deliveredMessages.add(message);
@@ -197,15 +195,11 @@ public class TapCoreRoomListManager {
                         TAPDataManager.getInstance(instanceKey).getMultipleUsersByIdFromApi(userIds, getMultipleUserView);
                     }
 
-                    TAPDataManager.getInstance(instanceKey).insertToDatabase(tempMessage, false, new TAPDatabaseListener() {
+                    TAPDataManager.getInstance(instanceKey).insertToDatabase(messagesToSave, false, new TAPDatabaseListener() {
                         @Override
                         public void onInsertFinished() {
-                            List<TAPMessageModel> messages = new ArrayList<>();
-                            for (HashMap<String, Object> h : response.getMessages()) {
-                                messages.add(TAPEncryptorManager.getInstance().decryptMessage(h));
-                            }
                             if (null != listener) {
-                                listener.onSuccess(messages);
+                                listener.onSuccess(resultMessages);
                             }
                         }
 
@@ -260,7 +254,7 @@ public class TapCoreRoomListManager {
                     if (null != unreadMap && null != unreadMap.get(e.getRoomID())) {
                         roomList.setNumberOfUnreadMessages(unreadMap.get(e.getRoomID()));
                     }
-                    else if (null != mentionMap && null != mentionMap.get(e.getRoomID())) {
+                    if (null != mentionMap && null != mentionMap.get(e.getRoomID())) {
                         roomList.setNumberOfUnreadMentions(mentionMap.get(e.getRoomID()));
                     }
                     roomListModel.add(roomList);

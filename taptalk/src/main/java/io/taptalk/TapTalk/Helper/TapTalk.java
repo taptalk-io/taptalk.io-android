@@ -852,6 +852,9 @@ public class TapTalk implements LifecycleObserver {
     public static void handleTapTalkPushNotification(String instanceKey, RemoteMessage remoteMessage) {
         TAPNotificationManager.getInstance(instanceKey).updateNotificationMessageMapWhenAppKilled();
         TAPMessageModel message = getDecryptedMessageFromTapTalkNotificationRemoteMessage(remoteMessage);
+        if (null == message) {
+            return;
+        }
         if (getInstanceKeys().size() > 1) {
             identifyMessageAndShowNotification(instanceKey, message);
         } else {
