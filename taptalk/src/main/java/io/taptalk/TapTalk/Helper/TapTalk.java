@@ -87,6 +87,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_USER_PHOTO_MAX
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MESSAGE_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.CHANNEL_MAX_PARTICIPANTS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.CHAT_MEDIA_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.GROUP_MAX_PARTICIPANTS;
@@ -102,28 +103,30 @@ public class TapTalk implements LifecycleObserver {
     private static final String TAG = TapTalk.class.getSimpleName();
     private static HashMap<String, TapTalk> tapTalkInstances;
     private static ArrayList<String> instanceKeys;
+    private static Thread.UncaughtExceptionHandler defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+    private static Class groupPendingIntentClass = TapUIRoomListActivity.class;
+    private static boolean handleMessageIfAppsCrashing = true;
+
     public static Context appContext;
     public static String mixpanelToken = "";
     public static boolean isForeground;
     public static boolean isLoggingEnabled = false;
-    private static Thread.UncaughtExceptionHandler defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-    private static boolean handleMessageIfAppsCrashing = true;
 
     private String instanceKey = "";
+    private String clientAppName = "";
     private Map<String, String> coreConfigs;
     private Map<String, String> projectConfigs;
     private Map<String, String> customConfigs;
     private List<TapListener> tapListeners = new ArrayList<>();
     private TapTalkScreenOrientation screenOrientation = TapTalkOrientationDefault;
-    private String clientAppName = "";
     private int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
-    private boolean isRefreshTokenExpired, /*isAutoConnectDisabled,*/
-            isAutoContactSyncDisabled;
+    private int imageCompressionQuality;
+    private boolean isRefreshTokenExpired, /*isAutoConnectDisabled,*/ isAutoContactSyncDisabled;
     private boolean listenerInit = false;
+
     public TapTalkImplementationType implementationType;
     public TapTalkSocketConnectionMode socketConnectionMode = TapTalkSocketConnectionMode.ALWAYS_ON;
     public String tapTalkUserAgent = "android";
-    private static Class groupPendingIntentClass = TapUIRoomListActivity.class;
 
     public enum TapTalkEnvironment {
         TapTalkEnvironmentProduction,
@@ -215,6 +218,8 @@ public class TapTalk implements LifecycleObserver {
         }
 
         this.implementationType = type;
+
+        this.imageCompressionQuality = IMAGE_COMPRESSION_QUALITY;
 
         TAPCacheManager.getInstance(appContext).initAllCache();
 
@@ -748,6 +753,30 @@ public class TapTalk implements LifecycleObserver {
             return false;
         }
         return !getTapTalkInstance(instanceKey).isAutoContactSyncDisabled;
+    }
+
+    public static void setImageCompressionQuality(int imageCompressionQuality) {
+        setImageCompressionQuality("", imageCompressionQuality);
+    }
+
+    public static void setImageCompressionQuality(String instanceKey, int imageCompressionQuality) {
+        if (imageCompressionQuality > 100) {
+            getTapTalkInstance(instanceKey).imageCompressionQuality = 100;
+        }
+        else if (imageCompressionQuality < 10) {
+            getTapTalkInstance(instanceKey).imageCompressionQuality = 10;
+        }
+        else {
+            getTapTalkInstance(instanceKey).imageCompressionQuality = imageCompressionQuality;
+        }
+    }
+
+    public static int getImageCompressionQuality() {
+        return getImageCompressionQuality("");
+    }
+
+    public static int getImageCompressionQuality(String instanceKey) {
+        return getTapTalkInstance(instanceKey).imageCompressionQuality;
     }
 
     /**

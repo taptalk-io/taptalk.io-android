@@ -51,7 +51,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_JPEG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MediaType.IMAGE_PNG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
@@ -412,7 +411,7 @@ public class TAPFileDownloadManager {
         Bitmap bitmap;
         bitmap = BitmapFactory.decodeStream(responseBody.byteStream());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
+        bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, TapTalk.getImageCompressionQuality(instanceKey), out);
         //Log.e(TAG, "getBitmapFromResponse: " + (mimeType.equals(IMAGE_PNG) ? "Bitmap.CompressFormat.PNG" : "Bitmap.CompressFormat.JPEG"));
         out.flush();
         out.close();
@@ -485,7 +484,7 @@ public class TAPFileDownloadManager {
 
             try {
                 FileOutputStream out = new FileOutputStream(file);
-                bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, IMAGE_COMPRESSION_QUALITY, out);
+                bitmap.compress(mimeType.equals(IMAGE_PNG) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, TapTalk.getImageCompressionQuality(instanceKey), out);
                 out.flush();
                 out.close();
                 scanFile(context, file, TAPUtils.getFileMimeType(file));

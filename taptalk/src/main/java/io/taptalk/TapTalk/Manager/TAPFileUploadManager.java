@@ -49,7 +49,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ER
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_USER_PHOTO_MAX_FILE_SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_MAX_DIMENSION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_ID;
@@ -856,7 +855,7 @@ public class TAPFileUploadManager {
             }
             bitmap = resizeBitmap(bitmap, imageMaxSize);
             bitmap = fixImageOrientation(bitmap, imageUri);
-            bitmap = compressBitmap(bitmap, mimeType, IMAGE_COMPRESSION_QUALITY);
+            bitmap = compressBitmap(bitmap, mimeType, TapTalk.getImageCompressionQuality(instanceKey));
             bitmapInterface.onBitmapReady(bitmap);
         }).start();
     }
@@ -866,7 +865,7 @@ public class TAPFileUploadManager {
             Bitmap bitmapEdit = bitmap;
             bitmapEdit = resizeBitmap(bitmapEdit, imageMaxSize);
             // TODO: 3 May 2019 MIME TYPE FORCED TO JPEG
-            bitmapEdit = compressBitmap(bitmapEdit, IMAGE_JPEG, IMAGE_COMPRESSION_QUALITY);
+            bitmapEdit = compressBitmap(bitmapEdit, IMAGE_JPEG, TapTalk.getImageCompressionQuality(instanceKey));
             bitmapInterface.onBitmapReady(bitmapEdit);
         }).start();
     }
