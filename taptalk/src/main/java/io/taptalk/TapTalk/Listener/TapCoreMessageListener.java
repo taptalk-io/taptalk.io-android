@@ -20,6 +20,11 @@ public abstract class TapCoreMessageListener implements TapCoreMessageInterface 
     }
 
     @Override
+    public void onMessageDeleted(TAPMessageModel message) {
+
+    }
+
+    @Override
     public void onRequestMessageFileUpload(TAPMessageModel tapMessageModel, Uri fileUri) {
 
     }

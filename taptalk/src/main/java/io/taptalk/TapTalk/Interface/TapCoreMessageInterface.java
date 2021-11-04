@@ -9,5 +9,7 @@ public interface TapCoreMessageInterface {
 
     void onReceiveUpdatedMessage(TAPMessageModel message);
 
+    void onMessageDeleted(TAPMessageModel message);
+
     void onRequestMessageFileUpload(TAPMessageModel tapMessageModel, Uri fileUri);
 }

@@ -123,15 +123,15 @@ public class TapCoreMessageManager {
 
                     @Override
                     public void onReceiveMessageInOtherRoom(TAPMessageModel message) {
-                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
-                            if (null != listener) {
-                                listener.onReceiveNewMessage(message);
-                            }
-                        }
+                        onReceiveMessageInActiveRoom(message);
                     }
 
                     @Override
                     public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
+                        if (null != message &&  null != message.getIsDeleted() && message.getIsDeleted()) {
+                            onDeleteMessageInActiveRoom(message);
+                            return;
+                        }
                         for (TapCoreMessageListener listener : getCoreMessageListeners()) {
                             if (null != listener) {
                                 listener.onReceiveUpdatedMessage(message);
@@ -141,11 +141,21 @@ public class TapCoreMessageManager {
 
                     @Override
                     public void onUpdateMessageInOtherRoom(TAPMessageModel message) {
+                        onUpdateMessageInActiveRoom(message);
+                    }
+
+                    @Override
+                    public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
                         for (TapCoreMessageListener listener : getCoreMessageListeners()) {
                             if (null != listener) {
-                                listener.onReceiveUpdatedMessage(message);
+                                listener.onMessageDeleted(message);
                             }
                         }
+                    }
+
+                    @Override
+                    public void onDeleteMessageInOtherRoom(TAPMessageModel message) {
+                        onDeleteMessageInActiveRoom(message);
                     }
                 };
             }
@@ -304,6 +314,10 @@ public class TapCoreMessageManager {
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendMessage(customMessage, listener);
+    }
+
+    public void deleteMessage(TAPMessageModel message) {
+        TAPDataManager.getInstance(instanceKey).deleteMessagesAPI(message.getRoom().getRoomID(), message.getMessageID(), true);
     }
 
     public void deleteLocalMessage(String localID) {
