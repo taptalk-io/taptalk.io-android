@@ -83,6 +83,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_CODE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_FLAG_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
@@ -894,7 +895,11 @@ public class TAPDataManager {
     }
 
     public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
-        TAPDatabaseManager.getInstance(instanceKey).getRoomMedias(lastTimestamp, roomID, listener);
+        getRoomMedias(lastTimestamp, roomID, MAX_ITEMS_PER_PAGE, listener);
+    }
+
+    public void getRoomMedias(Long lastTimestamp, String roomID, int numberOfItems, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getRoomMedias(lastTimestamp, roomID, numberOfItems, listener);
     }
 
     public void getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {

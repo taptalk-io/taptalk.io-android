@@ -215,9 +215,9 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomMedias(Long lastTimestamp, String roomID, TAPDatabaseListener listener) {
+    public void getRoomMedias(Long lastTimestamp, String roomID, int numberOfItems, TAPDatabaseListener listener) {
         if (null != messageRepository)
-            messageRepository.getRoomMedias(lastTimestamp, roomID, listener);
+            messageRepository.getRoomMedias(lastTimestamp, roomID, numberOfItems, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
