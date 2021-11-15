@@ -1,7 +1,10 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
-apply from: "${rootProject.rootDir}/environment.properties"
+apply plugin: 'kotlin-android-extensions'
+
+if (file("${rootProject.rootDir}/environment.properties").exists()) {
+    apply from: "${rootProject.rootDir}/environment.properties"
+}
 
 android {
     def globalConfig = rootProject.extensions.getByName("ext")
@@ -61,10 +64,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             minifyEnabled true
             zipAlignEnabled true
-            buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${RELEASE_GOOGLE_MAPS_API_KEY}\"")
-            buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${RELEASE_TAPTALK_SDK_APP_KEY_ID}\"")
-            buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${RELEASE_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${RELEASE_TAPTALK_SDK_BASE_URL}\"")
+            if (project.hasProperty('RELEASE_GOOGLE_MAPS_API_KEY')) {
+                buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${RELEASE_GOOGLE_MAPS_API_KEY}\"")
+            } else {
+                buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
+            }
+            if (project.hasProperty('RELEASE_TAPTALK_SDK_APP_KEY_ID')) {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${RELEASE_TAPTALK_SDK_APP_KEY_ID}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
+            }
+            if (project.hasProperty('RELEASE_TAPTALK_SDK_APP_KEY_SECRET')) {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${RELEASE_TAPTALK_SDK_APP_KEY_SECRET}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
+            }
+            if (project.hasProperty('RELEASE_TAPTALK_SDK_BASE_URL')) {
+                buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${RELEASE_TAPTALK_SDK_BASE_URL}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
+            }
         }
         staging {
             signingConfig signingConfigs.debug
@@ -72,10 +91,26 @@ android {
             minifyEnabled false
             applicationIdSuffix '.staging'
             versionNameSuffix '-STAGING'
-            buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${STAGING_GOOGLE_MAPS_API_KEY}\"")
-            buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${STAGING_TAPTALK_SDK_APP_KEY_ID}\"")
-            buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${STAGING_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${STAGING_TAPTALK_SDK_BASE_URL}\"")
+            if (project.hasProperty('STAGING_GOOGLE_MAPS_API_KEY')) {
+                buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${STAGING_GOOGLE_MAPS_API_KEY}\"")
+            } else {
+                buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
+            }
+            if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_ID')) {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${STAGING_TAPTALK_SDK_APP_KEY_ID}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
+            }
+            if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_SECRET')) {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${STAGING_TAPTALK_SDK_APP_KEY_SECRET}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
+            }
+            if (project.hasProperty('STAGING_TAPTALK_SDK_BASE_URL')) {
+                buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${STAGING_TAPTALK_SDK_BASE_URL}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
+            }
         }
         stagingUpload {
             signingConfig signingConfigs.release
@@ -83,10 +118,26 @@ android {
             minifyEnabled false
             applicationIdSuffix '.staging'
             versionNameSuffix '-STAGING'
-            buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${STAGING_GOOGLE_MAPS_API_KEY}\"")
-            buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${STAGING_TAPTALK_SDK_APP_KEY_ID}\"")
-            buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${STAGING_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${STAGING_TAPTALK_SDK_BASE_URL}\"")
+            if (project.hasProperty('STAGING_GOOGLE_MAPS_API_KEY')) {
+                buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${STAGING_GOOGLE_MAPS_API_KEY}\"")
+            } else {
+                buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
+            }
+            if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_ID')) {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${STAGING_TAPTALK_SDK_APP_KEY_ID}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
+            }
+            if (project.hasProperty('STAGING_TAPTALK_SDK_APP_KEY_SECRET')) {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${STAGING_TAPTALK_SDK_APP_KEY_SECRET}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
+            }
+            if (project.hasProperty('STAGING_TAPTALK_SDK_BASE_URL')) {
+                buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${STAGING_TAPTALK_SDK_BASE_URL}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
+            }
         }
         dev {
             signingConfig signingConfigs.debug
@@ -94,10 +145,26 @@ android {
             minifyEnabled false
             applicationIdSuffix '.dev'
             versionNameSuffix '-DEV'
-            buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${DEV_GOOGLE_MAPS_API_KEY}\"")
-            buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${DEV_TAPTALK_SDK_APP_KEY_ID}\"")
-            buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${DEV_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${DEV_TAPTALK_SDK_BASE_URL}\"")
+            if (project.hasProperty('DEV_GOOGLE_MAPS_API_KEY')) {
+                buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${DEV_GOOGLE_MAPS_API_KEY}\"")
+            } else {
+                buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
+            }
+            if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_ID')) {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${DEV_TAPTALK_SDK_APP_KEY_ID}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
+            }
+            if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_SECRET')) {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${DEV_TAPTALK_SDK_APP_KEY_SECRET}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
+            }
+            if (project.hasProperty('DEV_TAPTALK_SDK_BASE_URL')) {
+                buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${DEV_TAPTALK_SDK_BASE_URL}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
+            }
         }
         devUpload {
             signingConfig signingConfigs.release
@@ -105,10 +172,26 @@ android {
             minifyEnabled false
             applicationIdSuffix '.dev'
             versionNameSuffix '-DEV'
-            buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${DEV_GOOGLE_MAPS_API_KEY}\"")
-            buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${DEV_TAPTALK_SDK_APP_KEY_ID}\"")
-            buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${DEV_TAPTALK_SDK_APP_KEY_SECRET}\"")
-            buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${DEV_TAPTALK_SDK_BASE_URL}\"")
+            if (project.hasProperty('DEV_GOOGLE_MAPS_API_KEY')) {
+                buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"${DEV_GOOGLE_MAPS_API_KEY}\"")
+            } else {
+                buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"\"")
+            }
+            if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_ID')) {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"${DEV_TAPTALK_SDK_APP_KEY_ID}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_ID", "\"\"")
+            }
+            if (project.hasProperty('DEV_TAPTALK_SDK_APP_KEY_SECRET')) {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"${DEV_TAPTALK_SDK_APP_KEY_SECRET}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_APP_KEY_SECRET", "\"\"")
+            }
+            if (project.hasProperty('DEV_TAPTALK_SDK_BASE_URL')) {
+                buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"${DEV_TAPTALK_SDK_BASE_URL}\"")
+            } else {
+                buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
+            }
         }
     }
 
