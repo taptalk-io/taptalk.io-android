@@ -640,17 +640,16 @@ public class TAPFileDownloadManager {
     }
 
     public void saveFileMessageUri(String roomID, String fileID, Uri fileUri) {
-        HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
-        if (null != roomUriMap) {
-            roomUriMap.put(fileID, fileUri.toString());
-        } else {
-            HashMap<String, String> hashMap = new HashMap<>();
-            hashMap.put(fileID, fileUri.toString());
-            getFileMessageUriMap().put(roomID, hashMap);
+        if (null == fileUri) {
+            return;
         }
+        saveFileMessageUri(roomID, fileID, fileUri.toString());
     }
 
     public void saveFileMessageUri(String roomID, String fileID, String filePath) {
+        if (null == roomID || roomID.isEmpty() || null == fileID || fileID.isEmpty() || null == filePath || filePath.isEmpty()) {
+            return;
+        }
         HashMap<String, String> roomUriMap = getFileMessageUriMap().get(roomID);
         if (null != roomUriMap) {
             roomUriMap.put(fileID, filePath);
