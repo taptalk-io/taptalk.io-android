@@ -477,7 +477,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             getString(R.string.tap_report_user),
                             R.drawable.tap_ic_flag_black,
                             R.color.tapIconChatProfileMenuReportUserOrGroup,
-                            R.style.tapChatProfileMenuLabelStyle);
+                            R.style.tapChatProfileMenuDestructiveLabelStyle);
                     menuItems.add(menuReport);
                 }
             } else if (vm.getRoom().getType() == TYPE_GROUP &&
@@ -510,7 +510,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             getString(R.string.tap_report_group),
                             R.drawable.tap_ic_flag_black,
                             R.color.tapIconChatProfileMenuReportUserOrGroup,
-                            R.style.tapChatProfileMenuLabelStyle);
+                            R.style.tapChatProfileMenuDestructiveLabelStyle);
                     menuItems.add(menuReport);
                 }
 
@@ -555,7 +555,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                             getString(R.string.tap_report_group),
                             R.drawable.tap_ic_flag_black,
                             R.color.tapIconChatProfileMenuReportUserOrGroup,
-                            R.style.tapChatProfileMenuLabelStyle);
+                            R.style.tapChatProfileMenuDestructiveLabelStyle);
                     menuItems.add(menuReport);
                 }
 
@@ -637,7 +637,7 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         getString(R.string.tap_report_user),
                         R.drawable.tap_ic_flag_black,
                         R.color.tapIconChatProfileMenuReportUserOrGroup,
-                        R.style.tapChatProfileMenuLabelStyle);
+                        R.style.tapChatProfileMenuDestructiveLabelStyle);
                 menuItems.add(menuReport);
             }
         }
