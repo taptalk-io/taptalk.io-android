@@ -16,6 +16,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapUIChatProfileListener;
 import io.taptalk.TapTalk.Listener.TapUIChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
 import io.taptalk.TapTalk.Listener.TapUIRoomListListener;
@@ -59,6 +60,7 @@ public class TapUI {
 
     private List<TapUIRoomListListener> tapUIRoomListListeners;
     private List<TapUIChatRoomListener> tapUIChatRoomListeners;
+    private List<TapUIChatProfileListener> tapUIChatProfileListeners;
     private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
     private HashMap<Integer, LongPressMenuType> longPressMenuMap;
 
@@ -101,6 +103,7 @@ public class TapUI {
     private boolean isAddToContactsButtonInChatRoomHidden;
     private boolean isAddToContactsButtonInChatProfileHidden;
     private boolean isAddContactDisabled;
+    private boolean isReportButtonInChatProfileVisible;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -173,6 +176,25 @@ public class TapUI {
             return;
         }
         getChatRoomListeners().remove(listener);
+    }
+
+    private List<TapUIChatProfileListener> getChatProfileListeners() {
+        return null == tapUIChatProfileListeners ? tapUIChatProfileListeners = new ArrayList<>() : tapUIChatProfileListeners;
+    }
+
+    public void addChatProfileListener(TapUIChatProfileListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getChatProfileListeners().remove(listener);
+        getChatProfileListeners().add(listener);
+    }
+
+    public void removeChatProfileListener(TapUIChatProfileListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getChatProfileListeners().remove(listener);
     }
 
     private List<TapUICustomKeyboardListener> getCustomKeyboardListeners() {
@@ -922,6 +944,20 @@ public class TapUI {
         isAddContactDisabled = !addContactEnabled;
     }
 
+    public boolean isReportButtonInChatProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isReportButtonInChatProfileVisible;
+    }
+
+    public void setReportButtonInChatProfileVisible(boolean reportButtonInChatProfileVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isReportButtonInChatProfileVisible = reportButtonInChatProfileVisible;
+    }
+
     /**
      * ==========================================================================================
      * CUSTOM BUBBLE
@@ -1119,6 +1155,30 @@ public class TapUI {
             }
             if (null != listener) {
                 listener.onTapTalkMessageQuoteTapped(activity, messageModel, userInfo);
+            }
+        }
+    }
+
+    void triggerChatProfileReportUserButtonTapped(Activity activity, TAPRoomModel room, TAPUserModel reportedUser) {
+        if (getChatProfileListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatProfileListener listener : getChatProfileListeners()) {
+            if (null != listener) {
+                listener.onReportUserButtonTapped(activity, room, reportedUser);
+            }
+        }
+    }
+
+    void triggerChatProfileReportGroupButtonTapped(Activity activity, TAPRoomModel room) {
+        if (getChatProfileListeners().isEmpty()) {
+            return;
+        }
+
+        for (TapUIChatProfileListener listener : getChatProfileListeners()) {
+            if (null != listener) {
+                listener.onReportGroupButtonTapped(activity, room);
             }
         }
     }

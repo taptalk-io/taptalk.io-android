@@ -1796,6 +1796,14 @@ public class TAPChatManager {
         TapUI.getInstance(instanceKey).triggerMessageQuoteTapped(activity, messageModel);
     }
 
+    public void triggerChatProfileReportUserButtonTapped(Activity activity, TAPRoomModel room, TAPUserModel user) {
+        TapUI.getInstance(instanceKey).triggerChatProfileReportUserButtonTapped(activity, room, user);
+    }
+
+    public void triggerChatProfileReportGroupButtonTapped(Activity activity, TAPRoomModel room) {
+        TapUI.getInstance(instanceKey).triggerChatProfileReportGroupButtonTapped(activity, room);
+    }
+
     public List<TAPCustomKeyboardItemModel> getCustomKeyboardItems(TAPRoomModel room, TAPUserModel activeUser, TAPUserModel recipientUser) {
         return TapUI.getInstance(instanceKey).getCustomKeyboardItems(room, activeUser, recipientUser);
     }

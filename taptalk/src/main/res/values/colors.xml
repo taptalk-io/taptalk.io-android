@@ -136,6 +136,7 @@
     <color name="tapIconChatProfileMenuNotificationInactive">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuConversationColor">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuBlockUser">@color/tapColorDestructiveIcon</color>
+    <color name="tapIconChatProfileMenuReportUserOrGroup">@color/tapColorDestructiveIcon</color>
     <color name="tapIconChatProfileMenuSearchChat">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuClearChat">@color/tapColorDestructiveIcon</color>
     <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorPrimaryIcon</color>

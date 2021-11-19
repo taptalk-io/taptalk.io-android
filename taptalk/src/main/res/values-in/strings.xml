@@ -19,6 +19,8 @@
     <string name="tap_recent">Riwayat</string>
     <string name="tap_recent_chats">Riwayat Chat</string>
     <string name="tap_register">Daftar</string>
+    <string name="tap_report_group">Laporkan Grup</string>
+    <string name="tap_report_user">Laporkan Pengguna</string>
     <string name="tap_search_chat">Cari Chat</string>
     <string name="tap_search_results">Hasil Pencarian</string>
     <string name="tap_send_message">Kirim Pesan</string>

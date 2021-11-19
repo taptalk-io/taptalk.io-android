@@ -72,6 +72,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.ME
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_PROMOTE_ADMIN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_REMOVE_MEMBER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_REPORT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_ROOM_COLOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_ROOM_SEARCH_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_SEND_MESSAGE;
@@ -468,6 +469,17 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
 //            menuItems.add(2, menuBlock);
 //            menuItems.add(menuClearChat);
+
+                if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible()) {
+                    // Report user
+                    TapChatProfileItemModel menuReport = new TapChatProfileItemModel(
+                            MENU_REPORT,
+                            getString(R.string.tap_report_user),
+                            R.drawable.tap_ic_flag_black,
+                            R.color.tapIconChatProfileMenuReportUserOrGroup,
+                            R.style.tapChatProfileMenuLabelStyle);
+                    menuItems.add(menuReport);
+                }
             } else if (vm.getRoom().getType() == TYPE_GROUP &&
                     null != vm.getRoom().getAdmins() &&
                     vm.getRoom().getAdmins().contains(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
@@ -490,6 +502,17 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         R.color.tapIconGroupProfileMenuEditGroup,
                         R.style.tapChatProfileMenuLabelStyle);
                 menuItems.add(menuEditGroup);
+
+                if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible()) {
+                    // Report group
+                    TapChatProfileItemModel menuReport = new TapChatProfileItemModel(
+                            MENU_REPORT,
+                            getString(R.string.tap_report_group),
+                            R.drawable.tap_ic_flag_black,
+                            R.color.tapIconChatProfileMenuReportUserOrGroup,
+                            R.style.tapChatProfileMenuLabelStyle);
+                    menuItems.add(menuReport);
+                }
 
                 if (null != vm.getRoom().getParticipants() &&
                         1 < vm.getRoom().getParticipants().size()) {
@@ -524,6 +547,17 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         R.color.tapIconGroupProfileMenuViewMembers,
                         R.style.tapChatProfileMenuLabelStyle);
                 menuItems.add(menuViewMembers);
+
+                if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible()) {
+                    // Report group
+                    TapChatProfileItemModel menuReport = new TapChatProfileItemModel(
+                            MENU_REPORT,
+                            getString(R.string.tap_report_group),
+                            R.drawable.tap_ic_flag_black,
+                            R.color.tapIconChatProfileMenuReportUserOrGroup,
+                            R.style.tapChatProfileMenuLabelStyle);
+                    menuItems.add(menuReport);
+                }
 
                 // Exit group
                 TapChatProfileItemModel menuExitGroup = new TapChatProfileItemModel(
@@ -594,6 +628,17 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                         R.color.tapIconGroupMemberProfileMenuRemoveMember,
                         R.style.tapChatProfileMenuDestructiveLabelStyle);
                 menuItems.add(menuRemoveMember);
+            }
+
+            if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible()) {
+                // Report user
+                TapChatProfileItemModel menuReport = new TapChatProfileItemModel(
+                        MENU_REPORT,
+                        getString(R.string.tap_report_user),
+                        R.drawable.tap_ic_flag_black,
+                        R.color.tapIconChatProfileMenuReportUserOrGroup,
+                        R.style.tapChatProfileMenuLabelStyle);
+                menuItems.add(menuReport);
             }
         }
         return menuItems;
@@ -731,6 +776,14 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 .setSecondaryButtonListener(v -> {
                 })
                 .show();
+    }
+
+    private void triggerReportButtonTapped() {
+        if (vm.getRoom().getType() == TYPE_PERSONAL) {
+            TAPChatManager.getInstance(instanceKey).triggerChatProfileReportUserButtonTapped(this, vm.getRoom(), vm.getUserDataFromManager());
+        } else {
+            TAPChatManager.getInstance(instanceKey).triggerChatProfileReportGroupButtonTapped(this, vm.getRoom());
+        }
     }
 
     private void startVideoDownload(TAPMessageModel message) {
@@ -872,6 +925,8 @@ public class TAPChatProfileActivity extends TAPBaseActivity {
                 case MENU_DELETE_GROUP:
                     showDeleteChatRoomDialog();
                     break;
+                case MENU_REPORT:
+                    triggerReportButtonTapped();
             }
         }
 

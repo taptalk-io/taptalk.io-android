@@ -21,6 +21,8 @@
     <string name="tap_recent">Recent</string>
     <string name="tap_recent_chats">Recent Chats</string>
     <string name="tap_register">Register</string>
+    <string name="tap_report_group">Report Group</string>
+    <string name="tap_report_user">Report User</string>
     <string name="tap_search_chat">Search Chat</string>
     <string name="tap_search_results">Search Results</string>
     <string name="tap_send_message">Send Message</string>
