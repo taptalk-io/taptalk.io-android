@@ -784,6 +784,23 @@ public class TapCoreMessageManager {
         });
     }
 
+    public void getUnreadMessagesFromRoom(String roomID, TapCoreGetMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getAllUnreadMessagesFromRoom(roomID,
+            new TAPDatabaseListener<TAPMessageEntity>() {
+                @Override
+                public void onSelectFinished(List<TAPMessageEntity> entities) {
+                    ArrayList<TAPMessageModel> unreadMessages = new ArrayList<>();
+                    if (0 < entities.size()) {
+                        for (TAPMessageEntity entity : entities) {
+                            unreadMessages.add(TAPMessageModel.fromMessageEntity(entity));
+                        }
+                    }
+                    listener.onSuccess(unreadMessages);
+                }
+            }
+        );
+    }
+
     public void getMediaMessagesFromRoom(String roomID, long lastTimestamp, int numberOfItems, TapCoreGetMessageListener listener) {
         TAPDataManager.getInstance(instanceKey).getRoomMedias(lastTimestamp, roomID, numberOfItems, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
