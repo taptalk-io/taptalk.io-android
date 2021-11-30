@@ -587,11 +587,21 @@ public class TapCoreMessageManager {
                         }
 
                         TAPDataManager.getInstance(instanceKey).insertToDatabase(entities, false, new TAPDatabaseListener<TAPMessageEntity>() {
+                            @Override
+                            public void onInsertFinished() {
+                                if (null != listener) {
+                                    listener.onSuccess(messageBeforeModels, response.getHasMore());
+                                }
+                            }
+
+                            @Override
+                            public void onInsertFailed(String errorMessage) {
+                                if (null != listener) {
+                                    listener.onSuccess(messageBeforeModels, response.getHasMore());
+                                }
+                            }
                         });
 
-                        if (null != listener) {
-                            listener.onSuccess(messageBeforeModels, response.getHasMore());
-                        }
                     }
 
                     @Override
@@ -673,11 +683,20 @@ public class TapCoreMessageManager {
                         }
 
                         TAPDataManager.getInstance(instanceKey).insertToDatabase(entities, false, new TAPDatabaseListener<TAPMessageEntity>() {
-                        });
+                            @Override
+                            public void onInsertFinished() {
+                                if (null != listener) {
+                                    listener.onSuccess(messageAfterModels);
+                                }
+                            }
 
-                        if (null != listener) {
-                            listener.onSuccess(messageAfterModels);
-                        }
+                            @Override
+                            public void onInsertFailed(String errorMessage) {
+                                if (null != listener) {
+                                    listener.onSuccess(messageAfterModels);
+                                }
+                            }
+                        });
                     }
 
                     @Override
@@ -764,10 +783,23 @@ public class TapCoreMessageManager {
                                     }
                                     allMessages.addAll(filteredMessages);
                                     newerMessages.addAll(filteredMessages);
-                                    TAPUtils.mergeSort(allMessages, ASCENDING);
-                                    if (null != listener) {
-                                        listener.onGetAllMessagesCompleted(allMessages, olderMessages, newerMessages);
-                                    }
+
+                                    getLocalMessages(roomID, new TapCoreGetMessageListener() {
+                                        @Override
+                                        public void onSuccess(List<TAPMessageModel> messages) {
+                                            if (null != listener) {
+                                                listener.onGetAllMessagesCompleted(messages, olderMessages, newerMessages);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(String errorCode, String errorMessage) {
+                                            TAPUtils.mergeSort(allMessages, ASCENDING);
+                                            if (null != listener) {
+                                                listener.onGetAllMessagesCompleted(allMessages, olderMessages, newerMessages);
+                                            }
+                                        }
+                                    });
                                 }
                             });
                         }
