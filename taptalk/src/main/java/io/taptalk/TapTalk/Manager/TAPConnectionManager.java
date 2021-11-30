@@ -194,7 +194,7 @@ public class TAPConnectionManager {
     }
 
     public void send(String messageString) {
-        if (webSocketClient.isOpen()) {
+        if (webSocketClient != null && webSocketClient.isOpen()) {
             webSocketClient.send(messageString.getBytes(Charset.forName("UTF-8")));
         }
     }
@@ -241,7 +241,9 @@ public class TAPConnectionManager {
         if (CONNECTED == this.connectionStatus || CONNECTING == this.connectionStatus) {
             try {
                 this.connectionStatus = connectionStatus == NOT_CONNECTED ? connectionStatus : DISCONNECTED;
-                webSocketClient.close();
+                if (webSocketClient != null) {
+                    webSocketClient.close();
+                }
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             }
@@ -256,7 +258,9 @@ public class TAPConnectionManager {
         if (CONNECTED == connectionStatus || CONNECTING == connectionStatus) {
             try {
                 connectionStatus = DISCONNECTED;
-                webSocketClient.close(code);
+                if (webSocketClient != null) {
+                    webSocketClient.close(code);
+                }
             } catch (IllegalStateException e) {
                 e.printStackTrace();
             }
