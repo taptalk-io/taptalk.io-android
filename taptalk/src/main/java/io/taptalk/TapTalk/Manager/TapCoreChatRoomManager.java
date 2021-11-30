@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.Keep;
 
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -361,36 +363,32 @@ public class TapCoreChatRoomManager {
             }
             return;
         }
-        TAPRoomModel roomModel = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(groupRoomID);
-        if (null == roomModel) {
-            TAPDataManager.getInstance(instanceKey).getChatRoomData(groupRoomID, new TAPDefaultDataView<TAPCreateRoomResponse>() {
-                @Override
-                public void onSuccess(TAPCreateRoomResponse response) {
-                    TAPRoomModel room = TAPGroupManager.Companion.getInstance(instanceKey).updateGroupDataFromResponse(response);
-                    if (null != listener) {
-                        listener.onSuccess(room);
-                    }
+        TAPDataManager.getInstance(instanceKey).getChatRoomData(groupRoomID, new TAPDefaultDataView<TAPCreateRoomResponse>() {
+            @Override
+            public void onSuccess(TAPCreateRoomResponse response) {
+                TAPRoomModel room = TAPGroupManager.Companion.getInstance(instanceKey).updateGroupDataFromResponse(response);
+                if (null != listener) {
+                    listener.onSuccess(room);
                 }
+            }
 
-                @Override
-                public void onError(TAPErrorModel error) {
-                    if (null != listener) {
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    TAPRoomModel roomModel = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(groupRoomID);
+                    if (null != roomModel) {
+                        listener.onSuccess(roomModel);
+                    } else {
                         listener.onError(error.getCode(), error.getMessage());
                     }
                 }
-
-                @Override
-                public void onError(String errorMessage) {
-                    if (null != listener) {
-                        listener.onError(ERROR_CODE_OTHERS, errorMessage);
-                    }
-                }
-            });
-        } else {
-            if (null != listener) {
-                listener.onSuccess(roomModel);
             }
-        }
+
+            @Override
+            public void onError(String errorMessage) {
+                onError(new TAPErrorModel(ERROR_CODE_OTHERS, errorMessage, ""));
+            }
+        });
     }
 
     public void getChatRoomByXcRoomID(String xcRoomID, TapCoreGetRoomListener listener) {
