@@ -430,6 +430,30 @@ public class TapCoreChatRoomManager {
         }
     }
 
+    public void deleteLocalGroupChatRoom(String roomID, TapCommonListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+        TAPOldDataManager.getInstance(instanceKey).cleanRoomPhysicalData(roomID, new TAPDatabaseListener() {
+            @Override
+            public void onDeleteFinished() {
+                TAPDataManager.getInstance(instanceKey).deleteMessageByRoomId(roomID, new TAPDatabaseListener() {
+                    @Override
+                    public void onDeleteFinished() {
+                        TAPGroupManager.Companion.getInstance(instanceKey).removeGroupData(roomID);
+                        TAPGroupManager.Companion.getInstance(instanceKey).setRefreshRoomList(true);
+                        if (null != listener) {
+                            listener.onSuccess(SUCCESS_MESSAGE_DELETE_GROUP);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     public void deleteGroupChatRoom(TAPRoomModel groupChatRoomModel, TapCommonListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
@@ -441,21 +465,7 @@ public class TapCoreChatRoomManager {
             @Override
             public void onSuccess(TAPCommonResponse response) {
                 if (response.getSuccess()) {
-                    TAPOldDataManager.getInstance(instanceKey).cleanRoomPhysicalData(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
-                        @Override
-                        public void onDeleteFinished() {
-                            TAPDataManager.getInstance(instanceKey).deleteMessageByRoomId(groupChatRoomModel.getRoomID(), new TAPDatabaseListener() {
-                                @Override
-                                public void onDeleteFinished() {
-                                    TAPGroupManager.Companion.getInstance(instanceKey).removeGroupData(groupChatRoomModel.getRoomID());
-                                    TAPGroupManager.Companion.getInstance(instanceKey).setRefreshRoomList(true);
-                                    if (null != listener) {
-                                        listener.onSuccess(SUCCESS_MESSAGE_DELETE_GROUP);
-                                    }
-                                }
-                            });
-                        }
-                    });
+                    deleteLocalGroupChatRoom(groupChatRoomModel.getRoomID(), listener);
                 } else {
                     if (null != listener) {
                         listener.onError(ERROR_CODE_GROUP_DELETED, ERROR_MESSAGE_GROUP_DELETED);
