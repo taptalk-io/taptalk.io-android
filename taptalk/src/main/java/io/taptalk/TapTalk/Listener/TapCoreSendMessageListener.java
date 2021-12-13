@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Listener;
 
 import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
 
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -19,7 +20,7 @@ public abstract class TapCoreSendMessageListener implements TapSendMessageInterf
     }
 
     @Override
-    public void onError(String errorCode, String errorMessage) {
+    public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
 
     }
 

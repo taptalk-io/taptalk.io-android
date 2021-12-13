@@ -551,7 +551,7 @@ public class TAPChatManager {
 
         if (null == filePath || filePath.isEmpty()) {
             if (null != listener) {
-                listener.onError(ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve file path from provided Uri.");
+                listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve file path from provided Uri.");
             }
             return null;
         }
@@ -603,7 +603,7 @@ public class TAPChatManager {
         } catch (Exception e) {
             e.printStackTrace();
             if (null != listener) {
-                listener.onError(ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve file data from provided Uri.");
+                listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve file data from provided Uri.");
             }
             return null;
         }
@@ -616,7 +616,7 @@ public class TAPChatManager {
                 ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize()
         ) {
             if (null != listener) {
-                listener.onError(ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
+                listener.onError(messageModel, ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
             }
             return;
         }
@@ -841,7 +841,7 @@ public class TAPChatManager {
         } catch (Exception e) {
             e.printStackTrace();
             if (null != listener) {
-                listener.onError(ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve video data from provided Uri.");
+                listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve video data from provided Uri.");
             }
             return null;
         }
@@ -871,7 +871,7 @@ public class TAPChatManager {
 
         // Check if caption length exceeds limit
         if (caption.length() > MAX_CAPTION_LENGTH) {
-            listener.onError(ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, MAX_CAPTION_LENGTH));
+            listener.onError(messageModel, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, MAX_CAPTION_LENGTH));
             return;
         }
 
@@ -899,13 +899,15 @@ public class TAPChatManager {
 
         // Check if caption length exceeds limit
         if (caption.length() > MAX_CAPTION_LENGTH) {
-            listener.onError(ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, MAX_CAPTION_LENGTH));
+            listener.onError(messageModel, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, MAX_CAPTION_LENGTH));
             return;
         }
         // Check if file size exceeds limit
         if (null != messageModel.getData() && null != messageModel.getData().get(SIZE) &&
                 ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize()) {
-            listener.onError(ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
+            if (null != listener) {
+                listener.onError(messageModel, ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
+            }
             return;
         }
 
@@ -1335,7 +1337,7 @@ public class TAPChatManager {
             }
         } catch (Exception e) {
             if (sendMessageListeners.containsKey(messageModel.getLocalID())) {
-                sendMessageListeners.get(messageModel.getLocalID()).onError(ERROR_CODE_OTHERS, e.getMessage());
+                sendMessageListeners.get(messageModel.getLocalID()).onError(messageModel, ERROR_CODE_OTHERS, e.getMessage());
                 sendMessageListeners.remove(messageModel.getLocalID());
             }
         }

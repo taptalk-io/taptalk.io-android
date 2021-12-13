@@ -501,13 +501,13 @@ public class TapCoreMessageManager {
     public void sendProductMessage(List<HashMap<String, String>> products, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
-                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+                listener.onError(null, ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
             return;
         }
         if (null == products || products.size() == 0) {
             if (null != listener) {
-                listener.onError(ERROR_CODE_PRODUCT_EMPTY, ERROR_MESSAGE_PRODUCT_EMPTY);
+                listener.onError(null, ERROR_CODE_PRODUCT_EMPTY, ERROR_MESSAGE_PRODUCT_EMPTY);
             }
             return;
         }

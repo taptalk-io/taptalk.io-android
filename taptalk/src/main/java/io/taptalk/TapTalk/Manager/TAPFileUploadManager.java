@@ -317,7 +317,7 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadLocalID, messageModel.getLocalID());
             intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_data_empty));
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
             return;
         }
 
@@ -332,7 +332,7 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadLocalID, messageModel.getLocalID());
             intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_uri_empty));
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
             return;
         }
 
@@ -364,7 +364,7 @@ public class TAPFileUploadManager {
                 intent.putExtra(UploadLocalID, messageModel.getLocalID());
                 intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_uri_empty));
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+                triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
                 return;
             }
 
@@ -394,7 +394,7 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadLocalID, messageModel.getLocalID());
             intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_data_empty));
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
             return;
         }
 
@@ -428,7 +428,7 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadLocalID, messageModel.getLocalID());
             intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_uri_empty));
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
         }
     }
 
@@ -437,7 +437,7 @@ public class TAPFileUploadManager {
                                                TAPDataImageModel imageData, Bitmap bitmap,
                                                String thumbBase64) {
         if (null == bitmap) {
-            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_IMAGE_UNAVAILABLE, ERROR_MESSAGE_IMAGE_UNAVAILABLE);
+            triggerSendMessageError(messageModel, ERROR_CODE_IMAGE_UNAVAILABLE, ERROR_MESSAGE_IMAGE_UNAVAILABLE);
             return;
         }
         String mimeType = TAPUtils.getImageMimeType(context, imageUri);
@@ -456,7 +456,7 @@ public class TAPFileUploadManager {
 
         // Check if upload is cancelled
         if (isUploadQueueEmpty(roomID)) {
-            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_UPLOAD_CANCELLED, ERROR_MESSAGE_UPLOAD_CANCELLED);
+            triggerSendMessageError(messageModel, ERROR_CODE_UPLOAD_CANCELLED, ERROR_MESSAGE_UPLOAD_CANCELLED);
             return;
         } else if (0 < getUploadQueue(roomID).size() &&
                 !getUploadQueue(roomID).get(0).getLocalID().equals(messageModel.getLocalID())) {
@@ -481,7 +481,7 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadLocalID, messageModel.getLocalID());
             intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_data_empty));
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
             return;
         }
 
@@ -504,7 +504,7 @@ public class TAPFileUploadManager {
             intent.putExtra(UploadLocalID, messageModel.getLocalID());
             intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_uri_empty));
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+            triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
             return;
         }
 
@@ -516,7 +516,7 @@ public class TAPFileUploadManager {
 
         // Check if upload is cancelled
         if (isUploadQueueEmpty(roomID)) {
-            triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_UPLOAD_CANCELLED, ERROR_MESSAGE_UPLOAD_CANCELLED);
+            triggerSendMessageError(messageModel, ERROR_CODE_UPLOAD_CANCELLED, ERROR_MESSAGE_UPLOAD_CANCELLED);
             return;
         } else if (0 < getUploadQueue(roomID).size() &&
                 !getUploadQueue(roomID).get(0).getLocalID().equals(messageModel.getLocalID())) {
@@ -542,7 +542,7 @@ public class TAPFileUploadManager {
                 intent.putExtra(UploadLocalID, messageModel.getLocalID());
                 intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_data_empty));
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+                triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
                 return;
             }
 
@@ -557,7 +557,7 @@ public class TAPFileUploadManager {
                 intent.putExtra(UploadLocalID, messageModel.getLocalID());
                 intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_uri_not_found));
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+                triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
                 return;
             }
 
@@ -570,7 +570,7 @@ public class TAPFileUploadManager {
                 intent.putExtra(UploadLocalID, messageModel.getLocalID());
                 intent.putExtra(UploadFailedErrorMessage, context.getString(R.string.tap_error_message_uri_not_found));
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
+                triggerSendMessageError(messageModel, ERROR_CODE_URI_NOT_FOUND, ERROR_MESSAGE_URI_NOT_FOUND);
                 return;
             }
 
@@ -578,7 +578,7 @@ public class TAPFileUploadManager {
 
             // Check if upload is cancelled
             if (isUploadQueueEmpty(roomID)) {
-                triggerSendMessageError(messageModel.getLocalID(), ERROR_CODE_UPLOAD_CANCELLED, ERROR_MESSAGE_UPLOAD_CANCELLED);
+                triggerSendMessageError(messageModel, ERROR_CODE_UPLOAD_CANCELLED, ERROR_MESSAGE_UPLOAD_CANCELLED);
                 return;
             } else if (0 < getUploadQueue(roomID).size() &&
                     !getUploadQueue(roomID).get(0).getLocalID().equals(messageModel.getLocalID())) {
@@ -642,7 +642,7 @@ public class TAPFileUploadManager {
                     intent.putExtra(UploadLocalID, localID);
                     intent.putExtra(UploadFailedErrorMessage, error.getMessage());
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    triggerSendMessageError(localID, error.getCode(), error.getMessage());
+                    triggerSendMessageError(messageModel, error.getCode(), error.getMessage());
                 }).start();
             }
 
@@ -658,7 +658,7 @@ public class TAPFileUploadManager {
                     intent.putExtra(UploadLocalID, localID);
                     intent.putExtra(UploadFailedErrorMessage, errorMessage);
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    triggerSendMessageError(localID, ERROR_CODE_OTHERS, errorMessage);
+                    triggerSendMessageError(messageModel, ERROR_CODE_OTHERS, errorMessage);
                 }).start();
             }
         };
@@ -727,7 +727,7 @@ public class TAPFileUploadManager {
                 intent.putExtra(UploadLocalID, localID);
                 intent.putExtra(UploadFailedErrorMessage, error.getMessage());
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(localID, error.getCode(), error.getMessage());
+                triggerSendMessageError(messageModel, error.getCode(), error.getMessage());
             }
 
             @Override
@@ -737,7 +737,7 @@ public class TAPFileUploadManager {
                 intent.putExtra(UploadLocalID, localID);
                 intent.putExtra(UploadFailedErrorMessage, errorMessage);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(localID, ERROR_CODE_OTHERS, errorMessage);
+                triggerSendMessageError(messageModel, ERROR_CODE_OTHERS, errorMessage);
             }
         };
 
@@ -795,7 +795,7 @@ public class TAPFileUploadManager {
                 intent.putExtra(UploadLocalID, localID);
                 intent.putExtra(UploadFailedErrorMessage, error.getMessage());
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(localID, error.getCode(), error.getMessage());
+                triggerSendMessageError(messageModel, error.getCode(), error.getMessage());
             }
 
             @Override
@@ -805,7 +805,7 @@ public class TAPFileUploadManager {
                 intent.putExtra(UploadLocalID, localID);
                 intent.putExtra(UploadFailedErrorMessage, errorMessage);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(localID, ERROR_CODE_OTHERS, errorMessage);
+                triggerSendMessageError(messageModel, ERROR_CODE_OTHERS, errorMessage);
             }
         };
 
@@ -827,10 +827,10 @@ public class TAPFileUploadManager {
         }
     }
 
-    private void triggerSendMessageError(String localID, String errorCode, String errorMessage) {
-        if (null != getSendMessageListeners().get(localID)) {
-            getSendMessageListeners().get(localID).onError(errorCode, errorMessage);
-            getSendMessageListeners().remove(localID);
+    private void triggerSendMessageError(TAPMessageModel message, String errorCode, String errorMessage) {
+        if (null != getSendMessageListeners().get(message.getLocalID())) {
+            getSendMessageListeners().get(message.getLocalID()).onError(message, errorCode, errorMessage);
+            getSendMessageListeners().remove(message.getLocalID());
         }
     }
 
