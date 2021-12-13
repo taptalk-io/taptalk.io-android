@@ -17,11 +17,17 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.ROOM_ITEM;
+import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
 
 @Keep
 public class TapCoreContactManager {
@@ -265,6 +271,17 @@ public class TapCoreContactManager {
             public void onError(String errorMessage) {
                 if (null != listener) {
                     listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void searchLocalContactByName(String keyword, TapCoreGetMultipleContactListener listener) {
+        TAPDataManager.getInstance(instanceKey).searchContactsByName(keyword, new TAPDatabaseListener<TAPUserModel>() {
+            @Override
+            public void onSelectFinished(List<TAPUserModel> entities) {
+                if (null != listener) {
+                    listener.onSuccess(entities);
                 }
             }
         });

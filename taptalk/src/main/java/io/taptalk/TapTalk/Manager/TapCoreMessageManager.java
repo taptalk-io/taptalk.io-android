@@ -26,6 +26,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
+import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.MESSAGE_ITEM;
+import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -68,7 +70,9 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
 
 @Keep
 public class TapCoreMessageManager {
@@ -842,6 +846,23 @@ public class TapCoreMessageManager {
                     mediaMessages.add(TAPMessageModel.fromMessageEntity(entity));
                 }
                 listener.onSuccess(mediaMessages);
+            }
+        });
+    }
+
+    public void searchLocalMessageWithKeyword(String keyword, TapCoreGetMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).searchAllMessagesFromDatabase(keyword, new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                ArrayList<TAPMessageModel> searchResultArray = new ArrayList<>();
+                if (entities.size() > 0) {
+                    for (TAPMessageEntity entity : entities) {
+                        searchResultArray.add(TAPMessageModel.fromMessageEntity(entity));
+                    }
+                }
+                if (null != listener) {
+                    listener.onSuccess(searchResultArray);
+                }
             }
         });
     }

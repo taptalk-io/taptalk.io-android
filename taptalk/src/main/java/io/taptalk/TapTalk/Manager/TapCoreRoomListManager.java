@@ -9,23 +9,33 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
+import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.ROOM_ITEM;
+import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
+
+import android.util.Log;
 
 @Keep
 public class TapCoreRoomListManager {
@@ -420,6 +430,42 @@ public class TapCoreRoomListManager {
             public void onSelectFailed(String errorMessage) {
                 if (null != listener) {
                     listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void searchLocalRoomListWithKeyword(String keyword, TapCoreGetRoomListListener listener) {
+        TAPDataManager.getInstance(instanceKey).searchAllRoomsFromDatabase(keyword, new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
+                ArrayList<TAPRoomListModel> searchResultArray = new ArrayList<>();
+                if (entities.size() > 0) {
+                    for (TAPMessageEntity entity : entities) {
+                        String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+                        // Exclude active user's own room
+                        if (!entity.getRoomID().equals(TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId))) {
+                            TAPRoomListModel result = TAPRoomListModel.buildWithLastMessage(TAPMessageModel.fromMessageEntity(entity));
+                            Integer unreadCount = unreadMap.get(entity.getRoomID());
+                            if (null != unreadCount) {
+                                result.setNumberOfUnreadMessages(unreadCount);
+                            }
+                            Integer mentionCount = mentionMap.get(entity.getRoomID());
+                            if (null != mentionCount) {
+                                result.setNumberOfUnreadMentions(mentionCount);
+                            }
+                            if (result.getLastMessage().getRoom().getType() != TYPE_PERSONAL) {
+                                TAPRoomModel room = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(result.getLastMessage().getRoom().getRoomID());
+                                if (null != room) {
+                                    result.getLastMessage().setRoom(room);
+                                }
+                            }
+                            searchResultArray.add(result);
+                        }
+                    }
+                }
+                if (null != listener) {
+                    listener.onSuccess(searchResultArray);
                 }
             }
         });
