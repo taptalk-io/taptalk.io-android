@@ -153,7 +153,7 @@ public class TapCoreRoomListManager {
         });
     }
 
-    private void fetchNewMessage(TapCoreGetMessageListener listener) {
+    public void fetchNewMessage(TapCoreGetMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
