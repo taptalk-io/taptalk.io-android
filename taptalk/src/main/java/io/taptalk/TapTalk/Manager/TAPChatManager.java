@@ -611,12 +611,21 @@ public class TAPChatManager {
 
     private void addFileMessageToUploadQueue(Context context, TAPMessageModel messageModel, TAPRoomModel roomModel, TapSendMessageInterface listener) {
         // Check if file size exceeds limit
+        long maxFileUploadSize = TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize();
         if (null != messageModel.getData() &&
                 null != messageModel.getData().get(SIZE) &&
-                ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize()
+                ((Number) messageModel.getData().get(SIZE)).longValue() > maxFileUploadSize
         ) {
             if (null != listener) {
-                listener.onError(messageModel, ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
+                listener.onError(
+                        messageModel,
+                        ERROR_CODE_EXCEEDED_MAX_SIZE,
+                        String.format(
+                                Locale.getDefault(),
+                                ERROR_MESSAGE_EXCEEDED_MAX_SIZE,
+                                TAPUtils.getStringSizeLengthFile(maxFileUploadSize)
+                        )
+                );
             }
             return;
         }
@@ -903,10 +912,19 @@ public class TAPChatManager {
             return;
         }
         // Check if file size exceeds limit
+        long maxFileUploadSize = TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize();
         if (null != messageModel.getData() && null != messageModel.getData().get(SIZE) &&
-                ((Number) messageModel.getData().get(SIZE)).longValue() > TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize()) {
+                ((Number) messageModel.getData().get(SIZE)).longValue() > maxFileUploadSize) {
             if (null != listener) {
-                listener.onError(messageModel, ERROR_CODE_EXCEEDED_MAX_SIZE, ERROR_MESSAGE_EXCEEDED_MAX_SIZE);
+                listener.onError(
+                        messageModel,
+                        ERROR_CODE_EXCEEDED_MAX_SIZE,
+                        String.format(
+                                Locale.getDefault(),
+                                ERROR_MESSAGE_EXCEEDED_MAX_SIZE,
+                                TAPUtils.getStringSizeLengthFile(maxFileUploadSize)
+                        )
+                );
             }
             return;
         }

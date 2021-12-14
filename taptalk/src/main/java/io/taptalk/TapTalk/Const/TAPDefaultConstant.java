@@ -269,7 +269,7 @@ public class TAPDefaultConstant {
         public static final String ERROR_MESSAGE_GROUP_DELETED = "The group has already been deleted";
         public static final String ERROR_MESSAGE_ADMIN_REQUIRED = "Please assign another admin before leaving";
         public static final String ERROR_MESSAGE_URI_NOT_FOUND = "Uri is required in message data";
-        public static final String ERROR_MESSAGE_EXCEEDED_MAX_SIZE = "Selected file exceeded %d MB upload limit";
+        public static final String ERROR_MESSAGE_EXCEEDED_MAX_SIZE = "Selected file exceeded %s upload limit";
         public static final String ERROR_MESSAGE_UPLOAD_CANCELLED = "Upload was cancelled";
         public static final String ERROR_MESSAGE_DOWNLOAD_CANCELLED = "Download was cancelled";
         public static final String ERROR_MESSAGE_IMAGE_UNAVAILABLE = "Could not process compressed image";
