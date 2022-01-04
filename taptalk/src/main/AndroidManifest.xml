@@ -30,6 +30,7 @@
 
         <receiver
             android:name="io.taptalk.TapTalk.Manager.TAPNetworkStateManager$TapNetworkBroadcastReceiver"
+            android:exported="false"
             android:label="NetworkChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />

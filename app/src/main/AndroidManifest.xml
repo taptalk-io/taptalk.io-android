@@ -34,7 +34,9 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service android:name="io.taptalk.TapTalk.Firebase.TapFirebaseMessagingService">
+        <service
+            android:name="io.taptalk.TapTalk.Firebase.TapFirebaseMessagingService"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -42,6 +44,7 @@
 
         <activity
             android:name="io.moselo.SampleApps.Activity.MainActivity"
+            android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -68,6 +71,7 @@
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPShareOptionsActivity"
             android:clearTaskOnLaunch="true"
+            android:exported="true"
             android:noHistory="true"
             android:screenOrientation="portrait">
             <intent-filter>

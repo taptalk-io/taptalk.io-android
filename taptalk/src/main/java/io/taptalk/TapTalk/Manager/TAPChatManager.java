@@ -1480,19 +1480,20 @@ public class TAPChatManager {
             // Remove all room messages if user leaves/deletes a chat room
             new Thread(() -> {
                 for (Map.Entry<String, TAPMessageModel> entry : incomingMessages.entrySet()) {
-                    if (entry.getValue().getUser().getUserID().equals(newMessage.getUser().getUserID())) {
+                    if (entry.getValue().getRoom().getRoomID().equals(newMessage.getRoom().getRoomID())) {
                         incomingMessages.remove(entry.getKey());
                     }
                 }
                 for (TAPMessageEntity message : saveMessages) {
-                    if (message.getRoomID().equals(newMessage.getUser().getUserID())) {
+                    if (message.getRoomID().equals(newMessage.getRoom().getRoomID())) {
                         saveMessages.remove(message);
                     }
                 }
             }).start();
         } else {
             // Insert decrypted message to database
-            incomingMessages.put(newMessage.getLocalID(), newMessage);
+//            incomingMessages.put(newMessage.getLocalID(), newMessage);
+            TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(newMessage));
         }
 
         // Query Unread Message
