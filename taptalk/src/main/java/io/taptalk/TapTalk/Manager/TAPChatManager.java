@@ -676,22 +676,22 @@ public class TAPChatManager {
     }
 
     public void sendFileMessage(Context context, TAPRoomModel roomModel, Uri uri, TapSendMessageInterface listener) {
-        new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, roomModel, uri, listener)).start();
+        /*new Thread(() -> */createFileMessageModelAndAddToUploadQueue(context, roomModel, uri, listener)/*).start()*/;
     }
 
     public void sendFileMessage(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
-        new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, roomModel, file, listener)).start();
+        /*new Thread(() -> */createFileMessageModelAndAddToUploadQueue(context, roomModel, file, listener)/*).start()*/;
     }
 
     public void sendFileMessage(Context context, TAPRoomModel roomModel, File file) {
-        new Thread(() -> createFileMessageModelAndAddToUploadQueue(context, roomModel, file)).start();
+        /*new Thread(() -> */createFileMessageModelAndAddToUploadQueue(context, roomModel, file)/*).start()*/;
     }
 
     public void sendFileMessage(Context context, TAPMessageModel fileModel) {
-        new Thread(() -> {
+        //new Thread(() -> {
             addUploadingMessageToHashMap(fileModel);
             TAPFileUploadManager.getInstance(instanceKey).addUploadQueue(context, fileModel.getRoom().getRoomID(), fileModel);
-        }).start();
+        //}).start();
     }
 
     private String generateFileMessageBody(String fileName) {
@@ -1036,7 +1036,6 @@ public class TAPChatManager {
 
         TAPFileUploadManager.getInstance(instanceKey).addUploadQueue(context, room.getRoomID(), messageModel);
     }
-
     public void sendImageOrVideoMessage(Context context, TAPRoomModel room, ArrayList<TAPMediaPreviewModel> medias) {
         new Thread(() -> {
             checkAndSendForwardedMessage(room);
@@ -1051,23 +1050,23 @@ public class TAPChatManager {
     }
 
     public void sendImageMessage(Context context, TAPRoomModel room, Uri imageUri, String caption) {
-        new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, room, imageUri, caption)).start();
+        /*new Thread(() -> */createImageMessageModelAndAddToUploadQueue(context, room, imageUri, caption)/*).start()*/;
     }
 
     public void sendImageMessage(Context context, TAPRoomModel room, Bitmap bitmap, String caption) {
-        new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, room, bitmap, caption)).start();
+        /*new Thread(() -> */createImageMessageModelAndAddToUploadQueue(context, room, bitmap, caption)/*).start()*/;
     }
 
     public void sendImageMessage(Context context, TAPRoomModel roomModel, Uri imageUri, String caption, TapSendMessageInterface listener) {
-        new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomModel, imageUri, caption, listener)).start();
+        /*new Thread(() -> */createImageMessageModelAndAddToUploadQueue(context, roomModel, imageUri, caption, listener)/*).start()*/;
     }
 
     public void sendImageMessage(Context context, TAPRoomModel roomModel, Bitmap bitmap, String caption, TapSendMessageInterface listener) {
-        new Thread(() -> createImageMessageModelAndAddToUploadQueue(context, roomModel, bitmap, caption, listener)).start();
+        /*new Thread(() -> */createImageMessageModelAndAddToUploadQueue(context, roomModel, bitmap, caption, listener)/*).start()*/;
     }
 
     public void sendVideoMessage(Context context, TAPRoomModel roomModel, Uri videoUri, String caption, TapSendMessageInterface listener) {
-        new Thread(() -> createVideoMessageModelAndAddToUploadQueue(context, roomModel, videoUri, caption, listener)).start();
+        /*new Thread(() -> */createVideoMessageModelAndAddToUploadQueue(context, roomModel, videoUri, caption, listener)/*).start()*/;
     }
 
     public void resendMessage(TAPMessageModel failedMessageModel) {
