@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
@@ -30,6 +31,7 @@ import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapSendMessageInterface;
+import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -102,7 +104,30 @@ public class TAPFileUploadManager {
 
     public TAPFileUploadManager(String instanceKey) {
         this.instanceKey = instanceKey;
+        TAPConnectionManager.getInstance(instanceKey).addSocketListener(socketListener);
     }
+
+    private TapTalkSocketInterface socketListener = new TapTalkSocketInterface() {
+        @Override
+        public void onSocketConnected() {
+            checkAndUploadPendingMessages();
+        }
+
+        @Override
+        public void onSocketDisconnected() {
+
+        }
+
+        @Override
+        public void onSocketConnecting() {
+
+        }
+
+        @Override
+        public void onSocketError() {
+
+        }
+    };
 
     public Long getMaxFileUploadSize() {
         String maxFileSize = TapTalk.getCoreConfigs(instanceKey).get(CHAT_MEDIA_MAX_FILE_SIZE);
@@ -305,6 +330,12 @@ public class TAPFileUploadManager {
             // Queue is empty
             return;
         }
+
+        if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext)) {
+            // No internet connection
+            return;
+        }
+
         TAPMessageModel messageModel = getUploadQueue(roomID).get(0);
         HashMap<String, Object> messageData = messageModel.getData();
 
@@ -383,6 +414,12 @@ public class TAPFileUploadManager {
             // Queue is empty
             return;
         }
+
+        if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext)) {
+            // No internet connection
+            return;
+        }
+
         TAPMessageModel messageModel = getUploadQueue(roomID).get(0);
 
         if (null == messageModel.getData()) {
@@ -471,6 +508,12 @@ public class TAPFileUploadManager {
             // Queue is empty
             return;
         }
+
+        if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext)) {
+            // No internet connection
+            return;
+        }
+
         TAPMessageModel messageModel = getUploadQueue(roomID).get(0);
 
         if (null == messageModel.getData()) {
@@ -532,6 +575,12 @@ public class TAPFileUploadManager {
                 // Queue is empty
                 return;
             }
+
+            if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext)) {
+                // No internet connection
+                return;
+            }
+
             TAPMessageModel messageModel = getUploadQueue(roomID).get(0);
 
             if (null == messageModel.getData()) {
@@ -632,34 +681,17 @@ public class TAPFileUploadManager {
 
             @Override
             public void onError(TAPErrorModel error, String localID) {
-                new Thread(() -> {
-                    Uri imageUri = Uri.parse(imageData.getFileUri());
-                    if (null != messageModel.getData() && null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
-                        messageModel.getData().put(FILE_URI, TAPFileUtils.getInstance().getFilePath(context, imageUri));
-                    }
-                    messageUploadFailed(context, messageModel, roomID);
-                    Intent intent = new Intent(UploadFailed);
-                    intent.putExtra(UploadLocalID, localID);
-                    intent.putExtra(UploadFailedErrorMessage, error.getMessage());
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    triggerSendMessageError(messageModel, error.getCode(), error.getMessage());
-                }).start();
+                onError(error.getMessage(), localID);
             }
 
             @Override
             public void onError(String errorMessage, String localID) {
-                new Thread(() -> {
-                    Uri imageUri = Uri.parse(imageData.getFileUri());
-                    if (null != messageModel.getData() && null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
-                        messageModel.getData().put(FILE_URI, TAPFileUtils.getInstance().getFilePath(context, imageUri));
-                    }
-                    messageUploadFailed(context, messageModel, roomID);
-                    Intent intent = new Intent(UploadFailed);
-                    intent.putExtra(UploadLocalID, localID);
-                    intent.putExtra(UploadFailedErrorMessage, errorMessage);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    triggerSendMessageError(messageModel, ERROR_CODE_OTHERS, errorMessage);
-                }).start();
+                Uri imageUri = Uri.parse(imageData.getFileUri());
+                if (null != messageModel.getData() && null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
+                    messageModel.getData().put(FILE_URI, TAPFileUtils.getInstance().getFilePath(context, imageUri));
+                }
+                boolean hasConnection = TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext);
+                messageUploadFailed(context, messageModel, roomID, hasConnection, errorMessage);
             }
         };
 
@@ -722,22 +754,13 @@ public class TAPFileUploadManager {
 
             @Override
             public void onError(TAPErrorModel error, String localID) {
-                messageUploadFailed(context, messageModel, roomID);
-                Intent intent = new Intent(UploadFailed);
-                intent.putExtra(UploadLocalID, localID);
-                intent.putExtra(UploadFailedErrorMessage, error.getMessage());
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(messageModel, error.getCode(), error.getMessage());
+                onError(error.getMessage(), localID);
             }
 
             @Override
             public void onError(String errorMessage, String localID) {
-                messageUploadFailed(context, messageModel, roomID);
-                Intent intent = new Intent(UploadFailed);
-                intent.putExtra(UploadLocalID, localID);
-                intent.putExtra(UploadFailedErrorMessage, errorMessage);
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(messageModel, ERROR_CODE_OTHERS, errorMessage);
+                boolean hasConnection = TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext);
+                messageUploadFailed(context, messageModel, roomID, hasConnection, errorMessage);
             }
         };
 
@@ -790,22 +813,13 @@ public class TAPFileUploadManager {
 
             @Override
             public void onError(TAPErrorModel error, String localID) {
-                messageUploadFailed(context, messageModel, roomID);
-                Intent intent = new Intent(UploadFailed);
-                intent.putExtra(UploadLocalID, localID);
-                intent.putExtra(UploadFailedErrorMessage, error.getMessage());
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(messageModel, error.getCode(), error.getMessage());
+                onError(error.getMessage(), localID);
             }
 
             @Override
             public void onError(String errorMessage, String localID) {
-                messageUploadFailed(context, messageModel, roomID);
-                Intent intent = new Intent(UploadFailed);
-                intent.putExtra(UploadLocalID, localID);
-                intent.putExtra(UploadFailedErrorMessage, errorMessage);
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                triggerSendMessageError(messageModel, ERROR_CODE_OTHERS, errorMessage);
+                boolean hasConnection = TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext);
+                messageUploadFailed(context, messageModel, roomID, hasConnection, errorMessage);
             }
         };
 
@@ -816,14 +830,31 @@ public class TAPFileUploadManager {
                         mimeType, uploadCallbacks, uploadView);
     }
 
-    private void messageUploadFailed(Context context, TAPMessageModel messageModelWithUri, String roomID) {
+    private void messageUploadFailed(
+            Context context,
+            TAPMessageModel messageModelWithUri,
+            String roomID,
+            boolean hasConnection,
+            String errorMessage
+    ) {
         if (TAPChatManager.getInstance(instanceKey).checkMessageIsUploading(messageModelWithUri.getLocalID())) {
             TAPChatManager.getInstance(instanceKey).removeUploadingMessageFromHashMap(messageModelWithUri.getLocalID());
             getBitmapQueue().remove(messageModelWithUri.getLocalID());
             cancelUpload(context, messageModelWithUri, roomID);
-            messageModelWithUri.setSending(false);
-            messageModelWithUri.setFailedSend(true);
-            TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(messageModelWithUri));
+            if (hasConnection) {
+                messageModelWithUri.setSending(false);
+                messageModelWithUri.setFailedSend(true);
+                TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(messageModelWithUri));
+
+                Intent intent = new Intent(UploadFailed);
+                intent.putExtra(UploadLocalID, messageModelWithUri.getLocalID());
+                intent.putExtra(UploadFailedErrorMessage, errorMessage);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                triggerSendMessageError(messageModelWithUri, ERROR_CODE_OTHERS, errorMessage);
+            }
+            else {
+                getUploadQueue(roomID).add(messageModelWithUri);
+            }
         }
     }
 
@@ -956,6 +987,17 @@ public class TAPFileUploadManager {
      */
     public void uploadNextSequence(Context context, String roomID) {
         getUploadQueue(roomID).remove(0);
+        uploadNextFromQueue(context, roomID);
+    }
+
+    private void checkAndUploadPendingMessages() {
+        for (Map.Entry<String, List<TAPMessageModel>> entry : getUploadQueuePerRoom().entrySet()) {
+            String roomID = entry.getKey();
+            uploadNextFromQueue(appContext, roomID);
+        }
+    }
+
+    private void uploadNextFromQueue(Context context, String roomID) {
         if ((!isUploadQueueEmpty(roomID) || 0 < getUploadQueue(roomID).size()) &&
                 null != getUploadQueue(roomID).get(0) &&
                 TapCoreMessageManager.getInstance(instanceKey).isUploadMessageFileToExternalServerEnabled()) {
