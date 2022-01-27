@@ -450,12 +450,12 @@ public class TAPDefaultConstant {
 
     public static final int MAX_ITEMS_PER_PAGE = 50;
     public static final int MAX_PRODUCT_SIZE = 20;
-    public static final int MAX_CAPTION_LENGTH = 100;
+    public static final int DEFAULT_MAX_CAPTION_LENGTH = 100;
     public static final int SHORT_ANIMATION_TIME = 100;
     public static final int DEFAULT_ANIMATION_TIME = 200;
     public static final int IMAGE_MAX_DIMENSION = 2000;
     public static final int THUMB_MAX_DIMENSION = 20;
-    public static final int IMAGE_COMPRESSION_QUALITY = 50;
+    public static final int DEFAULT_IMAGE_COMPRESSION_QUALITY = 50;
 
     public static final long TYPING_EMIT_DELAY = 7000L;
     public static final long TYPING_INDICATOR_TIMEOUT = 10000L;

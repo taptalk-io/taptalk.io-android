@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter.PagerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import java.util.List;
 
 import io.taptalk.TapTalk.Helper.MaxHeightRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
+import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager;
 import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
@@ -32,7 +34,6 @@ import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Adapter.TapUserMentionListAdapter;
 
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_CAPTION_LENGTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
 public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
@@ -79,6 +80,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
         Glide.with(context).load(mediaPreview.getUri()).into(ivImagePreview);
 
         String caption = mediaPreview.getCaption();
+        etCaption.setFilters(new InputFilter[] { new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey)) });
 
         if (mediaPreview.getType() == TYPE_VIDEO) {
             if (mediaPreview.isLoading()) {
@@ -131,7 +133,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
             etCaption.setText(caption);
             etCaption.setSelection(caption.length());
             tvTypingIndicator.setVisibility(View.VISIBLE);
-            tvTypingIndicator.setText(String.format(context.getString(R.string.tap_format_dd_letter_count), caption.length(), MAX_CAPTION_LENGTH));
+            tvTypingIndicator.setText(String.format(context.getString(R.string.tap_format_dd_letter_count), caption.length(), TapTalk.getMaxCaptionLength(instanceKey)));
         }
 
         etCaption.addTextChangedListener(new TextWatcher() {
@@ -142,7 +144,7 @@ public class TAPMediaPreviewPagerAdapter extends PagerAdapter {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tvTypingIndicator.setText(String.format(context.getString(R.string.tap_format_dd_letter_count), s.length(), MAX_CAPTION_LENGTH));
+                tvTypingIndicator.setText(String.format(context.getString(R.string.tap_format_dd_letter_count), s.length(), TapTalk.getMaxCaptionLength(instanceKey)));
                 if (etCaption.getText().length() > 0) {
                     checkAndSearchUserMentionList(etCaption, clUserMentionList, rvUserMentionList);
                 } else {

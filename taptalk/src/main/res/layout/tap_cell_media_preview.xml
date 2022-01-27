@@ -60,7 +60,6 @@
             android:background="@color/tapTransparentWhite"
             android:hint="@string/tap_add_a_caption"
             android:maxHeight="75sp"
-            android:maxLength="100"
             android:minHeight="36sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_caption_letter_count"

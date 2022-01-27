@@ -82,12 +82,13 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_CHANNEL_MAX_PARTICIPANTS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_CHAT_MEDIA_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_GROUP_MAX_PARTICIPANTS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_MAX_CAPTION_LENGTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ROOM_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_USER_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MESSAGE_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MY_CONTACT_DB;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.SEARCH_DB;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IMAGE_COMPRESSION_QUALITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_IMAGE_COMPRESSION_QUALITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.CHANNEL_MAX_PARTICIPANTS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.CHAT_MEDIA_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.GROUP_MAX_PARTICIPANTS;
@@ -120,9 +121,11 @@ public class TapTalk implements LifecycleObserver {
     private List<TapListener> tapListeners = new ArrayList<>();
     private TapTalkScreenOrientation screenOrientation = TapTalkOrientationDefault;
     private int clientAppIcon = R.drawable.tap_ic_taptalk_logo;
-    private int imageCompressionQuality;
     private boolean isRefreshTokenExpired, /*isAutoConnectDisabled,*/ isAutoContactSyncDisabled;
     private boolean listenerInit = false;
+
+    private int imageCompressionQuality = DEFAULT_IMAGE_COMPRESSION_QUALITY;
+    private int maxCaptionLength = DEFAULT_MAX_CAPTION_LENGTH;
 
     public TapTalkImplementationType implementationType;
     public TapTalkSocketConnectionMode socketConnectionMode = TapTalkSocketConnectionMode.ALWAYS_ON;
@@ -218,8 +221,6 @@ public class TapTalk implements LifecycleObserver {
         }
 
         this.implementationType = type;
-
-        this.imageCompressionQuality = IMAGE_COMPRESSION_QUALITY;
 
         TAPCacheManager.getInstance(appContext).initAllCache();
 
@@ -777,6 +778,22 @@ public class TapTalk implements LifecycleObserver {
 
     public static int getImageCompressionQuality(String instanceKey) {
         return getTapTalkInstance(instanceKey).imageCompressionQuality;
+    }
+
+    public static void setMaxCaptionLength(int maxCaptionLength) {
+        setMaxCaptionLength("", maxCaptionLength);
+    }
+
+    public static void setMaxCaptionLength(String instanceKey, int maxCaptionLength) {
+        getTapTalkInstance(instanceKey).maxCaptionLength = maxCaptionLength;
+    }
+
+    public static int getMaxCaptionLength() {
+        return getMaxCaptionLength("");
+    }
+
+    public static int getMaxCaptionLength(String instanceKey) {
+        return getTapTalkInstance(instanceKey).maxCaptionLength;
     }
 
     /**
