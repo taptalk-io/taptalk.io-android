@@ -48,19 +48,47 @@ public class TAPMessageStatusManager {
     }
 
     public void addReadMessageQueue(String readMessageId) {
-        getReadMessageQueue().add(readMessageId);
+        if (readMessageId == null || readMessageId.isEmpty()) {
+            return;
+        }
+        try {
+            getReadMessageQueue().add(readMessageId);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addReadMessageQueue(List<String> readMessagesId) {
-        getReadMessageQueue().addAll(readMessagesId);
+        if (readMessagesId == null || readMessagesId.isEmpty()) {
+            return;
+        }
+        try {
+            getReadMessageQueue().addAll(readMessagesId);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
     }
 
     public void removeReadMessageQueue(List<String> readMessageId) {
-        getReadMessageQueue().removeAll(readMessageId);
+        if (readMessageId == null || readMessageId.isEmpty()) {
+            return;
+        }
+        try {
+            getReadMessageQueue().removeAll(readMessageId);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
     }
 
     public void removeReadMessageQueue(String readMessageId) {
-        getReadMessageQueue().remove(readMessageId);
+        if (readMessageId == null || readMessageId.isEmpty()) {
+            return;
+        }
+        try {
+            getReadMessageQueue().remove(readMessageId);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
     }
 
     public void clearReadMessageQueue() {
