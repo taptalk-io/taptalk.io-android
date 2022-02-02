@@ -785,7 +785,7 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public static void setMaxCaptionLength(String instanceKey, int maxCaptionLength) {
-        getTapTalkInstance(instanceKey).maxCaptionLength = maxCaptionLength;
+        getTapTalkInstance(instanceKey).maxCaptionLength = Math.max(maxCaptionLength, 0);
     }
 
     public static int getMaxCaptionLength() {
