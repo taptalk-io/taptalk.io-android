@@ -26,8 +26,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
-import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.MESSAGE_ITEM;
-import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -66,13 +64,12 @@ import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
-import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.R;
 
 @Keep
 public class TapCoreMessageManager {
@@ -519,6 +516,15 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance(instanceKey).sendProductMessageToServer(productHashMap, room, listener);
     }
 
+    public void markMessageAsDelivered(String messageID) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        List<String> messageIDs = new ArrayList<>();
+        messageIDs.add(messageID);
+        markMessagesAsDelivered(messageIDs);
+    }
+
     public void markMessageAsDelivered(TAPMessageModel message) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
@@ -526,11 +532,59 @@ public class TapCoreMessageManager {
         TAPMessageStatusManager.getInstance(instanceKey).updateMessageStatusToDeliveredFromNotification(message);
     }
 
+    public void markMessagesAsDelivered(List<String> messageIDs) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPDataManager.getInstance(instanceKey).updateMessageStatusAsDelivered(
+                messageIDs,
+                new TAPDefaultDataView<TAPUpdateMessageStatusResponse>() {
+        });
+    }
+
+    public void markMessageAsRead(String messageID) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPMessageStatusManager.getInstance(instanceKey).addReadMessageQueue(messageID);
+    }
+
     public void markMessageAsRead(TAPMessageModel message) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        TAPMessageStatusManager.getInstance(instanceKey).addReadMessageQueue(message.getMessageID());
+        markMessageAsRead(message.getMessageID());
+    }
+
+    public void markMessagesAsRead(List<String> messageIDs) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPMessageStatusManager.getInstance(instanceKey).addReadMessageQueue(messageIDs);
+    }
+
+    public void markAllMessagesInRoomAsRead(String roomID) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        TAPDataManager.getInstance(instanceKey).getAllUnreadMessagesFromRoom(
+                roomID,
+                new TAPDatabaseListener<TAPMessageEntity>() {
+                    @Override
+                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                        List<String> pendingReadList = new ArrayList<>();
+                        for (TAPMessageEntity entity : entities) {
+                            if ((null == entity.getIsRead() || !entity.getIsRead()) &&
+                                !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(entity.getMessageID()) &&
+                                !TAPMessageStatusManager.getInstance(instanceKey).getMessagesMarkedAsRead().contains(entity.getMessageID())
+                            ) {
+                                // Add message ID to pending list if new message has not been read or not in mark read queue
+                                pendingReadList.add(entity.getMessageID());
+                            }
+                        }
+                        markMessagesAsRead(pendingReadList);
+                    }
+                });
     }
 
     public void getLocalMessages(String roomID, TapCoreGetMessageListener listener) {
