@@ -1,16 +1,21 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'maven-publish'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'maven-publish'
+}
 
 android {
-    compileSdkVersion 30
+    compileSdk 31
+
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 30
-        versionCode 97
-        versionName '1.3.33'
+        minSdk 16
+        targetSdk 31
+        versionCode 98
+        versionName '1.3.34'
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
         multiDexEnabled true
     }
 
@@ -19,7 +24,7 @@ android {
             minifyEnabled true
             debuggable false
             consumerProguardFiles 'proguard-rules.pro'
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField 'String', 'VERSION_NAME', "\"${defaultConfig.versionName}\""
         }
         staging {
@@ -45,77 +50,87 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.code.gson:gson:2.8.6'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    //WebSocket
+    // WebSocket
     implementation "org.java-websocket:Java-WebSocket:1.3.9"
 
     // Room components
-    implementation 'androidx.room:room-runtime:2.3.0'
-    annotationProcessor 'androidx.room:room-compiler:2.3.0'
-    androidTestImplementation 'androidx.room:room-testing:2.3.0'
+    implementation 'androidx.room:room-runtime:2.4.1'
+    annotationProcessor 'androidx.room:room-compiler:2.4.1'
+    androidTestImplementation 'androidx.room:room-testing:2.4.1'
 
     // Lifecycle components
     api 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
-    //Jackson
+    // Jackson
     implementation "com.fasterxml.jackson.core:jackson-core:2.10.3"
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.10.3"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.10.3"
 
-    //GMS
+    // GMS
     implementation 'com.google.android.gms:play-services-vision:20.1.3'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.libraries.places:places:2.4.0'
 
-    //Glide
+    // Glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
-    //OKHTTP
+    // OKHTTP
     implementation("com.squareup.okhttp3:okhttp:4.5.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.5.0")
 
 
-    //Retrofit
+    // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-jackson:2.8.1'
     implementation 'com.squareup.retrofit2:adapter-rxjava:2.8.1'
 
-    //RxAndroid
+    // RxAndroid
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'io.reactivex:rxjava:1.3.8'
 
-    //Stetho
+    // Stetho
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
 
-    //HAWK
+    // Hawk
     implementation "com.orhanobut:hawk:2.0.1"
 
-    //Firebase
+    // Firebase
     implementation 'com.google.firebase:firebase-core:19.0.0'
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
 
-    //Chrome Custom Tab
-    implementation 'androidx.browser:browser:1.3.0'
+    // Chrome Custom Tab
+    implementation 'androidx.browser:browser:1.4.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.mixpanel.android:mixpanel-android:5.7.0'
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier 'sources'
+    from android.sourceSets.main.java.srcDirs
 }
 
 project.afterEvaluate {

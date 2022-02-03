@@ -18,10 +18,12 @@
 
         <receiver
             android:name="io.taptalk.TapTalk.BroadcastReceiver.TAPReplyBroadcastReceiver"
-            android:enabled="true" />
+            android:enabled="true"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
+            android:exported="false"
             android:value="AIzaSyBBowJXwSCAM9Q-ZyR4iSlfDKuKjawZb0s" />
 
         <provider
@@ -55,18 +57,23 @@
         </activity>
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPLandingActivity"
+            android:exported="true"
             android:screenOrientation="portrait" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPLoginActivity"
+            android:exported="true"
             android:screenOrientation="portrait" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPRegisterActivity"
+            android:exported="true"
             android:screenOrientation="portrait" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPCountryListActivity"
+            android:exported="true"
             android:screenOrientation="portrait" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TapDevLandingActivity"
+            android:exported="true"
             android:screenOrientation="portrait" />
         <activity
             android:name="io.moselo.SampleApps.Activity.TAPShareOptionsActivity"
@@ -82,6 +89,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="image/*" />
                 <data android:mimeType="video/*" />
                 <data android:mimeType="application/*" />
