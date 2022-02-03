@@ -336,7 +336,8 @@ public class TAPConnectionManager {
             websocketHeader.put("Device-Model", android.os.Build.MODEL);
             websocketHeader.put("Device-Platform", "android");
             websocketHeader.put("Device-OS-Version", deviceOsVersion);
-            websocketHeader.put("App-Version", BuildConfig.VERSION_NAME);
+//            websocketHeader.put("App-Version", BuildConfig.VERSION_NAME); // FIXME: SYMBOL NOT FOUND IN JITPACK BUILD
+            websocketHeader.put("App-Version", TapTalk.sdkVersion);
             websocketHeader.put("User-Agent", userAgent);
         }
         //return websocketHeader;

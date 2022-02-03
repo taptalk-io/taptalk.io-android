@@ -97,7 +97,8 @@ public class TAPDownloadHeaderRequestInterceptor implements Interceptor {
                 .addHeader("Device-Model", android.os.Build.MODEL)
                 .addHeader("Device-OS-Version", deviceOsVersion)
                 .addHeader("Device-Platform", "android")
-                .addHeader("SDK-Version", BuildConfig.VERSION_NAME)
+//                .addHeader("SDK-Version", BuildConfig.VERSION_NAME) // FIXME: SYMBOL NOT FOUND IN JITPACK BUILD
+                .addHeader("SDK-Version", TapTalk.sdkVersion)
                 .addHeader("User-Agent", userAgent)
                 .method(original.method(), original.body())
                 .build();
