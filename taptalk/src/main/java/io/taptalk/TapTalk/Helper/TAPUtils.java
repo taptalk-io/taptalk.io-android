@@ -971,7 +971,13 @@ public class TAPUtils {
     }
 
     public static String getFileMimeType(File file) {
-        return URLConnection.guessContentTypeFromName(file.getName());
+        String fileName = file.getName();
+        fileName = fileName.replaceAll("[^a-zA-Z0-9 .]", "");
+        try {
+            return URLConnection.guessContentTypeFromName(fileName);
+        } catch (StringIndexOutOfBoundsException e) {
+            return "";
+        }
     }
 
     public static String getImageMimeType(Context context, Uri imageUri) {
