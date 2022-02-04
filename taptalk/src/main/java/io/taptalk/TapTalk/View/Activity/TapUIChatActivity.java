@@ -1393,7 +1393,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Show small thumbnail
                     Drawable thumbnail = new BitmapDrawable(
                             getResources(),
-                            TAPFileUtils.getInstance().decodeBase64(
+                            TAPFileUtils.decodeBase64(
                                     (String) (null == message.getData().get(THUMBNAIL) ? "" :
                                             message.getData().get(THUMBNAIL))));
                     rcivQuoteImage.setImageDrawable(thumbnail);

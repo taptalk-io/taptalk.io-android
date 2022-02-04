@@ -356,6 +356,10 @@ public class TapCoreChatRoomManager {
                 });
     }
 
+    public TAPRoomModel getLocalGroupChatRoom(String groupRoomID) {
+        return TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(groupRoomID);
+    }
+
     public void getGroupChatRoom(String groupRoomID, TapCoreGetRoomListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
@@ -375,7 +379,7 @@ public class TapCoreChatRoomManager {
             @Override
             public void onError(TAPErrorModel error) {
                 if (null != listener) {
-                    TAPRoomModel roomModel = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(groupRoomID);
+                    TAPRoomModel roomModel = getLocalGroupChatRoom(groupRoomID);
                     if (null != roomModel) {
                         listener.onSuccess(roomModel);
                     } else {
@@ -398,7 +402,7 @@ public class TapCoreChatRoomManager {
             }
             return;
         }
-        TAPRoomModel roomModel = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(xcRoomID);
+        TAPRoomModel roomModel = getLocalGroupChatRoom(xcRoomID);
         if (null == roomModel) {
             TAPDataManager.getInstance(instanceKey).getChatRoomByXcRoomID(xcRoomID, new TAPDefaultDataView<TAPCreateRoomResponse>() {
                 @Override

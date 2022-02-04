@@ -32,6 +32,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.taptalk.TapTalk.Helper.TAPFileUtils;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
@@ -138,7 +139,8 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         String uriString = getIntent().getStringExtra(URI);
         vm.setMessage(getIntent().getParcelableExtra(MESSAGE));
         if (null != uriString) {
-            vm.setVideoUri(Uri.parse(uriString));
+            Uri parsedUri = TAPFileUtils.parseFileUri(Uri.parse(uriString));
+            vm.setVideoUri(parsedUri);
         } else {
             onBackPressed();
         }

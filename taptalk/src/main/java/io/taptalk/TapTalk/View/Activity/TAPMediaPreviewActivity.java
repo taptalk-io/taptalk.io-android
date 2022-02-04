@@ -246,7 +246,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                 // Check if video size exceeds limit
                 if (null == media.isSizeExceedsLimit() && media.getType() == TYPE_VIDEO) {
                     Uri uri = media.getUri();
-                    if (TAPFileUtils.getInstance().isGoogleDriveUri(media.getUri())) {
+                    if (TAPFileUtils.isGoogleDriveUri(media.getUri())) {
                         // Requires download to get file size from Google Drive
                         media.setLoading(true);
                         runOnUiThread(() -> {
@@ -276,7 +276,7 @@ public class TAPMediaPreviewActivity extends TAPBaseActivity {
                     } else {
                         // Check file size
                         if (!TAPFileUploadManager.getInstance(instanceKey).isSizeAllowedForUpload(
-                                new File(TAPFileUtils.getInstance().getFilePath(this, uri)).length())) {
+                                new File(TAPFileUtils.getFilePath(this, uri)).length())) {
                             media.setSizeExceedsLimit(true);
                             errorMedias.add(media);
                         } else {

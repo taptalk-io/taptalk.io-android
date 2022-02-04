@@ -33,15 +33,9 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY
 
 public class TAPFileUtils {
 
-    private static TAPFileUtils instance;
-
     private static final String DOCUMENTS_DIR = "documents";
 
-    public static TAPFileUtils getInstance() {
-        return instance == null ? (instance = new TAPFileUtils()) : instance;
-    }
-
-    public String encodeToBase64(Bitmap bitmap) {
+    public static String encodeToBase64(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
@@ -49,12 +43,12 @@ public class TAPFileUtils {
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
 
-    public Bitmap decodeBase64(String encodedMessage) {
+    public static Bitmap decodeBase64(String encodedMessage) {
         byte[] imageBytes = Base64.decode(encodedMessage, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
     }
 
-    public String encodeToBase64(Uri imageUri, int maxSize, Activity activity) {
+    public static String encodeToBase64(Uri imageUri, int maxSize, Activity activity) {
         final InputStream imageStream;
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -82,7 +76,7 @@ public class TAPFileUtils {
         }
     }
 
-    public int getImageOrientation(String imagePath) {
+    public static int getImageOrientation(String imagePath) {
         ExifInterface exif;
         try {
             if (imagePath != null) {
@@ -96,7 +90,7 @@ public class TAPFileUtils {
         return exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
     }
 
-    public String getFilePath(final Context context, final Uri uri) {
+    public static String getFilePath(final Context context, final Uri uri) {
         // DocumentProvider
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri)) {
             // ExternalStorageProvider
@@ -209,7 +203,7 @@ public class TAPFileUtils {
         return null;
     }
 
-    private Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
+    private static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
         float ratio = Math.min(
                 maxImageSize / realImage.getWidth(),
                 maxImageSize / realImage.getHeight());
@@ -219,7 +213,7 @@ public class TAPFileUtils {
         return Bitmap.createScaledBitmap(realImage, width, height, filter);
     }
 
-    private Bitmap scaleBitmapDown(Bitmap bitmap, int maxDimension) {
+    private static Bitmap scaleBitmapDown(Bitmap bitmap, int maxDimension) {
         int originalWidth = bitmap.getWidth();
         int originalHeight = bitmap.getHeight();
         int resizedWidth = maxDimension;
@@ -233,7 +227,7 @@ public class TAPFileUtils {
         return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false);
     }
 
-    private Bitmap getCorrectedImage(Bitmap image, Uri imageUri, Activity activity) {
+    private static Bitmap getCorrectedImage(Bitmap image, Uri imageUri, Activity activity) {
         ExifInterface exif;
         try {
             if (getFilePath(activity, imageUri) != null) {
@@ -248,7 +242,7 @@ public class TAPFileUtils {
         return rotateBitmap(image, orientation);
     }
 
-    private Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+    private static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
         Matrix matrix = new Matrix();
         switch (orientation) {
             case ExifInterface.ORIENTATION_NORMAL:
@@ -289,31 +283,31 @@ public class TAPFileUtils {
         }
     }
 
-    private boolean isExternalStorageDocument(Uri uri) {
+    private static boolean isExternalStorageDocument(Uri uri) {
         return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
 
-    private boolean isDownloadsDocument(Uri uri) {
+    private static boolean isDownloadsDocument(Uri uri) {
         return "com.android.providers.downloads.documents".equals(uri.getAuthority());
     }
 
-    private boolean isMediaDocument(Uri uri) {
+    private static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
-    private boolean isGooglePhotosUri(Uri uri) {
+    private static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
 
-    public boolean isGoogleDriveUri(Uri uri) {
+    public static boolean isGoogleDriveUri(Uri uri) {
         return "com.google.android.apps.docs.storage".equals(uri.getAuthority());
     }
 
-    private boolean isFileProviderUri(Uri uri) {
+    private static boolean isFileProviderUri(Uri uri) {
         return FILEPROVIDER_AUTHORITY.equals(uri.getAuthority());
     }
 
-    private String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
         final String column = "_data";
         final String[] projection = {
                 column
@@ -342,7 +336,7 @@ public class TAPFileUtils {
         return null;
     }
 
-    public static File getDocumentCacheDir(@NonNull Context context) {
+    public  static File getDocumentCacheDir(@NonNull Context context) {
         File dir = new File(context.getCacheDir(), DOCUMENTS_DIR);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -418,7 +412,7 @@ public class TAPFileUtils {
         }
     }
 
-    private File saveFileIntoExternalStorageByUri(Context context, Uri uri) throws Exception {
+    private static File saveFileIntoExternalStorageByUri(Context context, Uri uri) throws Exception {
         InputStream inputStream = context.getContentResolver().openInputStream(uri);
         int originalSize = inputStream.available();
 
@@ -444,13 +438,13 @@ public class TAPFileUtils {
         return file;
     }
 
-    private String getFileName(Context context, Uri uri) {
+    private static String getFileName(Context context, Uri uri) {
         String result = null;
         if ("content".equals(uri.getScheme())) {
             Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    result = cursor.getString(Math.max(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME), 0));
                 }
             } finally {
                 cursor.close();
@@ -466,7 +460,7 @@ public class TAPFileUtils {
         return result;
     }
 
-    public File renameDuplicateFile(File file) {
+    public static File renameDuplicateFile(File file) {
         while (file.exists() && !file.isDirectory()) {
             String path = file.getAbsolutePath();
             StringBuilder sb = new StringBuilder(path);
@@ -482,5 +476,14 @@ public class TAPFileUtils {
             file = new File(sb.toString());
         }
         return file;
+    }
+
+    public static Uri parseFileUri(Uri uri) {
+        String uriString = uri.toString();
+        if (uriString.startsWith("file://")) {
+            Uri fileUri = Uri.fromFile(new File(uriString.substring(7)));
+            return Uri.parse(String.valueOf(fileUri));
+        }
+        return uri;
     }
 }

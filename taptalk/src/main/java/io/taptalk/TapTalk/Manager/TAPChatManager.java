@@ -546,7 +546,7 @@ public class TAPChatManager {
 
     private TAPMessageModel createFileMessageModel(Context context, Uri uri, TAPRoomModel roomModel, TapSendMessageInterface listener) {
 
-        String filePath = TAPFileUtils.getInstance().getFilePath(context, uri);
+        String filePath = TAPFileUtils.getFilePath(context, uri);
 
         if (null == filePath || filePath.isEmpty()) {
             if (null != listener) {
@@ -703,7 +703,7 @@ public class TAPChatManager {
 
     private TAPMessageModel createImageMessageModel(Context context, Uri fileUri, String caption, TAPRoomModel roomModel) {
         String imageUri = fileUri.toString();
-        String imagePath = TAPFileUtils.getInstance().getFilePath(context, fileUri);
+        String imagePath = TAPFileUtils.getFilePath(context, fileUri);
         long size = null == imagePath ? 0L : new File(imagePath).length();
 
         // Get image width and height
@@ -712,7 +712,7 @@ public class TAPChatManager {
         BitmapFactory.decodeFile(imagePath, options);
         int imageWidth;
         int imageHeight;
-        int orientation = TAPFileUtils.getInstance().getImageOrientation(imagePath);
+        int orientation = TAPFileUtils.getImageOrientation(imagePath);
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
             imageWidth = options.outHeight;
             imageHeight = options.outWidth;
@@ -792,11 +792,12 @@ public class TAPChatManager {
 
     private TAPMessageModel createVideoMessageModel(Context context, Uri fileUri, String caption, TAPRoomModel room, TapSendMessageInterface listener) {
         try {
-            String videoPath = TAPFileUtils.getInstance().getFilePath(context, fileUri);
+            String videoPath = TAPFileUtils.getFilePath(context, fileUri);
 
             // Get video data
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            retriever.setDataSource(context, fileUri);
+            Uri parsedUri = TAPFileUtils.parseFileUri(fileUri);
+            retriever.setDataSource(context, parsedUri);
             String rotation = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
@@ -811,7 +812,7 @@ public class TAPChatManager {
                 height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
             }
             int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-            String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(TAPFileUploadManager.getInstance(instanceKey).resizeBitmap(retriever.getFrameAtTime(), THUMB_MAX_DIMENSION));
+            String thumbBase64 = TAPFileUtils.encodeToBase64(TAPFileUploadManager.getInstance(instanceKey).resizeBitmap(retriever.getFrameAtTime(), THUMB_MAX_DIMENSION));
             retriever.release();
             long size = null == videoPath ? 0L : new File(videoPath).length();
 
@@ -993,11 +994,11 @@ public class TAPChatManager {
         Uri imageUri = Uri.parse(imageData.getFileUri());
 
         // Get image width and height
-        String pathName = TAPFileUtils.getInstance().getFilePath(TapTalk.appContext, imageUri);
+        String pathName = TAPFileUtils.getFilePath(TapTalk.appContext, imageUri);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pathName, options);
-        int orientation = TAPFileUtils.getInstance().getImageOrientation(pathName);
+        int orientation = TAPFileUtils.getImageOrientation(pathName);
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90 || orientation == ExifInterface.ORIENTATION_ROTATE_270) {
             imageData.setWidth(options.outHeight);
             imageData.setHeight(options.outWidth);

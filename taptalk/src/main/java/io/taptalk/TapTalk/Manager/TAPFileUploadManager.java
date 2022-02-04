@@ -370,7 +370,7 @@ public class TAPFileUploadManager {
         if (messageModel.getType() == TYPE_IMAGE) {
             // Generate small thumbnail for image
             createAndResizeImageFile(context, Uri.parse(fileUri), THUMB_MAX_DIMENSION, thumbBitmap -> {
-                String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+                String thumbBase64 = TAPFileUtils.encodeToBase64(thumbBitmap);
                 messageData.put(THUMBNAIL, thumbBase64);
                 messageModel.setData(messageData);
                 TAPChatManager.getInstance(instanceKey).triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
@@ -384,7 +384,7 @@ public class TAPFileUploadManager {
             if (videoFile.length() == 0 && null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
                 // Get video file from file Uri if map is empty
                 videoUri = Uri.parse(videoData.getFileUri());
-                videoFile = new File(TAPFileUtils.getInstance().getFilePath(context, videoUri));
+                videoFile = new File(TAPFileUtils.getFilePath(context, videoUri));
                 mimeType = context.getContentResolver().getType(videoUri);
             }
             if (videoFile.length() == 0) {
@@ -445,7 +445,7 @@ public class TAPFileUploadManager {
             createAndResizeImageFile(context, imageUri, IMAGE_MAX_DIMENSION, bitmap ->
                     // Create thumbnail
                     createAndResizeImageFile(context, imageUri, THUMB_MAX_DIMENSION, thumbBitmap -> {
-                        String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+                        String thumbBase64 = TAPFileUtils.encodeToBase64(thumbBitmap);
                         checkAndUploadCompressedImage(context, roomID, messageModel, imageUri, imageData, bitmap, thumbBase64);
                     }));
         } else if (null != getBitmapQueue().get(messageModel.getLocalID())) {
@@ -453,7 +453,7 @@ public class TAPFileUploadManager {
             Bitmap bitmap = getBitmapQueue().get(messageModel.getLocalID());
             createAndResizeImageFile(bitmap, IMAGE_MAX_DIMENSION, bitmap1 ->
                     createAndResizeImageFile(bitmap1, THUMB_MAX_DIMENSION, thumbBitmap -> {
-                        String thumbBase64 = TAPFileUtils.getInstance().encodeToBase64(thumbBitmap);
+                        String thumbBase64 = TAPFileUtils.encodeToBase64(thumbBitmap);
                         checkAndUploadCompressedImage(context, roomID, messageModel, null, imageData, bitmap1, thumbBase64);
                     }));
         } else {
@@ -536,7 +536,7 @@ public class TAPFileUploadManager {
         if (videoFile.length() == 0 && null != videoData.getFileUri() && !videoData.getFileUri().isEmpty()) {
             // Get video file from file Uri if map is empty
             videoUri = Uri.parse(videoData.getFileUri());
-            videoFile = new File(TAPFileUtils.getInstance().getFilePath(context, videoUri));
+            videoFile = new File(TAPFileUtils.getFilePath(context, videoUri));
             mimeType = context.getContentResolver().getType(videoUri);
         }
         if (videoFile.length() == 0) {
@@ -610,7 +610,7 @@ public class TAPFileUploadManager {
                 return;
             }
 
-            String pathName = TAPFileUtils.getInstance().getFilePath(context, fileUri);
+            String pathName = TAPFileUtils.getFilePath(context, fileUri);
 
             if (null == pathName) {
                 getUploadQueue(roomID).remove(0);
@@ -688,7 +688,7 @@ public class TAPFileUploadManager {
             public void onError(String errorMessage, String localID) {
                 Uri imageUri = Uri.parse(imageData.getFileUri());
                 if (null != messageModel.getData() && null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
-                    messageModel.getData().put(FILE_URI, TAPFileUtils.getInstance().getFilePath(context, imageUri));
+                    messageModel.getData().put(FILE_URI, TAPFileUtils.getFilePath(context, imageUri));
                 }
                 boolean hasConnection = TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(appContext);
                 messageUploadFailed(context, messageModel, roomID, hasConnection, errorMessage);
@@ -920,12 +920,12 @@ public class TAPFileUploadManager {
     private Bitmap fixImageOrientation(Bitmap bitmap, Uri imageUri) {
         String pathName;
         if (null != imageUri.getScheme() && imageUri.getScheme().contains("content")) {
-            pathName = TAPFileUtils.getInstance().getFilePath(appContext, imageUri);
+            pathName = TAPFileUtils.getFilePath(appContext, imageUri);
         } else {
             pathName = imageUri.toString();
         }
 
-        int orientation = TAPFileUtils.getInstance().getImageOrientation(pathName);
+        int orientation = TAPFileUtils.getImageOrientation(pathName);
         if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
             Matrix matrix = new Matrix();
             matrix.postRotate(90);

@@ -413,7 +413,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 //            if (null == thumbnail) {
             thumbnail = new BitmapDrawable(
                     itemView.getContext().getResources(),
-                    TAPFileUtils.getInstance().decodeBase64(
+                    TAPFileUtils.decodeBase64(
                             (String) (null == message.getData().get(THUMBNAIL) ? "" :
                                     message.getData().get(THUMBNAIL))));
             if (thumbnail.getIntrinsicHeight() <= 0) {
@@ -471,7 +471,8 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                             String dataUri = (String) message.getData().get(FILE_URI);
                             Uri videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message);
                             try {
-                                retriever.setDataSource(itemView.getContext(), videoUri);
+                                Uri parsedUri = TAPFileUtils.parseFileUri(videoUri);
+                                retriever.setDataSource(itemView.getContext(), parsedUri);
                                 mediaThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
                                 TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, mediaThumbnail);
                             } catch (Exception e) {

@@ -339,7 +339,7 @@ public class TAPFileDownloadManager {
         dir.mkdirs();
 
         File targetFile = new File(dir, filename);
-        targetFile = TAPFileUtils.getInstance().renameDuplicateFile(targetFile);
+        targetFile = TAPFileUtils.renameDuplicateFile(targetFile);
 
         final DownloadFromUrlTask downloadFromUrlTask = new DownloadFromUrlTask(instanceKey, message, targetFile);
         downloadFromUrlTask.execute(fileUrl);
@@ -436,7 +436,7 @@ public class TAPFileDownloadManager {
         }
 
         File file = new File(dir, filename);
-        file = TAPFileUtils.getInstance().renameDuplicateFile(file);
+        file = TAPFileUtils.renameDuplicateFile(file);
         try {
             // Write file to disk
             BufferedSink sink = Okio.buffer(Okio.sink(file));
@@ -507,7 +507,7 @@ public class TAPFileDownloadManager {
                 dir.mkdirs();
 
                 File targetFile = new File(dir, filename);
-                targetFile = TAPFileUtils.getInstance().renameDuplicateFile(targetFile);
+                targetFile = TAPFileUtils.renameDuplicateFile(targetFile);
 
                 if (null != getFileMessageUri(message)) {
                     File sourceFile = new File(getFileProviderPath(getFileMessageUri(message)));

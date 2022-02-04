@@ -500,7 +500,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
     }
 
     private fun handleFileType(uri: Uri, roomModel: TAPRoomModel?, caption: String) {
-        val file = File(TAPFileUtils.getInstance().getFilePath(this, uri))
+        val file = File(TAPFileUtils.getFilePath(this, uri))
         if (caption.isNotEmpty()) {
             TapCoreMessageManager.getInstance().sendTextMessage(caption, roomModel, object : TapCoreSendMessageListener() {})
         }
@@ -557,7 +557,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
         val filUri = intent.getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
         if (filUri != null) {
             for (item in filUri) {
-                val file = File(TAPFileUtils.getInstance().getFilePath(this, item as? Uri))
+                val file = File(TAPFileUtils.getFilePath(this, item as? Uri))
                 if (firstCaption.isNotEmpty()) {
                     TapCoreMessageManager.getInstance().sendTextMessage(firstCaption, roomModel, object : TapCoreSendMessageListener() {})
                     firstCaption = ""

@@ -543,7 +543,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == thumbnail) {
                 thumbnail = new BitmapDrawable(
                         itemView.getContext().getResources(),
-                        TAPFileUtils.getInstance().decodeBase64(
+                        TAPFileUtils.decodeBase64(
                                 (String) (null == item.getData().get(THUMBNAIL) ? "" :
                                         item.getData().get(THUMBNAIL))));
                 if (thumbnail.getIntrinsicHeight() <= 0) {
@@ -870,7 +870,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == thumbnail) {
                 thumbnail = new BitmapDrawable(
                         itemView.getContext().getResources(),
-                        TAPFileUtils.getInstance().decodeBase64(
+                        TAPFileUtils.decodeBase64(
                                 (String) (null == item.getData().get(THUMBNAIL) ? "" :
                                         item.getData().get(THUMBNAIL))));
                 if (thumbnail.getIntrinsicHeight() <= 0) {
@@ -986,7 +986,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         // Get full-size thumbnail from Uri
                         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                         try {
-                            retriever.setDataSource(itemView.getContext(), videoUri);
+                            Uri parsedUri = TAPFileUtils.parseFileUri(videoUri);
+                            retriever.setDataSource(itemView.getContext(), parsedUri);
                             videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
                             TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(key, videoThumbnail);
                         } catch (Exception e) {
