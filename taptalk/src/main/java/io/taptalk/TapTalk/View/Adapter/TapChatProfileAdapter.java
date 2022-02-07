@@ -471,8 +471,9 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                             String dataUri = (String) message.getData().get(FILE_URI);
                             Uri videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message);
                             try {
-                                Uri parsedUri = TAPFileUtils.parseFileUri(videoUri);
-                                retriever.setDataSource(itemView.getContext(), parsedUri);
+//                                Uri parsedUri = TAPFileUtils.parseFileUri(videoUri);
+//                                retriever.setDataSource(itemView.getContext(), parsedUri);
+                                retriever.setDataSource(itemView.getContext(), videoUri);
                                 mediaThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
                                 TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(fileID, mediaThumbnail);
                             } catch (Exception e) {

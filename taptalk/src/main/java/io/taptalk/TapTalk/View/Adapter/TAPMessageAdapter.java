@@ -986,8 +986,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         // Get full-size thumbnail from Uri
                         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                         try {
-                            Uri parsedUri = TAPFileUtils.parseFileUri(videoUri);
-                            retriever.setDataSource(itemView.getContext(), parsedUri);
+//                            Uri parsedUri = TAPFileUtils.parseFileUri(videoUri);
+//                            retriever.setDataSource(itemView.getContext(), parsedUri);
+                            retriever.setDataSource(itemView.getContext(), videoUri);
                             videoThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
                             TAPCacheManager.getInstance(itemView.getContext()).addBitmapDrawableToCache(key, videoThumbnail);
                         } catch (Exception e) {
