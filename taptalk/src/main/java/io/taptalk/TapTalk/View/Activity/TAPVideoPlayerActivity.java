@@ -139,8 +139,9 @@ public class TAPVideoPlayerActivity extends TAPBaseActivity {
         String uriString = getIntent().getStringExtra(URI);
         vm.setMessage(getIntent().getParcelableExtra(MESSAGE));
         if (null != uriString) {
-            Uri parsedUri = TAPFileUtils.parseFileUri(Uri.parse(uriString));
-            vm.setVideoUri(parsedUri);
+//            Uri parsedUri = TAPFileUtils.parseFileUri(Uri.parse(uriString));
+//            vm.setVideoUri(parsedUri);
+            vm.setVideoUri(Uri.parse(uriString));
         } else {
             onBackPressed();
         }

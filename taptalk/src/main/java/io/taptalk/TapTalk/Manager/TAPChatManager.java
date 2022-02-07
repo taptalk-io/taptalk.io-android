@@ -796,8 +796,9 @@ public class TAPChatManager {
 
             // Get video data
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            Uri parsedUri = TAPFileUtils.parseFileUri(fileUri);
-            retriever.setDataSource(context, parsedUri);
+//            Uri parsedUri = TAPFileUtils.parseFileUri(fileUri);
+//            retriever.setDataSource(context, parsedUri);
+            retriever.setDataSource(context, fileUri);
             String rotation = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
