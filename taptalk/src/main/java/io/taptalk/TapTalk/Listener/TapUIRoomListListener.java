@@ -1,17 +1,16 @@
 package io.taptalk.TapTalk.Listener;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
 
 import androidx.annotation.Keep;
 
-import java.lang.ref.WeakReference;
-
 import io.taptalk.TapTalk.Interface.TapUIRoomListInterface;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
+import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.View.Activity.TAPMyAccountActivity;
 import io.taptalk.TapTalk.View.Activity.TAPNewChatActivity;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
-import io.taptalk.TapTalk.R;
 
 @Keep
 public abstract class TapUIRoomListListener implements TapUIRoomListInterface {
@@ -47,5 +46,15 @@ public abstract class TapUIRoomListListener implements TapUIRoomListInterface {
     @Override
     public void onNewChatButtonTapped(Activity activity) {
         TAPNewChatActivity.start(activity, instanceKey);
+    }
+
+    @Override
+    public String setRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {
+        return TAPChatManager.getInstance(instanceKey).getDefaultRoomListTitleText(roomList, position, context);
+    }
+
+    @Override
+    public String setRoomListContentText(TAPRoomListModel roomList, int position, Context context) {
+        return TAPChatManager.getInstance(instanceKey).getDefaultRoomListContentText(roomList, position, context);
     }
 }

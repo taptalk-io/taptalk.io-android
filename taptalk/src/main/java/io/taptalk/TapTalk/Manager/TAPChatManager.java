@@ -39,6 +39,7 @@ import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
+import io.taptalk.TapTalk.Listener.TapUIRoomListListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -48,6 +49,7 @@ import io.taptalk.TapTalk.Model.TAPMediaPreviewModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
+import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -81,11 +83,14 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
@@ -1844,6 +1849,53 @@ public class TAPChatManager {
 
     public void triggerProductListBubbleRightButtonTapped(Activity activity, TAPProductModel product, TAPRoomModel room, TAPUserModel recipient, boolean isSingleOption) {
         TapUI.getInstance(instanceKey).triggerProductListBubbleRightButtonTapped(activity, product, room, recipient, isSingleOption);
+    }
+
+    public String getRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {
+        return TapUI.getInstance(instanceKey).getRoomListTitleText(roomList, position, context);
+    }
+
+    public String getDefaultRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {
+        TAPRoomModel room = roomList.getLastMessage().getRoom();
+        TAPUserModel user = null;
+        TAPRoomModel group = null;
+
+        if (room.getType() == TYPE_PERSONAL) {
+            user = TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()));
+        } else if (room.getType() == TYPE_GROUP || room.getType() == TYPE_TRANSACTION) {
+            group = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(room.getRoomID());
+        }
+
+        // Set room name
+        if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
+                null != user.getFullname() && !user.getFullname().isEmpty()) {
+            return user.getFullname();
+        } else if (null != group && !group.isDeleted() && null != group.getName() &&
+                !group.getName().isEmpty()) {
+            return group.getName();
+        } else {
+            return room.getName();
+        }
+    }
+
+    public String getRoomListContentText(TAPRoomListModel roomList, int position, Context context) {
+        return TapUI.getInstance(instanceKey).getRoomListContentText(roomList, position, context);
+    }
+
+    public String getDefaultRoomListContentText(TAPRoomListModel roomList, int position, Context context) {
+        if (TYPE_SYSTEM_MESSAGE == roomList.getLastMessage().getType()) {
+            // Show system message
+            return TAPChatManager.getInstance(instanceKey).formattingSystemMessage(roomList.getLastMessage());
+        } else if (roomList.getLastMessage().getRoom().getType() != TYPE_PERSONAL) {
+            // Show group/channel room with last message
+            String sender = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(roomList.getLastMessage().getUser().getUserID()) ?
+                    context.getString(R.string.tap_you) :
+                    TAPUtils.getFirstWordOfString(roomList.getLastMessage().getUser().getFullname());
+            return String.format("%s: %s", sender, roomList.getLastMessage().getBody());
+        } else {
+            // Show personal room with last message
+            return roomList.getLastMessage().getBody();
+        }
     }
 
     /**

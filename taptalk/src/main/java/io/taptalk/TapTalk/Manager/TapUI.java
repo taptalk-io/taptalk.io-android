@@ -26,8 +26,10 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPProductModel;
+import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
@@ -46,6 +48,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
@@ -1215,5 +1218,25 @@ public class TapUI {
                 listener.onCustomKeyboardItemTapped(activity, customKeyboardItemModel, room, activeUser, recipientUser);
             }
         }
+    }
+
+    String getRoomListTitleText(TAPRoomListModel roomList, int position, Context context) {
+        if (getRoomListListeners().isEmpty()) {
+            return TAPChatManager.getInstance(instanceKey).getDefaultRoomListTitleText(roomList, position, context);
+        }
+        for (TapUIRoomListListener listener : getRoomListListeners()) {
+            return listener.setRoomListTitleText(roomList, position, context);
+        }
+        return "";
+    }
+
+    String getRoomListContentText(TAPRoomListModel roomList, int position, Context context) {
+        if (getRoomListListeners().isEmpty()) {
+            return TAPChatManager.getInstance(instanceKey).getDefaultRoomListContentText(roomList, position, context);
+        }
+        for (TapUIRoomListListener listener : getRoomListListeners()) {
+            return listener.setRoomListContentText(roomList, position, context);
+        }
+        return "";
     }
 }
