@@ -220,7 +220,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (null != customBubble) {
                     return customBubble.createCustomViewHolder(parent, this, myUserModel, customBubble.getCustomBubbleListener());
                 }
-                return new EmptyVH(parent, R.layout.tap_cell_empty);
+                return new UnsupportedVH(parent, R.layout.tap_cell_chat_bubble_text_left, viewType);
+//                return new EmptyVH(parent, R.layout.tap_cell_empty);
         }
     }
 
@@ -1819,6 +1820,83 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             markMessageAsRead(item, myUserModel);
 //            enableLongPress(itemView.getContext(), clContainer, item);
+        }
+    }
+
+    public class UnsupportedVH extends TAPBaseChatViewHolder {
+
+        private ConstraintLayout clContainer;
+        private ConstraintLayout clForwarded;
+        private ConstraintLayout clQuote;
+        private FrameLayout flBubble;
+        private CircleImageView civAvatar;
+        private ImageView ivMessageStatus;
+        private ImageView ivSending;
+        private TextView tvAvatarLabel;
+        private TextView tvUserName;
+        private TextView tvMessageBody;
+        private TextView tvMessageTimestamp;
+        private TextView tvMessageStatus;
+        private View vQuoteBackground;
+
+        UnsupportedVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
+            super(parent, itemLayoutId);
+
+            clContainer = itemView.findViewById(R.id.cl_container);
+            clForwarded = itemView.findViewById(R.id.cl_forwarded);
+            clQuote = itemView.findViewById(R.id.cl_quote);
+            flBubble = itemView.findViewById(R.id.fl_bubble);
+            tvMessageBody = itemView.findViewById(R.id.tv_message_body);
+            tvMessageTimestamp = itemView.findViewById(R.id.tv_message_timestamp);
+            tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
+            civAvatar = itemView.findViewById(R.id.civ_avatar);
+            tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
+            tvUserName = itemView.findViewById(R.id.tv_user_name);
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
+            if (!animatingMessages.contains(item)) {
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
+            }
+            tvMessageTimestamp.setText(item.getMessageStatusText());
+            tvMessageBody.setText(R.string.tap_message_type_unsupported);
+            clForwarded.setVisibility(View.GONE);
+            clQuote.setVisibility(View.GONE);
+            vQuoteBackground.setVisibility(View.GONE);
+
+            markMessageAsRead(item, myUserModel);
+
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+        }
+
+        @Override
+        protected void onMessageSending(TAPMessageModel message) {
+            showMessageAsSending(itemView, message, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageFailedToSend(TAPMessageModel message) {
+            showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageSent(TAPMessageModel message) {
+            showMessageAsSent(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageDelivered(TAPMessageModel message) {
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageRead(TAPMessageModel message) {
+            showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
         }
     }
 

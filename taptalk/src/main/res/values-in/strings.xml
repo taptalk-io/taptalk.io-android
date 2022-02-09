@@ -67,6 +67,7 @@
     <string name="tap_unread_messages">Pesan Belum Dibaca</string>
     <string name="tap_you_deleted_this_message">Anda menghapus pesan ini.</string>
     <string name="tap_group_unavailable">Maaf, grup ini tidak tersedia.</string>
+    <string name="tap_message_type_unsupported"><i>Tipe pesan ini belum didukung di versi aplikasi Anda.</i></string>
 
     <!--Group Chat-->
     <string name="tap_add_members">Tambah Anggota</string>
@@ -173,6 +174,11 @@
     <string name="tap_guide_username">Username diperlukan.\nHarus antara 4–32 karakter.\nHanya dapat memuat a–z, 0–9, garis bawah, dan titik.\nTidak dapat berawal dengan angka atau garis bawah atau titik.\nTidak dapat berakhir dengan garis bawah atau titik.\nTidak dapat berisi garis bawah berurutan, titik berurutan, garis bawah diikuti dengan titik, dan sebaliknya.</string>
     <string name="tap_guide_password">Kata sandi harus memuat setidaknya satu huruf kecil, huruf besar, karakter khusus, dan angka</string>
     <string name="tap_room_list_empty">Sepertinya Anda tidak memiliki obrolan untuk ditampilkan, tetapi jangan khawatir! Daftar obrolan Anda akan bertambah setelah Anda</string>
+    <string name="tap_no_countries_found">Negara tidak ditemukan</string>
+    <string name="tap_try_a_different_search">Coba pencarian lain</string>
+    <string name="tap_not_working_try_below">Tidak berfungsi? Coba di bawah ini</string>
+    <string name="tap_send_via_sms">Kirim lewat SMS</string>
+    <string name="tap_format_ss_to">%s ke %s</string>
 
     <!--Success/Error Message-->
     <string name="tap_error">Error</string>
@@ -215,6 +221,8 @@
     <string name="tap_error_could_not_find_message">Tidak dapat menemukan pesan.</string>
     <string name="tap_error_assign_another_admin">Harap tetapkan admin lain sebelum keluar.</string>
     <string name="tap_error_active_user_is_null">Could not find active user data. Please make sure the client app is authenticated.</string>
+    <string name="tap_error_we_are_experiencing_some_issues">Kami sedang mengalami masalah, silakan coba lagi nanti.</string>
+    <string name="tap_currently_unavailable">Sedang tidak tersedia</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
@@ -308,6 +316,7 @@
     <string name="tap_retype_password">Ketik Ulang Sandi</string>
     <string name="tap_search_for_country">Cari negara</string>
     <string name="tap_select_country">Pilih negara</string>
+    <string name="tap_hint_fullname">misal Bernama</string>
     <string name="tap_hint_username">misal user_1234</string>
     <string name="tap_hint_calling_code">+62</string>
     <string name="tap_hint_phone_number">12345678910</string>
@@ -316,6 +325,8 @@
     <string name="tap_hint_insert_name">Masukkan Nama</string>
     <string name="tap_login_confirmation">Sistem kami akan mengirimkan SMS verifikasi ke nomor %s. SMS tersebut berisi 6 digit kode untuk masuk ke aplikasi TapTalk.</string>
     <string name="tap_login_confirmation_title">Kirim SMS Verifikasi?</string>
+    <string name="tap_discard_changes">Hapus Perubahan</string>
+    <string name="tap_unsaved_progress_description">Anda memiliki perubahan yang belum disimpan di halaman ini. Apakah Anda yakin ingin menghapus perubahan yang dilakukan?</string>
 
     <!--General-->
     <string name="tap_allow">Izinkan</string>

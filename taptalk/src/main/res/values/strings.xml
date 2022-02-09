@@ -69,6 +69,7 @@
     <string name="tap_unread_messages">Unread Messages</string>
     <string name="tap_you_deleted_this_message">You deleted this message.</string>
     <string name="tap_group_unavailable">Sorry, this group is unavailable.</string>
+    <string name="tap_message_type_unsupported"><i>This message type is unsupported in the current app version.</i></string>
 
     <!--Group Chat-->
     <string name="tap_add_members">Add Members</string>
