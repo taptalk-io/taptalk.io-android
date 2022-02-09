@@ -129,7 +129,7 @@ public class TapTalk implements LifecycleObserver {
     private int maxCaptionLength = DEFAULT_MAX_CAPTION_LENGTH;
 
     public TapTalkImplementationType implementationType;
-    public TapTalkSocketConnectionMode socketConnectionMode = TapTalkSocketConnectionMode.ALWAYS_ON;
+    public TapTalkSocketConnectionMode socketConnectionMode = TapTalkSocketConnectionMode.DEFAULT;
     public String tapTalkUserAgent = "android";
 
     public enum TapTalkEnvironment {
@@ -145,8 +145,8 @@ public class TapTalk implements LifecycleObserver {
     }
 
     public enum TapTalkSocketConnectionMode {
+        DEFAULT,
         ALWAYS_ON,
-        ALWAYS_OFF,
         CONNECT_IF_NEEDED
     }
 

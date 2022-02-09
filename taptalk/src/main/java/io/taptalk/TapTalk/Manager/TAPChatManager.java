@@ -1445,7 +1445,7 @@ public class TAPChatManager {
     }
 
     public void saveIncomingMessageAndDisconnect() {
-        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) != TapTalk.TapTalkSocketConnectionMode.ALWAYS_OFF) {
+        if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) != TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON) {
             TAPConnectionManager.getInstance(instanceKey).close();
         }
         saveUnsentMessage();

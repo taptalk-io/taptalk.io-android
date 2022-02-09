@@ -22,7 +22,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Interface.TapCommonInterface;
 import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
@@ -37,6 +36,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ALREADY_CONNECTED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_NO_INTERNET;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientSuccessMessages.SUCCESS_MESSAGE_CONNECT;
+import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON;
+import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkSocketConnectionMode.DEFAULT;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
 import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTING;
@@ -348,7 +349,9 @@ public class TAPConnectionManager {
         public void onSuccess(TAPErrorModel response) {
             if (CONNECTING == connectionStatus || DISCONNECTED == connectionStatus) {
                 reconnectOnly();
-            } else if (TapTalk.getTapTalkSocketConnectionMode(instanceKey) == TapTalk.TapTalkSocketConnectionMode.ALWAYS_ON && NOT_CONNECTED == connectionStatus) {
+            } else if ((TapTalk.getTapTalkSocketConnectionMode(instanceKey) == DEFAULT ||
+                    TapTalk.getTapTalkSocketConnectionMode(instanceKey) == ALWAYS_ON) &&
+                    NOT_CONNECTED == connectionStatus) {
                 connect(new TapCommonInterface() {
                     @Override
                     public void onSuccess(String successMessage) {
