@@ -416,7 +416,6 @@
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/tap_bg_button_destructive"
                 android:visibility="gone"
-                tools:visibility="visible"
                 app:layout_constraintTop_toBottomOf="@id/cl_password">
 
                 <TextView
@@ -450,6 +449,21 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/g_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tv_label_full_name, et_full_name, tv_label_bio, tv_character_count, et_bio, tv_label_username, et_username, tv_label_mobile_number, ll_country_code, et_mobile_number, tv_label_email_address, tv_label_email_address_optional, et_email_address"
+                android:visibility="gone"/>
+
+            <include
+                android:id="@+id/cl_basic_info"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="24dp"
+                layout="@layout/tap_layout_basic_information"
+                app:layout_constraintTop_toBottomOf="@id/tv_edit_profile_picture"/>
+
             <TextView
                 android:id="@+id/tv_version_code"
                 style="@style/tapVersionCodeTextStyle"
@@ -459,7 +473,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginBottom="22dp"
-                app:layout_constraintTop_toBottomOf="@id/cl_logout"
+                app:layout_constraintTop_toBottomOf="@id/cl_basic_info"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="V 1.2.0(2)"/>
