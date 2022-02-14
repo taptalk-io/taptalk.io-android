@@ -358,5 +358,8 @@
     <string name="tap_at">\@</string>
     <string name="tap_sms">SMS</string>
     <string name="tap_whatsapp">WhatsApp</string>
+    <string name="tap_account_details">Account Details</string>
+    <string name="tap_set_new_profile_picture">Set New Profile Picture</string>
+    <string name="bio">Bio</string>
 
 </resources>
