@@ -1860,8 +1860,8 @@ public class TAPChatManager {
         TAPUserModel user = null;
         TAPRoomModel group = null;
 
-        if (room.getType() == TYPE_PERSONAL) {
-            user = TAPContactManager.getInstance(instanceKey).getUserData(TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(room.getRoomID()));
+        if (room.getType() == TYPE_PERSONAL && getActiveUser() != null) {
+            user = TAPContactManager.getInstance(instanceKey).getUserData(getOtherUserIdFromRoom(room.getRoomID()));
         } else if (room.getType() == TYPE_GROUP || room.getType() == TYPE_TRANSACTION) {
             group = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(room.getRoomID());
         }
@@ -1888,9 +1888,13 @@ public class TAPChatManager {
             return TAPChatManager.getInstance(instanceKey).formattingSystemMessage(roomList.getLastMessage());
         } else if (roomList.getLastMessage().getRoom().getType() != TYPE_PERSONAL) {
             // Show group/channel room with last message
-            String sender = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(roomList.getLastMessage().getUser().getUserID()) ?
-                    context.getString(R.string.tap_you) :
-                    TAPUtils.getFirstWordOfString(roomList.getLastMessage().getUser().getFullname());
+            String sender;
+            if (getActiveUser() != null && getActiveUser().getUserID().equals(roomList.getLastMessage().getUser().getUserID())) {
+                sender = context.getString(R.string.tap_you);
+            }
+            else {
+                sender = TAPUtils.getFirstWordOfString(roomList.getLastMessage().getUser().getFullname());
+            }
             return String.format("%s: %s", sender, roomList.getLastMessage().getBody());
         } else {
             // Show personal room with last message
