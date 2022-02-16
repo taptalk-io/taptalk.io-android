@@ -29,10 +29,14 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.ATTACH_LOCATION;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_CAMERA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_GALLERY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_REMOVE_PHOTO;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_SAVE_IMAGE;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_SET_AS_MAIN;
 
 public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
 
     private String instanceKey = "";
+    private int imagePosition = -1;
     private RecyclerView recyclerView;
     private TAPAttachmentListener attachmentListener;
     private View.OnClickListener onClickListener = v -> dismiss();
@@ -51,6 +55,12 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
         this.instanceKey = instanceKey;
         this.isImagePickerBottomSheet = isImagePickerBottomSheet;
         this.attachmentListener = attachmentListener;
+    }
+
+    public TAPAttachmentBottomSheet(String instanceKey, int imagePosition, TAPAttachmentListener attachmentListener) {
+        this.instanceKey = instanceKey;
+        this.attachmentListener = attachmentListener;
+        this.imagePosition = imagePosition;
     }
 
     public static TAPAttachmentBottomSheet newInstance() {
@@ -77,13 +87,17 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
         recyclerView = view.findViewById(R.id.recyclerView);
 
         List<TAPAttachmentModel> attachmentList;
-        if (isImagePickerBottomSheet) {
-            attachmentList = createImagePickerMenu(instanceKey);
+        if (imagePosition != -1) {
+            attachmentList = createImageOptionsMenu(instanceKey);
+            recyclerView.setAdapter(new TAPAttachmentAdapter(instanceKey, imagePosition, attachmentList, attachmentListener, onClickListener));
         } else {
-            attachmentList = createAttachMenu(instanceKey);
+            if (isImagePickerBottomSheet) {
+                attachmentList = createImagePickerMenu(instanceKey);
+            } else {
+                attachmentList = createAttachMenu(instanceKey);
+            }
+            recyclerView.setAdapter(new TAPAttachmentAdapter(instanceKey, attachmentList, attachmentListener, onClickListener));
         }
-
-        recyclerView.setAdapter(new TAPAttachmentAdapter(instanceKey, attachmentList, attachmentListener, onClickListener));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
     }
@@ -162,6 +176,29 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
             titleResIds.add(R.string.tap_gallery);
             ids.add(SELECT_PICTURE_GALLERY);
         }
+
+        List<TAPAttachmentModel> attachMenus = new ArrayList<>();
+        int size = imageResIds.size();
+        for (int index = 0; index < size; index++) {
+            attachMenus.add(new TAPAttachmentModel(imageResIds.get(index), titleResIds.get(index), ids.get(index)));
+        }
+        return attachMenus;
+    }
+
+    private List<TAPAttachmentModel> createImageOptionsMenu(String instanceKey) {
+        List<Integer> imageResIds = new ArrayList<>(), titleResIds = new ArrayList<>(), ids = new ArrayList<>();
+
+            imageResIds.add(R.drawable.tap_ic_gallery_orange);
+            titleResIds.add(R.string.tap_set_as_main_photo);
+            ids.add(SELECT_SET_AS_MAIN);
+
+            imageResIds.add(R.drawable.tap_ic_download_orange);
+            titleResIds.add(R.string.tap_save_image);
+            ids.add(SELECT_SAVE_IMAGE);
+
+            imageResIds.add(R.drawable.tap_ic_delete_red);
+            titleResIds.add(R.string.tap_remove_photo);
+            ids.add(SELECT_REMOVE_PHOTO);
 
         List<TAPAttachmentModel> attachMenus = new ArrayList<>();
         int size = imageResIds.size();
