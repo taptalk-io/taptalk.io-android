@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -18,18 +17,14 @@ import android.text.TextWatcher
 import android.util.Patterns
 import android.view.View
 import android.view.ViewTreeObserver
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.widget.ImageViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -52,6 +47,7 @@ import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
 import kotlinx.android.synthetic.main.tap_activity_my_account.*
+import kotlinx.android.synthetic.main.tap_layout_basic_information.*
 import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
 class TAPMyAccountActivity : TAPBaseActivity() {
@@ -174,39 +170,35 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
 
         if (TapUI.getInstance(instanceKey).isChangeProfilePictureButtonVisible) {
-            ll_change_profile_picture.visibility = View.VISIBLE
-            civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-            ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+            tv_edit_profile_picture.visibility = View.VISIBLE
+            // TODO: 16/02/22 set multiple profile picture MU
+            tv_edit_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         } else {
-            ll_change_profile_picture.visibility = View.INVISIBLE
+            tv_edit_profile_picture.visibility = View.INVISIBLE
         }
 
         if (vm.currentProfilePicture.isEmpty()) {
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname)))
-            civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
-            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
-            tv_profile_picture_label.visibility = View.VISIBLE
+            showDefaultProfilePicture()
         } else {
-            glide.load(vm.currentProfilePicture)
-                    .apply(RequestOptions().placeholder(R.drawable.tap_bg_circle_9b9b9b))
-                    .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                            runOnUiThread {
-                                ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname)))
-                                civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
-                                tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
-                                tv_profile_picture_label.visibility = View.VISIBLE
-                            }
-                            return false
-                        }
-
-                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                            return false
-                        }
-
-                    })
-                    .into(civ_profile_picture)
-            ImageViewCompat.setImageTintList(civ_profile_picture, null)
+            // TODO: 16/02/22 set viewpager MU
+//            glide.load(vm.currentProfilePicture)
+//                    .apply(RequestOptions().placeholder(R.drawable.tap_bg_circle_9b9b9b))
+//                    .listener(object : RequestListener<Drawable> {
+//                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+//                            runOnUiThread {
+//                                vp_profile_picture.setBackgroundColor(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname))
+//                                tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
+//                                tv_profile_picture_label.visibility = View.VISIBLE
+//                            }
+//                            return false
+//                        }
+//
+//                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+//                            return false
+//                        }
+//
+//                    })
+//                    .into(civ_profile_picture)
             tv_profile_picture_label.visibility = View.GONE
         }
 
@@ -220,12 +212,17 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tv_country_code.text = "+" + vm.myUserModel.countryCallingCode
         et_mobile_number.setText(vm.myUserModel.phone)
         et_email_address.setText(vm.myUserModel.email)
+        tv_title.text = vm.myUserModel.fullname
+        // TODO: 16/02/22 set bio info MU
+        setProfileInformation(tv_bio_view, g_bio, "lorem ipsum.")
+        setProfileInformation(tv_username_view, g_username, vm.myUserModel.username)
+        setProfileInformation(tv_mobile_number_view, g_mobile_number, vm.myUserModel.phone)
+        setProfileInformation(tv_email_view, g_email, vm.myUserModel.email)
         setTextVersionApp()
 
         iv_button_close.setOnClickListener { onBackPressed() }
         fl_container.setOnClickListener { clearAllFocus() }
         cl_form_container.setOnClickListener { clearAllFocus() }
-        fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
         cl_password.setOnClickListener { openChangePasswordPage() }
         cl_logout.setOnClickListener { promptUserLogout() }
 
@@ -253,12 +250,18 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         tv_label_password.visibility = View.GONE
         cl_password.visibility = View.GONE
-        fl_button_update.visibility = View.GONE
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cl_password.background = getDrawable(R.drawable.tap_bg_text_field_inactive_ripple)
-            cl_logout.background = getDrawable(R.drawable.tap_bg_text_field_inactive_ripple)
             sv_profile.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
+        }
+    }
+
+    private fun setProfileInformation(textView: TextView, group: View, textValue: String?) {
+        if (textValue.isNullOrEmpty()) {
+            group.visibility = View.GONE
+        } else {
+            group.visibility = View.VISIBLE
+            textView.text = textValue
         }
     }
 
@@ -272,19 +275,23 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPAttachmentBottomSheet(instanceKey, true, profilePicturePickerListener).show(supportFragmentManager, "")
     }
 
+    // TODO: 16/02/22 remove pp from list & viewpager MU
     private fun removeProfilePicture() {
         vm.profilePictureUri = null
         reloadProfilePicture(vm.profilePictureUri, false, false)
+    }
+
+    private fun showDefaultProfilePicture() {
+        vp_profile_picture.setBackgroundColor(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname))
+        tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
+        tv_profile_picture_label.visibility = View.VISIBLE
     }
 
     private fun reloadProfilePicture(imageUri: Uri?, showErrorMessage: Boolean, uploadPicture: Boolean) {
         if (null == imageUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
 
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname)))
-            civ_profile_picture.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_bg_circle_9b9b9b))
-            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
-            tv_profile_picture_label.visibility = View.VISIBLE
+            showDefaultProfilePicture()
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.GONE
 
@@ -294,9 +301,10 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         } else {
             vm.formCheck[indexProfilePicture] = stateValid
 
-            glide.load(imageUri).into(civ_profile_picture)
-            ImageViewCompat.setImageTintList(civ_profile_picture, null)
-            tv_profile_picture_label.visibility = View.GONE
+            // TODO: 16/02/22 load multiple pp MU
+//            glide.load(imageUri).into(civ_profile_picture)
+//            ImageViewCompat.setImageTintList(civ_profile_picture, null)
+//            tv_profile_picture_label.visibility = View.GONE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.VISIBLE
 
@@ -309,18 +317,15 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun reloadProfilePicture(imageUrl: String?, placeholder: Drawable) {
         if (null == imageUrl) {
             vm.formCheck[indexProfilePicture] = stateEmpty
-
-            ImageViewCompat.setImageTintList(civ_profile_picture, ColorStateList.valueOf(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname)))
-            glide.load(R.drawable.tap_bg_circle_9b9b9b).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
-            tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
-            tv_profile_picture_label.visibility = View.VISIBLE
+            showDefaultProfilePicture()
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.GONE
         } else {
-            vm.formCheck[indexProfilePicture] = stateValid
-            ImageViewCompat.setImageTintList(civ_profile_picture, null)
-            glide.load(imageUrl).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
-            tv_profile_picture_label.visibility = View.GONE
+            // TODO: 16/02/22 set multiple pp MU
+//            vm.formCheck[indexProfilePicture] = stateValid
+//            ImageViewCompat.setImageTintList(civ_profile_picture, null)
+//            glide.load(imageUrl).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
+//            tv_profile_picture_label.visibility = View.GONE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.VISIBLE
         }
@@ -399,29 +404,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                                 vm.formCheck[indexEmail] != stateUnchanged ||
                                 vm.formCheck[indexPassword] != stateUnchanged)) {
             // All forms valid
-            enableContinueButton()
         } else {
             // No changes / has invalid forms
-            disableContinueButton()
         }
-    }
-
-    private fun enableContinueButton() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            fl_button_update.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active_ripple)
-        } else {
-            fl_button_update.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_active)
-        }
-        //fl_button_update.setOnClickListener { register() }
-    }
-
-    private fun disableContinueButton() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            fl_button_update.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive_ripple)
-        } else {
-            fl_button_update.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_button_inactive)
-        }
-        fl_button_update.setOnClickListener(null)
     }
 
     private fun clearAllFocus() {
@@ -480,10 +465,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun disableEditing() {
         iv_button_close.setOnClickListener(null)
-        civ_profile_picture.setOnClickListener(null)
-        ll_change_profile_picture.setOnClickListener(null)
-        fl_remove_profile_picture.setOnClickListener(null)
-        fl_button_update.setOnClickListener(null)
+        tv_edit_profile_picture.setOnClickListener(null)
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_white))
         TAPUtils.rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
@@ -505,20 +487,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             return
         }
         iv_button_close.setOnClickListener { onBackPressed() }
-        civ_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        ll_change_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        fl_remove_profile_picture.setOnClickListener { removeProfilePicture() }
+        tv_edit_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
+        // TODO: 16/02/22 change button to edit pp MU
         //fl_button_update.setOnClickListener { updateProfile() }
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey))
         iv_button_close.clearAnimation()
-
-        tv_label_change_profile_picture.text = getString(R.string.tap_change)
-        tv_label_change_profile_picture.setTextColor(vm.clickableLabelFontColor)
-        iv_edit_profile_picture_icon.visibility = View.VISIBLE
-        civ_profile_picture_overlay.visibility = View.GONE
-        pb_profile_picture_progress.visibility = View.GONE
-        pb_profile_picture_progress.progress = 0
 
         // TODO temporarily disable editing
 //        et_full_name.isEnabled = true
@@ -534,18 +508,10 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun showProfilePictureUploading() {
         iv_button_close.setOnClickListener(null)
-        civ_profile_picture.setOnClickListener(null)
-        ll_change_profile_picture.setOnClickListener(null)
+        tv_edit_profile_picture.setOnClickListener(null)
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
         TAPUtils.rotateAnimateInfinitely(this, iv_button_close)
-
-        tv_label_change_profile_picture.text = getString(R.string.tap_uploading)
-        tv_label_change_profile_picture.setTextColor(ContextCompat.getColor(this, R.color.tapColorTextMedium))
-        iv_edit_profile_picture_icon.visibility = View.GONE
-        civ_profile_picture_overlay.visibility = View.VISIBLE
-        pb_profile_picture_progress.visibility = View.VISIBLE
-        pb_profile_picture_progress.progress = 0
     }
 
     private val profilePicturePickerListener = object : TAPAttachmentListener(instanceKey) {
@@ -656,7 +622,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            disableContinueButton()
             checkFullNameTimer.cancel()
             checkFullNameTimer.start()
         }
@@ -668,7 +633,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            disableContinueButton()
             checkEmailAddressTimer.cancel()
             checkEmailAddressTimer.start()
         }
@@ -695,7 +659,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private val scrollViewListener = ViewTreeObserver.OnScrollChangedListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val y = sv_profile.scrollY
-            val h = iv_profile_background.height
+            val h = vp_profile_picture.height
             when {
                 y == 0 ->
                     cl_action_bar.elevation = 0f
@@ -731,8 +695,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 UploadProgressLoading -> {
-                    pb_profile_picture_progress.progress = intent.getIntExtra(UploadProgress, 0)
-                    pb_profile_picture_progress.visibility = View.VISIBLE
+                    fl_loading.visibility = View.VISIBLE
                 }
                 UploadProgressFinish -> {
                     val updatedUserModel = intent.getParcelableExtra<TAPUserModel>(K_USER)
@@ -740,7 +703,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     if (updatedUserModel?.userID == vm.myUserModel.userID) {
                         vm.isUploadingProfilePicture = false
                         enableEditing()
-                        reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
+                        // TODO: 16/02/22 reload PP MU
+//                        reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
                     }
                     androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))
                 }
@@ -748,7 +712,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     val userID = intent.getStringExtra(K_USER_ID)
                     if (null != userID && userID == vm.myUserModel.userID) {
                         vm.isUploadingProfilePicture = false
-                        reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
+                        // TODO: 16/02/22 reload PP MU
+//                        reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
                         enableEditing()
                         TapTalkDialog.Builder(this@TAPMyAccountActivity)
                                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
