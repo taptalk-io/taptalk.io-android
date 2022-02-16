@@ -42,6 +42,7 @@ import io.taptalk.TapTalk.Manager.TAPFileUploadManager
 import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
+import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
@@ -117,7 +118,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 .setPrimaryButtonTitle(getString(R.string.tap_yes))
                 .setPrimaryButtonListener { showViewState() }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
                 .setSecondaryButtonListener(true) {}
                 .show()
         } else {
@@ -187,8 +188,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         if (TapUI.getInstance(instanceKey).isChangeProfilePictureButtonVisible) {
             tv_edit_profile_picture.visibility = View.VISIBLE
-            // TODO: 16/02/22 set multiple profile picture MU
-            tv_edit_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         } else {
             tv_edit_profile_picture.visibility = View.INVISIBLE
         }
@@ -278,6 +277,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tv_edit_save_btn.setOnClickListener { showEditState() }
         tv_edit_save_btn.text = getString(R.string.tap_edit)
         tv_edit_profile_picture.text = getString(R.string.tap_set_new_profile_picture)
+        tv_edit_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
         g_edit.visibility = View.GONE
         cl_basic_info.visibility = View.VISIBLE
         tv_version_code.visibility = View.VISIBLE
@@ -285,11 +285,25 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun showEditState() {
         state = ViewState.EDIT
-        // TODO: 16/02/22 save edit profile API MU
         tv_title.text = getString(R.string.tap_account_details)
-        tv_edit_save_btn.setOnClickListener { showViewState() }
+        tv_edit_save_btn.setOnClickListener {
+            TapTalkDialog.Builder(this@TAPMyAccountActivity)
+                .setTitle(getString(R.string.tap_save_changes_question))
+                .setMessage(getString(R.string.tap_save_changes_confirmation))
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_save))
+                .setPrimaryButtonListener {
+                    // TODO: 16/02/22 save edit profile API MU
+                    showViewState()
+                }
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                .setSecondaryButtonListener(true) {}
+                .show()
+             }
         tv_edit_save_btn.text = getString(R.string.tap_save)
         tv_edit_profile_picture.text = getString(R.string.tap_edit_profile_picture)
+        tv_edit_profile_picture.setOnClickListener { showProfilePictureOptionsBottomSheet() }
         g_edit.visibility = View.VISIBLE
         cl_basic_info.visibility = View.GONE
         tv_version_code.visibility = View.GONE
@@ -312,6 +326,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private fun showProfilePicturePickerBottomSheet() {
         TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
         TAPAttachmentBottomSheet(instanceKey, true, profilePicturePickerListener).show(supportFragmentManager, "")
+    }
+
+    private fun showProfilePictureOptionsBottomSheet() {
+        TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
+        // TODO: 16/02/22 set image position MU
+        TAPAttachmentBottomSheet(instanceKey, 0, profilePictureOptionListener).show(supportFragmentManager, "")
     }
 
     // TODO: 16/02/22 remove pp from list & viewpager MU
@@ -560,6 +580,43 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         override fun onGallerySelected() {
             TAPUtils.pickImageFromGallery(this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_GALLERY, false)
+        }
+    }
+
+    private val profilePictureOptionListener = object : TAPAttachmentListener(instanceKey) {
+        override fun onSaveImageToGallery(message: TAPMessageModel?) {
+            // TODO: 16/02/22 save image to gallery MU
+        }
+
+        override fun setAsMain(imagePosition: Int) {
+            TapTalkDialog.Builder(this@TAPMyAccountActivity)
+                .setTitle(getString(R.string.tap_set_as_main_question))
+                .setMessage(getString(R.string.tap_set_as_main_confirmation))
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_replace))
+                .setPrimaryButtonListener {
+                    // TODO: 16/02/22 set pp as main MU
+                }
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                .setSecondaryButtonListener(true) {}
+                .show()
+        }
+
+        override fun onImageRemoved(imagePosition: Int) {
+            TapTalkDialog.Builder(this@TAPMyAccountActivity)
+                .setTitle(getString(R.string.tap_remove_photo_question))
+                .setMessage(getString(R.string.tap_remove_photo_confirmation))
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_remove))
+                .setPrimaryButtonListener {
+
+                    // TODO: 16/02/22 remove pp MU
+                }
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setSecondaryButtonListener(true) {}
+                .show()
         }
     }
 
