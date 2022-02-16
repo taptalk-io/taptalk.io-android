@@ -361,5 +361,12 @@
     <string name="tap_account_details">Account Details</string>
     <string name="tap_set_new_profile_picture">Set New Profile Picture</string>
     <string name="bio">Bio</string>
+    <string name="tap_save">Simpan</string>
+    <string name="tap_edit_profile_picture">Edit Profile Picture</string>
+    <string name="tap_you_have_unsaved_changes">You have unsaved changes!</string>
+    <string name="tap_unsaved_changes_confirmation">All updates will not be saved. Are you sure you want to continue?</string>
+    <string name="tap_yes">Yes</string>
+    <string name="tap_logout">Logout</string>
+    <string name="tap_zero_of_hundred">0/100</string>
 
 </resources>
