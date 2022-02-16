@@ -65,7 +65,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private val stateEmpty = -2
 
     private lateinit var vm: TAPRegisterViewModel
-
+    private var state: ViewState = ViewState.VIEW
     private lateinit var glide: RequestManager
 
     companion object {
@@ -79,6 +79,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             if (context is Activity) {
                 context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay)
             }
+        }
+        enum class ViewState {
+            VIEW, EDIT
         }
     }
 
@@ -106,9 +109,21 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     override fun onBackPressed() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
+        } else if (ViewState.EDIT == state) {
+            TapTalkDialog.Builder(this)
+                .setTitle(getString(R.string.tap_you_have_unsaved_changes))
+                .setMessage(getString(R.string.tap_unsaved_changes_confirmation))
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_yes))
+                .setPrimaryButtonListener { showViewState() }
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setSecondaryButtonListener(true) {}
+                .show()
+        } else {
+            super.onBackPressed()
+            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
         }
-        super.onBackPressed()
-        overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -162,6 +177,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         //et_full_name.addTextChangedListener(fullNameWatcher)
         //et_email_address.addTextChangedListener(emailWatcher)
+        et_bio.addTextChangedListener(bioWatcher)
 
         if (TapUI.getInstance(instanceKey).isLogoutButtonVisible) {
             cl_logout.visibility = View.VISIBLE
@@ -212,7 +228,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tv_country_code.text = "+" + vm.myUserModel.countryCallingCode
         et_mobile_number.setText(vm.myUserModel.phone)
         et_email_address.setText(vm.myUserModel.email)
-        tv_title.text = vm.myUserModel.fullname
+        showViewState()
         // TODO: 16/02/22 set bio info MU
         setProfileInformation(tv_bio_view, g_bio, "lorem ipsum.")
         setProfileInformation(tv_username_view, g_username, vm.myUserModel.username)
@@ -254,6 +270,29 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             sv_profile.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
         }
+    }
+
+    private fun showViewState() {
+        state = ViewState.VIEW
+        tv_title.text = vm.myUserModel.fullname
+        tv_edit_save_btn.setOnClickListener { showEditState() }
+        tv_edit_save_btn.text = getString(R.string.tap_edit)
+        tv_edit_profile_picture.text = getString(R.string.tap_set_new_profile_picture)
+        g_edit.visibility = View.GONE
+        cl_basic_info.visibility = View.VISIBLE
+        tv_version_code.visibility = View.VISIBLE
+    }
+
+    private fun showEditState() {
+        state = ViewState.EDIT
+        // TODO: 16/02/22 save edit profile API MU
+        tv_title.text = getString(R.string.tap_account_details)
+        tv_edit_save_btn.setOnClickListener { showViewState() }
+        tv_edit_save_btn.text = getString(R.string.tap_save)
+        tv_edit_profile_picture.text = getString(R.string.tap_edit_profile_picture)
+        g_edit.visibility = View.VISIBLE
+        cl_basic_info.visibility = View.GONE
+        tv_version_code.visibility = View.GONE
     }
 
     private fun setProfileInformation(textView: TextView, group: View, textValue: String?) {
@@ -613,6 +652,16 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             tv_version_code.text = String.format("V %s(%s)", versionName, versionNumber)
         }catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
+        }
+    }
+
+    private val bioWatcher = object : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+        override fun afterTextChanged(p0: Editable?) {
+            tv_character_count.text = "${et_bio.text.length}/100"
         }
     }
 
