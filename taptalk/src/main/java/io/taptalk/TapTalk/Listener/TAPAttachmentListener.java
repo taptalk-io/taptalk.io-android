@@ -94,4 +94,14 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     public void onDeleteMessage(String roomID, TAPMessageModel message) {
         TAPDataManager.getInstance(instanceKey).deleteMessagesAPI(roomID, message.getMessageID(), true);
     }
+
+    @Override
+    public void setAsMain(int imagePosition) {
+
+    }
+
+    @Override
+    public void onImageRemoved(int imagePosition) {
+
+    }
 }

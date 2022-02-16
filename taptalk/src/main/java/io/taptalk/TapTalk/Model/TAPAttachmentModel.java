@@ -10,6 +10,7 @@ public class TAPAttachmentModel {
     private int icon;
     private int titleIds;
     private int id;
+    private int imagePosition;
 
     public static final int SELECT_PICTURE_CAMERA = 1;
     public static final int SELECT_PICTURE_GALLERY = 2;
@@ -20,6 +21,10 @@ public class TAPAttachmentModel {
     public static final int ATTACH_AUDIO = 14;
     public static final int ATTACH_LOCATION = 15;
     public static final int ATTACH_CONTACT = 16;
+
+    public static final int SELECT_SET_AS_MAIN = 101;
+    public static final int SELECT_SAVE_IMAGE = 102;
+    public static final int SELECT_REMOVE_PHOTO = 103;
 
     public static final int LONG_PRESS_REPLY = 201;
     public static final int LONG_PRESS_FORWARD = 202;
@@ -78,5 +83,13 @@ public class TAPAttachmentModel {
 
     public void setTitleIds(int titleIds) {
         this.titleIds = titleIds;
+    }
+
+    public int getImagePosition() {
+        return imagePosition;
+    }
+
+    public void setImagePosition(int imagePosition) {
+        this.imagePosition = imagePosition;
     }
 }

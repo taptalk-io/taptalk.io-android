@@ -41,4 +41,8 @@ public interface TapTalkAttachmentInterface {
     void onSendMessageSelected(String username);
 
     void onDeleteMessage(String roomID, TAPMessageModel message);
+
+    void setAsMain(int imagePosition);
+
+    void onImageRemoved(int imagePosition);
 }
