@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         tools:text="@tools:sample/lorem"
-        style="@style/tapPopupDialogTitleStyle"
+        style="@style/tapActionSheetDefaultLabelStyle"
         app:layout_constraintTop_toBottomOf="@id/tv_label_bio_view"
         app:layout_constraintStart_toStartOf="@id/tv_label_bio_view"
         app:layout_constraintEnd_toEndOf="@id/tv_label_bio_view"/>
@@ -75,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         tools:text="@tools:sample/lorem"
-        style="@style/tapPopupDialogTitleStyle"
+        style="@style/tapActionSheetDefaultLabelStyle"
         app:layout_constraintTop_toBottomOf="@id/tv_label_username_view"
         app:layout_constraintStart_toStartOf="@id/tv_label_bio_view"
         app:layout_constraintEnd_toEndOf="@id/tv_label_bio_view"/>
@@ -115,7 +115,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         tools:text="@tools:sample/lorem"
-        style="@style/tapPopupDialogTitleStyle"
+        style="@style/tapActionSheetDefaultLabelStyle"
         app:layout_constraintTop_toBottomOf="@id/tv_label_mobile_number_view"
         app:layout_constraintStart_toStartOf="@id/tv_label_bio_view"
         app:layout_constraintEnd_toEndOf="@id/tv_label_bio_view"/>
@@ -155,7 +155,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         tools:text="@tools:sample/lorem"
-        style="@style/tapPopupDialogTitleStyle"
+        style="@style/tapActionSheetDefaultLabelStyle"
         app:layout_constraintTop_toBottomOf="@id/tv_label_email_view"
         app:layout_constraintStart_toStartOf="@id/tv_label_bio_view"
         app:layout_constraintEnd_toEndOf="@id/tv_label_bio_view"/>
