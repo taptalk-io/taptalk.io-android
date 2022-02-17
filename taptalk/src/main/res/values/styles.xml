@@ -764,11 +764,16 @@
         <item name="android:textSize">16sp</item>
     </style>
     
-    <style name="tapSpacedPrimaryTextStyle" parent="tapFontFamilyBold">
+    <style name="tapChatProfileTitleLabelStyle" parent="tapFontFamilyBold">
         <item name="android:letterSpacing" tools:targetApi="lollipop">0.2</item>
         <item name="android:textColor">@color/tapColorPrimary</item>
         <item name="android:textSize">12sp</item>
         <item name="textAllCaps">true</item>
     </style>
 
+    <style name="tapChatProfileBioLetterCountStyle" parent="tapFontFamilyRegular">
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:textColor">@color/tapAlbumCountLabelColor</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

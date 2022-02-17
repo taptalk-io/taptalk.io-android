@@ -167,6 +167,7 @@
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/tap_bg_text_field_inactive"
                 android:imeOptions="actionNext"
+                android:hint="@string/tap_input_your_bio_here"
                 android:inputType="textCapSentences|textMultiLine"
                 android:maxLength="100"
                 android:padding="15dp"
