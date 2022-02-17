@@ -1,91 +1,51 @@
 package io.taptalk.TapTalk.View.Activity
 
 import android.Manifest
-import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
-import io.taptalk.TapTalk.Manager.TAPGroupManager.getGroupData
-import io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity.Companion.start
-import io.taptalk.TapTalk.Manager.TAPGroupManager.addGroupData
-import io.taptalk.TapTalk.Manager.TAPGroupManager.removeGroupData
-import io.taptalk.TapTalk.Manager.TAPGroupManager.refreshRoomList
-import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
-import android.widget.FrameLayout
-import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
-import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter
-import androidx.recyclerview.widget.GridLayoutManager
-import android.view.ViewTreeObserver.OnScrollChangedListener
-import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
-import com.bumptech.glide.RequestManager
-import android.os.Bundle
-import io.taptalk.TapTalk.R
-import com.bumptech.glide.Glide
-import io.taptalk.TapTalk.Helper.TAPBroadcastManager
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
-import android.content.pm.PackageManager
-import android.content.Intent
 import android.app.Activity
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode
-import io.taptalk.TapTalk.Manager.TAPGroupManager
-import android.os.Parcelable
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
-import androidx.lifecycle.ViewModelProvider
-import io.taptalk.TapTalk.Const.TAPDefaultConstant
-import io.taptalk.TapTalk.Manager.TAPContactManager
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType
-import io.taptalk.TapTalk.Manager.TAPChatManager
-import io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel
-import io.taptalk.TapTalk.Manager.TAPDataManager
-import androidx.recyclerview.widget.RecyclerView.Recycler
-import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
-import androidx.recyclerview.widget.SimpleItemAnimator
-import io.taptalk.TapTalk.Model.TAPImageURL
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType
-import io.taptalk.TapTalk.Manager.TapUI
-import io.taptalk.TapTalk.Model.TAPUserModel
-import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity
-import io.taptalk.TapTalk.View.Activity.TAPEditGroupSubjectActivity
-import io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity
-import io.taptalk.TapTalk.Helper.TapTalkDialog
-import io.taptalk.TapTalk.View.Activity.TapUIChatActivity
-import io.taptalk.TapTalk.Model.TAPMessageModel
-import io.taptalk.TapTalk.Helper.TAPUtils
-import androidx.core.app.ActivityCompat
-import io.taptalk.TapTalk.Manager.TAPFileDownloadManager
-import androidx.core.content.ContextCompat
-import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity.ChatProfileInterface
-import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
-import io.taptalk.TapTalk.Manager.TAPCacheManager
-import io.taptalk.TapTalk.Helper.TapTalk
-import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity
-import io.taptalk.TapTalk.API.View.TAPDefaultDataView
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
-import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse
-import android.os.Build
-import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
-import io.taptalk.TapTalk.Manager.TAPOldDataManager
-import io.taptalk.TapTalk.Listener.TAPDatabaseListener
-import io.taptalk.TapTalk.Model.TAPErrorModel
-import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse
-import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver.OnScrollChangedListener
 import android.widget.ImageView
-import io.taptalk.TapTalk.Model.TAPRoomModel
-import java.lang.IndexOutOfBoundsException
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
+import androidx.recyclerview.widget.SimpleItemAnimator
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
+import io.taptalk.TapTalk.API.View.TAPDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
+import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
+import io.taptalk.TapTalk.Helper.TAPBroadcastManager
+import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
+import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Listener.TAPDatabaseListener
+import io.taptalk.TapTalk.Manager.*
+import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
+import io.taptalk.TapTalk.Model.*
+import io.taptalk.TapTalk.Model.ResponseModel.*
+import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity.Companion.start
+import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter
+import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
 import java.util.*
-import kotlin.jvm.JvmOverloads
+import kotlinx.android.synthetic.main.tap_activity_chat_profile.*
+import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
 class TAPChatProfileActivity : TAPBaseActivity() {
-    private var flLoading: FrameLayout? = null
-    private var ivButtonBack: ImageView? = null
-    private var ivSaving: ImageView? = null
-    private var tvTitle: TextView? = null
-    private var tvLoadingText: TextView? = null
-    private var rvChatProfile: RecyclerView? = null
+   
     private var adapter: TapChatProfileAdapter? = null
     private var glm: GridLayoutManager? = null
     private var sharedMediaPagingScrollListener: OnScrollChangedListener? = null
@@ -187,12 +147,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
     private fun initView() {
-        flLoading = findViewById(R.id.fl_loading)
-        ivButtonBack = findViewById(R.id.iv_button_back)
-        ivSaving = findViewById(R.id.iv_loading_image)
-        tvTitle = findViewById(R.id.tv_title)
-        tvLoadingText = findViewById(R.id.tv_loading_text)
-        rvChatProfile = findViewById(R.id.rv_chat_profile)
         window.setBackgroundDrawable(null)
         updateView()
         if (!vm!!.isGroupMemberProfile) {
@@ -219,7 +173,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 }
             }
         }
-        glm.setSpanSizeLookup(object : SpanSizeLookup() {
+        (glm as GridLayoutManager).setSpanSizeLookup(object : SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 return if (adapter!!.getItemAt(position).type == TapChatProfileItemModel.TYPE_MEDIA_THUMBNAIL) {
                     1
@@ -228,15 +182,15 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 }
             }
         })
-        rvChatProfile.setAdapter(adapter)
-        rvChatProfile.setLayoutManager(glm)
-        rvChatProfile.addOnScrollListener(scrollListener)
-        val recyclerAnimator = rvChatProfile.getItemAnimator() as SimpleItemAnimator?
+        rv_chat_profile.setAdapter(adapter)
+        rv_chat_profile.setLayoutManager(glm)
+        rv_chat_profile.addOnScrollListener(scrollListener)
+        val recyclerAnimator = rv_chat_profile.getItemAnimator() as SimpleItemAnimator?
         if (null != recyclerAnimator) {
             recyclerAnimator.supportsChangeAnimations = false
         }
-        ivButtonBack.setOnClickListener(View.OnClickListener { v: View? -> onBackPressed() })
-        flLoading.setOnClickListener(View.OnClickListener { v: View? -> })
+        iv_button_back.setOnClickListener { onBackPressed() }
+        fl_loading.setOnClickListener { }
 
         // Update room data
         if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
@@ -248,7 +202,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             TAPDataManager.getInstance(instanceKey).getChatRoomData(vm!!.room.roomID, getRoomView)
             if (!vm!!.isGroupMemberProfile) {
                 // Change title to Group Details
-                tvTitle.setText(R.string.tap_group_details)
+                tv_title.setText(R.string.tap_group_details)
             }
         }
     }
@@ -817,39 +771,39 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     private fun showLoadingPopup(message: String) {
         vm!!.isApiCallOnProgress = true
         runOnUiThread {
-            ivSaving!!.setImageDrawable(
+            iv_loading_image.setImageDrawable(
                 ContextCompat.getDrawable(
                     this,
                     R.drawable.tap_ic_loading_progress_circle_white
                 )
             )
-            if (null == ivSaving!!.animation) {
-                TAPUtils.rotateAnimateInfinitely(this, ivSaving)
+            if (null == iv_loading_image.animation) {
+                TAPUtils.rotateAnimateInfinitely(this, iv_loading_image)
             }
-            tvLoadingText!!.text = message
-            flLoading!!.visibility = View.VISIBLE
+            tv_loading_text!!.text = message
+            fl_loading!!.visibility = View.VISIBLE
         }
     }
 
     private fun hideLoadingPopup(message: String) {
         //vm.setApiCallOnProgress(false);
         runOnUiThread {
-            ivSaving!!.setImageDrawable(
+            iv_loading_image.setImageDrawable(
                 ContextCompat.getDrawable(
                     this,
                     R.drawable.tap_ic_checklist_pumpkin
                 )
             )
-            ivSaving!!.clearAnimation()
-            tvLoadingText!!.text = message
-            flLoading!!.setOnClickListener { v: View? -> hideLoadingPopup() }
+            iv_loading_image.clearAnimation()
+            tv_loading_text!!.text = message
+            fl_loading!!.setOnClickListener { v: View? -> hideLoadingPopup() }
             Handler().postDelayed({ this.hideLoadingPopup() }, 1000L)
         }
     }
 
     private fun hideLoadingPopup() {
         vm!!.isApiCallOnProgress = false
-        flLoading!!.visibility = View.GONE
+        fl_loading!!.visibility = View.GONE
     }
 
     private fun showErrorDialog(title: String, message: String) {
@@ -963,7 +917,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         }
     }
     private val getRoomView: TAPDefaultDataView<TAPCreateRoomResponse> =
-        object : TAPDefaultDataView<TAPCreateRoomResponse?>() {
+        object : TAPDefaultDataView<TAPCreateRoomResponse>() {
             override fun onSuccess(response: TAPCreateRoomResponse) {
                 vm!!.room = response.room
                 vm!!.room.participants = response.participants
@@ -973,7 +927,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
     private val getUserView: TAPDefaultDataView<TAPGetUserResponse> =
-        object : TAPDefaultDataView<TAPGetUserResponse?>() {
+        object : TAPDefaultDataView<TAPGetUserResponse>() {
             override fun onSuccess(response: TAPGetUserResponse) {
                 val user = response.user
                 TAPContactManager.getInstance(instanceKey).updateUserData(user)
@@ -996,7 +950,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
     private val deleteRoomView: TAPDefaultDataView<TAPCommonResponse> =
-        object : TAPDefaultDataView<TAPCommonResponse?>() {
+        object : TAPDefaultDataView<TAPCommonResponse>() {
             override fun startLoading() {
                 showLoadingPopup(vm!!.loadingStartText)
             }
@@ -1015,17 +969,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                                             getInstance(instanceKey).removeGroupData(vm!!.room.roomID)
                                             getInstance(instanceKey).refreshRoomList = true
                                             runOnUiThread {
-                                                ivSaving!!.setImageDrawable(
+                                                iv_loading_image.setImageDrawable(
                                                     ContextCompat.getDrawable(
                                                         this@TAPChatProfileActivity,
                                                         R.drawable.tap_ic_checklist_pumpkin
                                                     )
                                                 )
-                                                ivSaving!!.clearAnimation()
-                                                tvLoadingText!!.text = vm!!.loadingEndText
+                                                iv_loading_image.clearAnimation()
+                                                tv_loading_text!!.text = vm!!.loadingEndText
                                                 Handler().postDelayed({
                                                     vm!!.isApiCallOnProgress = false
-                                                    flLoading!!.visibility = View.GONE
+                                                    fl_loading!!.visibility = View.GONE
                                                     setResult(RESULT_OK)
                                                     finish()
                                                     overridePendingTransition(
@@ -1067,7 +1021,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
     private val addContactView: TAPDefaultDataView<TAPAddContactResponse> =
-        object : TAPDefaultDataView<TAPAddContactResponse?>() {
+        object : TAPDefaultDataView<TAPAddContactResponse>() {
             override fun startLoading() {
                 showLoadingPopup(getString(R.string.tap_adding))
             }
@@ -1092,7 +1046,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
     private val userActionView: TAPDefaultDataView<TAPCreateRoomResponse> =
-        object : TAPDefaultDataView<TAPCreateRoomResponse?>() {
+        object : TAPDefaultDataView<TAPCreateRoomResponse>() {
             override fun startLoading() {
                 showLoadingPopup(vm!!.loadingStartText)
             }
@@ -1126,13 +1080,13 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
     private val sharedMediaListener: TAPDatabaseListener<TAPMessageEntity> =
-        object : TAPDatabaseListener<TAPMessageEntity?>() {
+        object : TAPDatabaseListener<TAPMessageEntity>() {
             override fun onSelectFinished(entities: List<TAPMessageEntity>) {
                 Thread {
                     if (0 == entities.size && 0 == vm!!.sharedMedias.size) {
                         // No shared media
                         vm!!.isFinishedLoadingSharedMedia = true
-                        runOnUiThread { rvChatProfile!!.post { hideSharedMediaLoading() } }
+                        runOnUiThread { rv_chat_profile!!.post { hideSharedMediaLoading() } }
                     } else {
                         // Has shared media
                         val previousSize = vm!!.sharedMedias.size
@@ -1161,7 +1115,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                                             }
                                         }
                                     }
-                                    rvChatProfile!!.viewTreeObserver.addOnScrollChangedListener(
+                                    rv_chat_profile!!.viewTreeObserver.addOnScrollChangedListener(
                                         sharedMediaPagingScrollListener
                                     )
                                 }
@@ -1172,7 +1126,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             // TODO: 10 May 2019 CALL API BEFORE?
                             vm!!.isFinishedLoadingSharedMedia = true
                             runOnUiThread {
-                                rvChatProfile!!.viewTreeObserver.removeOnScrollChangedListener(
+                                rv_chat_profile!!.viewTreeObserver.removeOnScrollChangedListener(
                                     sharedMediaPagingScrollListener
                                 )
                             }
@@ -1186,9 +1140,9 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             vm!!.sharedMedias[vm!!.sharedMedias.size - 1].created
                         vm!!.isLoadingSharedMedia = false
                         runOnUiThread {
-                            rvChatProfile!!.post {
+                            rv_chat_profile!!.post {
                                 hideSharedMediaLoading()
-                                rvChatProfile!!.post {
+                                rv_chat_profile!!.post {
                                     adapter!!.notifyItemRangeInserted(
                                         vm!!.menuItems.size + 2 + previousSize,
                                         entities.size
