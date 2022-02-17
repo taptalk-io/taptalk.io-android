@@ -26,8 +26,8 @@
             android:maxLines="1"
             android:text="@string/tap_account_details"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_edit_save_btn"
+            app:layout_constraintStart_toEndOf="@id/iv_button_close"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
@@ -43,7 +43,7 @@
 
         <TextView
             android:id="@+id/tv_edit_save_btn"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
