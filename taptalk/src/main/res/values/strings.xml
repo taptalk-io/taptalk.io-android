@@ -74,7 +74,7 @@
     <!--Group Chat-->
     <string name="tap_add_members">Add Members</string>
     <string name="tap_format_dd_selected_member_count">Group Members (%d/%d)</string>
-    <string name="tap_format_d_group_member_count">%d Members</string>
+    <string name="tap_format_d_group_member_count">%d members</string>
     <string name="tap_group_name">Group Name</string>
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>

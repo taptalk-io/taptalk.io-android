@@ -72,7 +72,7 @@
     <!--Group Chat-->
     <string name="tap_add_members">Tambah Anggota</string>
     <string name="tap_format_dd_selected_member_count">Anggota Grup (%d/%d)</string>
-    <string name="tap_format_d_group_member_count">%d Anggota</string>
+    <string name="tap_format_d_group_member_count">%d anggota</string>
     <string name="tap_group_name">Nama Grup</string>
     <string name="tap_group_picture">Foto Grup</string>
     <string name="tap_create_group">Buat Grup</string>
