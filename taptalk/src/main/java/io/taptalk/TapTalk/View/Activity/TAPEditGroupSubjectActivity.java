@@ -470,7 +470,7 @@ public class TAPEditGroupSubjectActivity extends TAPBaseActivity {
     }
 
     private void openChatGroupProfile() {
-        TAPChatProfileActivity.start(this, instanceKey, vm.getGroupData(), null);
+        TAPChatProfileActivity.Companion.start(this, instanceKey, vm.getGroupData(), null);
     }
 
     private void openChatRoom() {
