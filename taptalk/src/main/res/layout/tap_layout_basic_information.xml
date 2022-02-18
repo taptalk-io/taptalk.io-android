@@ -77,8 +77,8 @@
         tools:text="@tools:sample/lorem"
         style="@style/tapChatProfileMenuLabelStyle"
         app:layout_constraintTop_toBottomOf="@id/tv_label_username_view"
-        app:layout_constraintStart_toStartOf="@id/tv_label_bio_view"
-        app:layout_constraintEnd_toEndOf="@id/tv_label_bio_view"/>
+        app:layout_constraintStart_toStartOf="@id/tv_label_username_view"
+        app:layout_constraintEnd_toEndOf="@id/tv_label_username_view"/>
 
     <View
         android:id="@+id/v_separator_2"
@@ -117,8 +117,8 @@
         tools:text="@tools:sample/lorem"
         style="@style/tapChatProfileMenuLabelStyle"
         app:layout_constraintTop_toBottomOf="@id/tv_label_mobile_number_view"
-        app:layout_constraintStart_toStartOf="@id/tv_label_bio_view"
-        app:layout_constraintEnd_toEndOf="@id/tv_label_bio_view"/>
+        app:layout_constraintStart_toStartOf="@id/tv_label_mobile_number_view"
+        app:layout_constraintEnd_toEndOf="@id/tv_label_mobile_number_view"/>
 
     <View
         android:id="@+id/v_separator_3"
@@ -157,8 +157,8 @@
         tools:text="@tools:sample/lorem"
         style="@style/tapChatProfileMenuLabelStyle"
         app:layout_constraintTop_toBottomOf="@id/tv_label_email_view"
-        app:layout_constraintStart_toStartOf="@id/tv_label_bio_view"
-        app:layout_constraintEnd_toEndOf="@id/tv_label_bio_view"/>
+        app:layout_constraintStart_toStartOf="@id/tv_label_email_view"
+        app:layout_constraintEnd_toEndOf="@id/tv_label_email_view"/>
 
     <View
         android:id="@+id/v_separator_4"
@@ -167,7 +167,5 @@
         android:layout_marginTop="8dp"
         android:background="@color/tapDefaultBackgroundColor"
         app:layout_constraintTop_toBottomOf="@id/tv_email_view" />
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
