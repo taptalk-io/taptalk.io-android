@@ -1092,11 +1092,36 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 return;
             }
             vm.delete(message.getLocalID());
-            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO || message.getType() == TYPE_FILE) && null != message.getData() &&
-                    (null == message.getData().get(FILE_ID) || ((String) message.getData().get(FILE_ID)).isEmpty())) {
-                // Re-upload image/video
-                TAPChatManager.getInstance(instanceKey).retryUpload(TapUIChatActivity.this, message);
-            } else {
+            if ((message.getType() == TYPE_IMAGE ||
+                    message.getType() == TYPE_VIDEO ||
+                    message.getType() == TYPE_FILE)
+            ) {
+                if (null != message.getData() &&
+                        null != message.getData().get(FILE_ID) &&
+                        null != message.getData().get(FILE_URL) &&
+                        !(((String) message.getData().get(FILE_ID)).isEmpty()) &&
+                        !(((String) message.getData().get(FILE_URL)).isEmpty())
+                ) {
+                    // Resend message
+                    TAPChatManager.getInstance(instanceKey).resendMessage(message);
+                }
+                else if (null != message.getData() &&
+                        (null != message.getData().get(FILE_URI) &&
+                                !(((String) message.getData().get(FILE_URI)).isEmpty()))
+                ) {
+                    // Re-upload image/video
+                    TAPChatManager.getInstance(instanceKey).retryUpload(TapUIChatActivity.this, message);
+                }
+                else {
+                    // Data not found
+                    Toast.makeText(
+                            TapUIChatActivity.this,
+                            getString(R.string.tap_error_resend_media_data_not_found),
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            }
+            else {
                 // Resend message
                 TAPChatManager.getInstance(instanceKey).resendMessage(message);
             }

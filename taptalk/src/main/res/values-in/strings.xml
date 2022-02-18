@@ -200,6 +200,7 @@
     <string name="tap_error_message_data_empty">File upload failed: data is required in MessageModel.</string>
     <string name="tap_error_message_uri_empty">File upload failed: Uri is required in MessageModel data.</string>
     <string name="tap_error_message_uri_not_found">File upload failed: file Uri not found in Chat Manager.</string>
+    <string name="tap_error_resend_media_data_not_found">File tidak ditemukan, harap mencoba untuk mengirim ulang.</string>
     <string name="tap_error_load_image_detail">Could not load image, message data is null.</string>
     <string name="tap_error_no_app_to_open_file">Tidak ada aplikasi yang cocok untuk membuka file ini.</string>
     <string name="tap_format_s_error_exceed_upload_limit">Melebihi batas unggahan %s</string>
