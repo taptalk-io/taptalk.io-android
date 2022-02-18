@@ -1102,7 +1102,7 @@ public class TapUI {
             return;
         }
         if (getChatRoomListeners().isEmpty()) {
-            TAPChatProfileActivity.start(activity, instanceKey, room, user);
+            TAPChatProfileActivity.Companion.start(activity, instanceKey, room, user);
         } else {
             for (TapUIChatRoomListener listener : getChatRoomListeners()) {
                 if (room.getType() == TYPE_PERSONAL) {
@@ -1126,10 +1126,10 @@ public class TapUI {
         if (getChatRoomListeners().isEmpty()) {
             if (isRoomParticipant) {
                 // Open member profile
-                TAPChatProfileActivity.start(activity, instanceKey, message.getRoom(), user);
+                TAPChatProfileActivity.Companion.start(activity, instanceKey, message.getRoom(), user);
             } else {
                 // Open personal profile
-                TAPChatProfileActivity.start(
+                TAPChatProfileActivity.Companion.start(
                         activity,
                         instanceKey,
                         TAPRoomModel.Builder(
