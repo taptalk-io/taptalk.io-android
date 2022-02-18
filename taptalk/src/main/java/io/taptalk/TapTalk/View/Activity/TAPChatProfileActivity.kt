@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -39,14 +38,17 @@ import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity.Companion.start
 import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
-import java.util.*
 import kotlinx.android.synthetic.main.tap_activity_chat_profile.*
+import kotlinx.android.synthetic.main.tap_layout_basic_information.*
 import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
+import java.util.*
 
 class TAPChatProfileActivity : TAPBaseActivity() {
    
     private var adapter: TapChatProfileAdapter? = null
+    private var sharedMediaAdapter: TapChatProfileAdapter? = null
     private var glm: GridLayoutManager? = null
+    private var sharedMediaGlm: GridLayoutManager? = null
     private var sharedMediaPagingScrollListener: OnScrollChangedListener? = null
     private var vm: TAPProfileViewModel? = null
     private var glide: RequestManager? = null
@@ -152,22 +154,21 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     private fun initView() {
         window.setBackgroundDrawable(null)
         updateView()
-        if (!vm!!.isGroupMemberProfile) {
-            // Show loading on start
-            vm!!.loadingItem = TapChatProfileItemModel(TapChatProfileItemModel.TYPE_LOADING_LAYOUT)
-            vm!!.adapterItems.add(vm!!.loadingItem)
+        // Show loading on start
+        vm!!.loadingItem = TapChatProfileItemModel(TapChatProfileItemModel.TYPE_LOADING_LAYOUT)
+        vm!!.sharedMediaAdapterItems.add(vm!!.loadingItem)
 
-            // Load shared medias
-            Thread {
-                TAPDataManager.getInstance(instanceKey)
-                    .getRoomMedias(0L, vm!!.room.roomID, sharedMediaListener)
-            }
-                .start()
+        // Load shared medias
+        Thread {
+            TAPDataManager.getInstance(instanceKey)
+                .getRoomMedias(0L, vm!!.room.roomID, sharedMediaListener)
         }
+            .start()
 
         // Setup recycler view
         adapter = TapChatProfileAdapter(instanceKey, vm!!.adapterItems, chatProfileInterface, glide)
-        glm = object : GridLayoutManager(this, 3) {
+        sharedMediaAdapter = TapChatProfileAdapter(instanceKey, vm!!.sharedMediaAdapterItems, chatProfileInterface, glide)
+        glm = object : GridLayoutManager(this, 1) {
             override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
                 try {
                     super.onLayoutChildren(recycler, state)
@@ -176,22 +177,33 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 }
             }
         }
-        (glm as GridLayoutManager).spanSizeLookup = object : SpanSizeLookup() {
+        rv_chat_profile.adapter = adapter
+        rv_chat_profile.layoutManager = glm
+        val recyclerAnimator = rv_chat_profile.itemAnimator as SimpleItemAnimator?
+        if (null != recyclerAnimator) {
+            recyclerAnimator.supportsChangeAnimations = false
+        }
+        sharedMediaGlm = object : GridLayoutManager(this, 3) {
+            override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
+                try {
+                    super.onLayoutChildren(recycler, state)
+                } catch (e: IndexOutOfBoundsException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        (sharedMediaGlm as GridLayoutManager).spanSizeLookup = object : SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (adapter!!.getItemAt(position).type == TapChatProfileItemModel.TYPE_MEDIA_THUMBNAIL) {
+                return if (sharedMediaAdapter!!.getItemAt(position).type == TapChatProfileItemModel.TYPE_MEDIA_THUMBNAIL) {
                     1
                 } else {
                     3
                 }
             }
         }
-        rv_chat_profile.adapter = adapter
-        rv_chat_profile.layoutManager = glm
-        rv_chat_profile.addOnScrollListener(scrollListener)
-        val recyclerAnimator = rv_chat_profile.itemAnimator as SimpleItemAnimator?
-        if (null != recyclerAnimator) {
-            recyclerAnimator.supportsChangeAnimations = false
-        }
+        rv_shared_media.adapter = sharedMediaAdapter
+        rv_shared_media.layoutManager = sharedMediaGlm
+
         iv_button_back.setOnClickListener { onBackPressed() }
         fl_loading.setOnClickListener { }
 
@@ -212,9 +224,14 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     private fun updateView() {
         // Set profile detail item
+        // TODO: 17/02/22 set multiple profile picture MU
+        // TODO: 17/02/22 check if bio exist MU
+        g_bio.visibility = View.GONE
+        // TODO: 17/02/22 check if mobile number exist MU
+        g_email.visibility = View.GONE
         val imageURL: TAPImageURL?
         val itemLabel: String?
-        var itemSubLabel = ""
+        var itemSubLabel: String? = ""
         var textStyleResource = 0
         if (null != vm!!.userDataFromManager &&
             vm!!.userDataFromManager.fullname.isNotEmpty()
@@ -222,11 +239,21 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             // Set name & avatar from contact manager
             imageURL = vm!!.userDataFromManager.imageURL
             itemLabel = vm!!.userDataFromManager.fullname
+            tv_title.text = itemLabel
             if (null != vm!!.userDataFromManager.username &&
                 vm!!.userDataFromManager.username!!.isNotEmpty()
             ) {
-                itemSubLabel = "@" + vm!!.userDataFromManager.username
-                textStyleResource = R.style.tapChatProfileUsernameStyle
+                itemSubLabel = vm!!.userDataFromManager.username
+                tv_username_view.text = itemSubLabel
+            } else {
+                g_username.visibility = View.GONE
+            }
+            if (null != vm!!.userDataFromManager.phoneWithCode &&
+                vm!!.userDataFromManager.phoneWithCode!!.isNotEmpty()
+            ) {
+                tv_mobile_number_view.text = vm!!.userDataFromManager.phoneWithCode
+            } else {
+                g_mobile_number.visibility = View.GONE
             }
         } else if (null != vm!!.groupDataFromManager &&
             vm!!.groupDataFromManager.name.isNotEmpty()
@@ -234,58 +261,109 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             // Set name & avatar from group manager
             imageURL = vm!!.groupDataFromManager.imageURL
             itemLabel = vm!!.groupDataFromManager.name
+            tv_title.text = itemLabel
             if (null != vm!!.groupDataFromManager.participants &&
                 vm!!.groupDataFromManager.participants!!.isNotEmpty()
             ) {
+                cl_basic_info.visibility = View.GONE
                 itemSubLabel = String.format(
                     getString(R.string.tap_format_d_group_member_count),
                     vm!!.groupDataFromManager.participants!!.size
                 )
-                textStyleResource = R.style.tapChatProfileMemberCountStyle
+                tv_member_count.text = itemSubLabel
+                tv_member_count.visibility = View.VISIBLE
             }
         } else if (vm!!.isGroupMemberProfile) {
             // Set name & avatar from passed member profile intent
             imageURL = vm!!.groupMemberUser.imageURL
             itemLabel = vm!!.groupMemberUser.fullname
+            tv_title.text = itemLabel
             if (null != vm!!.groupMemberUser.username &&
                 vm!!.groupMemberUser.username!!.isNotEmpty()
             ) {
-                itemSubLabel = "@" + vm!!.groupMemberUser.username
-                textStyleResource = R.style.tapChatProfileUsernameStyle
+                itemSubLabel = vm!!.groupMemberUser.username
+                tv_username_view.text = itemSubLabel
+            }
+            if (null != vm!!.groupMemberUser.phoneWithCode &&
+                vm!!.groupMemberUser.phoneWithCode!!.isNotEmpty()
+            ) {
+                tv_mobile_number_view.text = vm!!.groupMemberUser.phoneWithCode
+            } else {
+                g_mobile_number.visibility = View.GONE
             }
         } else {
             // Set name & avatar from passed room intent
             imageURL = vm!!.room.imageURL
             itemLabel = vm!!.room.name
+            tv_title.text = itemLabel
             if (null != vm!!.room.participants &&
                 vm!!.room.participants!!.isNotEmpty()
             ) {
+                cl_basic_info.visibility = View.GONE
                 itemSubLabel = String.format(
                     getString(R.string.tap_format_d_group_member_count),
                     vm!!.room.participants!!.size
                 )
-                textStyleResource = R.style.tapChatProfileMemberCountStyle
+                tv_member_count.text = itemSubLabel
+                tv_member_count.visibility = View.VISIBLE
             }
         }
-        vm!!.adapterItems.remove(vm!!.profileDetailItem)
-        vm!!.profileDetailItem = TapChatProfileItemModel(
-            imageURL,
-            itemLabel,
-            itemSubLabel,
-            textStyleResource
-        )
-        vm!!.adapterItems.add(0, vm!!.profileDetailItem)
+
+        // TODO: 17/02/22 set multiple profile picture MU
+//        if (null != imageURL && null != imageURL.getThumbnail() &&
+//            !imageURL.getThumbnail().isEmpty()
+//        ) {
+            // Load image
+//            glide!!.load(imageURL.getThumbnail())
+//                .apply(RequestOptions().placeholder(R.drawable.tap_bg_circle_9b9b9b))
+//                .listener(object : RequestListener<Drawable?> {
+//                    override fun onLoadFailed(
+//                        e: GlideException?,
+//                        model: Any,
+//                        target: Target<Drawable?>,
+//                        isFirstResource: Boolean
+//                    ): Boolean {
+//                        setInitialToProfilePicture(itemLabel)
+//                        return false
+//                    }
+//
+//                    override fun onResourceReady(
+//                        resource: Drawable?,
+//                        model: Any,
+//                        target: Target<Drawable?>,
+//                        dataSource: DataSource,
+//                        isFirstResource: Boolean
+//                    ): Boolean {
+//                        return false
+//                    }
+//                })
+//                .into(civProfilePicture)
+//            ImageViewCompat.setImageTintList(civProfilePicture, null)
+//            tv_profile_picture_label.visibility = View.GONE
+//        } else {
+//            setInitialToProfilePicture(itemLabel)
+//        }
+
+        setInitialToProfilePicture(itemLabel)
 
         // Update room menu
         vm!!.adapterItems.removeAll(vm!!.menuItems)
         vm!!.menuItems = generateChatProfileMenu()
-        vm!!.adapterItems.addAll(1, vm!!.menuItems)
+        vm!!.adapterItems.addAll(vm!!.menuItems)
         if (null != adapter) {
             adapter!!.items = vm!!.adapterItems
             adapter!!.notifyDataSetChanged()
         }
     }
 
+    private fun setInitialToProfilePicture(itemLabel: String) {
+        vp_profile_picture.setBackgroundColor(TAPUtils.getRandomColor(this, itemLabel))
+        tv_profile_picture_label.text = TAPUtils.getInitials(
+            itemLabel, 2
+        )
+        tv_profile_picture_label.visibility = View.VISIBLE
+    }
+    
     private fun generateChatProfileMenu(): List<TapChatProfileItemModel> {
         val menuItems: MutableList<TapChatProfileItemModel> = ArrayList()
         if (!vm!!.isGroupMemberProfile) {
@@ -744,31 +822,27 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     private fun notifyItemChanged(mediaMessage: TAPMessageModel) {
         runOnUiThread {
-            adapter!!.notifyItemChanged(
-                vm!!.menuItems.size + 2 + vm!!.sharedMedias.indexOf(
-                    mediaMessage
-                )
-            )
+            sharedMediaAdapter!!.notifyItemChanged( vm!!.sharedMedias.indexOf(mediaMessage) + NEXT_VALUE)
         }
     }
 
     private fun showSharedMediaLoading() {
-        if (vm!!.adapterItems.contains(vm!!.loadingItem)) {
+        if (vm!!.sharedMediaAdapterItems.contains(vm!!.loadingItem)) {
             return
         }
-        vm!!.adapterItems.add(vm!!.loadingItem)
-        adapter!!.setMediaThumbnailStartIndex(vm!!.adapterItems.indexOf(vm!!.sharedMediaSectionTitle) + 1)
-        adapter!!.notifyItemInserted(adapter!!.itemCount - 1)
+        vm!!.sharedMediaAdapterItems.add(vm!!.loadingItem)
+        sharedMediaAdapter!!.setMediaThumbnailStartIndex(vm!!.sharedMediaAdapterItems.indexOf(vm!!.sharedMediaSectionTitle) + NEXT_VALUE)
+        sharedMediaAdapter!!.notifyItemInserted(sharedMediaAdapter!!.itemCount - 1)
     }
 
     private fun hideSharedMediaLoading() {
-        if (!vm!!.adapterItems.contains(vm!!.loadingItem)) {
+        if (!vm!!.sharedMediaAdapterItems.contains(vm!!.loadingItem)) {
             return
         }
-        val index = vm!!.adapterItems.indexOf(vm!!.loadingItem)
-        vm!!.adapterItems.removeAt(index)
-        adapter!!.setMediaThumbnailStartIndex(vm!!.adapterItems.indexOf(vm!!.sharedMediaSectionTitle) + 1)
-        adapter!!.notifyItemRemoved(index)
+        val index = vm!!.sharedMediaAdapterItems.indexOf(vm!!.loadingItem)
+        vm!!.sharedMediaAdapterItems.removeAt(index)
+        sharedMediaAdapter!!.setMediaThumbnailStartIndex(vm!!.sharedMediaAdapterItems.indexOf(vm!!.sharedMediaSectionTitle) + NEXT_VALUE)
+        sharedMediaAdapter!!.notifyItemRemoved(index)
     }
 
     private fun showLoadingPopup(message: String) {
@@ -939,19 +1013,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 updateView()
             }
         }
-    private val scrollListener: RecyclerView.OnScrollListener =
-        object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (!recyclerView.canScrollVertically(-1)) {
-                        recyclerView.elevation = TAPUtils.dpToPx(2).toFloat()
-                    } else {
-                        recyclerView.elevation = 0f
-                    }
-                }
-            }
-        }
+
     private val deleteRoomView: TAPDefaultDataView<TAPCommonResponse> =
         object : TAPDefaultDataView<TAPCommonResponse>() {
             override fun startLoading() {
@@ -1089,7 +1151,10 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     if (entities.isEmpty() && 0 == vm!!.sharedMedias.size) {
                         // No shared media
                         vm!!.isFinishedLoadingSharedMedia = true
-                        runOnUiThread { rv_chat_profile!!.post { hideSharedMediaLoading() } }
+                        runOnUiThread {
+                            rv_shared_media.visibility = View.GONE
+                            rv_shared_media!!.post { hideSharedMediaLoading() }
+                        }
                     } else {
                         // Has shared media
                         val previousSize = vm!!.sharedMedias.size
@@ -1097,12 +1162,13 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             // First load
                             vm!!.sharedMediaSectionTitle =
                                 TapChatProfileItemModel(getString(R.string.tap_shared_media))
-                            vm!!.adapterItems.add(vm!!.sharedMediaSectionTitle)
-                            adapter!!.setMediaThumbnailStartIndex(vm!!.adapterItems.indexOf(vm!!.sharedMediaSectionTitle) + 1)
+                            vm!!.sharedMediaAdapterItems.add(vm!!.sharedMediaSectionTitle)
+                            sharedMediaAdapter!!.setMediaThumbnailStartIndex(vm!!.sharedMediaAdapterItems.indexOf(vm!!.sharedMediaSectionTitle) + NEXT_VALUE)
                             runOnUiThread {
+                                rv_shared_media.visibility = View.VISIBLE
                                 if (MAX_ITEMS_PER_PAGE <= entities.size) {
                                     sharedMediaPagingScrollListener = OnScrollChangedListener {
-                                        if (!vm!!.isFinishedLoadingSharedMedia && glm!!.findLastVisibleItemPosition() > vm!!.menuItems.size + vm!!.sharedMedias.size - MAX_ITEMS_PER_PAGE / 2) {
+                                        if (!vm!!.isFinishedLoadingSharedMedia && sharedMediaGlm!!.findLastVisibleItemPosition() > vm!!.sharedMedias.size - MAX_ITEMS_PER_PAGE / 2) {
                                             // Load more if view holder is visible
                                             if (!vm!!.isLoadingSharedMedia) {
                                                 vm!!.isLoadingSharedMedia = true
@@ -1118,7 +1184,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                                             }
                                         }
                                     }
-                                    rv_chat_profile!!.viewTreeObserver.addOnScrollChangedListener(
+                                    rv_shared_media!!.viewTreeObserver.addOnScrollChangedListener(
                                         sharedMediaPagingScrollListener
                                     )
                                 }
@@ -1129,7 +1195,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             // TODO: 10 May 2019 CALL API BEFORE?
                             vm!!.isFinishedLoadingSharedMedia = true
                             runOnUiThread {
-                                rv_chat_profile!!.viewTreeObserver.removeOnScrollChangedListener(
+                                rv_shared_media!!.viewTreeObserver.removeOnScrollChangedListener(
                                     sharedMediaPagingScrollListener
                                 )
                             }
@@ -1137,19 +1203,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         for (entity in entities) {
                             val mediaMessage = TAPMessageModel.fromMessageEntity(entity)
                             vm!!.addSharedMedia(mediaMessage)
-                            vm!!.adapterItems.add(TapChatProfileItemModel(mediaMessage))
+                            vm!!.sharedMediaAdapterItems.add(TapChatProfileItemModel(mediaMessage))
                         }
                         vm!!.lastSharedMediaTimestamp =
                             vm!!.sharedMedias[vm!!.sharedMedias.size - 1].created
                         vm!!.isLoadingSharedMedia = false
                         runOnUiThread {
-                            rv_chat_profile!!.post {
+                            Log.d("cobaa", "")
+                            rv_shared_media!!.post {
                                 hideSharedMediaLoading()
-                                rv_chat_profile!!.post {
-                                    adapter!!.notifyItemRangeInserted(
-                                        vm!!.menuItems.size + 2 + previousSize,
-                                        entities.size
-                                    )
+                                rv_shared_media!!.post {
+                                    sharedMediaAdapter!!.notifyItemRangeInserted(previousSize + NEXT_VALUE, entities.size)
                                 }
                             }
                         }
@@ -1176,6 +1240,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     companion object {
         private val TAG = TAPChatProfileActivity::class.java.simpleName
+        private const val NEXT_VALUE = 1
         fun start(
             context: Activity,
             instanceKey: String?,
@@ -1190,7 +1255,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         fun start(
             context: Activity,
             instanceKey: String?,
-            room: TAPRoomModel,
+            room: TAPRoomModel?,
             user: TAPUserModel?,
             isAdmin: Boolean? = null,
             isNonParticipantUserProfile: Boolean = false
@@ -1205,15 +1270,15 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 intent.putExtra(K_USER, user)
                 intent.putExtra(Extras.IS_ADMIN, isAdmin)
                 context.startActivityForResult(intent, RequestCode.GROUP_OPEN_MEMBER_PROFILE)
-            } else if (room.type == RoomType.TYPE_PERSONAL) {
+            } else if (room?.type == RoomType.TYPE_PERSONAL) {
                 if (isNonParticipantUserProfile) {
                     intent.putExtra(Extras.IS_NON_PARTICIPANT_USER_PROFILE, true)
                 }
                 context.startActivity(intent)
-            } else if (room.type == RoomType.TYPE_GROUP && null != user) {
+            } else if (room?.type == RoomType.TYPE_GROUP && null != user) {
                 intent.putExtra(K_USER, user)
                 context.startActivityForResult(intent, RequestCode.OPEN_MEMBER_PROFILE)
-            } else if (room.type == RoomType.TYPE_GROUP) {
+            } else if (room?.type == RoomType.TYPE_GROUP) {
                 context.startActivityForResult(intent, RequestCode.OPEN_GROUP_PROFILE)
             }
             context.overridePendingTransition(R.anim.tap_slide_left, R.anim.tap_stay)
