@@ -10,7 +10,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_action_bar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="@color/tapDefaultNavBarBackgroundColor"
         android:elevation="2dp"
         android:foreground="?attr/selectableItemBackground"
@@ -23,7 +24,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="16dp"
             android:src="@drawable/tap_ic_chevron_left_white"
-            android:tint="@color/tapIconNavigationBarBackButton"
+            app:tint="@color/tapIconNavigationBarBackButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
@@ -40,21 +41,96 @@
             android:gravity="center"
             android:maxLines="1"
             android:text="@string/tap_user_details"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintBottom_toTopOf="@id/tv_member_count"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_button_back"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/tv_member_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/tapChatProfileMemberCountStyle"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@id/tv_title"
+            app:layout_constraintEnd_toEndOf="@id/tv_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_chat_profile"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/sv_profile"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:elevation="2dp"
-        android:overScrollMode="never"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:overScrollMode="never">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_form_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/vp_profile_picture"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                tools:background="@color/tapColorPrimary"
+                app:layout_constraintDimensionRatio="W, 1:1"
+                app:layout_constraintTop_toBottomOf="@id/tab_layout" />
+
+            <TextView
+                android:id="@+id/tv_profile_picture_label"
+                style="@style/tapDefaultRoomAvatarExtraLargeFontStyle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/vp_profile_picture"
+                app:layout_constraintEnd_toEndOf="@id/vp_profile_picture"
+                app:layout_constraintStart_toStartOf="@id/vp_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/vp_profile_picture"
+                tools:text="MU" />
+
+            <include
+                android:id="@+id/cl_basic_info"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginTop="24dp"
+                layout="@layout/tap_layout_basic_information"
+                app:layout_constraintTop_toBottomOf="@id/vp_profile_picture"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_chat_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:overScrollMode="never"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintTop_toBottomOf="@id/cl_basic_info"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_shared_media"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/tapWhite"
+                android:overScrollMode="never"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rv_chat_profile"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <include layout="@layout/tap_layout_popup_loading_screen" />
 
