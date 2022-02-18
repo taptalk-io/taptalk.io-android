@@ -1230,9 +1230,11 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
             when (action) {
                 DownloadBroadcastEvent.DownloadProgressLoading, DownloadBroadcastEvent.DownloadFinish, DownloadBroadcastEvent.DownloadFailed -> runOnUiThread {
-                    notifyItemChanged(
-                        vm!!.getSharedMedia(localID)
-                    )
+                    if (vm!!.getSharedMedia(localID) != null) {
+                        notifyItemChanged(
+                            vm!!.getSharedMedia(localID)
+                        )
+                    }
                 }
             }
         }
