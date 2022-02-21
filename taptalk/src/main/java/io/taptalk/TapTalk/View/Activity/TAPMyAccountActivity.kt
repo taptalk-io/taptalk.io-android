@@ -193,7 +193,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (TapUI.getInstance(instanceKey).isChangeProfilePictureButtonVisible) {
             tv_edit_profile_picture.visibility = View.VISIBLE
         } else {
-            tv_edit_profile_picture.visibility = View.INVISIBLE
+            tv_edit_profile_picture.visibility = View.GONE
         }
 
         if (vm.currentProfilePicture.isEmpty()) {

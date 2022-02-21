@@ -227,8 +227,11 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         // TODO: 17/02/22 set multiple profile picture MU
         // TODO: 17/02/22 check if bio exist MU
         g_bio.visibility = View.GONE
-        // TODO: 17/02/22 check if mobile number exist MU
-        g_email.visibility = View.GONE
+        if (TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible) {
+            g_email.visibility = View.VISIBLE
+        } else {
+            g_email.visibility = View.GONE
+        }
         val imageURL: TAPImageURL?
         val itemLabel: String?
         var itemSubLabel: String? = ""
@@ -241,7 +244,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             itemLabel = vm!!.userDataFromManager.fullname
             tv_title.text = itemLabel
             if (null != vm!!.userDataFromManager.username &&
-                vm!!.userDataFromManager.username!!.isNotEmpty()
+                vm!!.userDataFromManager.username!!.isNotEmpty() &&
+                TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
             ) {
                 itemSubLabel = vm!!.userDataFromManager.username
                 tv_username_view.text = itemSubLabel
@@ -249,7 +253,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 g_username.visibility = View.GONE
             }
             if (null != vm!!.userDataFromManager.phoneWithCode &&
-                vm!!.userDataFromManager.phoneWithCode!!.isNotEmpty()
+                vm!!.userDataFromManager.phoneWithCode!!.isNotEmpty() &&
+                TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible
             ) {
                 tv_mobile_number_view.text = vm!!.userDataFromManager.phoneWithCode
             } else {
@@ -279,13 +284,15 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             itemLabel = vm!!.groupMemberUser.fullname
             tv_title.text = itemLabel
             if (null != vm!!.groupMemberUser.username &&
-                vm!!.groupMemberUser.username!!.isNotEmpty()
+                vm!!.groupMemberUser.username!!.isNotEmpty() &&
+                TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
             ) {
                 itemSubLabel = vm!!.groupMemberUser.username
                 tv_username_view.text = itemSubLabel
             }
             if (null != vm!!.groupMemberUser.phoneWithCode &&
-                vm!!.groupMemberUser.phoneWithCode!!.isNotEmpty()
+                vm!!.groupMemberUser.phoneWithCode!!.isNotEmpty() &&
+                TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible
             ) {
                 tv_mobile_number_view.text = vm!!.groupMemberUser.phoneWithCode
             } else {
