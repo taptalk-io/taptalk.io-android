@@ -460,8 +460,14 @@
                 android:id="@+id/g_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:constraint_referenced_ids="tv_label_full_name, et_full_name, tv_label_bio, tv_character_count, et_bio, tv_label_username, et_username, tv_label_mobile_number, ll_country_code, et_mobile_number, tv_label_email_address, tv_label_email_address_optional, et_email_address"
+                app:constraint_referenced_ids="tv_label_full_name, et_full_name, tv_label_username, et_username, tv_label_mobile_number, ll_country_code, et_mobile_number, tv_label_email_address, tv_label_email_address_optional, et_email_address"
                 android:visibility="gone"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/g_bio_fields"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tv_label_bio, tv_character_count, et_bio" />
 
             <include
                 android:id="@+id/cl_basic_info"

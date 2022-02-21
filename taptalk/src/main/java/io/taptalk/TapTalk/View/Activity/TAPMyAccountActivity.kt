@@ -122,7 +122,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 .setPrimaryButtonTitle(getString(R.string.tap_yes))
                 .setPrimaryButtonListener { showViewState() }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                 .setSecondaryButtonListener(true) {}
                 .show()
         } else {
@@ -321,6 +321,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tv_edit_profile_picture.text = getString(R.string.tap_edit_profile_picture)
         tv_edit_profile_picture.setOnClickListener { showProfilePictureOptionsBottomSheet() }
         g_edit.visibility = View.VISIBLE
+        if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible) {
+            g_bio_fields.visibility = View.VISIBLE
+        } else {
+            g_bio_fields.visibility = View.GONE
+        }
         cl_basic_info.visibility = View.GONE
         tv_version_code.visibility = View.GONE
     }
