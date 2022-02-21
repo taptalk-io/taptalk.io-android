@@ -105,6 +105,10 @@ public class TapUI {
     private boolean isMentionUsernameDisabled;
     private boolean isAddToContactsButtonInChatRoomHidden;
     private boolean isAddToContactsButtonInChatProfileHidden;
+    private boolean isEditBioTextFieldVisible;
+    private boolean isUsernameInChatProfileVisible;
+    private boolean isMobileNumberInChatProfileVisible;
+    private boolean isEmailAddressInChatProfileVisible;
     private boolean isAddContactDisabled;
     private boolean isReportButtonInChatProfileVisible;
 
@@ -931,6 +935,62 @@ public class TapUI {
             return;
         }
         isAddToContactsButtonInChatProfileHidden = !isVisible;
+    }
+
+    public boolean isEditBioTextFieldVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isEditBioTextFieldVisible;
+    }
+
+    public void setEditBioTextFieldVisible(boolean editBioTextFieldVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isEditBioTextFieldVisible = editBioTextFieldVisible;
+    }
+
+    public boolean isUsernameInChatProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isUsernameInChatProfileVisible;
+    }
+
+    public void setUsernameInChatProfileVisible(boolean usernameInChatProfileVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isUsernameInChatProfileVisible = usernameInChatProfileVisible;
+    }
+
+    public boolean isMobileNumberInChatProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isMobileNumberInChatProfileVisible;
+    }
+
+    public void setMobileNumberInChatProfileVisible(boolean mobileNumberInChatProfileVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isMobileNumberInChatProfileVisible = mobileNumberInChatProfileVisible;
+    }
+
+    public boolean isEmailAddressInChatProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isEmailAddressInChatProfileVisible;
+    }
+
+    public void setEmailAddressInChatProfileVisible(boolean emailAddressInChatProfileVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isEmailAddressInChatProfileVisible = emailAddressInChatProfileVisible;
     }
 
     public boolean isAddContactDisabled() {
