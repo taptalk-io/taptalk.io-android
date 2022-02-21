@@ -25,6 +25,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.tabs.TabLayoutMediator
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -45,6 +46,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapProfilePicturePagerAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
 import kotlinx.android.synthetic.main.tap_activity_my_account.*
@@ -68,6 +70,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private lateinit var vm: TAPRegisterViewModel
     private var state: ViewState = ViewState.VIEW
     private lateinit var glide: RequestManager
+    private lateinit var profilePicturePagerAdapter: TapProfilePicturePagerAdapter
 
     companion object {
         fun start(
@@ -92,6 +95,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         glide = Glide.with(this)
         initViewModel()
+        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm.profilePictureUriList)
         initView()
         registerBroadcastReceiver()
     }
@@ -214,6 +218,18 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 //
 //                    })
 //                    .into(civ_profile_picture)
+            // TODO: 21/02/22 temporary test case MU
+            vm.profilePictureUriList.add(vm.currentProfilePicture)
+            vm.profilePictureUriList.add(vm.currentProfilePicture)
+            vm.profilePictureUriList.add(vm.currentProfilePicture)
+            vm.profilePictureUriList.add(vm.currentProfilePicture)
+            vm.profilePictureUriList.add(vm.currentProfilePicture)
+            vm.profilePictureUriList.add(vm.currentProfilePicture)
+            vp_profile_picture.adapter = profilePicturePagerAdapter
+            if (vm.profilePictureUriList.size > 1) {
+                tab_layout.visibility = View.VISIBLE
+                tab_layout.setupWithViewPager(vp_profile_picture)
+            }
             tv_profile_picture_label.visibility = View.GONE
         }
 
@@ -342,6 +358,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun showDefaultProfilePicture() {
         vp_profile_picture.setBackgroundColor(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname))
+        vp_profile_picture.adapter = null
+        tab_layout.visibility = View.GONE
         tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
         tv_profile_picture_label.visibility = View.VISIBLE
     }
@@ -550,7 +568,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         // TODO: 16/02/22 change button to edit pp MU
         //fl_button_update.setOnClickListener { updateProfile() }
 
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey))
+        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white))
         iv_button_close.clearAnimation()
 
         // TODO temporarily disable editing
