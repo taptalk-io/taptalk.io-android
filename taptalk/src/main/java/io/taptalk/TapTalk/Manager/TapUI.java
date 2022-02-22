@@ -29,7 +29,6 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
@@ -48,7 +47,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
@@ -105,9 +103,9 @@ public class TapUI {
     private boolean isMentionUsernameDisabled;
     private boolean isAddToContactsButtonInChatRoomHidden;
     private boolean isAddToContactsButtonInChatProfileHidden;
-    private boolean isEditBioTextFieldVisible;
-    private boolean isUsernameInChatProfileVisible;
-    private boolean isMobileNumberInChatProfileVisible;
+    private boolean isEditBioTextFieldHidden;
+    private boolean isUsernameInChatProfileHidden;
+    private boolean isMobileNumberInChatProfileHidden;
     private boolean isEmailAddressInChatProfileVisible;
     private boolean isAddContactDisabled;
     private boolean isReportButtonInChatProfileVisible;
@@ -941,42 +939,42 @@ public class TapUI {
         if (!TapTalk.checkTapTalkInitialized()) {
             return false;
         }
-        return isEditBioTextFieldVisible;
+        return !isEditBioTextFieldHidden;
     }
 
-    public void setEditBioTextFieldVisible(boolean editBioTextFieldVisible) {
+    public void setEditBioTextFieldVisible(boolean isVisible) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isEditBioTextFieldVisible = editBioTextFieldVisible;
+        isEditBioTextFieldHidden = !isVisible;
     }
 
     public boolean isUsernameInChatProfileVisible() {
         if (!TapTalk.checkTapTalkInitialized()) {
             return false;
         }
-        return isUsernameInChatProfileVisible;
+        return !isUsernameInChatProfileHidden;
     }
 
-    public void setUsernameInChatProfileVisible(boolean usernameInChatProfileVisible) {
+    public void setUsernameInChatProfileVisible(boolean isVisible) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isUsernameInChatProfileVisible = usernameInChatProfileVisible;
+        isUsernameInChatProfileHidden = !isVisible;
     }
 
     public boolean isMobileNumberInChatProfileVisible() {
         if (!TapTalk.checkTapTalkInitialized()) {
             return false;
         }
-        return isMobileNumberInChatProfileVisible;
+        return !isMobileNumberInChatProfileHidden;
     }
 
-    public void setMobileNumberInChatProfileVisible(boolean mobileNumberInChatProfileVisible) {
+    public void setMobileNumberInChatProfileVisible(boolean isVisible) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
         }
-        isMobileNumberInChatProfileVisible = mobileNumberInChatProfileVisible;
+        isMobileNumberInChatProfileHidden = !isVisible;
     }
 
     public boolean isEmailAddressInChatProfileVisible() {
