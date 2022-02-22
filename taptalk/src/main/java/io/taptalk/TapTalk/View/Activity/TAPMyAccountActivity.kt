@@ -25,7 +25,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.tabs.TabLayoutMediator
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -37,10 +36,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
-import io.taptalk.TapTalk.Manager.AnalyticsManager
-import io.taptalk.TapTalk.Manager.TAPDataManager
-import io.taptalk.TapTalk.Manager.TAPFileUploadManager
-import io.taptalk.TapTalk.Manager.TapUI
+import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
@@ -245,7 +241,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         et_email_address.setText(vm.myUserModel.email)
         showViewState()
         // TODO: 16/02/22 set bio info MU
-        setProfileInformation(tv_bio_view, g_bio, "lorem ipsum.")
+        if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible ){
+            g_bio.visibility = View.VISIBLE
+            setProfileInformation(tv_bio_view, g_bio, "lorem ipsum.")
+        } else {
+            g_bio.visibility = View.GONE
+        }
         setProfileInformation(tv_username_view, g_username, vm.myUserModel.username)
         setProfileInformation(tv_mobile_number_view, g_mobile_number, vm.myUserModel.phone)
         setProfileInformation(tv_email_view, g_email, vm.myUserModel.email)

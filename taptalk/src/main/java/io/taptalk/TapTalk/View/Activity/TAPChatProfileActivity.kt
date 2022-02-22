@@ -224,9 +224,12 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     private fun updateView() {
         // Set profile detail item
-        // TODO: 17/02/22 set multiple profile picture MU
         // TODO: 17/02/22 check if bio exist MU
-        g_bio.visibility = View.GONE
+        if (TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible) {
+            g_bio.visibility = View.VISIBLE
+        } else {
+            g_bio.visibility = View.GONE
+        }
         if (TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible) {
             g_email.visibility = View.VISIBLE
         } else {
