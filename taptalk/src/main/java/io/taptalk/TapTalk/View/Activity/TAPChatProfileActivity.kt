@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnScrollChangedListener
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +30,7 @@ import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
@@ -37,6 +39,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.*
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity.Companion.start
 import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
 import kotlinx.android.synthetic.main.tap_activity_chat_profile.*
 import kotlinx.android.synthetic.main.tap_layout_basic_information.*
@@ -267,6 +270,11 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             vm!!.groupDataFromManager.name.isNotEmpty()
         ) {
             // Set name & avatar from group manager
+            vp_profile_picture.setOnLongClickListener {
+                // TODO: 22/02/22 check if vp has images MU
+                TAPLongPressActionBottomSheet.newInstance(instanceKey, TAPLongPressActionBottomSheet.LongPressType.IMAGE_TYPE, profilePictureBottomSheetListener)
+                return@setOnLongClickListener true
+            }
             imageURL = vm!!.groupDataFromManager.imageURL
             itemLabel = vm!!.groupDataFromManager.name
             tv_title.text = itemLabel
@@ -909,6 +917,14 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         fun onMediaClicked(item: TAPMessageModel, ivThumbnail: ImageView?, isMediaReady: Boolean)
         fun onCancelDownloadClicked(item: TAPMessageModel)
         fun onReloadSharedMedia()
+    }
+
+    private val profilePictureBottomSheetListener = object: TAPAttachmentListener(instanceKey) {
+        override fun onSaveProfilePicture() {
+            super.onSaveProfilePicture()
+            // TODO: 22/02/22 save image here MU
+            Toast.makeText(this@TAPChatProfileActivity, "Image saved", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private val chatProfileInterface: ChatProfileInterface = object : ChatProfileInterface {
