@@ -240,7 +240,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         et_mobile_number.setText(vm.myUserModel.phone)
         et_email_address.setText(vm.myUserModel.email)
         showViewState()
-        // TODO: 16/02/22 set bio info MU
+        // TODO: 16/02/22 set bio info & check if text empty MU
         if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible ){
             g_bio.visibility = View.VISIBLE
             setProfileInformation(tv_bio_view, g_bio, "lorem ipsum.")
