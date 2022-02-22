@@ -45,4 +45,6 @@ public interface TapTalkAttachmentInterface {
     void setAsMain(int imagePosition);
 
     void onImageRemoved(int imagePosition);
+
+    void onSaveProfilePicture();
 }

@@ -104,4 +104,9 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     public void onImageRemoved(int imagePosition) {
 
     }
+
+    @Override
+    public void onSaveProfilePicture() {
+
+    }
 }
