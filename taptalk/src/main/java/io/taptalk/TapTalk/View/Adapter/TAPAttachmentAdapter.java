@@ -42,6 +42,7 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_OPEN_LINK;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_REPLY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_DOWNLOADS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_IMAGE_GALLERY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_PROFILE_PICTURE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_VIDEO_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_MESSAGE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_SMS;
@@ -208,6 +209,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                 case LONG_PRESS_SAVE_IMAGE_GALLERY:
                 case LONG_PRESS_SAVE_VIDEO_GALLERY:
                 case LONG_PRESS_SAVE_DOWNLOADS:
+                case LONG_PRESS_SAVE_PROFILE_PICTURE:
                     setComponentColors(R.color.tapIconLongPressActionSaveToGallery, R.style.tapActionSheetDefaultLabelStyle);
                     break;
                 case LONG_PRESS_VIEW_PROFILE:
@@ -323,6 +325,8 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case SELECT_REMOVE_PHOTO:
                     attachmentListener.onImageRemoved(imagePosition);
+                case LONG_PRESS_SAVE_PROFILE_PICTURE:
+                    attachmentListener.onSaveProfilePicture();
             }
             onClickListener.onClick(itemView);
         }
