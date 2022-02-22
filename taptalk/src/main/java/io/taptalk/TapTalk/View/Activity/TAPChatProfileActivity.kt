@@ -230,11 +230,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         } else {
             g_bio.visibility = View.GONE
         }
-        if (TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible) {
-            g_email.visibility = View.VISIBLE
-        } else {
-            g_email.visibility = View.GONE
-        }
         val imageURL: TAPImageURL?
         val itemLabel: String?
         var itemSubLabel: String? = ""
@@ -246,8 +241,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             imageURL = vm!!.userDataFromManager.imageURL
             itemLabel = vm!!.userDataFromManager.fullname
             tv_title.text = itemLabel
-            if (null != vm!!.userDataFromManager.username &&
-                vm!!.userDataFromManager.username!!.isNotEmpty() &&
+            if (!vm!!.userDataFromManager.username.isNullOrEmpty() &&
                 TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
             ) {
                 itemSubLabel = vm!!.userDataFromManager.username
@@ -255,13 +249,19 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             } else {
                 g_username.visibility = View.GONE
             }
-            if (null != vm!!.userDataFromManager.phoneWithCode &&
-                vm!!.userDataFromManager.phoneWithCode!!.isNotEmpty() &&
+            if (!vm!!.userDataFromManager.phoneWithCode.isNullOrEmpty() &&
                 TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible
             ) {
                 tv_mobile_number_view.text = vm!!.userDataFromManager.phoneWithCode
             } else {
                 g_mobile_number.visibility = View.GONE
+            }
+            if (!vm!!.userDataFromManager.email.isNullOrEmpty() &&
+                TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible) {
+                g_email.visibility = View.VISIBLE
+                tv_email_view.text = vm!!.userDataFromManager.email
+            } else {
+                g_email.visibility = View.GONE
             }
         } else if (null != vm!!.groupDataFromManager &&
             vm!!.groupDataFromManager.name.isNotEmpty()
@@ -270,9 +270,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             imageURL = vm!!.groupDataFromManager.imageURL
             itemLabel = vm!!.groupDataFromManager.name
             tv_title.text = itemLabel
-            if (null != vm!!.groupDataFromManager.participants &&
-                vm!!.groupDataFromManager.participants!!.isNotEmpty()
-            ) {
+            if (!vm!!.groupDataFromManager.participants!!.isNullOrEmpty()) {
                 cl_basic_info.visibility = View.GONE
                 itemSubLabel = String.format(
                     getString(R.string.tap_format_d_group_member_count),
@@ -286,29 +284,32 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             imageURL = vm!!.groupMemberUser.imageURL
             itemLabel = vm!!.groupMemberUser.fullname
             tv_title.text = itemLabel
-            if (null != vm!!.groupMemberUser.username &&
-                vm!!.groupMemberUser.username!!.isNotEmpty() &&
+            if (!vm!!.groupMemberUser.username.isNullOrEmpty() &&
                 TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
             ) {
                 itemSubLabel = vm!!.groupMemberUser.username
                 tv_username_view.text = itemSubLabel
             }
-            if (null != vm!!.groupMemberUser.phoneWithCode &&
-                vm!!.groupMemberUser.phoneWithCode!!.isNotEmpty() &&
+            if (!vm!!.groupMemberUser.phoneWithCode.isNullOrEmpty() &&
                 TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible
             ) {
                 tv_mobile_number_view.text = vm!!.groupMemberUser.phoneWithCode
             } else {
                 g_mobile_number.visibility = View.GONE
             }
+            if (!vm!!.groupMemberUser.email.isNullOrEmpty() &&
+                TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible) {
+                g_email.visibility = View.VISIBLE
+                tv_email_view.text = vm!!.groupMemberUser.email
+            } else {
+                g_email.visibility = View.GONE
+            }
         } else {
             // Set name & avatar from passed room intent
             imageURL = vm!!.room.imageURL
             itemLabel = vm!!.room.name
             tv_title.text = itemLabel
-            if (null != vm!!.room.participants &&
-                vm!!.room.participants!!.isNotEmpty()
-            ) {
+            if (!vm!!.room.participants!!.isNullOrEmpty()) {
                 cl_basic_info.visibility = View.GONE
                 itemSubLabel = String.format(
                     getString(R.string.tap_format_d_group_member_count),
