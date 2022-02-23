@@ -1,8 +1,8 @@
 package io.taptalk.TapTalk.View.Adapter.PagerAdapter
 
 import android.content.Context
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +15,7 @@ import com.bumptech.glide.request.target.Target
 import io.taptalk.TapTalk.R
 import kotlinx.android.synthetic.main.tap_cell_profile_picture.view.*
 
-class TapProfilePicturePagerAdapter(private val context: Context, val images: ArrayList<String>, private val listener: View.OnLongClickListener) : PagerAdapter() {
-    var onFailed: Unit? = null
+class TapProfilePicturePagerAdapter(private val context: Context, val images: ArrayList<String>, private val listener: ProfilePictureListener) : PagerAdapter() {
     override fun getCount(): Int {
        return images.size
     }
@@ -34,9 +33,7 @@ class TapProfilePicturePagerAdapter(private val context: Context, val images: Ar
                 target: Target<Drawable>?,
                 isFirstResource: Boolean
             ): Boolean {
-                if (onFailed != null) {
-                    onFailed
-                }
+                listener.onFailed()
                 return false
             }
 
@@ -47,16 +44,21 @@ class TapProfilePicturePagerAdapter(private val context: Context, val images: Ar
                 dataSource: DataSource?,
                 isFirstResource: Boolean
             ): Boolean {
+                layout.iv_image.setOnLongClickListener{ listener.onLongClick(resource as BitmapDrawable); true}
                 return false
             }
 
         }).into(layout.iv_image)
-        layout.iv_image.setOnLongClickListener(listener)
         container.addView(layout)
         return layout
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         container.removeView(`object` as View)
+    }
+
+    interface ProfilePictureListener {
+        fun onLongClick(bitmap: BitmapDrawable)
+        fun onFailed()
     }
 }
