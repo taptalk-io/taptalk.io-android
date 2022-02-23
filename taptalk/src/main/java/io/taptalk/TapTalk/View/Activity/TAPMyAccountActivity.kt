@@ -1,11 +1,14 @@
 package io.taptalk.TapTalk.View.Activity
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -19,6 +22,7 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -35,6 +39,7 @@ import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
@@ -92,7 +97,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         glide = Glide.with(this)
         initViewModel()
-        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm.profilePictureUriList, onLongClickListener)
+        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm.profilePictureUriList, profilePictureListener)
         initView()
         registerBroadcastReceiver()
     }
@@ -598,9 +603,64 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPUtils.rotateAnimateInfinitely(this, iv_button_close)
     }
 
-    private val onLongClickListener = View.OnLongClickListener {
-        // TODO: 22/02/22 set long click here MU
-        false
+    private fun saveImage(url: String?, bitmap: Bitmap) {
+        if (url.isNullOrEmpty()) {
+            return
+        }
+        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Request storage permission
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE
+            )
+        } else {
+            showLoading(getString(R.string.tap_downloading))
+            TAPFileDownloadManager.getInstance(instanceKey).writeImageFileToDisk(
+                this,
+                System.currentTimeMillis(),
+                bitmap,
+                MediaType.IMAGE_JPEG,
+                saveImageListener
+            )
+        }
+    }
+
+    private val profilePictureListener = object : TapProfilePicturePagerAdapter.ProfilePictureListener {
+        override fun onLongClick(bitmap: BitmapDrawable) {
+            val fragment = TAPLongPressActionBottomSheet.newInstance(
+                instanceKey,
+                TAPLongPressActionBottomSheet.LongPressType.IMAGE_TYPE,
+                bitmap.bitmap,
+                profilePictureBottomSheetListener
+            )
+            fragment.show(supportFragmentManager, "")
+        }
+
+        override fun onFailed() {
+            // TODO: 23/02/22 set if image failed to load MU
+        }
+    }
+
+    private val profilePictureBottomSheetListener = object: TAPAttachmentListener(instanceKey) {
+        override fun onSaveProfilePicture(bitmap: Bitmap) {
+            super.onSaveProfilePicture(bitmap)
+            saveImage(vm.profilePictureUriList[vp_profile_picture.currentItem], bitmap)
+        }
+    }
+
+    private val saveImageListener: TapTalkActionInterface = object : TapTalkActionInterface {
+        override fun onSuccess(message: String) {
+            endLoading(getString(R.string.tap_image_saved))
+        }
+
+        override fun onError(errorMessage: String) {
+            runOnUiThread {
+                hideLoading()
+                Toast.makeText(this@TAPMyAccountActivity, errorMessage, Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
     }
 
     private val profilePicturePickerListener = object : TAPAttachmentListener(instanceKey) {
