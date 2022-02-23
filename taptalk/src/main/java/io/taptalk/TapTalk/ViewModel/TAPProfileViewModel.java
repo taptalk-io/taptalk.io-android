@@ -30,6 +30,7 @@ public class TAPProfileViewModel extends AndroidViewModel {
     private String loadingStartText, loadingEndText;
     private long lastSharedMediaTimestamp;
     private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isApiCallOnProgress, isGroupMemberProfile, isGroupAdmin;
+    private ArrayList<String> profilePictureUriList;
 
     public TAPProfileViewModel(@NonNull Application application) {
         super(application);
@@ -202,5 +203,13 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setGroupAdmin(boolean isGroupAdmin) {
         this.isGroupAdmin = isGroupAdmin;
+    }
+
+    public ArrayList<String> getProfilePictureUriList() {
+        return profilePictureUriList == null? profilePictureUriList = new ArrayList<>() : profilePictureUriList;
+    }
+
+    public void setProfilePictureUriList(ArrayList<String> profilePictureUriList) {
+        this.profilePictureUriList = profilePictureUriList;
     }
 }
