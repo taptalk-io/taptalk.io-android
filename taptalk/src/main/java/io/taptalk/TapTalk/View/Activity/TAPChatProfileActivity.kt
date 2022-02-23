@@ -38,6 +38,7 @@ import io.taptalk.TapTalk.Model.*
 import io.taptalk.TapTalk.Model.ResponseModel.*
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity.Companion.start
+import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapProfilePicturePagerAdapter
 import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
@@ -55,11 +56,14 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     private var sharedMediaPagingScrollListener: OnScrollChangedListener? = null
     private var vm: TAPProfileViewModel? = null
     private var glide: RequestManager? = null
+    private lateinit var profilePicturePagerAdapter: TapProfilePicturePagerAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_chat_profile)
         glide = Glide.with(this)
         initViewModel()
+        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm!!.profilePictureUriList, onLongClickListener)
         initView()
         TAPBroadcastManager.register(
             this,
@@ -270,11 +274,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             vm!!.groupDataFromManager.name.isNotEmpty()
         ) {
             // Set name & avatar from group manager
-            vp_profile_picture.setOnLongClickListener {
-                // TODO: 22/02/22 check if vp has images MU
-                TAPLongPressActionBottomSheet.newInstance(instanceKey, TAPLongPressActionBottomSheet.LongPressType.IMAGE_TYPE, profilePictureBottomSheetListener)
-                return@setOnLongClickListener true
-            }
             imageURL = vm!!.groupDataFromManager.imageURL
             itemLabel = vm!!.groupDataFromManager.name
             tv_title.text = itemLabel
@@ -362,8 +361,19 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 //        } else {
 //            setInitialToProfilePicture(itemLabel)
 //        }
-
-        setInitialToProfilePicture(itemLabel)
+//      TODO: 22/02/22 implement multiple profile picture MU
+        if (!imageURL!!.fullsize.isNullOrEmpty()) {
+            vm!!.profilePictureUriList.clear()
+            vm!!.profilePictureUriList.add(imageURL.fullsize)
+            vp_profile_picture.adapter = profilePicturePagerAdapter
+            if (vm!!.profilePictureUriList.size > 1) {
+                tab_layout.visibility = View.VISIBLE
+                tab_layout.setupWithViewPager(vp_profile_picture)
+            }
+            tv_profile_picture_label.visibility = View.GONE
+        } else {
+            setInitialToProfilePicture(itemLabel)
+        }
 
         // Update room menu
         vm!!.adapterItems.removeAll(vm!!.menuItems)
@@ -917,6 +927,18 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         fun onMediaClicked(item: TAPMessageModel, ivThumbnail: ImageView?, isMediaReady: Boolean)
         fun onCancelDownloadClicked(item: TAPMessageModel)
         fun onReloadSharedMedia()
+    }
+
+    private val onLongClickListener = View.OnLongClickListener {
+        if (vm!!.room.type == RoomType.TYPE_GROUP) {
+           val fragment =  TAPLongPressActionBottomSheet.newInstance(
+                instanceKey,
+                TAPLongPressActionBottomSheet.LongPressType.IMAGE_TYPE,
+                profilePictureBottomSheetListener
+            )
+           fragment.show(supportFragmentManager, "")
+            true
+        } else false
     }
 
     private val profilePictureBottomSheetListener = object: TAPAttachmentListener(instanceKey) {
