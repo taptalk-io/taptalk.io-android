@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.BottomSheet
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,6 +40,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     private var message: TAPMessageModel? = null
     private var urlMessage = ""
     private var linkifyResult = ""
+    private var bitmap: Bitmap? = null
     private val onClickListener = View.OnClickListener { dismiss() }
     private var bottomSheetListener: TAPAttachmentListener? = null
 
@@ -68,10 +70,11 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.bottomSheetListener = bottomSheetListener
     }
 
-    constructor(instanceKey: String, longPressType: LongPressType, bottomSheetListener: TAPAttachmentListener) {
+    constructor(instanceKey: String, longPressType: LongPressType, bitmap: Bitmap, bottomSheetListener: TAPAttachmentListener) {
         this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.bottomSheetListener = bottomSheetListener
+        this.bitmap = bitmap
     }
 
     companion object {
@@ -100,8 +103,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         // Save Profile Picture
-        fun newInstance(instanceKey: String, longPressType: LongPressType, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
-            val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, bottomSheetListener)
+        fun newInstance(instanceKey: String, longPressType: LongPressType, bitmap: Bitmap, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, bitmap, bottomSheetListener)
             val args = Bundle()
             fragment.arguments = args
             return fragment
@@ -221,7 +224,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 if (menus.isEmpty()) {
                     dismiss()
                 } else {
-                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, bottomSheetListener, onClickListener)
+                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, bitmap, bottomSheetListener, onClickListener)
                 }
             }
         }

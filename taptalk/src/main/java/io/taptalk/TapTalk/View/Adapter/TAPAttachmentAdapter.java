@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -62,10 +63,19 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
     private String linkifyResult = "";
     private TAPMessageModel message;
     private int imagePosition = -1;
+    private Bitmap bitmap;
 
     public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         this.instanceKey = instanceKey;
         setItems(items);
+        this.attachmentListener = attachmentListener;
+        this.onClickListener = onClickListener;
+    }
+
+    public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, Bitmap bitmap, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        this.instanceKey = instanceKey;
+        setItems(items);
+        this.bitmap = bitmap;
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
     }
@@ -326,7 +336,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                 case SELECT_REMOVE_PHOTO:
                     attachmentListener.onImageRemoved(imagePosition);
                 case LONG_PRESS_SAVE_PROFILE_PICTURE:
-                    attachmentListener.onSaveProfilePicture();
+                    attachmentListener.onSaveProfilePicture(bitmap);
             }
             onClickListener.onClick(itemView);
         }

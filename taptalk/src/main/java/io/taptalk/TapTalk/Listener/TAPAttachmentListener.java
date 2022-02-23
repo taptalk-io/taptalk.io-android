@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Listener;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.Keep;
 
 import io.taptalk.TapTalk.Interface.TapTalkAttachmentInterface;
@@ -106,7 +108,7 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     }
 
     @Override
-    public void onSaveProfilePicture() {
+    public void onSaveProfilePicture(Bitmap bitmap) {
 
     }
 }
