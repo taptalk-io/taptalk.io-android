@@ -116,7 +116,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (null == message) {
+        if (null == message && longPressType != LongPressType.IMAGE_TYPE) {
             dismiss()
             return
         }
