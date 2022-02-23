@@ -15,7 +15,7 @@ import com.bumptech.glide.request.target.Target
 import io.taptalk.TapTalk.R
 import kotlinx.android.synthetic.main.tap_cell_profile_picture.view.*
 
-class TapProfilePicturePagerAdapter(private val context: Context, val images: ArrayList<String>) : PagerAdapter() {
+class TapProfilePicturePagerAdapter(private val context: Context, val images: ArrayList<String>, private val listener: View.OnLongClickListener) : PagerAdapter() {
     var onFailed: Unit? = null
     override fun getCount(): Int {
        return images.size
@@ -27,7 +27,7 @@ class TapProfilePicturePagerAdapter(private val context: Context, val images: Ar
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val layout = LayoutInflater.from(context).inflate(R.layout.tap_cell_profile_picture, container, false)
-        Glide.with(context).load(images[position]).listener(object : RequestListener<Drawable> {
+        Glide.with(context).load(images[position]).centerCrop().listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
                 e: GlideException?,
                 model: Any?,
@@ -51,6 +51,7 @@ class TapProfilePicturePagerAdapter(private val context: Context, val images: Ar
             }
 
         }).into(layout.iv_image)
+        layout.iv_image.setOnLongClickListener(listener)
         container.addView(layout)
         return layout
     }
