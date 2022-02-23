@@ -383,5 +383,6 @@
     <string name="tap_save_changes_question">Save Changes?</string>
     <string name="tap_save_changes_confirmation">You will be saving new changes on your profile. Are you sure you want to continue?</string>
     <string name="tap_input_your_bio_here">Input your bio here.</string>
+    <string name="tap_picture_uploaded">Picture Uploaded</string>
 
 </resources>

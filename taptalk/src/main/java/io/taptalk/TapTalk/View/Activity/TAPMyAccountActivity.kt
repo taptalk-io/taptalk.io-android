@@ -44,6 +44,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapProfilePicturePagerAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPRegisterViewModel
 import kotlinx.android.synthetic.main.tap_activity_my_account.*
 import kotlinx.android.synthetic.main.tap_layout_basic_information.*
@@ -91,7 +92,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         glide = Glide.with(this)
         initViewModel()
-        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm.profilePictureUriList)
+        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm.profilePictureUriList, onLongClickListener)
         initView()
         registerBroadcastReceiver()
     }
@@ -597,6 +598,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPUtils.rotateAnimateInfinitely(this, iv_button_close)
     }
 
+    private val onLongClickListener = View.OnLongClickListener {
+        // TODO: 22/02/22 set long click here MU
+        false
+    }
+
     private val profilePicturePickerListener = object : TAPAttachmentListener(instanceKey) {
         override fun onCameraSelected() {
             vm.profilePictureUri = TAPUtils.takePicture(instanceKey, this@TAPMyAccountActivity, PICK_PROFILE_IMAGE_CAMERA)
@@ -825,9 +831,10 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 UploadProgressLoading -> {
-                    fl_loading.visibility = View.VISIBLE
+                    showLoading(getString(R.string.tap_uploading))
                 }
                 UploadProgressFinish -> {
+                    endLoading(getString(R.string.tap_picture_uploaded))
                     val updatedUserModel = intent.getParcelableExtra<TAPUserModel>(K_USER)
                     vm.currentProfilePicture = updatedUserModel?.imageURL?.thumbnail
                     if (updatedUserModel?.userID == vm.myUserModel.userID) {
@@ -839,6 +846,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))
                 }
                 UploadFailed -> {
+                    hideLoading()
                     val userID = intent.getStringExtra(K_USER_ID)
                     if (null != userID && userID == vm.myUserModel.userID) {
                         vm.isUploadingProfilePicture = false
