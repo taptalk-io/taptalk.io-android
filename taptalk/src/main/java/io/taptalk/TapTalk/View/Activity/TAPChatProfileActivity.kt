@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -24,12 +26,14 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
 import io.taptalk.TapTalk.Manager.*
@@ -63,7 +67,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         setContentView(R.layout.tap_activity_chat_profile)
         glide = Glide.with(this)
         initViewModel()
-        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm!!.profilePictureUriList, onLongClickListener)
+        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm!!.profilePictureUriList, profilePictureListener)
         initView()
         TAPBroadcastManager.register(
             this,
@@ -929,23 +933,66 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         fun onReloadSharedMedia()
     }
 
-    private val onLongClickListener = View.OnLongClickListener {
-        if (vm!!.room.type == RoomType.TYPE_GROUP) {
-           val fragment =  TAPLongPressActionBottomSheet.newInstance(
-                instanceKey,
-                TAPLongPressActionBottomSheet.LongPressType.IMAGE_TYPE,
-                profilePictureBottomSheetListener
+    private fun saveImage(url: String?, bitmap: Bitmap) {
+        if (url.isNullOrEmpty()) {
+            return
+        }
+        if (!TAPUtils.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Request storage permission
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE
             )
-           fragment.show(supportFragmentManager, "")
-            true
-        } else false
+        } else {
+            showLoadingPopup(getString(R.string.tap_downloading))
+            TAPFileDownloadManager.getInstance(instanceKey).writeImageFileToDisk(
+                this,
+                System.currentTimeMillis(),
+                bitmap,
+                MediaType.IMAGE_JPEG,
+                saveImageListener
+            )
+        }
+    }
+
+    private val profilePictureListener = object : TapProfilePicturePagerAdapter.ProfilePictureListener {
+        override fun onLongClick(bitmap: BitmapDrawable) {
+            if (vm!!.room.type == RoomType.TYPE_GROUP) {
+                val fragment = TAPLongPressActionBottomSheet.newInstance(
+                    instanceKey,
+                    TAPLongPressActionBottomSheet.LongPressType.IMAGE_TYPE,
+                    bitmap.bitmap,
+                    profilePictureBottomSheetListener
+                )
+                fragment.show(supportFragmentManager, "")
+            }
+        }
+
+        override fun onFailed() {
+            // TODO: 23/02/22 set if load image failed MU
+        }
+
     }
 
     private val profilePictureBottomSheetListener = object: TAPAttachmentListener(instanceKey) {
-        override fun onSaveProfilePicture() {
-            super.onSaveProfilePicture()
-            // TODO: 22/02/22 save image here MU
-            Toast.makeText(this@TAPChatProfileActivity, "Image saved", Toast.LENGTH_SHORT).show()
+        override fun onSaveProfilePicture(bitmap: Bitmap) {
+            super.onSaveProfilePicture(bitmap)
+            saveImage(vm!!.groupDataFromManager.imageURL?.fullsize, bitmap)
+        }
+    }
+
+    private val saveImageListener: TapTalkActionInterface = object : TapTalkActionInterface {
+        override fun onSuccess(message: String) {
+            hideLoadingPopup(getString(R.string.tap_image_saved))
+        }
+
+        override fun onError(errorMessage: String) {
+            runOnUiThread {
+                hideLoadingPopup()
+                Toast.makeText(this@TAPChatProfileActivity, errorMessage, Toast.LENGTH_SHORT)
+                    .show()
+            }
         }
     }
 
@@ -1258,7 +1305,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             vm!!.sharedMedias[vm!!.sharedMedias.size - 1].created
                         vm!!.isLoadingSharedMedia = false
                         runOnUiThread {
-                            Log.d("cobaa", "")
                             rv_shared_media!!.post {
                                 hideSharedMediaLoading()
                                 rv_shared_media!!.post {
