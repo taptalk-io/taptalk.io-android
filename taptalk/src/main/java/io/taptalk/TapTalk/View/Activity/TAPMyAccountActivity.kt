@@ -403,7 +403,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
     }
 
-    private fun reloadProfilePicture(imageUrl: String?, placeholder: Drawable) {
+    private fun reloadProfilePicture(imageUrl: String?) {
         if (null == imageUrl) {
             vm.formCheck[indexProfilePicture] = stateEmpty
             showDefaultProfilePicture()
@@ -411,10 +411,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 //            fl_remove_profile_picture.visibility = View.GONE
         } else {
             // TODO: 16/02/22 set multiple pp MU
-//            vm.formCheck[indexProfilePicture] = stateValid
+            vm.formCheck[indexProfilePicture] = stateValid
 //            ImageViewCompat.setImageTintList(civ_profile_picture, null)
-//            glide.load(imageUrl).apply(RequestOptions().placeholder(placeholder)).into(civ_profile_picture)
-//            tv_profile_picture_label.visibility = View.GONE
+            vm.profilePictureUriList.add(0, imageUrl)
+            vp_profile_picture.adapter = profilePicturePagerAdapter
+
+            tv_profile_picture_label.visibility = View.GONE
             // TODO temporarily disabled removing profile picture
 //            fl_remove_profile_picture.visibility = View.VISIBLE
         }
@@ -901,9 +903,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                         vm.isUploadingProfilePicture = false
                         enableEditing()
                         // TODO: 16/02/22 reload PP MU
-//                        reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
+                        reloadProfilePicture(vm.currentProfilePicture)
                     }
-                    androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))
+                    LocalBroadcastManager.getInstance(this@TAPMyAccountActivity).sendBroadcast(Intent(RELOAD_PROFILE_PICTURE))
                 }
                 UploadFailed -> {
                     hideLoading()
@@ -911,7 +913,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     if (null != userID && userID == vm.myUserModel.userID) {
                         vm.isUploadingProfilePicture = false
                         // TODO: 16/02/22 reload PP MU
-//                        reloadProfilePicture(vm.currentProfilePicture, civ_profile_picture.drawable)
+                        reloadProfilePicture(vm.currentProfilePicture)
                         enableEditing()
                         TapTalkDialog.Builder(this@TAPMyAccountActivity)
                                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
