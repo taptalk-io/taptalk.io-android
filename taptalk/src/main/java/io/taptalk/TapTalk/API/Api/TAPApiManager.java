@@ -46,6 +46,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
@@ -565,5 +566,11 @@ public class TAPApiManager {
 
     public void getProjectConfig(Subscriber<TAPBaseResponse<TapConfigs>> subscriber) {
         executeWithoutHeaders(homingPigeon.getProjectConfig(), subscriber);
+    }
+
+    public void updateBio(String bio, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPUpdateBioRequest request = new TAPUpdateBioRequest();
+        request.setBio(bio);
+        execute(homingPigeon.updateBio(request), subscriber);
     }
 }

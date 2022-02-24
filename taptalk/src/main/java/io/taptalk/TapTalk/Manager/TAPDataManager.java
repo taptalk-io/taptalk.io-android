@@ -1341,4 +1341,8 @@ public class TAPDataManager {
     public void getProjectConfig(TAPDefaultDataView<TapConfigs> view) {
         TAPApiManager.getInstance(instanceKey).getProjectConfig(new TAPDefaultSubscriber<>(view));
     }
+
+    public void updateBio(String bio, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).updateBio(bio, new TAPDefaultSubscriber<>(view));
+    }
 }

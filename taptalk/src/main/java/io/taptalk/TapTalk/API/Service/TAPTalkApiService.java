@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
@@ -159,4 +160,7 @@ public interface TAPTalkApiService {
 
     @POST("client/project_configs")
     Observable<TAPBaseResponse<TapConfigs>> getProjectConfig();
+
+    @POST("client/user/update_bio")
+    Observable<TAPBaseResponse<TAPCommonResponse>> updateBio(@Body TAPUpdateBioRequest request);
 }
