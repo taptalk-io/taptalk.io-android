@@ -16,7 +16,7 @@ import io.taptalk.TapTalk.Model.TapPhotosItemModel
 import io.taptalk.TapTalk.R
 import kotlinx.android.synthetic.main.tap_cell_profile_picture.view.*
 
-class TapProfilePicturePagerAdapter(private val context: Context, val images: ArrayList<TapPhotosItemModel>, private val listener: ProfilePictureListener) : PagerAdapter() {
+class TapProfilePicturePagerAdapter(private val context: Context, val images: ArrayList<TapPhotosItemModel>, private val listener: ProfilePictureListener?) : PagerAdapter() {
     override fun getCount(): Int {
        return images.size
     }
@@ -34,7 +34,7 @@ class TapProfilePicturePagerAdapter(private val context: Context, val images: Ar
                 target: Target<Drawable>?,
                 isFirstResource: Boolean
             ): Boolean {
-                listener.onFailed()
+                listener?.onFailed()
                 return false
             }
 
@@ -45,7 +45,7 @@ class TapProfilePicturePagerAdapter(private val context: Context, val images: Ar
                 dataSource: DataSource?,
                 isFirstResource: Boolean
             ): Boolean {
-                layout.iv_image.setOnLongClickListener{ listener.onLongClick(resource as BitmapDrawable); true}
+                layout.iv_image.setOnLongClickListener{ listener?.onLongClick(resource as BitmapDrawable); true}
                 return false
             }
 
