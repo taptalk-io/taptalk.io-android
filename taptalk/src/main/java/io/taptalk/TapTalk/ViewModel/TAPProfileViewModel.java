@@ -13,6 +13,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapPhotosItemModel;
 
 public class TAPProfileViewModel extends AndroidViewModel {
 
@@ -30,7 +31,7 @@ public class TAPProfileViewModel extends AndroidViewModel {
     private String loadingStartText, loadingEndText;
     private long lastSharedMediaTimestamp;
     private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isApiCallOnProgress, isGroupMemberProfile, isGroupAdmin;
-    private ArrayList<String> profilePictureUriList;
+    private ArrayList<TapPhotosItemModel> profilePictureList;
 
     public TAPProfileViewModel(@NonNull Application application) {
         super(application);
@@ -205,11 +206,11 @@ public class TAPProfileViewModel extends AndroidViewModel {
         this.isGroupAdmin = isGroupAdmin;
     }
 
-    public ArrayList<String> getProfilePictureUriList() {
-        return profilePictureUriList == null? profilePictureUriList = new ArrayList<>() : profilePictureUriList;
+    public ArrayList<TapPhotosItemModel> getProfilePictureList() {
+        return profilePictureList == null? profilePictureList = new ArrayList<>() : profilePictureList;
     }
 
-    public void setProfilePictureUriList(ArrayList<String> profilePictureUriList) {
-        this.profilePictureUriList = profilePictureUriList;
+    public void setProfilePictureList(ArrayList<TapPhotosItemModel> profilePictureList) {
+        this.profilePictureList = profilePictureList;
     }
 }
