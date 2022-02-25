@@ -1,42 +1,50 @@
 package io.taptalk.TapTalk.Model;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TapPhotosItemModel {
 
+	@Nullable
 	@JsonProperty("fullsizeImageURL")
 	private String fullsizeImageURL;
 
+	@Nullable
 	@JsonProperty("thumbnailImageURL")
 	private String thumbnailImageURL;
 
+	@Nullable
 	@JsonProperty("createdTime")
-	private long createdTime;
+	private Long createdTime;
 
 	@JsonProperty("id")
 	private int id;
 
-	public void setFullsizeImageURL(String fullsizeImageURL){
+	public void setFullsizeImageURL(@Nullable String fullsizeImageURL){
 		this.fullsizeImageURL = fullsizeImageURL;
 	}
 
+	@Nullable
 	public String getFullsizeImageURL(){
 		return fullsizeImageURL;
 	}
 
-	public void setThumbnailImageURL(String thumbnailImageURL){
+	public void setThumbnailImageURL(@Nullable String thumbnailImageURL){
 		this.thumbnailImageURL = thumbnailImageURL;
 	}
 
+	@Nullable
 	public String getThumbnailImageURL(){
 		return thumbnailImageURL;
 	}
 
-	public void setCreatedTime(long createdTime){
+	public void setCreatedTime(@Nullable Long createdTime){
 		this.createdTime = createdTime;
 	}
 
-	public long getCreatedTime(){
+	@Nullable
+	public Long getCreatedTime(){
 		return createdTime;
 	}
 
