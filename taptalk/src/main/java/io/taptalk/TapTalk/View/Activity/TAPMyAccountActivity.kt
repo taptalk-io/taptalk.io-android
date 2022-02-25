@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -27,7 +28,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.transition.Transition
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
@@ -99,7 +106,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         glide = Glide.with(this)
         initViewModel()
-        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm.profilePictureList, profilePictureListener)
+        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm.profilePictureList, null)
         initView()
         registerBroadcastReceiver()
     }
@@ -260,6 +267,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             sv_profile.viewTreeObserver.addOnScrollChangedListener(scrollViewListener)
         }
+        getPhotoList(null)
     }
 
     private fun showViewState() {
@@ -583,7 +591,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
     }
 
-    private fun saveImage(url: String?, bitmap: Bitmap) {
+    private fun saveImage(url: String?, bitmap: Bitmap?) {
         if (url.isNullOrEmpty()) {
             return
         }
@@ -640,29 +648,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         enableEditing()
     }
 
-    private val profilePictureListener = object : TapProfilePicturePagerAdapter.ProfilePictureListener {
-        override fun onLongClick(bitmap: BitmapDrawable) {
-            val fragment = TAPLongPressActionBottomSheet.newInstance(
-                instanceKey,
-                TAPLongPressActionBottomSheet.LongPressType.IMAGE_TYPE,
-                bitmap.bitmap,
-                profilePictureBottomSheetListener
-            )
-            fragment.show(supportFragmentManager, "")
-        }
-
-        override fun onFailed() {
-            // TODO: 23/02/22 set if image failed to load MU
-        }
-    }
-
-    private val profilePictureBottomSheetListener = object: TAPAttachmentListener(instanceKey) {
-        override fun onSaveProfilePicture(bitmap: Bitmap) {
-            super.onSaveProfilePicture(bitmap)
-            saveImage(vm.profilePictureList[vp_profile_picture.currentItem].fullsizeImageURL, bitmap)
-        }
-    }
-
     private val saveImageListener: TapTalkActionInterface = object : TapTalkActionInterface {
         override fun onSuccess(message: String) {
             endLoading(getString(R.string.tap_image_saved))
@@ -689,7 +674,13 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private val profilePictureOptionListener = object : TAPAttachmentListener(instanceKey) {
         override fun onSaveImageToGallery(message: TAPMessageModel?) {
-            // TODO: 16/02/22 save image to gallery MU
+            Glide.with(this@TAPMyAccountActivity).asBitmap().load(vm.profilePictureList[vp_profile_picture.currentItem].fullsizeImageURL).into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    saveImage(vm.profilePictureList[vp_profile_picture.currentItem].fullsizeImageURL, resource)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) { }
+            })
         }
 
         override fun setAsMain(imagePosition: Int) {
