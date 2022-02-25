@@ -1347,8 +1347,8 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).updateBio(bio, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getPhotoList(TAPDefaultDataView<TapGetPhotoListResponse> view) {
-        TAPApiManager.getInstance(instanceKey).getPhotoList(new TAPDefaultSubscriber<>(view));
+    public void getPhotoList(String userId, TAPDefaultDataView<TapGetPhotoListResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getPhotoList(userId, new TAPDefaultSubscriber<>(view));
     }
 
     public void setMainPhoto(String id, TAPDefaultDataView<TAPGetUserResponse> view) {
