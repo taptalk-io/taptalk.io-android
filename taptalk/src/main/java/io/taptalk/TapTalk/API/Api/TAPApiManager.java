@@ -38,7 +38,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPRequest;
@@ -378,7 +378,7 @@ public class TAPApiManager {
     }
 
     public void getUserByID(String id, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
-        TAPGetUserByIdRequest request = new TAPGetUserByIdRequest(id);
+        TapIdRequest request = new TapIdRequest(id);
         execute(homingPigeon.getUserByID(request), subscriber);
     }
 
@@ -580,6 +580,6 @@ public class TAPApiManager {
     }
 
     public void setMainPhoto(String id, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
-        execute(homingPigeon.setMainPhoto(new TAPGetUserByIdRequest(id)), subscriber);
+        execute(homingPigeon.setMainPhoto(new TapIdRequest(id)), subscriber);
     }
 }

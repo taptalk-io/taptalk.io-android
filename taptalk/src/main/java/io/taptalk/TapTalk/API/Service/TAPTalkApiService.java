@@ -11,7 +11,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPRequest;
@@ -106,7 +106,7 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByUsername(@Body TAPGetUserByUsernameRequest request);
 
     @POST("client/user/get_by_id")
-    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByID(@Body TAPGetUserByIdRequest request);
+    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByID(@Body TapIdRequest request);
 
     @POST("client/user/get_by_xcuserid")
     Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByXcUserID(@Body TAPGetUserByXcUserIdRequest request);
@@ -169,6 +169,6 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TapGetPhotoListResponse>> getPhotoList();
 
     @POST("client/user/photo/set_main")
-    Observable<TAPBaseResponse<TAPGetUserResponse>> setMainPhoto(@Body TAPGetUserByIdRequest request);
+    Observable<TAPBaseResponse<TAPGetUserResponse>> setMainPhoto(@Body TapIdRequest request);
 
 }
