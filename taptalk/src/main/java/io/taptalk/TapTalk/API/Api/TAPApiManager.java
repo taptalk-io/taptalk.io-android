@@ -571,7 +571,7 @@ public class TAPApiManager {
         executeWithoutHeaders(homingPigeon.getProjectConfig(), subscriber);
     }
 
-    public void updateBio(String bio, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+    public void updateBio(String bio, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
         TAPUpdateBioRequest request = new TAPUpdateBioRequest();
         request.setBio(bio);
         execute(homingPigeon.updateBio(request), subscriber);

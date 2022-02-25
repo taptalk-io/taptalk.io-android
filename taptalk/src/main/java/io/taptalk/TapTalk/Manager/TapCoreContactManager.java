@@ -297,13 +297,12 @@ public class TapCoreContactManager {
 
         TAPDataManager.getInstance(instanceKey).updateBio(bio, new TAPDefaultDataView<>() {
             @Override
-            public void onSuccess(TAPCommonResponse response) {
+            public void onSuccess(TAPGetUserResponse response) {
                 super.onSuccess(response);
                 if (null != listener) {
-                    // TODO: 24/02/22 handle onsuccess listener MU
+                    listener.onSuccess(response.getUser());
                 }
-                // TODO: 24/02/22 save active user MU
-//                TapCoreContactManager.getInstance(instanceKey).saveUserData();
+                TAPDataManager.getInstance(instanceKey).saveActiveUser(response.getUser());
             }
 
             @Override

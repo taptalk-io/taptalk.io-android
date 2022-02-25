@@ -1343,7 +1343,7 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).getProjectConfig(new TAPDefaultSubscriber<>(view));
     }
 
-    public void updateBio(String bio, TAPDefaultDataView<TAPCommonResponse> view) {
+    public void updateBio(String bio, TAPDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance(instanceKey).updateBio(bio, new TAPDefaultSubscriber<>(view));
     }
 
