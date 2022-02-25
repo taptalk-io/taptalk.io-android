@@ -120,16 +120,20 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (vm.isUpdatingProfile || vm.isUploadingProfilePicture) {
             return
         } else if (ViewState.EDIT == state) {
-            TapTalkDialog.Builder(this)
-                .setTitle(getString(R.string.tap_you_have_unsaved_changes))
-                .setMessage(getString(R.string.tap_unsaved_changes_confirmation))
-                .setCancelable(false)
-                .setPrimaryButtonTitle(getString(R.string.tap_yes))
-                .setPrimaryButtonListener { showViewState() }
-                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
-                .setSecondaryButtonListener(true) {}
-                .show()
+            if (vm.myUserModel.bio != et_bio.text.toString()) {
+                TapTalkDialog.Builder(this)
+                    .setTitle(getString(R.string.tap_you_have_unsaved_changes))
+                    .setMessage(getString(R.string.tap_unsaved_changes_confirmation))
+                    .setCancelable(false)
+                    .setPrimaryButtonTitle(getString(R.string.tap_yes))
+                    .setPrimaryButtonListener { showViewState() }
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                    .setSecondaryButtonListener(true) {}
+                    .show()
+            } else {
+                showViewState()
+            }
         } else {
             super.onBackPressed()
             overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_down)
