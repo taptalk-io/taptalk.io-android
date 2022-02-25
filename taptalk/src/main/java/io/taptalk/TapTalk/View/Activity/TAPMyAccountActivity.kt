@@ -41,6 +41,7 @@ import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
+import io.taptalk.TapTalk.Listener.TapCoreGetContactListener
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
@@ -171,7 +172,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         vm = ViewModelProvider(this,
                 TAPRegisterViewModel.TAPRegisterViewModelFactory(application, instanceKey))
                 .get(TAPRegisterViewModel::class.java)
-        vm.currentProfilePicture = vm.myUserModel.imageURL.thumbnail
+        vm.currentProfilePicture = vm.myUserModel.imageURL.fullsize
         vm.countryFlagUrl = TAPDataManager.getInstance(instanceKey).myCountryFlagUrl
     }
 
@@ -185,12 +186,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         //et_full_name.addTextChangedListener(fullNameWatcher)
         //et_email_address.addTextChangedListener(emailWatcher)
         et_bio.addTextChangedListener(bioWatcher)
-
-        if (TapUI.getInstance(instanceKey).isLogoutButtonVisible) {
-            cl_logout.visibility = View.VISIBLE
-        } else {
-            cl_logout.visibility = View.GONE
-        }
 
         if (TapUI.getInstance(instanceKey).isChangeProfilePictureButtonVisible) {
             tv_edit_profile_picture.visibility = View.VISIBLE
@@ -249,7 +244,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         // TODO: 16/02/22 set bio info & check if text empty MU
         if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible ){
             g_bio.visibility = View.VISIBLE
-            setProfileInformation(tv_bio_view, g_bio, "lorem ipsum.")
+            setProfileInformation(tv_bio_view, g_bio, vm.myUserModel.bio)
         } else {
             g_bio.visibility = View.GONE
         }
@@ -304,25 +299,14 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         g_edit.visibility = View.GONE
         cl_basic_info.visibility = View.VISIBLE
         tv_version_code.visibility = View.VISIBLE
+        cl_logout.visibility = View.GONE
     }
 
     private fun showEditState() {
         state = ViewState.EDIT
         tv_title.text = getString(R.string.tap_account_details)
         tv_edit_save_btn.setOnClickListener {
-            TapTalkDialog.Builder(this@TAPMyAccountActivity)
-                .setTitle(getString(R.string.tap_save_changes_question))
-                .setMessage(getString(R.string.tap_save_changes_confirmation))
-                .setCancelable(false)
-                .setPrimaryButtonTitle(getString(R.string.tap_save))
-                .setPrimaryButtonListener {
-                    // TODO: 16/02/22 save edit profile API MU
-                    showViewState()
-                }
-                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
-                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
-                .setSecondaryButtonListener(true) {}
-                .show()
+                saveProfile()
              }
         tv_edit_save_btn.text = getString(R.string.tap_save)
         tv_edit_profile_picture.text = getString(R.string.tap_edit_profile_picture)
@@ -335,6 +319,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         }
         cl_basic_info.visibility = View.GONE
         tv_version_code.visibility = View.GONE
+        if (TapUI.getInstance(instanceKey).isLogoutButtonVisible) {
+            cl_logout.visibility = View.VISIBLE
+        } else {
+            cl_logout.visibility = View.GONE
+        }
     }
 
     private fun setProfileInformation(textView: TextView, group: View, textValue: String?) {
@@ -343,6 +332,25 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         } else {
             group.visibility = View.VISIBLE
             textView.text = textValue
+        }
+    }
+
+    private fun saveProfile() {
+        // TODO: 24/02/22 set save multiple picture API MU
+        if (vm.myUserModel.bio != et_bio.text.toString()) {
+            TapTalkDialog.Builder(this@TAPMyAccountActivity)
+                .setTitle(getString(R.string.tap_save_changes_question))
+                .setMessage(getString(R.string.tap_save_changes_confirmation))
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_save))
+                .setPrimaryButtonListener {
+                    showLoading(getString(R.string.tap_updating))
+                    TapCoreContactManager.getInstance(instanceKey).updateBio(et_bio.text.toString(), updateBioListener)
+                }
+                .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                .setSecondaryButtonListener(true) {}
+                .show()
         }
     }
 
@@ -603,6 +611,22 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
         TAPUtils.rotateAnimateInfinitely(this, iv_button_close)
+    }
+
+    private val updateBioListener = object : TapCoreGetContactListener() {
+        override fun onSuccess(user: TAPUserModel?) {
+            super.onSuccess(user)
+            hideLoading()
+            vm.myUserModel = user
+            setProfileInformation(tv_bio_view, g_bio, user?.bio)
+            showViewState()
+        }
+
+        override fun onError(errorCode: String?, errorMessage: String?) {
+            super.onError(errorCode, errorMessage)
+            hideLoading()
+            showErrorDialog(errorMessage.toString())
+        }
     }
 
     private fun saveImage(url: String?, bitmap: Bitmap) {
@@ -898,7 +922,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 UploadProgressFinish -> {
                     endLoading(getString(R.string.tap_picture_uploaded))
                     val updatedUserModel = intent.getParcelableExtra<TAPUserModel>(K_USER)
-                    vm.currentProfilePicture = updatedUserModel?.imageURL?.thumbnail
+                    vm.currentProfilePicture = updatedUserModel?.imageURL?.fullsize
                     if (updatedUserModel?.userID == vm.myUserModel.userID) {
                         vm.isUploadingProfilePicture = false
                         enableEditing()
