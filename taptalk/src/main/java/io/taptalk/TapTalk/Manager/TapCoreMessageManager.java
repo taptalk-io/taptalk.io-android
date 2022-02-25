@@ -33,6 +33,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -44,6 +45,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.taptalk.TapTalk.API.RequestBody.ProgressRequestBody;
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
@@ -78,10 +81,17 @@ public class TapCoreMessageManager {
     private static HashMap<String, TapCoreMessageManager> instances;
 
     private List<TapCoreMessageListener> coreMessageListeners;
+    private List<TAPMessageModel> pendingCallbackNewMessages;
+    private List<TAPMessageModel> pendingCallbackUpdatedMessages;
+    private List<TAPMessageModel> pendingCallbackDeletedMessages;
     private TAPChatListener chatListener;
 
     private String instanceKey = "";
+    private Timer newMessageListenerBulkCallbackTimer;
+    private Timer updatedMessageListenerBulkCallbackTimer;
+    private Timer deletedMessageListenerBulkCallbackTimer;
     private boolean isUploadMessageFileToExternalServerEnabled;
+    private long messageListenerBulkCallbackDelay = 0L;
 
     public TapCoreMessageManager(String instanceKey) {
         this.instanceKey = instanceKey;
@@ -107,6 +117,99 @@ public class TapCoreMessageManager {
         return null == coreMessageListeners ? coreMessageListeners = new ArrayList<>() : coreMessageListeners;
     }
 
+    private List<TAPMessageModel> getPendingCallbackNewMessages() {
+        return null == pendingCallbackNewMessages ? pendingCallbackNewMessages = new ArrayList<>() : pendingCallbackNewMessages;
+    }
+
+    private List<TAPMessageModel> getPendingCallbackUpdatedMessages() {
+        return null == pendingCallbackUpdatedMessages ? pendingCallbackUpdatedMessages = new ArrayList<>() : pendingCallbackUpdatedMessages;
+    }
+
+    private List<TAPMessageModel> getPendingCallbackDeletedMessages() {
+        return null == pendingCallbackDeletedMessages ? pendingCallbackDeletedMessages = new ArrayList<>() : pendingCallbackDeletedMessages;
+    }
+
+    private void startNewMessageListenerBulkCallbackTimer() {
+        if (newMessageListenerBulkCallbackTimer != null) {
+            newMessageListenerBulkCallbackTimer.cancel();
+        }
+        newMessageListenerBulkCallbackTimer = new Timer();
+        newMessageListenerBulkCallbackTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (getPendingCallbackNewMessages().size() > 1) {
+                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                        if (null != listener) {
+                            listener.onReceiveNewMessage(getPendingCallbackNewMessages());
+                        }
+                    }
+                } else if (getPendingCallbackNewMessages().size() == 1) {
+                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                        if (null != listener) {
+                            listener.onReceiveNewMessage(getPendingCallbackNewMessages().get(0));
+                        }
+                    }
+                }
+                getPendingCallbackNewMessages().clear();
+                newMessageListenerBulkCallbackTimer.cancel();
+            }
+        }, messageListenerBulkCallbackDelay, messageListenerBulkCallbackDelay);
+    }
+
+    private void startUpdatedMessageListenerBulkCallbackTimer() {
+        if (updatedMessageListenerBulkCallbackTimer != null) {
+            updatedMessageListenerBulkCallbackTimer.cancel();
+        }
+        updatedMessageListenerBulkCallbackTimer = new Timer();
+        updatedMessageListenerBulkCallbackTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (getPendingCallbackUpdatedMessages().size() > 1) {
+                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                        if (null != listener) {
+                            listener.onReceiveUpdatedMessage(getPendingCallbackUpdatedMessages());
+                        }
+                    }
+                } else if (getPendingCallbackUpdatedMessages().size() == 1) {
+                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                        if (null != listener) {
+                            listener.onReceiveUpdatedMessage(getPendingCallbackUpdatedMessages().get(0));
+                        }
+                    }
+                }
+                getPendingCallbackUpdatedMessages().clear();
+                updatedMessageListenerBulkCallbackTimer.cancel();
+            }
+        }, messageListenerBulkCallbackDelay, messageListenerBulkCallbackDelay);
+    }
+
+    private void startDeletedMessageListenerBulkCallbackTimer() {
+        if (deletedMessageListenerBulkCallbackTimer != null) {
+            deletedMessageListenerBulkCallbackTimer.cancel();
+        }
+        deletedMessageListenerBulkCallbackTimer = new Timer();
+        deletedMessageListenerBulkCallbackTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (getPendingCallbackDeletedMessages().size() > 1) {
+                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                        if (null != listener) {
+                            listener.onMessageDeleted(getPendingCallbackDeletedMessages());
+                        }
+                    }
+                } else if (getPendingCallbackDeletedMessages().size() == 1) {
+                    for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                        if (null != listener) {
+                            listener.onMessageDeleted(getPendingCallbackDeletedMessages().get(0));
+                        }
+                    }
+                }
+                getPendingCallbackDeletedMessages().clear();
+                deletedMessageListenerBulkCallbackTimer.cancel();
+            }
+        }, messageListenerBulkCallbackDelay, messageListenerBulkCallbackDelay);
+    }
+
     public void addMessageListener(TapCoreMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;
@@ -116,10 +219,15 @@ public class TapCoreMessageManager {
                 chatListener = new TAPChatListener() {
                     @Override
                     public void onReceiveMessageInActiveRoom(TAPMessageModel message) {
-                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
-                            if (null != listener) {
-                                listener.onReceiveNewMessage(message);
+                        if (messageListenerBulkCallbackDelay == 0L) {
+                            for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                                if (null != listener) {
+                                    listener.onReceiveNewMessage(message);
+                                }
                             }
+                        } else {
+                            getPendingCallbackNewMessages().add(message);
+                            startNewMessageListenerBulkCallbackTimer();
                         }
                     }
 
@@ -134,10 +242,15 @@ public class TapCoreMessageManager {
                             onDeleteMessageInActiveRoom(message);
                             return;
                         }
-                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
-                            if (null != listener) {
-                                listener.onReceiveUpdatedMessage(message);
+                        if (messageListenerBulkCallbackDelay == 0L) {
+                            for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                                if (null != listener) {
+                                    listener.onReceiveUpdatedMessage(message);
+                                }
                             }
+                        } else {
+                            getPendingCallbackUpdatedMessages().add(message);
+                            startUpdatedMessageListenerBulkCallbackTimer();
                         }
                     }
 
@@ -148,10 +261,15 @@ public class TapCoreMessageManager {
 
                     @Override
                     public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
-                        for (TapCoreMessageListener listener : getCoreMessageListeners()) {
-                            if (null != listener) {
-                                listener.onMessageDeleted(message);
+                        if (messageListenerBulkCallbackDelay == 0L) {
+                            for (TapCoreMessageListener listener : getCoreMessageListeners()) {
+                                if (null != listener) {
+                                    listener.onMessageDeleted(message);
+                                }
                             }
+                        } else {
+                            getPendingCallbackDeletedMessages().add(message);
+                            startDeletedMessageListenerBulkCallbackTimer();
                         }
                     }
 
@@ -175,6 +293,14 @@ public class TapCoreMessageManager {
         if (getCoreMessageListeners().isEmpty()) {
             TAPChatManager.getInstance(instanceKey).removeChatListener(chatListener);
         }
+    }
+
+    public long getMessageListenerBulkCallbackDelay() {
+        return messageListenerBulkCallbackDelay;
+    }
+
+    public void setMessageListenerBulkCallbackDelay(long messageListenerBulkCallbackDelay) {
+        this.messageListenerBulkCallbackDelay = messageListenerBulkCallbackDelay;
     }
 
     public void sendTextMessage(String messageBody, TAPRoomModel room, TapCoreSendMessageListener listener) {
