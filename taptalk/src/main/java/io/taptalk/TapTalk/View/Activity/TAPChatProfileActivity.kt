@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
@@ -67,7 +66,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         setContentView(R.layout.tap_activity_chat_profile)
         glide = Glide.with(this)
         initViewModel()
-        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm!!.profilePictureUriList, profilePictureListener)
+        profilePicturePagerAdapter = TapProfilePicturePagerAdapter(this, vm!!.profilePictureList, profilePictureListener)
         initView()
         TAPBroadcastManager.register(
             this,
@@ -274,6 +273,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             } else {
                 g_email.visibility = View.GONE
             }
+            getPhotoList(vm!!.userDataFromManager.userID, itemLabel)
         } else if (null != vm!!.groupDataFromManager &&
             vm!!.groupDataFromManager.name.isNotEmpty()
         ) {
@@ -315,6 +315,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             } else {
                 g_email.visibility = View.GONE
             }
+            getPhotoList(vm!!.groupMemberUser.userID, itemLabel)
         } else {
             // Set name & avatar from passed room intent
             imageURL = vm!!.room.imageURL
@@ -331,46 +332,13 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
 
-        // TODO: 17/02/22 set multiple profile picture MU
-//        if (null != imageURL && null != imageURL.getThumbnail() &&
-//            !imageURL.getThumbnail().isEmpty()
-//        ) {
-            // Load image
-//            glide!!.load(imageURL.getThumbnail())
-//                .apply(RequestOptions().placeholder(R.drawable.tap_bg_circle_9b9b9b))
-//                .listener(object : RequestListener<Drawable?> {
-//                    override fun onLoadFailed(
-//                        e: GlideException?,
-//                        model: Any,
-//                        target: Target<Drawable?>,
-//                        isFirstResource: Boolean
-//                    ): Boolean {
-//                        setInitialToProfilePicture(itemLabel)
-//                        return false
-//                    }
-//
-//                    override fun onResourceReady(
-//                        resource: Drawable?,
-//                        model: Any,
-//                        target: Target<Drawable?>,
-//                        dataSource: DataSource,
-//                        isFirstResource: Boolean
-//                    ): Boolean {
-//                        return false
-//                    }
-//                })
-//                .into(civProfilePicture)
-//            ImageViewCompat.setImageTintList(civProfilePicture, null)
-//            tv_profile_picture_label.visibility = View.GONE
-//        } else {
-//            setInitialToProfilePicture(itemLabel)
-//        }
-//      TODO: 22/02/22 implement multiple profile picture MU
         if (!imageURL!!.fullsize.isNullOrEmpty()) {
-            vm!!.profilePictureUriList.clear()
-            vm!!.profilePictureUriList.add(imageURL.fullsize)
+            val photosItemModel = TapPhotosItemModel()
+            photosItemModel.fullsizeImageURL = imageURL.fullsize
+            photosItemModel.thumbnailImageURL = imageURL.thumbnail
+            vm!!.profilePictureList.add(photosItemModel)
             vp_profile_picture.adapter = profilePicturePagerAdapter
-            if (vm!!.profilePictureUriList.size > 1) {
+            if (vm!!.room.type != RoomType.TYPE_GROUP && vm!!.profilePictureList.size > 1) {
                 tab_layout.visibility = View.VISIBLE
                 tab_layout.setupWithViewPager(vp_profile_picture)
             }
@@ -389,14 +357,41 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         }
     }
 
-    private fun setInitialToProfilePicture(itemLabel: String) {
+    private fun setInitialToProfilePicture(itemLabel: String?) {
         vp_profile_picture.setBackgroundColor(TAPUtils.getRandomColor(this, itemLabel))
         tv_profile_picture_label.text = TAPUtils.getInitials(
             itemLabel, 2
         )
         tv_profile_picture_label.visibility = View.VISIBLE
     }
-    
+
+    private fun getPhotoList(userId: String?, itemLabel: String?) {
+        TAPDataManager.getInstance(instanceKey).getPhotoList(userId, object : TAPDefaultDataView<TapGetPhotoListResponse>() {
+            override fun onSuccess(response: TapGetPhotoListResponse?) {
+                super.onSuccess(response)
+                loadProfilePicture(response?.photos?.toCollection(ArrayList()), itemLabel)
+            }
+        })
+    }
+
+    private fun loadProfilePicture(photoList: ArrayList<TapPhotosItemModel>?, itemLabel: String?) {
+        vm?.profilePictureList?.clear()
+        if (photoList.isNullOrEmpty()) {
+            setInitialToProfilePicture(itemLabel)
+        } else {
+            vm?.profilePictureList?.addAll(photoList)
+            vp_profile_picture.adapter = profilePicturePagerAdapter
+            if (vm?.profilePictureList?.size!! > 1) {
+                tab_layout.visibility = View.VISIBLE
+                tab_layout.setupWithViewPager(vp_profile_picture)
+            } else {
+                tab_layout.visibility = View.GONE
+            }
+            tv_profile_picture_label.visibility = View.GONE
+        }
+    }
+
+
     private fun generateChatProfileMenu(): List<TapChatProfileItemModel> {
         val menuItems: MutableList<TapChatProfileItemModel> = ArrayList()
         if (!vm!!.isGroupMemberProfile) {
