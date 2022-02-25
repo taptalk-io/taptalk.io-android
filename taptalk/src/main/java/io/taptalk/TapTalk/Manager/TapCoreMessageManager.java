@@ -984,6 +984,23 @@ public class TapCoreMessageManager {
         });
     }
 
+    public void searchLocalRoomMessageWithKeyword(String keyword, String roomID, TapCoreGetMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).searchAllRoomMessagesFromDatabase(keyword, roomID, new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                ArrayList<TAPMessageModel> searchResultArray = new ArrayList<>();
+                if (entities.size() > 0) {
+                    for (TAPMessageEntity entity : entities) {
+                        searchResultArray.add(TAPMessageModel.fromMessageEntity(entity));
+                    }
+                }
+                if (null != listener) {
+                    listener.onSuccess(searchResultArray);
+                }
+            }
+        });
+    }
+
     public boolean isUploadMessageFileToExternalServerEnabled() {
         if (!TapTalk.checkTapTalkInitialized()) {
             return false;
