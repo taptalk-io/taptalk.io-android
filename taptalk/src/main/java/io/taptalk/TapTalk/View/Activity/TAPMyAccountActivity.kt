@@ -286,6 +286,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tv_edit_save_btn.text = getString(R.string.tap_save)
         tv_edit_profile_picture.text = getString(R.string.tap_edit_profile_picture)
         tv_edit_profile_picture.setOnClickListener { showProfilePictureOptionsBottomSheet() }
+        if (tv_profile_picture_label.visibility == View.VISIBLE) {
+            tv_edit_profile_picture.visibility = View.GONE
+        } else {
+            tv_edit_profile_picture.visibility = View.VISIBLE
+        }
         g_edit.visibility = View.VISIBLE
         if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible) {
             g_bio_fields.visibility = View.VISIBLE
