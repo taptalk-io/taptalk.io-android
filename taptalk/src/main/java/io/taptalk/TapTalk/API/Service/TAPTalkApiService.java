@@ -23,6 +23,8 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
@@ -169,6 +171,8 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TapGetPhotoListResponse>> getPhotoList(@Body TAPUserIdRequest request);
 
     @POST("client/user/photo/set_main")
-    Observable<TAPBaseResponse<TAPGetUserResponse>> setMainPhoto(@Body TapIdRequest request);
+    Observable<TAPBaseResponse<TAPGetUserResponse>> setMainPhoto(@Body TapSetMainPhotoRequest request);
 
+    @POST("client/user/photo/delete")
+    Observable<TAPBaseResponse<TAPGetUserResponse>> removePhoto(@Body TapRemovePhotoRequest request);
 }

@@ -1351,7 +1351,11 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).getPhotoList(userId, new TAPDefaultSubscriber<>(view));
     }
 
-    public void setMainPhoto(String id, TAPDefaultDataView<TAPGetUserResponse> view) {
+    public void setMainPhoto(int id, TAPDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance(instanceKey).setMainPhoto(id, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void removePhoto(int id, Long createdTime, TAPDefaultDataView<TAPGetUserResponse> view) {
+        TAPApiManager.getInstance(instanceKey).removePhoto(id, createdTime, new TAPDefaultSubscriber<>(view));
     }
 }

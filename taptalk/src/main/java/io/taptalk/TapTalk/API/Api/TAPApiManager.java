@@ -50,6 +50,8 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
@@ -579,7 +581,11 @@ public class TAPApiManager {
         execute(homingPigeon.getPhotoList(new TAPUserIdRequest(userId)), subscriber);
     }
 
-    public void setMainPhoto(String id, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
-        execute(homingPigeon.setMainPhoto(new TapIdRequest(id)), subscriber);
+    public void setMainPhoto(int id, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        execute(homingPigeon.setMainPhoto(new TapSetMainPhotoRequest(id)), subscriber);
+    }
+
+    public void removePhoto(int id, Long createdTime, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        execute(homingPigeon.removePhoto(new TapRemovePhotoRequest(id, createdTime)), subscriber);
     }
 }
