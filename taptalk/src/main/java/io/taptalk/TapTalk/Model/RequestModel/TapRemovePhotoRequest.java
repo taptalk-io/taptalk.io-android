@@ -5,16 +5,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TapRemovePhotoRequest{
 
 	@JsonProperty("createdTime")
-	private long createdTime;
+	private Long createdTime;
 
 	@JsonProperty("id")
 	private int id;
 
-	public void setCreatedTime(long createdTime){
+	public TapRemovePhotoRequest(int id, Long createdTime) {
+		this.id = id;
 		this.createdTime = createdTime;
 	}
 
-	public long getCreatedTime(){
+	public void setCreatedTime(Long createdTime){
+		this.createdTime = createdTime;
+	}
+
+	public Long getCreatedTime(){
 		return createdTime;
 	}
 
