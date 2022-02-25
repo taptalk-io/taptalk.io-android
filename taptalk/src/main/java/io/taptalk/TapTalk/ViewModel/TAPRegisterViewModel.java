@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapPhotosItemModel;
 
 public class TAPRegisterViewModel extends AndroidViewModel {
     private String instanceKey = "";
@@ -20,7 +21,7 @@ public class TAPRegisterViewModel extends AndroidViewModel {
     private boolean isUpdatingProfile, isUploadingProfilePicture;
     private String countryCallingCode = "62", countryFlagUrl, currentProfilePicture;
     private Uri profilePictureUri;
-    private ArrayList<String> profilePictureUriList;
+    private ArrayList<TapPhotosItemModel> profilePictureList;
     private TAPUserModel myUserModel;
 
     public static class TAPRegisterViewModelFactory implements ViewModelProvider.Factory {
@@ -141,11 +142,11 @@ public class TAPRegisterViewModel extends AndroidViewModel {
         this.myUserModel = myUserModel;
     }
 
-    public ArrayList<String> getProfilePictureUriList() {
-        return profilePictureUriList == null? profilePictureUriList = new ArrayList<>() : profilePictureUriList;
+    public ArrayList<TapPhotosItemModel> getProfilePictureList() {
+        return profilePictureList == null? profilePictureList = new ArrayList<>() : profilePictureList;
     }
 
-    public void setProfilePictureUriList(ArrayList<String> profilePictureUriList) {
-        this.profilePictureUriList = profilePictureUriList;
+    public void setProfilePictureList(ArrayList<TapPhotosItemModel> profilePictureList) {
+        this.profilePictureList = profilePictureList;
     }
 }
