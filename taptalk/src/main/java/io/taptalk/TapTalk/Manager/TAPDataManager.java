@@ -1350,4 +1350,8 @@ public class TAPDataManager {
     public void getPhotoList(TAPDefaultDataView<TapGetPhotoListResponse> view) {
         TAPApiManager.getInstance(instanceKey).getPhotoList(new TAPDefaultSubscriber<>(view));
     }
+
+    public void setMainPhoto(String id, TAPDefaultDataView<TAPGetUserResponse> view) {
+        TAPApiManager.getInstance(instanceKey).setMainPhoto(id, new TAPDefaultSubscriber<>(view));
+    }
 }

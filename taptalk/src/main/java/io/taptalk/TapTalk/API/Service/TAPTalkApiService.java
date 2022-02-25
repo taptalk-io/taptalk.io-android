@@ -168,4 +168,7 @@ public interface TAPTalkApiService {
     @POST("client/user/photo/get_list")
     Observable<TAPBaseResponse<TapGetPhotoListResponse>> getPhotoList();
 
+    @POST("client/user/photo/set_main")
+    Observable<TAPBaseResponse<TAPGetUserResponse>> setMainPhoto(@Body TAPGetUserByIdRequest request);
+
 }

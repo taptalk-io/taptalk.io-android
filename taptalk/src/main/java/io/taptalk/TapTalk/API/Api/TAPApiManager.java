@@ -578,4 +578,8 @@ public class TAPApiManager {
     public void getPhotoList(Subscriber<TAPBaseResponse<TapGetPhotoListResponse>> subscriber) {
         execute(homingPigeon.getPhotoList(), subscriber);
     }
+
+    public void setMainPhoto(String id, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
+        execute(homingPigeon.setMainPhoto(new TAPGetUserByIdRequest(id)), subscriber);
+    }
 }
