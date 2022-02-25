@@ -199,6 +199,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             tv_edit_profile_picture.visibility = View.GONE
         }
 
+        // TODO: 25/02/22 handle onError and save list on preference later MU 
         if (vm.currentProfilePicture.isEmpty()) {
             showDefaultProfilePicture()
         } else {
