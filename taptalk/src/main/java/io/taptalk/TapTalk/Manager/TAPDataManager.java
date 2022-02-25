@@ -53,6 +53,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -1344,5 +1345,9 @@ public class TAPDataManager {
 
     public void updateBio(String bio, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance(instanceKey).updateBio(bio, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getPhotoList(TAPDefaultDataView<TapGetPhotoListResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getPhotoList(new TAPDefaultSubscriber<>(view));
     }
 }

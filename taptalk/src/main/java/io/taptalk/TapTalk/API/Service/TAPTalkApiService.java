@@ -44,6 +44,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
@@ -163,4 +164,8 @@ public interface TAPTalkApiService {
 
     @POST("client/user/update_bio")
     Observable<TAPBaseResponse<TAPCommonResponse>> updateBio(@Body TAPUpdateBioRequest request);
+
+    @POST("client/user/photo/get_list")
+    Observable<TAPBaseResponse<TapGetPhotoListResponse>> getPhotoList();
+
 }

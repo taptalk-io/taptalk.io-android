@@ -72,6 +72,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
@@ -572,5 +573,9 @@ public class TAPApiManager {
         TAPUpdateBioRequest request = new TAPUpdateBioRequest();
         request.setBio(bio);
         execute(homingPigeon.updateBio(request), subscriber);
+    }
+
+    public void getPhotoList(Subscriber<TAPBaseResponse<TapGetPhotoListResponse>> subscriber) {
+        execute(homingPigeon.getPhotoList(), subscriber);
     }
 }
