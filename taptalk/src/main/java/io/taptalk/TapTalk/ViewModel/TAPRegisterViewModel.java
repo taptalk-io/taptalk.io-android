@@ -18,7 +18,7 @@ public class TAPRegisterViewModel extends AndroidViewModel {
     private String instanceKey = "";
     private int[] formCheck = {0, 0, 0, 0, 0, 0, 0};
     private int countryID = 0, textFieldFontColor, textFieldFontColorHint, clickableLabelFontColor;
-    private boolean isUpdatingProfile, isUploadingProfilePicture;
+    private boolean isUpdatingProfile, isUploadingProfilePicture, isLoadPhotoFailed;
     private String countryCallingCode = "62", countryFlagUrl, currentProfilePicture;
     private Uri profilePictureUri;
     private ArrayList<TapPhotosItemModel> profilePictureList;
@@ -148,5 +148,13 @@ public class TAPRegisterViewModel extends AndroidViewModel {
 
     public void setProfilePictureList(ArrayList<TapPhotosItemModel> profilePictureList) {
         this.profilePictureList = profilePictureList;
+    }
+
+    public boolean isLoadPhotoFailed() {
+        return isLoadPhotoFailed;
+    }
+
+    public void setLoadPhotoFailed(boolean loadPhotoFailed) {
+        isLoadPhotoFailed = loadPhotoFailed;
     }
 }
