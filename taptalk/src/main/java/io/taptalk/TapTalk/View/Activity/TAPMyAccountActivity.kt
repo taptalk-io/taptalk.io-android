@@ -93,6 +93,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         enum class ViewState {
             VIEW, EDIT
         }
+        const val MAX_PHOTO_SIZE = 10
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -346,14 +347,30 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun showProfilePicturePickerBottomSheet() {
-        TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
-        TAPAttachmentBottomSheet(instanceKey, true, profilePicturePickerListener).show(supportFragmentManager, "")
+        if (vm.isLoadPhotoFailed) {
+            getPhotoListWithDialog()
+        } else {
+            if (vm.profilePictureList.size >= MAX_PHOTO_SIZE) {
+                TapTalkDialog.Builder(this)
+                    .setTitle(getString(R.string.tap_max_profile_picture_title))
+                    .setMessage(getString(R.string.tap_max_profile_picture_message))
+                    .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                    .setPrimaryButtonListener(true) { }
+                    .setCancelable(true)
+                    .show()
+            } else {
+                TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
+                TAPAttachmentBottomSheet(instanceKey, true, profilePicturePickerListener).show(
+                    supportFragmentManager,
+                    ""
+                )
+            }
+        }
     }
 
     private fun showProfilePictureOptionsBottomSheet() {
         if (vm.isLoadPhotoFailed) {
-            showLoading(getString(R.string.tap_loading))
-            disableEditing()
             getPhotoListWithDialog()
         } else {
             TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
@@ -713,7 +730,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         override fun startLoading() {
             super.startLoading()
-            showLoading(getString(R.string.tap_loading))
+            showLoading(getString(R.string.tap_updating))
         }
 
         override fun onSuccess(response: TAPGetUserResponse?) {
@@ -980,7 +997,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 UploadProgressLoading -> {
-                    showLoading(getString(R.string.tap_uploading))
+                    showLoading(getString(R.string.tap_updating))
                 }
                 UploadProgressFinish -> {
                     val updatedUserModel = intent.getParcelableExtra<TAPUserModel>(K_USER)

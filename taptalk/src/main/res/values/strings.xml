@@ -8,8 +8,8 @@
     <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_chat">Clear Chat</string>
     <string name="tap_conversation_color">Conversation Color</string>
-    <string name="tap_leave_group">Leave Group</string>
-    <string name="tap_delete_group">Delete Group</string>
+    <string name="tap_leave_group">Leave group</string>
+    <string name="tap_delete_group">Delete group</string>
     <string name="tap_forward">Forward</string>
     <string name="tap_group_details">Group Details</string>
     <string name="tap_group_subject">Group Subject</string>
@@ -30,7 +30,7 @@
     <string name="tap_scan_qr_code">Scan QR Code</string>
     <string name="tap_show_qr_code">Show QR Code</string>
     <string name="tap_user_details">User Details</string>
-    <string name="tap_view_members">View Group Members</string>
+    <string name="tap_view_members">View members</string>
     <string name="tap_welcome">Welcome</string>
 
     <!--Chat Room List-->
@@ -79,6 +79,7 @@
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>
     <string name="tap_edit_group">Edit Group</string>
+    <string name="tap_edit_group_small">Edit group</string>
     <string name="tap_change_avatar">Change Avatar</string>
     <string name="tap_group_members">Group Members</string>
     <string name="tap_remove_group_member">Remove Member</string>
@@ -385,5 +386,7 @@
     <string name="tap_input_your_bio_here">Input your bio here.</string>
     <string name="tap_picture_uploaded">Picture Uploaded</string>
     <string name="tap_could_not_retrieve_photo">Could not retrieve latest profile picture data, please check your connection and try again</string>
+    <string name="tap_max_profile_picture_title">You have reached maximum profile picture.</string>
+    <string name="tap_max_profile_picture_message">You can only have 10 profile picture at a time, remove some picture to upload new ones.</string>
 
 </resources>
