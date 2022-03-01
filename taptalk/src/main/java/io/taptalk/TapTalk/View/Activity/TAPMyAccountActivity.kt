@@ -356,12 +356,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPAttachmentBottomSheet(instanceKey, vp_profile_picture.currentItem, profilePictureOptionListener).show(supportFragmentManager, "")
     }
 
-    // TODO: 16/02/22 remove pp from list & viewpager MU
-    private fun removeProfilePicture() {
-        vm.profilePictureUri = null
-        reloadProfilePicture(vm.profilePictureUri, false, false)
-    }
-
     private fun showDefaultProfilePicture() {
         vp_profile_picture.setBackgroundColor(TAPUtils.getRandomColor(this@TAPMyAccountActivity, vm.myUserModel.fullname))
         vp_profile_picture.adapter = null
@@ -634,6 +628,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPDataManager.getInstance(instanceKey).setMainPhoto(id, editPhotoView)
     }
 
+    private fun removePhoto(id: Int, createdTime: Long?) {
+        vm.isUpdatingProfile = true
+        disableEditing()
+        TAPDataManager.getInstance(instanceKey).removePhoto(id, createdTime, editPhotoView)
+    }
+
     private fun reloadProfilePicture(photoList: ArrayList<TapPhotosItemModel>?, loadingText: String?) {
         vm.profilePictureList.clear()
         if (photoList.isNullOrEmpty()) {
@@ -740,7 +740,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_remove))
                 .setPrimaryButtonListener {
-                    // TODO: 16/02/22 remove pp MU
+                    removePhoto(vm.profilePictureList[imagePosition].id, vm.profilePictureList[imagePosition].createdTime)
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
