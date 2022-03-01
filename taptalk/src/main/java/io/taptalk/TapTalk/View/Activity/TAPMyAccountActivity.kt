@@ -45,6 +45,7 @@ import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TapCoreGetContactListener
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
+import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.Model.TAPMessageModel
@@ -511,11 +512,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun uploadProfilePicture() {
         vm.isUploadingProfilePicture = true
-        showProfilePictureUploading()
+        disableEditing()
         TAPFileUploadManager.getInstance(instanceKey).uploadProfilePicture(this@TAPMyAccountActivity, vm.profilePictureUri, vm.myUserModel.userID)
     }
 
-    private fun showErrorDialog(message: String) {
+    private fun showErrorDialog(message: String?) {
         vm.isUpdatingProfile = false
         enableEditing()
         TapTalkDialog.Builder(this@TAPMyAccountActivity)
@@ -627,6 +628,12 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         })
     }
 
+    private fun setMainPhoto(id: Int) {
+        vm.isUpdatingProfile = true
+        disableEditing()
+        TAPDataManager.getInstance(instanceKey).setMainPhoto(id, editPhotoView)
+    }
+
     private fun reloadProfilePicture(photoList: ArrayList<TapPhotosItemModel>?, loadingText: String?) {
         vm.profilePictureList.clear()
         if (photoList.isNullOrEmpty()) {
@@ -650,6 +657,30 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             endLoading(loadingText)
         }
         enableEditing()
+    }
+
+    private val editPhotoView = object : TAPDefaultDataView<TAPGetUserResponse>() {
+
+        override fun startLoading() {
+            super.startLoading()
+            showLoading(getString(R.string.tap_loading))
+        }
+
+        override fun onSuccess(response: TAPGetUserResponse?) {
+            super.onSuccess(response)
+            vm.isUpdatingProfile = false
+            getPhotoList(null)
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            showErrorDialog(error?.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            showErrorDialog(errorMessage)
+        }
     }
 
     private val saveImageListener: TapTalkActionInterface = object : TapTalkActionInterface {
@@ -694,7 +725,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_replace))
                 .setPrimaryButtonListener {
-                    // TODO: 16/02/22 set pp as main MU
+                    setMainPhoto(vm.profilePictureList[imagePosition].id)
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
@@ -709,7 +740,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_remove))
                 .setPrimaryButtonListener {
-
                     // TODO: 16/02/22 remove pp MU
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
