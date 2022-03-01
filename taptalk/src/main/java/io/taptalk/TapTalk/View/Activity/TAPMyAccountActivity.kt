@@ -93,6 +93,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         enum class ViewState {
             VIEW, EDIT
         }
+        const val MAX_PHOTO_SIZE = 10
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -346,8 +347,26 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun showProfilePicturePickerBottomSheet() {
-        TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
-        TAPAttachmentBottomSheet(instanceKey, true, profilePicturePickerListener).show(supportFragmentManager, "")
+        if (vm.isLoadPhotoFailed) {
+            getPhotoListWithDialog()
+        } else {
+            if (vm.profilePictureList.size >= MAX_PHOTO_SIZE) {
+                TapTalkDialog.Builder(this)
+                    .setTitle(getString(R.string.tap_max_profile_picture_title))
+                    .setMessage(getString(R.string.tap_max_profile_picture_message))
+                    .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                    .setPrimaryButtonListener(true) { }
+                    .setCancelable(true)
+                    .show()
+            } else {
+                TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
+                TAPAttachmentBottomSheet(instanceKey, true, profilePicturePickerListener).show(
+                    supportFragmentManager,
+                    ""
+                )
+            }
+        }
     }
 
     private fun showProfilePictureOptionsBottomSheet() {

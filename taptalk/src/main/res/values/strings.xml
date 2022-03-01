@@ -386,5 +386,7 @@
     <string name="tap_input_your_bio_here">Input your bio here.</string>
     <string name="tap_picture_uploaded">Picture Uploaded</string>
     <string name="tap_could_not_retrieve_photo">Could not retrieve latest profile picture data, please check your connection and try again</string>
+    <string name="tap_max_profile_picture_title">You have reached maximum profile picture.</string>
+    <string name="tap_max_profile_picture_message">You can only have 10 profile picture at a time, remove some picture to upload new ones.</string>
 
 </resources>

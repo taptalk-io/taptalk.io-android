@@ -360,7 +360,7 @@
     <string name="tap_at">\@</string>
     <string name="tap_sms">SMS</string>
     <string name="tap_whatsapp">WhatsApp</string>
-    <string name="tap_account_details">Account Details</string>
+    <string name="tap_account_details">Detail Akun</string>
     <string name="tap_set_new_profile_picture">Tambah Foto Profil</string>
     <string name="bio">Bio</string>
     <string name="tap_save">Simpan</string>
@@ -383,6 +383,8 @@
     <string name="tap_save_changes_confirmation">Anda akan menyimpan perubahan pada profil, apakah anda ingin melanjutkan?</string>
     <string name="tap_input_your_bio_here">Input your bio here.</string>
     <string name="tap_picture_uploaded">Berhasil!</string>
-    <string name="tap_could_not_retrieve_photo">Could not retrieve latest profile picture data, please check your connection and try again</string>
+    <string name="tap_could_not_retrieve_photo">Tidak dapat memuat foto profil terakhir anda, cek kembali koneksi internet anda dan coba lagi.</string>
+    <string name="tap_max_profile_picture_title">Anda telah mencapai maksimum foto profil!</string>
+    <string name="tap_max_profile_picture_message">Anda hanya dapat mempunyai maksimal 10 foto profil. Anda dapat menghapus beberapa foto untuk mengunggah foto baru.</string>
 
 </resources>
