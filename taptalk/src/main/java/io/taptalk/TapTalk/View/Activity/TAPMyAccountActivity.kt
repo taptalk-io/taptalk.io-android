@@ -352,8 +352,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun showProfilePictureOptionsBottomSheet() {
         if (vm.isLoadPhotoFailed) {
-            showLoading(getString(R.string.tap_loading))
-            disableEditing()
             getPhotoListWithDialog()
         } else {
             TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
@@ -713,7 +711,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
         override fun startLoading() {
             super.startLoading()
-            showLoading(getString(R.string.tap_loading))
+            showLoading(getString(R.string.tap_updating))
         }
 
         override fun onSuccess(response: TAPGetUserResponse?) {
@@ -980,7 +978,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 UploadProgressLoading -> {
-                    showLoading(getString(R.string.tap_uploading))
+                    showLoading(getString(R.string.tap_updating))
                 }
                 UploadProgressFinish -> {
                     val updatedUserModel = intent.getParcelableExtra<TAPUserModel>(K_USER)
