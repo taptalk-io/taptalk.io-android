@@ -85,8 +85,6 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
     @Override
     public TAPBaseViewHolder<TapChatProfileItemModel> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
-            case TYPE_USER_GROUP_DETAIL:
-                return new UserGroupDetailViewHolder(parent, R.layout.tap_cell_profile_user_group_detail);
             case TYPE_SECTION_TITLE:
                 return new SectionTitleViewHolder(parent, R.layout.tap_cell_shared_media_title);
             case TYPE_MENU_BUTTON:
@@ -226,34 +224,10 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             if (getItemCount() > (position + 1)) {
                 nextItem = getItemAt(position + 1);
             }
-            if (previousItem.getType() != item.getType() ||
-                    previousItem.getTextStyleResource() != item.getTextStyleResource()) {
-                if (null == nextItem ||
-                        nextItem.getType() != item.getType() ||
-                        nextItem.getTextStyleResource() != item.getTextStyleResource()) {
-                    // Set single background
-                    clContainer.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_profile_menu_button_single_ripple));
-                    vSeparator.setBackground(null);
-                    if (clContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-                        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) clContainer.getLayoutParams();
-                        params.bottomMargin = TAPUtils.dpToPx(24);
-                        clContainer.requestLayout();
-                    }
-                } else {
-                    // Set top background
-                    clContainer.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_profile_menu_button_top_ripple));
-                    vSeparator.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.color.tapGreyDc));
-                    if (clContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-                        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) clContainer.getLayoutParams();
-                        params.bottomMargin = 0;
-                        clContainer.requestLayout();
-                    }
-                }
-            } else if (null == nextItem ||
+            if (null == nextItem ||
                     nextItem.getType() != item.getType() ||
                     nextItem.getTextStyleResource() != item.getTextStyleResource()) {
-                // Set bottom background
-                clContainer.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_profile_menu_button_bottom_ripple));
+                // Set single background
                 vSeparator.setBackground(null);
                 if (clContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
                     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) clContainer.getLayoutParams();
@@ -261,8 +235,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                     clContainer.requestLayout();
                 }
             } else {
-                // Set middle background
-                clContainer.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_profile_menu_button_middle_ripple));
+                // Set top background
                 vSeparator.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.color.tapGreyDc));
                 if (clContainer.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
                     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) clContainer.getLayoutParams();

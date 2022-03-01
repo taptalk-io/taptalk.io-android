@@ -74,7 +74,7 @@
     <!--Group Chat-->
     <string name="tap_add_members">Add Members</string>
     <string name="tap_format_dd_selected_member_count">Group Members (%d/%d)</string>
-    <string name="tap_format_d_group_member_count">%d Members</string>
+    <string name="tap_format_d_group_member_count">%d members</string>
     <string name="tap_group_name">Group Name</string>
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>
@@ -361,5 +361,29 @@
     <string name="tap_at">\@</string>
     <string name="tap_sms">SMS</string>
     <string name="tap_whatsapp">WhatsApp</string>
+    <string name="tap_account_details">Account Details</string>
+    <string name="tap_set_new_profile_picture">Set New Profile Picture</string>
+    <string name="bio">Bio</string>
+    <string name="tap_save">Save</string>
+    <string name="tap_edit_profile_picture">Edit Profile Picture</string>
+    <string name="tap_you_have_unsaved_changes">You have unsaved changes!</string>
+    <string name="tap_unsaved_changes_confirmation">All updates will not be saved. Are you sure you want to continue?</string>
+    <string name="tap_yes">Yes</string>
+    <string name="tap_logout">Logout</string>
+    <string name="tap_zero_of_hundred">0/100</string>
+    <string name="tap_set_as_main_photo">Set as Main Photo</string>
+    <string name="tap_save_image">Save Image</string>
+    <string name="tap_remove_photo">Remove Photo</string>
+    <string name="tap_set_as_main_question">Set as Main Photo?</string>
+    <string name="tap_set_as_main_confirmation">You will be replacing the main photo with this photo. Are you sure you want to continue?</string>
+    <string name="tap_replace">Replace</string>
+    <string name="tap_remove_photo_question">Remove Photo?</string>
+    <string name="tap_remove_photo_confirmation">You will be removing this profile picture. Are you sure you want to continue?</string>
+    <string name="tap_remove">Remove</string>
+    <string name="tap_save_changes_question">Save Changes?</string>
+    <string name="tap_save_changes_confirmation">You will be saving new changes on your profile. Are you sure you want to continue?</string>
+    <string name="tap_input_your_bio_here">Input your bio here.</string>
+    <string name="tap_picture_uploaded">Picture Uploaded</string>
+    <string name="tap_could_not_retrieve_photo">Could not retrieve latest profile picture data, please check your connection and try again</string>
 
 </resources>

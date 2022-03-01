@@ -171,6 +171,9 @@
     <color name="tapIconAttachAudio">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachContact">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachLocation">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconSetAsMain">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconSaveToGallery">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconRemoveImage">@color/tapColorDestructiveIcon</color>
 
     <color name="tapIconChatComposerSend">@color/tapColorWhiteIcon</color>
     <color name="tapIconChatComposerSendInactive">@color/tapColorWhiteIcon</color>

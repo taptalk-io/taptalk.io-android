@@ -2,10 +2,10 @@ package io.taptalk.TapTalk.Model.RequestModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TAPGetUserByIdRequest {
+public class TapIdRequest {
     @JsonProperty("id") private String id;
 
-    public TAPGetUserByIdRequest(String id) {
+    public TapIdRequest(String id) {
         this.id = id;
     }
 

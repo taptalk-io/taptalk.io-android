@@ -8,16 +8,20 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.ArrayList;
+
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapPhotosItemModel;
 
 public class TAPRegisterViewModel extends AndroidViewModel {
     private String instanceKey = "";
     private int[] formCheck = {0, 0, 0, 0, 0, 0, 0};
     private int countryID = 0, textFieldFontColor, textFieldFontColorHint, clickableLabelFontColor;
-    private boolean isUpdatingProfile, isUploadingProfilePicture;
+    private boolean isUpdatingProfile, isUploadingProfilePicture, isLoadPhotoFailed;
     private String countryCallingCode = "62", countryFlagUrl, currentProfilePicture;
     private Uri profilePictureUri;
+    private ArrayList<TapPhotosItemModel> profilePictureList;
     private TAPUserModel myUserModel;
 
     public static class TAPRegisterViewModelFactory implements ViewModelProvider.Factory {
@@ -136,5 +140,21 @@ public class TAPRegisterViewModel extends AndroidViewModel {
 
     public void setMyUserModel(TAPUserModel myUserModel) {
         this.myUserModel = myUserModel;
+    }
+
+    public ArrayList<TapPhotosItemModel> getProfilePictureList() {
+        return profilePictureList == null? profilePictureList = new ArrayList<>() : profilePictureList;
+    }
+
+    public void setProfilePictureList(ArrayList<TapPhotosItemModel> profilePictureList) {
+        this.profilePictureList = profilePictureList;
+    }
+
+    public boolean isLoadPhotoFailed() {
+        return isLoadPhotoFailed;
+    }
+
+    public void setLoadPhotoFailed(boolean loadPhotoFailed) {
+        isLoadPhotoFailed = loadPhotoFailed;
     }
 }

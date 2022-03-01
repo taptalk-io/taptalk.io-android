@@ -49,6 +49,10 @@ public class TAPUserModel implements Parcelable {
     @Nullable
     @JsonProperty("phoneWithCode")
     private String phoneWithCode;
+    @Nullable
+    @JsonProperty("bio")
+    @ColumnInfo(name = "bio")
+    private String bio;
     @Embedded
     @Nullable
     @JsonProperty("userRole")
@@ -300,6 +304,17 @@ public class TAPUserModel implements Parcelable {
     }
 
     @Nullable
+    @JsonProperty("bio")
+    public String getBio() {
+        return bio;
+    }
+
+    @JsonProperty("bio")
+    public void setBio(@Nullable String bio) {
+        this.bio = bio;
+    }
+
+    @Nullable
     @JsonProperty("userRole")
     public TAPUserRoleModel getUserRole() {
         return userRole;
@@ -470,6 +485,7 @@ public class TAPUserModel implements Parcelable {
         this.email = userModel.getEmail();
         this.phone = userModel.getPhone();
         this.phoneWithCode = userModel.getPhoneWithCode();
+        this.bio = userModel.getBio();
         this.userRole = userModel.getUserRole();
         this.lastLogin = userModel.getLastLogin();
         this.lastActivity = userModel.getLastActivity();
@@ -508,6 +524,7 @@ public class TAPUserModel implements Parcelable {
         dest.writeString(this.email);
         dest.writeString(this.phone);
         dest.writeString(this.phoneWithCode);
+        dest.writeString(this.bio);
         dest.writeParcelable(this.userRole, flags);
         dest.writeValue(this.lastLogin);
         dest.writeValue(this.lastActivity);
@@ -535,6 +552,7 @@ public class TAPUserModel implements Parcelable {
         this.email = in.readString();
         this.phone = in.readString();
         this.phoneWithCode = in.readString();
+        this.bio = in.readString();
         this.userRole = in.readParcelable(TAPUserRoleModel.class.getClassLoader());
         this.lastLogin = (Long) in.readValue(Long.class.getClassLoader());
         this.lastActivity = (Long) in.readValue(Long.class.getClassLoader());
