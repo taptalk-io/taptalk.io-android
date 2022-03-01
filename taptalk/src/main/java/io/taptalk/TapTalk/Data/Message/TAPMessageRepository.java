@@ -145,6 +145,17 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void searchAllRoomMessages(String keyword, String roomID, final TAPDatabaseListener listener) {
+        new Thread(() -> {
+            String queryKeyword = '%' + keyword
+                    .replace("\\", "\\\\")
+                    .replace("%", "\\%")
+                    .replace("_", "\\_") + '%';
+            List<TAPMessageEntity> entities = messageDao.searchAllRoomMessages(queryKeyword, roomID);
+            listener.onSelectFinished(entities);
+        }).start();
+    }
+
     public TAPMessageEntity generateMessageEntity(TAPMessageEntityWithUnreadCount room) {
         return new TAPMessageEntity(room.getMessageID(), room.getLocalID(), room.getFilterID(),
                 room.getBody(), room.getRecipientID(), room.getType(), room.getCreated(),
