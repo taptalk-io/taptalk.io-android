@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver.OnScrollChangedListener
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -234,12 +235,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     private fun updateView() {
         // Set profile detail item
-        // TODO: 17/02/22 check if bio exist MU
-        if (TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible) {
-            g_bio.visibility = View.VISIBLE
-        } else {
-            g_bio.visibility = View.GONE
-        }
         val imageURL: TAPImageURL?
         val itemLabel: String?
         var itemSubLabel: String? = ""
@@ -255,24 +250,26 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
             ) {
                 itemSubLabel = vm!!.userDataFromManager.username
+                g_username.visibility = View.VISIBLE
                 tv_username_view.text = itemSubLabel
             } else {
                 g_username.visibility = View.GONE
             }
-            if (!vm!!.userDataFromManager.phoneWithCode.isNullOrEmpty() &&
-                TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible
-            ) {
-                tv_mobile_number_view.text = vm!!.userDataFromManager.phoneWithCode
-            } else {
-                g_mobile_number.visibility = View.GONE
-            }
-            if (!vm!!.userDataFromManager.email.isNullOrEmpty() &&
-                TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible) {
-                g_email.visibility = View.VISIBLE
-                tv_email_view.text = vm!!.userDataFromManager.email
-            } else {
-                g_email.visibility = View.GONE
-            }
+            setBasicInfo(
+                vm!!.userDataFromManager.phoneWithCode,
+                TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible,
+                g_mobile_number,
+                tv_mobile_number_view)
+            setBasicInfo(
+                vm!!.userDataFromManager.email,
+                TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible,
+                g_email,
+                tv_email_view)
+            setBasicInfo(
+                vm!!.userDataFromManager.bio,
+                TapUI.getInstance(instanceKey).isEditBioTextFieldVisible,
+                g_bio,
+                tv_bio_view)
             getPhotoList(vm!!.userDataFromManager.userID, itemLabel)
         } else if (null != vm!!.groupDataFromManager &&
             vm!!.groupDataFromManager.name.isNotEmpty()
@@ -301,20 +298,21 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 itemSubLabel = vm!!.groupMemberUser.username
                 tv_username_view.text = itemSubLabel
             }
-            if (!vm!!.groupMemberUser.phoneWithCode.isNullOrEmpty() &&
-                TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible
-            ) {
-                tv_mobile_number_view.text = vm!!.groupMemberUser.phoneWithCode
-            } else {
-                g_mobile_number.visibility = View.GONE
-            }
-            if (!vm!!.groupMemberUser.email.isNullOrEmpty() &&
-                TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible) {
-                g_email.visibility = View.VISIBLE
-                tv_email_view.text = vm!!.groupMemberUser.email
-            } else {
-                g_email.visibility = View.GONE
-            }
+            setBasicInfo(
+                vm!!.groupMemberUser.phoneWithCode,
+                TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible,
+                g_mobile_number,
+                tv_mobile_number_view)
+            setBasicInfo(
+                vm!!.groupMemberUser.email,
+                TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible,
+                g_email,
+                tv_email_view)
+            setBasicInfo(
+                vm!!.groupMemberUser.bio,
+                TapUI.getInstance(instanceKey).isEditBioTextFieldVisible,
+                g_bio,
+                tv_bio_view)
             getPhotoList(vm!!.groupMemberUser.userID, itemLabel)
         } else {
             // Set name & avatar from passed room intent
@@ -354,6 +352,15 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         if (null != adapter) {
             adapter!!.items = vm!!.adapterItems
             adapter!!.notifyDataSetChanged()
+        }
+    }
+
+    private fun setBasicInfo(infoValue: String?, isVisible: Boolean, group: View, textView: TextView) {
+        if (!infoValue.isNullOrEmpty() && isVisible) {
+            group.visibility = View.VISIBLE
+            textView.text = infoValue
+        } else {
+            group.visibility = View.GONE
         }
     }
 
