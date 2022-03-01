@@ -534,7 +534,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun disableEditing() {
         iv_button_close.setOnClickListener(null)
-        tv_edit_profile_picture.setOnClickListener(null)
+        tv_edit_profile_picture.isEnabled = false
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this@TAPMyAccountActivity, R.drawable.tap_ic_loading_progress_circle_white))
         TAPUtils.rotateAnimateInfinitely(this@TAPMyAccountActivity, iv_button_close)
@@ -556,9 +556,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             return
         }
         iv_button_close.setOnClickListener { onBackPressed() }
-        tv_edit_profile_picture.setOnClickListener { showProfilePicturePickerBottomSheet() }
-        // TODO: 16/02/22 change button to edit pp MU
-        //fl_button_update.setOnClickListener { updateProfile() }
+        tv_edit_profile_picture.isEnabled = true
 
         iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white))
         iv_button_close.clearAnimation()
@@ -573,14 +571,6 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 //        tv_button_update.visibility = View.VISIBLE
 //        iv_update_progress.visibility = View.GONE
 //        iv_update_progress.clearAnimation()
-    }
-
-    private fun showProfilePictureUploading() {
-        iv_button_close.setOnClickListener(null)
-        tv_edit_profile_picture.setOnClickListener(null)
-
-        iv_button_close.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_loading_progress_circle_white))
-        TAPUtils.rotateAnimateInfinitely(this, iv_button_close)
     }
 
     private val updateBioListener = object : TapCoreGetContactListener() {
