@@ -160,15 +160,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         when (resultCode) {
             Activity.RESULT_OK -> {
                 when (requestCode) {
-                    PICK_PROFILE_IMAGE_CAMERA -> {
+                    PICK_PROFILE_IMAGE_CAMERA, PICK_PROFILE_IMAGE_GALLERY -> {
                         if (null != intent?.data) {
                             vm.profilePictureUri = intent.data
                         }
-                        reloadProfilePicture(vm.profilePictureUri, showErrorMessage = true, uploadPicture = true)
-                    }
-                    PICK_PROFILE_IMAGE_GALLERY -> {
-                        vm.profilePictureUri = intent?.data
-                        reloadProfilePicture(vm.profilePictureUri, showErrorMessage = true, uploadPicture = true)
+                        reloadProfilePicture(vm.profilePictureUri)
                     }
                 }
             }
@@ -373,30 +369,13 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tv_profile_picture_label.visibility = View.VISIBLE
     }
 
-    private fun reloadProfilePicture(imageUri: Uri?, showErrorMessage: Boolean, uploadPicture: Boolean) {
+    private fun reloadProfilePicture(imageUri: Uri?) {
         if (null == imageUri) {
             vm.formCheck[indexProfilePicture] = stateEmpty
-
-            showDefaultProfilePicture()
-            // TODO temporarily disabled removing profile picture
-//            fl_remove_profile_picture.visibility = View.GONE
-
-            if (showErrorMessage) {
-                Toast.makeText(this@TAPMyAccountActivity, getString(R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(this@TAPMyAccountActivity, getString(R.string.tap_failed_to_load_image), Toast.LENGTH_SHORT).show()
         } else {
             vm.formCheck[indexProfilePicture] = stateValid
-
-            // TODO: 16/02/22 load multiple pp MU
-//            glide.load(imageUri).into(civ_profile_picture)
-//            ImageViewCompat.setImageTintList(civ_profile_picture, null)
-//            tv_profile_picture_label.visibility = View.GONE
-            // TODO temporarily disabled removing profile picture
-//            fl_remove_profile_picture.visibility = View.VISIBLE
-
-            if (uploadPicture) {
-                uploadProfilePicture()
-            }
+            uploadProfilePicture(imageUri)
         }
     }
 
@@ -513,10 +492,10 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         finish()
     }
 
-    private fun uploadProfilePicture() {
+    private fun uploadProfilePicture(imageUri: Uri?) {
         vm.isUploadingProfilePicture = true
         disableEditing()
-        TAPFileUploadManager.getInstance(instanceKey).uploadProfilePicture(this@TAPMyAccountActivity, vm.profilePictureUri, vm.myUserModel.userID)
+        TAPFileUploadManager.getInstance(instanceKey).uploadProfilePicture(this@TAPMyAccountActivity, imageUri, vm.myUserModel.userID)
     }
 
     private fun showErrorDialog(message: String?) {
@@ -1026,7 +1005,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                                 .setMessage(intent.getStringExtra(UploadFailedErrorMessage)
                                         ?: getString(R.string.tap_error_upload_profile_picture))
                                 .setPrimaryButtonTitle(getString(R.string.tap_retry))
-                                .setPrimaryButtonListener(true) { reloadProfilePicture(vm.profilePictureUri, true, true) }
+                                .setPrimaryButtonListener(true) { reloadProfilePicture(vm.profilePictureUri) }
                                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                                 .setCancelable(true)
                                 .show()
