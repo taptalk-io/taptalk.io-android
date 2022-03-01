@@ -88,7 +88,7 @@ public abstract class TapTalkDatabase extends RoomDatabase {
     private static final Migration MIGRATION_4_5 = new Migration(4, 5) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE 'a' ADD COLUMN 'deleted' INTEGER");
+            database.execSQL("ALTER TABLE 'Message_Table' ADD COLUMN 'deleted' INTEGER");
         }
     };
 
