@@ -355,8 +355,14 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun showProfilePictureOptionsBottomSheet() {
-        TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
-        TAPAttachmentBottomSheet(instanceKey, vp_profile_picture.currentItem, profilePictureOptionListener).show(supportFragmentManager, "")
+        if (vm.isLoadPhotoFailed) {
+            showLoading(getString(R.string.tap_loading))
+            disableEditing()
+            getPhotoListWithDialog()
+        } else {
+            TAPUtils.dismissKeyboard(this@TAPMyAccountActivity)
+            TAPAttachmentBottomSheet(instanceKey, vp_profile_picture.currentItem, profilePictureOptionListener).show(supportFragmentManager, "")
+        }
     }
 
     private fun showDefaultProfilePicture() {
@@ -622,7 +628,77 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         TAPDataManager.getInstance(instanceKey).getPhotoList(vm.myUserModel.userID, object : TAPDefaultDataView<TapGetPhotoListResponse>() {
             override fun onSuccess(response: TapGetPhotoListResponse?) {
                 super.onSuccess(response)
+                vm.isLoadPhotoFailed = false
                 reloadProfilePicture(response?.photos?.toCollection(ArrayList()), loadingText)
+            }
+
+            override fun onError(error: TAPErrorModel?) {
+                super.onError(error)
+                vm.isLoadPhotoFailed = true
+            }
+
+            override fun onError(errorMessage: String?) {
+                super.onError(errorMessage)
+                vm.isLoadPhotoFailed = true
+            }
+        })
+    }
+
+    private fun getPhotoListWithDialog() {
+        TAPDataManager.getInstance(instanceKey).getPhotoList(vm.myUserModel.userID, object : TAPDefaultDataView<TapGetPhotoListResponse>() {
+            override fun startLoading() {
+                super.startLoading()
+                vm.isUpdatingProfile = true
+                disableEditing()
+                showLoading(getString(R.string.tap_loading))
+            }
+
+            override fun endLoading() {
+                super.endLoading()
+                vm.isUpdatingProfile = false
+                enableEditing()
+            }
+            override fun onSuccess(response: TapGetPhotoListResponse?) {
+                super.onSuccess(response)
+                vm.isLoadPhotoFailed = false
+                reloadProfilePicture(response?.photos?.toCollection(ArrayList()), null)
+            }
+
+            override fun onError(error: TAPErrorModel?) {
+                super.onError(error)
+                endLoading()
+                vm.isLoadPhotoFailed = true
+                TapTalkDialog.Builder(this@TAPMyAccountActivity)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(getString(R.string.tap_could_not_retrieve_photo))
+                    .setCancelable(false)
+                    .setPrimaryButtonTitle(getString(R.string.tap_retry))
+                    .setPrimaryButtonListener {
+                        getPhotoListWithDialog()
+                    }
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                    .setSecondaryButtonListener(true) {}
+                    .show()
+            }
+
+            override fun onError(errorMessage: String?) {
+                super.onError(errorMessage)
+                endLoading()
+                vm.isLoadPhotoFailed = true
+                enableEditing()
+                TapTalkDialog.Builder(this@TAPMyAccountActivity)
+                    .setTitle(getString(R.string.tap_error))
+                    .setMessage(getString(R.string.tap_could_not_retrieve_photo))
+                    .setCancelable(false)
+                    .setPrimaryButtonTitle(getString(R.string.tap_retry))
+                    .setPrimaryButtonListener {
+                        getPhotoListWithDialog()
+                    }
+                    .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                    .setDialogType(TapTalkDialog.DialogType.DEFAULT)
+                    .setSecondaryButtonListener(true) {}
+                    .show()
             }
         })
     }
