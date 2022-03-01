@@ -272,6 +272,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
 
     private fun showViewState() {
         state = ViewState.VIEW
+        TAPUtils.dismissKeyboard(this)
         tv_title.text = vm.myUserModel.fullname
         tv_edit_save_btn.setOnClickListener { showEditState() }
         tv_edit_save_btn.text = getString(R.string.tap_edit)
@@ -329,6 +330,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                 .setCancelable(false)
                 .setPrimaryButtonTitle(getString(R.string.tap_save))
                 .setPrimaryButtonListener {
+                    vm.isUpdatingProfile = true
+                    disableEditing()
                     showLoading(getString(R.string.tap_updating))
                     TapCoreContactManager.getInstance(instanceKey).updateBio(et_bio.text.toString(), updateBioListener)
                 }
@@ -577,6 +580,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     private val updateBioListener = object : TapCoreGetContactListener() {
         override fun onSuccess(user: TAPUserModel?) {
             super.onSuccess(user)
+            vm.isUpdatingProfile = false
+            enableEditing()
             hideLoading()
             vm.myUserModel = user
             setProfileInformation(tv_bio_view, g_bio, user?.bio)
