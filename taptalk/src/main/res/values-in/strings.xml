@@ -381,7 +381,7 @@
     <string name="tap_remove">Hapus</string>
     <string name="tap_save_changes_question">Simpan Perubahan?</string>
     <string name="tap_save_changes_confirmation">Anda akan menyimpan perubahan pada profil, apakah anda ingin melanjutkan?</string>
-    <string name="tap_input_your_bio_here">Masukan bio anda disini.</string>
+    <string name="tap_input_your_bio_here">Masukkan bio anda disini.</string>
     <string name="tap_picture_uploaded">Berhasil!</string>
     <string name="tap_could_not_retrieve_photo">Tidak dapat memuat foto profil terakhir anda, cek kembali koneksi internet anda dan coba lagi.</string>
     <string name="tap_max_profile_picture_title">Anda telah mencapai maksimum foto profil!</string>
