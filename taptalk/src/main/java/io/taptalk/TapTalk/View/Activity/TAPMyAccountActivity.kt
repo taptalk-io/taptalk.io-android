@@ -225,8 +225,13 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         } else {
             g_bio.visibility = View.GONE
         }
+        if (vm.myUserModel.phoneWithCode.isNullOrEmpty()) {
+            g_mobile_number.visibility = View.GONE
+        } else {
+            g_mobile_number.visibility = View.VISIBLE
+            tv_mobile_number_view.text = "+" + vm.myUserModel.phoneWithCode
+        }
         setProfileInformation(tv_username_view, g_username, vm.myUserModel.username)
-        setProfileInformation(tv_mobile_number_view, g_mobile_number, vm.myUserModel.phone)
         setProfileInformation(tv_email_view, g_email, vm.myUserModel.email)
         setTextVersionApp()
 
