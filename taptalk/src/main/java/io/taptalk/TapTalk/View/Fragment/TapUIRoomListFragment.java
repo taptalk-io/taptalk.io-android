@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -51,6 +53,8 @@ import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
+import io.taptalk.TapTalk.Helper.SwipedListItem.ListItemSwipeCallback;
+import io.taptalk.TapTalk.Helper.SwipedListItem.OnMoveAndSwipeListener;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -127,6 +131,7 @@ public class TapUIRoomListFragment extends Fragment {
     private HashMap<String, CountDownTimer> typingIndicatorTimeoutTimers;
     private RequestManager glide;
     private TapTalkDialog userNullErrorDialog;
+    private ListItemSwipeCallback listItemSwipeCallback;
 
     private TAPChatListener chatListener;
 
@@ -390,6 +395,18 @@ public class TapUIRoomListFragment extends Fragment {
         rvContactList.setAdapter(adapter);
         rvContactList.setLayoutManager(llm);
         rvContactList.setHasFixedSize(true);
+        float clamp;
+        try {
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            clamp = Math.round(64 * (float) displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        } catch (Exception e) {
+            clamp = 48f;
+        }
+        listItemSwipeCallback = new ListItemSwipeCallback();
+        listItemSwipeCallback.setClamp(clamp);
+        listItemSwipeCallback.setListener(onMoveAndSwipeListener);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(listItemSwipeCallback);
+        itemTouchHelper.attachToRecyclerView(rvContactList);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
         if (null != messageAnimator) messageAnimator.setSupportsChangeAnimations(false);
@@ -1091,6 +1108,14 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(true);
             calculateBadgeCount();
+        }
+    };
+
+    // TODO: 04/03/22 set mark as read MU
+    OnMoveAndSwipeListener onMoveAndSwipeListener = new OnMoveAndSwipeListener() {
+        @Override
+        public void onItemClick(int position) {
+            adapter.notifyItemChanged(position);
         }
     };
 
