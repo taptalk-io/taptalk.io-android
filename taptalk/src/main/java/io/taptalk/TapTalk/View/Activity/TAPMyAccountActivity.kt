@@ -229,7 +229,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             g_mobile_number.visibility = View.GONE
         } else {
             g_mobile_number.visibility = View.VISIBLE
-            tv_mobile_number_view.text = "+" + vm.myUserModel.phoneWithCode
+            tv_mobile_number_view.text = "+" + vm.myUserModel.countryCallingCode + " " + vm.myUserModel.phone
         }
         setProfileInformation(tv_username_view, g_username, vm.myUserModel.username)
         setProfileInformation(tv_email_view, g_email, vm.myUserModel.email)
