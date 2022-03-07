@@ -222,6 +222,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible ){
             g_bio.visibility = View.VISIBLE
             setProfileInformation(tv_bio_view, g_bio, vm.myUserModel.bio)
+            if (!vm.myUserModel.bio.isNullOrEmpty()) {
+                et_bio.setText(vm.myUserModel.bio)
+            }
         } else {
             g_bio.visibility = View.GONE
         }
