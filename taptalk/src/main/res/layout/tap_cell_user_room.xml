@@ -29,13 +29,14 @@
             android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/iv_mark_read"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:src="@drawable/tap_ic_mark_unread_white"/>
 
             <TextView
-                android:id="@+id/tv_archive"
+                android:id="@+id/tv_mark_read"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tap_unread"
