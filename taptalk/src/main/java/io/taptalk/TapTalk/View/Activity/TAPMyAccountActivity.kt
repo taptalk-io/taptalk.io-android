@@ -288,6 +288,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_basic_info.visibility = View.VISIBLE
         tv_version_code.visibility = View.VISIBLE
         cl_logout.visibility = View.GONE
+        et_bio.isEnabled = false
     }
 
     private fun showEditState() {
@@ -317,6 +318,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         } else {
             cl_logout.visibility = View.GONE
         }
+        et_bio.isEnabled = true
     }
 
     private fun setProfileInformation(textView: TextView, group: View, textValue: String?) {
