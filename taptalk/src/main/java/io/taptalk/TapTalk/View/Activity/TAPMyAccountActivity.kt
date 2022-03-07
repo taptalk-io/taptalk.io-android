@@ -276,6 +276,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         state = ViewState.VIEW
         TAPUtils.dismissKeyboard(this)
         tv_title.text = vm.myUserModel.fullname
+        tv_edit_profile_picture.visibility = View.VISIBLE
         tv_edit_save_btn.setOnClickListener { showEditState() }
         tv_edit_save_btn.text = getString(R.string.tap_edit)
         tv_edit_profile_picture.text = getString(R.string.tap_set_new_profile_picture)
@@ -389,6 +390,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tab_layout.visibility = View.GONE
         tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
         tv_profile_picture_label.visibility = View.VISIBLE
+        if (state == ViewState.EDIT) {
+            tv_edit_profile_picture.visibility = View.GONE
+        } else {
+            tv_edit_profile_picture.visibility = View.VISIBLE
+        }
     }
 
     private fun reloadProfilePicture(imageUri: Uri?) {
