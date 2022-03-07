@@ -389,5 +389,6 @@
     <string name="tap_max_profile_picture_title">You have reached maximum profile picture.</string>
     <string name="tap_max_profile_picture_message">You can only have 10 profile picture at a time, remove some picture to upload new ones.</string>
     <string name="tap_unread">Unread</string>
+    <string name="tap_read">Read</string>
 
 </resources>
