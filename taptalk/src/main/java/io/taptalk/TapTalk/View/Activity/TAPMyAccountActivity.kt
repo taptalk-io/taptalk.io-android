@@ -335,7 +335,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     vm.isUpdatingProfile = true
                     disableEditing()
                     showLoading(getString(R.string.tap_updating))
-                    TapCoreContactManager.getInstance(instanceKey).updateBio(et_bio.text.toString(), updateBioListener)
+                    TapCoreContactManager.getInstance(instanceKey).updateActiveUserBio(et_bio.text.toString(), updateBioListener)
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)

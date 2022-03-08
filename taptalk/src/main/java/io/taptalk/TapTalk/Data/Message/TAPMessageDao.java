@@ -130,6 +130,9 @@ public interface TAPMessageDao {
     @Query("select localID, created from message_table where isRead = 0 and isHidden = 0 and isDeleted = 0 and RoomID like :roomID and userID not like :userID order by created asc limit 1")
     TAPMessageEntity getMinCreatedOfUnreadMessage(String userID, String roomID);
 
+    @Query("select localID, created from message_table where RoomID like :roomID order by created asc limit 1")
+    TAPMessageEntity getOldestCreatedTimeFromRoom(String roomID);
+
     @Query("update Message_Table set isFailedSend = 1, isSending = 0 where isSending = 1")
     void updatePendingStatus();
 

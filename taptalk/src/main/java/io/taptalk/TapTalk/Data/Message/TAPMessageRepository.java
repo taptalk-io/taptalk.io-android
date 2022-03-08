@@ -379,6 +379,19 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getOldestCreatedTimeFromRoom(String roomID, final TAPDatabaseListener<Long> listener) {
+        new Thread(() -> {
+            TAPMessageEntity createdTimeEntity = messageDao.getOldestCreatedTimeFromRoom(roomID);
+
+            if (null != createdTimeEntity) {
+                Long createdTime = createdTimeEntity.getCreated();
+                listener.onSelectFinished(createdTime);
+            } else {
+                listener.onSelectFinished(System.currentTimeMillis());
+            }
+        }).start();
+    }
+
     public void delete(final String localID) {
         new Thread(() -> messageDao.delete(localID)).start();
     }
