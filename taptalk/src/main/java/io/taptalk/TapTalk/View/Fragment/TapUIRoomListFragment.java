@@ -1112,6 +1112,7 @@ public class TapUIRoomListFragment extends Fragment {
     };
 
     // TODO: 04/03/22 set mark as read MU
+    // TODO: 08/03/22 set tapUI function MU 
     OnMoveAndSwipeListener onMoveAndSwipeListener = new OnMoveAndSwipeListener() {
         @Override
         public void onItemClick(int position) {
