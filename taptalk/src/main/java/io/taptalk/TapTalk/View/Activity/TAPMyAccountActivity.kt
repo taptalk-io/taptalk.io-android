@@ -752,6 +752,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         override fun onSuccess(response: TAPGetUserResponse?) {
             super.onSuccess(response)
             vm.isUpdatingProfile = false
+            TAPDataManager.getInstance(instanceKey).saveActiveUser(response?.user)
             getPhotoList(null)
         }
 
