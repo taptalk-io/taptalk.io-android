@@ -386,5 +386,6 @@
     <string name="tap_could_not_retrieve_photo">Tidak dapat memuat foto profil terakhir anda, cek kembali koneksi internet anda dan coba lagi.</string>
     <string name="tap_max_profile_picture_title">Anda telah mencapai maksimum foto profil!</string>
     <string name="tap_max_profile_picture_message">Anda hanya dapat mempunyai maksimal 10 foto profil. Anda dapat menghapus beberapa foto untuk mengunggah foto baru.</string>
+    <string name="tap_star">Bintang</string>
 
 </resources>
