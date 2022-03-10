@@ -936,6 +936,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance(instanceKey).getMinCreatedOfUnreadMessage(getActiveUser().getUserID(), roomID, listener);
     }
 
+    public void getOldestCreatedTimeFromRoom(String roomID, final TAPDatabaseListener<Long> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getOldestCreatedTimeFromRoom(roomID, listener);
+    }
+
     public void deleteAllMessage() {
         TAPDatabaseManager.getInstance(instanceKey).deleteAllMessage();
     }
