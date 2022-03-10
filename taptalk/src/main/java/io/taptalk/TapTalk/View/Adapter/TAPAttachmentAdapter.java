@@ -239,6 +239,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case SELECT_REMOVE_PHOTO:
                     setComponentColors(R.color.tapIconRemoveImage, R.style.tapActionSheetDestructiveLabelStyle);
+                    break;
             }
 
             if (getItemCount() - 1 == position) {
@@ -335,8 +336,10 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case SELECT_REMOVE_PHOTO:
                     attachmentListener.onImageRemoved(imagePosition);
+                    break;
                 case LONG_PRESS_SAVE_PROFILE_PICTURE:
                     attachmentListener.onSaveProfilePicture(bitmap);
+                    break;
             }
             onClickListener.onClick(itemView);
         }

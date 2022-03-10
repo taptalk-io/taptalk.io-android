@@ -27,7 +27,7 @@ class TapProfilePicturePagerAdapter(private val context: Context, val images: Ar
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val layout = LayoutInflater.from(context).inflate(R.layout.tap_cell_profile_picture, container, false)
-        Glide.with(context).load(images[position].fullsizeImageURL).centerCrop().listener(object : RequestListener<Drawable> {
+        Glide.with(context).load(images[position].fullsizeImageURL).fitCenter().listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
                 e: GlideException?,
                 model: Any?,
