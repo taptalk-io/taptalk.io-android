@@ -6,11 +6,13 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter
 import kotlin.math.max
 import kotlin.math.min
 
-class ListItemSwipeCallback : ItemTouchHelper.Callback() {
+class ListItemSwipeCallback(private val instanceKey: String) : ItemTouchHelper.Callback() {
 
     private var currentDx = 0f
     private var swipeBack = false
@@ -19,15 +21,24 @@ class ListItemSwipeCallback : ItemTouchHelper.Callback() {
     private var clamp: Float = 0f
     private var onMoveAndSwipedListener: OnMoveAndSwipeListener? = null
 
-    companion object {
-        private const val IS_SWIPED = "isSwiped"
-    }
-
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-        if (getTag(viewHolder)) {
-            return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+        if (((viewHolder as TAPRoomListAdapter.RoomListVH).item.isMarkAsUnread || viewHolder.item.numberOfUnreadMessages > 0)
+            && TapUI.getInstance(instanceKey).isMarkAsUnreadRoomListSwipeMenuEnabled
+        ) {
+            if (getTag((viewHolder as RecyclerView.ViewHolder))) {
+                return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+            }
+            return makeMovementFlags(0, ItemTouchHelper.RIGHT)
+
+        } else if (!viewHolder.item.isMarkAsUnread && TapUI.getInstance(instanceKey).isMarkAsReadRoomListSwipeMenuEnabled) {
+            if (getTag(viewHolder)) {
+                return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
+            }
+            return makeMovementFlags(0, ItemTouchHelper.RIGHT)
         }
-        return makeMovementFlags(0, ItemTouchHelper.RIGHT)
+        else {
+            return 0
+        }
     }
 
     override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {

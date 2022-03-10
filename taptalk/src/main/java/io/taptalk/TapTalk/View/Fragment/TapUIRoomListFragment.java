@@ -402,7 +402,7 @@ public class TapUIRoomListFragment extends Fragment {
         } catch (Exception e) {
             clamp = 48f;
         }
-        listItemSwipeCallback = new ListItemSwipeCallback();
+        listItemSwipeCallback = new ListItemSwipeCallback(instanceKey);
         listItemSwipeCallback.setClamp(clamp);
         listItemSwipeCallback.setListener(onMoveAndSwipeListener);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(listItemSwipeCallback);
@@ -974,6 +974,7 @@ public class TapUIRoomListFragment extends Fragment {
 
             vm.setFetchingMessageListAndUnread(false);
 
+            // TODO: 10/03/22 get, save to preference and set unread room list from API MU
             calculateBadgeCount();
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
@@ -1054,6 +1055,7 @@ public class TapUIRoomListFragment extends Fragment {
             }
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
+            // TODO: 10/03/22 get unread room list, and set to room list model MU
             calculateBadgeCount();
         }
 
@@ -1112,7 +1114,6 @@ public class TapUIRoomListFragment extends Fragment {
     };
 
     // TODO: 04/03/22 set mark as read MU
-    // TODO: 08/03/22 set tapUI function MU 
     OnMoveAndSwipeListener onMoveAndSwipeListener = new OnMoveAndSwipeListener() {
         @Override
         public void onItemClick(int position) {
@@ -1218,7 +1219,10 @@ public class TapUIRoomListFragment extends Fragment {
         vm.setRoomBadgeCount(0);
         try {
             for (Map.Entry<String, TAPRoomListModel> entry : vm.getRoomPointer().entrySet()) {
-                vm.setRoomBadgeCount(vm.getRoomBadgeCount() + entry.getValue().getNumberOfUnreadMessages());
+                // TODO: 10/03/22 add unread count if room unread MU
+                if (entry.getValue().getNumberOfUnreadMessages() > 0) {
+                    vm.setRoomBadgeCount(vm.getRoomBadgeCount() + entry.getValue().getNumberOfUnreadMessages());
+                }
             }
         } catch (ConcurrentModificationException e) { // FIXME: 5 Dec 2019
             e.printStackTrace();
