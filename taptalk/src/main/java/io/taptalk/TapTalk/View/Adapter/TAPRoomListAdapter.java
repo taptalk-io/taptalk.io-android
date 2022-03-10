@@ -312,9 +312,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Show unread count
-            // TODO: 07/03/22 temporarily use boolean for testing purposes MU
-            boolean isRead = false;
-            if (isRead) {
+            if (item.isMarkAsUnread()) {
                 glide.load(R.drawable.tap_ic_mark_read_white).fitCenter().into(ivMarkRead);
                 tvMarkRead.setText(R.string.tap_read);
             } else {
@@ -322,16 +320,14 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 tvMarkRead.setText(R.string.tap_unread);
             }
             int unreadCount = item.getNumberOfUnreadMessages();
-            if (unreadCount < 100 || !isRead) {
+            if (unreadCount > 0 || item.isMarkAsUnread()) {
                 if (unreadCount == 0) {
                     tvBadgeUnread.setText("");
+                } else if (unreadCount >= 100) {
+                    tvBadgeUnread.setText(R.string.tap_over_99);
                 } else {
-                    tvBadgeUnread.setText(String.valueOf(item.getNumberOfUnreadMessages()));
+                    tvBadgeUnread.setText(String.valueOf(unreadCount));
                 }
-                ivMessageStatus.setVisibility(View.GONE);
-                tvBadgeUnread.setVisibility(View.VISIBLE);
-            } else if (unreadCount >= 100) {
-                tvBadgeUnread.setText(R.string.tap_over_99);
                 ivMessageStatus.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
             } else {
