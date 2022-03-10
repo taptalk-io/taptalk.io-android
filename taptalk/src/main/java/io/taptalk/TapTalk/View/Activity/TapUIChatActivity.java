@@ -3527,7 +3527,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //                            messageFromPointer = messageFromPointer.copyMessageModel();
 //                        }
                         if (!TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID()) &&
-                                (null == message.getHidden() || !message.getHidden()) &&
+//                                (null == message.getHidden() || !message.getHidden()) &&
 //                                (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
 //                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
                                 !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(message.getMessageID()) &&
