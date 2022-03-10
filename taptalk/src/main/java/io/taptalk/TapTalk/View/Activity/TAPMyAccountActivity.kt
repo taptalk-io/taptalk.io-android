@@ -289,6 +289,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tv_version_code.visibility = View.VISIBLE
         cl_logout.visibility = View.GONE
         et_bio.isEnabled = false
+        et_bio.setText(vm.myUserModel.bio)
     }
 
     private fun showEditState() {
