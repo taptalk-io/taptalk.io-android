@@ -1219,9 +1219,10 @@ public class TapUIRoomListFragment extends Fragment {
         vm.setRoomBadgeCount(0);
         try {
             for (Map.Entry<String, TAPRoomListModel> entry : vm.getRoomPointer().entrySet()) {
-                // TODO: 10/03/22 add unread count if room unread MU
                 if (entry.getValue().getNumberOfUnreadMessages() > 0) {
                     vm.setRoomBadgeCount(vm.getRoomBadgeCount() + entry.getValue().getNumberOfUnreadMessages());
+                } else if (entry.getValue().isMarkAsUnread()) {
+                    vm.setRoomBadgeCount(vm.getRoomBadgeCount() + 1);
                 }
             }
         } catch (ConcurrentModificationException e) { // FIXME: 5 Dec 2019
