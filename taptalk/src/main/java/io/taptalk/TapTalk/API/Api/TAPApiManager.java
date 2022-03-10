@@ -201,7 +201,7 @@ public class TAPApiManager {
             return Observable.just(t);
         } else if (code == UNAUTHORIZED) {
             Log.e(TAG, String.format(String.format("[Err %s - %s] %s", br.getStatus(), br.getError().getCode(), br.getError().getMessage()), code));
-            if (br.getError().getCode().equals(String.valueOf(TOKEN_EXPIRED))) {
+            if (br.getError().getCode().equals(TOKEN_EXPIRED)) {
                 if (!isLoggedOut) {
                     if (isRefreshTokenRunning) {
                         return raiseApiRefreshTokenRunningException();

@@ -1987,7 +1987,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
                 @Override
                 public void onError(TAPErrorModel error) {
-                    if (null != error.getCode() && error.getCode().equals(String.valueOf(USER_NOT_FOUND))) {
+                    if (null != error.getCode() && error.getCode().equals(USER_NOT_FOUND)) {
                         showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
                     }
                 }

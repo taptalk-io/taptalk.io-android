@@ -28,6 +28,8 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.PERMISSION_DENIED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.ROOM_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ADMIN_REQUIRED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_GROUP_DELETED;
@@ -378,7 +380,18 @@ public class TapCoreChatRoomManager {
 
             @Override
             public void onError(TAPErrorModel error) {
-                if (null != listener) {
+                if (error.getCode().equals(PERMISSION_DENIED)) {
+                    if (null != listener) {
+                        listener.onError(error.getCode(), error.getMessage());
+                    }
+                }
+                else if (error.getCode().equals(ROOM_NOT_FOUND)) {
+                    TAPGroupManager.Companion.getInstance(instanceKey).removeGroupData(groupRoomID);
+                    if (null != listener) {
+                        listener.onError(error.getCode(), error.getMessage());
+                    }
+                }
+                else if (null != listener) {
                     TAPRoomModel roomModel = getLocalGroupChatRoom(groupRoomID);
                     if (null != roomModel) {
                         listener.onSuccess(roomModel);
