@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -42,12 +43,16 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_OPEN_LINK;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_REPLY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_DOWNLOADS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_IMAGE_GALLERY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_PROFILE_PICTURE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_VIDEO_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_MESSAGE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_SMS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_VIEW_PROFILE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_CAMERA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_GALLERY;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_REMOVE_PHOTO;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_SAVE_IMAGE;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_SET_AS_MAIN;
 
 public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAPBaseViewHolder<TAPAttachmentModel>> {
 
@@ -57,10 +62,28 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
     private String messageToCopy = "";
     private String linkifyResult = "";
     private TAPMessageModel message;
+    private int imagePosition = -1;
+    private Bitmap bitmap;
 
     public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
         this.instanceKey = instanceKey;
         setItems(items);
+        this.attachmentListener = attachmentListener;
+        this.onClickListener = onClickListener;
+    }
+
+    public TAPAttachmentAdapter(String instanceKey, List<TAPAttachmentModel> items, Bitmap bitmap, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        this.instanceKey = instanceKey;
+        setItems(items);
+        this.bitmap = bitmap;
+        this.attachmentListener = attachmentListener;
+        this.onClickListener = onClickListener;
+    }
+
+    public TAPAttachmentAdapter(String instanceKey, int imagePosition, List<TAPAttachmentModel> items, TAPAttachmentListener attachmentListener, View.OnClickListener onClickListener) {
+        this.instanceKey = instanceKey;
+        setItems(items);
+        this.imagePosition = imagePosition;
         this.attachmentListener = attachmentListener;
         this.onClickListener = onClickListener;
     }
@@ -196,6 +219,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                 case LONG_PRESS_SAVE_IMAGE_GALLERY:
                 case LONG_PRESS_SAVE_VIDEO_GALLERY:
                 case LONG_PRESS_SAVE_DOWNLOADS:
+                case LONG_PRESS_SAVE_PROFILE_PICTURE:
                     setComponentColors(R.color.tapIconLongPressActionSaveToGallery, R.style.tapActionSheetDefaultLabelStyle);
                     break;
                 case LONG_PRESS_VIEW_PROFILE:
@@ -206,6 +230,15 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case LONG_PRESS_DELETE:
                     setComponentColors(R.color.tapIconLongPressActionDelete, R.style.tapActionSheetDestructiveLabelStyle);
+                    break;
+                case SELECT_SET_AS_MAIN:
+                    setComponentColors(R.color.tapIconSetAsMain, R.style.tapActionSheetDefaultLabelStyle);
+                    break;
+                case SELECT_SAVE_IMAGE:
+                    setComponentColors(R.color.tapIconSaveToGallery, R.style.tapActionSheetDefaultLabelStyle);
+                    break;
+                case SELECT_REMOVE_PHOTO:
+                    setComponentColors(R.color.tapIconRemoveImage, R.style.tapActionSheetDestructiveLabelStyle);
                     break;
             }
 
@@ -280,6 +313,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     attachmentListener.onPhoneSmsSelected(messageToCopy);
                     break;
                 case LONG_PRESS_SAVE_IMAGE_GALLERY:
+                case SELECT_SAVE_IMAGE:
                     attachmentListener.onSaveImageToGallery(message);
                     break;
                 case LONG_PRESS_SAVE_VIDEO_GALLERY:
@@ -296,6 +330,15 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case LONG_PRESS_DELETE:
                     attachmentListener.onDeleteMessage(message.getRoom().getRoomID(), message);
+                    break;
+                case SELECT_SET_AS_MAIN:
+                    attachmentListener.setAsMain(imagePosition);
+                    break;
+                case SELECT_REMOVE_PHOTO:
+                    attachmentListener.onImageRemoved(imagePosition);
+                    break;
+                case LONG_PRESS_SAVE_PROFILE_PICTURE:
+                    attachmentListener.onSaveProfilePicture(bitmap);
                     break;
             }
             onClickListener.onClick(itemView);

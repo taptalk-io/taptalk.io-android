@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.Listener;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.Keep;
 
 import io.taptalk.TapTalk.Interface.TapTalkAttachmentInterface;
@@ -93,5 +95,20 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     @Override
     public void onDeleteMessage(String roomID, TAPMessageModel message) {
         TAPDataManager.getInstance(instanceKey).deleteMessagesAPI(roomID, message.getMessageID(), true);
+    }
+
+    @Override
+    public void setAsMain(int imagePosition) {
+
+    }
+
+    @Override
+    public void onImageRemoved(int imagePosition) {
+
+    }
+
+    @Override
+    public void onSaveProfilePicture(Bitmap bitmap) {
+
     }
 }

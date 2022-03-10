@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.View.BottomSheet
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +31,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         LINK_TYPE,
         EMAIL_TYPE,
         PHONE_TYPE,
-        MENTION_TYPE
+        MENTION_TYPE,
+        IMAGE_TYPE
     }
 
     private var instanceKey = ""
@@ -38,6 +40,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     private var message: TAPMessageModel? = null
     private var urlMessage = ""
     private var linkifyResult = ""
+    private var bitmap: Bitmap? = null
     private val onClickListener = View.OnClickListener { dismiss() }
     private var bottomSheetListener: TAPAttachmentListener? = null
 
@@ -66,7 +69,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.message = message
         this.bottomSheetListener = bottomSheetListener
     }
-    
+
+    constructor(instanceKey: String, longPressType: LongPressType, bitmap: Bitmap, bottomSheetListener: TAPAttachmentListener) {
+        this.instanceKey = instanceKey
+        this.longPressType = longPressType
+        this.bottomSheetListener = bottomSheetListener
+        this.bitmap = bitmap
+    }
+
     companion object {
         // Chat Bubble
         fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
@@ -91,6 +101,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             fragment.arguments = args
             return fragment
         }
+
+        // Save Profile Picture
+        fun newInstance(instanceKey: String, longPressType: LongPressType, bitmap: Bitmap, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, bitmap, bottomSheetListener)
+            val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -101,7 +119,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (null == message) {
+        if (null == message && longPressType != LongPressType.IMAGE_TYPE) {
             dismiss()
             return
         }
@@ -199,6 +217,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                     dismiss()
                 } else {
                     longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, urlMessage, linkifyResult, bottomSheetListener, onClickListener)
+                }
+            }
+            LongPressType.IMAGE_TYPE -> {
+                val menus = createSaveImageLongPressMenu()
+                if (menus.isEmpty()) {
+                    dismiss()
+                } else {
+                    longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, bitmap, bottomSheetListener, onClickListener)
                 }
             }
         }
@@ -599,6 +625,16 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                     R.string.tap_copy,
                     TAPAttachmentModel.LONG_PRESS_COPY))
         }
+        return attachMenus
+    }
+
+    private fun createSaveImageLongPressMenu(): List<TAPAttachmentModel> {
+        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+        // Save Profile Picture
+        attachMenus.add(TAPAttachmentModel(
+            R.drawable.tap_ic_download_orange,
+            R.string.tap_save_image,
+            TAPAttachmentModel.LONG_PRESS_SAVE_PROFILE_PICTURE))
         return attachMenus
     }
 }

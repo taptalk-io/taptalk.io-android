@@ -8,8 +8,8 @@
     <string name="tap_chats_and_contacts">Chats and Contacts</string>
     <string name="tap_clear_chat">Clear Chat</string>
     <string name="tap_conversation_color">Conversation Color</string>
-    <string name="tap_leave_group">Leave Group</string>
-    <string name="tap_delete_group">Delete Group</string>
+    <string name="tap_leave_group">Leave group</string>
+    <string name="tap_delete_group">Delete group</string>
     <string name="tap_forward">Forward</string>
     <string name="tap_group_details">Group Details</string>
     <string name="tap_group_subject">Group Subject</string>
@@ -30,7 +30,7 @@
     <string name="tap_scan_qr_code">Scan QR Code</string>
     <string name="tap_show_qr_code">Show QR Code</string>
     <string name="tap_user_details">User Details</string>
-    <string name="tap_view_members">View Group Members</string>
+    <string name="tap_view_members">View members</string>
     <string name="tap_welcome">Welcome</string>
 
     <!--Chat Room List-->
@@ -74,11 +74,12 @@
     <!--Group Chat-->
     <string name="tap_add_members">Add Members</string>
     <string name="tap_format_dd_selected_member_count">Group Members (%d/%d)</string>
-    <string name="tap_format_d_group_member_count">%d Members</string>
+    <string name="tap_format_d_group_member_count">%d members</string>
     <string name="tap_group_name">Group Name</string>
     <string name="tap_group_picture">Group Picture</string>
     <string name="tap_create_group">Create Group</string>
     <string name="tap_edit_group">Edit Group</string>
+    <string name="tap_edit_group_small">Edit group</string>
     <string name="tap_change_avatar">Change Avatar</string>
     <string name="tap_group_members">Group Members</string>
     <string name="tap_remove_group_member">Remove Member</string>
@@ -361,5 +362,31 @@
     <string name="tap_at">\@</string>
     <string name="tap_sms">SMS</string>
     <string name="tap_whatsapp">WhatsApp</string>
+    <string name="tap_account_details">Account Details</string>
+    <string name="tap_set_new_profile_picture">Set New Profile Picture</string>
+    <string name="bio">Bio</string>
+    <string name="tap_save">Save</string>
+    <string name="tap_edit_profile_picture">Edit Profile Picture</string>
+    <string name="tap_you_have_unsaved_changes">You have unsaved changes!</string>
+    <string name="tap_unsaved_changes_confirmation">All updates will not be saved. Are you sure you want to continue?</string>
+    <string name="tap_yes">Yes</string>
+    <string name="tap_logout">Logout</string>
+    <string name="tap_zero_of_hundred">0/100</string>
+    <string name="tap_set_as_main_photo">Set as Main Photo</string>
+    <string name="tap_save_image">Save Image</string>
+    <string name="tap_remove_photo">Remove Photo</string>
+    <string name="tap_set_as_main_question">Set as Main Photo?</string>
+    <string name="tap_set_as_main_confirmation">You will be replacing the main photo with this photo. Are you sure you want to continue?</string>
+    <string name="tap_replace">Replace</string>
+    <string name="tap_remove_photo_question">Remove Photo?</string>
+    <string name="tap_remove_photo_confirmation">You will be removing this profile picture. Are you sure you want to continue?</string>
+    <string name="tap_remove">Remove</string>
+    <string name="tap_save_changes_question">Save Changes?</string>
+    <string name="tap_save_changes_confirmation">You will be saving new changes on your profile. Are you sure you want to continue?</string>
+    <string name="tap_input_your_bio_here">Input your bio here.</string>
+    <string name="tap_picture_uploaded">Picture Uploaded</string>
+    <string name="tap_could_not_retrieve_photo">Could not retrieve latest profile picture data, please check your connection and try again</string>
+    <string name="tap_max_profile_picture_title">You have reached maximum profile picture.</string>
+    <string name="tap_max_profile_picture_message">You can only have 10 profile picture at a time, remove some picture to upload new ones.</string>
 
 </resources>

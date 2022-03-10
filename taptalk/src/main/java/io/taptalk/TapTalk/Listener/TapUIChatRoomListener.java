@@ -63,10 +63,10 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
     public void onTapTalkUserMentionTapped(Activity activity, TAPMessageModel messageModel, TAPUserModel user, boolean isRoomParticipant) {
         if (isRoomParticipant) {
             // Open member profile
-            TAPChatProfileActivity.start(activity, instanceKey, messageModel.getRoom(), user);
+            TAPChatProfileActivity.Companion.start(activity, instanceKey, messageModel.getRoom(), user);
         } else {
             // Open personal profile
-            TAPChatProfileActivity.start(
+            TAPChatProfileActivity.Companion.start(
                     activity,
                     instanceKey,
                     TAPRoomModel.Builder(
@@ -100,6 +100,6 @@ public abstract class TapUIChatRoomListener implements TapUIChatRoomInterface {
         if (null == activity) {
             return;
         }
-        TAPChatProfileActivity.start(activity, instanceKey, room, user);
+        TAPChatProfileActivity.Companion.start(activity, instanceKey, room, user);
     }
 }

@@ -1987,7 +1987,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
                 @Override
                 public void onError(TAPErrorModel error) {
-                    if (null != error.getCode() && error.getCode().equals(String.valueOf(USER_NOT_FOUND))) {
+                    if (null != error.getCode() && error.getCode().equals(USER_NOT_FOUND)) {
                         showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
                     }
                 }
@@ -3067,7 +3067,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
                 case LongPressChatBubble:
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, intent.getParcelableExtra(MESSAGE), attachmentListener);
+                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener);
                         chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }
@@ -3527,7 +3527,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //                            messageFromPointer = messageFromPointer.copyMessageModel();
 //                        }
                         if (!TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID()) &&
-                                (null == message.getHidden() || !message.getHidden()) &&
+//                                (null == message.getHidden() || !message.getHidden()) &&
 //                                (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
 //                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
                                 !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(message.getMessageID()) &&

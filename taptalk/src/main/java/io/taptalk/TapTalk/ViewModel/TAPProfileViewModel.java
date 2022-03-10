@@ -13,12 +13,14 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapPhotosItemModel;
 
 public class TAPProfileViewModel extends AndroidViewModel {
 
     private TAPRoomModel room, groupDataFromManager;
     private List<TapChatProfileItemModel> menuItems;
     private List<TapChatProfileItemModel> adapterItems;
+    private List<TapChatProfileItemModel> sharedMediaAdapterItems;
     private TapChatProfileItemModel profileDetailItem;
     private TapChatProfileItemModel sharedMediaSectionTitle;
     private TapChatProfileItemModel loadingItem;
@@ -29,6 +31,7 @@ public class TAPProfileViewModel extends AndroidViewModel {
     private String loadingStartText, loadingEndText;
     private long lastSharedMediaTimestamp;
     private boolean isLoadingSharedMedia, isFinishedLoadingSharedMedia, isApiCallOnProgress, isGroupMemberProfile, isGroupAdmin;
+    private ArrayList<TapPhotosItemModel> profilePictureList;
 
     public TAPProfileViewModel(@NonNull Application application) {
         super(application);
@@ -56,6 +59,14 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setAdapterItems(List<TapChatProfileItemModel> adapterItems) {
         this.adapterItems = adapterItems;
+    }
+
+    public List<TapChatProfileItemModel> getSharedMediaAdapterItems() {
+        return null == sharedMediaAdapterItems ? sharedMediaAdapterItems = new ArrayList<>() : sharedMediaAdapterItems;
+    }
+
+    public void setSharedMediaAdapterItems(List<TapChatProfileItemModel> sharedMediaAdapterItems) {
+        this.sharedMediaAdapterItems = sharedMediaAdapterItems;
     }
 
     public TapChatProfileItemModel getProfileDetailItem() {
@@ -193,5 +204,13 @@ public class TAPProfileViewModel extends AndroidViewModel {
 
     public void setGroupAdmin(boolean isGroupAdmin) {
         this.isGroupAdmin = isGroupAdmin;
+    }
+
+    public ArrayList<TapPhotosItemModel> getProfilePictureList() {
+        return profilePictureList == null? profilePictureList = new ArrayList<>() : profilePictureList;
+    }
+
+    public void setProfilePictureList(ArrayList<TapPhotosItemModel> profilePictureList) {
+        this.profilePictureList = profilePictureList;
     }
 }

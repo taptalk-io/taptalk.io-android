@@ -11,7 +11,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPRequest;
@@ -19,9 +19,12 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
@@ -43,6 +46,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
@@ -104,7 +108,7 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByUsername(@Body TAPGetUserByUsernameRequest request);
 
     @POST("client/user/get_by_id")
-    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByID(@Body TAPGetUserByIdRequest request);
+    Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByID(@Body TapIdRequest request);
 
     @POST("client/user/get_by_xcuserid")
     Observable<TAPBaseResponse<TAPGetUserResponse>> getUserByXcUserID(@Body TAPGetUserByXcUserIdRequest request);
@@ -159,4 +163,16 @@ public interface TAPTalkApiService {
 
     @POST("client/project_configs")
     Observable<TAPBaseResponse<TapConfigs>> getProjectConfig();
+
+    @POST("client/user/update_bio")
+    Observable<TAPBaseResponse<TAPGetUserResponse>> updateBio(@Body TAPUpdateBioRequest request);
+
+    @POST("client/user/photo/get_list")
+    Observable<TAPBaseResponse<TapGetPhotoListResponse>> getPhotoList(@Body TAPUserIdRequest request);
+
+    @POST("client/user/photo/set_main")
+    Observable<TAPBaseResponse<TAPGetUserResponse>> setMainPhoto(@Body TapSetMainPhotoRequest request);
+
+    @POST("client/user/photo/delete")
+    Observable<TAPBaseResponse<TAPGetUserResponse>> removePhoto(@Body TapRemovePhotoRequest request);
 }

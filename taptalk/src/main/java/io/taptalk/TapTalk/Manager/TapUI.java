@@ -29,7 +29,6 @@ import io.taptalk.TapTalk.Model.TAPProductModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TAPAddGroupMemberActivity;
 import io.taptalk.TapTalk.View.Activity.TAPBarcodeScannerActivity;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
@@ -48,7 +47,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
@@ -105,6 +103,10 @@ public class TapUI {
     private boolean isMentionUsernameDisabled;
     private boolean isAddToContactsButtonInChatRoomHidden;
     private boolean isAddToContactsButtonInChatProfileHidden;
+    private boolean isEditBioTextFieldHidden;
+    private boolean isUsernameInChatProfileHidden;
+    private boolean isMobileNumberInChatProfileHidden;
+    private boolean isEmailAddressInChatProfileVisible;
     private boolean isAddContactDisabled;
     private boolean isReportButtonInChatProfileVisible;
 
@@ -933,6 +935,62 @@ public class TapUI {
         isAddToContactsButtonInChatProfileHidden = !isVisible;
     }
 
+    public boolean isEditBioTextFieldVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isEditBioTextFieldHidden;
+    }
+
+    public void setEditBioTextFieldVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isEditBioTextFieldHidden = !isVisible;
+    }
+
+    public boolean isUsernameInChatProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isUsernameInChatProfileHidden;
+    }
+
+    public void setUsernameInChatProfileVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isUsernameInChatProfileHidden = !isVisible;
+    }
+
+    public boolean isMobileNumberInChatProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isMobileNumberInChatProfileHidden;
+    }
+
+    public void setMobileNumberInChatProfileVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isMobileNumberInChatProfileHidden = !isVisible;
+    }
+
+    public boolean isEmailAddressInChatProfileVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isEmailAddressInChatProfileVisible;
+    }
+
+    public void setEmailAddressInChatProfileVisible(boolean emailAddressInChatProfileVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isEmailAddressInChatProfileVisible = emailAddressInChatProfileVisible;
+    }
+
     public boolean isAddContactDisabled() {
         if (!TapTalk.checkTapTalkInitialized()) {
             return false;
@@ -1102,7 +1160,7 @@ public class TapUI {
             return;
         }
         if (getChatRoomListeners().isEmpty()) {
-            TAPChatProfileActivity.start(activity, instanceKey, room, user);
+            TAPChatProfileActivity.Companion.start(activity, instanceKey, room, user);
         } else {
             for (TapUIChatRoomListener listener : getChatRoomListeners()) {
                 if (room.getType() == TYPE_PERSONAL) {
@@ -1126,10 +1184,10 @@ public class TapUI {
         if (getChatRoomListeners().isEmpty()) {
             if (isRoomParticipant) {
                 // Open member profile
-                TAPChatProfileActivity.start(activity, instanceKey, message.getRoom(), user);
+                TAPChatProfileActivity.Companion.start(activity, instanceKey, message.getRoom(), user);
             } else {
                 // Open personal profile
-                TAPChatProfileActivity.start(
+                TAPChatProfileActivity.Companion.start(
                         activity,
                         instanceKey,
                         TAPRoomModel.Builder(

@@ -53,6 +53,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -935,6 +936,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance(instanceKey).getMinCreatedOfUnreadMessage(getActiveUser().getUserID(), roomID, listener);
     }
 
+    public void getOldestCreatedTimeFromRoom(String roomID, final TAPDatabaseListener<Long> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getOldestCreatedTimeFromRoom(roomID, listener);
+    }
+
     public void deleteAllMessage() {
         TAPDatabaseManager.getInstance(instanceKey).deleteAllMessage();
     }
@@ -1344,5 +1349,21 @@ public class TAPDataManager {
 
     public void getProjectConfig(TAPDefaultDataView<TapConfigs> view) {
         TAPApiManager.getInstance(instanceKey).getProjectConfig(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void updateBio(String bio, TAPDefaultDataView<TAPGetUserResponse> view) {
+        TAPApiManager.getInstance(instanceKey).updateBio(bio, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getPhotoList(String userId, TAPDefaultDataView<TapGetPhotoListResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getPhotoList(userId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void setMainPhoto(int id, TAPDefaultDataView<TAPGetUserResponse> view) {
+        TAPApiManager.getInstance(instanceKey).setMainPhoto(id, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void removePhoto(int id, Long createdTime, TAPDefaultDataView<TAPGetUserResponse> view) {
+        TAPApiManager.getInstance(instanceKey).removePhoto(id, createdTime, new TAPDefaultSubscriber<>(view));
     }
 }

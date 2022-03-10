@@ -286,4 +286,40 @@ public class TapCoreContactManager {
             }
         });
     }
+
+    public void updateActiveUserBio(String bio, TapCoreGetContactListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
+            }
+            return;
+        }
+
+        TAPDataManager.getInstance(instanceKey).updateBio(bio, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPGetUserResponse response) {
+                super.onSuccess(response);
+                if (null != listener) {
+                    listener.onSuccess(response.getUser());
+                }
+                TAPDataManager.getInstance(instanceKey).saveActiveUser(response.getUser());
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                super.onError(error);
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                super.onError(errorMessage);
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
 }

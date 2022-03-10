@@ -1,7 +1,7 @@
 package io.taptalk.TapTalk.Interface;
 
+import android.graphics.Bitmap;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.Model.TAPUserModel;
 
 public interface TapTalkAttachmentInterface {
     void onDocumentSelected();
@@ -41,4 +41,10 @@ public interface TapTalkAttachmentInterface {
     void onSendMessageSelected(String username);
 
     void onDeleteMessage(String roomID, TAPMessageModel message);
+
+    void setAsMain(int imagePosition);
+
+    void onImageRemoved(int imagePosition);
+
+    void onSaveProfilePicture(Bitmap bitmap);
 }
