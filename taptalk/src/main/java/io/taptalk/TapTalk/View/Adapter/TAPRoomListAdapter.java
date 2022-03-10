@@ -312,7 +312,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Show unread count
-            if (item.isMarkAsUnread()) {
+            if (item.isMarkedAsUnread()) {
                 glide.load(R.drawable.tap_ic_mark_read_white).fitCenter().into(ivMarkRead);
                 tvMarkRead.setText(R.string.tap_read);
             } else {
@@ -320,7 +320,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 tvMarkRead.setText(R.string.tap_unread);
             }
             int unreadCount = item.getNumberOfUnreadMessages();
-            if (unreadCount > 0 || item.isMarkAsUnread()) {
+            if (unreadCount > 0 || item.isMarkedAsUnread()) {
                 if (unreadCount == 0) {
                     tvBadgeUnread.setText("");
                 } else if (unreadCount >= 100) {

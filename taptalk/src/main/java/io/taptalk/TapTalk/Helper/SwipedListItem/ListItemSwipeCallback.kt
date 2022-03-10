@@ -22,7 +22,7 @@ class ListItemSwipeCallback(private val instanceKey: String) : ItemTouchHelper.C
     private var onMoveAndSwipedListener: OnMoveAndSwipeListener? = null
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
-        if (((viewHolder as TAPRoomListAdapter.RoomListVH).item.isMarkAsUnread || viewHolder.item.numberOfUnreadMessages > 0)
+        if (((viewHolder as TAPRoomListAdapter.RoomListVH).item.isMarkedAsUnread || viewHolder.item.numberOfUnreadMessages > 0)
             && TapUI.getInstance(instanceKey).isMarkAsUnreadRoomListSwipeMenuEnabled
         ) {
             if (getTag((viewHolder as RecyclerView.ViewHolder))) {
@@ -30,7 +30,7 @@ class ListItemSwipeCallback(private val instanceKey: String) : ItemTouchHelper.C
             }
             return makeMovementFlags(0, ItemTouchHelper.RIGHT)
 
-        } else if (!viewHolder.item.isMarkAsUnread && TapUI.getInstance(instanceKey).isMarkAsReadRoomListSwipeMenuEnabled) {
+        } else if (!viewHolder.item.isMarkedAsUnread && TapUI.getInstance(instanceKey).isMarkAsReadRoomListSwipeMenuEnabled) {
             if (getTag(viewHolder)) {
                 return makeMovementFlags(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
             }

@@ -19,7 +19,7 @@ public class TAPRoomListModel {
     private String title;
     public enum Type { SELECTABLE_ROOM, SELECTABLE_CONTACT, SECTION }
     private Type type;
-    private boolean isMarkAsUnread;
+    private boolean isMarkedAsUnread;
 
     public TAPRoomListModel(TAPMessageModel lastMessage, int unreadCount) {
         this.lastMessage = lastMessage;
@@ -207,11 +207,11 @@ public class TAPRoomListModel {
         this.type = type;
     }
 
-    public boolean isMarkAsUnread() {
-        return isMarkAsUnread;
+    public boolean isMarkedAsUnread() {
+        return isMarkedAsUnread;
     }
 
-    public void setMarkAsUnread(boolean markAsUnread) {
-        isMarkAsUnread = markAsUnread;
+    public void setMarkedAsUnread(boolean markedAsUnread) {
+        isMarkedAsUnread = markedAsUnread;
     }
 }
