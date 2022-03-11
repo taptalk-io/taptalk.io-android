@@ -277,6 +277,10 @@ public class TapUIRoomListFragment extends Fragment {
 
             @Override
             public void onReadMessage(String roomID) {
+                TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
+                if (roomListModel != null && roomListModel.isMarkedAsUnread()) {
+                    TapCoreMessageManager.getInstance(instanceKey).markMessageAsRead(roomListModel.getLastMessage().getMessageID());
+                }
                 updateUnreadCountPerRoom(roomID);
             }
 
