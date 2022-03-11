@@ -77,6 +77,7 @@ import io.taptalk.TapTalk.Manager.TAPGroupManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
+import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
@@ -1111,13 +1112,45 @@ public class TapUIRoomListFragment extends Fragment {
         }
     };
 
-    // TODO: 04/03/22 set mark as read MU
     OnMoveAndSwipeListener onMoveAndSwipeListener = new OnMoveAndSwipeListener() {
         @Override
         public void onItemClick(int position) {
+            TAPRoomListModel room = vm.getRoomList().get(position);
+            String roomId = room.getLastMessage().getRoom().getRoomID();
+            if (room.isMarkedAsUnread()) {
+                // read button
+                TapCoreMessageManager.getInstance(instanceKey).markAllMessagesInRoomAsRead(roomId);
+                removeUnreadRoomToPreference(roomId);
+            } else {
+                // unread button
+                // TODO: 04/03/22 set mark as read API MU
+                addUnreadRoomToPreference(roomId);
+            }
             adapter.notifyItemChanged(position);
         }
     };
+
+    private void removeUnreadRoomToPreference(String roomId) {
+        ArrayList<String> unreadRoomListIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
+        unreadRoomListIds.remove(roomId);
+        TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(unreadRoomListIds);
+        updateRoomUnreadMark(roomId, false);
+    }
+
+    private void addUnreadRoomToPreference(String roomId) {
+        ArrayList<String> unreadRoomListIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
+        if (!unreadRoomListIds.contains(roomId)) {
+            unreadRoomListIds.add(roomId);
+            updateRoomUnreadMark(roomId, true);
+        }
+    }
+
+    private void updateRoomUnreadMark(String roomId, boolean isMarkAsUnread) {
+        TAPRoomListModel room = vm.getRoomPointer().get(roomId);
+        if (room != null) {
+            room.setMarkedAsUnread(isMarkAsUnread);
+        }
+    }
 
     private void updateQueryRoomListFromBackground() {
         // TODO: 27/07/20 FIX HERE --> Check flow if this code is needed!
