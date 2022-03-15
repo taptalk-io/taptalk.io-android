@@ -94,6 +94,7 @@ class ListItemSwipeCallback(private val instanceKey: String) : ItemTouchHelper.C
                     true
                 } else {
                     setTag(viewHolder, false)
+                    onMoveAndSwipedListener?.onItemClick(viewHolder.layoutPosition)
                     true
                 }
             }
