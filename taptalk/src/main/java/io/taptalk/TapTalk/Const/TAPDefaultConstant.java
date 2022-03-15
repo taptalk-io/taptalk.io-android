@@ -417,6 +417,7 @@ public class TAPDefaultConstant {
         public static final int MENU_DELETE_GROUP = 13;
         public static final int MENU_EDIT_GROUP = 14;
         public static final int MENU_REPORT = 15;
+        public static final int MENU_STARRED_MESSAGES = 16;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
