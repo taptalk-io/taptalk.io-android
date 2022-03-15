@@ -387,5 +387,6 @@
     <string name="tap_max_profile_picture_title">Anda telah mencapai maksimum foto profil!</string>
     <string name="tap_max_profile_picture_message">Anda hanya dapat mempunyai maksimal 10 foto profil. Anda dapat menghapus beberapa foto untuk mengunggah foto baru.</string>
     <string name="tap_star">Bintang</string>
+    <string name="starred_messages">Starred Messages</string>
 
 </resources>

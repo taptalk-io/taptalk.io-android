@@ -437,6 +437,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
                 //// Personal chat room
 
+                // Starred messages
+                if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                    val menuStarredMessages = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                        getString(R.string.starred_messages),
+                        R.drawable.tap_ic_star_outline,
+                        R.color.tapIconChatProfileMenuStarredMessages,
+                        R.style.tapChatProfileMenuStarredLabelStyle
+                    )
+                    menuItems.add(menuStarredMessages)
+                }
                 // Add to contacts
                 if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
                         instanceKey
@@ -526,6 +537,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     R.style.tapChatProfileMenuLabelStyle
                 )
                 menuItems.add(menuEditGroup)
+                 // Starred messages
+                if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                    val menuStarredMessages = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                        getString(R.string.starred_messages),
+                        R.drawable.tap_ic_star_outline,
+                        R.color.tapIconChatProfileMenuStarredMessages,
+                        R.style.tapChatProfileMenuStarredLabelStyle
+                    )
+                    menuItems.add(menuStarredMessages)
+                }
                 if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
                     // Report group
                     val menuReport = TapChatProfileItemModel(
@@ -572,6 +594,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     R.style.tapChatProfileMenuLabelStyle
                 )
                 menuItems.add(menuViewMembers)
+                // Starred messages
+                if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                    val menuStarredMessages = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                        getString(R.string.starred_messages),
+                        R.drawable.tap_ic_star_outline,
+                        R.color.tapIconChatProfileMenuStarredMessages,
+                        R.style.tapChatProfileMenuStarredLabelStyle
+                    )
+                    menuItems.add(menuStarredMessages)
+                }
                 if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
                     // Report group
                     val menuReport = TapChatProfileItemModel(
@@ -597,6 +630,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         } else {
             //// Group chat member profile
 
+            // Starred messages
+            if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                val menuStarredMessages = TapChatProfileItemModel(
+                    ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                    getString(R.string.starred_messages),
+                    R.drawable.tap_ic_star_outline,
+                    R.color.tapIconChatProfileMenuStarredMessages,
+                    R.style.tapChatProfileMenuStarredLabelStyle
+                )
+                menuItems.add(menuStarredMessages)
+            }
             // Add to contacts
             if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
                     instanceKey
@@ -1030,6 +1074,9 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 ChatProfileMenuType.MENU_REMOVE_MEMBER -> showRemoveMemberDialog()
                 ChatProfileMenuType.MENU_DELETE_GROUP -> showDeleteChatRoomDialog()
                 ChatProfileMenuType.MENU_REPORT -> triggerReportButtonTapped()
+                ChatProfileMenuType.MENU_STARRED_MESSAGES -> {
+                    // TODO: 15/03/22 move to starred messages page MU
+                  }
             }
         }
 
