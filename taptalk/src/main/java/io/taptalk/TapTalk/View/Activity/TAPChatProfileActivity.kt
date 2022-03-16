@@ -441,7 +441,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
                     val menuStarredMessages = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_STARRED_MESSAGES,
-                        getString(R.string.starred_messages),
+                        getString(R.string.tap_starred_messages),
                         R.drawable.tap_ic_star_outline,
                         R.color.tapIconChatProfileMenuStarredMessages,
                         R.style.tapChatProfileMenuStarredLabelStyle
@@ -541,7 +541,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
                     val menuStarredMessages = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_STARRED_MESSAGES,
-                        getString(R.string.starred_messages),
+                        getString(R.string.tap_starred_messages),
                         R.drawable.tap_ic_star_outline,
                         R.color.tapIconChatProfileMenuStarredMessages,
                         R.style.tapChatProfileMenuStarredLabelStyle
@@ -598,7 +598,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
                     val menuStarredMessages = TapChatProfileItemModel(
                         ChatProfileMenuType.MENU_STARRED_MESSAGES,
-                        getString(R.string.starred_messages),
+                        getString(R.string.tap_starred_messages),
                         R.drawable.tap_ic_star_outline,
                         R.color.tapIconChatProfileMenuStarredMessages,
                         R.style.tapChatProfileMenuStarredLabelStyle
@@ -634,7 +634,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
                 val menuStarredMessages = TapChatProfileItemModel(
                     ChatProfileMenuType.MENU_STARRED_MESSAGES,
-                    getString(R.string.starred_messages),
+                    getString(R.string.tap_starred_messages),
                     R.drawable.tap_ic_star_outline,
                     R.color.tapIconChatProfileMenuStarredMessages,
                     R.style.tapChatProfileMenuStarredLabelStyle
