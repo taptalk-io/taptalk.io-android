@@ -159,6 +159,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private RequestManager glide;
     private float initialTranslationX = TAPUtils.dpToPx(-22);
     private long defaultAnimationTime = 200L;
+    private RoomType roomType = RoomType.DEFAULT;
+
+    enum RoomType {
+        DEFAULT, STARRED
+    }
 
     public TAPMessageAdapter(
             String instanceKey,
@@ -171,6 +176,23 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         this.chatListener = chatListener;
         this.glide = glide;
         this.messageMentionIndexes = messageMentionIndexes;
+        pendingAnimationMessages = new ArrayList<>();
+        animatingMessages = new ArrayList<>();
+    }
+
+    public TAPMessageAdapter(
+            String instanceKey,
+            RequestManager glide,
+            TAPChatListener chatListener,
+            Map<String, List<Integer>> messageMentionIndexes,
+            RoomType roomType
+    ) {
+        myUserModel = TAPChatManager.getInstance(instanceKey).getActiveUser();
+        this.instanceKey = instanceKey;
+        this.chatListener = chatListener;
+        this.glide = glide;
+        this.messageMentionIndexes = messageMentionIndexes;
+        this.roomType = roomType;
         pendingAnimationMessages = new ArrayList<>();
         animatingMessages = new ArrayList<>();
     }
@@ -376,9 +398,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setLinkDetection(itemView.getContext(), item, tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
 
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
-            flBubble.setOnClickListener(v -> onStatusImageClicked(item));
-            //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+            if (roomType == RoomType.DEFAULT) {
+                flBubble.setOnClickListener(v -> onStatusImageClicked(item));
+                //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+            }
         }
 
         @Override
@@ -500,7 +524,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivImageBody, item);
 
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -854,7 +878,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
 
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -1262,9 +1286,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);
 
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
-            flBubble.setOnClickListener(v -> flFileIcon.performClick());
-            //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+            if (roomType == RoomType.DEFAULT) {
+                flBubble.setOnClickListener(v -> flFileIcon.performClick());
+                //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+            }
         }
 
         @Override
@@ -1530,7 +1556,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), vMapBorder, item);
 
             vMapBorder.setOnClickListener(v -> openMapDetail(mapData));
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -1696,7 +1722,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             markMessageAsRead(item, myUserModel);
             tv_message.setText(item.getBody());
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             enableLongPress(itemView.getContext(), clContainer, item);
         }
     }
@@ -1720,7 +1746,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             markMessageAsRead(item, myUserModel);
             tvDateSeparator.setText(item.getBody());
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
         }
     }
 
@@ -1739,7 +1765,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == item) {
                 return;
             }
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
         }
     }
 
@@ -1762,7 +1788,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             tvLogMessage.setText(TAPUtils.toJsonString(item));
             //tvLogMessage.setText(item.getBody());
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             markMessageAsRead(item, myUserModel);
         }
     }
@@ -1896,7 +1922,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             markMessageAsRead(item, myUserModel);
 
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
         }
 
         @Override
