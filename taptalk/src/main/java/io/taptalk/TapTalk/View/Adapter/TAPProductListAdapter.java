@@ -149,7 +149,7 @@ public class TAPProductListAdapter extends TAPBaseAdapter<TAPProductModel, TAPBa
                 tvRating.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.tapColorTextMedium));
             }
 
-            flContainer.setOnClickListener(v -> chatListener.onOutsideClicked());
+            flContainer.setOnClickListener(v -> chatListener.onOutsideClicked(messageModel));
             tvButtonOne.setOnClickListener(v -> buttonLeftClicked(item));
             tvButtonTwo.setOnClickListener(v -> buttonRightClicked(item));
         }

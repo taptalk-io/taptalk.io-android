@@ -83,7 +83,7 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     }
 
     @Override
-    public void onOutsideClicked() {
+    public void onOutsideClicked(TAPMessageModel message) {
     }
 
     @Override

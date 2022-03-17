@@ -948,7 +948,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivButtonSend.setOnClickListener(v -> buildAndSendTextMessage());
         ivToBottom.setOnClickListener(v -> scrollToBottom());
         ivMentionAnchor.setOnClickListener(v -> scrollToMessage(vm.getUnreadMentions().entrySet().iterator().next().getValue().getLocalID()));
-        flMessageList.setOnClickListener(v -> chatListener.onOutsideClicked());
+        flMessageList.setOnClickListener(v -> chatListener.onOutsideClicked(null));
         flLoading.setOnClickListener(v -> {
         });
 
