@@ -49,10 +49,12 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <io.taptalk.TapTalk.Helper.TAPChatRecyclerView
         android:id="@+id/rv_starred_messages"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:overScrollMode="never"
+        android:scrollbars="vertical"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
         app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
