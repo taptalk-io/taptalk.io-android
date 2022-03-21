@@ -1777,6 +1777,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
         }
+
+        @Override
+        public void onMessageStarred(TAPMessageModel message) {
+            super.onMessageStarred(message);
+            // TODO: 21/03/22 implement star / unstar API MU
+        }
     };
 
     private void setChatRoomStatus(TAPOnlineStatusModel onlineStatus) {
@@ -3067,7 +3073,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
                 case LongPressChatBubble:
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener);
+                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds());
                         chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
                         TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                     }

@@ -23,6 +23,7 @@ import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
@@ -43,6 +44,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     private var bitmap: Bitmap? = null
     private val onClickListener = View.OnClickListener { dismiss() }
     private var bottomSheetListener: TAPAttachmentListener? = null
+    private var starredMessageIds: ArrayList<String> = arrayListOf()
 
     constructor() : super()
 
@@ -63,11 +65,12 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.linkifyResult = linkifyResult
     }
 
-    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener) {
+    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener, starredMessageIds: ArrayList<String>) {
         this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.message = message
         this.bottomSheetListener = bottomSheetListener
+        this.starredMessageIds = starredMessageIds
     }
 
     constructor(instanceKey: String, longPressType: LongPressType, bitmap: Bitmap, bottomSheetListener: TAPAttachmentListener) {
@@ -79,8 +82,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
     companion object {
         // Chat Bubble
-        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener): TAPLongPressActionBottomSheet {
-            val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, message, bottomSheetListener)
+        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener, starredMessageIds: ArrayList<String>): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, message, bottomSheetListener, starredMessageIds)
             val args = Bundle()
             fragment.arguments = args
             return fragment
@@ -275,12 +278,17 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
         }
 
-        // TODO: 09/03/22 add unstar case MU
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
             // Star
-            imageResIds.add(R.drawable.tap_ic_star_outline)
-            titleResIds.add(R.string.tap_star)
-            ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            if (starredMessageIds.contains(messageModel.localID)) {
+                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+                titleResIds.add(R.string.tap_unstar)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_star_outline)
+                titleResIds.add(R.string.tap_star)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            }
         }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
@@ -339,12 +347,17 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
-        // TODO: 09/03/22 add unstar case MU
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
             // Star
-            imageResIds.add(R.drawable.tap_ic_star_outline)
-            titleResIds.add(R.string.tap_star)
-            ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            if (starredMessageIds.contains(messageModel.localID)) {
+                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+                titleResIds.add(R.string.tap_unstar)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_star_outline)
+                titleResIds.add(R.string.tap_star)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            }
         }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
@@ -400,12 +413,17 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
-        // TODO: 09/03/22 add unstar case MU
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
             // Star
-            imageResIds.add(R.drawable.tap_ic_star_outline)
-            titleResIds.add(R.string.tap_star)
-            ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            if (starredMessageIds.contains(messageModel.localID)) {
+                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+                titleResIds.add(R.string.tap_unstar)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_star_outline)
+                titleResIds.add(R.string.tap_star)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            }
         }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
@@ -452,12 +470,17 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
-        // TODO: 09/03/22 add unstar case MU
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
             // Star
-            imageResIds.add(R.drawable.tap_ic_star_outline)
-            titleResIds.add(R.string.tap_star)
-            ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            if (starredMessageIds.contains(messageModel.localID)) {
+                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+                titleResIds.add(R.string.tap_unstar)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_star_outline)
+                titleResIds.add(R.string.tap_star)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            }
         }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
@@ -507,12 +530,17 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
         }
 
-        // TODO: 09/03/22 add unstar case MU
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
             // Star
-            imageResIds.add(R.drawable.tap_ic_star_outline)
-            titleResIds.add(R.string.tap_star)
-            ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            if (starredMessageIds.contains(messageModel.localID)) {
+                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+                titleResIds.add(R.string.tap_unstar)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_star_outline)
+                titleResIds.add(R.string.tap_star)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            }
         }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&

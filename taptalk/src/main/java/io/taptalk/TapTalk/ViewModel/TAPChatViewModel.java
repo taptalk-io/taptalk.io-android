@@ -46,6 +46,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private LinkedHashMap<String, Integer> dateSeparatorIndexes;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
+    private ArrayList<String> starredMessageIds;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
     private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage, unreadIndicator, loadingIndicator;
@@ -559,5 +560,13 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setDeleteGroup(boolean deleteGroup) {
         this.deleteGroup = deleteGroup;
+    }
+
+    public ArrayList<String> getStarredMessageIds() {
+        return null == starredMessageIds? new ArrayList<>() : starredMessageIds;
+    }
+
+    public void setStarredMessageIds(ArrayList<String> starredMessageIds) {
+        this.starredMessageIds = starredMessageIds;
     }
 }
