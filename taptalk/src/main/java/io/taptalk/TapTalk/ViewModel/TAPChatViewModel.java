@@ -571,10 +571,16 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void addStarredMessageId(String messageId) {
+        if (starredMessageIds == null) {
+            starredMessageIds = new ArrayList<>();
+        }
         this.starredMessageIds.add(messageId);
     }
 
     public void removeStarredMessageId(String messageId) {
+        if (starredMessageIds == null) {
+            starredMessageIds = new ArrayList<>();
+        }
         this.starredMessageIds.remove(messageId);
     }
 }
