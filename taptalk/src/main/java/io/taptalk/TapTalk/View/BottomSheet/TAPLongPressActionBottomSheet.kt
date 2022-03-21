@@ -275,6 +275,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
         }
 
+        // TODO: 09/03/22 add unstar case MU
+        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+            // Star
+            imageResIds.add(R.drawable.tap_ic_star_outline)
+            titleResIds.add(R.string.tap_star)
+            ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
@@ -331,6 +339,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
+        // TODO: 09/03/22 add unstar case MU
+        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+            // Star
+            imageResIds.add(R.drawable.tap_ic_star_outline)
+            titleResIds.add(R.string.tap_star)
+            ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
@@ -384,6 +400,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
+        // TODO: 09/03/22 add unstar case MU
+        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+            // Star
+            imageResIds.add(R.drawable.tap_ic_star_outline)
+            titleResIds.add(R.string.tap_star)
+            ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
@@ -426,6 +450,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 titleResIds.add(R.string.tap_save_to_downloads)
                 ids.add(TAPAttachmentModel.LONG_PRESS_SAVE_DOWNLOADS)
             }
+        }
+
+        // TODO: 09/03/22 add unstar case MU
+        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+            // Star
+            imageResIds.add(R.drawable.tap_ic_star_outline)
+            titleResIds.add(R.string.tap_star)
+            ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
         }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
@@ -473,6 +505,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             imageResIds.add(R.drawable.tap_ic_copy_orange)
             titleResIds.add(R.string.tap_copy)
             ids.add(TAPAttachmentModel.LONG_PRESS_COPY)
+        }
+
+        // TODO: 09/03/22 add unstar case MU
+        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+            // Star
+            imageResIds.add(R.drawable.tap_ic_star_outline)
+            titleResIds.add(R.string.tap_star)
+            ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
         }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
