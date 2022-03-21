@@ -345,7 +345,7 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     attachmentListener.onSaveProfilePicture(bitmap);
                     break;
                 case LONG_PRESS_STAR:
-                    attachmentListener.onMessageStarred();
+                    attachmentListener.onMessageStarred(message);
             }
             onClickListener.onClick(itemView);
         }

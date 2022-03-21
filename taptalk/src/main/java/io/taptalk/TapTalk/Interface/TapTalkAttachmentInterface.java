@@ -48,5 +48,5 @@ public interface TapTalkAttachmentInterface {
 
     void onSaveProfilePicture(Bitmap bitmap);
 
-    void onMessageStarred();
+    void onMessageStarred(TAPMessageModel message);
 }
