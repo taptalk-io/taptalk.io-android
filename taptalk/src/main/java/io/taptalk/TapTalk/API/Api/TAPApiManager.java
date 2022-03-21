@@ -52,6 +52,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapStarMessageRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
@@ -75,6 +76,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
@@ -587,5 +590,19 @@ public class TAPApiManager {
 
     public void removePhoto(int id, Long createdTime, Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {
         execute(homingPigeon.removePhoto(new TapRemovePhotoRequest(id, createdTime)), subscriber);
+    }
+
+    public void starMessage (String roomId, List<String> messageIds, Subscriber<TAPBaseResponse<TapStarMessageResponse>> subscriber) {
+        TapStarMessageRequest request = new TapStarMessageRequest();
+        request.setRoomID(roomId);
+        request.setMessageIDs(messageIds);
+        execute(homingPigeon.starMessage(request), subscriber);
+    }
+
+    public void unStarMessage (String roomId, List<String> messageIds, Subscriber<TAPBaseResponse<TapUnstarMessageResponse>> subscriber) {
+        TapStarMessageRequest request = new TapStarMessageRequest();
+        request.setRoomID(roomId);
+        request.setMessageIDs(messageIds);
+        execute(homingPigeon.unStarMessage(request), subscriber);
     }
 }

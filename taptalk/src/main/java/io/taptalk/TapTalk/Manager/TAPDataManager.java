@@ -54,6 +54,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -1365,5 +1366,13 @@ public class TAPDataManager {
 
     public void removePhoto(int id, Long createdTime, TAPDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance(instanceKey).removePhoto(id, createdTime, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void starMessage(String roomId, List<String> messageIds, TAPDefaultDataView<TapStarMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).starMessage(roomId, messageIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unStarMessage(String roomId, List<String> messageIds, TAPDefaultDataView<TapStarMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).starMessage(roomId, messageIds, new TAPDefaultSubscriber<>(view));
     }
 }
