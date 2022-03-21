@@ -1195,7 +1195,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         @Override
-        public void onOutsideClicked() {
+        public void onOutsideClicked(TAPMessageModel message) {
             hideKeyboards();
         }
 
