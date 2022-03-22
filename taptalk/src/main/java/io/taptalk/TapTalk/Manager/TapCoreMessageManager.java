@@ -904,6 +904,7 @@ public class TapCoreMessageManager {
             }
             return;
         }
+
         TAPDataManager.getInstance(instanceKey).getMessageListByRoomAfter(roomID, minCreatedTimestamp, lastUpdateTimestamp,
                 new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
                     @Override
@@ -1224,6 +1225,42 @@ public class TapCoreMessageManager {
                 listener.onRequestMessageFileUpload(messageModel, fileUri);
             }
         }
+    }
+
+    public void getStarredMessages(String roomId, int pageNumber, int numberOfItems, TapCoreGetOlderMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getStarredMessages(roomId, pageNumber, numberOfItems, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPGetMessageListByRoomResponse response) {
+                super.onSuccess(response);
+                if (listener != null) {
+                    List<TAPMessageModel> starredMessageList = new ArrayList<>();
+                    for (HashMap<String, Object> messageMap : response.getMessages()) {
+                        try {
+                            TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
+                            starredMessageList.add(message);
+
+                        } catch (Exception e) {
+                            listener.onError(ERROR_CODE_OTHERS, e.getMessage());
+                        }
+                    }
+                    listener.onSuccess(starredMessageList, response.getHasMore());
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
     }
 
     /**
