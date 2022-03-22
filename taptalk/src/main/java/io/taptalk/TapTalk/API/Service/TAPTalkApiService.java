@@ -11,6 +11,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
@@ -184,4 +185,7 @@ public interface TAPTalkApiService {
 
     @POST("chat/message/star")
     Observable<TAPBaseResponse<TapUnstarMessageResponse>> unStarMessage(@Body TapStarMessageRequest request);
+
+    @POST("chat/message/get_starred_list")
+    Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getStarredMessages(@Body TapGetStarredMessagesRequest request);
 }

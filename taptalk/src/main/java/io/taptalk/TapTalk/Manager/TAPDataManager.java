@@ -1376,4 +1376,8 @@ public class TAPDataManager {
     public void unStarMessage(String roomId, List<String> messageIds, TAPDefaultDataView<TapUnstarMessageResponse> view) {
         TAPApiManager.getInstance(instanceKey).unStarMessage(roomId, messageIds, new TAPDefaultSubscriber<>(view));
     }
+
+    public void getStarredMessages(String roomId, int pageNumber, int pageSize, TAPDefaultDataView<TAPGetMessageListByRoomResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getStarredMessages(roomId, pageNumber, pageSize, new TAPDefaultSubscriber<>(view));
+    }
 }

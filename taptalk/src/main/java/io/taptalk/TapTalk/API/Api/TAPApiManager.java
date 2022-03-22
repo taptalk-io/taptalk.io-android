@@ -38,6 +38,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
@@ -604,5 +605,13 @@ public class TAPApiManager {
         request.setRoomID(roomId);
         request.setMessageIDs(messageIds);
         execute(homingPigeon.unStarMessage(request), subscriber);
+    }
+
+    public void getStarredMessages(String roomId, int pageNumber, int pageSize, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
+        TapGetStarredMessagesRequest request = new TapGetStarredMessagesRequest();
+        request.setRoomID(roomId);
+        request.setPageNumber(pageNumber);
+        request.setPageSize(pageSize);
+        execute(homingPigeon.getStarredMessages(request), subscriber);
     }
 }
