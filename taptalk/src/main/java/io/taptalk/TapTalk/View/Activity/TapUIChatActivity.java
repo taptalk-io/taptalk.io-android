@@ -104,6 +104,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
@@ -1781,20 +1782,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onMessageStarred(TAPMessageModel message) {
             super.onMessageStarred(message);
-            List<String> idList = new ArrayList<>();
             String messageId = message.getLocalID();
-            idList.add(messageId);
             if (vm.getStarredMessageIds().contains(messageId)) {
                 //unstar
-                TAPDataManager.getInstance(instanceKey).unStarMessage(message.getRoom().getRoomID(), idList, new TAPDefaultDataView<>() { });
+                TapCoreMessageManager.getInstance(instanceKey).unstarMessage(message.getRoom().getRoomID(), messageId);
                 vm.removeStarredMessageId(messageId);
-                messageAdapter.setStarredMessageIds(vm.getStarredMessageIds());
             } else {
                 //star
-                TAPDataManager.getInstance(instanceKey).starMessage(message.getRoom().getRoomID(), idList, new TAPDefaultDataView<>() { });
+                TapCoreMessageManager.getInstance(instanceKey).starMessage(message.getRoom().getRoomID(), messageId);
                 vm.addStarredMessageId(messageId);
-                messageAdapter.setStarredMessageIds(vm.getStarredMessageIds());
             }
+            messageAdapter.setStarredMessageIds(vm.getStarredMessageIds());
             if (vm.getMessagePointer().containsKey(messageId)) {
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(messageId)));
             }
