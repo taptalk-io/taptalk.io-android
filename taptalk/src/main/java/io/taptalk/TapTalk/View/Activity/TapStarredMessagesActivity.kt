@@ -1,5 +1,7 @@
 package io.taptalk.TapTalk.View.Activity
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
@@ -13,9 +15,11 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPChatListener
+import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Model.TAPMessageModel
+import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel
@@ -29,12 +33,33 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
     private lateinit var messageLayoutManager: LinearLayoutManager
     private lateinit var messageAnimator: SimpleItemAnimator
     private lateinit var endlessScrollListener: TAPEndlessScrollListener
+    private var pageNumber = 1
+
+    companion object {
+        const val PAGE_SIZE = 50
+    }
+
+    fun start(
+        context: Activity,
+        instanceKey: String?,
+        room: TAPRoomModel
+    ) {
+        val intent = Intent(context, TapStarredMessagesActivity::class.java)
+        intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
+        intent.putExtra(Extras.ROOM, room)
+        context.startActivityForResult(intent, RequestCode.OPEN_STARRED_MESSAGES)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_starred_messages)
         glide = Glide.with(this)
         initRoom()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadMessagesFromApi()
     }
 
     private fun initRoom() {
@@ -96,7 +121,7 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
 
         // Initialize chat message RecyclerView
         messageAdapter =
-            TAPMessageAdapter(instanceKey, glide, chatListener, vm.messageMentionIndexes)
+            TAPMessageAdapter(instanceKey, glide, chatListener, vm.messageMentionIndexes, vm.starredMessageIds)
         messageAdapter.setMessages(vm.messageModels)
         messageLayoutManager = object : LinearLayoutManager(this, VERTICAL, true) {
             override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
@@ -137,10 +162,27 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
         iv_button_back.setOnClickListener { onBackPressed() }
     }
 
+    private fun loadMessagesFromApi() {
+        TapCoreMessageManager.getInstance(instanceKey).getStarredMessages(vm.room.roomID, PAGE_SIZE, pageNumber, object  : TapCoreGetOlderMessageListener() {
+            override fun onSuccess(messages: MutableList<TAPMessageModel>?, hasMoreData: Boolean?) {
+                super.onSuccess(messages, hasMoreData)
+                // TODO: 22/03/22 onsuccess MU
+            }
+
+            override fun onError(errorCode: String?, errorMessage: String?) {
+                super.onError(errorCode, errorMessage)
+                // TODO: 22/03/22 onerror MU
+            }
+        })
+    }
+
     private val chatListener = object : TAPChatListener() {
         override fun onOutsideClicked(message: TAPMessageModel?) {
             super.onOutsideClicked(message)
-            TapUI.getInstance(instanceKey).openChatRoomWithRoomModel(this@TapStarredMessagesActivity, message?.room, message?.localID)
+            val intent = Intent()
+            intent.putExtra(Extras.MESSAGE, message)
+            setResult(RESULT_OK, intent)
+            finish()
         }
     }
 
