@@ -1263,6 +1263,26 @@ public class TapCoreMessageManager {
         });
     }
 
+    public void starMessage(String roomID, String messageID) {
+        List<String> idList = new ArrayList<>();
+        idList.add(messageID);
+        TAPDataManager.getInstance(instanceKey).starMessage(roomID, idList, new TAPDefaultDataView<>() { });
+    }
+
+    public void starMessages(String roomID, List<String> messageIDs) {
+        TAPDataManager.getInstance(instanceKey).starMessage(roomID, messageIDs, new TAPDefaultDataView<>() { });
+    }
+
+    public void unstarMessage(String roomID, String messageID) {
+        List<String> idList = new ArrayList<>();
+        idList.add(messageID);
+        TAPDataManager.getInstance(instanceKey).unStarMessage(roomID, idList, new TAPDefaultDataView<>() { });
+    }
+
+    public void unstarMessages(String roomID, List<String> messageIDs) {
+        TAPDataManager.getInstance(instanceKey).unStarMessage(roomID, messageIDs, new TAPDefaultDataView<>() { });
+    }
+
     /**
      * =============================================================================================
      * TEMP
