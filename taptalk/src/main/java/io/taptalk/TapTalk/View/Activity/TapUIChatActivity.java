@@ -805,7 +805,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Initialize chat message RecyclerView
-        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm.getMessageMentionIndexes());
+        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm.getMessageMentionIndexes(), vm.getStarredMessageIds());
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true) {
             @Override
@@ -1781,7 +1781,23 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onMessageStarred(TAPMessageModel message) {
             super.onMessageStarred(message);
-            // TODO: 21/03/22 implement star / unstar API MU
+            List<String> idList = new ArrayList<>();
+            String messageId = message.getLocalID();
+            idList.add(messageId);
+            if (vm.getStarredMessageIds().contains(messageId)) {
+                //unstar
+                TAPDataManager.getInstance(instanceKey).unStarMessage(message.getRoom().getRoomID(), idList, new TAPDefaultDataView<>() { });
+                vm.removeStarredMessageId(messageId);
+                messageAdapter.setStarredMessageIds(vm.getStarredMessageIds());
+            } else {
+                //star
+                TAPDataManager.getInstance(instanceKey).starMessage(message.getRoom().getRoomID(), idList, new TAPDefaultDataView<>() { });
+                vm.addStarredMessageId(messageId);
+                messageAdapter.setStarredMessageIds(vm.getStarredMessageIds());
+            }
+            if (vm.getMessagePointer().containsKey(messageId)) {
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(messageId)));
+            }
         }
     };
 
