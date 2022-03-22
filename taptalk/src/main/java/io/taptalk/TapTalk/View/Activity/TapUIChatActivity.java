@@ -569,11 +569,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
 
                 case OPEN_GROUP_PROFILE:
-                    vm.setDeleteGroup(true);
-                    closeActivity();
+                    TAPMessageModel messageModel = intent.getParcelableExtra(MESSAGE);
+                    if (messageModel != null) {
+                        scrollToMessage(messageModel.getLocalID());
+                    } else {
+                        vm.setDeleteGroup(true);
+                        closeActivity();
+                    }
                     break;
                 case OPEN_MEMBER_PROFILE:
-                    if (intent.getBooleanExtra(CLOSE_ACTIVITY, false)) {
+                    TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
+                    if (message != null) {
+                        scrollToMessage(message.getLocalID());
+                    } else if (intent.getBooleanExtra(CLOSE_ACTIVITY, false)) {
                         closeActivity();
                     }
                     break;

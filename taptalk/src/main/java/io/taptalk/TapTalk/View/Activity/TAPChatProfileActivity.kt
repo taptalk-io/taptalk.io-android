@@ -121,11 +121,27 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         vm!!.room = data.getParcelableExtra(Extras.ROOM)
                         updateView()
                     }
+                    val message = data.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                    if (message != null) {
+                        val intent = Intent()
+                        intent.putExtra(Extras.MESSAGE, message)
+                        setResult(RESULT_OK)
+                        finish()
+                    }
                     if (data.getBooleanExtra(Extras.CLOSE_ACTIVITY, false)) {
                         val intent = Intent()
                         intent.putExtra(Extras.CLOSE_ACTIVITY, true)
                         setResult(RESULT_OK)
                         onBackPressed()
+                    }
+                }
+                RequestCode.OPEN_STARRED_MESSAGES -> {
+                    val message = data?.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                    if (message != null) {
+                        val intent = Intent()
+                        intent.putExtra(Extras.MESSAGE, message)
+                        setResult(RESULT_OK)
+                        finish()
                     }
                 }
             }
@@ -1074,9 +1090,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 ChatProfileMenuType.MENU_REMOVE_MEMBER -> showRemoveMemberDialog()
                 ChatProfileMenuType.MENU_DELETE_GROUP -> showDeleteChatRoomDialog()
                 ChatProfileMenuType.MENU_REPORT -> triggerReportButtonTapped()
-                ChatProfileMenuType.MENU_STARRED_MESSAGES -> {
-                    // TODO: 15/03/22 move to starred messages page MU
-                  }
+                ChatProfileMenuType.MENU_STARRED_MESSAGES -> TapStarredMessagesActivity().start(this@TAPChatProfileActivity, instanceKey, vm!!.room)
             }
         }
 
