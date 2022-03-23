@@ -2015,7 +2015,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
                 @Override
                 public void onError(TAPErrorModel error) {
-                    if (null != error.getCode() && error.getCode().equals(String.valueOf(USER_NOT_FOUND))) {
+                    if (null != error.getCode() && error.getCode().equals(USER_NOT_FOUND)) {
                         showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
                     }
                 }
@@ -3555,7 +3555,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //                            messageFromPointer = messageFromPointer.copyMessageModel();
 //                        }
                         if (!TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID()) &&
-                                (null == message.getHidden() || !message.getHidden()) &&
+//                                (null == message.getHidden() || !message.getHidden()) &&
 //                                (null == messageFromPointer || null == messageFromPointer.getIsRead() || !messageFromPointer.getIsRead()) &&
 //                                (null == messageFromPointer || null == messageFromPointer.getHidden() || !messageFromPointer.getHidden()) &&
                                 !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(message.getMessageID()) &&

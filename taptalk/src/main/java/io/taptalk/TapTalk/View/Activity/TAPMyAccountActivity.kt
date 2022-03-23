@@ -222,6 +222,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible ){
             g_bio.visibility = View.VISIBLE
             setProfileInformation(tv_bio_view, g_bio, vm.myUserModel.bio)
+            if (!vm.myUserModel.bio.isNullOrEmpty()) {
+                et_bio.setText(vm.myUserModel.bio)
+            }
         } else {
             g_bio.visibility = View.GONE
         }
@@ -229,7 +232,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             g_mobile_number.visibility = View.GONE
         } else {
             g_mobile_number.visibility = View.VISIBLE
-            tv_mobile_number_view.text = "+" + vm.myUserModel.phoneWithCode
+            tv_mobile_number_view.text = "+" + vm.myUserModel.countryCallingCode + " " + vm.myUserModel.phone
         }
         setProfileInformation(tv_username_view, g_username, vm.myUserModel.username)
         setProfileInformation(tv_email_view, g_email, vm.myUserModel.email)
@@ -276,6 +279,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         state = ViewState.VIEW
         TAPUtils.dismissKeyboard(this)
         tv_title.text = vm.myUserModel.fullname
+        tv_edit_profile_picture.visibility = View.VISIBLE
         tv_edit_save_btn.setOnClickListener { showEditState() }
         tv_edit_save_btn.text = getString(R.string.tap_edit)
         tv_edit_profile_picture.text = getString(R.string.tap_set_new_profile_picture)
@@ -284,6 +288,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_basic_info.visibility = View.VISIBLE
         tv_version_code.visibility = View.VISIBLE
         cl_logout.visibility = View.GONE
+        et_bio.isEnabled = false
+        et_bio.setText(vm.myUserModel.bio)
     }
 
     private fun showEditState() {
@@ -313,6 +319,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         } else {
             cl_logout.visibility = View.GONE
         }
+        et_bio.isEnabled = true
     }
 
     private fun setProfileInformation(textView: TextView, group: View, textValue: String?) {
@@ -389,6 +396,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         tab_layout.visibility = View.GONE
         tv_profile_picture_label.text = TAPUtils.getInitials(vm.myUserModel.fullname, 2)
         tv_profile_picture_label.visibility = View.VISIBLE
+        if (state == ViewState.EDIT) {
+            tv_edit_profile_picture.visibility = View.GONE
+        } else {
+            tv_edit_profile_picture.visibility = View.VISIBLE
+        }
     }
 
     private fun reloadProfilePicture(imageUri: Uri?) {
@@ -741,6 +753,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         override fun onSuccess(response: TAPGetUserResponse?) {
             super.onSuccess(response)
             vm.isUpdatingProfile = false
+            TAPDataManager.getInstance(instanceKey).saveActiveUser(response?.user)
             getPhotoList(null)
         }
 
