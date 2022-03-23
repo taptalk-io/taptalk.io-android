@@ -2924,7 +2924,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private void setStarredIcon(String id, ImageView imageView) {
-        if (starredMessageIds.contains(id)) {
+        if (starredMessageIds.contains(id) || roomType == RoomType.STARRED) {
             imageView.setVisibility(View.VISIBLE);
         } else {
             imageView.setVisibility(View.GONE);
