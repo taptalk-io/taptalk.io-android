@@ -571,7 +571,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 case OPEN_GROUP_PROFILE:
                     TAPMessageModel messageModel = intent.getParcelableExtra(MESSAGE);
                     if (messageModel != null) {
-                        scrollToMessage(messageModel.getLocalID());
+                        scrollToMessage(messageModel.getMessageID());
                     } else {
                         vm.setDeleteGroup(true);
                         closeActivity();
@@ -580,7 +580,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 case OPEN_MEMBER_PROFILE:
                     TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
                     if (message != null) {
-                        scrollToMessage(message.getLocalID());
+                        scrollToMessage(message.getMessageID());
                     } else if (intent.getBooleanExtra(CLOSE_ACTIVITY, false)) {
                         closeActivity();
                     }
@@ -1790,7 +1790,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onMessageStarred(TAPMessageModel message) {
             super.onMessageStarred(message);
-            String messageId = message.getLocalID();
+            String messageId = message.getMessageID();
             if (vm.getStarredMessageIds().contains(messageId)) {
                 //unstar
                 TapCoreMessageManager.getInstance(instanceKey).unstarMessage(message.getRoom().getRoomID(), messageId);
@@ -2539,6 +2539,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
     }
 
+
     private void showLoadingOlderMessagesIndicator() {
         hideLoadingOlderMessagesIndicator();
         rvMessageList.post(() -> runOnUiThread(() -> {
@@ -3258,6 +3259,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                     } else {
                         // Message exists
+
                         vm.setMessageModels(models);
                         state = STATE.LOADED;
                         if (clEmptyChat.getVisibility() == View.VISIBLE && !finalAllMessagesHidden) {

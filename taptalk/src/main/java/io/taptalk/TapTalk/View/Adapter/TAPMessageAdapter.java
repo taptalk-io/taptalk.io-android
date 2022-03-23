@@ -402,7 +402,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             markMessageAsRead(item, myUserModel);
             setLinkDetection(itemView.getContext(), item, tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
-            setStarredIcon(item.getLocalID(), ivStarMessage);
+            setStarredIcon(item.getMessageID(), ivStarMessage);
 
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
@@ -532,7 +532,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setLinkDetection(itemView.getContext(), item, tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivImageBody, item);
-            setStarredIcon(item.getLocalID(), ivStarMessage);
+            setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -889,7 +889,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setLinkDetection(itemView.getContext(), item, tvMessageBody);
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
-            setStarredIcon(item.getLocalID(), ivStarMessage);
+            setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -1300,7 +1300,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);
-            setStarredIcon(item.getLocalID(), ivStarMessage);
+            setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             if (roomType == RoomType.DEFAULT) {
@@ -1572,7 +1572,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), vMapBorder, item);
-            setStarredIcon(item.getLocalID(), ivStarMessage);
+            setStarredIcon(item.getMessageID(), ivStarMessage);
 
             vMapBorder.setOnClickListener(v -> openMapDetail(mapData));
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
@@ -1942,7 +1942,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteBackground.setVisibility(View.GONE);
 
             markMessageAsRead(item, myUserModel);
-            setStarredIcon(item.getLocalID(), ivStarMessage);
+            setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
         }

@@ -62,7 +62,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
             isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading,
             isScrollFromKeyboard, isAllUnreadMessagesHidden, deleteGroup;
-
+    private boolean isHasMoreData = true;
     public final int IDLE = 0;
     public final int ANIMATING = 1;
     public final int PROCESSING = 2;
@@ -345,7 +345,11 @@ public class TAPChatViewModel extends AndroidViewModel {
         }
         if (updateCreated) {
             // Update created time for loading indicator to array's last message created time
-            loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated() - 1L);
+            if (getMessageModels().isEmpty()) {
+                loadingIndicator.setCreated(0L);
+            } else {
+                loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated() - 1L);
+            }
         }
         return loadingIndicator;
     }
@@ -582,5 +586,13 @@ public class TAPChatViewModel extends AndroidViewModel {
             starredMessageIds = new ArrayList<>();
         }
         this.starredMessageIds.remove(messageId);
+    }
+
+    public boolean isHasMoreData() {
+        return isHasMoreData;
+    }
+
+    public void setHasMoreData(boolean hasMoreData) {
+        isHasMoreData = hasMoreData;
     }
 }

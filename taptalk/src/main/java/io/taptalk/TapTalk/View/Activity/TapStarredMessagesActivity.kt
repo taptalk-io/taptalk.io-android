@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener
+import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Listener.TAPChatListener
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener
@@ -154,26 +157,114 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
         // Listener for scroll pagination
         endlessScrollListener = object : TAPEndlessScrollListener(messageLayoutManager) {
             override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView) {
-                if (!vm.isOnBottom) {
-//                    loadMoreMessagesFromDatabase()
-                }
+                loadMessagesFromApi()
             }
         }
         iv_button_back.setOnClickListener { onBackPressed() }
     }
 
     private fun loadMessagesFromApi() {
-        TapCoreMessageManager.getInstance(instanceKey).getStarredMessages(vm.room.roomID, PAGE_SIZE, pageNumber, object  : TapCoreGetOlderMessageListener() {
-            override fun onSuccess(messages: MutableList<TAPMessageModel>?, hasMoreData: Boolean?) {
-                super.onSuccess(messages, hasMoreData)
-                // TODO: 22/03/22 onsuccess MU
-            }
+        if (vm.isHasMoreData) {
+            showLoadingOlderMessagesIndicator()
+            TapCoreMessageManager.getInstance(instanceKey).getStarredMessages(
+                vm.room.roomID,
+                pageNumber,
+                PAGE_SIZE,
+                object : TapCoreGetOlderMessageListener() {
+                    override fun onSuccess(
+                        messages: MutableList<TAPMessageModel>?,
+                        hasMoreData: Boolean?
+                    ) {
+                        super.onSuccess(messages, hasMoreData)
+                        if (hasMoreData != null)
+                            vm.isHasMoreData = hasMoreData
+                        hideLoadingOlderMessagesIndicator()
+                        pageNumber++
+                        if (!messages.isNullOrEmpty()) {
+                            vm.messageModels.addAll(messages)
+                        }
+                        updateMessageDecoration()
+                    }
 
-            override fun onError(errorCode: String?, errorMessage: String?) {
-                super.onError(errorCode, errorMessage)
-                // TODO: 22/03/22 onerror MU
+                    override fun onError(errorCode: String?, errorMessage: String?) {
+                        super.onError(errorCode, errorMessage)
+                        hideLoadingOlderMessagesIndicator()
+                        Toast.makeText(this@TapStarredMessagesActivity, errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                })
+        }
+    }
+
+    private fun showLoadingOlderMessagesIndicator() {
+        hideLoadingOlderMessagesIndicator()
+        rv_starred_messages.post {
+            runOnUiThread {
+                vm.addMessagePointer(vm.getLoadingIndicator(true))
+                messageAdapter.addItem(vm.getLoadingIndicator(false)) // Add loading indicator to last index
+                messageAdapter.notifyItemInserted(messageAdapter.itemCount - 1)
             }
-        })
+        }
+    }
+
+    private fun hideLoadingOlderMessagesIndicator() {
+        rv_starred_messages.post {
+            runOnUiThread {
+                if (!messageAdapter.items.contains(vm.getLoadingIndicator(false))) {
+                    return@runOnUiThread
+                }
+                val index = messageAdapter.items.indexOf(vm.getLoadingIndicator(false))
+                vm.removeMessagePointer(LOADING_INDICATOR_LOCAL_ID)
+                if (index >= 0) {
+                    messageAdapter.removeMessage(vm.getLoadingIndicator(false))
+                    if (null != messageAdapter.getItemAt(index)) {
+                        messageAdapter.notifyItemChanged(index)
+                    } else {
+                        messageAdapter.notifyItemRemoved(index)
+                    }
+                    updateMessageDecoration()
+                }
+                checkMessageList()
+            }
+        }
+    }
+
+    private fun updateMessageDecoration() {
+        // Update decoration for the top item in recycler view
+        runOnUiThread {
+            if (rv_starred_messages.itemDecorationCount > 0) {
+                rv_starred_messages.removeItemDecorationAt(0)
+            }
+            rv_starred_messages.addItemDecoration(
+                TAPVerticalDecoration(
+                    TAPUtils.dpToPx(10),
+                    0,
+                    messageAdapter.itemCount - 1
+                )
+            )
+        }
+    }
+
+    private fun checkMessageList() {
+        if (messageAdapter.items.isEmpty()) {
+            showEmptyState()
+        } else {
+            hideEmptyState()
+            val starredMessageIds : MutableList<String> = mutableListOf()
+            for (item in vm.messageModels) {
+                starredMessageIds.add(item.localID)
+            }
+            messageAdapter.setStarredMessageIds(starredMessageIds)
+        }
+    }
+
+    private fun showEmptyState() {
+        rv_starred_messages.visibility = View.GONE
+        g_empty_starred_messages.visibility = View.VISIBLE
+    }
+
+    private fun hideEmptyState() {
+        rv_starred_messages.visibility = View.VISIBLE
+        g_empty_starred_messages.visibility = View.GONE
     }
 
     private val chatListener = object : TAPChatListener() {
