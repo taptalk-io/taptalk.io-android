@@ -190,6 +190,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PERSONAL_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
@@ -569,20 +570,32 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
 
                 case OPEN_GROUP_PROFILE:
-                    TAPMessageModel messageModel = intent.getParcelableExtra(MESSAGE);
-                    if (messageModel != null) {
-                        scrollToMessage(messageModel.getMessageID());
-                    } else {
-                        vm.setDeleteGroup(true);
-                        closeActivity();
+                    if (intent != null) {
+                        TAPMessageModel messageModel = intent.getParcelableExtra(MESSAGE);
+                        if (messageModel != null) {
+                            scrollToMessage(messageModel.getLocalID());
+                        } else {
+                            vm.setDeleteGroup(true);
+                            closeActivity();
+                        }
                     }
                     break;
                 case OPEN_MEMBER_PROFILE:
-                    TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
-                    if (message != null) {
-                        scrollToMessage(message.getMessageID());
-                    } else if (intent.getBooleanExtra(CLOSE_ACTIVITY, false)) {
-                        closeActivity();
+                    if (intent != null) {
+                        TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
+                        if (message != null) {
+                            scrollToMessage(message.getLocalID());
+                        } else if (intent.getBooleanExtra(CLOSE_ACTIVITY, false)) {
+                            closeActivity();
+                        }
+                    }
+                    break;
+                case OPEN_PERSONAL_PROFILE:
+                    if (intent != null) {
+                        TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
+                        if (message != null) {
+                            scrollToMessage(message.getLocalID());
+                        }
                     }
                     break;
             }
@@ -1801,8 +1814,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.addStarredMessageId(messageId);
             }
             messageAdapter.setStarredMessageIds(vm.getStarredMessageIds());
-            if (vm.getMessagePointer().containsKey(messageId)) {
-                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(messageId)));
+            if (vm.getMessagePointer().containsKey(message.getLocalID())) {
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
             }
         }
     };

@@ -125,7 +125,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     if (message != null) {
                         val intent = Intent()
                         intent.putExtra(Extras.MESSAGE, message)
-                        setResult(RESULT_OK)
+                        setResult(RESULT_OK, intent)
                         finish()
                     }
                     if (data.getBooleanExtra(Extras.CLOSE_ACTIVITY, false)) {
@@ -140,7 +140,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     if (message != null) {
                         val intent = Intent()
                         intent.putExtra(Extras.MESSAGE, message)
-                        setResult(RESULT_OK)
+                        setResult(RESULT_OK, intent)
                         finish()
                     }
                 }
@@ -1434,7 +1434,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 if (isNonParticipantUserProfile) {
                     intent.putExtra(Extras.IS_NON_PARTICIPANT_USER_PROFILE, true)
                 }
-                context.startActivity(intent)
+                context.startActivityForResult(intent, RequestCode.OPEN_PERSONAL_PROFILE)
             } else if (room?.type == RoomType.TYPE_GROUP && null != user) {
                 intent.putExtra(K_USER, user)
                 context.startActivityForResult(intent, RequestCode.OPEN_MEMBER_PROFILE)

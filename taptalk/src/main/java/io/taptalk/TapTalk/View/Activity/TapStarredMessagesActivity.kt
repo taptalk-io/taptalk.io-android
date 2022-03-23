@@ -124,7 +124,7 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
 
         // Initialize chat message RecyclerView
         messageAdapter =
-            TAPMessageAdapter(instanceKey, glide, chatListener, vm.messageMentionIndexes, vm.starredMessageIds)
+            TAPMessageAdapter(instanceKey, glide, chatListener, vm.messageMentionIndexes, TAPMessageAdapter.RoomType.STARRED)
         messageAdapter.setMessages(vm.messageModels)
         messageLayoutManager = object : LinearLayoutManager(this, VERTICAL, true) {
             override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {

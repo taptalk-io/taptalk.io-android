@@ -157,6 +157,7 @@ public class TAPDefaultConstant {
         public static final int EDIT_PROFILE = 21;
         public static final int OPEN_GROUP_PROFILE = 22;
         public static final int OPEN_MEMBER_PROFILE = 23;
+        public static final int OPEN_PERSONAL_PROFILE = 24;
         public static final int REGISTER = 31;
         public static final int GROUP_ADD_MEMBER = 4;
         public static final int GROUP_UPDATE_DATA = 41;

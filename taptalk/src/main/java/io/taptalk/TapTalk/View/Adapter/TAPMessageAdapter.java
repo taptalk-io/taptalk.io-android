@@ -162,7 +162,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private long defaultAnimationTime = 200L;
     private RoomType roomType = RoomType.DEFAULT;
 
-    enum RoomType {
+    public enum RoomType {
         DEFAULT, STARRED
     }
 
@@ -400,15 +400,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             checkAndAnimateHighlight(item, ivBubbleHighlight);
 
             markMessageAsRead(item, myUserModel);
-            setLinkDetection(itemView.getContext(), item, tvMessageBody);
+            if (roomType != RoomType.STARRED) {
+                setLinkDetection(itemView.getContext(), item, tvMessageBody);
+            }
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
 
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-            if (roomType == RoomType.DEFAULT) {
+            if (roomType != RoomType.STARRED) {
                 flBubble.setOnClickListener(v -> onStatusImageClicked(item));
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+            } else {
+                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
         }
 
@@ -529,7 +533,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             fixBubbleMarginForGroupRoom(item, flBubble);
 
             markMessageAsRead(item, myUserModel);
-            setLinkDetection(itemView.getContext(), item, tvMessageBody);
+            if (roomType != RoomType.STARRED) {
+                setLinkDetection(itemView.getContext(), item, tvMessageBody);
+            }
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivImageBody, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
@@ -539,7 +545,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openImageDetailPreview(TAPMessageModel message) {
-            TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, message, rcivImageBody);
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(message);
+            } else {
+                TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, message, rcivImageBody);
+            }
         }
 
         private void setProgress(TAPMessageModel item) {
@@ -599,7 +609,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                rcivImageBody.setBottomRightRadius(TAPUtils.dpToPx(2));
                 //tvMessageBody.setText(imageCaption);
                 setMessageBodyText(tvMessageBody, item, imageCaption);
-                setLinkDetection(itemView.getContext(), item, tvMessageBody);
+                if (roomType != RoomType.STARRED) {
+                    setLinkDetection(itemView.getContext(), item, tvMessageBody);
+                }
                 tvMessageBody.setVisibility(View.VISIBLE);
                 llTimestampIconImage.setVisibility(View.GONE);
                 tvMessageTimestamp.setVisibility(View.VISIBLE);
@@ -740,8 +752,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 // Uploading / Downloading
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileCancelUploadDownloadWhite)));
-                flProgress.setOnClickListener(v -> TAPDataManager.getInstance(instanceKey)
-                        .cancelUploadImage(itemView.getContext(), item.getLocalID()));
+                flProgress.setOnClickListener(v -> {
+                     if (roomType == RoomType.STARRED) {
+                        chatListener.onOutsideClicked(item);
+                     } else {
+                         TAPDataManager.getInstance(instanceKey)
+                                 .cancelUploadImage(itemView.getContext(), item.getLocalID());
+                     }
+                });
                 if (isMessageFromMySelf(item) && null != item.getSending() && item.getSending()) {
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_sending));
                 } else {
@@ -886,7 +904,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             fixBubbleMarginForGroupRoom(item, flBubble);
 
             markMessageAsRead(item, myUserModel);
-            setLinkDetection(itemView.getContext(), item, tvMessageBody);
+            if (roomType != RoomType.STARRED) {
+                setLinkDetection(itemView.getContext(), item, tvMessageBody);
+            }
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
@@ -929,7 +949,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                rcivImageBody.setBottomRightRadius(TAPUtils.dpToPx(2));
                 //tvMessageBody.setText(videoCaption);
                 setMessageBodyText(tvMessageBody, item, videoCaption);
-                setLinkDetection(itemView.getContext(), item, tvMessageBody);
+                if (roomType != RoomType.STARRED) {
+                    setLinkDetection(itemView.getContext(), item, tvMessageBody);
+                }
                 tvMessageBody.setVisibility(View.VISIBLE);
                 llTimestampIconImage.setVisibility(View.GONE);
                 tvMessageTimestamp.setVisibility(View.VISIBLE);
@@ -1126,45 +1148,61 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         };
 
         private void downloadVideo(TAPMessageModel item) {
-            Intent intent = new Intent(DownloadFile);
-            intent.putExtra(MESSAGE, item);
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(DownloadFile);
+                intent.putExtra(MESSAGE, item);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
 
         private void cancelDownload(TAPMessageModel item) {
-            Intent intent = new Intent(CancelDownload);
-            intent.putExtra(DownloadLocalID, item.getLocalID());
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(CancelDownload);
+                intent.putExtra(DownloadLocalID, item.getLocalID());
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
 
         private void cancelUpload(TAPMessageModel item) {
-            Intent intent = new Intent(UploadCancelled);
-            intent.putExtra(UploadLocalID, item.getLocalID());
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(UploadCancelled);
+                intent.putExtra(UploadLocalID, item.getLocalID());
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
 
         private void openVideoPlayer(TAPMessageModel message) {
             if (null == message.getData()) {
                 return;
             }
-            Uri videoUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message);
-            if (null == videoUri || !TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(message)) {
-                // Prompt download
-                this.videoUri = null;
-                String fileID = (String) message.getData().get(FILE_ID);
-                TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache(fileID);
-                notifyItemChanged(getLayoutPosition());
-                new TapTalkDialog.Builder(itemView.getContext())
-                        .setTitle(itemView.getContext().getString(R.string.tap_error_could_not_find_file))
-                        .setMessage(itemView.getContext().getString(R.string.tap_error_redownload_file))
-                        .setCancelable(true)
-                        .setPrimaryButtonTitle(itemView.getContext().getString(R.string.tap_ok))
-                        .setSecondaryButtonTitle(itemView.getContext().getString(R.string.tap_cancel))
-                        .setPrimaryButtonListener(v -> downloadVideo(message))
-                        .show();
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(message);
             } else {
-                // Open video
-                TAPVideoPlayerActivity.start(itemView.getContext(), instanceKey, videoUri, message);
+                Uri videoUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message);
+                if (null == videoUri || !TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(message)) {
+                    // Prompt download
+                    this.videoUri = null;
+                    String fileID = (String) message.getData().get(FILE_ID);
+                    TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache(fileID);
+                    notifyItemChanged(getLayoutPosition());
+                    new TapTalkDialog.Builder(itemView.getContext())
+                            .setTitle(itemView.getContext().getString(R.string.tap_error_could_not_find_file))
+                            .setMessage(itemView.getContext().getString(R.string.tap_error_redownload_file))
+                            .setCancelable(true)
+                            .setPrimaryButtonTitle(itemView.getContext().getString(R.string.tap_ok))
+                            .setSecondaryButtonTitle(itemView.getContext().getString(R.string.tap_cancel))
+                            .setPrimaryButtonListener(v -> downloadVideo(message))
+                            .show();
+                } else {
+                    // Open video
+                    TAPVideoPlayerActivity.start(itemView.getContext(), instanceKey, videoUri, message);
+                }
             }
         }
 
@@ -1303,9 +1341,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-            if (roomType == RoomType.DEFAULT) {
+            if (roomType != RoomType.STARRED) {
                 flBubble.setOnClickListener(v -> flFileIcon.performClick());
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+            } else {
+                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
         }
 
@@ -1433,28 +1473,44 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void downloadFile(TAPMessageModel item) {
-            Intent intent = new Intent(DownloadFile);
-            intent.putExtra(MESSAGE, item);
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(DownloadFile);
+                intent.putExtra(MESSAGE, item);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
 
         private void cancelDownload(TAPMessageModel item) {
-            Intent intent = new Intent(CancelDownload);
-            intent.putExtra(DownloadLocalID, item.getLocalID());
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(CancelDownload);
+                intent.putExtra(DownloadLocalID, item.getLocalID());
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
 
         private void cancelUpload(TAPMessageModel item) {
-            Intent intent = new Intent(UploadCancelled);
-            intent.putExtra(UploadLocalID, item.getLocalID());
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(UploadCancelled);
+                intent.putExtra(UploadLocalID, item.getLocalID());
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
 
         private void openFile(TAPMessageModel item) {
-            Intent intent = new Intent(OpenFile);
-            intent.putExtra(MESSAGE, item);
-            intent.putExtra(FILE_URI, fileUri);
-            LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(OpenFile);
+                intent.putExtra(MESSAGE, item);
+                intent.putExtra(FILE_URI, fileUri);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
     }
 
@@ -1574,7 +1630,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), vMapBorder, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
 
-            vMapBorder.setOnClickListener(v -> openMapDetail(mapData));
+            vMapBorder.setOnClickListener(v -> {
+                if (roomType == RoomType.STARRED) {
+                    chatListener.onOutsideClicked(item);
+                } else {
+                    openMapDetail(mapData);
+                }
+            });
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
@@ -2292,11 +2354,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (null != civAvatar) {
                     civAvatar.setOnClickListener(v -> {
                         // Open group member profile
-                        Activity activity = (Activity) vh.itemView.getContext();
-                        if (null == activity) {
-                            return;
+                        if (roomType == RoomType.STARRED) {
+                            chatListener.onOutsideClicked(item);
+                        } else {
+                            Activity activity = (Activity) vh.itemView.getContext();
+                            if (null == activity) {
+                                return;
+                            }
+                            chatListener.onGroupMemberAvatarClicked(item);
                         }
-                        chatListener.onGroupMemberAvatarClicked(item);
                     });
                 }
             }
@@ -2506,7 +2572,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 updateQuoteBackground(itemView, vQuoteBackground, isMessageFromMySelf(item), false);
                 rcivQuoteImage.setVisibility(View.GONE);
             }
-            vQuoteBackground.setOnClickListener(v -> chatListener.onMessageQuoteClicked(item));
+            vQuoteBackground.setOnClickListener(v -> {
+                if (roomType == RoomType.STARRED) {
+                    chatListener.onOutsideClicked(item);
+                } else {
+                    chatListener.onMessageQuoteClicked(item);
+                }
+            });
         } else {
             // Hide quote
             clQuote.setVisibility(View.GONE);
@@ -2557,8 +2629,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private void resendMessage(TAPMessageModel item) {
-        removeMessage(item);
-        chatListener.onRetrySendMessage(item);
+        if (roomType == RoomType.STARRED) {
+            chatListener.onOutsideClicked(item);
+        } else {
+            removeMessage(item);
+            chatListener.onRetrySendMessage(item);
+        }
     }
 
     private void animateSend(TAPMessageModel item, FrameLayout flBubble,

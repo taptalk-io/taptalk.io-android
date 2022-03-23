@@ -280,7 +280,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
             // Star
-            if (starredMessageIds.contains(messageModel.localID)) {
+            if (starredMessageIds.contains(messageModel.messageID)) {
                 imageResIds.add(R.drawable.tap_ic_star_filled_primary)
                 titleResIds.add(R.string.tap_unstar)
                 ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
@@ -349,7 +349,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
             // Star
-            if (starredMessageIds.contains(messageModel.localID)) {
+            if (starredMessageIds.contains(messageModel.messageID)) {
                 imageResIds.add(R.drawable.tap_ic_star_filled_primary)
                 titleResIds.add(R.string.tap_unstar)
                 ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
@@ -415,7 +415,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
             // Star
-            if (starredMessageIds.contains(messageModel.localID)) {
+            if (starredMessageIds.contains(messageModel.messageID)) {
                 imageResIds.add(R.drawable.tap_ic_star_filled_primary)
                 titleResIds.add(R.string.tap_unstar)
                 ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
@@ -472,7 +472,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
             // Star
-            if (starredMessageIds.contains(messageModel.localID)) {
+            if (starredMessageIds.contains(messageModel.messageID)) {
                 imageResIds.add(R.drawable.tap_ic_star_filled_primary)
                 titleResIds.add(R.string.tap_unstar)
                 ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
@@ -532,7 +532,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
             // Star
-            if (starredMessageIds.contains(messageModel.localID)) {
+            if (starredMessageIds.contains(messageModel.messageID)) {
                 imageResIds.add(R.drawable.tap_ic_star_filled_primary)
                 titleResIds.add(R.string.tap_unstar)
                 ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
