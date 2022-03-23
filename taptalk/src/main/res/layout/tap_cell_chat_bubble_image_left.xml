@@ -197,6 +197,20 @@
                 app:layout_constraintTop_toBottomOf="@id/rciv_image"
                 tools:text="Hey there, love your work!" />
 
+
+            <ImageView
+                android:id="@+id/iv_star_message_body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_gravity="center"
+                android:src="@drawable/tap_ic_star_filled_grey"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/tv_message_timestamp" />
+
             <TextView
                 android:id="@+id/tv_message_timestamp"
                 style="@style/tapLeftBubbleMessageTimestampStyle"
@@ -235,7 +249,7 @@
                     android:layout_marginEnd="6dp"
                     android:layout_marginRight="6dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/tap_ic_star_filled_white"
+                    android:src="@drawable/tap_ic_star_filled_grey"
                     android:visibility="gone" />
 
                 <TextView

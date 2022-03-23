@@ -472,6 +472,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteDecoration;
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
+        private ImageView ivStarMessageBody;
 
         private TAPMessageModel obtainedItem;
         private Drawable thumbnail;
@@ -502,6 +503,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            ivStarMessageBody = itemView.findViewById(R.id.iv_star_message_body);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -538,7 +540,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivImageBody, item);
-            setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -618,6 +619,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.VISIBLE);
                 }
+                setStarredIcon(item.getMessageID(), ivStarMessageBody);
             } else {
                 // Hide caption
 //                rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(13));
@@ -628,6 +630,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.GONE);
                 }
+                setStarredIcon(item.getMessageID(), ivStarMessage);
             }
 
             if (null != widthDimension && null != heightDimension && widthDimension.intValue() > 0 && heightDimension.intValue() > 0) {
@@ -840,6 +843,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteDecoration;
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
+        private ImageView ivStarMessageBody;
 
         private TAPMessageModel obtainedItem;
         private Uri videoUri;
@@ -872,6 +876,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            ivStarMessageBody = itemView.findViewById(R.id.iv_star_message_body);
 
             if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -909,7 +914,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
-            setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -958,6 +962,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.VISIBLE);
                 }
+                setStarredIcon(item.getMessageID(), ivStarMessageBody);
             } else {
                 // Hide caption
 //                rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(13));
@@ -968,6 +973,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (isMessageFromMySelf(item)) {
                     ivMessageStatus.setVisibility(View.GONE);
                 }
+                setStarredIcon(item.getMessageID(), ivStarMessage);
             }
 
             if (null != widthDimension && null != heightDimension && widthDimension.intValue() > 0 && heightDimension.intValue() > 0) {
