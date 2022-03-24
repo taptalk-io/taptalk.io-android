@@ -126,7 +126,7 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
         messageAdapter =
             TAPMessageAdapter(instanceKey, glide, chatListener, vm.messageMentionIndexes, TAPMessageAdapter.RoomType.STARRED)
         messageAdapter.setMessages(vm.messageModels)
-        messageLayoutManager = object : LinearLayoutManager(this, VERTICAL, true) {
+        messageLayoutManager = object : LinearLayoutManager(this, VERTICAL, false) {
             override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {
                 try {
                     super.onLayoutChildren(recycler, state)
@@ -135,7 +135,6 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
                 }
             }
         }
-        messageLayoutManager.stackFromEnd = true
         rv_starred_messages.instanceKey = instanceKey
         rv_starred_messages.adapter = messageAdapter
         rv_starred_messages.layoutManager = messageLayoutManager
@@ -236,8 +235,8 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
             }
             rv_starred_messages.addItemDecoration(
                 TAPVerticalDecoration(
-                    TAPUtils.dpToPx(10),
                     0,
+                    TAPUtils.dpToPx(16),
                     messageAdapter.itemCount - 1
                 )
             )

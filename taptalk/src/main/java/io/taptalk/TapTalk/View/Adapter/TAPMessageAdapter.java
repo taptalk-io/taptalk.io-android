@@ -353,6 +353,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteBackground;
         private View vQuoteDecoration;
         private ImageView ivStarMessage;
+        private View vSeparator;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -373,6 +374,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            vSeparator = itemView.findViewById(R.id.v_separator);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -413,6 +415,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+                if (position != 0) {
+                    vSeparator.setVisibility(View.VISIBLE);
+                } else {
+                    vSeparator.setVisibility(View.GONE);
+                }
             }
         }
 
@@ -473,6 +480,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
         private ImageView ivStarMessageBody;
+        private View vSeparator;
 
         private TAPMessageModel obtainedItem;
         private Drawable thumbnail;
@@ -504,6 +512,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             ivStarMessageBody = itemView.findViewById(R.id.iv_star_message_body);
+            vSeparator = itemView.findViewById(R.id.v_separator);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -537,6 +546,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             markMessageAsRead(item, myUserModel);
             if (roomType != RoomType.STARRED) {
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
+            } else {
+                if (position != 0) {
+                    vSeparator.setVisibility(View.VISIBLE);
+                } else {
+                    vSeparator.setVisibility(View.GONE);
+                }
             }
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivImageBody, item);
@@ -844,6 +859,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
         private ImageView ivStarMessageBody;
+        private View vSeparator;
 
         private TAPMessageModel obtainedItem;
         private Uri videoUri;
@@ -877,6 +893,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             ivStarMessageBody = itemView.findViewById(R.id.iv_star_message_body);
+            vSeparator = itemView.findViewById(R.id.v_separator);
 
             if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -911,6 +928,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             markMessageAsRead(item, myUserModel);
             if (roomType != RoomType.STARRED) {
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
+            } else {
+                if (position != 0) {
+                    vSeparator.setVisibility(View.VISIBLE);
+                } else {
+                    vSeparator.setVisibility(View.GONE);
+                }
             }
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
@@ -1280,6 +1303,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteDecoration;
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
+        private View vSeparator;
 
         private Uri fileUri;
 
@@ -1307,6 +1331,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            vSeparator = itemView.findViewById(R.id.v_separator);
 
             if (bubbleType == TYPE_BUBBLE_FILE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -1352,6 +1377,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+                if (position != 0) {
+                    vSeparator.setVisibility(View.VISIBLE);
+                } else {
+                    vSeparator.setVisibility(View.GONE);
+                }
             }
         }
 
@@ -1548,6 +1578,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vMapBorder;
         private MapView mapView;
         private ImageView ivStarMessage;
+        private View vSeparator;
 
         LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -1574,6 +1605,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             mapView = itemView.findViewById(R.id.map_view);
             mapView.onCreate(new Bundle());
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            vSeparator = itemView.findViewById(R.id.v_separator);
 
             if (bubbleType == TYPE_BUBBLE_LOCATION_LEFT) {
                 clBubbleTop = itemView.findViewById(R.id.cl_bubble_top);
@@ -1643,6 +1675,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     openMapDetail(mapData);
                 }
             });
+            if (roomType == RoomType.STARRED) {
+                if (position != 0) {
+                    vSeparator.setVisibility(View.VISIBLE);
+                } else {
+                    vSeparator.setVisibility(View.GONE);
+                }
+            }
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
