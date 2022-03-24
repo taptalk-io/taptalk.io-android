@@ -249,7 +249,7 @@
                     android:layout_marginEnd="6dp"
                     android:layout_marginRight="6dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/tap_ic_star_filled_grey"
+                    android:src="@drawable/tap_ic_star_filled_white"
                     android:visibility="gone" />
 
                 <TextView
