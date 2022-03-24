@@ -90,6 +90,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -400,6 +401,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft(vm.getRoom().getRoomID()));
         showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
 
+        getStarredMessageIds();
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
             callApiGetUserByUserID();
         } else {
@@ -410,6 +412,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
             fetchBeforeMessageFromAPIAndUpdateUI(messageBeforeView);
         }
         checkInitSocket();
+    }
+
+    private void getStarredMessageIds() {
+        TapCoreMessageManager.getInstance(instanceKey).getStarredMessageIds(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
+            @Override
+            public void onSuccess(@NonNull ArrayList<String> messages) {
+                super.onSuccess(messages);
+                vm.setStarredMessageIds(messages);
+                messageAdapter.setStarredMessageIds(messages);
+                messageAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private void checkInitSocket() {
