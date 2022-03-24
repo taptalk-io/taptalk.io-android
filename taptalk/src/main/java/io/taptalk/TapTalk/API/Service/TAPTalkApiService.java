@@ -188,4 +188,7 @@ public interface TAPTalkApiService {
 
     @POST("chat/message/get_starred_list")
     Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getStarredMessages(@Body TapGetStarredMessagesRequest request);
+
+    @POST("chat/message/get_starred_ids")
+    Observable<TAPBaseResponse<TapStarMessageResponse>> getStarredMessageIds(@Body TAPCommonRequest request);
 }

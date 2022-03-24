@@ -1380,4 +1380,8 @@ public class TAPDataManager {
     public void getStarredMessages(String roomId, int pageNumber, int pageSize, TAPDefaultDataView<TAPGetMessageListByRoomResponse> view) {
         TAPApiManager.getInstance(instanceKey).getStarredMessages(roomId, pageNumber, pageSize, new TAPDefaultSubscriber<>(view));
     }
+
+    public void getStarredMessageIds(String roomId, TAPDefaultDataView<TapStarMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getStarredMessageIds(roomId, new TAPDefaultSubscriber<>(view));
+    }
 }

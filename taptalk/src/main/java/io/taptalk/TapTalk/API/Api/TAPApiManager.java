@@ -614,4 +614,10 @@ public class TAPApiManager {
         request.setPageSize(pageSize);
         execute(homingPigeon.getStarredMessages(request), subscriber);
     }
+
+    public void getStarredMessageIds(String roomId, Subscriber<TAPBaseResponse<TapStarMessageResponse>> subscriber) {
+        TAPCommonRequest request = new TAPCommonRequest();
+        request.setRoomID(roomId);
+        execute(homingPigeon.getStarredMessageIds(request), subscriber);
+    }
 }
