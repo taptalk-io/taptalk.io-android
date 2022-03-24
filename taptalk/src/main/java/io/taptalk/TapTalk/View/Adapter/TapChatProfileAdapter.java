@@ -51,6 +51,7 @@ import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_STARRED_MESSAGES;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_VIEW_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
@@ -212,7 +213,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             typedArray.recycle();
 
             // Show menu chevron
-            if (item.getMenuId() == MENU_VIEW_MEMBERS) {
+            if (item.getMenuId() == MENU_VIEW_MEMBERS || item.getMenuId() == MENU_STARRED_MESSAGES) {
                 ivRightArrow.setVisibility(View.VISIBLE);
             } else {
                 ivRightArrow.setVisibility(View.GONE);

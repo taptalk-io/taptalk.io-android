@@ -64,12 +64,14 @@ import io.taptalk.TapTalk.Listener.TapCoreFileUploadListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetAllMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapCoreMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreUpdateMessageStatusListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
@@ -903,6 +905,7 @@ public class TapCoreMessageManager {
             }
             return;
         }
+
         TAPDataManager.getInstance(instanceKey).getMessageListByRoomAfter(roomID, minCreatedTimestamp, lastUpdateTimestamp,
                 new TAPDefaultDataView<TAPGetMessageListByRoomResponse>() {
                     @Override
@@ -1227,6 +1230,86 @@ public class TapCoreMessageManager {
                 listener.onRequestMessageFileUpload(messageModel, fileUri);
             }
         }
+    }
+
+    public void getStarredMessages(String roomId, int pageNumber, int numberOfItems, TapCoreGetOlderMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getStarredMessages(roomId, pageNumber, numberOfItems, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPGetMessageListByRoomResponse response) {
+                super.onSuccess(response);
+                if (listener != null) {
+                    List<TAPMessageModel> starredMessageList = new ArrayList<>();
+                    for (HashMap<String, Object> messageMap : response.getMessages()) {
+                        try {
+                            TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
+                            starredMessageList.add(message);
+
+                        } catch (Exception e) {
+                            listener.onError(ERROR_CODE_OTHERS, e.getMessage());
+                        }
+                    }
+                    listener.onSuccess(starredMessageList, response.getHasMore());
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void starMessage(String roomID, String messageID) {
+        List<String> idList = new ArrayList<>();
+        idList.add(messageID);
+        TAPDataManager.getInstance(instanceKey).starMessage(roomID, idList, new TAPDefaultDataView<>() { });
+    }
+
+    public void starMessages(String roomID, List<String> messageIDs) {
+        TAPDataManager.getInstance(instanceKey).starMessage(roomID, messageIDs, new TAPDefaultDataView<>() { });
+    }
+
+    public void unstarMessage(String roomID, String messageID) {
+        List<String> idList = new ArrayList<>();
+        idList.add(messageID);
+        TAPDataManager.getInstance(instanceKey).unStarMessage(roomID, idList, new TAPDefaultDataView<>() { });
+    }
+
+    public void unstarMessages(String roomID, List<String> messageIDs) {
+        TAPDataManager.getInstance(instanceKey).unStarMessage(roomID, messageIDs, new TAPDefaultDataView<>() { });
+    }
+
+    public void getStarredMessageIds(String roomId, TapCoreGetStringArrayListener listener) {
+        TAPDataManager.getInstance(instanceKey).getStarredMessageIds(roomId, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapStarMessageResponse response) {
+                super.onSuccess(response);
+                listener.onSuccess(new ArrayList<>(response.getStarredMessageIDs()));
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
     }
 
     /**

@@ -155,6 +155,7 @@ public class TAPDefaultConstant {
         public static final int EDIT_PROFILE = 21;
         public static final int OPEN_GROUP_PROFILE = 22;
         public static final int OPEN_MEMBER_PROFILE = 23;
+        public static final int OPEN_PERSONAL_PROFILE = 24;
         public static final int REGISTER = 31;
         public static final int GROUP_ADD_MEMBER = 4;
         public static final int GROUP_UPDATE_DATA = 41;
@@ -171,6 +172,7 @@ public class TAPDefaultConstant {
         public static final int PICK_PROFILE_IMAGE_GALLERY = 92;
         public static final int PICK_GROUP_IMAGE_CAMERA = 93;
         public static final int PICK_GROUP_IMAGE_GALLERY = 94;
+        public static final int OPEN_STARRED_MESSAGES = 95;
     }
 
     public static final class PermissionRequest {
@@ -419,6 +421,7 @@ public class TAPDefaultConstant {
         public static final int MENU_DELETE_GROUP = 13;
         public static final int MENU_EDIT_GROUP = 14;
         public static final int MENU_REPORT = 15;
+        public static final int MENU_STARRED_MESSAGES = 16;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -474,6 +477,7 @@ public class TAPDefaultConstant {
     public static final String CLEAR_ROOM_LIST = "kTAPClearRoomList";
     public static final String CLEAR_ROOM_LIST_BADGE = "kTAPClearRoomListBadge";
     public static final String RELOAD_PROFILE_PICTURE = "kTAPReloadProfilePicture";
+    public static final String OPEN_CHAT = "kTAPOpenChat";
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";

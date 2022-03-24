@@ -123,6 +123,10 @@
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:screenOrientation="sensor" />
+        <activity
+            android:name="io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

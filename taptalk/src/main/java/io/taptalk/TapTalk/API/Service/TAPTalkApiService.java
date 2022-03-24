@@ -11,6 +11,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
@@ -25,6 +26,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapStarMessageRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAuthTicketResponse;
@@ -47,6 +49,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
@@ -175,4 +179,16 @@ public interface TAPTalkApiService {
 
     @POST("client/user/photo/delete")
     Observable<TAPBaseResponse<TAPGetUserResponse>> removePhoto(@Body TapRemovePhotoRequest request);
+
+    @POST("chat/message/star")
+    Observable<TAPBaseResponse<TapStarMessageResponse>> starMessage(@Body TapStarMessageRequest request);
+
+    @POST("chat/message/star")
+    Observable<TAPBaseResponse<TapUnstarMessageResponse>> unStarMessage(@Body TapStarMessageRequest request);
+
+    @POST("chat/message/get_starred_list")
+    Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getStarredMessages(@Body TapGetStarredMessagesRequest request);
+
+    @POST("chat/message/get_starred_ids")
+    Observable<TAPBaseResponse<TapStarMessageResponse>> getStarredMessageIds(@Body TAPCommonRequest request);
 }

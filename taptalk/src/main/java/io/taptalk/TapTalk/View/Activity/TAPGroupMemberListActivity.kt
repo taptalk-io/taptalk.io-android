@@ -26,6 +26,7 @@ import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPGroupManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
+import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.Model.TAPUserModel
 import io.taptalk.TapTalk.View.Adapter.TAPGroupMemberAdapter
@@ -209,6 +210,14 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                             adapter?.addItem(groupViewModel?.memberCountModel)
                         }
                         groupViewModel?.isUpdateMember = true
+                    }
+
+                    val message = data?.getParcelableExtra<TAPMessageModel>(MESSAGE)
+                    if (message != null) {
+                        val intent = Intent()
+                        intent.putExtra(MESSAGE, message)
+                        setResult(RESULT_OK, intent)
+                        finish()
                     }
 
                     if (data?.getBooleanExtra(CLOSE_ACTIVITY, false) == true) {
