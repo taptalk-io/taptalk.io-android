@@ -59,7 +59,6 @@ public class TAPDefaultConstant {
         public static final int TYPE_UNREAD_MESSAGE_IDENTIFIER = 9002;
         public static final int TYPE_LOADING_MESSAGE_IDENTIFIER = 9003;
         public static final int TYPE_DATE_SEPARATOR = 9005;
-        public static final int TYPE_LINE_SEPARATOR = 9006;
     }
 
     public static final class BubbleType {
@@ -81,7 +80,6 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_DELETED_RIGHT = 90041;
         public static final int TYPE_BUBBLE_DELETED_LEFT = 90042;
         public static final int TYPE_BUBBLE_DATE_SEPARATOR = 9005;
-        public static final int TYPE_BUBBLE_LINE_SEPARATOR = 9006;
         public static final int TYPE_EMPTY = 9999;
     }
 

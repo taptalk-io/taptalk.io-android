@@ -13,10 +13,8 @@ import android.os.Handler;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
@@ -87,7 +85,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_FILE_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_IMAGE_RIGHT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LINE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LOADING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LOCATION_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_LOCATION_RIGHT;
@@ -121,7 +118,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LINE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
@@ -242,8 +238,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return new SystemMessageVH(parent, R.layout.tap_cell_chat_system_message);
             case TYPE_BUBBLE_DATE_SEPARATOR:
                 return new DateSeparatorVH(parent, R.layout.tap_cell_chat_date_separator);
-            case TYPE_BUBBLE_LINE_SEPARATOR:
-                return new LineSeparatorVH(parent, R.layout.tap_cell_chat_line_separator);
             default:
                 TAPBaseCustomBubble customBubble = TAPCustomBubbleManager.getInstance(instanceKey).getCustomBubbleMap().get(viewType);
                 if (null != customBubble) {
@@ -316,8 +310,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     return TYPE_BUBBLE_LOADING;
                 case TYPE_DATE_SEPARATOR:
                     return TYPE_BUBBLE_DATE_SEPARATOR;
-                case TYPE_LINE_SEPARATOR:
-                    return TYPE_BUBBLE_LINE_SEPARATOR;
                 default:
                     return messageType;
             }
@@ -1872,25 +1864,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             markMessageAsRead(item, myUserModel);
             tvDateSeparator.setText(item.getBody());
-            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-        }
-    }
-
-    public class LineSeparatorVH extends TAPBaseChatViewHolder {
-
-        private final ConstraintLayout clContainer;
-
-        LineSeparatorVH(ViewGroup parent, int itemLayoutId) {
-            super(parent, itemLayoutId);
-
-            clContainer = itemView.findViewById(R.id.cl_container);
-        }
-
-        @Override
-        protected void onBind(TAPMessageModel item, int position) {
-            if (null == item) {
-                return;
-            }
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
         }
     }
