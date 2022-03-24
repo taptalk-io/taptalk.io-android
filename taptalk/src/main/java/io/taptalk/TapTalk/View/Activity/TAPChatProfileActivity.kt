@@ -1018,6 +1018,25 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         }
     }
 
+    private fun openStarredMessages() {
+        if (vm!!.isGroupMemberProfile) {
+            val user = vm!!.groupMemberUser
+            val room = TAPRoomModel(
+                TAPChatManager.getInstance(instanceKey).arrangeRoomId(
+                    TAPChatManager.getInstance(instanceKey).activeUser.userID,
+                    user.userID
+                ),
+                user.fullname,
+                RoomType.TYPE_PERSONAL,
+                user.imageURL,
+                ""
+            )
+            TapStarredMessagesActivity().start(this@TAPChatProfileActivity, instanceKey, room)
+        } else {
+            TapStarredMessagesActivity().start(this@TAPChatProfileActivity, instanceKey, vm!!.room)
+        }
+    }
+
     private val profilePictureListener = object : TapProfilePicturePagerAdapter.ProfilePictureListener {
         override fun onLongClick(bitmap: BitmapDrawable) {
             if (vm!!.room.type == RoomType.TYPE_GROUP) {
@@ -1090,7 +1109,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 ChatProfileMenuType.MENU_REMOVE_MEMBER -> showRemoveMemberDialog()
                 ChatProfileMenuType.MENU_DELETE_GROUP -> showDeleteChatRoomDialog()
                 ChatProfileMenuType.MENU_REPORT -> triggerReportButtonTapped()
-                ChatProfileMenuType.MENU_STARRED_MESSAGES -> TapStarredMessagesActivity().start(this@TAPChatProfileActivity, instanceKey, vm!!.room)
+                ChatProfileMenuType.MENU_STARRED_MESSAGES -> openStarredMessages()
             }
         }
 

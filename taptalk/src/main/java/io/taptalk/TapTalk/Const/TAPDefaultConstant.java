@@ -479,6 +479,7 @@ public class TAPDefaultConstant {
     public static final String CLEAR_ROOM_LIST = "kTAPClearRoomList";
     public static final String CLEAR_ROOM_LIST_BADGE = "kTAPClearRoomListBadge";
     public static final String RELOAD_PROFILE_PICTURE = "kTAPReloadProfilePicture";
+    public static final String OPEN_CHAT = "kTAPOpenChat";
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";

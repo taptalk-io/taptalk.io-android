@@ -176,6 +176,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
@@ -573,7 +574,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (intent != null) {
                         TAPMessageModel messageModel = intent.getParcelableExtra(MESSAGE);
                         if (messageModel != null) {
-                            scrollToMessage(messageModel.getLocalID());
+                            if (vm.getRoom().getRoomID().equals(messageModel.getRoom().getRoomID())) {
+                                scrollToMessage(messageModel.getLocalID());
+                            } else {
+                                Intent roomIntent = new Intent(OPEN_CHAT);
+                                roomIntent.putExtra(MESSAGE, messageModel);
+                                LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(roomIntent);
+                                closeActivity();
+                            }
                         } else {
                             vm.setDeleteGroup(true);
                             closeActivity();
@@ -584,7 +592,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (intent != null) {
                         TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
                         if (message != null) {
-                            scrollToMessage(message.getLocalID());
+                            if (vm.getRoom().getRoomID().equals(message.getRoom().getRoomID())) {
+                                scrollToMessage(message.getLocalID());
+                            } else {
+                                Intent roomIntent = new Intent(OPEN_CHAT);
+                                roomIntent.putExtra(MESSAGE, message);
+                                LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(roomIntent);
+                                closeActivity();
+                            }
                         } else if (intent.getBooleanExtra(CLOSE_ACTIVITY, false)) {
                             closeActivity();
                         }

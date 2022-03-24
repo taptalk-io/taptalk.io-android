@@ -216,7 +216,7 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                     if (message != null) {
                         val intent = Intent()
                         intent.putExtra(MESSAGE, message)
-                        setResult(RESULT_OK)
+                        setResult(RESULT_OK, intent)
                         finish()
                     }
 
