@@ -78,6 +78,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
+import io.taptalk.TapTalk.Manager.TapCoreRoomListManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
@@ -1133,7 +1134,7 @@ public class TapUIRoomListFragment extends Fragment {
                 removeUnreadRoomToPreference(roomId);
             } else {
                 // unread button
-                // TODO: 04/03/22 set mark as read API MU
+                TapCoreRoomListManager.getInstance(instanceKey).markChatRoomAsUnread(roomId, null);
                 addUnreadRoomToPreference(roomId);
             }
             adapter.notifyItemChanged(position);
