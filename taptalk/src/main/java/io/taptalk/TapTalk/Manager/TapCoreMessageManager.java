@@ -747,6 +747,19 @@ public class TapCoreMessageManager {
                         markMessagesAsRead(pendingReadList);
                     }
                 });
+        ArrayList<String> roomIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
+        if (roomIds.contains(roomID)) {
+            TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, new TAPDatabaseListener<>() {
+                @Override
+                public void onSelectFinished(List<TAPMessageEntity> entities) {
+                    if (!entities.isEmpty()) {
+                        markMessageAsRead(entities.get(0).getMessageID());
+                        roomIds.remove(roomID);
+                        TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(roomIds);
+                    }
+                }
+            });
+        }
     }
 
     public void markAllMessagesInRoomAsRead(String roomID, TapCoreUpdateMessageStatusListener listener) {
