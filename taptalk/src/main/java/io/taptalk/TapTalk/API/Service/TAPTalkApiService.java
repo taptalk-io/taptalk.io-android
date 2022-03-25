@@ -185,7 +185,7 @@ public interface TAPTalkApiService {
     @POST("chat/message/star")
     Observable<TAPBaseResponse<TapStarMessageResponse>> starMessage(@Body TapStarMessageRequest request);
 
-    @POST("chat/message/star")
+    @POST("chat/message/unstar")
     Observable<TAPBaseResponse<TapUnstarMessageResponse>> unStarMessage(@Body TapStarMessageRequest request);
 
     @POST("chat/message/get_starred_list")
