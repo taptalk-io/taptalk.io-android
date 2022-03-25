@@ -544,6 +544,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     vSeparator.setVisibility(View.GONE);
                 }
+                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivImageBody, item);
@@ -926,6 +927,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     vSeparator.setVisibility(View.GONE);
                 }
+                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
@@ -1673,6 +1675,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     vSeparator.setVisibility(View.GONE);
                 }
+                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
