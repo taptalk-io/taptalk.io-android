@@ -312,13 +312,6 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Show unread count
-            if (item.isMarkedAsUnread()) {
-                glide.load(R.drawable.tap_ic_mark_read_white).fitCenter().into(ivMarkRead);
-                tvMarkRead.setText(R.string.tap_read);
-            } else {
-                glide.load(R.drawable.tap_ic_mark_unread_white).fitCenter().into(ivMarkRead);
-                tvMarkRead.setText(R.string.tap_unread);
-            }
             int unreadCount = item.getNumberOfUnreadMessages();
             if (unreadCount > 0 || item.isMarkedAsUnread()) {
                 if (unreadCount == 0) {
@@ -330,9 +323,13 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 }
                 ivMessageStatus.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
+                glide.load(R.drawable.tap_ic_mark_read_white).fitCenter().into(ivMarkRead);
+                tvMarkRead.setText(R.string.tap_read);
             } else {
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 tvBadgeUnread.setVisibility(View.GONE);
+                glide.load(R.drawable.tap_ic_mark_unread_white).fitCenter().into(ivMarkRead);
+                tvMarkRead.setText(R.string.tap_unread);
             }
 
             // Show mention badge

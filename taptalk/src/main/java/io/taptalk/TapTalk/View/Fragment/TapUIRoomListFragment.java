@@ -66,6 +66,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -286,7 +287,7 @@ public class TapUIRoomListFragment extends Fragment {
                 TAPRoomListModel roomListModel = vm.getRoomPointer().get(roomID);
                 if (roomListModel != null && roomListModel.isMarkedAsUnread()) {
                     TapCoreMessageManager.getInstance(instanceKey).markMessageAsRead(roomListModel.getLastMessage().getMessageID());
-                    removeUnreadRoomToPreference(roomID);
+                    removeUnreadRoomFromPreference(roomID);
                 }
                 updateUnreadCountPerRoom(roomID);
             }
@@ -892,6 +893,27 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
+    private void getUnreadRoomList() {
+        TapCoreRoomListManager.getInstance(instanceKey).getMarkedAsUnreadChatRoomList(new TapCoreGetStringArrayListener() {
+            @Override
+            public void onSuccess(@NonNull ArrayList<String> arrayList) {
+                super.onSuccess(arrayList);
+                TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(arrayList);
+                for(String id : arrayList) {
+                    updateRoomUnreadMark(id, true);
+                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(id)));
+                }
+                calculateBadgeCount();
+            }
+
+            @Override
+            public void onError(@org.jetbrains.annotations.Nullable String errorCode, @org.jetbrains.annotations.Nullable String errorMessage) {
+                super.onError(errorCode, errorMessage);
+                calculateBadgeCount();
+            }
+        });
+    }
+
     private TAPDefaultDataView<TAPGetRoomListResponse> roomListView = new TAPDefaultDataView<TAPGetRoomListResponse>() {
         @Override
         public void startLoading() {
@@ -984,8 +1006,7 @@ public class TapUIRoomListFragment extends Fragment {
 
             vm.setFetchingMessageListAndUnread(false);
 
-            // TODO: 10/03/22 get, save to preference and set unread room list from API MU
-            calculateBadgeCount();
+            getUnreadRoomList();
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
 
@@ -1065,8 +1086,7 @@ public class TapUIRoomListFragment extends Fragment {
             }
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
-            // TODO: 10/03/22 get unread room list, and set to room list model MU
-            calculateBadgeCount();
+            getUnreadRoomList();
         }
 
         @Override
@@ -1128,10 +1148,10 @@ public class TapUIRoomListFragment extends Fragment {
         public void onItemClick(int position) {
             TAPRoomListModel room = vm.getRoomList().get(position);
             String roomId = room.getLastMessage().getRoom().getRoomID();
-            if (room.isMarkedAsUnread()) {
+            if (room.isMarkedAsUnread() || room.getNumberOfUnreadMessages() > 0) {
                 // read button
                 TapCoreMessageManager.getInstance(instanceKey).markAllMessagesInRoomAsRead(roomId);
-                removeUnreadRoomToPreference(roomId);
+                updateRoomUnreadMark(roomId, false);
             } else {
                 // unread button
                 TapCoreRoomListManager.getInstance(instanceKey).markChatRoomAsUnread(roomId, null);
@@ -1141,7 +1161,7 @@ public class TapUIRoomListFragment extends Fragment {
         }
     };
 
-    private void removeUnreadRoomToPreference(String roomId) {
+    private void removeUnreadRoomFromPreference(String roomId) {
         ArrayList<String> unreadRoomListIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
         unreadRoomListIds.remove(roomId);
         TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(unreadRoomListIds);
@@ -1160,6 +1180,9 @@ public class TapUIRoomListFragment extends Fragment {
         TAPRoomListModel room = vm.getRoomPointer().get(roomId);
         if (room != null) {
             room.setMarkedAsUnread(isMarkAsUnread);
+            if (!isMarkAsUnread) {
+                room.setNumberOfUnreadMessages(0);
+            }
         }
     }
 
