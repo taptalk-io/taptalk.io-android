@@ -1412,4 +1412,8 @@ public class TAPDataManager {
     public void markRoomAsUnread(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
         TAPApiManager.getInstance(instanceKey).markRoomAsUnread(roomIds, new TAPDefaultSubscriber<>(view));
     }
+
+    public void getUnreadRoomIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getUnreadRoomIds(new TAPDefaultSubscriber<>(view));
+    }
 }

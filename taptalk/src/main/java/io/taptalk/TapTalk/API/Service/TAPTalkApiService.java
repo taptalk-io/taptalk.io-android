@@ -196,4 +196,7 @@ public interface TAPTalkApiService {
 
     @POST("client/room/mark_as_unread")
     Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> markRoomAsUnread(@Body TapRoomIdsRequest request);
+
+    @POST("client/room/get_unread_room_ids")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> getUnreadRoomIds();
 }

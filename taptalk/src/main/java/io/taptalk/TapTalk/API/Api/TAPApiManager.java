@@ -628,4 +628,8 @@ public class TAPApiManager {
         request.setRoomIDs(roomIds);
         execute(homingPigeon.markRoomAsUnread(request), subscriber);
     }
+
+    public void getUnreadRoomIds(Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        execute(homingPigeon.getUnreadRoomIds(), subscriber);
+    }
 }
