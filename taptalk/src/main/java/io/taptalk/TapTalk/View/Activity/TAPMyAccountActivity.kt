@@ -222,6 +222,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         if (TapUI.getInstance(instanceKey).isEditBioTextFieldVisible ){
             g_bio.visibility = View.VISIBLE
             setProfileInformation(tv_bio_view, g_bio, vm.myUserModel.bio)
+            if (!vm.myUserModel.bio.isNullOrEmpty()) {
+                et_bio.setText(vm.myUserModel.bio)
+            }
         } else {
             g_bio.visibility = View.GONE
         }
@@ -285,6 +288,8 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_basic_info.visibility = View.VISIBLE
         tv_version_code.visibility = View.VISIBLE
         cl_logout.visibility = View.GONE
+        et_bio.isEnabled = false
+        et_bio.setText(vm.myUserModel.bio)
     }
 
     private fun showEditState() {
@@ -314,6 +319,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         } else {
             cl_logout.visibility = View.GONE
         }
+        et_bio.isEnabled = true
     }
 
     private fun setProfileInformation(textView: TextView, group: View, textValue: String?) {
@@ -336,7 +342,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
                     vm.isUpdatingProfile = true
                     disableEditing()
                     showLoading(getString(R.string.tap_updating))
-                    TapCoreContactManager.getInstance(instanceKey).updateBio(et_bio.text.toString(), updateBioListener)
+                    TapCoreContactManager.getInstance(instanceKey).updateActiveUserBio(et_bio.text.toString(), updateBioListener)
                 }
                 .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                 .setDialogType(TapTalkDialog.DialogType.DEFAULT)
@@ -747,6 +753,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         override fun onSuccess(response: TAPGetUserResponse?) {
             super.onSuccess(response)
             vm.isUpdatingProfile = false
+            TAPDataManager.getInstance(instanceKey).saveActiveUser(response?.user)
             getPhotoList(null)
         }
 

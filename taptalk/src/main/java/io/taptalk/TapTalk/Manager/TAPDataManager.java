@@ -54,6 +54,8 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -959,6 +961,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance(instanceKey).getMinCreatedOfUnreadMessage(getActiveUser().getUserID(), roomID, listener);
     }
 
+    public void getOldestCreatedTimeFromRoom(String roomID, final TAPDatabaseListener<Long> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getOldestCreatedTimeFromRoom(roomID, listener);
+    }
+
     public void deleteAllMessage() {
         TAPDatabaseManager.getInstance(instanceKey).deleteAllMessage();
     }
@@ -1384,5 +1390,21 @@ public class TAPDataManager {
 
     public void removePhoto(int id, Long createdTime, TAPDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance(instanceKey).removePhoto(id, createdTime, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void starMessage(String roomId, List<String> messageIds, TAPDefaultDataView<TapStarMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).starMessage(roomId, messageIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unStarMessage(String roomId, List<String> messageIds, TAPDefaultDataView<TapUnstarMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unStarMessage(roomId, messageIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getStarredMessages(String roomId, int pageNumber, int pageSize, TAPDefaultDataView<TAPGetMessageListByRoomResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getStarredMessages(roomId, pageNumber, pageSize, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getStarredMessageIds(String roomId, TAPDefaultDataView<TapStarMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getStarredMessageIds(roomId, new TAPDefaultSubscriber<>(view));
     }
 }

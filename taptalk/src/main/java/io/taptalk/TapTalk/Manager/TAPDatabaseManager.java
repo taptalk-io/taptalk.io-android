@@ -266,6 +266,12 @@ public class TAPDatabaseManager {
         } else throw new IllegalStateException("Message Repository was not initialized");
     }
 
+    public void getOldestCreatedTimeFromRoom( String roomID, final TAPDatabaseListener<Long> listener) {
+        if (null != messageRepository) {
+            messageRepository.getOldestCreatedTimeFromRoom(roomID, listener);
+        } else throw new IllegalStateException("Message Repository was not initialized");
+    }
+
     public void updatePendingStatus() {
         if (null != messageRepository)
             messageRepository.updatePendingStatus();

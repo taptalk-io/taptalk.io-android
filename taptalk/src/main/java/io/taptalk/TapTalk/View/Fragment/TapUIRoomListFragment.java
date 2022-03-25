@@ -86,16 +86,20 @@ import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
@@ -172,7 +176,8 @@ public class TapUIRoomListFragment extends Fragment {
                 RELOAD_PROFILE_PICTURE,
                 RELOAD_ROOM_LIST,
                 CLEAR_ROOM_LIST_BADGE,
-                CLEAR_ROOM_LIST);
+                CLEAR_ROOM_LIST,
+                OPEN_CHAT);
         checkAndUpdateContactList();
     }
 
@@ -1211,42 +1216,63 @@ public class TapUIRoomListFragment extends Fragment {
             if (null == intent.getAction()) {
                 return;
             }
-            if (intent.getAction().equals(REFRESH_TOKEN_RENEWED)) {
-                if (null != userNullErrorDialog) {
-                    userNullErrorDialog.dismiss();
-                }
-                // Token refreshed
-                initViewModel();
-                initView();
-                viewLoadedSequence();
-            } else if (intent.getAction().equals(CLEAR_ROOM_LIST)) {
-                // Logged out
-                initViewModel();
-                initView();
-                viewLoadedSequence();
-            } else if (RELOAD_PROFILE_PICTURE.equals(intent.getAction())) {
-                // Reload profile picture
-                reloadProfilePicture();
-            } else {
-                // Update room list
-                String roomID = intent.getStringExtra(ROOM_ID);
-                switch (intent.getAction()) {
-                    case RELOAD_ROOM_LIST:
-                        if (null != adapter) {
-                            adapter.notifyItemChanged(vm.getRoomList().indexOf(
-                                    vm.getRoomPointer().get(roomID)));
-                        }
-                        break;
-                    case CLEAR_ROOM_LIST_BADGE:
-                        TAPRoomListModel room = vm.getRoomPointer().get(roomID);
-                        if (null != room) {
-                            room.setNumberOfUnreadMessages(0);
-                            room.setNumberOfUnreadMentions(0);
-                            TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
-                            TAPMessageStatusManager.getInstance(instanceKey).clearUnreadMentionPerRoomID(roomID);
-                        }
-                        break;
-                }
+            switch (intent.getAction()) {
+                case REFRESH_TOKEN_RENEWED:
+                    if (null != userNullErrorDialog) {
+                        userNullErrorDialog.dismiss();
+                    }
+                    // Token refreshed
+                    initViewModel();
+                    initView();
+                    viewLoadedSequence();
+                    break;
+                case CLEAR_ROOM_LIST:
+                    // Logged out
+                    initViewModel();
+                    initView();
+                    viewLoadedSequence();
+                    break;
+                case RELOAD_PROFILE_PICTURE:
+                    // Reload profile picture
+                    reloadProfilePicture();
+                    break;
+                case OPEN_CHAT:
+                    // Open Chat
+                    TAPMessageModel messageModel = intent.getParcelableExtra(MESSAGE);
+                    if (messageModel != null) {
+                        TAPRoomModel room = messageModel.getRoom();
+                        TapUIChatActivity.start(
+                                context,
+                                instanceKey,
+                                room.getRoomID(),
+                                room.getName(),
+                                room.getImageURL(),
+                                room.getType(),
+                                room.getColor(),
+                                messageModel.getLocalID());
+                    }
+                    break;
+                default:
+                    // Update room list
+                    String roomID = intent.getStringExtra(ROOM_ID);
+                    switch (intent.getAction()) {
+                        case RELOAD_ROOM_LIST:
+                            if (null != adapter) {
+                                adapter.notifyItemChanged(vm.getRoomList().indexOf(
+                                        vm.getRoomPointer().get(roomID)));
+                            }
+                            break;
+                        case CLEAR_ROOM_LIST_BADGE:
+                            TAPRoomListModel room = vm.getRoomPointer().get(roomID);
+                            if (null != room) {
+                                room.setNumberOfUnreadMessages(0);
+                                room.setNumberOfUnreadMentions(0);
+                                TAPMessageStatusManager.getInstance(instanceKey).clearUnreadListPerRoomID(roomID);
+                                TAPMessageStatusManager.getInstance(instanceKey).clearUnreadMentionPerRoomID(roomID);
+                            }
+                            break;
+                    }
+                    break;
             }
         }
     };

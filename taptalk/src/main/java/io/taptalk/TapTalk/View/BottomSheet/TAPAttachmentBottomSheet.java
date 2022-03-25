@@ -188,17 +188,19 @@ public class TAPAttachmentBottomSheet extends BottomSheetDialogFragment {
     private List<TAPAttachmentModel> createImageOptionsMenu(String instanceKey) {
         List<Integer> imageResIds = new ArrayList<>(), titleResIds = new ArrayList<>(), ids = new ArrayList<>();
 
+        if (imagePosition != 0) {
             imageResIds.add(R.drawable.tap_ic_gallery_orange);
             titleResIds.add(R.string.tap_set_as_main_photo);
             ids.add(SELECT_SET_AS_MAIN);
+        }
 
-            imageResIds.add(R.drawable.tap_ic_download_orange);
-            titleResIds.add(R.string.tap_save_image);
-            ids.add(SELECT_SAVE_IMAGE);
+        imageResIds.add(R.drawable.tap_ic_download_orange);
+        titleResIds.add(R.string.tap_save_image);
+        ids.add(SELECT_SAVE_IMAGE);
 
-            imageResIds.add(R.drawable.tap_ic_delete_red);
-            titleResIds.add(R.string.tap_remove_photo);
-            ids.add(SELECT_REMOVE_PHOTO);
+        imageResIds.add(R.drawable.tap_ic_delete_red);
+        titleResIds.add(R.string.tap_remove_photo);
+        ids.add(SELECT_REMOVE_PHOTO);
 
         List<TAPAttachmentModel> attachMenus = new ArrayList<>();
         int size = imageResIds.size();

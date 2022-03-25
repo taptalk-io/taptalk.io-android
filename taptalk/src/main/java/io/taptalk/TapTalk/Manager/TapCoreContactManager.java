@@ -287,7 +287,7 @@ public class TapCoreContactManager {
         });
     }
 
-    public void updateBio(String bio, TapCoreGetContactListener listener) {
+    public void updateActiveUserBio(String bio, TapCoreGetContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);

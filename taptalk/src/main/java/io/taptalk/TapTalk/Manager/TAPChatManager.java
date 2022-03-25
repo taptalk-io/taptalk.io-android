@@ -884,9 +884,6 @@ public class TAPChatManager {
     private void createImageMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri fileUri, String caption, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createImageMessageModel(context, fileUri, caption, roomModel);
 
-
-        Log.e(">>>>>>>", "createImageMessageModelAndAddToUploadQueue: " + TapTalk.getMaxCaptionLength(instanceKey));
-
         // Check if caption length exceeds limit
         if (caption.length() > TapTalk.getMaxCaptionLength(instanceKey)) {
             listener.onError(messageModel, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, TapTalk.getMaxCaptionLength(instanceKey)));
@@ -909,8 +906,6 @@ public class TAPChatManager {
 
     private void createVideoMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri fileUri, String caption, TapSendMessageInterface listener) {
         TAPMessageModel messageModel = createVideoMessageModel(context, fileUri, caption, roomModel, listener);
-
-        Log.e(">>>>>>>", "createVideoMessageModelAndAddToUploadQueue: " + TapTalk.getMaxCaptionLength(instanceKey));
 
         // Return if generated message is null due to exception
         if (null == messageModel) {

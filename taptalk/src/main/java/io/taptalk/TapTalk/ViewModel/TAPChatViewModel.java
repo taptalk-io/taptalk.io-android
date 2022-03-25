@@ -46,6 +46,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private LinkedHashMap<String, Integer> dateSeparatorIndexes;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
+    private ArrayList<String> starredMessageIds;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
     private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage, unreadIndicator, loadingIndicator;
@@ -61,7 +62,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private boolean isOnBottom, isActiveUserTyping, isOtherUserTyping, isCustomKeyboardEnabled,
             isInitialAPICallFinished, isUnreadButtonShown, isNeedToShowLoading,
             isScrollFromKeyboard, isAllUnreadMessagesHidden, deleteGroup;
-
+    private boolean isHasMoreData = true;
     public final int IDLE = 0;
     public final int ANIMATING = 1;
     public final int PROCESSING = 2;
@@ -344,7 +345,11 @@ public class TAPChatViewModel extends AndroidViewModel {
         }
         if (updateCreated) {
             // Update created time for loading indicator to array's last message created time
-            loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated() - 1L);
+            if (getMessageModels().isEmpty()) {
+                loadingIndicator.setCreated(0L);
+            } else {
+                loadingIndicator.setCreated(getMessageModels().get(getMessageModels().size() - 1).getCreated() - 1L);
+            }
         }
         return loadingIndicator;
     }
@@ -559,5 +564,35 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setDeleteGroup(boolean deleteGroup) {
         this.deleteGroup = deleteGroup;
+    }
+
+    public ArrayList<String> getStarredMessageIds() {
+        return null == starredMessageIds? new ArrayList<>() : starredMessageIds;
+    }
+
+    public void setStarredMessageIds(ArrayList<String> starredMessageIds) {
+        this.starredMessageIds = starredMessageIds;
+    }
+
+    public void addStarredMessageId(String messageId) {
+        if (starredMessageIds == null) {
+            starredMessageIds = new ArrayList<>();
+        }
+        this.starredMessageIds.add(messageId);
+    }
+
+    public void removeStarredMessageId(String messageId) {
+        if (starredMessageIds == null) {
+            starredMessageIds = new ArrayList<>();
+        }
+        this.starredMessageIds.remove(messageId);
+    }
+
+    public boolean isHasMoreData() {
+        return isHasMoreData;
+    }
+
+    public void setHasMoreData(boolean hasMoreData) {
+        isHasMoreData = hasMoreData;
     }
 }

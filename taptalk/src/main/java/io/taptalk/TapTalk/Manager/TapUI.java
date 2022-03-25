@@ -111,6 +111,7 @@ public class TapUI {
     private boolean isReportButtonInChatProfileVisible;
     private boolean isMarkAsReadRoomListSwipeMenuDisabled;
     private boolean isMarkAsUnreadRoomListSwipeMenuDisabled;
+    private boolean isStarMessageMenuDisabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -753,6 +754,20 @@ public class TapUI {
             return;
         }
         isForwardMessageMenuDisabled = !forwardMessageMenuEnabled;
+    }
+
+    public boolean isStarMessageMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isStarMessageMenuDisabled;
+    }
+
+    public void setStarMessageMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isStarMessageMenuDisabled = !isEnabled;
     }
 
     public boolean isCopyMessageMenuDisabled() {

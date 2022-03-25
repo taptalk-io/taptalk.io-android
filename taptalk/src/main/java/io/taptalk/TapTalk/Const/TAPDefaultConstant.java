@@ -155,6 +155,7 @@ public class TAPDefaultConstant {
         public static final int EDIT_PROFILE = 21;
         public static final int OPEN_GROUP_PROFILE = 22;
         public static final int OPEN_MEMBER_PROFILE = 23;
+        public static final int OPEN_PERSONAL_PROFILE = 24;
         public static final int REGISTER = 31;
         public static final int GROUP_ADD_MEMBER = 4;
         public static final int GROUP_UPDATE_DATA = 41;
@@ -171,6 +172,7 @@ public class TAPDefaultConstant {
         public static final int PICK_PROFILE_IMAGE_GALLERY = 92;
         public static final int PICK_GROUP_IMAGE_CAMERA = 93;
         public static final int PICK_GROUP_IMAGE_GALLERY = 94;
+        public static final int OPEN_STARRED_MESSAGES = 95;
     }
 
     public static final class PermissionRequest {
@@ -217,24 +219,26 @@ public class TAPDefaultConstant {
     }
 
     public static final class ApiErrorCode {
-        public static final int HTTP_HEADER_VALIDATION_FAILED = 40001;
-        public static final int API_PARAMETER_VALIDATION_FAILED = 40002;
-        public static final int HTTP_HEADER_AUTHORIZATION_NOT_PROVIDED = 40101;
-        public static final int HTTP_HEADER_AUTHORIZATION_INVALID = 40102;
-        public static final int INVALID_TOKEN = 40103;
-        public static final int TOKEN_EXPIRED = 40104;
-        public static final int TOKEN_DOES_NOT_BELONG_TO_CLIENT = 40105;
-        public static final int USER_NOT_FOUND_FOR_THE_SPECIFIED_TOKEN = 40106;
-        public static final int USER_NOT_FOUND = 40401;
-        public static final int SERVER_KEY_NOT_PROVIDED = 49101;
-        public static final int INVALID_SERVER_KEY = 49102;
-        public static final int SERVER_KEY_NOT_FOUND = 49103;
-        public static final int SERVER_KEY_INCOMPATIBLE = 49104;
-        public static final int SERVER_KEY_EXPIRED = 49106;
-        public static final int SERVER_KEY_NOT_ENABLED_BY_CUSTOMER = 49201;
-        public static final int SERVER_NOT_AVAILABLE = 49202;
-        public static final int ERROR_VALIDATING_SERVER_KEY = 50001;
-        public static final int OTHER_ERRORS = 99999;
+        public static final String HTTP_HEADER_VALIDATION_FAILED = "40001";
+        public static final String API_PARAMETER_VALIDATION_FAILED = "40002";
+        public static final String HTTP_HEADER_AUTHORIZATION_NOT_PROVIDED = "40101";
+        public static final String HTTP_HEADER_AUTHORIZATION_INVALID = "40102";
+        public static final String INVALID_TOKEN = "40103";
+        public static final String TOKEN_EXPIRED = "40104";
+        public static final String TOKEN_DOES_NOT_BELONG_TO_CLIENT = "40105";
+        public static final String USER_NOT_FOUND_FOR_THE_SPECIFIED_TOKEN = "40106";
+        public static final String PERMISSION_DENIED = "40301";
+        public static final String USER_NOT_FOUND = "40401";
+        public static final String ROOM_NOT_FOUND = "40401";
+        public static final String SERVER_KEY_NOT_PROVIDED = "49101";
+        public static final String INVALID_SERVER_KEY = "49102";
+        public static final String SERVER_KEY_NOT_FOUND = "49103";
+        public static final String SERVER_KEY_INCOMPATIBLE = "49104";
+        public static final String SERVER_KEY_EXPIRED = "49106";
+        public static final String SERVER_KEY_NOT_ENABLED_BY_CUSTOMER = "49201";
+        public static final String SERVER_NOT_AVAILABLE = "49202";
+        public static final String ERROR_VALIDATING_SERVER_KEY = "50001";
+        public static final String OTHER_ERRORS = "99999";
     }
 
     public static final class ClientErrorCodes {
@@ -417,6 +421,7 @@ public class TAPDefaultConstant {
         public static final int MENU_DELETE_GROUP = 13;
         public static final int MENU_EDIT_GROUP = 14;
         public static final int MENU_REPORT = 15;
+        public static final int MENU_STARRED_MESSAGES = 16;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -473,6 +478,7 @@ public class TAPDefaultConstant {
     public static final String CLEAR_ROOM_LIST = "kTAPClearRoomList";
     public static final String CLEAR_ROOM_LIST_BADGE = "kTAPClearRoomListBadge";
     public static final String RELOAD_PROFILE_PICTURE = "kTAPReloadProfilePicture";
+    public static final String OPEN_CHAT = "kTAPOpenChat";
     public static final String LAST_CALL_COUNTRY_TIMESTAMP = "kLastCallCountryTimestamp";
     public static final String K_COUNTRY_LIST = "kTAPCountryList";
     public static final String K_COUNTRY_PICK = "kTAPCountryPick";
