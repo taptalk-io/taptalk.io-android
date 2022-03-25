@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.Manager;
 
 import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import io.taptalk.TapTalk.Listener.TapCoreGetRoomListListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
@@ -466,6 +468,35 @@ public class TapCoreRoomListManager {
                 }
                 if (null != listener) {
                     listener.onSuccess(searchResultArray);
+                }
+            }
+        });
+    }
+
+    public void markChatRoomAsUnread(String roomID, @Nullable TapCommonListener listener) {
+        List<String> roomIds = new ArrayList<>();
+        roomIds.add(roomID);
+        TAPDataManager.getInstance(instanceKey).markRoomAsUnread(roomIds, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapGetUnreadRoomIdsResponse response) {
+                super.onSuccess(response);
+                if (null != listener) {
+                    String successMessage = "Successfully marked room as unread.";
+                    listener.onSuccess(successMessage);
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
                 }
             }
         });
