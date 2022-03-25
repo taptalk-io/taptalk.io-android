@@ -417,10 +417,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void getStarredMessageIds() {
         TapCoreMessageManager.getInstance(instanceKey).getStarredMessageIds(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
             @Override
-            public void onSuccess(@NonNull ArrayList<String> messages) {
-                super.onSuccess(messages);
-                vm.setStarredMessageIds(messages);
-                messageAdapter.setStarredMessageIds(messages);
+            public void onSuccess(@NonNull ArrayList<String> arrayList) {
+                super.onSuccess(arrayList);
+                vm.setStarredMessageIds(arrayList);
+                messageAdapter.setStarredMessageIds(arrayList);
                 messageAdapter.notifyDataSetChanged();
             }
         });
