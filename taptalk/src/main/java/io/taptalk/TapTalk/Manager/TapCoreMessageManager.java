@@ -1218,6 +1218,40 @@ public class TapCoreMessageManager {
         });
     }
 
+    public void getLocalMessageByLocalID(String localID, TapCoreGetMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getMessageByLocalIDFromDatabase(localID, new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                ArrayList<TAPMessageModel> messagesArray = new ArrayList<>();
+                if (entities.size() > 0) {
+                    for (TAPMessageEntity entity : entities) {
+                        messagesArray.add(TAPMessageModel.fromMessageEntity(entity));
+                    }
+                }
+                if (null != listener) {
+                    listener.onSuccess(messagesArray);
+                }
+            }
+        });
+    }
+
+    public void getLocalMessagesByLocalID(List<String> localIDs, TapCoreGetMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getMessageByLocalIDsFromDatabase(localIDs, new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                ArrayList<TAPMessageModel> messagesArray = new ArrayList<>();
+                if (entities.size() > 0) {
+                    for (TAPMessageEntity entity : entities) {
+                        messagesArray.add(TAPMessageModel.fromMessageEntity(entity));
+                    }
+                }
+                if (null != listener) {
+                    listener.onSuccess(messagesArray);
+                }
+            }
+        });
+    }
+
     public boolean isUploadMessageFileToExternalServerEnabled() {
         if (!TapTalk.checkTapTalkInitialized()) {
             return false;

@@ -865,6 +865,14 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance(instanceKey).searchAllRoomMessages(keyword, roomID, listener);
     }
 
+    public void getMessageByLocalIDFromDatabase(String localID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getMessageByLocalID(localID, listener);
+    }
+
+    public void getMessageByLocalIDsFromDatabase(List<String> localIDs, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getMessageByLocalIDs(localIDs, listener);
+    }
+
     public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;

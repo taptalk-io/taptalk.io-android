@@ -74,6 +74,12 @@ public interface TAPMessageDao {
     @Query("select * from Message_Table where body like :keyword escape '\\' and RoomID like :roomID and type != 9001 and isHidden = 0 order by created desc")
     List<TAPMessageEntity> searchAllRoomMessages(String keyword, String roomID);
 
+    @Query("select * from Message_Table where localID like :localID order by created desc")
+    List<TAPMessageEntity> getMessageByLocalID(String localID);
+
+    @Query("select * from Message_Table where localID in (:localIDs) order by created desc")
+    List<TAPMessageEntity> getMessageByLocalIDs(List<String> localIDs);
+
     @Query("select * from (select roomID, max(created) as max_created from Message_Table where isHidden = 0 group by roomID) secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created " +
             "group by firstQuery.roomID order by firstQuery.created desc")
     List<TAPMessageEntity> getAllRoomList();
