@@ -1100,11 +1100,10 @@ public class TapUIRoomListFragment extends Fragment {
     };
 
     private void updateQueryRoomListFromBackground() {
-        // TODO: 27/07/20 FIX HERE --> Check flow if this code is needed!
-//        if (TAPDataManager.getInstance(instanceKey).isNeedToQueryUpdateRoomList()) {
-//            runFullRefreshSequence();
-//            TAPDataManager.getInstance(instanceKey).setNeedToQueryUpdateRoomList(false);
-//        }
+        if (TAPDataManager.getInstance(instanceKey).isNeedToQueryUpdateRoomList()) {
+            runFullRefreshSequence();
+            TAPDataManager.getInstance(instanceKey).setNeedToQueryUpdateRoomList(false);
+        }
     }
 
     private void addNetworkListener() {
