@@ -362,6 +362,11 @@ public class TapCoreRoomListManager {
                                         if (null != message.getIsDeleted() && message.getIsDeleted()) {
                                             TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
                                         }
+                                        if (null != message.getUpdated() &&
+                                                TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(message.getRoom().getRoomID()) < message.getUpdated()
+                                        ) {
+                                            TAPDataManager.getInstance(instanceKey).saveLastUpdatedMessageTimestamp(message.getRoom().getRoomID(), message.getUpdated());
+                                        }
                                     } catch (Exception e) {
                                         if (null != listener) {
                                             listener.onError(ERROR_CODE_OTHERS, e.getMessage());

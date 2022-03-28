@@ -913,10 +913,16 @@ public class TapCoreMessageManager {
         TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseAsc(roomID, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
-                long lastUpdateTimestamp = TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(roomID);
-                long minCreatedTimestamp = 0L;
+                long minCreatedTimestamp;
                 if (entities.size() > 0) {
                     minCreatedTimestamp = entities.get(0).getCreated();
+                }
+                else {
+                    minCreatedTimestamp = 0L;
+                }
+                long lastUpdateTimestamp = TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(roomID);
+                if (lastUpdateTimestamp == 0L) {
+                    lastUpdateTimestamp = minCreatedTimestamp;
                 }
                 getNewerMessagesAfterTimestamp(roomID, minCreatedTimestamp, lastUpdateTimestamp, listener);
             }
