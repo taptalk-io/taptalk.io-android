@@ -781,26 +781,58 @@ public class TapCoreMessageManager {
     }
 
     public void getLocalMessages(String roomID, TapCoreGetMessageListener listener) {
+        getLocalMessages(roomID, false, listener);
+    }
+
+    public void getLocalMessages(String roomID, boolean excludeHidden, TapCoreGetMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
             return;
         }
-        List<TAPMessageModel> messageList = new ArrayList<>();
-        TAPDataManager.getInstance(instanceKey).getAllMessagesInRoomFromDatabase(roomID, new TAPDatabaseListener<TAPMessageEntity>() {
+        TAPDataManager.getInstance(instanceKey).getAllMessagesInRoomFromDatabase(roomID, excludeHidden, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
-                List<TAPMessageModel> models = new ArrayList<>();
-                for (TAPMessageEntity entity : entities) {
-                    TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
-                    models.add(model);
-                }
-                messageList.addAll(models);
+                new Thread(() -> {
+                    List<TAPMessageModel> messages = new ArrayList<>();
+                    for (TAPMessageEntity entity : entities) {
+                        TAPMessageModel message = TAPMessageModel.fromMessageEntity(entity);
+                        messages.add(message);
+                    }
+                    if (null != listener) {
+                        new Handler(Looper.getMainLooper()).post(() -> listener.onSuccess(messages));
+                    }
+                }).start();
+            }
 
+            @Override
+            public void onSelectFailed(String errorMessage) {
                 if (null != listener) {
-                    listener.onSuccess(messageList);
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
                 }
+            }
+        });
+    }
+
+    public void getLocalMessages(String roomID, long maxCreatedTimestamp, int numberOfItems, TapCoreGetMessageListener listener) {
+        getLocalMessages(roomID, maxCreatedTimestamp, numberOfItems, false, listener);
+    }
+
+    public void getLocalMessages(String roomID, long maxCreatedTimestamp, int numberOfItems, boolean excludeHidden, TapCoreGetMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getRoomMessagesFromDatabaseBeforeTimestampDesc(roomID, maxCreatedTimestamp, numberOfItems, excludeHidden, new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                new Thread(() -> {
+                    List<TAPMessageModel> messages = new ArrayList<>();
+                    for (TAPMessageEntity entity : entities) {
+                        TAPMessageModel message = TAPMessageModel.fromMessageEntity(entity);
+                        messages.add(message);
+                    }
+                    if (null != listener) {
+                        new Handler(Looper.getMainLooper()).post(() -> listener.onSuccess(messages));
+                    }
+                }).start();
             }
 
             @Override

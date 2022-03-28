@@ -203,7 +203,7 @@ public class TAPChatViewModel extends AndroidViewModel {
         TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, listener);
     }
 
-    public void getMessageByTimestamp(String roomID, TAPDatabaseListener listener, long lastTimestamp) {
+    public void getMessageByTimestamp(String roomID, TAPDatabaseListener<TAPMessageEntity> listener, long lastTimestamp) {
         TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, listener, lastTimestamp);
     }
 

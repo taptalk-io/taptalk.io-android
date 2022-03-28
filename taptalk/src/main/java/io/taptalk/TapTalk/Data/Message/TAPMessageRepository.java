@@ -109,6 +109,19 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getAllMessagesInRoom(String roomID, boolean excludeHidden, final TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> allMessages;
+            if (excludeHidden) {
+                allMessages = messageDao.getAllMessagesInRoomExcludeHidden(roomID);
+            }
+            else {
+                allMessages = messageDao.getAllMessagesInRoom(roomID);
+            }
+            listener.onSelectFinished(allMessages);
+        }).start();
+    }
+
     public void getMessageListDesc(final String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
         new Thread(() -> {
             allMessageList = messageDao.getAllMessageListDesc(roomID);
@@ -119,6 +132,19 @@ public class TAPMessageRepository {
     public void getMessageListDesc(final String roomID, final TAPDatabaseListener listener, final long lastTimestamp) {
         new Thread(() -> {
             List<TAPMessageEntity> entities = messageDao.getAllMessageTimeStamp(lastTimestamp, roomID);
+            listener.onSelectFinished(entities);
+        }).start();
+    }
+
+    public void getRoomMessagesBeforeTimestampDesc(final String roomID, final TAPDatabaseListener listener, final long lastTimestamp, final int itemLimit, boolean excludeHidden) {
+        new Thread(() -> {
+            List<TAPMessageEntity> entities;
+            if (excludeHidden) {
+                entities = messageDao.getRoomMessagesBeforeTimestampDescExcludeHidden(lastTimestamp, roomID, itemLimit);
+            }
+            else {
+                entities = messageDao.getRoomMessagesBeforeTimestampDesc(lastTimestamp, roomID, itemLimit);
+            }
             listener.onSelectFinished(entities);
         }).start();
     }

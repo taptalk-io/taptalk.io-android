@@ -44,6 +44,9 @@ public interface TAPMessageDao {
     @Query("select * from Message_Table where RoomID like :roomID order by created desc")
     List<TAPMessageEntity> getAllMessagesInRoom(String roomID);
 
+    @Query("select * from Message_Table where RoomID like :roomID and isHidden = 0 order by created desc")
+    List<TAPMessageEntity> getAllMessagesInRoomExcludeHidden(String roomID);
+
     @Query("select * from Message_Table where RoomID like :roomID order by created desc limit " + numOfItem)
     List<TAPMessageEntity> getAllMessageListDesc(String roomID);
 
@@ -54,6 +57,16 @@ public interface TAPMessageDao {
             "created in (select distinct created from Message_Table where created < :lastTimestamp and RoomID like :roomID order by created desc limit " + numOfItem + " ) " +
             "and RoomID like :roomID order by created desc")
     List<TAPMessageEntity> getAllMessageTimeStamp(Long lastTimestamp, String roomID);
+
+    @Query("select * from Message_Table where " +
+            "created in (select distinct created from Message_Table where created < :lastTimestamp and RoomID like :roomID order by created desc limit :itemLimit) " +
+            "and RoomID like :roomID order by created desc")
+    List<TAPMessageEntity> getRoomMessagesBeforeTimestampDesc(Long lastTimestamp, String roomID, int itemLimit);
+
+    @Query("select * from Message_Table where " +
+            "created in (select distinct created from Message_Table where created < :lastTimestamp and RoomID like :roomID and isHidden = 0 order by created desc limit :itemLimit) " +
+            "and RoomID like :roomID order by created desc")
+    List<TAPMessageEntity> getRoomMessagesBeforeTimestampDescExcludeHidden(Long lastTimestamp, String roomID, int itemLimit);
 
     @Query("select * from Message_Table where body like :keyword escape '\\' and type != 9001 and isHidden = 0 order by created desc")
     List<TAPMessageEntity> searchAllMessages(String keyword);
