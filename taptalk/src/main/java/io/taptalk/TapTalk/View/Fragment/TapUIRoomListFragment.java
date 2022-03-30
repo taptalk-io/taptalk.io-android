@@ -1172,6 +1172,7 @@ public class TapUIRoomListFragment extends Fragment {
         ArrayList<String> unreadRoomListIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
         if (!unreadRoomListIds.contains(roomId)) {
             unreadRoomListIds.add(roomId);
+            TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(unreadRoomListIds);
             updateRoomUnreadMark(roomId, true);
         }
     }
