@@ -80,6 +80,14 @@ public class TapCoreContactManager {
         });
     }
 
+    public TAPUserModel getLocalUserData(String userID) {
+        TAPUserModel activeUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
+        if (userID.equals(activeUser.getUserID())) {
+            return activeUser;
+        }
+        return TAPContactManager.getInstance(instanceKey).getUserData(userID);
+    }
+
     public void getUserDataWithUserID(String userID, TapCoreGetContactListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {

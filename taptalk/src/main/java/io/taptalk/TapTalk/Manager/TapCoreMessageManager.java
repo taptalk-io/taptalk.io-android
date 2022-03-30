@@ -794,26 +794,58 @@ public class TapCoreMessageManager {
     }
 
     public void getLocalMessages(String roomID, TapCoreGetMessageListener listener) {
+        getLocalMessages(roomID, false, listener);
+    }
+
+    public void getLocalMessages(String roomID, boolean excludeHidden, TapCoreGetMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             if (null != listener) {
                 listener.onError(ERROR_CODE_INIT_TAPTALK, ERROR_MESSAGE_INIT_TAPTALK);
             }
             return;
         }
-        List<TAPMessageModel> messageList = new ArrayList<>();
-        TAPDataManager.getInstance(instanceKey).getAllMessagesInRoomFromDatabase(roomID, new TAPDatabaseListener<TAPMessageEntity>() {
+        TAPDataManager.getInstance(instanceKey).getAllMessagesInRoomFromDatabase(roomID, excludeHidden, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
-                List<TAPMessageModel> models = new ArrayList<>();
-                for (TAPMessageEntity entity : entities) {
-                    TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
-                    models.add(model);
-                }
-                messageList.addAll(models);
+                new Thread(() -> {
+                    List<TAPMessageModel> messages = new ArrayList<>();
+                    for (TAPMessageEntity entity : entities) {
+                        TAPMessageModel message = TAPMessageModel.fromMessageEntity(entity);
+                        messages.add(message);
+                    }
+                    if (null != listener) {
+                        new Handler(Looper.getMainLooper()).post(() -> listener.onSuccess(messages));
+                    }
+                }).start();
+            }
 
+            @Override
+            public void onSelectFailed(String errorMessage) {
                 if (null != listener) {
-                    listener.onSuccess(messageList);
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
                 }
+            }
+        });
+    }
+
+    public void getLocalMessages(String roomID, long maxCreatedTimestamp, int numberOfItems, TapCoreGetMessageListener listener) {
+        getLocalMessages(roomID, maxCreatedTimestamp, numberOfItems, false, listener);
+    }
+
+    public void getLocalMessages(String roomID, long maxCreatedTimestamp, int numberOfItems, boolean excludeHidden, TapCoreGetMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getRoomMessagesFromDatabaseBeforeTimestampDesc(roomID, maxCreatedTimestamp, numberOfItems, excludeHidden, new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                new Thread(() -> {
+                    List<TAPMessageModel> messages = new ArrayList<>();
+                    for (TAPMessageEntity entity : entities) {
+                        TAPMessageModel message = TAPMessageModel.fromMessageEntity(entity);
+                        messages.add(message);
+                    }
+                    if (null != listener) {
+                        new Handler(Looper.getMainLooper()).post(() -> listener.onSuccess(messages));
+                    }
+                }).start();
             }
 
             @Override
@@ -894,10 +926,16 @@ public class TapCoreMessageManager {
         TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseAsc(roomID, new TAPDatabaseListener<TAPMessageEntity>() {
             @Override
             public void onSelectFinished(List<TAPMessageEntity> entities) {
-                long lastUpdateTimestamp = TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(roomID);
-                long minCreatedTimestamp = 0L;
+                long minCreatedTimestamp;
                 if (entities.size() > 0) {
                     minCreatedTimestamp = entities.get(0).getCreated();
+                }
+                else {
+                    minCreatedTimestamp = 0L;
+                }
+                long lastUpdateTimestamp = TAPDataManager.getInstance(instanceKey).getLastUpdatedMessageTimestamp(roomID);
+                if (lastUpdateTimestamp == 0L) {
+                    lastUpdateTimestamp = minCreatedTimestamp;
                 }
                 getNewerMessagesAfterTimestamp(roomID, minCreatedTimestamp, lastUpdateTimestamp, listener);
             }
@@ -1194,6 +1232,40 @@ public class TapCoreMessageManager {
                 }
                 if (null != listener) {
                     listener.onSuccess(searchResultArray);
+                }
+            }
+        });
+    }
+
+    public void getLocalMessageByLocalID(String localID, TapCoreGetMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getMessageByLocalIDFromDatabase(localID, new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                ArrayList<TAPMessageModel> messagesArray = new ArrayList<>();
+                if (entities.size() > 0) {
+                    for (TAPMessageEntity entity : entities) {
+                        messagesArray.add(TAPMessageModel.fromMessageEntity(entity));
+                    }
+                }
+                if (null != listener) {
+                    listener.onSuccess(messagesArray);
+                }
+            }
+        });
+    }
+
+    public void getLocalMessagesByLocalID(List<String> localIDs, TapCoreGetMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getMessageByLocalIDsFromDatabase(localIDs, new TAPDatabaseListener<TAPMessageEntity>() {
+            @Override
+            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                ArrayList<TAPMessageModel> messagesArray = new ArrayList<>();
+                if (entities.size() > 0) {
+                    for (TAPMessageEntity entity : entities) {
+                        messagesArray.add(TAPMessageModel.fromMessageEntity(entity));
+                    }
+                }
+                if (null != listener) {
+                    listener.onSuccess(messagesArray);
                 }
             }
         });

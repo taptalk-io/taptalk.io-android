@@ -861,16 +861,20 @@ public class TAPDataManager {
         return TAPDatabaseManager.getInstance(instanceKey).getMessagesLiveData();
     }
 
-    public void getAllMessagesInRoomFromDatabase(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
-        TAPDatabaseManager.getInstance(instanceKey).getAllMessagesInRoom(roomID, listener);
+    public void getAllMessagesInRoomFromDatabase(String roomID, boolean excludeHidden, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getAllMessagesInRoom(roomID, excludeHidden, listener);
     }
 
     public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance(instanceKey).getMessagesDesc(roomID, listener);
     }
 
-    public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener listener, long lastTimestamp) {
+    public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener, long lastTimestamp) {
         TAPDatabaseManager.getInstance(instanceKey).getMessagesDesc(roomID, listener, lastTimestamp);
+    }
+
+    public void getRoomMessagesFromDatabaseBeforeTimestampDesc(String roomID, long lastTimestamp, int itemLimit, boolean excludeHidden, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getRoomMessagesBeforeTimestampDesc(roomID, listener, lastTimestamp, itemLimit, excludeHidden);
     }
 
     public void getMessagesFromDatabaseAsc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
@@ -883,6 +887,14 @@ public class TAPDataManager {
 
     public void searchAllRoomMessagesFromDatabase(String keyword, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance(instanceKey).searchAllRoomMessages(keyword, roomID, listener);
+    }
+
+    public void getMessageByLocalIDFromDatabase(String localID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getMessageByLocalID(localID, listener);
+    }
+
+    public void getMessageByLocalIDsFromDatabase(List<String> localIDs, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getMessageByLocalIDs(localIDs, listener);
     }
 
     public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
