@@ -744,7 +744,7 @@ public class TapCoreMessageManager {
                                 pendingReadList.add(entity.getMessageID());
                             }
                         }
-                        markMessagesAsRead(pendingReadList, null);
+                        markMessagesAsRead(pendingReadList);
                     }
                 });
         ArrayList<String> roomIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
@@ -753,7 +753,9 @@ public class TapCoreMessageManager {
                 @Override
                 public void onSelectFinished(List<TAPMessageEntity> entities) {
                     if (!entities.isEmpty()) {
-                        markMessageAsRead(entities.get(0).getMessageID());
+                        List<String> unreadList = new ArrayList<>();
+                        unreadList.add(entities.get(0).getMessageID());
+                        markMessagesAsRead(unreadList, null);
                         roomIds.remove(roomID);
                         TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(roomIds);
                     }
