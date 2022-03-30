@@ -744,7 +744,7 @@ public class TapCoreMessageManager {
                                 pendingReadList.add(entity.getMessageID());
                             }
                         }
-                        markMessagesAsRead(pendingReadList);
+                        markMessagesAsRead(pendingReadList, null);
                     }
                 });
         ArrayList<String> roomIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
