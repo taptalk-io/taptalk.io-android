@@ -782,4 +782,10 @@
         <item name="android:textColor">@color/tapAlbumCountLabelColor</item>
         <item name="android:textSize">12sp</item>
     </style>
+
+    <style name="tapThinButtonLabelStyle" parent="tapFontFamilyRegular">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/tapButtonLabelColor</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

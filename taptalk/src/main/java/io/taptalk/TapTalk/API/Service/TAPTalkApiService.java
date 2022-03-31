@@ -25,6 +25,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapStarMessageRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactByPhoneResponse;
@@ -51,6 +52,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
@@ -183,7 +185,7 @@ public interface TAPTalkApiService {
     @POST("chat/message/star")
     Observable<TAPBaseResponse<TapStarMessageResponse>> starMessage(@Body TapStarMessageRequest request);
 
-    @POST("chat/message/star")
+    @POST("chat/message/unstar")
     Observable<TAPBaseResponse<TapUnstarMessageResponse>> unStarMessage(@Body TapStarMessageRequest request);
 
     @POST("chat/message/get_starred_list")
@@ -191,4 +193,10 @@ public interface TAPTalkApiService {
 
     @POST("chat/message/get_starred_ids")
     Observable<TAPBaseResponse<TapStarMessageResponse>> getStarredMessageIds(@Body TAPCommonRequest request);
+
+    @POST("client/room/mark_as_unread")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> markRoomAsUnread(@Body TapRoomIdsRequest request);
+
+    @POST("client/room/get_unread_room_ids")
+    Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> getUnreadRoomIds();
 }

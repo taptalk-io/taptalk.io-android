@@ -269,6 +269,7 @@
     <color name="tapRoomListTimeColor">@color/tapColorTextMedium</color>
     <color name="tapGroupRoomListSenderNameColor">@color/tapColorTextDark</color>
     <color name="tapRoomListUnreadBadgeLabelColor">@color/tapColorTextLight</color>
+    <color name="tapRoomListSwipeButtonBackgroundColor">@color/tapColorPrimary</color>
 
     <color name="tapNewChatMenuLabelColor">@color/tapColorTextDark</color>
 

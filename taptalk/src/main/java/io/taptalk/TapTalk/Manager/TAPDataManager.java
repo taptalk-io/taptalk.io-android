@@ -54,11 +54,13 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
@@ -83,6 +85,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_UNREAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
@@ -234,6 +237,7 @@ public class TAPDataManager {
         removeContactSyncAllowedByUser();
         removeChatRoomContactActionDismissed();
         removeContactListUpdated();
+        removeUnreadRoomIDs();
     }
 
     /**
@@ -511,6 +515,26 @@ public class TAPDataManager {
 
     public void removeChatRoomContactActionDismissed() {
         removePreference(K_CHAT_ROOM_CONTACT_ACTION);
+    }
+
+    /**
+     * CHAT ROOM SWIPE BUTTON
+     */
+
+    public ArrayList<String> getUnreadRoomIDs() {
+        return Hawk.get(instanceKey + K_UNREAD_ROOM_LIST, new ArrayList<>());
+    }
+
+    public void saveUnreadRoomIDs(ArrayList<String> unreadRoomIDs) {
+        Hawk.put(instanceKey + K_UNREAD_ROOM_LIST, unreadRoomIDs);
+    }
+
+    public boolean isUnreadRoomIDsEmpty() {
+        return getUnreadRoomIDs().isEmpty();
+    }
+
+    public void removeUnreadRoomIDs() {
+        removePreference(K_UNREAD_ROOM_LIST);
     }
 
     /**
@@ -1395,5 +1419,13 @@ public class TAPDataManager {
 
     public void getStarredMessageIds(String roomId, TAPDefaultDataView<TapStarMessageResponse> view) {
         TAPApiManager.getInstance(instanceKey).getStarredMessageIds(roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void markRoomAsUnread(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).markRoomAsUnread(roomIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getUnreadRoomIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getUnreadRoomIds(new TAPDefaultSubscriber<>(view));
     }
 }

@@ -444,6 +444,7 @@ public class TAPDefaultConstant {
     public static final String IS_CONTACT_SYNC_ALLOWED_BY_USER = "kTAPIsContactSyncAllowedByUser";
     public static final String K_CHAT_ROOM_CONTACT_ACTION = "kTAPChatRoomContactAction";
     public static final String K_IS_CONTACT_LIST_UPDATED = "kTAPIsContactListUpdated";
+    public static final String K_UNREAD_ROOM_LIST = "kTAPUnreadRoomList";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 
