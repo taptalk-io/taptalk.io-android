@@ -54,9 +54,13 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
+import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
@@ -81,6 +85,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_UNREAD_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
@@ -232,6 +237,7 @@ public class TAPDataManager {
         removeContactSyncAllowedByUser();
         removeChatRoomContactActionDismissed();
         removeContactListUpdated();
+        removeUnreadRoomIDs();
     }
 
     /**
@@ -509,6 +515,26 @@ public class TAPDataManager {
 
     public void removeChatRoomContactActionDismissed() {
         removePreference(K_CHAT_ROOM_CONTACT_ACTION);
+    }
+
+    /**
+     * CHAT ROOM SWIPE BUTTON
+     */
+
+    public ArrayList<String> getUnreadRoomIDs() {
+        return Hawk.get(instanceKey + K_UNREAD_ROOM_LIST, new ArrayList<>());
+    }
+
+    public void saveUnreadRoomIDs(ArrayList<String> unreadRoomIDs) {
+        Hawk.put(instanceKey + K_UNREAD_ROOM_LIST, unreadRoomIDs);
+    }
+
+    public boolean isUnreadRoomIDsEmpty() {
+        return getUnreadRoomIDs().isEmpty();
+    }
+
+    public void removeUnreadRoomIDs() {
+        removePreference(K_UNREAD_ROOM_LIST);
     }
 
     /**
@@ -835,16 +861,20 @@ public class TAPDataManager {
         return TAPDatabaseManager.getInstance(instanceKey).getMessagesLiveData();
     }
 
-    public void getAllMessagesInRoomFromDatabase(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
-        TAPDatabaseManager.getInstance(instanceKey).getAllMessagesInRoom(roomID, listener);
+    public void getAllMessagesInRoomFromDatabase(String roomID, boolean excludeHidden, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getAllMessagesInRoom(roomID, excludeHidden, listener);
     }
 
     public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance(instanceKey).getMessagesDesc(roomID, listener);
     }
 
-    public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener listener, long lastTimestamp) {
+    public void getMessagesFromDatabaseDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener, long lastTimestamp) {
         TAPDatabaseManager.getInstance(instanceKey).getMessagesDesc(roomID, listener, lastTimestamp);
+    }
+
+    public void getRoomMessagesFromDatabaseBeforeTimestampDesc(String roomID, long lastTimestamp, int itemLimit, boolean excludeHidden, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getRoomMessagesBeforeTimestampDesc(roomID, listener, lastTimestamp, itemLimit, excludeHidden);
     }
 
     public void getMessagesFromDatabaseAsc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
@@ -857,6 +887,14 @@ public class TAPDataManager {
 
     public void searchAllRoomMessagesFromDatabase(String keyword, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance(instanceKey).searchAllRoomMessages(keyword, roomID, listener);
+    }
+
+    public void getMessageByLocalIDFromDatabase(String localID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getMessageByLocalID(localID, listener);
+    }
+
+    public void getMessageByLocalIDsFromDatabase(List<String> localIDs, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getMessageByLocalIDs(localIDs, listener);
     }
 
     public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
@@ -1365,5 +1403,29 @@ public class TAPDataManager {
 
     public void removePhoto(int id, Long createdTime, TAPDefaultDataView<TAPGetUserResponse> view) {
         TAPApiManager.getInstance(instanceKey).removePhoto(id, createdTime, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void starMessage(String roomId, List<String> messageIds, TAPDefaultDataView<TapStarMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).starMessage(roomId, messageIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unStarMessage(String roomId, List<String> messageIds, TAPDefaultDataView<TapUnstarMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unStarMessage(roomId, messageIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getStarredMessages(String roomId, int pageNumber, int pageSize, TAPDefaultDataView<TAPGetMessageListByRoomResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getStarredMessages(roomId, pageNumber, pageSize, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getStarredMessageIds(String roomId, TAPDefaultDataView<TapStarMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getStarredMessageIds(roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void markRoomAsUnread(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).markRoomAsUnread(roomIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getUnreadRoomIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getUnreadRoomIds(new TAPDefaultSubscriber<>(view));
     }
 }

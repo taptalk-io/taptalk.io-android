@@ -105,7 +105,14 @@ public class TAPEncryptorManager {
         try {
             String localID = (String) messageMap.get(K_LOCAL_ID);
             // Decrypt message body
-            messageMap.put(K_BODY, decrypt((String) messageMap.get(K_BODY), localID));
+            String body = (String) messageMap.get(K_BODY);
+            if (null != body && !body.isEmpty()) {
+                // Decrypt message body
+                messageMap.put(K_BODY, decrypt((String) messageMap.get(K_BODY), localID));
+            } else {
+                // Body is empty
+                messageMap.put(K_BODY, "");
+            }
             String data = (String) messageMap.get(K_DATA);
             if (null != data && !data.isEmpty()) {
                 // Decrypt message data

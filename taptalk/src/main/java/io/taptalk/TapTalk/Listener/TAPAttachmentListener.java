@@ -111,4 +111,9 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     public void onSaveProfilePicture(Bitmap bitmap) {
 
     }
+
+    @Override
+    public void onMessageStarred(TAPMessageModel message) {
+
+    }
 }

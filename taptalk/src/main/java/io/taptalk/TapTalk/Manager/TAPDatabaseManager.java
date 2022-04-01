@@ -14,6 +14,7 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageRepository;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchEntity;
 import io.taptalk.TapTalk.Data.RecentSearch.TAPRecentSearchRepository;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DatabaseType.MESSAGE_DB;
@@ -66,14 +67,14 @@ public class TAPDatabaseManager {
      * ==============================================================
      */
 
-    public void deleteMessage(List<TAPMessageEntity> messageEntities, TAPDatabaseListener listener) {
+    public void deleteMessage(List<TAPMessageEntity> messageEntities, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.delete(messageEntities, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void deleteRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener listener) {
+    public void deleteRoomMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.deleteRoomMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
         else throw new IllegalStateException("Message Repository was not initialized");
@@ -93,7 +94,7 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener listener) {
+    public void insert(List<TAPMessageEntity> messageEntities, boolean isClearSaveMessages, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.insert(messageEntities, isClearSaveMessages, listener);
         else
@@ -149,9 +150,9 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getAllMessagesInRoom(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+    public void getAllMessagesInRoom(String roomID, boolean excludeHidden, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
-            messageRepository.getAllMessagesInRoom(roomID, listener);
+            messageRepository.getAllMessagesInRoom(roomID, excludeHidden, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
@@ -163,35 +164,56 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessagesDesc(String roomID, TAPDatabaseListener listener, long lastTimestamp) {
+    public void getMessagesDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener, long lastTimestamp) {
         if (null != messageRepository)
             messageRepository.getMessageListDesc(roomID, listener, lastTimestamp);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getMessagesAsc(String roomID, TAPDatabaseListener listener) {
+    public void getRoomMessagesBeforeTimestampDesc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener, long lastTimestamp, int itemLimit, boolean excludeHidden) {
+        if (null != messageRepository)
+            messageRepository.getRoomMessagesBeforeTimestampDesc(roomID, listener, lastTimestamp, itemLimit, excludeHidden);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void getMessagesAsc(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getMessageListAsc(roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void searchAllMessages(String keyword, TAPDatabaseListener listener) {
+    public void searchAllMessages(String keyword, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.searchAllMessages(keyword, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void searchAllRoomMessages(String keyword, String roomID, TAPDatabaseListener listener) {
+    public void searchAllRoomMessages(String keyword, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.searchAllRoomMessages(keyword, roomID, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomList(String myID, String username, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+    public void getMessageByLocalID(String localID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null != messageRepository)
+            messageRepository.getMessageByLocalID(localID, listener);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void getMessageByLocalIDs(List<String> localIDs, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null != messageRepository)
+            messageRepository.getMessageByLocalIDs(localIDs, listener);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void getRoomList(String myID, String username, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getRoomList(myID, username, saveMessages, isCheckUnreadFirst, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
@@ -209,20 +231,20 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized");
     }
 
-    public void getRoomList(String myID, String username, boolean isCheckUnreadFirst, TAPDatabaseListener listener) {
+    public void getRoomList(String myID, String username, boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getRoomList(myID, username, isCheckUnreadFirst, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void searchAllRooms(String myID, String username, String keyword, TAPDatabaseListener listener) {
+    public void searchAllRooms(String myID, String username, String keyword, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.searchAllChatRooms(myID, username, keyword, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getRoomMedias(Long lastTimestamp, String roomID, int numberOfItems, TAPDatabaseListener listener) {
+    public void getRoomMedias(Long lastTimestamp, String roomID, int numberOfItems, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getRoomMedias(lastTimestamp, roomID, numberOfItems, listener);
         else
@@ -241,20 +263,20 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("Message Repository was not initialized");
     }
 
-    public void getRoom(String myID, TAPUserModel otherUserModel, TAPDatabaseListener listener) {
+    public void getRoom(String myID, TAPUserModel otherUserModel, TAPDatabaseListener<TAPRoomModel> listener) {
         if (null != messageRepository)
             messageRepository.getRoom(myID, otherUserModel, listener);
         else
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
-    public void getUnreadCountPerRoom(String myID, String username, String roomID, final TAPDatabaseListener listener) {
+    public void getUnreadCountPerRoom(String myID, String username, String roomID, final TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getUnreadCountPerRoom(myID, username, roomID, listener);
         else throw new IllegalStateException("Message Repository was not initialized");
     }
 
-    public void getUnreadCount(String myID, final TAPDatabaseListener listener) {
+    public void getUnreadCount(String myID, final TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getUnreadCount(myID, listener);
         else throw new IllegalStateException("Message Repository was not initialized");
@@ -433,7 +455,7 @@ public class TAPDatabaseManager {
         else throw new IllegalStateException("My Contact Repository was not initialized");
     }
 
-    public void deleteMessageByRoomId(String roomId, TAPDatabaseListener listener) {
+    public void deleteMessageByRoomId(String roomId, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.deleteMessageByRoomId(roomId, listener);
         else

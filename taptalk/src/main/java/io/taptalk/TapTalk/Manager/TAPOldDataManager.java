@@ -84,7 +84,7 @@ public class TAPOldDataManager {
                     if (0L != minCreated && minCreated < maxCreatedTimestamp[0]) {
                         maxCreatedTimestamp[0] = minCreated;
                     }
-                    TAPDataManager.getInstance(instanceKey).getAllMessagesInRoomFromDatabase(roomEntity.getRoomID(), new TAPDatabaseListener<TAPMessageEntity>() {
+                    TAPDataManager.getInstance(instanceKey).getAllMessagesInRoomFromDatabase(roomEntity.getRoomID(), false, new TAPDatabaseListener<TAPMessageEntity>() {
                         @Override
                         public void onSelectFinished(List<TAPMessageEntity> entities) {
                             if (null != entities && MAX_ITEMS_PER_PAGE < entities.size()) {

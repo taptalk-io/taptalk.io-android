@@ -47,4 +47,6 @@ public interface TapTalkAttachmentInterface {
     void onImageRemoved(int imagePosition);
 
     void onSaveProfilePicture(Bitmap bitmap);
+
+    void onMessageStarred(TAPMessageModel message);
 }

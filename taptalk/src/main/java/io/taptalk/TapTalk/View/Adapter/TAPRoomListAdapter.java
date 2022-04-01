@@ -7,6 +7,7 @@ import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -92,6 +93,9 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 //        private TextView tvGroupSenderName;
         private View vSeparator;
         private View vSeparatorFull;
+        private LinearLayout llMarkRead;
+        private TextView tvMarkRead;
+        private ImageView ivMarkRead;
 
         RoomListVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -111,6 +115,9 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             ivBadgeMention = itemView.findViewById(R.id.iv_badge_mention);
             vSeparator = itemView.findViewById(R.id.v_separator);
             vSeparatorFull = itemView.findViewById(R.id.v_separator_full);
+            llMarkRead = itemView.findViewById(R.id.ll_mark_read);
+            tvMarkRead = itemView.findViewById(R.id.tv_mark_read);
+            ivMarkRead = itemView.findViewById(R.id.iv_mark_read);
         }
 
         @Override
@@ -306,17 +313,23 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
 
             // Show unread count
             int unreadCount = item.getNumberOfUnreadMessages();
-            if (0 < unreadCount && unreadCount < 100) {
-                tvBadgeUnread.setText(String.valueOf(item.getNumberOfUnreadMessages()));
+            if (unreadCount > 0 || item.isMarkedAsUnread()) {
+                if (unreadCount == 0) {
+                    tvBadgeUnread.setText("");
+                } else if (unreadCount >= 100) {
+                    tvBadgeUnread.setText(R.string.tap_over_99);
+                } else {
+                    tvBadgeUnread.setText(String.valueOf(unreadCount));
+                }
                 ivMessageStatus.setVisibility(View.GONE);
                 tvBadgeUnread.setVisibility(View.VISIBLE);
-            } else if (unreadCount >= 100) {
-                tvBadgeUnread.setText(R.string.tap_over_99);
-                ivMessageStatus.setVisibility(View.GONE);
-                tvBadgeUnread.setVisibility(View.VISIBLE);
+                glide.load(R.drawable.tap_ic_mark_read_white).fitCenter().into(ivMarkRead);
+                tvMarkRead.setText(R.string.tap_read);
             } else {
                 ivMessageStatus.setVisibility(View.VISIBLE);
                 tvBadgeUnread.setVisibility(View.GONE);
+                glide.load(R.drawable.tap_ic_mark_unread_white).fitCenter().into(ivMarkRead);
+                tvMarkRead.setText(R.string.tap_unread);
             }
 
             // Show mention badge

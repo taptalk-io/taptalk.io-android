@@ -388,5 +388,12 @@
     <string name="tap_could_not_retrieve_photo">Could not retrieve latest profile picture data, please check your connection and try again</string>
     <string name="tap_max_profile_picture_title">You have reached maximum profile picture.</string>
     <string name="tap_max_profile_picture_message">You can only have 10 profile picture at a time, remove some picture to upload new ones.</string>
+    <string name="tap_unread">Unread</string>
+    <string name="tap_read">Read</string>
+    <string name="tap_star">Star</string>
+    <string name="tap_starred_messages">Starred Messages</string>
+    <string name="tap_no_starred_messages">No Starred Messages</string>
+    <string name="tap_empty_starred_messages_info">Tap and hold on any messages and add star to find important text later.</string>
+    <string name="tap_unstar">Unstar</string>
 
 </resources>

@@ -121,11 +121,27 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         vm!!.room = data.getParcelableExtra(Extras.ROOM)
                         updateView()
                     }
+                    val message = data.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                    if (message != null) {
+                        val intent = Intent()
+                        intent.putExtra(Extras.MESSAGE, message)
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
                     if (data.getBooleanExtra(Extras.CLOSE_ACTIVITY, false)) {
                         val intent = Intent()
                         intent.putExtra(Extras.CLOSE_ACTIVITY, true)
                         setResult(RESULT_OK)
                         onBackPressed()
+                    }
+                }
+                RequestCode.OPEN_STARRED_MESSAGES -> {
+                    val message = data?.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
+                    if (message != null) {
+                        val intent = Intent()
+                        intent.putExtra(Extras.MESSAGE, message)
+                        setResult(RESULT_OK, intent)
+                        finish()
                     }
                 }
             }
@@ -437,6 +453,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
                 //// Personal chat room
 
+                // Starred messages
+                if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                    val menuStarredMessages = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                        getString(R.string.tap_starred_messages),
+                        R.drawable.tap_ic_star_outline,
+                        R.color.tapIconChatProfileMenuStarredMessages,
+                        R.style.tapChatProfileMenuStarredLabelStyle
+                    )
+                    menuItems.add(menuStarredMessages)
+                }
                 // Add to contacts
                 if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
                         instanceKey
@@ -526,6 +553,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     R.style.tapChatProfileMenuLabelStyle
                 )
                 menuItems.add(menuEditGroup)
+                 // Starred messages
+                if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                    val menuStarredMessages = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                        getString(R.string.tap_starred_messages),
+                        R.drawable.tap_ic_star_outline,
+                        R.color.tapIconChatProfileMenuStarredMessages,
+                        R.style.tapChatProfileMenuStarredLabelStyle
+                    )
+                    menuItems.add(menuStarredMessages)
+                }
                 if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
                     // Report group
                     val menuReport = TapChatProfileItemModel(
@@ -572,6 +610,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     R.style.tapChatProfileMenuLabelStyle
                 )
                 menuItems.add(menuViewMembers)
+                // Starred messages
+                if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                    val menuStarredMessages = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                        getString(R.string.tap_starred_messages),
+                        R.drawable.tap_ic_star_outline,
+                        R.color.tapIconChatProfileMenuStarredMessages,
+                        R.style.tapChatProfileMenuStarredLabelStyle
+                    )
+                    menuItems.add(menuStarredMessages)
+                }
                 if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
                     // Report group
                     val menuReport = TapChatProfileItemModel(
@@ -597,6 +646,17 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         } else {
             //// Group chat member profile
 
+            // Starred messages
+            if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                val menuStarredMessages = TapChatProfileItemModel(
+                    ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                    getString(R.string.tap_starred_messages),
+                    R.drawable.tap_ic_star_outline,
+                    R.color.tapIconChatProfileMenuStarredMessages,
+                    R.style.tapChatProfileMenuStarredLabelStyle
+                )
+                menuItems.add(menuStarredMessages)
+            }
             // Add to contacts
             if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
                     instanceKey
@@ -958,6 +1018,25 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         }
     }
 
+    private fun openStarredMessages() {
+        if (vm!!.isGroupMemberProfile) {
+            val user = vm!!.groupMemberUser
+            val room = TAPRoomModel(
+                TAPChatManager.getInstance(instanceKey).arrangeRoomId(
+                    TAPChatManager.getInstance(instanceKey).activeUser.userID,
+                    user.userID
+                ),
+                user.fullname,
+                RoomType.TYPE_PERSONAL,
+                user.imageURL,
+                ""
+            )
+            TapStarredMessagesActivity().start(this@TAPChatProfileActivity, instanceKey, room)
+        } else {
+            TapStarredMessagesActivity().start(this@TAPChatProfileActivity, instanceKey, vm!!.room)
+        }
+    }
+
     private val profilePictureListener = object : TapProfilePicturePagerAdapter.ProfilePictureListener {
         override fun onLongClick(bitmap: BitmapDrawable) {
             if (vm!!.room.type == RoomType.TYPE_GROUP) {
@@ -1030,6 +1109,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 ChatProfileMenuType.MENU_REMOVE_MEMBER -> showRemoveMemberDialog()
                 ChatProfileMenuType.MENU_DELETE_GROUP -> showDeleteChatRoomDialog()
                 ChatProfileMenuType.MENU_REPORT -> triggerReportButtonTapped()
+                ChatProfileMenuType.MENU_STARRED_MESSAGES -> openStarredMessages()
             }
         }
 
@@ -1373,7 +1453,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 if (isNonParticipantUserProfile) {
                     intent.putExtra(Extras.IS_NON_PARTICIPANT_USER_PROFILE, true)
                 }
-                context.startActivity(intent)
+                context.startActivityForResult(intent, RequestCode.OPEN_PERSONAL_PROFILE)
             } else if (room?.type == RoomType.TYPE_GROUP && null != user) {
                 intent.putExtra(K_USER, user)
                 context.startActivityForResult(intent, RequestCode.OPEN_MEMBER_PROFILE)
