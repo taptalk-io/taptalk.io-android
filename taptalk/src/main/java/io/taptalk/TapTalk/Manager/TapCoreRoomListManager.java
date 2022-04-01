@@ -10,13 +10,11 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
-import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListListener;
-import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
@@ -25,9 +23,7 @@ import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
-import io.taptalk.TapTalk.Model.TAPSearchChatModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
@@ -35,10 +31,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
-import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.ROOM_ITEM;
-import static io.taptalk.TapTalk.Model.TAPSearchChatModel.Type.SECTION_TITLE;
-
-import android.util.Log;
 
 @Keep
 public class TapCoreRoomListManager {
@@ -480,9 +472,13 @@ public class TapCoreRoomListManager {
     }
 
     public void markChatRoomAsUnread(String roomID, @Nullable TapCommonListener listener) {
-        List<String> roomIds = new ArrayList<>();
-        roomIds.add(roomID);
-        TAPDataManager.getInstance(instanceKey).markRoomAsUnread(roomIds, new TAPDefaultDataView<>() {
+        List<String> roomIDs = new ArrayList<>();
+        roomIDs.add(roomID);
+        markChatRoomsAsUnread(roomIDs, listener);
+    }
+
+    public void markChatRoomsAsUnread(List<String> roomIDs, @Nullable TapCommonListener listener) {
+        TAPDataManager.getInstance(instanceKey).markRoomAsUnread(roomIDs, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetUnreadRoomIdsResponse response) {
                 super.onSuccess(response);
