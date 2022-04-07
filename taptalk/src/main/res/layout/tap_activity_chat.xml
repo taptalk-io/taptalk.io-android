@@ -619,7 +619,7 @@
                 android:paddingBottom="6dp"
                 android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/iv_send"
+                app:layout_constraintEnd_toStartOf="@id/iv_voice_note"
                 app:layout_constraintStart_toEndOf="@id/iv_chat_menu"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0"
@@ -634,6 +634,21 @@
                 app:layout_constraintBottom_toBottomOf="@id/et_chat"
                 app:layout_constraintEnd_toEndOf="@id/et_chat"
                 app:tint="@color/tapIconChatComposerAttach" />
+
+            <ImageView
+                android:id="@+id/iv_voice_note"
+                android:layout_width="32dp"
+                android:layout_height="40dp"
+                android:paddingStart="8dp"
+                android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:src="@drawable/tap_ic_mic_grey"
+                android:tooltipText="@string/tap_hold_to_record"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/et_chat"
+                app:layout_constraintEnd_toStartOf="@id/iv_send" />
 
             <ImageView
                 android:id="@+id/iv_send_area"
@@ -658,7 +673,7 @@
                 android:src="@drawable/tap_ic_send_white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/et_chat"
+                app:layout_constraintStart_toEndOf="@id/iv_voice_note"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0"
                 app:tint="@color/tapIconChatComposerSendInactive" />
