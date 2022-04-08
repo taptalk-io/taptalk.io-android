@@ -394,5 +394,7 @@
     <string name="tap_empty_starred_messages_info">Tap and hold on any messages and add star to find important text later.</string>
     <string name="tap_unstar">Unstar</string>
     <string name="tap_hold_to_record">Tap and hold mic to record.</string>
+    <string name="tap_slide_left_to_cancel">Slide left to cancel</string>
+    <string name="zero_colon_zero">00:00</string>
 
 </resources>

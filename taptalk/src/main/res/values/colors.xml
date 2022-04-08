@@ -73,7 +73,8 @@
     <color name="tapFileProgressBackgroundColorWhite">@color/tapWhite</color>
     <color name="tapFileProgressBackgroundColorPrimary">@color/tapDefaultRightBubbleBackgroundColor</color>
     <color name="tapDeletedChatRoomInfoBackgroundColor">@color/tapParchment</color>
-    <color name="tapChatRoomBackgroundColor">@color/tapDefaultBackgroundColor</color> <!--*-->
+    <color name="tapChatRoomBackgroundColor">@color/tapDefaultBackgroundColor</color>
+    <color name="tapChatVoiceNoteRecordTimeColor">@color/tapColorPrimary</color>  <!--*-->
 
     <color name="tapSelectedMediaPreviewThumbnailBorderColor">@color/tapColorPrimary</color>
     <color name="tapMediaPreviewWarningBackgroundColor">@color/tapColorError</color>
