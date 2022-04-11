@@ -723,13 +723,28 @@
                 android:id="@+id/tv_record_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/zero_colon_zero"
-                android:textColor="@color/tapChatVoiceNoteRecordTimeColor"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/zero_colon_zero"
+                android:textColor="@color/tapChatVoiceNoteRecordTimeColor"
+                app:layout_constraintEnd_toStartOf="@id/iv_stop_play_voice_note"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ImageView
+                android:id="@+id/iv_stop_play_voice_note"
+                android:layout_width="34dp"
+                android:layout_height="36dp"
+                android:padding="4dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="50dp"
+                android:layout_marginRight="50dp"
+                android:src="@drawable/tap_ic_stop_orange"
+                android:elevation="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
