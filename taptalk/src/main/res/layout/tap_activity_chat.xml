@@ -677,7 +677,7 @@
 
 
             <ImageView
-                android:id="@+id/iv_remove_voice_chat"
+                android:id="@+id/iv_remove_voice_note"
                 android:layout_width="52dp"
                 android:layout_height="52dp"
                 android:paddingStart="14dp"
@@ -695,10 +695,11 @@
                 android:layout_height="24dp"
                 android:src="@drawable/tap_ic_chevron_left_grey"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iv_remove_voice_chat"
+                app:layout_constraintStart_toEndOf="@id/iv_remove_voice_note"
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
+                android:id="@+id/tv_slide_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tap_slide_left_to_cancel"
@@ -727,12 +728,12 @@
                 android:layout_marginRight="8dp"
                 android:text="@string/zero_colon_zero"
                 android:textColor="@color/tapChatVoiceNoteRecordTimeColor"
-                app:layout_constraintEnd_toStartOf="@id/iv_stop_play_voice_note"
+                app:layout_constraintEnd_toStartOf="@id/iv_voice_note_control"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
             <ImageView
-                android:id="@+id/iv_stop_play_voice_note"
+                android:id="@+id/iv_voice_note_control"
                 android:layout_width="34dp"
                 android:layout_height="36dp"
                 android:padding="4dp"
