@@ -49,18 +49,18 @@ class AudioRecorder {
             val count = dir.listFiles().size
             output = Environment.getExternalStorageDirectory().absolutePath + "/voicenotes/recording"+count+".mp3"
         }
-
-        mediaRecorder = MediaRecorder()
-
-        mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
-        mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-        mediaRecorder?.setOutputFile(output)
     }
 
     @SuppressLint("RestrictedApi")
     fun startRecording() {
+        if (mediaRecorder == null) {
+            mediaRecorder = MediaRecorder()
 
+            mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
+            mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            mediaRecorder?.setOutputFile(output)
+        }
 
         try {
             println("Starting recording!")
