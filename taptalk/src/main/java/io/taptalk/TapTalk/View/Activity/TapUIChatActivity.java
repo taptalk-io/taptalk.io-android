@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.View.Activity;
 
 import android.Manifest;
 import android.animation.LayoutTransition;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.Group;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -74,6 +76,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.MaxHeightRecyclerView;
+import io.taptalk.TapTalk.Helper.OnSwipeTouchListener;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener;
@@ -84,6 +87,8 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Helper.audiorecorder.AudioPlayer;
+import io.taptalk.TapTalk.Helper.audiorecorder.AudioRecorder;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
@@ -105,6 +110,7 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
+import io.taptalk.TapTalk.Manager.TapAudioManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
@@ -182,6 +188,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_RECORD_AUDIO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
@@ -292,6 +299,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private View vQuoteDecoration;
     private TAPConnectionStatusFragment fConnectionStatus;
 
+//  Voice Note
+    private ImageView ivVoiceNote;
+    private ConstraintLayout clVoiceNote;
+    private ImageView ivVoiceNoteControl;
+    private TextView tvRecordTime;
+    private ImageView ivRecording;
+    private TextView tvSlideLabel;
+    private ImageView ivLeft;
+    private ImageView ivRemoveVoiceNote;
+    private ConstraintLayout clSwipeVoiceNote;
+    private Group gTooltip;
+    private AudioRecorder audioRecorder;
+    private AudioPlayer audioPlayer;
+    private TapAudioManager audioManager;
+
     // RecyclerView
     private TAPMessageAdapter messageAdapter;
     private TAPCustomKeyboardAdapter customKeyboardAdapter;
@@ -306,8 +328,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     // Scroll state
     private enum STATE {WORKING, LOADED, DONE}
+    // Voice Note State
+    private enum RECORDING_STATE {
+        DEFAULT, HOLD_RECORD, LOCKED_RECORD, FINISH, PLAY, PAUSE
+    }
+
 
     private STATE state = STATE.WORKING;
+    private RECORDING_STATE recordingState = RECORDING_STATE.DEFAULT;
 
     /**
      * =========================================================================================== *
@@ -387,6 +415,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         setContentView(R.layout.tap_activity_chat);
 
         glide = Glide.with(this);
+        audioRecorder = AudioRecorder.Companion.getInstance();
+        audioPlayer = AudioPlayer.Companion.getInstance();
+        audioManager = new TapAudioManager(audioRecorder, audioPlayer);
         bindViews();
         initRoom();
         registerBroadcastManager();
@@ -662,6 +693,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 case PERMISSION_LOCATION:
                     TAPUtils.openLocationPicker(TapUIChatActivity.this, instanceKey);
                     break;
+                case PERMISSION_RECORD_AUDIO:
+                    showTooltip();
+                    break;
             }
         }
     }
@@ -753,6 +787,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         vQuoteDecoration = findViewById(R.id.v_quote_decoration);
         fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
+        ivVoiceNote = findViewById(R.id.iv_voice_note);
+        clVoiceNote = findViewById(R.id.cl_voice_note);
+        ivVoiceNoteControl = findViewById(R.id.iv_voice_note_control);
+        tvRecordTime = findViewById(R.id.tv_record_time);
+        ivRecording = findViewById(R.id.iv_recording);
+        tvSlideLabel = findViewById(R.id.tv_slide_label);
+        ivLeft = findViewById(R.id.iv_left);
+        ivRemoveVoiceNote = findViewById(R.id.iv_remove_voice_note);
+        clSwipeVoiceNote = findViewById(R.id.cl_swipe_voice_note);
+        gTooltip = findViewById(R.id.g_tooltip);
     }
 
     private boolean initViewModel() {
@@ -794,6 +838,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         return null != vm.getMyUserModel() && (null != vm.getOtherUserModel() || (TYPE_PERSONAL != vm.getRoom().getType()));
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initView() {
         getWindow().setBackgroundDrawable(null);
 
@@ -919,28 +964,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
-        // Show / hide attachment button
-        if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
-                TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
-                TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
-                TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
-        ) {
-            ivButtonAttach.setVisibility(View.GONE);
-            etChat.setPadding(
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6),
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6)
-            );
-        } else {
-            ivButtonAttach.setVisibility(View.VISIBLE);
-            etChat.setPadding(
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6),
-                    TAPUtils.dpToPx(44),
-                    TAPUtils.dpToPx(6)
-            );
-        }
+        showAttachmentButton();
 
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_personal_chat_room_empty_guide_title), vm.getRoom().getName())));
@@ -1003,6 +1027,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flLoading.setOnClickListener(v -> {
         });
 
+        ivVoiceNote.setOnClickListener(v -> {
+            showTooltip();
+        });
+        ivVoiceNote.setOnTouchListener(swipeTouchListener);
+        ivVoiceNote.setOnLongClickListener(v -> {
+            startRecording();
+            return true;
+        });
+        ivVoiceNoteControl.setOnClickListener(v -> onVoiceNoteControlClick());
+
 //        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
 //        if (null == vm.getRoom().getGroupParticipants()) {
 //            showChatAsHistory(getString(R.string.tap_not_a_participant));
@@ -1014,6 +1048,31 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivToBottom.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
             ivMentionAnchor.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
             clUnreadButton.setBackground(getDrawable(R.drawable.tap_bg_white_rounded_8dp_ripple));
+        }
+    }
+
+    private void showAttachmentButton() {
+        // Show / hide attachment button
+        if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
+                TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
+                TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
+                TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
+        ) {
+            ivButtonAttach.setVisibility(View.GONE);
+            etChat.setPadding(
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6),
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6)
+            );
+        } else {
+            ivButtonAttach.setVisibility(View.VISIBLE);
+            etChat.setPadding(
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6),
+                    TAPUtils.dpToPx(44),
+                    TAPUtils.dpToPx(6)
+            );
         }
     }
 
@@ -1631,6 +1690,145 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
             TAPUtils.dismissKeyboard(this);
         });
+    }
+
+    private void setLockedRecordingState() {
+        // TODO: 12/04/22 locked recording state MU
+        hideVoiceNoteButton();
+        ivVoiceNoteControl.setVisibility(View.VISIBLE);
+        recordingState = RECORDING_STATE.LOCKED_RECORD;
+
+    }
+
+    private void setHoldRecordingState() {
+        // TODO: 12/04/22 voice note recording MU
+        hideChatField();
+        clVoiceNote.setVisibility(View.VISIBLE);
+        clSwipeVoiceNote.setVisibility(View.VISIBLE);
+        recordingState = RECORDING_STATE.HOLD_RECORD;
+    }
+
+    private void setDefaultState() {
+        // TODO: 12/04/22 default activity state MU
+        etChat.setVisibility(View.VISIBLE);
+        showAttachmentButton();
+        if (vm.isCustomKeyboardEnabled() && etChat.getText().toString().isEmpty()) {
+            ivChatMenu.setVisibility(View.VISIBLE);
+        }
+        hideVoiceNoteButton();
+        recordingState = RECORDING_STATE.DEFAULT;
+        ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_stop_orange));
+    }
+
+    private void setFinishedRecordingState() {
+        // TODO: 12/04/22 finished recording voice note MU
+        hideVoiceNoteButton();
+        clSwipeVoiceNote.setVisibility(View.VISIBLE);
+        hideVoiceNoteButton();
+        tvSlideLabel.setVisibility(View.GONE);
+        ivLeft.setVisibility(View.GONE);
+        recordingState = RECORDING_STATE.FINISH;
+        ivVoiceNoteControl.setVisibility(View.VISIBLE);
+        ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
+    }
+
+    private void setPlayingState() {
+        // TODO: 12/04/22 voice note playing MU
+        recordingState = RECORDING_STATE.PLAY;
+        ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_pause_orange));
+    }
+
+    private void setPausedState() {
+        // TODO: 12/04/22 voice note paused MU
+        recordingState = RECORDING_STATE.PAUSE;
+        ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
+    }
+
+    private void hideChatField() {
+        etChat.setVisibility(View.GONE);
+        ivButtonAttach.setVisibility(View.GONE);
+        ivChatMenu.setVisibility(View.GONE);
+    }
+
+    private void hideVoiceNoteButton() {
+        clSwipeVoiceNote.setVisibility(View.GONE);
+        clVoiceNote.setVisibility(View.GONE);
+    }
+
+    private void startRecording() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_RECORD_AUDIO);
+        } else {
+            setHoldRecordingState();
+            audioManager.startRecording();
+            audioManager.getRecordingTime().observe(TapUIChatActivity.this, s -> tvRecordTime.setText(s));
+        }
+    }
+
+    private void stopRecording() {
+        if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD) {
+            setFinishedRecordingState();
+            audioManager.stopRecording();
+        }
+    }
+
+    private void resumeVoiceNote() {
+        // TODO: 13/04/22 play voice note MU
+        setPlayingState();
+        audioManager.resumeRecording();
+    }
+
+    private void pauseVoiceNote() {
+        // TODO: 13/04/22 pause voice note MU
+        setPausedState();
+        audioManager.pauseRecording();
+    }
+
+    private void onVoiceNoteControlClick() {
+        switch (recordingState) {
+            case PLAY:
+                resumeVoiceNote();
+                break;
+            case PAUSE:
+                pauseVoiceNote();
+                break;
+            case DEFAULT:
+                stopRecording();
+                break;
+        }
+    }
+
+    private OnSwipeTouchListener swipeTouchListener = new OnSwipeTouchListener(TapUIChatActivity.this) {
+        @Override
+        public boolean onSwipeLeft() {
+            // TODO: 13/04/22 remove voice note MU
+            // TODO: 13/04/22 delete voice note file MU
+            setDefaultState();
+            return true;
+        }
+
+        @Override
+        public boolean onSwipeTop() {
+            setLockedRecordingState();
+            return true;
+        }
+
+        @Override
+        public boolean onActionUp() {
+                stopRecording();
+            return true;
+        }
+    };
+
+    private void showTooltip() {
+        if (gTooltip.getVisibility() == View.GONE) {
+            gTooltip.setVisibility(View.VISIBLE);
+            new Handler(getMainLooper()).postDelayed(() -> {
+                gTooltip.setVisibility(View.GONE);
+            }, 2000);
+        } else {
+            gTooltip.setVisibility(View.GONE);
+        }
     }
 
     private void openAttachMenu() {
