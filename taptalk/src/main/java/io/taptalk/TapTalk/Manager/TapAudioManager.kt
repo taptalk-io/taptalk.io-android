@@ -5,8 +5,6 @@ import io.taptalk.TapTalk.Helper.audiorecorder.AudioRecorder
 
 class TapAudioManager(private val audioRecorder: AudioRecorder, private val audioPlayer: AudioPlayer) {
 
-    var recorderState: AudioRecorder.RecorderState = AudioRecorder.RecorderState.Stopped
-
     fun startRecording() = audioRecorder.startRecording()
 
     fun stopRecording() = audioRecorder.stopRecording()

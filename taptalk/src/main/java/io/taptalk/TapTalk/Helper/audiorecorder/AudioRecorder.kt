@@ -22,10 +22,6 @@ class AudioRecorder {
             }
     }
 
-    enum class RecorderState{
-        Stopped, Running, Paused
-    }
-
     private var output: String? = null
     private var mediaRecorder: MediaRecorder? = null
     private val dir: File = File(Environment.getExternalStorageDirectory().absolutePath + "/voicenotes/")
