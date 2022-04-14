@@ -795,9 +795,44 @@
             android:layout_marginRight="50dp"
             android:src="@drawable/tap_ic_mic_grey"
             android:elevation="9dp"
-            android:tooltipText="@string/tap_hold_to_record"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_tooltip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:src="@drawable/tap_ic_tooltip_pointer"
+            android:elevation="9dp"
+            app:layout_constraintEnd_toEndOf="@id/iv_voice_note"
+            app:layout_constraintBottom_toTopOf="@id/iv_voice_note"
+            app:layout_constraintStart_toStartOf="@id/iv_voice_note" />
+
+        <TextView
+            android:id="@+id/tv_tooltip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:translationX="20dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            style="@style/tapFontFamilyMedium"
+            android:textColor="@color/tapWhite"
+            android:translationY="4dp"
+            android:background="@drawable/tap_bg_tooltip"
+            android:text="@string/tap_hold_to_record"
+            android:elevation="9dp"
+            app:layout_constraintEnd_toEndOf="@id/iv_tooltip"
+            app:layout_constraintBottom_toTopOf="@id/iv_tooltip" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/g_tooltip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="iv_tooltip, tv_tooltip" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_chat_history"
