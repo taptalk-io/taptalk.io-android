@@ -95,6 +95,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_UNREAD_STATUS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_RIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VOICE_LEFT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VOICE_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
@@ -125,6 +127,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.VIDEO;
@@ -216,6 +219,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return new FileVH(parent, R.layout.tap_cell_chat_bubble_file_right, viewType);
             case TYPE_BUBBLE_FILE_LEFT:
                 return new FileVH(parent, R.layout.tap_cell_chat_bubble_file_left, viewType);
+            case TYPE_BUBBLE_VOICE_RIGHT:
+                return new VoiceVH(parent, R.layout.tap_cell_chat_bubble_voice_right, viewType);
+            case TYPE_BUBBLE_VOICE_LEFT:
+                return new VoiceVH(parent, R.layout.tap_cell_chat_bubble_voice_left, viewType);
             case TYPE_BUBBLE_LOCATION_RIGHT:
                 return new LocationVH(parent, R.layout.tap_cell_chat_bubble_location_right, viewType);
             case TYPE_BUBBLE_LOCATION_LEFT:
@@ -293,6 +300,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         return TYPE_BUBBLE_FILE_RIGHT;
                     } else {
                         return TYPE_BUBBLE_FILE_LEFT;
+                    }
+                case TYPE_VOICE:
+                    if (isMessageFromMySelf(messageModel)) {
+                        return TYPE_BUBBLE_VOICE_RIGHT;
+                    } else {
+                        return TYPE_BUBBLE_VOICE_LEFT;
                     }
                 case TYPE_LOCATION:
                     if (isMessageFromMySelf(messageModel)) {
@@ -1543,6 +1556,228 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
         }
     }
+
+    public class VoiceVH extends TAPBaseChatViewHolder {
+
+        private ConstraintLayout clContainer;
+        private ConstraintLayout clForwarded;
+        private ConstraintLayout clQuote;
+        private FrameLayout flBubble;
+        private FrameLayout fVoiceIcon;
+        private CircleImageView civAvatar;
+        private ImageView ivVoiceIcon;
+        private ImageView ivMessageStatus;
+        //private ImageView ivReply;
+        private ImageView ivSending;
+        private ImageView ivBubbleHighlight;
+        private TAPRoundedCornerImageView rcivQuoteImage;
+        private TextView tvAvatarLabel;
+        private TextView tvUserName;
+        private TextView tVoiceTime;
+        private TextView tvMessageTimestamp;
+        private TextView tvMessageStatus;
+        private TextView tvForwardedFrom;
+        private TextView tvQuoteTitle;
+        private TextView tvQuoteContent;
+        private View vQuoteBackground;
+        private View vQuoteDecoration;
+        private ProgressBar pbProgress;
+        private ImageView ivStarMessage;
+        private View vSeparator;
+
+        VoiceVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
+            super(parent, itemLayoutId);
+
+            clContainer = itemView.findViewById(R.id.cl_container);
+            clForwarded = itemView.findViewById(R.id.cl_forwarded);
+            clQuote = itemView.findViewById(R.id.cl_quote);
+            flBubble = itemView.findViewById(R.id.fl_bubble);
+            fVoiceIcon = itemView.findViewById(R.id.fl_voice_icon);
+            ivVoiceIcon = itemView.findViewById(R.id.iv_voice_icon);
+            ivBubbleHighlight = itemView.findViewById(R.id.iv_bubble_highlight);
+            //ivReply = itemView.findViewById(R.id.iv_reply);
+            rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
+            tVoiceTime = itemView.findViewById(R.id.tv_voice_time);
+            tvMessageTimestamp = itemView.findViewById(R.id.tv_message_timestamp);
+            tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
+            tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
+            tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
+            vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
+            vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            pbProgress = itemView.findViewById(R.id.pb_progress);
+            ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            vSeparator = itemView.findViewById(R.id.v_separator);
+
+            if (bubbleType == TYPE_BUBBLE_FILE_LEFT) {
+                civAvatar = itemView.findViewById(R.id.civ_avatar);
+                tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
+                tvUserName = itemView.findViewById(R.id.tv_user_name);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    fVoiceIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_left_ripple));
+                } else {
+                    fVoiceIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_left));
+                }
+            } else {
+                ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
+                ivSending = itemView.findViewById(R.id.iv_sending);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    fVoiceIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_right_ripple));
+                } else {
+                    fVoiceIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_right));
+                }
+            }
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
+            if (!animatingMessages.contains(item)) {
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
+            }
+            tvMessageTimestamp.setText(item.getMessageStatusText());
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            showForwardedFrom(item, clForwarded, tvForwardedFrom);
+            checkAndAnimateHighlight(item, ivBubbleHighlight);
+            setFileProgress(item);
+
+            markMessageAsRead(item, myUserModel);
+            enableLongPress(itemView.getContext(), flBubble, item);
+            setStarredIcon(item.getMessageID(), ivStarMessage);
+
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+            if (roomType != RoomType.STARRED) {
+                flBubble.setOnClickListener(v -> fVoiceIcon.performClick());
+                //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+            } else {
+                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+                if (position != 0) {
+                    vSeparator.setVisibility(View.VISIBLE);
+                } else {
+                    vSeparator.setVisibility(View.GONE);
+                }
+            }
+        }
+
+        @Override
+        protected void onMessageSending(TAPMessageModel message) {
+            showMessageAsSending(itemView, message, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageFailedToSend(TAPMessageModel message) {
+            showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageSent(TAPMessageModel message) {
+            showMessageAsSent(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageDelivered(TAPMessageModel message) {
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageRead(TAPMessageModel message) {
+            showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        private void setFileProgress(TAPMessageModel item) {
+            if (null == item.getData()) {
+                return;
+            }
+            String localID = item.getLocalID();
+            Integer uploadProgressPercent = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressPercent(localID);
+            Integer downloadProgressPercent = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(localID);
+//            String key = TAPUtils.getUriKeyFromMessage(item);
+//            fileUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item);
+
+//            String space = isMessageFromMySelf(item) ? RIGHT_BUBBLE_SPACE_APPEND : LEFT_BUBBLE_SPACE_APPEND;
+//            tvFileName.setText(TAPUtils.getFileDisplayName(item));
+//            tvFileInfoDummy.setText(String.format("%s%s", TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item), space));
+//            tvFileInfoDummy.setText(TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item));
+
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                // Message failed to send
+                tVoiceTime.setText(TAPUtils.getFileDisplayInfo(item));
+                ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
+                pbProgress.setVisibility(View.GONE);
+                tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
+                if (isMessageFromMySelf(item)) {
+                    // TODO: 18/04/22 handle resend voice note MU
+                    fVoiceIcon.setOnClickListener(v -> resendMessage(item));
+                } else {
+                    fVoiceIcon.setOnClickListener(v -> downloadFile(item));
+                }
+            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressPercent) && TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item)) {
+                // File has finished downloading or uploading
+                tvMessageStatus.setText(item.getMessageStatusText());
+                tVoiceTime.setText(TAPUtils.getFileDisplayInfo(item));
+                ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_play_white));
+                pbProgress.setVisibility(View.GONE);
+                // TODO: 18/04/22 handle play pause voice note MU
+                // TODO: 18/04/22 handle seekbar logic MU
+                fVoiceIcon.setOnClickListener(v -> playVoiceNote(item));
+            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressPercent)) {
+                // File is not downloaded
+                tVoiceTime.setText(TAPUtils.getFileDisplayInfo(item));
+                if (TAPFileDownloadManager.getInstance(instanceKey).getFailedDownloads().contains(item.getLocalID())) {
+                    tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
+                    ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
+                } else {
+                    tvMessageStatus.setText(item.getMessageStatusText());
+                    ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_orange));
+                }
+                pbProgress.setVisibility(View.GONE);
+                fVoiceIcon.setOnClickListener(v -> downloadFile(item));
+            } else {
+                // File is downloading or uploading
+                ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
+                pbProgress.setMax(100);
+                pbProgress.setVisibility(View.VISIBLE);
+                tvMessageStatus.setText(item.getMessageStatusText());
+                if (null != uploadProgressPercent) {
+                    Long uploadProgressBytes = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressBytes(localID);
+                    tVoiceTime.setText(TAPUtils.getFileDisplayProgress(item, uploadProgressBytes));
+                    pbProgress.setProgress(uploadProgressPercent);
+                    fVoiceIcon.setOnClickListener(v -> cancelUpload(item));
+                } else {
+                    Long downloadProgressBytes = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressBytes(localID);
+                    tVoiceTime.setText(TAPUtils.getFileDisplayProgress(item, downloadProgressBytes));
+                    pbProgress.setProgress(downloadProgressPercent);
+                    fVoiceIcon.setOnClickListener(v -> cancelDownload(item));
+                }
+            }
+        }
+
+        private void downloadFile(TAPMessageModel item) {
+            // TODO: 18/04/22 download voice note MU
+        }
+
+        private void cancelDownload(TAPMessageModel item) {
+            // TODO: 18/04/22 cancel download MU
+        }
+
+        private void cancelUpload(TAPMessageModel item) {
+            // TODO: 18/04/22 cancel upload MU
+        }
+
+        private void playVoiceNote(TAPMessageModel item) {
+            // TODO: 18/04/22 play voice note MU
+        }
+
+        private void pauseVoiceNote(TAPMessageModel item) {
+            // TODO: 18/04/22 pause voice note MU
+        }
+
+    }
+
 
     public class LocationVH extends TAPBaseChatViewHolder {
 

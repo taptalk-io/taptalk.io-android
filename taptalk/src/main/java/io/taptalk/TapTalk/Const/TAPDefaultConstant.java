@@ -48,6 +48,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_LOCATION = 1005;
         public static final int TYPE_CONTACT = 1006;
         public static final int TYPE_STICKER = 1007;
+        public static final int TYPE_VOICE = 1008;
+        public static final int TYPE_AUDIO = 1009;
 
         public static final int TYPE_PRODUCT = 2001;
         public static final int TYPE_CATEGORY = 2002;
@@ -71,6 +73,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_VIDEO_LEFT = 10032;
         public static final int TYPE_BUBBLE_FILE_RIGHT = 10041;
         public static final int TYPE_BUBBLE_FILE_LEFT = 10042;
+        public static final int TYPE_BUBBLE_VOICE_RIGHT = 10043;
+        public static final int TYPE_BUBBLE_VOICE_LEFT = 10044;
         public static final int TYPE_BUBBLE_LOCATION_RIGHT = 10051;
         public static final int TYPE_BUBBLE_LOCATION_LEFT = 10052;
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
