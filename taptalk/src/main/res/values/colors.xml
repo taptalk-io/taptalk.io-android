@@ -67,7 +67,7 @@
     <color name="tapLeftBubbleQuoteBackgroundColor">@color/tapDefaultLeftBubbleDarkBackgroundColor</color>
     <color name="tapRightFileButtonBackgroundColor">@color/tapWhite</color>
     <color name="tapLeftFileButtonBackgroundColor">@color/tapColorPrimary</color>
-    <color name="tapRightVoiceButtonBackgroundColor">@color/tapTransparentBlack1960</color>
+    <color name="tapRightVoiceButtonBackgroundColor">@color/tapTransparentBlack1940</color>
     <color name="tapLeftVoiceButtonBackgroundColor">@color/tapTransparentBlack1920</color>
     <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
     <color name="tapDateIndicatorBackgroundColor">@color/tapWhite</color>

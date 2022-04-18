@@ -510,7 +510,14 @@
     <style name="tapLeftVoiceBubbleInfoStyle" parent="tapFontFamilyChatRegular">
         <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
         <item name="android:lineSpacingExtra">4sp</item>
-        <item name="android:textColor">@color/tapLeftFileBubbleInfoColor</item>
+        <item name="android:textColor">@color/tapLeftVoiceBubbleInfoColor</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="tapRightVoiceBubbleInfoStyle" parent="tapFontFamilyChatRegular">
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+        <item name="android:textColor">@color/tapRightVoiceBubbleInfoColor</item>
         <item name="android:textSize">14sp</item>
     </style>
 

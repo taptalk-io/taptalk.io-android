@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--    <ImageView-->
+    <!--        android:id="@+id/iv_reply"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginEnd="2dp"-->
+    <!--        android:layout_marginRight="2dp"-->
+    <!--        android:layout_marginBottom="2dp"-->
+    <!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+    <!--        android:src="@drawable/tap_ic_reply_circle_white"-->
+    <!--        android:visibility="gone"-->
+    <!--        app:layout_constraintBottom_toTopOf="@id/iv_message_status"-->
+    <!--        app:layout_constraintEnd_toStartOf="@id/fl_bubble"-->
+    <!--        app:layout_constraintHorizontal_bias="1"-->
+    <!--        app:layout_constraintHorizontal_chainStyle="packed"-->
+    <!--        app:layout_constraintStart_toStartOf="parent" />-->
+
+    <View
+        android:id="@+id/v_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/tapTransparentBlack1910"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/fl_bubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginLeft="64dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/tap_bg_chat_bubble_right_default"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/tv_message_status"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/v_separator"
+        app:layout_goneMarginBottom="8dp"
+        app:layout_goneMarginTop="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="10dp">
+
+            <include
+                android:id="@+id/cl_forwarded"
+                layout="@layout/tap_layout_forwarded_bubble_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toTopOf="@id/cl_quote"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_goneMarginBottom="10dp" />
+
+            <View
+                android:id="@+id/v_quote_background"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/tap_bg_bubble_quote_right_4dp"
+                app:layout_constraintBottom_toBottomOf="@id/cl_quote"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/cl_quote" />
+
+            <include
+                android:id="@+id/cl_quote"
+                layout="@layout/tap_layout_quote_bubble_right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/cl_voice"
+                app:layout_constraintTop_toBottomOf="@id/cl_forwarded" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_voice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cl_quote"
+                app:layout_goneMarginTop="0dp">
+
+                <FrameLayout
+                    android:id="@+id/fl_voice_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/tap_bg_voice_button_right"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ProgressBar
+                        android:id="@+id/pb_progress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="center"
+                        android:indeterminate="false"
+                        android:max="100"
+                        android:progressDrawable="@drawable/tap_file_circular_progress_white"
+                        tools:progress="65" />
+
+                    <ImageView
+                        android:id="@+id/iv_voice_icon"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        app:tint="@color/tapIconFileCancelUploadDownloadWhite"
+                        tools:src="@drawable/tap_ic_download_orange" />
+
+                </FrameLayout>
+
+
+                <SeekBar
+                    android:id="@+id/seek_bar"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:indeterminateTint="@color/tapOrange20"
+                    android:max="10000"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:progressBackgroundTint="@color/tapOrange20"
+                    android:progressTint="@color/tapWhite"
+                    android:thumbTint="@color/tapWhite"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/tv_voice_time"
+                    app:layout_constraintStart_toEndOf="@id/fl_voice_icon"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:progress="40" />
+
+                <TextView
+                    android:id="@+id/tv_voice_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/tapRightVoiceBubbleInfoStyle"
+                    android:text="@string/zero_colon_zero"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/seek_bar"
+                    app:layout_constraintBottom_toBottomOf="@id/seek_bar"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <ImageView
+                android:id="@+id/iv_star_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:layout_marginRight="6dp"
+                android:src="@drawable/tap_ic_star_filled_white"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/tv_message_timestamp" />
+
+            <TextView
+                android:id="@+id/tv_message_timestamp"
+                style="@style/tapRightBubbleMessageTimestampStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/iv_message_status"
+                app:layout_constraintTop_toBottomOf="@id/cl_voice"
+                app:layout_goneMarginEnd="0dp"
+                app:layout_goneMarginRight="0dp"
+                tools:text="17:05" />
+
+            <ImageView
+                android:id="@+id/iv_message_status"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:src="@drawable/tap_ic_delivered_grey"
+                tools:tint="@color/tapWhite" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/iv_bubble_highlight"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/tap_bg_chat_bubble_right_highlight"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toEndOf="@id/fl_bubble"
+        app:layout_constraintStart_toStartOf="@id/fl_bubble"
+        app:layout_constraintTop_toTopOf="@id/fl_bubble" />
+
+    <TextView
+        android:id="@+id/tv_message_status"
+        style="@style/tapBubbleMessageStatusStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/tap_message_send_failed"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/fl_bubble"
+        app:layout_constraintTop_toBottomOf="@id/fl_bubble" />
+
+    <ImageView
+        android:id="@+id/iv_sending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="5dp"
+        android:alpha="0"
+        android:src="@drawable/tap_ic_sending_grey"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:tint="@color/tapIconRoomListMessageSending" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
