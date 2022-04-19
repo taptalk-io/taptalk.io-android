@@ -49,6 +49,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_TRANSACTION;
@@ -118,6 +119,7 @@ public class TapUI {
         TYPE_IMAGE_MESSAGE,
         TYPE_VIDEO_MESSAGE,
         TYPE_FILE_MESSAGE,
+        TYPE_VOICE_MESSAGE,
         TYPE_LOCATION_MESSAGE,
         TYPE_NONE,
     }
@@ -1084,6 +1086,7 @@ public class TapUI {
         defaultLongPressMenuMap.put(TYPE_VIDEO, LongPressMenuType.TYPE_VIDEO_MESSAGE);
         defaultLongPressMenuMap.put(TYPE_FILE, LongPressMenuType.TYPE_FILE_MESSAGE);
         defaultLongPressMenuMap.put(TYPE_LOCATION, LongPressMenuType.TYPE_LOCATION_MESSAGE);
+        defaultLongPressMenuMap.put(TYPE_VOICE, LongPressMenuType.TYPE_VOICE_MESSAGE);
         return defaultLongPressMenuMap;
     }
 
