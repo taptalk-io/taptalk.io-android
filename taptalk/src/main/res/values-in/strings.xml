@@ -230,6 +230,7 @@
     <string name="tap_photo">Photo</string>
     <string name="tap_video">Video</string>
     <string name="tap_file">File</string>
+    <string name="tap_voice_note">Voice Note</string>
     <string name="tap_document">Dokumen</string>
     <string name="tap_camera">Kamera</string>
     <string name="tap_gallery">Galeri</string>
@@ -239,6 +240,7 @@
     <string name="tap_emoji_photo">🖼</string>
     <string name="tap_emoji_video">🎥</string>
     <string name="tap_emoji_file">📎</string>
+    <string name="tap_emoji_voice_note">🎤</string>
     <string name="tap_location_body">📍 Lokasi</string>
 
     <!--Long Press-->

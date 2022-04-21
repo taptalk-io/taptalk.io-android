@@ -79,6 +79,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_AUDIO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
@@ -700,6 +701,164 @@ public class TAPChatManager {
 
     private String generateFileMessageBody(String fileName) {
         return TapTalk.appContext.getString(R.string.tap_emoji_file) + " " + (fileName.isEmpty() ? TapTalk.appContext.getString(R.string.tap_file) : fileName);
+    }
+
+
+    /**
+     * Construct Audio Message Model
+     */
+
+    private TAPMessageModel createVoiceNoteMessageModel(Context context, Uri uri, TAPRoomModel roomModel, TapSendMessageInterface listener) {
+
+        String path = TAPFileUtils.getFilePath(context, uri);
+
+        if (null == path || path.isEmpty()) {
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve file path from provided Uri.");
+            }
+            return null;
+        }
+
+        File file = new File(path);
+        return createVoiceNoteMessageModel(context, file, roomModel, listener);
+    }
+
+    private TAPMessageModel createVoiceNoteMessageModel(Context context, File file, TAPRoomModel roomModel, TapSendMessageInterface listener) {
+        try {
+            String fileName = file.getName();
+            Number fileSize = file.length();
+            String fileMimeType = null != TAPUtils.getFileMimeType(file) ?
+                    TAPUtils.getFileMimeType(file) : "application/octet-stream";
+
+            // Build message model
+            TAPMessageModel messageModel;
+            Uri fileUri = FileProvider.getUriForFile(context, FILEPROVIDER_AUTHORITY, file);
+
+            // Get audio data
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(context, fileUri);
+
+            int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+            HashMap<String, Object> data = new TAPDataFileModel(fileName, fileMimeType, fileSize).toHashMap();
+            data.put(DURATION, duration);
+            data.put(FILE_URI, fileUri.toString());
+            if (null == getQuotedMessage(roomModel.getRoomID())) {
+                messageModel = TAPMessageModel.Builder(
+                        generateVoiceNoteMessageBody(),
+                        roomModel,
+                        TYPE_AUDIO,
+                        System.currentTimeMillis(),
+                        activeUser,
+                        TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                        data);
+            } else {
+                if (null != getUserInfo(roomModel.getRoomID())) {
+                    data.put(USER_INFO, getUserInfo(roomModel.getRoomID()));
+                }
+                messageModel = TAPMessageModel.BuilderWithQuotedMessage(
+                        generateVoiceNoteMessageBody(),
+                        roomModel,
+                        TYPE_AUDIO,
+                        System.currentTimeMillis(),
+                        activeUser,
+                        TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
+                        data,
+                        getQuotedMessage(roomModel.getRoomID()));
+                setQuotedMessage(roomModel.getRoomID(), null, 0);
+            }
+            // Save file Uri
+//        TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), fileUri);
+            TAPFileDownloadManager.getInstance(instanceKey).addFileProviderPath(fileUri, file.getAbsolutePath());
+            return messageModel;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (null != listener) {
+                listener.onError(null, ERROR_CODE_URI_NOT_FOUND, "Unable to retrieve file data from provided Uri.");
+            }
+            return null;
+        }
+    }
+
+    private void addVoiceNoteMessageToUploadQueue(Context context, TAPMessageModel messageModel, TAPRoomModel roomModel, TapSendMessageInterface listener) {
+        // Check if file size exceeds limit
+        long maxFileUploadSize = TAPFileUploadManager.getInstance(instanceKey).getMaxFileUploadSize();
+        if (null != messageModel.getData() &&
+                null != messageModel.getData().get(SIZE) &&
+                ((Number) messageModel.getData().get(SIZE)).longValue() > maxFileUploadSize
+        ) {
+            if (null != listener) {
+                listener.onError(
+                        messageModel,
+                        ERROR_CODE_EXCEEDED_MAX_SIZE,
+                        String.format(
+                                Locale.getDefault(),
+                                ERROR_MESSAGE_EXCEEDED_MAX_SIZE,
+                                TAPUtils.getStringSizeLengthFile(maxFileUploadSize)
+                        )
+                );
+            }
+            return;
+        }
+
+        if (null != listener) {
+            sendMessageListeners.put(messageModel.getLocalID(), listener);
+            listener.onStart(messageModel);
+        }
+
+        // Set Start Point for Progress
+        TAPFileUploadManager.getInstance(instanceKey).addUploadProgressMap(messageModel.getLocalID(), 0, 0);
+
+        addUploadingMessageToHashMap(messageModel);
+        triggerSendMessageListener(messageModel);
+
+        TAPFileUploadManager.getInstance(instanceKey).addUploadQueue(context, roomModel.getRoomID(), messageModel, listener);
+    }
+
+    /**
+     * Create voice message model and call upload api
+     */
+    private void createVoiceNoteMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, File file) {
+        createVoiceNoteMessageModelAndAddToUploadQueue(context, roomModel, file, null);
+    }
+
+    private void createVoiceNoteMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
+        checkAndSendForwardedMessage(roomModel);
+
+        TAPMessageModel messageModel = createFileMessageModel(context, file, roomModel, listener);
+
+        if (null == messageModel) {
+            return;
+        }
+
+        addVoiceNoteMessageToUploadQueue(context, messageModel, roomModel, listener);
+    }
+
+    private void createVoiceNoteMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri uri, TapSendMessageInterface listener) {
+        checkAndSendForwardedMessage(roomModel);
+
+        TAPMessageModel messageModel = createFileMessageModel(context, uri, roomModel, listener);
+
+        if (null == messageModel) {
+            return;
+        }
+
+        addVoiceNoteMessageToUploadQueue(context, messageModel, roomModel, listener);
+    }
+
+    public void sendVoiceNoteMessage(Context context, TAPRoomModel roomModel, Uri uri, TapSendMessageInterface listener) {
+        /*new Thread(() -> */createVoiceNoteMessageModelAndAddToUploadQueue(context, roomModel, uri, listener);/*).start()*/;
+    }
+
+    public void sendVoiceNoteMessage(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
+        /*new Thread(() -> */createVoiceNoteMessageModelAndAddToUploadQueue(context, roomModel, file, listener)/*).start()*/;
+    }
+
+    public void sendVoiceNoteMessage(Context context, TAPRoomModel roomModel, File file) {
+        /*new Thread(() -> */createVoiceNoteMessageModelAndAddToUploadQueue(context, roomModel, file)/*).start()*/;
+    }
+
+    private String generateVoiceNoteMessageBody() {
+        return TapTalk.appContext.getString(R.string.tap_emoji_voice_note) + " " + TapTalk.appContext.getString(R.string.tap_voice_note);
     }
 
     /**
