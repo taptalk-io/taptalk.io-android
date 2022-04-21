@@ -61,6 +61,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_AUDIO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
@@ -379,7 +380,7 @@ public class TAPFileUploadManager {
                 messageModel.setData(messageData);
                 TAPChatManager.getInstance(instanceKey).triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
             });
-        } else if (messageModel.getType() == TYPE_VIDEO) {
+        } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_AUDIO) {
             TAPDataImageModel videoData = new TAPDataImageModel(messageModel.getData());
             Uri videoUri = Uri.parse(videoData.getFileUri());
             File videoFile = new File(videoUri.toString());
@@ -409,7 +410,6 @@ public class TAPFileUploadManager {
             messageModel.putData(videoData.toHashMap());
             TAPChatManager.getInstance(instanceKey).triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
         } else {
-            // TODO: 20/04/22 check for audio type MU
             TAPChatManager.getInstance(instanceKey).triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
         }
     }
@@ -1279,7 +1279,6 @@ public class TAPFileUploadManager {
         }
         //Log.e(TAG, "onFileUploadFromExternalServerFinished messageModel.getData: " + TAPUtils.toJsonString(messageModel.getData()));
 
-        // TODO: 20/04/22 check for audio type MU
         if (messageModel.getType() == TYPE_IMAGE) {
             //Log.e(TAG, "onFileUploadFromExternalServerFinished: send image");
             // Send image message to server
@@ -1294,7 +1293,7 @@ public class TAPFileUploadManager {
             // Check for next upload in queue
             uploadNextSequence(appContext, messageModel.getRoom().getRoomID());
             getBitmapQueue().remove(messageModel.getLocalID());
-        } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_FILE) {
+        } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_FILE || messageModel.getType() == TYPE_AUDIO) {
             //Log.e(TAG, "onFileUploadFromExternalServerFinished: send video/file\n" + fileUrl + "\n" + fileUri);
             // Save Uri map with file URL as key
             TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(

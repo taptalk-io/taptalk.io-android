@@ -6,25 +6,27 @@ import android.media.MediaRecorder
 import android.os.Build
 import android.os.Environment
 import androidx.lifecycle.MutableLiveData
+import io.taptalk.TapTalk.Helper.TapTalk
 import java.io.File
 import java.io.IOException
 import java.util.*
 
-class AudioRecorder {
+class AudioRecorder(val instanceKey: String) {
 
     companion object {
         @Volatile
         private var instance: AudioRecorder? = null
 
-        fun getInstance() =
+        fun getInstance(instanceKey: String) =
             instance ?: synchronized(this) {
-                instance ?: AudioRecorder().also { instance = it }
+                instance ?: AudioRecorder(instanceKey).also { instance = it }
             }
     }
 
     private var output: String? = null
     private var mediaRecorder: MediaRecorder? = null
-    private val dir: File = File(Environment.getExternalStorageDirectory().absolutePath + "/voicenotes/")
+    private val pathName = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${TapTalk.getClientAppName(instanceKey)}/Voice Notes"
+    private val dir: File = File(pathName)
 
 
     private var recordingTime: Long = 0
@@ -34,7 +36,7 @@ class AudioRecorder {
     init {
         try{
             // create a File object for the parent directory
-            val recorderDirectory = File(Environment.getExternalStorageDirectory().absolutePath+"/voicenotes/")
+            val recorderDirectory = File(pathName)
             // have the object build the directory structure, if needed.
             recorderDirectory.mkdirs()
         }catch (e: IOException){
@@ -42,8 +44,7 @@ class AudioRecorder {
         }
 
         if(dir.exists()){
-            val count = dir.listFiles().size
-            output = Environment.getExternalStorageDirectory().absolutePath + "/voicenotes/recording"+count+".mp3"
+            output = "$pathName/${System.currentTimeMillis()}.m4a"
         }
     }
 
@@ -101,8 +102,7 @@ class AudioRecorder {
         mediaRecorder = MediaRecorder()
 
         if(dir.exists()){
-            val count = dir.listFiles().size
-            output = Environment.getExternalStorageDirectory().absolutePath + "/voicenotes/recording"+count+".mp3"
+            output = "$pathName/${System.currentTimeMillis()}.m4a"
         }
 
         mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)

@@ -415,7 +415,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         setContentView(R.layout.tap_activity_chat);
 
         glide = Glide.with(this);
-        audioRecorder = AudioRecorder.Companion.getInstance();
+        audioRecorder = AudioRecorder.Companion.getInstance(instanceKey);
         audioPlayer = AudioPlayer.Companion.getInstance();
         audioManager = new TapAudioManager(audioRecorder, audioPlayer);
         bindViews();
