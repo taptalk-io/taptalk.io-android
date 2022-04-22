@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -1563,7 +1564,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ConstraintLayout clForwarded;
         private ConstraintLayout clQuote;
         private FrameLayout flBubble;
-        private FrameLayout fVoiceIcon;
+        private FrameLayout flVoiceIcon;
         private CircleImageView civAvatar;
         private ImageView ivVoiceIcon;
         private ImageView ivMessageStatus;
@@ -1573,7 +1574,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TAPRoundedCornerImageView rcivQuoteImage;
         private TextView tvAvatarLabel;
         private TextView tvUserName;
-        private TextView tVoiceTime;
+        private TextView tvVoiceTime;
         private TextView tvMessageTimestamp;
         private TextView tvMessageStatus;
         private TextView tvForwardedFrom;
@@ -1584,6 +1585,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
         private View vSeparator;
+        private SeekBar seekBar;
 
         VoiceVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -1592,12 +1594,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             clForwarded = itemView.findViewById(R.id.cl_forwarded);
             clQuote = itemView.findViewById(R.id.cl_quote);
             flBubble = itemView.findViewById(R.id.fl_bubble);
-            fVoiceIcon = itemView.findViewById(R.id.fl_voice_icon);
+            flVoiceIcon = itemView.findViewById(R.id.fl_voice_icon);
             ivVoiceIcon = itemView.findViewById(R.id.iv_voice_icon);
             ivBubbleHighlight = itemView.findViewById(R.id.iv_bubble_highlight);
             //ivReply = itemView.findViewById(R.id.iv_reply);
             rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
-            tVoiceTime = itemView.findViewById(R.id.tv_voice_time);
+            tvVoiceTime = itemView.findViewById(R.id.tv_voice_time);
             tvMessageTimestamp = itemView.findViewById(R.id.tv_message_timestamp);
             tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
             tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
@@ -1608,24 +1610,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             vSeparator = itemView.findViewById(R.id.v_separator);
+            seekBar = itemView.findViewById(R.id.seek_bar);
 
-            if (bubbleType == TYPE_BUBBLE_FILE_LEFT) {
+            if (bubbleType == TYPE_BUBBLE_VOICE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
                 tvUserName = itemView.findViewById(R.id.tv_user_name);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    fVoiceIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_left_ripple));
-                } else {
-                    fVoiceIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_left));
-                }
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivSending = itemView.findViewById(R.id.iv_sending);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    fVoiceIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_right_ripple));
-                } else {
-                    fVoiceIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_right));
-                }
             }
         }
 
@@ -1649,7 +1642,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             if (roomType != RoomType.STARRED) {
-                flBubble.setOnClickListener(v -> fVoiceIcon.performClick());
+                flBubble.setOnClickListener(v -> flVoiceIcon.performClick());
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
@@ -1701,57 +1694,68 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //            tvFileInfoDummy.setText(String.format("%s%s", TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item), space));
 //            tvFileInfoDummy.setText(TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item));
 
+            Number duration = (Number) item.getData().get(DURATION);
+            String durationString = "00:00";
+            if (duration != null && duration.longValue() > 0L) {
+                durationString = TAPUtils.getMediaDurationString(duration.intValue(), duration.intValue());
+            }
             if (null != item.getFailedSend() && item.getFailedSend()) {
                 // Message failed to send
-                tVoiceTime.setText(TAPUtils.getFileDisplayInfo(item));
-                ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
+                tvVoiceTime.setText(durationString);
+                ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white_thin));
                 pbProgress.setVisibility(View.GONE);
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 if (isMessageFromMySelf(item)) {
                     // TODO: 18/04/22 handle resend voice note MU
-                    fVoiceIcon.setOnClickListener(v -> resendMessage(item));
+                    flVoiceIcon.setOnClickListener(v -> resendMessage(item));
                 } else {
-                    fVoiceIcon.setOnClickListener(v -> downloadFile(item));
+                    flVoiceIcon.setOnClickListener(v -> downloadFile(item));
                 }
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent) && TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item)) {
                 // File has finished downloading or uploading
                 tvMessageStatus.setText(item.getMessageStatusText());
-                tVoiceTime.setText(TAPUtils.getFileDisplayInfo(item));
+                tvVoiceTime.setText(durationString);
                 ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_play_white));
                 pbProgress.setVisibility(View.GONE);
+                seekBar.getThumb().mutate().setAlpha(255);
+                seekBar.setEnabled(true);
                 // TODO: 18/04/22 handle play pause voice note MU
                 // TODO: 18/04/22 handle seekbar logic MU
-                fVoiceIcon.setOnClickListener(v -> playVoiceNote(item));
+                flVoiceIcon.setOnClickListener(v -> playVoiceNote(item));
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent)) {
                 // File is not downloaded
-                tVoiceTime.setText(TAPUtils.getFileDisplayInfo(item));
+                tvVoiceTime.setText(durationString);
                 if (TAPFileDownloadManager.getInstance(instanceKey).getFailedDownloads().contains(item.getLocalID())) {
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
-                    ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
+                    ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white_thin));
                 } else {
                     tvMessageStatus.setText(item.getMessageStatusText());
                     ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_orange));
                 }
+                seekBar.getThumb().mutate().setAlpha(0);
+                seekBar.setEnabled(false);
                 pbProgress.setVisibility(View.GONE);
-                fVoiceIcon.setOnClickListener(v -> downloadFile(item));
+                flVoiceIcon.setOnClickListener(v -> downloadFile(item));
             } else {
                 // File is downloading or uploading
+                seekBar.getThumb().mutate().setAlpha(0);
+                seekBar.setEnabled(false);
                 ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
                 pbProgress.setMax(100);
                 pbProgress.setVisibility(View.VISIBLE);
                 tvMessageStatus.setText(item.getMessageStatusText());
                 if (null != uploadProgressPercent) {
                     Long uploadProgressBytes = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressBytes(localID);
-                    tVoiceTime.setText(TAPUtils.getFileDisplayProgress(item, uploadProgressBytes));
+                    tvVoiceTime.setText(TAPUtils.getFileDisplayProgress(item, uploadProgressBytes));
                     pbProgress.setProgress(uploadProgressPercent);
-                    fVoiceIcon.setOnClickListener(v -> cancelUpload(item));
+                    flVoiceIcon.setOnClickListener(v -> cancelUpload(item));
                 } else {
                     Long downloadProgressBytes = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressBytes(localID);
-                    tVoiceTime.setText(TAPUtils.getFileDisplayProgress(item, downloadProgressBytes));
+                    tvVoiceTime.setText(TAPUtils.getFileDisplayProgress(item, downloadProgressBytes));
                     pbProgress.setProgress(downloadProgressPercent);
-                    fVoiceIcon.setOnClickListener(v -> cancelDownload(item));
+                    flVoiceIcon.setOnClickListener(v -> cancelDownload(item));
                 }
             }
         }
