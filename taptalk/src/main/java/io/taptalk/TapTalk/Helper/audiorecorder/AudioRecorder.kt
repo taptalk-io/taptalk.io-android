@@ -27,6 +27,7 @@ class AudioRecorder(val instanceKey: String) {
     private var mediaRecorder: MediaRecorder? = null
     private val pathName = "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/${TapTalk.getClientAppName(instanceKey)}/Voice Notes"
     private val dir: File = File(pathName)
+    private lateinit var outputFile: File
 
 
     private var recordingTime: Long = 0
@@ -44,7 +45,8 @@ class AudioRecorder(val instanceKey: String) {
         }
 
         if(dir.exists()){
-            output = "$pathName/${System.currentTimeMillis()}.m4a"
+            output = "$pathName/${System.currentTimeMillis()}.mp3"
+            outputFile = File(output)
         }
     }
 
@@ -76,6 +78,8 @@ class AudioRecorder(val instanceKey: String) {
     fun stopRecording(){
         mediaRecorder?.stop()
         mediaRecorder?.release()
+        mediaRecorder?.release()
+        mediaRecorder = null
         stopTimer()
         resetTimer()
 
@@ -102,7 +106,8 @@ class AudioRecorder(val instanceKey: String) {
         mediaRecorder = MediaRecorder()
 
         if(dir.exists()){
-            output = "$pathName/${System.currentTimeMillis()}.m4a"
+            outputFile = File(output)
+            output = "$pathName/${System.currentTimeMillis()}.mp3"
         }
 
         mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
@@ -140,4 +145,5 @@ class AudioRecorder(val instanceKey: String) {
 
     fun getRecordingTime() = recordingTimeString
 
+    fun getRecording() = outputFile
 }

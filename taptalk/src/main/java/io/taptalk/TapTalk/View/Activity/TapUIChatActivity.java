@@ -417,7 +417,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         glide = Glide.with(this);
         audioRecorder = AudioRecorder.Companion.getInstance(instanceKey);
         audioPlayer = AudioPlayer.Companion.getInstance();
-        audioManager = new TapAudioManager(audioRecorder, audioPlayer);
+        audioManager = new TapAudioManager(audioRecorder);
         bindViews();
         initRoom();
         registerBroadcastManager();
@@ -1769,6 +1769,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD) {
             setFinishedRecordingState();
             audioManager.stopRecording();
+            TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
         }
     }
 
