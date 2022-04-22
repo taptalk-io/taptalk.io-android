@@ -79,7 +79,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_AUDIO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
@@ -87,6 +86,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODU
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
@@ -746,7 +746,7 @@ public class TAPChatManager {
                 messageModel = TAPMessageModel.Builder(
                         generateVoiceNoteMessageBody(),
                         roomModel,
-                        TYPE_AUDIO,
+                        TYPE_VOICE,
                         System.currentTimeMillis(),
                         activeUser,
                         TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
@@ -758,7 +758,7 @@ public class TAPChatManager {
                 messageModel = TAPMessageModel.BuilderWithQuotedMessage(
                         generateVoiceNoteMessageBody(),
                         roomModel,
-                        TYPE_AUDIO,
+                        TYPE_VOICE,
                         System.currentTimeMillis(),
                         activeUser,
                         TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
@@ -824,7 +824,7 @@ public class TAPChatManager {
     private void createVoiceNoteMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, File file, TapSendMessageInterface listener) {
         checkAndSendForwardedMessage(roomModel);
 
-        TAPMessageModel messageModel = createFileMessageModel(context, file, roomModel, listener);
+        TAPMessageModel messageModel = createVoiceNoteMessageModel(context, file, roomModel, listener);
 
         if (null == messageModel) {
             return;
@@ -836,7 +836,7 @@ public class TAPChatManager {
     private void createVoiceNoteMessageModelAndAddToUploadQueue(Context context, TAPRoomModel roomModel, Uri uri, TapSendMessageInterface listener) {
         checkAndSendForwardedMessage(roomModel);
 
-        TAPMessageModel messageModel = createFileMessageModel(context, uri, roomModel, listener);
+        TAPMessageModel messageModel = createVoiceNoteMessageModel(context, uri, roomModel, listener);
 
         if (null == messageModel) {
             return;
@@ -1295,7 +1295,7 @@ public class TAPChatManager {
         if (null == getQuotedMessages().get(room.getRoomID())) {
             return null;
         }
-        if ((messageToForward.getType() == TYPE_VIDEO || messageToForward.getType() == TYPE_FILE) && null != messageToForward.getData()) {
+        if ((messageToForward.getType() == TYPE_VIDEO || messageToForward.getType() == TYPE_FILE || messageToForward.getType() == TYPE_VOICE) && null != messageToForward.getData()) {
             // Copy file message Uri to destination room
             String key = TAPUtils.getUriKeyFromMessage(messageToForward);
             Uri uri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(messageToForward);

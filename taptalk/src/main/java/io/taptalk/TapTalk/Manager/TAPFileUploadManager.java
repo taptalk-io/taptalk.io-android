@@ -61,7 +61,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_AUDIO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
@@ -235,7 +235,7 @@ public class TAPFileUploadManager {
                 uploadVideo(context, roomID);
             } else if (TAPDefaultConstant.MessageType.TYPE_FILE == messageModel.getType()) {
                 uploadFile(context, roomID);
-            } else if (TAPDefaultConstant.MessageType.TYPE_AUDIO == messageModel.getType()) {
+            } else if (TAPDefaultConstant.MessageType.TYPE_VOICE == messageModel.getType()) {
                 uploadAudio(context, roomID);
             }
         }
@@ -380,7 +380,7 @@ public class TAPFileUploadManager {
                 messageModel.setData(messageData);
                 TAPChatManager.getInstance(instanceKey).triggerRequestMessageFileUpload(messageModel, Uri.parse(fileUri));
             });
-        } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_AUDIO) {
+        } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_VOICE) {
             TAPDataImageModel videoData = new TAPDataImageModel(messageModel.getData());
             Uri videoUri = Uri.parse(videoData.getFileUri());
             File videoFile = new File(videoUri.toString());
@@ -1142,7 +1142,7 @@ public class TAPFileUploadManager {
                     TAPDefaultConstant.MessageType.TYPE_FILE == getUploadQueue(roomID).get(0).getType()) {
                 uploadFile(context, roomID);
             } else if (null != getUploadQueue(roomID).get(0) &&
-                    TAPDefaultConstant.MessageType.TYPE_AUDIO == getUploadQueue(roomID).get(0).getType()) {
+                    TAPDefaultConstant.MessageType.TYPE_VOICE == getUploadQueue(roomID).get(0).getType()) {
                 uploadAudio(context, roomID);
             }
         }
@@ -1293,7 +1293,7 @@ public class TAPFileUploadManager {
             // Check for next upload in queue
             uploadNextSequence(appContext, messageModel.getRoom().getRoomID());
             getBitmapQueue().remove(messageModel.getLocalID());
-        } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_FILE || messageModel.getType() == TYPE_AUDIO) {
+        } else if (messageModel.getType() == TYPE_VIDEO || messageModel.getType() == TYPE_FILE || messageModel.getType() == TYPE_VOICE) {
             //Log.e(TAG, "onFileUploadFromExternalServerFinished: send video/file\n" + fileUrl + "\n" + fileUri);
             // Save Uri map with file URL as key
             TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(
