@@ -1761,15 +1761,33 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void downloadFile(TAPMessageModel item) {
-            // TODO: 18/04/22 download voice note MU
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(DownloadFile);
+                intent.putExtra(MESSAGE, item);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
 
         private void cancelDownload(TAPMessageModel item) {
-            // TODO: 18/04/22 cancel download MU
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(CancelDownload);
+                intent.putExtra(DownloadLocalID, item.getLocalID());
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
 
         private void cancelUpload(TAPMessageModel item) {
-            // TODO: 18/04/22 cancel upload MU
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(UploadCancelled);
+                intent.putExtra(UploadLocalID, item.getLocalID());
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
         }
 
         private void playVoiceNote(TAPMessageModel item) {
