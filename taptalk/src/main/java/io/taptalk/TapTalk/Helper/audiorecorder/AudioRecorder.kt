@@ -94,16 +94,18 @@ class AudioRecorder(val instanceKey: String) {
     @TargetApi(Build.VERSION_CODES.N)
     @SuppressLint("RestrictedApi")
     fun pauseRecording(){
-        stopTimer()
-        mediaRecorder?.pause()
+        // TODO: 25/04/22 change to pause player MU
+//        stopTimer()
+//        mediaRecorder?.pause()
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     @SuppressLint("RestrictedApi")
     fun resumeRecording(){
-        timer = Timer()
-        startTimer()
-        mediaRecorder?.resume()
+        // TODO: 25/04/22 change to resume player MU 
+//        timer = Timer()
+//        startTimer()
+//        mediaRecorder?.resume()
     }
 
     fun deleteRecording(context: Context) {
