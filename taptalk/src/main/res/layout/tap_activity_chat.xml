@@ -694,6 +694,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/tap_ic_chevron_left_grey"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_remove_voice_note"
                 app:layout_constraintTop_toTopOf="parent"/>
@@ -705,9 +706,27 @@
                 android:text="@string/tap_slide_left_to_cancel"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
+                android:visibility="gone"
                 app:layout_constraintStart_toEndOf="@id/iv_left"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <SeekBar
+                android:id="@+id/seek_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@color/tapOrange20"
+                android:max="10000"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:progressBackgroundTint="@color/tapOrange20"
+                android:progressTint="@color/tapColorPrimary"
+                android:thumbTint="@color/tapColorPrimary"
+                android:visibility="gone"
+                app:layout_constraintStart_toEndOf="@id/iv_remove_voice_note"
+                app:layout_constraintEnd_toStartOf="@id/iv_recording"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <ImageView
                 android:id="@+id/iv_recording"
@@ -742,7 +761,6 @@
                 android:layout_marginRight="50dp"
                 android:src="@drawable/tap_ic_stop_orange"
                 android:elevation="8dp"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 

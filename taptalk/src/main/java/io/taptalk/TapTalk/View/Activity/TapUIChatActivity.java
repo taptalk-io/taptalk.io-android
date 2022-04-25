@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -313,6 +314,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private AudioRecorder audioRecorder;
     private AudioPlayer audioPlayer;
     private TapAudioManager audioManager;
+    private SeekBar seekBar;
 
     // RecyclerView
     private TAPMessageAdapter messageAdapter;
@@ -797,6 +799,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivRemoveVoiceNote = findViewById(R.id.iv_remove_voice_note);
         clSwipeVoiceNote = findViewById(R.id.cl_swipe_voice_note);
         gTooltip = findViewById(R.id.g_tooltip);
+        seekBar = findViewById(R.id.seek_bar);
     }
 
     private boolean initViewModel() {
