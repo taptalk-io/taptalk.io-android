@@ -2,14 +2,20 @@ package io.taptalk.TapTalk.Helper.audiorecorder
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Environment
+import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
 import io.taptalk.TapTalk.Helper.TapTalk
 import java.io.File
 import java.io.IOException
 import java.util.*
+import android.media.MediaScannerConnection
+import android.media.MediaScannerConnection.OnScanCompletedListener
+import android.util.Log
+
 
 class AudioRecorder(val instanceKey: String) {
 
@@ -78,9 +84,7 @@ class AudioRecorder(val instanceKey: String) {
     fun stopRecording(){
         mediaRecorder?.stop()
         mediaRecorder?.release()
-        mediaRecorder?.release()
         mediaRecorder = null
-        stopTimer()
         resetTimer()
 
         initRecorder()
@@ -100,6 +104,17 @@ class AudioRecorder(val instanceKey: String) {
         timer = Timer()
         startTimer()
         mediaRecorder?.resume()
+    }
+
+    fun deleteRecording(context: Context) {
+        // Delete file from TapTalk folder
+        MediaScannerConnection.scanFile(context, arrayOf(outputFile.absolutePath), null
+        ) { _, uri ->
+            Log.i("onScanCompleted", uri.path.orEmpty())
+            if (uri.path.orEmpty().isNotEmpty()) {
+                TapTalk.appContext.contentResolver.delete(uri, null, null)
+            }
+        }
     }
 
     private fun initRecorder() {
@@ -131,7 +146,8 @@ class AudioRecorder(val instanceKey: String) {
 
 
     private fun resetTimer() {
-        timer.cancel()
+        stopTimer()
+        timer = Timer()
         recordingTime = 0
         recordingTimeString.postValue("00:00")
     }

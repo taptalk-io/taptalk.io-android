@@ -1,5 +1,6 @@
 package io.taptalk.TapTalk.Manager
 
+import android.content.Context
 import io.taptalk.TapTalk.Helper.audiorecorder.AudioRecorder
 
 class TapAudioManager(private val audioRecorder: AudioRecorder) {
@@ -15,4 +16,6 @@ class TapAudioManager(private val audioRecorder: AudioRecorder) {
     fun getRecordingTime() = audioRecorder.getRecordingTime()
 
     fun getRecording() = audioRecorder.getRecording()
+
+    fun deleteRecording(context: Context) = audioRecorder.deleteRecording(context)
 }

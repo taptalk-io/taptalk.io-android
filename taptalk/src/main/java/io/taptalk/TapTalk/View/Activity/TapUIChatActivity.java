@@ -519,6 +519,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TapTalk.disconnect(instanceKey);
             }
         }
+
+        // remove unsent voice note
+        if (recordingState != RECORDING_STATE.DEFAULT) {
+            removeRecording();
+        }
     }
 
     @Override
@@ -1033,12 +1038,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivVoiceNote.setOnClickListener(v -> {
             showTooltip();
         });
-        ivVoiceNote.setOnTouchListener(swipeTouchListener);
+        // TODO: 25/04/22 temporarily disabled for improvement MU
+//        ivVoiceNote.setOnTouchListener(swipeTouchListener);
         ivVoiceNote.setOnLongClickListener(v -> {
             startRecording();
             return true;
         });
         ivVoiceNoteControl.setOnClickListener(v -> onVoiceNoteControlClick());
+        ivRemoveVoiceNote.setOnClickListener(v -> removeRecording());
 
 //        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
 //        if (null == vm.getRoom().getGroupParticipants()) {
@@ -1697,14 +1704,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void setLockedRecordingState() {
         // TODO: 12/04/22 locked recording state MU
-        hideVoiceNoteButton();
+        hideChatField();
+        ivVoiceNote.setVisibility(View.GONE);
+        clSwipeVoiceNote.setVisibility(View.VISIBLE);
         ivVoiceNoteControl.setVisibility(View.VISIBLE);
         recordingState = RECORDING_STATE.LOCKED_RECORD;
 
     }
 
     private void setHoldRecordingState() {
-        // TODO: 12/04/22 voice note recording MU
+        // TODO: 12/04/22 voice note recording improvement MU
         hideChatField();
         clVoiceNote.setVisibility(View.VISIBLE);
         clSwipeVoiceNote.setVisibility(View.VISIBLE);
@@ -1714,24 +1723,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void setDefaultState() {
         // TODO: 12/04/22 default activity state MU
         etChat.setVisibility(View.VISIBLE);
+        ivVoiceNote.setVisibility(View.VISIBLE);
         showAttachmentButton();
         if (vm.isCustomKeyboardEnabled() && etChat.getText().toString().isEmpty()) {
             ivChatMenu.setVisibility(View.VISIBLE);
         }
-        hideVoiceNoteButton();
+        clSwipeVoiceNote.setVisibility(View.GONE);
+        seekBar.setVisibility(View.GONE);
         recordingState = RECORDING_STATE.DEFAULT;
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_stop_orange));
     }
 
     private void setFinishedRecordingState() {
         // TODO: 12/04/22 finished recording voice note MU
-        hideVoiceNoteButton();
-        clSwipeVoiceNote.setVisibility(View.VISIBLE);
-        hideVoiceNoteButton();
-        tvSlideLabel.setVisibility(View.GONE);
-        ivLeft.setVisibility(View.GONE);
+        seekBar.setVisibility(View.VISIBLE);
         recordingState = RECORDING_STATE.FINISH;
-        ivVoiceNoteControl.setVisibility(View.VISIBLE);
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
     }
 
@@ -1753,16 +1759,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivChatMenu.setVisibility(View.GONE);
     }
 
-    private void hideVoiceNoteButton() {
-        clSwipeVoiceNote.setVisibility(View.GONE);
-        clVoiceNote.setVisibility(View.GONE);
-    }
-
     private void startRecording() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_RECORD_AUDIO);
         } else {
-            setHoldRecordingState();
+            setLockedRecordingState();
             audioManager.startRecording();
             audioManager.getRecordingTime().observe(TapUIChatActivity.this, s -> tvRecordTime.setText(s));
         }
@@ -1772,8 +1773,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD) {
             setFinishedRecordingState();
             audioManager.stopRecording();
-            TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
         }
+    }
+
+    private void removeRecording() {
+        stopRecording();
+        // TODO: 25/04/22 set stop playing MU
+        audioManager.deleteRecording(this);
+        setDefaultState();
+    }
+
+    private void sendVoiceNote() {
+        TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
     }
 
     private void resumeVoiceNote() {
@@ -1791,22 +1802,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void onVoiceNoteControlClick() {
         switch (recordingState) {
             case PLAY:
-                resumeVoiceNote();
-                break;
-            case PAUSE:
                 pauseVoiceNote();
                 break;
+            case PAUSE:
+            case FINISH:
+                resumeVoiceNote();
+                break;
             case DEFAULT:
+            case HOLD_RECORD:
+            case LOCKED_RECORD:
                 stopRecording();
                 break;
         }
     }
 
+    // TODO: 25/04/22 use later for improvement MU
     private OnSwipeTouchListener swipeTouchListener = new OnSwipeTouchListener(TapUIChatActivity.this) {
         @Override
         public boolean onSwipeLeft() {
-            // TODO: 13/04/22 remove voice note MU
-            // TODO: 13/04/22 delete voice note file MU
             setDefaultState();
             return true;
         }
