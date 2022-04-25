@@ -1723,6 +1723,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void setDefaultState() {
         // TODO: 12/04/22 default activity state MU
         etChat.setVisibility(View.VISIBLE);
+        recordingState = RECORDING_STATE.DEFAULT;
+        etChat.setText(etChat.getText().toString());
         ivVoiceNote.setVisibility(View.VISIBLE);
         showAttachmentButton();
         if (vm.isCustomKeyboardEnabled() && etChat.getText().toString().isEmpty()) {
@@ -1730,7 +1732,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
         clSwipeVoiceNote.setVisibility(View.GONE);
         seekBar.setVisibility(View.GONE);
-        recordingState = RECORDING_STATE.DEFAULT;
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_stop_orange));
     }
 
@@ -1738,6 +1739,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
         // TODO: 12/04/22 finished recording voice note MU
         seekBar.setVisibility(View.VISIBLE);
         recordingState = RECORDING_STATE.FINISH;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_ripple));
+        } else {
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
+        }
+        ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
     }
 
@@ -1781,10 +1788,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         // TODO: 25/04/22 set stop playing MU
         audioManager.deleteRecording(this);
         setDefaultState();
-    }
-
-    private void sendVoiceNote() {
-        TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
     }
 
     private void resumeVoiceNote() {
@@ -2453,7 +2456,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void buildAndSendTextMessage() {
         String message = etChat.getText().toString().trim();
-        if (!TextUtils.isEmpty(message)) {
+        if (recordingState == RECORDING_STATE.FINISH || recordingState == RECORDING_STATE.PLAY || recordingState == RECORDING_STATE.PAUSE) {
+            //send voice note
+            TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
+            setDefaultState();
+        } else if (!TextUtils.isEmpty(message)) {
             etChat.setText("");
             TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
             // Updated 2020/04/23
