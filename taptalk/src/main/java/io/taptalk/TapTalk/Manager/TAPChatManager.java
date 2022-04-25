@@ -39,7 +39,6 @@ import io.taptalk.TapTalk.Interface.TapTalkSocketInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPSocketMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
-import io.taptalk.TapTalk.Listener.TapUIRoomListListener;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
 import io.taptalk.TapTalk.Model.TAPDataFileModel;
 import io.taptalk.TapTalk.Model.TAPDataImageModel;
@@ -858,7 +857,7 @@ public class TAPChatManager {
     }
 
     private String generateVoiceNoteMessageBody() {
-        return TapTalk.appContext.getString(R.string.tap_emoji_voice_note) + " " + TapTalk.appContext.getString(R.string.tap_voice_note);
+        return TapTalk.appContext.getString(R.string.tap_emoji_voice_note) + " " + TapTalk.appContext.getString(R.string.tap_voice);
     }
 
     /**
