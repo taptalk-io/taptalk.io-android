@@ -88,7 +88,6 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
-import io.taptalk.TapTalk.Helper.audiorecorder.AudioPlayer;
 import io.taptalk.TapTalk.Helper.audiorecorder.AudioRecorder;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
@@ -312,7 +311,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private ConstraintLayout clSwipeVoiceNote;
     private Group gTooltip;
     private AudioRecorder audioRecorder;
-    private AudioPlayer audioPlayer;
     private TapAudioManager audioManager;
     private SeekBar seekBar;
 
@@ -418,7 +416,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         glide = Glide.with(this);
         audioRecorder = AudioRecorder.Companion.getInstance(instanceKey);
-        audioPlayer = AudioPlayer.Companion.getInstance();
         audioManager = new TapAudioManager(audioRecorder);
         bindViews();
         initRoom();
