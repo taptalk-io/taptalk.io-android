@@ -840,7 +840,7 @@
             android:textColor="@color/tapWhite"
             android:translationY="4dp"
             android:background="@drawable/tap_bg_tooltip"
-            android:text="@string/tap_hold_to_record"
+            android:text="@string/tap_long_press_to_record"
             android:elevation="9dp"
             app:layout_constraintEnd_toEndOf="@id/iv_tooltip"
             app:layout_constraintBottom_toTopOf="@id/iv_tooltip" />
