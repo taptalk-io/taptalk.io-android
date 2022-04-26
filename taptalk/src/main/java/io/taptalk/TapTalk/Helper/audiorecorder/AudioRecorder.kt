@@ -4,17 +4,15 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.media.MediaRecorder
+import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Environment
-import androidx.core.net.toUri
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import io.taptalk.TapTalk.Helper.TapTalk
 import java.io.File
 import java.io.IOException
 import java.util.*
-import android.media.MediaScannerConnection
-import android.media.MediaScannerConnection.OnScanCompletedListener
-import android.util.Log
 
 
 class AudioRecorder(val instanceKey: String) {
