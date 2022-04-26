@@ -1705,6 +1705,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void setLockedRecordingState() {
         // TODO: 12/04/22 locked recording state MU
         hideChatField();
+        setSendButtonDisabled();
         ivVoiceNote.setVisibility(View.GONE);
         clSwipeVoiceNote.setVisibility(View.VISIBLE);
         ivVoiceNoteControl.setVisibility(View.VISIBLE);
@@ -1715,6 +1716,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void setHoldRecordingState() {
         // TODO: 12/04/22 voice note recording improvement MU
         hideChatField();
+        setSendButtonDisabled();
         clVoiceNote.setVisibility(View.VISIBLE);
         clSwipeVoiceNote.setVisibility(View.VISIBLE);
         recordingState = RECORDING_STATE.HOLD_RECORD;
@@ -1739,12 +1741,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         // TODO: 12/04/22 finished recording voice note MU
         seekBar.setVisibility(View.VISIBLE);
         recordingState = RECORDING_STATE.FINISH;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_ripple));
-        } else {
-            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
-        }
-        ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+        setSendButtonEnabled();
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
     }
 
@@ -2460,7 +2457,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             //send voice note
             TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
             setDefaultState();
-        } else if (!TextUtils.isEmpty(message)) {
+        } else if (!TextUtils.isEmpty(message) && recordingState == RECORDING_STATE.DEFAULT) {
             etChat.setText("");
             TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
             // Updated 2020/04/23
@@ -2901,63 +2898,45 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (s.length() > 0 && s.toString().trim().length() > 0) {
-                // Hide chat menu and enable send button when EditText is filled
-                ivChatMenu.setVisibility(View.GONE);
-                ivButtonChatMenu.setVisibility(View.GONE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_ripple));
-                } else {
-                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
-                }
-                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
-                checkAndSearchUserMentionList();
-                //checkAndHighlightTypedText();
-            } else if (s.length() > 0) {
-                // Hide chat menu but keep send button disabled if trimmed text is empty
-                ivChatMenu.setVisibility(View.GONE);
-                ivButtonChatMenu.setVisibility(View.GONE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive_ripple));
-                } else {
-                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
-                }
-                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
-                hideUserMentionList();
-                //} else if (s.length() > 0 && s.toString().trim().length() > 0) {
-                //    if (vm.isCustomKeyboardEnabled()) {
-                //        ivChatMenu.setVisibility(View.VISIBLE);
-                //        ivButtonChatMenu.setVisibility(View.VISIBLE);
-                //    }
-                //    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, );(R.drawable.tap_bg_chat_composer_send_ripple));
-                //    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
-            } else {
-                if (vm.isCustomKeyboardEnabled() && s.length() == 0) {
-                    // Show chat menu if text is empty
-                    ivChatMenu.setVisibility(View.VISIBLE);
-                    ivButtonChatMenu.setVisibility(View.VISIBLE);
-                } else {
+            if (recordingState == RECORDING_STATE.DEFAULT) {
+                if (s.length() > 0 && s.toString().trim().length() > 0) {
+                    // Hide chat menu and enable send button when EditText is filled
                     ivChatMenu.setVisibility(View.GONE);
                     ivButtonChatMenu.setVisibility(View.GONE);
-                }
-                if (vm.getQuoteAction() == FORWARD) {
-                    // Enable send button if message to forward exists
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_ripple));
-                    } else {
-                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
-                    }
-                    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+                    setSendButtonEnabled();
+                    checkAndSearchUserMentionList();
+                    //checkAndHighlightTypedText();
+                } else if (s.length() > 0) {
+                    // Hide chat menu but keep send button disabled if trimmed text is empty
+                    ivChatMenu.setVisibility(View.GONE);
+                    ivButtonChatMenu.setVisibility(View.GONE);
+                    setSendButtonDisabled();
+                    hideUserMentionList();
+                    //} else if (s.length() > 0 && s.toString().trim().length() > 0) {
+                    //    if (vm.isCustomKeyboardEnabled()) {
+                    //        ivChatMenu.setVisibility(View.VISIBLE);
+                    //        ivButtonChatMenu.setVisibility(View.VISIBLE);
+                    //    }
+                    //    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, );(R.drawable.tap_bg_chat_composer_send_ripple));
+                    //    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
                 } else {
-                    // Disable send button
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive_ripple));
+                    if (vm.isCustomKeyboardEnabled() && s.length() == 0) {
+                        // Show chat menu if text is empty
+                        ivChatMenu.setVisibility(View.VISIBLE);
+                        ivButtonChatMenu.setVisibility(View.VISIBLE);
                     } else {
-                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
+                        ivChatMenu.setVisibility(View.GONE);
+                        ivButtonChatMenu.setVisibility(View.GONE);
                     }
-                    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+                    if (vm.getQuoteAction() == FORWARD) {
+                        // Enable send button if message to forward exists
+                        setSendButtonEnabled();
+                    } else {
+                        // Disable send button
+                        setSendButtonDisabled();
+                    }
+                    hideUserMentionList();
                 }
-                hideUserMentionList();
             }
         }
 
@@ -2966,6 +2945,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
             sendTypingEmit(s.length() > 0);
         }
     };
+
+    private void setSendButtonDisabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive_ripple));
+        } else {
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
+        }
+        ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+    }
+
+    private void setSendButtonEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_ripple));
+        } else {
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
+        }
+        ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+    }
 
     private void checkAndSearchUserMentionList() {
         if (TapUI.getInstance(instanceKey).isMentionUsernameDisabled() || vm.getRoomParticipantsByUsername().isEmpty()) {
