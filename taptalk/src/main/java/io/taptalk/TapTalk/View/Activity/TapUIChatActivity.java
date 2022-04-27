@@ -88,7 +88,8 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
-import io.taptalk.TapTalk.Helper.audiorecorder.AudioRecorder;
+import io.taptalk.TapTalk.Helper.audiorecorder.TapAudioManager;
+import io.taptalk.TapTalk.Interface.TapAudioListener;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
@@ -110,7 +111,6 @@ import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager;
 import io.taptalk.TapTalk.Manager.TAPNotificationManager;
 import io.taptalk.TapTalk.Manager.TAPOldDataManager;
-import io.taptalk.TapTalk.Manager.TapAudioManager;
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPAddContactResponse;
@@ -310,7 +310,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private ImageView ivRemoveVoiceNote;
     private ConstraintLayout clSwipeVoiceNote;
     private Group gTooltip;
-    private AudioRecorder audioRecorder;
     private TapAudioManager audioManager;
     private SeekBar seekBar;
 
@@ -415,8 +414,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         setContentView(R.layout.tap_activity_chat);
 
         glide = Glide.with(this);
-        audioRecorder = AudioRecorder.Companion.getInstance(instanceKey);
-        audioManager = new TapAudioManager(audioRecorder);
+        audioManager = TapAudioManager.Companion.getInstance(instanceKey, audioListener);
         bindViews();
         initRoom();
         registerBroadcastManager();
@@ -1792,7 +1790,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void resumeVoiceNote() {
         // TODO: 13/04/22 play voice note MU
         setPlayingState();
-        audioManager.resumeRecording();
+        audioManager.resumeRecording(this, vm.getAudioFile());
     }
 
     private void pauseVoiceNote() {
@@ -1813,6 +1811,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             case DEFAULT:
             case HOLD_RECORD:
             case LOCKED_RECORD:
+                vm.setAudioFile(audioManager.getRecording());
                 stopRecording();
                 break;
         }
@@ -4500,6 +4499,25 @@ public class TapUIChatActivity extends TAPBaseActivity {
             return null;
         }
     }
+
+    private TapAudioListener audioListener = new TapAudioListener() {
+        @Override
+        public void onPrepared() {
+
+        }
+
+        @Override
+        public void onSeekComplete() {
+
+        }
+
+        @Override
+        public void onPlayComplete() {
+            setFinishedRecordingState();
+            seekBar.setProgress(0);
+
+        }
+    };
 
 //    private SwipeBackLayout.SwipeBackInterface swipeInterface = new SwipeBackLayout.SwipeBackInterface() {
 //        @Override

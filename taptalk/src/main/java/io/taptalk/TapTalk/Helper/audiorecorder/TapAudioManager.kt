@@ -3,27 +3,31 @@ package io.taptalk.TapTalk.Helper.audiorecorder
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import io.taptalk.TapTalk.Helper.TapTalk
+import io.taptalk.TapTalk.Interface.TapAudioListener
 import java.io.File
 import java.io.IOException
 import java.util.*
 
 
-class AudioRecorder(val instanceKey: String) {
+class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
 
     companion object {
         @Volatile
-        private var instance: AudioRecorder? = null
+        private var instance: TapAudioManager? = null
 
-        fun getInstance(instanceKey: String) =
+        fun getInstance(instanceKey: String, listener: TapAudioListener) =
             instance ?: synchronized(this) {
-                instance ?: AudioRecorder(instanceKey).also { instance = it }
+                instance ?: TapAudioManager(instanceKey, listener).also { instance = it }
             }
     }
 
@@ -36,6 +40,8 @@ class AudioRecorder(val instanceKey: String) {
 
     private var recordingTime: Long = 0
     private var timer = Timer()
+    private var mediaPlayer: MediaPlayer? = MediaPlayer()
+    private var previousDuration = 0
     private val recordingTimeString = MutableLiveData<String>()
 
     init {
@@ -47,7 +53,19 @@ class AudioRecorder(val instanceKey: String) {
         }catch (e: IOException){
             e.printStackTrace()
         }
-
+        mediaPlayer?.setOnCompletionListener {
+            stopTimer()
+            resetTimer()
+            it.release()
+            mediaPlayer = null
+            listener.onPlayComplete()
+        }
+        mediaPlayer?.setOnPreparedListener {
+            listener.onPrepared()
+        }
+        mediaPlayer?.setOnSeekCompleteListener {
+            listener.onSeekComplete()
+        }
         if(dir.exists()){
             output = "$pathName/${System.currentTimeMillis()}.mp3"
             outputFile = File(output)
@@ -83,6 +101,7 @@ class AudioRecorder(val instanceKey: String) {
         mediaRecorder?.stop()
         mediaRecorder?.release()
         mediaRecorder = null
+        stopTimer()
         resetTimer()
 
         initRecorder()
@@ -93,17 +112,43 @@ class AudioRecorder(val instanceKey: String) {
     @SuppressLint("RestrictedApi")
     fun pauseRecording(){
         // TODO: 25/04/22 change to pause player MU
-//        stopTimer()
-//        mediaRecorder?.pause()
+        if (mediaPlayer != null) {
+            mediaPlayer!!.pause()
+            stopTimer()
+            previousDuration = mediaPlayer!!.currentPosition
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     @SuppressLint("RestrictedApi")
-    fun resumeRecording(){
-        // TODO: 25/04/22 change to resume player MU 
-//        timer = Timer()
-//        startTimer()
-//        mediaRecorder?.resume()
+    fun resumeRecording(context: Context, file: File){
+        // TODO: 25/04/22 change to resume player MU
+        if (mediaPlayer == null) {
+            initPlayer()
+        } else if (mediaPlayer!!.isPlaying) {
+            mediaPlayer?.stop()
+            resetTimer()
+        }
+        MediaScannerConnection.scanFile(context, arrayOf(file.absolutePath), null
+        ) { _, uri ->
+            Log.i("onScanCompleted", uri.path.orEmpty())
+            try {
+                println("Starting playing!")
+                mediaPlayer.apply {
+                    this?.setAudioStreamType(AudioManager.STREAM_MUSIC)
+                    this?.setDataSource(context, uri)
+                    this?.prepare()
+                    this?.seekTo(previousDuration)
+                    this?.start()
+                }
+//                timer = Timer()
+                startTimer()
+            } catch (e: IllegalStateException) {
+                e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 
     fun deleteRecording(context: Context) {
@@ -131,6 +176,24 @@ class AudioRecorder(val instanceKey: String) {
         mediaRecorder?.setOutputFile(output)
     }
 
+    private fun initPlayer() {
+
+        mediaPlayer = MediaPlayer()
+        mediaPlayer?.setOnCompletionListener {
+            stopTimer()
+            resetTimer()
+            it.release()
+            mediaPlayer = null
+            listener.onPlayComplete()
+        }
+        mediaPlayer?.setOnPreparedListener {
+            listener.onPrepared()
+        }
+        mediaPlayer?.setOnSeekCompleteListener {
+            listener.onSeekComplete()
+        }
+    }
+
     private fun startTimer(){
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
@@ -146,7 +209,6 @@ class AudioRecorder(val instanceKey: String) {
 
 
     private fun resetTimer() {
-        stopTimer()
         timer = Timer()
         recordingTime = 0
         recordingTimeString.postValue("00:00")
@@ -155,11 +217,13 @@ class AudioRecorder(val instanceKey: String) {
     private fun updateDisplay(){
         val minutes = recordingTime / (60)
         val seconds = recordingTime % 60
-        val str = String.format("%d:%02d", minutes, seconds)
+        val str = String.format("%02d:%02d", minutes, seconds)
         recordingTimeString.postValue(str)
     }
 
     fun getRecordingTime() = recordingTimeString
 
     fun getRecording() = outputFile
+
+    fun isPlayingRecord() = mediaPlayer?.isPlaying
 }

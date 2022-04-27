@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,6 +67,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     public final int IDLE = 0;
     public final int ANIMATING = 1;
     public final int PROCESSING = 2;
+    private File audioFile;
 
     public static class TAPChatViewModelFactory implements ViewModelProvider.Factory {
         private Application application;
@@ -594,5 +596,13 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setHasMoreData(boolean hasMoreData) {
         isHasMoreData = hasMoreData;
+    }
+
+    public File getAudioFile() {
+        return audioFile == null? new File("") : audioFile;
+    }
+
+    public void setAudioFile(File audioFile) {
+        this.audioFile = audioFile;
     }
 }
