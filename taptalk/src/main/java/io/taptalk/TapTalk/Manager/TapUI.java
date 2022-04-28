@@ -113,6 +113,7 @@ public class TapUI {
     private boolean isMarkAsReadRoomListSwipeMenuDisabled;
     private boolean isMarkAsUnreadRoomListSwipeMenuDisabled;
     private boolean isStarMessageMenuDisabled;
+    private boolean isSendVoiceNoteMenuDisabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -1064,6 +1065,20 @@ public class TapUI {
             return;
         }
         isMarkAsReadRoomListSwipeMenuDisabled = !isEnabled;
+    }
+
+    public boolean isSendVoiceNoteMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isSendVoiceNoteMenuDisabled;
+    }
+
+    public void setSendVoiceNoteMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isSendVoiceNoteMenuDisabled = !isEnabled;
     }
 
     /**
