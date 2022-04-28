@@ -749,21 +749,7 @@ public class TapCoreMessageManager {
                         markMessagesAsRead(pendingReadList);
                     }
                 });
-        ArrayList<String> roomIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
-        if (roomIds.contains(roomID)) {
-            TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, new TAPDatabaseListener<>() {
-                @Override
-                public void onSelectFinished(List<TAPMessageEntity> entities) {
-                    if (!entities.isEmpty()) {
-                        List<String> unreadList = new ArrayList<>();
-                        unreadList.add(entities.get(0).getMessageID());
-                        markMessagesAsRead(unreadList, null);
-                        roomIds.remove(roomID);
-                        TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(roomIds);
-                    }
-                }
-            });
-        }
+        markLastMessageInRoomAsRead(roomID);
     }
 
     public void markAllMessagesInRoomAsRead(String roomID, TapCoreUpdateMessageStatusListener listener) {
@@ -795,6 +781,25 @@ public class TapCoreMessageManager {
                         }
                     }
                 });
+        markLastMessageInRoomAsRead(roomID);
+    }
+
+    private void markLastMessageInRoomAsRead(String roomID) {
+        ArrayList<String> roomIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
+        if (roomIds.contains(roomID)) {
+            TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, new TAPDatabaseListener<>() {
+                @Override
+                public void onSelectFinished(List<TAPMessageEntity> entities) {
+                    if (!entities.isEmpty()) {
+                        List<String> unreadList = new ArrayList<>();
+                        unreadList.add(entities.get(0).getMessageID());
+                        markMessagesAsRead(unreadList, null);
+                        roomIds.remove(roomID);
+                        TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(roomIds);
+                    }
+                }
+            });
+        }
     }
 
     public void getLocalMessages(String roomID, TapCoreGetMessageListener listener) {
