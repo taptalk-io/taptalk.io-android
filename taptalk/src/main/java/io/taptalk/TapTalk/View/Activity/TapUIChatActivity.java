@@ -1704,7 +1704,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void setLockedRecordingState() {
-        // TODO: 12/04/22 locked recording state MU
         hideChatField();
         setSendButtonDisabled();
         ivVoiceNote.setVisibility(View.GONE);
@@ -1724,7 +1723,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void setDefaultState() {
-        // TODO: 12/04/22 default activity state MU
         etChat.setVisibility(View.VISIBLE);
         recordingState = RECORDING_STATE.DEFAULT;
         etChat.setText(etChat.getText().toString());
@@ -1739,7 +1737,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void setFinishedRecordingState() {
-        // TODO: 12/04/22 finished recording voice note MU
         seekBar.setVisibility(View.VISIBLE);
         recordingState = RECORDING_STATE.FINISH;
         seekBar.setEnabled(false);
@@ -1748,13 +1745,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void setPlayingState() {
-        // TODO: 12/04/22 voice note playing MU
         recordingState = RECORDING_STATE.PLAY;
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_pause_orange));
     }
 
     private void setPausedState() {
-        // TODO: 12/04/22 voice note paused MU
         recordingState = RECORDING_STATE.PAUSE;
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
     }
@@ -1788,7 +1783,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void removeRecording() {
         stopRecording();
-        // TODO: 25/04/22 set stop playing MU
         audioManager.deleteRecording(this);
         stopProgressTimer();
         if (vm.getMediaPlayer() != null) {
@@ -1802,7 +1796,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void resumeVoiceNote() {
-        // TODO: 13/04/22 play voice note MU
         seekBar.setEnabled(true);
         if (vm.getMediaPlayer() == null) {
             vm.setMediaPlayer(new MediaPlayer());
@@ -1815,7 +1808,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void pauseVoiceNote() {
-        // TODO: 13/04/22 pause voice note MU
         setPausedState();
         vm.setMediaPlaying(false);
         vm.setPausedPosition(vm.getMediaPlayer().getCurrentPosition());
@@ -1853,7 +1845,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     }
 
-    // TODO: 28/04/22 call after recording MU
     private void loadMediaPlayer() {
         try {
             vm.getMediaPlayer().setAudioStreamType(AudioManager.STREAM_MUSIC);
