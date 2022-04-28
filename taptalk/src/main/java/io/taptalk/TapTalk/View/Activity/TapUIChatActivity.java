@@ -16,6 +16,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -71,6 +74,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
@@ -1046,6 +1051,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //        if (null == vm.getRoom().getGroupParticipants()) {
 //            showChatAsHistory(getString(R.string.tap_not_a_participant));
 //        }
+        seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             llButtonDeleteChat.setBackground(getDrawable(R.drawable.tap_bg_button_destructive_ripple));
@@ -1736,6 +1742,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         // TODO: 12/04/22 finished recording voice note MU
         seekBar.setVisibility(View.VISIBLE);
         recordingState = RECORDING_STATE.FINISH;
+        seekBar.setEnabled(false);
         setSendButtonEnabled();
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
     }
@@ -1775,7 +1782,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void stopRecording() {
         if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD) {
-            setFinishedRecordingState();
             audioManager.stopRecording();
         }
     }
@@ -1784,19 +1790,37 @@ public class TapUIChatActivity extends TAPBaseActivity {
         stopRecording();
         // TODO: 25/04/22 set stop playing MU
         audioManager.deleteRecording(this);
+        stopProgressTimer();
+        if (vm.getMediaPlayer() != null) {
+            if (vm.getMediaPlayer().isPlaying()) {
+                vm.getMediaPlayer().stop();
+            }
+            vm.setMediaPlayer(null);
+        }
+        seekBar.setProgress(0);
         setDefaultState();
     }
 
     private void resumeVoiceNote() {
         // TODO: 13/04/22 play voice note MU
-        setPlayingState();
-        audioManager.resumeRecording(this, vm.getAudioFile());
+        seekBar.setEnabled(true);
+        if (vm.getMediaPlayer() == null) {
+            vm.setMediaPlayer(new MediaPlayer());
+            loadMediaPlayer();
+            vm.getMediaPlayer().prepareAsync();
+        } else {
+            setPlayingState();
+            vm.getMediaPlayer().start();
+        }
     }
 
     private void pauseVoiceNote() {
         // TODO: 13/04/22 pause voice note MU
         setPausedState();
-        audioManager.pauseRecording();
+        vm.setMediaPlaying(false);
+        vm.setPausedPosition(vm.getMediaPlayer().getCurrentPosition());
+        vm.getMediaPlayer().pause();
+        stopProgressTimer();
     }
 
     private void onVoiceNoteControlClick() {
@@ -1811,10 +1835,130 @@ public class TapUIChatActivity extends TAPBaseActivity {
             case DEFAULT:
             case HOLD_RECORD:
             case LOCKED_RECORD:
-                vm.setAudioFile(audioManager.getRecording());
                 stopRecording();
+                vm.setAudioFile(audioManager.getRecording());
+                MediaScannerConnection.scanFile(
+                        TapUIChatActivity.this,
+                        new String[]{audioManager.getRecording().getAbsolutePath()}, null,
+                        (s, uri) -> {
+                            try {
+                                Log.v("onScanCompleted", uri.getPath());
+                                vm.setVoiceUri(uri);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+                setFinishedRecordingState();
                 break;
         }
+    }
+
+    // TODO: 28/04/22 call after recording MU
+    private void loadMediaPlayer() {
+        try {
+            vm.getMediaPlayer().setAudioStreamType(AudioManager.STREAM_MUSIC);
+            vm.getMediaPlayer().setDataSource(TapUIChatActivity.this, vm.getVoiceUri());
+            vm.getMediaPlayer().setOnPreparedListener(preparedListener);
+            vm.getMediaPlayer().setOnCompletionListener(completionListener);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            try {
+                String currentTimeString = TAPUtils.getMediaDurationString(vm.getMediaPlayer().getCurrentPosition(), vm.getMediaPlayer().getDuration());
+                tvRecordTime.setText(currentTimeString);
+            } catch (Exception e) {
+                Log.e(TAG, "onProgressChanged: " + e.getMessage());
+            }
+            if (vm.isSeeking()) {
+                vm.getMediaPlayer().seekTo(vm.getMediaPlayer().getDuration() * seekBar.getProgress() / seekBar.getMax());
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            vm.setSeeking(true);
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            vm.setSeeking(false);
+            setPlayingState();
+            vm.getMediaPlayer().seekTo(vm.getMediaPlayer().getDuration() * seekBar.getProgress() / seekBar.getMax());
+        }
+    };
+
+    private MediaPlayer.OnPreparedListener preparedListener = new MediaPlayer.OnPreparedListener() {
+        @Override
+        public void onPrepared(MediaPlayer mediaPlayer) {
+            vm.setDuration(mediaPlayer.getDuration());
+            vm.setMediaPlaying(true);
+            startProgressTimer();
+            tvRecordTime.setText(TAPUtils.getMediaDurationString(vm.getDuration(), vm.getDuration()));
+            mediaPlayer.seekTo(vm.getPausedPosition());
+            mediaPlayer.setOnSeekCompleteListener(onSeekListener);
+            vm.setMediaPlayer(mediaPlayer);
+            runOnUiThread(() -> {
+                vm.getMediaPlayer().start();
+                setPlayingState();
+            });
+        }
+    };
+
+    private MediaPlayer.OnSeekCompleteListener onSeekListener = new MediaPlayer.OnSeekCompleteListener() {
+        @Override
+        public void onSeekComplete(MediaPlayer mediaPlayer) {
+            try {
+                tvRecordTime.setText(TAPUtils.getMediaDurationString(mediaPlayer.getCurrentPosition(), vm.getDuration()));
+            } catch (Exception e) {
+                Log.e(TAG, "onProgressChanged: " + e.getMessage());
+            }
+            if (!vm.isSeeking() && vm.isMediaPlaying()) {
+                mediaPlayer.start();
+                startProgressTimer();
+            } else {
+                vm.setPausedPosition(mediaPlayer.getCurrentPosition());
+                if (vm.getPausedPosition() >= vm.getDuration()) {
+                    vm.setPausedPosition(0);
+                }
+            }
+        }
+    };
+
+    private MediaPlayer.OnCompletionListener completionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mediaPlayer) {
+            setFinishedRecordingState();
+        }
+    };
+
+    private void startProgressTimer() {
+        if (null != vm.getDurationTimer()) {
+            return;
+        }
+        vm.setDurationTimer(new Timer());
+        vm.getDurationTimer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(() -> {
+                    if (vm.getMediaPlayer() != null) {
+                        seekBar.setProgress(vm.getMediaPlayer().getCurrentPosition() * seekBar.getMax() / vm.getDuration());
+                    }
+                });
+            }
+        }, 0, 10L);
+    }
+
+    private void stopProgressTimer() {
+        if (null == vm.getDurationTimer()) {
+            return;
+        }
+        vm.getDurationTimer().cancel();
+        vm.setDurationTimer(null);
     }
 
     // TODO: 25/04/22 use later for improvement MU
@@ -4513,8 +4657,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onPlayComplete() {
-            setFinishedRecordingState();
-            seekBar.setProgress(0);
+//            setFinishedRecordingState();
+//            seekBar.setProgress(0);
 
         }
     };
