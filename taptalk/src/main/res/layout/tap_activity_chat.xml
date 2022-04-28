@@ -597,7 +597,6 @@
                 app:layout_constraintVertical_bias="1.0"
                 app:tint="@color/tapIconChatComposerBurgerMenu" />
 
-
             <EditText
                 android:id="@+id/et_chat"
                 style="@style/tapChatComposerTextFieldStyle"
@@ -616,11 +615,9 @@
                 android:paddingEnd="44dp"
                 android:paddingRight="44dp"
                 android:paddingBottom="6dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginRight="32dp"
                 android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/iv_send"
+                app:layout_constraintEnd_toStartOf="@id/v_separator"
                 app:layout_constraintStart_toEndOf="@id/iv_chat_menu"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0"
@@ -635,6 +632,15 @@
                 app:layout_constraintBottom_toBottomOf="@id/et_chat"
                 app:layout_constraintEnd_toEndOf="@id/et_chat"
                 app:tint="@color/tapIconChatComposerAttach" />
+
+            <View
+                android:id="@+id/v_separator"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toStartOf="@id/iv_send"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <ImageView
                 android:id="@+id/iv_send_area"

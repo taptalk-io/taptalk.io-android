@@ -302,6 +302,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private View vRoomImage;
     private View vStatusBadge;
     private View vQuoteDecoration;
+    private View vSeparator;
     private TAPConnectionStatusFragment fConnectionStatus;
 
 //  Voice Note
@@ -805,6 +806,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clSwipeVoiceNote = findViewById(R.id.cl_swipe_voice_note);
         gTooltip = findViewById(R.id.g_tooltip);
         seekBar = findViewById(R.id.seek_bar);
+        vSeparator = findViewById(R.id.v_separator);
     }
 
     private boolean initViewModel() {
@@ -1035,23 +1037,28 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flLoading.setOnClickListener(v -> {
         });
 
-        ivVoiceNote.setOnClickListener(v -> {
-            showTooltip();
-        });
-        // TODO: 25/04/22 temporarily disabled for improvement MU
+        if (TapUI.getInstance().isSendVoiceNoteMenuEnabled()) {
+            ivVoiceNote.setOnClickListener(v -> {
+                showTooltip();
+            });
+            // TODO: 25/04/22 temporarily disabled for improvement MU
 //        ivVoiceNote.setOnTouchListener(swipeTouchListener);
-        ivVoiceNote.setOnLongClickListener(v -> {
-            startRecording();
-            return true;
-        });
-        ivVoiceNoteControl.setOnClickListener(v -> onVoiceNoteControlClick());
-        ivRemoveVoiceNote.setOnClickListener(v -> removeRecording());
+            ivVoiceNote.setOnLongClickListener(v -> {
+                startRecording();
+                return true;
+            });
+            ivVoiceNoteControl.setOnClickListener(v -> onVoiceNoteControlClick());
+            ivRemoveVoiceNote.setOnClickListener(v -> removeRecording());
+            seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+        } else {
+            vSeparator.setVisibility(View.GONE);
+            ivVoiceNote.setVisibility(View.GONE);
+        }
 
 //        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
 //        if (null == vm.getRoom().getGroupParticipants()) {
 //            showChatAsHistory(getString(R.string.tap_not_a_participant));
 //        }
-        seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             llButtonDeleteChat.setBackground(getDrawable(R.drawable.tap_bg_button_destructive_ripple));
