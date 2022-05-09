@@ -487,11 +487,10 @@
                 android:id="@+id/cl_quote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/et_chat">
+                app:layout_constraintBottom_toTopOf="@+id/iv_send">
 
                 <ImageView
                     android:id="@+id/iv_cancel_reply"
