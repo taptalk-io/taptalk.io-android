@@ -3273,7 +3273,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 isSeeking = false;
-                image.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.tap_ic_pause_white));
                 audioPlayer.seekTo(audioPlayer.getDuration() * seekBar.getProgress() / seekBar.getMax());
             }
         };
@@ -3283,6 +3282,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         return mediaPlayer -> {
             duration = mediaPlayer.getDuration();
             isMediaPlaying = true;
+            seekBar.setEnabled(true);
             startProgressTimer(seekBar, activity);
             tvDuration.setText(TAPUtils.getMediaDurationString(duration, duration));
             mediaPlayer.seekTo(pausedPosition);
