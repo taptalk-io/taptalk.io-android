@@ -59,6 +59,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_AUDIO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
@@ -422,8 +424,19 @@ public class TAPFileDownloadManager {
         String localID = message.getLocalID();
         String filename = getFileNameFromMessage(message);
 
-        File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.getClientAppName(instanceKey) + (message.getType() == TYPE_VIDEO ? "/" + TapTalk.getClientAppName(instanceKey) + " Videos" :
-                "/" + TapTalk.getClientAppName(instanceKey) + " Files"));
+        String folder;
+        switch (message.getType()) {
+            case TYPE_VIDEO:
+                folder = " Videos";
+                break;
+            case TYPE_AUDIO:
+                folder = " Voice Note";
+                break;
+            default:
+                folder = " Files";
+                break;
+        };
+        File dir = new File(Environment.getExternalStorageDirectory() + "/" + TapTalk.getClientAppName(instanceKey) + "/" + folder);
         dir.mkdirs();
 
         File noMediaFile = new File(dir, ".nomedia");

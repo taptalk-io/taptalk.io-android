@@ -106,6 +106,7 @@ public class TAPDefaultConstant {
         public static final String ADDRESS = "address";
         public static final String LATITUDE = "latitude";
         public static final String LONGITUDE = "longitude";
+        public static final String IS_PLAYING = "isPLaying";
     }
 
     public static final class QuoteFileType {
@@ -321,6 +322,7 @@ public class TAPDefaultConstant {
         public static final String DownloadedFile = "kTAPDownloadedFile";
         public static final String DownloadErrorCode = "kTAPDownloadErrorCode";
         public static final String DownloadErrorMessage = "kTAPDownloadErrorMessage";
+        public static final String PlayPauseVoiceNote = "kTAPPlayPauseVoiceNote";
     }
 
     public static final class LongPressBroadcastEvent {
