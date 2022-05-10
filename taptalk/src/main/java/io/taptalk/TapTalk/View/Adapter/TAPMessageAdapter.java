@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,6 +52,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -78,6 +82,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DELETED_LEFT;
@@ -104,6 +109,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
@@ -112,6 +118,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.HEIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IS_PLAYING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
@@ -161,6 +168,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private float initialTranslationX = TAPUtils.dpToPx(-22);
     private long defaultAnimationTime = 200L;
     private RoomType roomType = RoomType.DEFAULT;
+    private boolean isMediaPlaying, isSeeking;
+    private Uri voiceUri;
+    private MediaPlayer audioPlayer = null;
+    private Timer durationTimer;
+    private int duration, pausedPosition;
+    public int lastPosition = -1;
 
     public enum RoomType {
         DEFAULT, STARRED
@@ -1587,6 +1600,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vSeparator;
         private SeekBar seekBar;
 
+        private Uri fileUri;
+
         VoiceVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
 
@@ -1687,7 +1702,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             Integer uploadProgressPercent = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressPercent(localID);
             Integer downloadProgressPercent = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(localID);
 //            String key = TAPUtils.getUriKeyFromMessage(item);
-//            fileUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item);
+            fileUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item);
 
 //            String space = isMessageFromMySelf(item) ? RIGHT_BUBBLE_SPACE_APPEND : LEFT_BUBBLE_SPACE_APPEND;
 //            tvFileName.setText(TAPUtils.getFileDisplayName(item));
@@ -1712,17 +1727,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     flVoiceIcon.setOnClickListener(v -> downloadFile(item));
                 }
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
-                    && null == downloadProgressPercent) && TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item)) {
+                    && null == downloadProgressPercent) && (null != fileUri || TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item))) {
                 // File has finished downloading or uploading
                 tvMessageStatus.setText(item.getMessageStatusText());
                 tvVoiceTime.setText(durationString);
                 ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_play_white));
                 pbProgress.setVisibility(View.GONE);
                 seekBar.getThumb().mutate().setAlpha(255);
-                seekBar.setEnabled(true);
+                seekBar.setOnSeekBarChangeListener(null);
+                seekBar.setProgress(0);
+                seekBar.setEnabled(false);
                 // TODO: 18/04/22 handle play pause voice note MU
                 // TODO: 18/04/22 handle seekbar logic MU
-                flVoiceIcon.setOnClickListener(v -> playVoiceNote(item));
+                flVoiceIcon.setOnClickListener(v -> playPauseVoiceNote(seekBar, (Activity) itemView.getContext(), tvVoiceTime, ivVoiceIcon, fileUri, item, getAbsoluteAdapterPosition()));
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent)) {
                 // File is not downloaded
@@ -1790,12 +1807,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
         }
 
-        private void playVoiceNote(TAPMessageModel item) {
+        private void playPauseVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, TAPMessageModel item, int currentPosition) {
             // TODO: 18/04/22 play voice note MU
-        }
-
-        private void pauseVoiceNote(TAPMessageModel item) {
-            // TODO: 18/04/22 pause voice note MU
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(PlayPauseVoiceNote);
+                intent.putExtra(MESSAGE, item);
+                intent.putExtra(IS_PLAYING, true);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                seekBar.setOnSeekBarChangeListener(seekBarChangeListener(activity, tvDuration, image));
+                playBubbleVoiceNote(seekBar, activity, tvDuration, image, fileUri, currentPosition);
+            }
         }
 
     }
@@ -3214,4 +3237,180 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         this.starredMessageIds.clear();
         this.starredMessageIds.addAll(starredMessageIds);
     }
+
+
+    private void loadMediaPlayer(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri) {
+        try {
+            audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            audioPlayer.setDataSource(activity, fileUri);
+            audioPlayer.setOnPreparedListener(preparedListener(seekBar, activity, tvDuration, image));
+            audioPlayer.setOnCompletionListener(completionListener(seekBar, activity, image));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private SeekBar.OnSeekBarChangeListener seekBarChangeListener(Activity activity, TextView tvDuration, ImageView image) {
+        return new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                try {
+                    String currentTimeString = TAPUtils.getMediaDurationString(audioPlayer.getCurrentPosition(), audioPlayer.getDuration());
+                    tvDuration.setText(currentTimeString);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (isSeeking) {
+                    audioPlayer.seekTo(audioPlayer.getDuration() * seekBar.getProgress() / seekBar.getMax());
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                isSeeking = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                isSeeking = false;
+                image.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.tap_ic_pause_white));
+                audioPlayer.seekTo(audioPlayer.getDuration() * seekBar.getProgress() / seekBar.getMax());
+            }
+        };
+    }
+
+    private MediaPlayer.OnPreparedListener preparedListener(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image) {
+        return mediaPlayer -> {
+            duration = mediaPlayer.getDuration();
+            isMediaPlaying = true;
+            startProgressTimer(seekBar, activity);
+            tvDuration.setText(TAPUtils.getMediaDurationString(duration, duration));
+            mediaPlayer.seekTo(pausedPosition);
+            mediaPlayer.setOnSeekCompleteListener(onSeekListener(seekBar, activity, tvDuration));
+            audioPlayer = mediaPlayer;
+            activity.runOnUiThread(() -> {
+                audioPlayer.start();
+                image.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.tap_ic_pause_white));
+            });
+        };
+    }
+
+    private MediaPlayer.OnSeekCompleteListener onSeekListener(SeekBar seekBar, Activity activity, TextView tvDuration) {
+       return mediaPlayer -> {
+           try {
+               tvDuration.setText(TAPUtils.getMediaDurationString(mediaPlayer.getCurrentPosition(), duration));
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+           if (!isSeeking && isMediaPlaying) {
+               mediaPlayer.start();
+               startProgressTimer(seekBar, activity);
+           } else {
+               pausedPosition = mediaPlayer.getCurrentPosition();
+               if (pausedPosition >= duration) {
+                   pausedPosition = 0;
+               }
+           }
+       };
+    }
+
+    private MediaPlayer.OnCompletionListener completionListener(SeekBar seekBar, Activity activity, ImageView image) {
+        return mediaPlayer -> setFinishPlayingState(seekBar, activity, image);
+    }
+
+    private void setFinishPlayingState(SeekBar seekBar, Activity activity, ImageView image) {
+            seekBar.setEnabled(false);
+            pausedPosition = 0;
+            image.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.tap_ic_play_white));
+    }
+
+    private void startProgressTimer(SeekBar seekBar, Activity activity) {
+        if (null != durationTimer) {
+            return;
+        }
+        durationTimer = new Timer();
+        durationTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                activity.runOnUiThread(() -> {
+                    if (audioPlayer != null) {
+                        seekBar.setProgress(audioPlayer.getCurrentPosition() * seekBar.getMax() / duration);
+                    }
+                });
+            }
+        }, 0, 10L);
+    }
+
+    private void stopProgressTimer() {
+        if (null == durationTimer) {
+            return;
+        }
+        durationTimer.cancel();
+        durationTimer = null;
+    }
+
+    private void playBubbleVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, int currentPosition) {
+        try {
+            if (audioPlayer == null) {
+                audioPlayer = new MediaPlayer();
+                voiceUri = fileUri;
+                loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri);
+                audioPlayer.prepareAsync();
+                lastPosition = currentPosition;
+            } else {
+                if (audioPlayer.isPlaying()) {
+                    if (voiceUri != fileUri) {
+                        voiceUri = fileUri;
+                        pausedPosition = 0;
+                        removePlayer();
+                        audioPlayer = new MediaPlayer();
+                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri);
+                        notifyItemChanged(lastPosition);
+                        audioPlayer.prepareAsync();
+                        lastPosition = currentPosition;
+                    } else {
+                        pauseBubbleVoiceNote(image, activity);
+                    }
+                } else {
+                    if (voiceUri != fileUri) {
+                        voiceUri = fileUri;
+                        pausedPosition = 0;
+                        removePlayer();
+                        audioPlayer = new MediaPlayer();
+                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri);
+                        notifyItemChanged(lastPosition);
+                    } else {
+                        audioPlayer.release();
+                        audioPlayer = null;
+                        audioPlayer = new MediaPlayer();
+                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri);
+                    }
+                    audioPlayer.prepareAsync();
+                    lastPosition = currentPosition;
+                }
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void pauseBubbleVoiceNote(ImageView image, Activity activity) {
+        isMediaPlaying = false;
+        pausedPosition = audioPlayer.getCurrentPosition();
+        audioPlayer.pause();
+        stopProgressTimer();
+        image.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.tap_ic_play_white));
+    }
+
+    public void removePlayer() {
+        if (audioPlayer != null) {
+            if (audioPlayer.isPlaying()) {
+                audioPlayer.stop();
+            }
+            audioPlayer.release();
+            audioPlayer = null;
+        }
+        stopProgressTimer();
+    }
+
 }

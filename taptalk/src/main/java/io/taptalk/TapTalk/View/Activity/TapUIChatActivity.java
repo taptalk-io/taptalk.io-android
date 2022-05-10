@@ -150,6 +150,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
@@ -177,6 +178,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IS_PLAYING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
@@ -525,6 +527,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (recordingState != RECORDING_STATE.DEFAULT) {
             removeRecording();
         }
+        if (vm.getMediaPlayer() != null) {
+            vm.getMediaPlayer().release();
+        }
+        messageAdapter.removePlayer();
     }
 
     @Override
@@ -1131,6 +1137,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 DownloadFile,
                 OpenFile,
                 CancelDownload,
+                PlayPauseVoiceNote,
                 LongPressChatBubble,
                 LongPressEmail,
                 LongPressLink,
@@ -1747,7 +1754,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         seekBar.setVisibility(View.VISIBLE);
         recordingState = RECORDING_STATE.FINISH;
         seekBar.setEnabled(false);
-        setSendButtonEnabled();
         ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
     }
 
@@ -1804,13 +1810,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void resumeVoiceNote() {
         seekBar.setEnabled(true);
-        if (vm.getMediaPlayer() == null) {
-            vm.setMediaPlayer(new MediaPlayer());
-            loadMediaPlayer();
-            vm.getMediaPlayer().prepareAsync();
-        } else {
-            setPlayingState();
-            vm.getMediaPlayer().start();
+        try {
+            if (vm.getMediaPlayer() == null) {
+                vm.setMediaPlayer(new MediaPlayer());
+                loadMediaPlayer();
+                vm.getMediaPlayer().prepareAsync();
+            } else {
+                setPlayingState();
+                vm.getMediaPlayer().start();
+                if (messageAdapter.lastPosition != -1) {
+                    messageAdapter.removePlayer();
+                    messageAdapter.notifyItemChanged(messageAdapter.lastPosition);
+                }
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
     }
 
@@ -1835,6 +1849,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
             case HOLD_RECORD:
             case LOCKED_RECORD:
                 stopRecording();
+                if (messageAdapter.lastPosition != -1) {
+                    messageAdapter.removePlayer();
+                    messageAdapter.notifyItemChanged(messageAdapter.lastPosition);
+                }
                 vm.setAudioFile(audioManager.getRecording());
                 MediaScannerConnection.scanFile(
                         TapUIChatActivity.this,
@@ -1848,6 +1866,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             }
                         });
                 setFinishedRecordingState();
+                setSendButtonEnabled();
                 break;
         }
     }
@@ -1927,12 +1946,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     };
 
-    private MediaPlayer.OnCompletionListener completionListener = new MediaPlayer.OnCompletionListener() {
-        @Override
-        public void onCompletion(MediaPlayer mediaPlayer) {
-            setFinishedRecordingState();
-        }
-    };
+    private MediaPlayer.OnCompletionListener completionListener = mediaPlayer -> setFinishedRecordingState();
 
     private void startProgressTimer() {
         if (null != vm.getDurationTimer()) {
@@ -3501,6 +3515,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                     } else {
                         showDownloadFileDialog();
+                    }
+                    break;
+                case PlayPauseVoiceNote:
+                    TAPMessageModel voiceMessage = intent.getParcelableExtra(MESSAGE);
+                    boolean isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
+                    if (isPlaying) {
+                        if (vm.getMediaPlayer() != null && vm.getMediaPlayer().isPlaying()) {
+                            pauseVoiceNote();
+                        }
                     }
                     break;
                 case LongPressChatBubble:
