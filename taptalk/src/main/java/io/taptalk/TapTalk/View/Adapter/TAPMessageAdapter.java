@@ -1739,7 +1739,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 seekBar.setEnabled(false);
                 // TODO: 18/04/22 handle play pause voice note MU
                 // TODO: 18/04/22 handle seekbar logic MU
-                flVoiceIcon.setOnClickListener(v -> playPauseVoiceNote(seekBar, (Activity) itemView.getContext(), tvVoiceTime, ivVoiceIcon, fileUri, item, getAbsoluteAdapterPosition()));
+                flVoiceIcon.setOnClickListener(v -> playPauseVoiceNote(seekBar, (Activity) itemView.getContext(), tvVoiceTime, ivVoiceIcon, fileUri, item, getAbsoluteAdapterPosition(), duration.intValue()));
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent)) {
                 // File is not downloaded
@@ -1807,7 +1807,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
         }
 
-        private void playPauseVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, TAPMessageModel item, int currentPosition) {
+        private void playPauseVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, TAPMessageModel item, int currentPosition, int audioDuration) {
             // TODO: 18/04/22 play voice note MU
             if (roomType == RoomType.STARRED) {
                 chatListener.onOutsideClicked(item);
@@ -1817,7 +1817,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 intent.putExtra(IS_PLAYING, true);
                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
                 seekBar.setOnSeekBarChangeListener(seekBarChangeListener(activity, tvDuration, image));
-                playBubbleVoiceNote(seekBar, activity, tvDuration, image, fileUri, currentPosition);
+                playBubbleVoiceNote(seekBar, activity, tvDuration, image, fileUri, currentPosition, audioDuration);
             }
         }
 
@@ -3239,11 +3239,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
 
-    private void loadMediaPlayer(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri) {
+    private void loadMediaPlayer(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, int audioDuration) {
         try {
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             audioPlayer.setDataSource(activity, fileUri);
-            audioPlayer.setOnPreparedListener(preparedListener(seekBar, activity, tvDuration, image));
+            audioPlayer.setOnPreparedListener(preparedListener(seekBar, activity, tvDuration, image, audioDuration));
             audioPlayer.setOnCompletionListener(completionListener(seekBar, activity, image));
         } catch (Exception e) {
             e.printStackTrace();
@@ -3278,9 +3278,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         };
     }
 
-    private MediaPlayer.OnPreparedListener preparedListener(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image) {
+    private MediaPlayer.OnPreparedListener preparedListener(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, int audioDuration) {
         return mediaPlayer -> {
-            duration = mediaPlayer.getDuration();
+            duration = audioDuration;
             isMediaPlaying = true;
             seekBar.setEnabled(true);
             startProgressTimer(seekBar, activity);
@@ -3349,12 +3349,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         durationTimer = null;
     }
 
-    private void playBubbleVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, int currentPosition) {
+    private void playBubbleVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, int currentPosition, int audioDuration) {
         try {
             if (audioPlayer == null) {
                 audioPlayer = new MediaPlayer();
                 voiceUri = fileUri;
-                loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri);
+                loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
                 audioPlayer.prepareAsync();
                 lastPosition = currentPosition;
             } else {
@@ -3364,7 +3364,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         pausedPosition = 0;
                         removePlayer();
                         audioPlayer = new MediaPlayer();
-                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri);
+                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
                         notifyItemChanged(lastPosition);
                         audioPlayer.prepareAsync();
                         lastPosition = currentPosition;
@@ -3377,13 +3377,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         pausedPosition = 0;
                         removePlayer();
                         audioPlayer = new MediaPlayer();
-                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri);
+                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
                         notifyItemChanged(lastPosition);
                     } else {
                         audioPlayer.release();
                         audioPlayer = null;
                         audioPlayer = new MediaPlayer();
-                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri);
+                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
                     }
                     audioPlayer.prepareAsync();
                     lastPosition = currentPosition;

@@ -761,7 +761,7 @@
                 android:layout_width="34dp"
                 android:layout_height="36dp"
                 android:padding="4dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="6dp"
                 android:layout_marginEnd="50dp"
                 android:layout_marginRight="50dp"
                 android:src="@drawable/tap_ic_stop_orange"

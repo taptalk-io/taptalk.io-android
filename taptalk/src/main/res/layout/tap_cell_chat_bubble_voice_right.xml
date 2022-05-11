@@ -96,7 +96,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                app:layout_constraintWidth_min="240dp"
+                app:layout_constraintWidth_min="200dp"
                 app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
@@ -146,6 +146,8 @@
                     android:max="10000"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
                     android:progressBackgroundTint="@color/tapOrange20"
                     android:progressTint="@color/tapWhite"
                     android:thumbTint="@color/tapWhite"
@@ -163,7 +165,6 @@
                     android:text="@string/zero_colon_zero"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/seek_bar"
-                    app:layout_constraintStart_toEndOf="@id/seek_bar"
                     app:layout_constraintBottom_toBottomOf="@id/seek_bar"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
