@@ -1798,6 +1798,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void removeRecording() {
         stopRecording();
         audioManager.deleteRecording(this);
+        vm.setPausedPosition(0);
         stopProgressTimer();
         if (vm.getMediaPlayer() != null) {
             if (vm.getMediaPlayer().isPlaying()) {
@@ -1818,6 +1819,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.getMediaPlayer().prepareAsync();
             } else {
                 setPlayingState();
+                startProgressTimer();
                 vm.getMediaPlayer().start();
                 if (messageAdapter.lastPosition != -1) {
                     messageAdapter.removePlayer();
@@ -1905,7 +1907,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
             vm.setSeeking(false);
-            setPlayingState();
+            if (vm.isMediaPlaying()) {
+                setPlayingState();
+            }
             vm.getMediaPlayer().seekTo(vm.getMediaPlayer().getDuration() * seekBar.getProgress() / seekBar.getMax());
         }
     };
