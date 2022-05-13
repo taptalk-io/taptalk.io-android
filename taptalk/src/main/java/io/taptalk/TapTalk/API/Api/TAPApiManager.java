@@ -459,6 +459,25 @@ public class TAPApiManager {
         execute(tapMultipart.uploadFile(requestBody), subscriber);
     }
 
+    public void uploadAudio(File audioFile, String roomID, String mimeType,
+                           ProgressRequestBody.UploadCallbacks uploadCallback,
+                           Subscriber<TAPBaseResponse<TAPUploadFileResponse>> subscriber) {
+        TAPTalkMultipartApiService tapMultipart = TAPApiConnection.getInstance(instanceKey).getTapMultipart(calculateTimeOutTimeWithFileSize(audioFile.length()));
+        ProgressRequestBody reqFile = new ProgressRequestBody(audioFile, mimeType, uploadCallback);
+        String extension = "";
+        if (audioFile.getAbsolutePath().contains(".")) {
+            extension = audioFile.getAbsolutePath().substring(audioFile.getAbsolutePath().lastIndexOf("."));
+        }
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("roomID", roomID)
+                .addFormDataPart("file", System.currentTimeMillis() + extension, reqFile)
+                .addFormDataPart("fileType", "audio")
+                .build();
+        execute(tapMultipart.uploadFile(requestBody), subscriber);
+    }
+
     public void uploadProfilePicture(File imageFile, String mimeType,
                                      ProgressRequestBody.UploadCallbacks uploadCallback,
                                      Subscriber<TAPBaseResponse<TAPGetUserResponse>> subscriber) {

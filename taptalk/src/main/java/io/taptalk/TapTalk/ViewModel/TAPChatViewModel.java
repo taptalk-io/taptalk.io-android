@@ -2,6 +2,7 @@ package io.taptalk.TapTalk.ViewModel;
 
 import android.app.Application;
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 
@@ -11,10 +12,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
@@ -66,6 +69,12 @@ public class TAPChatViewModel extends AndroidViewModel {
     public final int IDLE = 0;
     public final int ANIMATING = 1;
     public final int PROCESSING = 2;
+    private File audioFile;
+    private boolean isMediaPlaying, isSeeking;
+    private Uri voiceUri;
+    private MediaPlayer mediaPlayer;
+    private Timer durationTimer;
+    private int duration, pausedPosition;
 
     public static class TAPChatViewModelFactory implements ViewModelProvider.Factory {
         private Application application;
@@ -594,5 +603,69 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void setHasMoreData(boolean hasMoreData) {
         isHasMoreData = hasMoreData;
+    }
+
+    public File getAudioFile() {
+        return audioFile == null? new File("") : audioFile;
+    }
+
+    public void setAudioFile(File audioFile) {
+        this.audioFile = audioFile;
+    }
+
+    public boolean isMediaPlaying() {
+        return isMediaPlaying;
+    }
+
+    public void setMediaPlaying(boolean mediaPlaying) {
+        isMediaPlaying = mediaPlaying;
+    }
+
+    public boolean isSeeking() {
+        return isSeeking;
+    }
+
+    public void setSeeking(boolean seeking) {
+        isSeeking = seeking;
+    }
+
+    public Uri getVoiceUri() {
+        return voiceUri;
+    }
+
+    public void setVoiceUri(Uri voiceUri) {
+        this.voiceUri = voiceUri;
+    }
+
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
+    public void setMediaPlayer(MediaPlayer mediaPlayer) {
+        this.mediaPlayer = mediaPlayer;
+    }
+
+    public Timer getDurationTimer() {
+        return durationTimer;
+    }
+
+    public void setDurationTimer(Timer durationTimer) {
+        this.durationTimer = durationTimer;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public int getPausedPosition() {
+        return pausedPosition;
+    }
+
+    public void setPausedPosition(int pausedPosition) {
+        this.pausedPosition = pausedPosition;
     }
 }

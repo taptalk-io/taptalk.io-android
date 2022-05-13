@@ -230,6 +230,7 @@
     <string name="tap_photo">Photo</string>
     <string name="tap_video">Video</string>
     <string name="tap_file">File</string>
+    <string name="tap_voice">Voice</string>
     <string name="tap_document">Dokumen</string>
     <string name="tap_camera">Kamera</string>
     <string name="tap_gallery">Galeri</string>
@@ -239,6 +240,7 @@
     <string name="tap_emoji_photo">🖼</string>
     <string name="tap_emoji_video">🎥</string>
     <string name="tap_emoji_file">📎</string>
+    <string name="tap_emoji_voice_note">🎤</string>
     <string name="tap_location_body">📍 Lokasi</string>
 
     <!--Long Press-->
@@ -393,5 +395,8 @@
     <string name="tap_no_starred_messages">No Starred Messages</string>
     <string name="tap_empty_starred_messages_info">Tap and hold on any messages and add star to find important text later.</string>
     <string name="tap_unstar">Unstar</string>
+    <string name="tap_long_press_to_record">Long press mic to record.</string>
+    <string name="tap_slide_left_to_cancel">Slide left to cancel</string>
+    <string name="zero_colon_zero">00:00</string>
 
 </resources>

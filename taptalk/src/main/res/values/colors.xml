@@ -67,13 +67,16 @@
     <color name="tapLeftBubbleQuoteBackgroundColor">@color/tapDefaultLeftBubbleDarkBackgroundColor</color>
     <color name="tapRightFileButtonBackgroundColor">@color/tapWhite</color>
     <color name="tapLeftFileButtonBackgroundColor">@color/tapColorPrimary</color>
+    <color name="tapRightVoiceButtonBackgroundColor">@color/tapTransparentBlack1940</color>
+    <color name="tapLeftVoiceButtonBackgroundColor">@color/tapTransparentBlack1920</color>
     <color name="tapSystemMessageBackgroundColor">@color/tapTransparentWhite82</color>
     <color name="tapDateIndicatorBackgroundColor">@color/tapWhite</color>
     <color name="tapUnreadIdentifierBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapFileProgressBackgroundColorWhite">@color/tapWhite</color>
     <color name="tapFileProgressBackgroundColorPrimary">@color/tapDefaultRightBubbleBackgroundColor</color>
     <color name="tapDeletedChatRoomInfoBackgroundColor">@color/tapParchment</color>
-    <color name="tapChatRoomBackgroundColor">@color/tapDefaultBackgroundColor</color> <!--*-->
+    <color name="tapChatRoomBackgroundColor">@color/tapDefaultBackgroundColor</color>
+    <color name="tapChatVoiceNoteRecordTimeColor">@color/tapColorPrimary</color>  <!--*-->
 
     <color name="tapSelectedMediaPreviewThumbnailBorderColor">@color/tapColorPrimary</color>
     <color name="tapMediaPreviewWarningBackgroundColor">@color/tapColorError</color>
@@ -312,6 +315,8 @@
     <color name="tapLeftFileBubbleNameColor">@color/tapColorTextDark</color>
     <color name="tapRightFileBubbleInfoColor">@color/tapColorTextLight</color>
     <color name="tapLeftFileBubbleInfoColor">@color/tapColorTextDark</color>
+    <color name="tapRightVoiceBubbleInfoColor">@color/tapColorTextLight</color>
+    <color name="tapLeftVoiceBubbleInfoColor">@color/tapColorTextDark</color>
     <color name="tapLeftBubbleSenderNameColor">@color/tapColorPrimary</color>
     <color name="tapBubbleMessageStatusColor">@color/tapColorTextMedium</color>
     <color name="tapRightBubbleMessageTimestampColor">@color/tapTransparentWhite80</color>
@@ -407,6 +412,7 @@
     <color name="tapTangerine">#ffa107</color>
     <color name="tapOrangeish">#ff9049</color>
     <color name="tapOrangeYellow">#ff9f00</color>
+    <color name="tapOrange20">#FFCB99</color>
     <color name="tapMango">#ff9833</color>
     <color name="tapLightOrange">#ffa145</color>
     <color name="tapLightOrangeTwo">#ffa045</color>

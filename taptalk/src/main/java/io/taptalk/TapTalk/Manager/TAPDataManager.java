@@ -1312,6 +1312,12 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).uploadFile(file, roomID, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
     }
 
+    public void uploadAudio(String localID, File file, String roomID, String mimeType,
+                           ProgressRequestBody.UploadCallbacks uploadCallback,
+                           TAPDefaultDataView<TAPUploadFileResponse> view) {
+        TAPApiManager.getInstance(instanceKey).uploadAudio(file, roomID, mimeType, uploadCallback, getUploadSubscriber(roomID, localID, view));
+    }
+
     private HashMap<String, TAPDefaultSubscriber<TAPBaseResponse<TAPUploadFileResponse>, TAPDefaultDataView<TAPUploadFileResponse>, TAPUploadFileResponse>>
     getUploadSubscribers() {
         return null == uploadSubscribers ? uploadSubscribers = new HashMap<>() : uploadSubscribers;
