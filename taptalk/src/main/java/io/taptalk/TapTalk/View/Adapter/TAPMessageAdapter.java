@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,6 +52,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
@@ -77,6 +82,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
+import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DELETED_LEFT;
@@ -95,12 +101,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_UNREAD_STATUS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_LEFT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VIDEO_RIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VOICE_LEFT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_VOICE_RIGHT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_EMPTY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_LOG;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
@@ -109,6 +118,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.HEIGHT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IS_PLAYING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LATITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.LONGITUDE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
@@ -125,6 +135,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTE
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.VIDEO;
@@ -157,6 +168,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private float initialTranslationX = TAPUtils.dpToPx(-22);
     private long defaultAnimationTime = 200L;
     private RoomType roomType = RoomType.DEFAULT;
+    private boolean isMediaPlaying, isSeeking;
+    private Uri voiceUri;
+    private MediaPlayer audioPlayer = null;
+    private Timer durationTimer;
+    private int duration, pausedPosition;
+    public int lastPosition = -1;
 
     public enum RoomType {
         DEFAULT, STARRED
@@ -216,6 +233,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 return new FileVH(parent, R.layout.tap_cell_chat_bubble_file_right, viewType);
             case TYPE_BUBBLE_FILE_LEFT:
                 return new FileVH(parent, R.layout.tap_cell_chat_bubble_file_left, viewType);
+            case TYPE_BUBBLE_VOICE_RIGHT:
+                return new VoiceVH(parent, R.layout.tap_cell_chat_bubble_voice_right, viewType);
+            case TYPE_BUBBLE_VOICE_LEFT:
+                return new VoiceVH(parent, R.layout.tap_cell_chat_bubble_voice_left, viewType);
             case TYPE_BUBBLE_LOCATION_RIGHT:
                 return new LocationVH(parent, R.layout.tap_cell_chat_bubble_location_right, viewType);
             case TYPE_BUBBLE_LOCATION_LEFT:
@@ -293,6 +314,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         return TYPE_BUBBLE_FILE_RIGHT;
                     } else {
                         return TYPE_BUBBLE_FILE_LEFT;
+                    }
+                case TYPE_VOICE:
+                    if (isMessageFromMySelf(messageModel)) {
+                        return TYPE_BUBBLE_VOICE_RIGHT;
+                    } else {
+                        return TYPE_BUBBLE_VOICE_LEFT;
                     }
                 case TYPE_LOCATION:
                     if (isMessageFromMySelf(messageModel)) {
@@ -1543,6 +1570,259 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
         }
     }
+
+    public class VoiceVH extends TAPBaseChatViewHolder {
+
+        private ConstraintLayout clContainer;
+        private ConstraintLayout clForwarded;
+        private ConstraintLayout clQuote;
+        private FrameLayout flBubble;
+        private FrameLayout flVoiceIcon;
+        private CircleImageView civAvatar;
+        private ImageView ivVoiceIcon;
+        private ImageView ivMessageStatus;
+        //private ImageView ivReply;
+        private ImageView ivSending;
+        private ImageView ivBubbleHighlight;
+        private TAPRoundedCornerImageView rcivQuoteImage;
+        private TextView tvAvatarLabel;
+        private TextView tvUserName;
+        private TextView tvVoiceTime;
+        private TextView tvMessageTimestamp;
+        private TextView tvMessageStatus;
+        private TextView tvForwardedFrom;
+        private TextView tvQuoteTitle;
+        private TextView tvQuoteContent;
+        private View vQuoteBackground;
+        private View vQuoteDecoration;
+        private ProgressBar pbProgress;
+        private ImageView ivStarMessage;
+        private View vSeparator;
+        private SeekBar seekBar;
+
+        private Uri fileUri;
+
+        VoiceVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
+            super(parent, itemLayoutId);
+
+            clContainer = itemView.findViewById(R.id.cl_container);
+            clForwarded = itemView.findViewById(R.id.cl_forwarded);
+            clQuote = itemView.findViewById(R.id.cl_quote);
+            flBubble = itemView.findViewById(R.id.fl_bubble);
+            flVoiceIcon = itemView.findViewById(R.id.fl_voice_icon);
+            ivVoiceIcon = itemView.findViewById(R.id.iv_voice_icon);
+            ivBubbleHighlight = itemView.findViewById(R.id.iv_bubble_highlight);
+            //ivReply = itemView.findViewById(R.id.iv_reply);
+            rcivQuoteImage = itemView.findViewById(R.id.rciv_quote_image);
+            tvVoiceTime = itemView.findViewById(R.id.tv_voice_time);
+            tvMessageTimestamp = itemView.findViewById(R.id.tv_message_timestamp);
+            tvMessageStatus = itemView.findViewById(R.id.tv_message_status);
+            tvForwardedFrom = itemView.findViewById(R.id.tv_forwarded_from);
+            tvQuoteTitle = itemView.findViewById(R.id.tv_quote_title);
+            tvQuoteContent = itemView.findViewById(R.id.tv_quote_content);
+            vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
+            vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
+            pbProgress = itemView.findViewById(R.id.pb_progress);
+            ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            vSeparator = itemView.findViewById(R.id.v_separator);
+            seekBar = itemView.findViewById(R.id.seek_bar);
+
+            if (bubbleType == TYPE_BUBBLE_VOICE_LEFT) {
+                civAvatar = itemView.findViewById(R.id.civ_avatar);
+                tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
+                tvUserName = itemView.findViewById(R.id.tv_user_name);
+            } else {
+                ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
+                ivSending = itemView.findViewById(R.id.iv_sending);
+            }
+        }
+
+        @Override
+        protected void onBind(TAPMessageModel item, int position) {
+            if (null == item) {
+                return;
+            }
+            if (!animatingMessages.contains(item)) {
+                checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
+            }
+            tvMessageTimestamp.setText(item.getMessageStatusText());
+            showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            showForwardedFrom(item, clForwarded, tvForwardedFrom);
+            checkAndAnimateHighlight(item, ivBubbleHighlight);
+            setFileProgress(item);
+
+            markMessageAsRead(item, myUserModel);
+            enableLongPress(itemView.getContext(), flBubble, item);
+            setStarredIcon(item.getMessageID(), ivStarMessage);
+
+            clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+            if (roomType != RoomType.STARRED) {
+                flBubble.setOnClickListener(v -> flVoiceIcon.performClick());
+                //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
+            } else {
+                flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+                if (position != 0) {
+                    vSeparator.setVisibility(View.VISIBLE);
+                } else {
+                    vSeparator.setVisibility(View.GONE);
+                }
+            }
+        }
+
+        @Override
+        protected void onMessageSending(TAPMessageModel message) {
+            showMessageAsSending(itemView, message, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageFailedToSend(TAPMessageModel message) {
+            showMessageFailedToSend(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageSent(TAPMessageModel message) {
+            showMessageAsSent(message, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageDelivered(TAPMessageModel message) {
+            showMessageAsDelivered(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        @Override
+        protected void onMessageRead(TAPMessageModel message) {
+            showMessageAsRead(itemView, flBubble, tvMessageStatus, ivMessageStatus, ivSending);
+        }
+
+        private void setFileProgress(TAPMessageModel item) {
+            if (null == item.getData()) {
+                return;
+            }
+            String localID = item.getLocalID();
+            Integer uploadProgressPercent = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressPercent(localID);
+            Integer downloadProgressPercent = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(localID);
+//            String key = TAPUtils.getUriKeyFromMessage(item);
+            fileUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item);
+
+//            String space = isMessageFromMySelf(item) ? RIGHT_BUBBLE_SPACE_APPEND : LEFT_BUBBLE_SPACE_APPEND;
+//            tvFileName.setText(TAPUtils.getFileDisplayName(item));
+//            tvFileInfoDummy.setText(String.format("%s%s", TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item), space));
+//            tvFileInfoDummy.setText(TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item));
+
+            Number duration = (Number) item.getData().get(DURATION);
+            String durationString = "00:00";
+            if (duration != null && duration.longValue() > 0L) {
+                durationString = TAPUtils.getMediaDurationString(duration.intValue(), duration.intValue());
+            }
+            if (null != item.getFailedSend() && item.getFailedSend()) {
+                // Message failed to send
+                tvVoiceTime.setText(durationString);
+                ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white_thin));
+                pbProgress.setVisibility(View.GONE);
+                tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
+                if (isMessageFromMySelf(item)) {
+                    // TODO: 18/04/22 handle resend voice note MU
+                    flVoiceIcon.setOnClickListener(v -> resendMessage(item));
+                } else {
+                    flVoiceIcon.setOnClickListener(v -> downloadFile(item));
+                }
+            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressPercent) && (null != fileUri || TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item))) {
+                // File has finished downloading or uploading
+                tvMessageStatus.setText(item.getMessageStatusText());
+                tvVoiceTime.setText(durationString);
+                ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_play_white));
+                pbProgress.setVisibility(View.GONE);
+                seekBar.getThumb().mutate().setAlpha(255);
+                seekBar.setOnSeekBarChangeListener(null);
+                seekBar.setProgress(0);
+                seekBar.setEnabled(false);
+                // TODO: 18/04/22 handle play pause voice note MU
+                // TODO: 18/04/22 handle seekbar logic MU
+                flVoiceIcon.setOnClickListener(v -> playPauseVoiceNote(seekBar, (Activity) itemView.getContext(), tvVoiceTime, ivVoiceIcon, fileUri, item, getAbsoluteAdapterPosition(), duration != null ? duration.intValue() : 1));
+            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+                    && null == downloadProgressPercent)) {
+                // File is not downloaded
+                tvVoiceTime.setText(durationString);
+                if (TAPFileDownloadManager.getInstance(instanceKey).getFailedDownloads().contains(item.getLocalID())) {
+                    tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
+                    ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white_thin));
+                } else {
+                    tvMessageStatus.setText(item.getMessageStatusText());
+                    ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_download_orange));
+                }
+                seekBar.getThumb().mutate().setAlpha(0);
+                seekBar.setEnabled(false);
+                pbProgress.setVisibility(View.GONE);
+                flVoiceIcon.setOnClickListener(v -> downloadFile(item));
+            } else {
+                // File is downloading or uploading
+                seekBar.getThumb().mutate().setAlpha(0);
+                seekBar.setEnabled(false);
+                ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
+                pbProgress.setMax(100);
+                pbProgress.setVisibility(View.VISIBLE);
+                tvMessageStatus.setText(item.getMessageStatusText());
+                if (null != uploadProgressPercent) {
+                    Long uploadProgressBytes = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressBytes(localID);
+                    tvVoiceTime.setText(TAPUtils.getFileDisplayProgress(item, uploadProgressBytes));
+                    pbProgress.setProgress(uploadProgressPercent);
+                    flVoiceIcon.setOnClickListener(v -> cancelUpload(item));
+                } else {
+                    Long downloadProgressBytes = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressBytes(localID);
+                    tvVoiceTime.setText(TAPUtils.getFileDisplayProgress(item, downloadProgressBytes));
+                    pbProgress.setProgress(downloadProgressPercent);
+                    flVoiceIcon.setOnClickListener(v -> cancelDownload(item));
+                }
+            }
+        }
+
+        private void downloadFile(TAPMessageModel item) {
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(DownloadFile);
+                intent.putExtra(MESSAGE, item);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
+        }
+
+        private void cancelDownload(TAPMessageModel item) {
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(CancelDownload);
+                intent.putExtra(DownloadLocalID, item.getLocalID());
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
+        }
+
+        private void cancelUpload(TAPMessageModel item) {
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(UploadCancelled);
+                intent.putExtra(UploadLocalID, item.getLocalID());
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+            }
+        }
+
+        private void playPauseVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, TAPMessageModel item, int currentPosition, int audioDuration) {
+            // TODO: 18/04/22 play voice note MU
+            if (roomType == RoomType.STARRED) {
+                chatListener.onOutsideClicked(item);
+            } else {
+                Intent intent = new Intent(PlayPauseVoiceNote);
+                intent.putExtra(MESSAGE, item);
+                intent.putExtra(IS_PLAYING, true);
+                LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
+                seekBar.setOnSeekBarChangeListener(seekBarChangeListener(activity, tvDuration, image));
+                playBubbleVoiceNote(seekBar, activity, tvDuration, image, fileUri, currentPosition, audioDuration);
+            }
+        }
+
+    }
+
 
     public class LocationVH extends TAPBaseChatViewHolder {
 
@@ -2957,4 +3237,180 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         this.starredMessageIds.clear();
         this.starredMessageIds.addAll(starredMessageIds);
     }
+
+
+    private void loadMediaPlayer(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, int audioDuration) {
+        try {
+            audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            audioPlayer.setDataSource(activity, fileUri);
+            audioPlayer.setOnPreparedListener(preparedListener(seekBar, activity, tvDuration, image, audioDuration));
+            audioPlayer.setOnCompletionListener(completionListener(seekBar, activity, image));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private SeekBar.OnSeekBarChangeListener seekBarChangeListener(Activity activity, TextView tvDuration, ImageView image) {
+        return new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                try {
+                    String currentTimeString = TAPUtils.getMediaDurationString(audioPlayer.getCurrentPosition(), audioPlayer.getDuration());
+                    tvDuration.setText(currentTimeString);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (isSeeking) {
+                    audioPlayer.seekTo(audioPlayer.getDuration() * seekBar.getProgress() / seekBar.getMax());
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                isSeeking = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                isSeeking = false;
+                audioPlayer.seekTo(audioPlayer.getDuration() * seekBar.getProgress() / seekBar.getMax());
+            }
+        };
+    }
+
+    private MediaPlayer.OnPreparedListener preparedListener(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, int audioDuration) {
+        return mediaPlayer -> {
+            duration = audioPlayer.getDuration();
+            isMediaPlaying = true;
+            seekBar.setEnabled(true);
+            startProgressTimer(seekBar, activity);
+            tvDuration.setText(TAPUtils.getMediaDurationString(duration, duration));
+            mediaPlayer.seekTo(pausedPosition);
+            mediaPlayer.setOnSeekCompleteListener(onSeekListener(seekBar, activity, tvDuration));
+            audioPlayer = mediaPlayer;
+            activity.runOnUiThread(() -> {
+                audioPlayer.start();
+                image.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.tap_ic_pause_white));
+            });
+        };
+    }
+
+    private MediaPlayer.OnSeekCompleteListener onSeekListener(SeekBar seekBar, Activity activity, TextView tvDuration) {
+       return mediaPlayer -> {
+           try {
+               tvDuration.setText(TAPUtils.getMediaDurationString(mediaPlayer.getCurrentPosition(), duration));
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+           if (!isSeeking && isMediaPlaying) {
+               mediaPlayer.start();
+               startProgressTimer(seekBar, activity);
+           } else {
+               pausedPosition = mediaPlayer.getCurrentPosition();
+               if (pausedPosition >= duration) {
+                   pausedPosition = 0;
+               }
+           }
+       };
+    }
+
+    private MediaPlayer.OnCompletionListener completionListener(SeekBar seekBar, Activity activity, ImageView image) {
+        return mediaPlayer -> setFinishPlayingState(seekBar, activity, image);
+    }
+
+    private void setFinishPlayingState(SeekBar seekBar, Activity activity, ImageView image) {
+            seekBar.setEnabled(false);
+            pausedPosition = 0;
+            image.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.tap_ic_play_white));
+    }
+
+    private void startProgressTimer(SeekBar seekBar, Activity activity) {
+        if (null != durationTimer) {
+            return;
+        }
+        durationTimer = new Timer();
+        durationTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                activity.runOnUiThread(() -> {
+                    if (audioPlayer != null && duration != 0) {
+                        seekBar.setProgress(audioPlayer.getCurrentPosition() * seekBar.getMax() / duration);
+                    }
+                });
+            }
+        }, 0, 10L);
+    }
+
+    private void stopProgressTimer() {
+        if (null == durationTimer) {
+            return;
+        }
+        durationTimer.cancel();
+        durationTimer = null;
+    }
+
+    private void playBubbleVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, int currentPosition, int audioDuration) {
+        try {
+            if (audioPlayer == null) {
+                audioPlayer = new MediaPlayer();
+                voiceUri = fileUri;
+                loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
+                audioPlayer.prepareAsync();
+                lastPosition = currentPosition;
+            } else {
+                if (audioPlayer.isPlaying()) {
+                    if (voiceUri != fileUri) {
+                        voiceUri = fileUri;
+                        pausedPosition = 0;
+                        removePlayer();
+                        audioPlayer = new MediaPlayer();
+                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
+                        notifyItemChanged(lastPosition);
+                        audioPlayer.prepareAsync();
+                        lastPosition = currentPosition;
+                    } else {
+                        pauseBubbleVoiceNote(image, activity);
+                    }
+                } else {
+                    if (voiceUri != fileUri) {
+                        voiceUri = fileUri;
+                        pausedPosition = 0;
+                        removePlayer();
+                        audioPlayer = new MediaPlayer();
+                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
+                        notifyItemChanged(lastPosition);
+                    } else {
+                        audioPlayer.release();
+                        audioPlayer = null;
+                        audioPlayer = new MediaPlayer();
+                        loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
+                    }
+                    audioPlayer.prepareAsync();
+                    lastPosition = currentPosition;
+                }
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void pauseBubbleVoiceNote(ImageView image, Activity activity) {
+        isMediaPlaying = false;
+        pausedPosition = audioPlayer.getCurrentPosition();
+        audioPlayer.pause();
+        stopProgressTimer();
+        image.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.tap_ic_play_white));
+    }
+
+    public void removePlayer() {
+        if (audioPlayer != null) {
+            if (audioPlayer.isPlaying()) {
+                audioPlayer.stop();
+            }
+            audioPlayer.release();
+            audioPlayer = null;
+        }
+        stopProgressTimer();
+    }
+
 }

@@ -48,6 +48,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_LOCATION = 1005;
         public static final int TYPE_CONTACT = 1006;
         public static final int TYPE_STICKER = 1007;
+        public static final int TYPE_VOICE = 1008;
+        public static final int TYPE_AUDIO = 1009;
 
         public static final int TYPE_PRODUCT = 2001;
         public static final int TYPE_CATEGORY = 2002;
@@ -71,6 +73,8 @@ public class TAPDefaultConstant {
         public static final int TYPE_BUBBLE_VIDEO_LEFT = 10032;
         public static final int TYPE_BUBBLE_FILE_RIGHT = 10041;
         public static final int TYPE_BUBBLE_FILE_LEFT = 10042;
+        public static final int TYPE_BUBBLE_VOICE_RIGHT = 10043;
+        public static final int TYPE_BUBBLE_VOICE_LEFT = 10044;
         public static final int TYPE_BUBBLE_LOCATION_RIGHT = 10051;
         public static final int TYPE_BUBBLE_LOCATION_LEFT = 10052;
         public static final int TYPE_BUBBLE_PRODUCT_LIST = 2001;
@@ -102,6 +106,7 @@ public class TAPDefaultConstant {
         public static final String ADDRESS = "address";
         public static final String LATITUDE = "latitude";
         public static final String LONGITUDE = "longitude";
+        public static final String IS_PLAYING = "isPLaying";
     }
 
     public static final class QuoteFileType {
@@ -185,6 +190,7 @@ public class TAPDefaultConstant {
         public static final int PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE = 35;
         public static final int PERMISSION_LOCATION = 41;
         public static final int PERMISSION_READ_CONTACT = 51;
+        public static final int PERMISSION_RECORD_AUDIO = 61;
     }
 
     public static final class Sorting {
@@ -316,6 +322,7 @@ public class TAPDefaultConstant {
         public static final String DownloadedFile = "kTAPDownloadedFile";
         public static final String DownloadErrorCode = "kTAPDownloadErrorCode";
         public static final String DownloadErrorMessage = "kTAPDownloadErrorMessage";
+        public static final String PlayPauseVoiceNote = "kTAPPlayPauseVoiceNote";
     }
 
     public static final class LongPressBroadcastEvent {

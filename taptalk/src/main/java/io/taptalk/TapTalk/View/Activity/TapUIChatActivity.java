@@ -1,7 +1,109 @@
 package io.taptalk.TapTalk.View.Activity;
 
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.PlayPauseVoiceNote;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.SOCKET_CONNECTED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LOCATION_NAME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LONGITUDE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressMention;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IS_PLAYING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_RECORD_AUDIO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PERSONAL_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_PREVIEW;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_ADD_PARTICIPANT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_REMOVE_PARTICIPANT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UNREAD_INDICATOR_LOCAL_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFileData;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadImageData;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
+import static io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity.RESULT_FILE_PATH;
+import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.LINK_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.MENTION_TYPE;
+import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.PHONE_TYPE;
+
 import android.Manifest;
 import android.animation.LayoutTransition;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -15,6 +117,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -34,12 +139,14 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.Group;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -68,12 +175,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.MaxHeightRecyclerView;
+import io.taptalk.TapTalk.Helper.OnSwipeTouchListener;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
 import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener;
@@ -84,6 +194,8 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Helper.audiorecorder.TapAudioManager;
+import io.taptalk.TapTalk.Interface.TapAudioListener;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
@@ -127,103 +239,6 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPAttachmentBottomSheet;
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet;
 import io.taptalk.TapTalk.View.Fragment.TAPConnectionStatusFragment;
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
-
-import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
-import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.USER_NOT_FOUND;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.OpenFile;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.SOCKET_CONNECTED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.URL_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LATITUDE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LOCATION_NAME;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Location.LONGITUDE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressChatBubble;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressEmail;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressLink;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressMention;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LongPressBroadcastEvent.LongPressPhone;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ADDRESS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_UNREAD_MESSAGE_IDENTIFIER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_LOCATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_FILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_READ_EXTERNAL_STORAGE_GALLERY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PERSONAL_PROFILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_GALLERY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_MEDIA_FROM_PREVIEW;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_ADD_PARTICIPANT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_REMOVE_PARTICIPANT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_INDICATOR_TIMEOUT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UNREAD_INDICATOR_LOCAL_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFailed;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadFileData;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadImageData;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressFinish;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadProgressLoading;
-import static io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity.RESULT_FILE_PATH;
-import static io.taptalk.TapTalk.Manager.TAPConnectionManager.ConnectionStatus.CONNECTED;
-import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.CHAT_BUBBLE_TYPE;
-import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.EMAIL_TYPE;
-import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.LINK_TYPE;
-import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.MENTION_TYPE;
-import static io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet.LongPressType.PHONE_TYPE;
 
 public class TapUIChatActivity extends TAPBaseActivity {
 
@@ -290,7 +305,22 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private View vRoomImage;
     private View vStatusBadge;
     private View vQuoteDecoration;
+    private View vSeparator;
     private TAPConnectionStatusFragment fConnectionStatus;
+
+//  Voice Note
+    private ImageView ivVoiceNote;
+    private ConstraintLayout clVoiceNote;
+    private ImageView ivVoiceNoteControl;
+    private TextView tvRecordTime;
+    private ImageView ivRecording;
+    private TextView tvSlideLabel;
+    private ImageView ivLeft;
+    private ImageView ivRemoveVoiceNote;
+    private ConstraintLayout clSwipeVoiceNote;
+    private Group gTooltip;
+    private TapAudioManager audioManager;
+    private SeekBar seekBar;
 
     // RecyclerView
     private TAPMessageAdapter messageAdapter;
@@ -306,8 +336,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     // Scroll state
     private enum STATE {WORKING, LOADED, DONE}
+    // Voice Note State
+    private enum RECORDING_STATE {
+        DEFAULT, HOLD_RECORD, LOCKED_RECORD, FINISH, PLAY, PAUSE
+    }
+
 
     private STATE state = STATE.WORKING;
+    private RECORDING_STATE recordingState = RECORDING_STATE.DEFAULT;
 
     /**
      * =========================================================================================== *
@@ -387,6 +423,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         setContentView(R.layout.tap_activity_chat);
 
         glide = Glide.with(this);
+        audioManager = TapAudioManager.Companion.getInstance(instanceKey, audioListener);
         bindViews();
         initRoom();
         registerBroadcastManager();
@@ -486,6 +523,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TapTalk.disconnect(instanceKey);
             }
         }
+
+        if (vm.getMediaPlayer() != null) {
+            vm.getMediaPlayer().release();
+        }
+        messageAdapter.removePlayer();
     }
 
     @Override
@@ -662,6 +704,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 case PERMISSION_LOCATION:
                     TAPUtils.openLocationPicker(TapUIChatActivity.this, instanceKey);
                     break;
+                case PERMISSION_RECORD_AUDIO:
+                    showTooltip();
+                    break;
             }
         }
     }
@@ -753,6 +798,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vStatusBadge = findViewById(R.id.v_room_status_badge);
         vQuoteDecoration = findViewById(R.id.v_quote_decoration);
         fConnectionStatus = (TAPConnectionStatusFragment) getSupportFragmentManager().findFragmentById(R.id.f_connection_status);
+        ivVoiceNote = findViewById(R.id.iv_voice_note);
+        clVoiceNote = findViewById(R.id.cl_voice_note);
+        ivVoiceNoteControl = findViewById(R.id.iv_voice_note_control);
+        tvRecordTime = findViewById(R.id.tv_record_time);
+        ivRecording = findViewById(R.id.iv_recording);
+        tvSlideLabel = findViewById(R.id.tv_slide_label);
+        ivLeft = findViewById(R.id.iv_left);
+        ivRemoveVoiceNote = findViewById(R.id.iv_remove_voice_note);
+        clSwipeVoiceNote = findViewById(R.id.cl_swipe_voice_note);
+        gTooltip = findViewById(R.id.g_tooltip);
+        seekBar = findViewById(R.id.seek_bar);
+        vSeparator = findViewById(R.id.v_separator);
     }
 
     private boolean initViewModel() {
@@ -794,6 +851,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         return null != vm.getMyUserModel() && (null != vm.getOtherUserModel() || (TYPE_PERSONAL != vm.getRoom().getType()));
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initView() {
         getWindow().setBackgroundDrawable(null);
 
@@ -919,28 +977,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivButtonChatMenu.setVisibility(View.GONE);
         }
 
-        // Show / hide attachment button
-        if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
-                TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
-                TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
-                TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
-        ) {
-            ivButtonAttach.setVisibility(View.GONE);
-            etChat.setPadding(
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6),
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6)
-            );
-        } else {
-            ivButtonAttach.setVisibility(View.VISIBLE);
-            etChat.setPadding(
-                    TAPUtils.dpToPx(12),
-                    TAPUtils.dpToPx(6),
-                    TAPUtils.dpToPx(44),
-                    TAPUtils.dpToPx(6)
-            );
-        }
+        showAttachmentButton();
 
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
             tvChatEmptyGuide.setText(Html.fromHtml(String.format(getString(R.string.tap_format_s_personal_chat_room_empty_guide_title), vm.getRoom().getName())));
@@ -1003,6 +1040,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flLoading.setOnClickListener(v -> {
         });
 
+        if (TapUI.getInstance().isSendVoiceNoteMenuEnabled()) {
+            ivVoiceNote.setOnClickListener(v -> {
+                showTooltip();
+            });
+            // TODO: 25/04/22 temporarily disabled for improvement MU
+//        ivVoiceNote.setOnTouchListener(swipeTouchListener);
+            ivVoiceNote.setOnLongClickListener(v -> {
+                startRecording();
+                return true;
+            });
+            ivVoiceNoteControl.setOnClickListener(v -> onVoiceNoteControlClick());
+            ivRemoveVoiceNote.setOnClickListener(v -> removeRecording());
+            seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
+        } else {
+            vSeparator.setVisibility(View.GONE);
+            ivVoiceNote.setVisibility(View.GONE);
+        }
+
 //        // TODO: 19 July 2019 SHOW CHAT AS HISTORY IF ACTIVE USER IS NOT IN PARTICIPANT LIST
 //        if (null == vm.getRoom().getGroupParticipants()) {
 //            showChatAsHistory(getString(R.string.tap_not_a_participant));
@@ -1014,6 +1069,31 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivToBottom.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
             ivMentionAnchor.setBackground(getDrawable(R.drawable.tap_bg_scroll_to_bottom_ripple));
             clUnreadButton.setBackground(getDrawable(R.drawable.tap_bg_white_rounded_8dp_ripple));
+        }
+    }
+
+    private void showAttachmentButton() {
+        // Show / hide attachment button
+        if (TapUI.getInstance(instanceKey).isDocumentAttachmentDisabled() &&
+                TapUI.getInstance(instanceKey).isCameraAttachmentDisabled() &&
+                TapUI.getInstance(instanceKey).isGalleryAttachmentDisabled() &&
+                TapUI.getInstance(instanceKey).isLocationAttachmentDisabled()
+        ) {
+            ivButtonAttach.setVisibility(View.GONE);
+            etChat.setPadding(
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6),
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6)
+            );
+        } else {
+            ivButtonAttach.setVisibility(View.VISIBLE);
+            etChat.setPadding(
+                    TAPUtils.dpToPx(12),
+                    TAPUtils.dpToPx(6),
+                    TAPUtils.dpToPx(44),
+                    TAPUtils.dpToPx(6)
+            );
         }
     }
 
@@ -1054,6 +1134,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 DownloadFile,
                 OpenFile,
                 CancelDownload,
+                PlayPauseVoiceNote,
                 LongPressChatBubble,
                 LongPressEmail,
                 LongPressLink,
@@ -1145,7 +1226,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
             vm.delete(message.getLocalID());
             if ((message.getType() == TYPE_IMAGE ||
                     message.getType() == TYPE_VIDEO ||
-                    message.getType() == TYPE_FILE)
+                    message.getType() == TYPE_FILE ||
+                    message.getType() == TYPE_VOICE)
             ) {
                 if (null != message.getData() &&
                         null != message.getData().get(FILE_ID) &&
@@ -1497,7 +1579,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(TAPUtils.getFileDisplayName(message));
                 tvQuoteContent.setText(TAPUtils.getFileDisplayInfo(message));
                 tvQuoteContent.setMaxLines(1);
-            } else if (null != message.getData() && null != message.getData().get(FILE_URL)) {
+            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE) {
                 // Show image quote from file URL
                 glide.load((String) message.getData().get(FILE_URL)).into(rcivQuoteImage);
                 rcivQuoteImage.setColorFilter(null);
@@ -1631,6 +1713,298 @@ public class TapUIChatActivity extends TAPBaseActivity {
             ivChatMenu.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerBurgerMenu));
             TAPUtils.dismissKeyboard(this);
         });
+    }
+
+    private void setLockedRecordingState() {
+        hideChatField();
+        setSendButtonDisabled();
+        ivVoiceNote.setVisibility(View.GONE);
+        clSwipeVoiceNote.setVisibility(View.VISIBLE);
+        ivVoiceNoteControl.setVisibility(View.VISIBLE);
+        recordingState = RECORDING_STATE.LOCKED_RECORD;
+
+    }
+
+    private void setHoldRecordingState() {
+        // TODO: 12/04/22 voice note recording improvement MU
+        hideChatField();
+        setSendButtonDisabled();
+        clVoiceNote.setVisibility(View.VISIBLE);
+        clSwipeVoiceNote.setVisibility(View.VISIBLE);
+        recordingState = RECORDING_STATE.HOLD_RECORD;
+    }
+
+    private void setDefaultState() {
+        etChat.setVisibility(View.VISIBLE);
+        recordingState = RECORDING_STATE.DEFAULT;
+        etChat.setText(etChat.getText().toString());
+        ivVoiceNote.setVisibility(View.VISIBLE);
+        showAttachmentButton();
+        if (vm.isCustomKeyboardEnabled() && etChat.getText().toString().isEmpty()) {
+            ivChatMenu.setVisibility(View.VISIBLE);
+        }
+        clSwipeVoiceNote.setVisibility(View.GONE);
+        seekBar.setVisibility(View.GONE);
+        ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_stop_orange));
+    }
+
+    private void setFinishedRecordingState() {
+        seekBar.setVisibility(View.VISIBLE);
+        recordingState = RECORDING_STATE.FINISH;
+        seekBar.setEnabled(false);
+        ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
+    }
+
+    private void setPlayingState() {
+        recordingState = RECORDING_STATE.PLAY;
+        ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_pause_orange));
+    }
+
+    private void setPausedState() {
+        recordingState = RECORDING_STATE.PAUSE;
+        ivVoiceNoteControl.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_play_orange));
+    }
+
+    private void hideChatField() {
+        etChat.setVisibility(View.GONE);
+        ivButtonAttach.setVisibility(View.GONE);
+        ivChatMenu.setVisibility(View.GONE);
+    }
+
+    private void startRecording() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_RECORD_AUDIO);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_RECORD_AUDIO);
+            }
+        } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_RECORD_AUDIO);
+        } else {
+            setLockedRecordingState();
+            audioManager.startRecording();
+            audioManager.getRecordingTime().observe(TapUIChatActivity.this, s -> tvRecordTime.setText(s));
+        }
+    }
+
+    private void stopRecording() {
+        if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD) {
+            audioManager.stopRecording();
+        }
+    }
+
+    private void removeRecording() {
+        stopRecording();
+        audioManager.deleteRecording(this);
+        vm.setPausedPosition(0);
+        stopProgressTimer();
+        if (vm.getMediaPlayer() != null) {
+            if (vm.getMediaPlayer().isPlaying()) {
+                vm.getMediaPlayer().stop();
+            }
+            vm.setMediaPlayer(null);
+        }
+        seekBar.setProgress(0);
+        setDefaultState();
+    }
+
+    private void resumeVoiceNote() {
+        seekBar.setEnabled(true);
+        try {
+            if (vm.getMediaPlayer() == null) {
+                vm.setMediaPlayer(new MediaPlayer());
+                loadMediaPlayer();
+                vm.getMediaPlayer().prepareAsync();
+            } else {
+                setPlayingState();
+                startProgressTimer();
+                vm.getMediaPlayer().start();
+                if (messageAdapter.lastPosition != -1) {
+                    messageAdapter.removePlayer();
+                    messageAdapter.notifyItemChanged(messageAdapter.lastPosition);
+                }
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void pauseVoiceNote() {
+        setPausedState();
+        vm.setMediaPlaying(false);
+        vm.setPausedPosition(vm.getMediaPlayer().getCurrentPosition());
+        vm.getMediaPlayer().pause();
+        stopProgressTimer();
+    }
+
+    private void onVoiceNoteControlClick() {
+        switch (recordingState) {
+            case PLAY:
+                pauseVoiceNote();
+                break;
+            case PAUSE:
+            case FINISH:
+                resumeVoiceNote();
+                break;
+            case DEFAULT:
+            case HOLD_RECORD:
+            case LOCKED_RECORD:
+                stopRecording();
+                if (messageAdapter.lastPosition != -1) {
+                    messageAdapter.removePlayer();
+                    messageAdapter.notifyItemChanged(messageAdapter.lastPosition);
+                }
+                vm.setAudioFile(audioManager.getRecording());
+                MediaScannerConnection.scanFile(
+                        TapUIChatActivity.this,
+                        new String[]{audioManager.getRecording().getAbsolutePath()}, null,
+                        (s, uri) -> {
+                            try {
+                                Log.v("onScanCompleted", uri.getPath());
+                                vm.setVoiceUri(uri);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+                setFinishedRecordingState();
+                setSendButtonEnabled();
+                break;
+        }
+    }
+
+    private void loadMediaPlayer() {
+        try {
+            vm.getMediaPlayer().setAudioStreamType(AudioManager.STREAM_MUSIC);
+            vm.getMediaPlayer().setDataSource(TapUIChatActivity.this, vm.getVoiceUri());
+            vm.getMediaPlayer().setOnPreparedListener(preparedListener);
+            vm.getMediaPlayer().setOnCompletionListener(completionListener);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+            try {
+                String currentTimeString = TAPUtils.getMediaDurationString(vm.getMediaPlayer().getCurrentPosition(), vm.getMediaPlayer().getDuration());
+                tvRecordTime.setText(currentTimeString);
+            } catch (Exception e) {
+                Log.e(TAG, "onProgressChanged: " + e.getMessage());
+            }
+            if (vm.isSeeking()) {
+                vm.getMediaPlayer().seekTo(vm.getMediaPlayer().getDuration() * seekBar.getProgress() / seekBar.getMax());
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            vm.setSeeking(true);
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            vm.setSeeking(false);
+            if (vm.isMediaPlaying()) {
+                setPlayingState();
+            }
+            vm.getMediaPlayer().seekTo(vm.getMediaPlayer().getDuration() * seekBar.getProgress() / seekBar.getMax());
+        }
+    };
+
+    private MediaPlayer.OnPreparedListener preparedListener = new MediaPlayer.OnPreparedListener() {
+        @Override
+        public void onPrepared(MediaPlayer mediaPlayer) {
+            vm.setDuration(mediaPlayer.getDuration());
+            vm.setMediaPlaying(true);
+            startProgressTimer();
+            tvRecordTime.setText(TAPUtils.getMediaDurationString(vm.getDuration(), vm.getDuration()));
+            mediaPlayer.seekTo(vm.getPausedPosition());
+            mediaPlayer.setOnSeekCompleteListener(onSeekListener);
+            vm.setMediaPlayer(mediaPlayer);
+            runOnUiThread(() -> {
+                vm.getMediaPlayer().start();
+                setPlayingState();
+            });
+        }
+    };
+
+    private MediaPlayer.OnSeekCompleteListener onSeekListener = new MediaPlayer.OnSeekCompleteListener() {
+        @Override
+        public void onSeekComplete(MediaPlayer mediaPlayer) {
+            try {
+                tvRecordTime.setText(TAPUtils.getMediaDurationString(mediaPlayer.getCurrentPosition(), vm.getDuration()));
+            } catch (Exception e) {
+                Log.e(TAG, "onProgressChanged: " + e.getMessage());
+            }
+            if (!vm.isSeeking() && vm.isMediaPlaying()) {
+                mediaPlayer.start();
+                startProgressTimer();
+            } else {
+                vm.setPausedPosition(mediaPlayer.getCurrentPosition());
+                if (vm.getPausedPosition() >= vm.getDuration()) {
+                    vm.setPausedPosition(0);
+                }
+            }
+        }
+    };
+
+    private MediaPlayer.OnCompletionListener completionListener = mediaPlayer -> setFinishedRecordingState();
+
+    private void startProgressTimer() {
+        if (null != vm.getDurationTimer()) {
+            return;
+        }
+        vm.setDurationTimer(new Timer());
+        vm.getDurationTimer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(() -> {
+                    if (vm.getMediaPlayer() != null) {
+                        seekBar.setProgress(vm.getMediaPlayer().getCurrentPosition() * seekBar.getMax() / vm.getDuration());
+                    }
+                });
+            }
+        }, 0, 10L);
+    }
+
+    private void stopProgressTimer() {
+        if (null == vm.getDurationTimer()) {
+            return;
+        }
+        vm.getDurationTimer().cancel();
+        vm.setDurationTimer(null);
+    }
+
+    // TODO: 25/04/22 use later for improvement MU
+    private OnSwipeTouchListener swipeTouchListener = new OnSwipeTouchListener(TapUIChatActivity.this) {
+        @Override
+        public boolean onSwipeLeft() {
+            setDefaultState();
+            return true;
+        }
+
+        @Override
+        public boolean onSwipeTop() {
+            setLockedRecordingState();
+            return true;
+        }
+
+        @Override
+        public boolean onActionUp() {
+                stopRecording();
+            return true;
+        }
+    };
+
+    private void showTooltip() {
+        if (gTooltip.getVisibility() == View.GONE) {
+            gTooltip.setVisibility(View.VISIBLE);
+            new Handler(getMainLooper()).postDelayed(() -> {
+                gTooltip.setVisibility(View.GONE);
+            }, 2000);
+        } else {
+            gTooltip.setVisibility(View.GONE);
+        }
     }
 
     private void openAttachMenu() {
@@ -2238,7 +2612,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void buildAndSendTextMessage() {
         String message = etChat.getText().toString().trim();
-        if (!TextUtils.isEmpty(message)) {
+        if (recordingState == RECORDING_STATE.FINISH || recordingState == RECORDING_STATE.PLAY || recordingState == RECORDING_STATE.PAUSE) {
+            //send voice note
+            TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
+            setDefaultState();
+        } else if (!TextUtils.isEmpty(message) && recordingState == RECORDING_STATE.DEFAULT) {
             etChat.setText("");
             TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
             // Updated 2020/04/23
@@ -2679,63 +3057,45 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (s.length() > 0 && s.toString().trim().length() > 0) {
-                // Hide chat menu and enable send button when EditText is filled
-                ivChatMenu.setVisibility(View.GONE);
-                ivButtonChatMenu.setVisibility(View.GONE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_ripple));
-                } else {
-                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
-                }
-                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
-                checkAndSearchUserMentionList();
-                //checkAndHighlightTypedText();
-            } else if (s.length() > 0) {
-                // Hide chat menu but keep send button disabled if trimmed text is empty
-                ivChatMenu.setVisibility(View.GONE);
-                ivButtonChatMenu.setVisibility(View.GONE);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive_ripple));
-                } else {
-                    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
-                }
-                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
-                hideUserMentionList();
-                //} else if (s.length() > 0 && s.toString().trim().length() > 0) {
-                //    if (vm.isCustomKeyboardEnabled()) {
-                //        ivChatMenu.setVisibility(View.VISIBLE);
-                //        ivButtonChatMenu.setVisibility(View.VISIBLE);
-                //    }
-                //    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, );(R.drawable.tap_bg_chat_composer_send_ripple));
-                //    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
-            } else {
-                if (vm.isCustomKeyboardEnabled() && s.length() == 0) {
-                    // Show chat menu if text is empty
-                    ivChatMenu.setVisibility(View.VISIBLE);
-                    ivButtonChatMenu.setVisibility(View.VISIBLE);
-                } else {
+            if (recordingState == RECORDING_STATE.DEFAULT) {
+                if (s.length() > 0 && s.toString().trim().length() > 0) {
+                    // Hide chat menu and enable send button when EditText is filled
                     ivChatMenu.setVisibility(View.GONE);
                     ivButtonChatMenu.setVisibility(View.GONE);
-                }
-                if (vm.getQuoteAction() == FORWARD) {
-                    // Enable send button if message to forward exists
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_ripple));
-                    } else {
-                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
-                    }
-                    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+                    setSendButtonEnabled();
+                    checkAndSearchUserMentionList();
+                    //checkAndHighlightTypedText();
+                } else if (s.length() > 0) {
+                    // Hide chat menu but keep send button disabled if trimmed text is empty
+                    ivChatMenu.setVisibility(View.GONE);
+                    ivButtonChatMenu.setVisibility(View.GONE);
+                    setSendButtonDisabled();
+                    hideUserMentionList();
+                    //} else if (s.length() > 0 && s.toString().trim().length() > 0) {
+                    //    if (vm.isCustomKeyboardEnabled()) {
+                    //        ivChatMenu.setVisibility(View.VISIBLE);
+                    //        ivButtonChatMenu.setVisibility(View.VISIBLE);
+                    //    }
+                    //    ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, );(R.drawable.tap_bg_chat_composer_send_ripple));
+                    //    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
                 } else {
-                    // Disable send button
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive_ripple));
+                    if (vm.isCustomKeyboardEnabled() && s.length() == 0) {
+                        // Show chat menu if text is empty
+                        ivChatMenu.setVisibility(View.VISIBLE);
+                        ivButtonChatMenu.setVisibility(View.VISIBLE);
                     } else {
-                        ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
+                        ivChatMenu.setVisibility(View.GONE);
+                        ivButtonChatMenu.setVisibility(View.GONE);
                     }
-                    ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+                    if (vm.getQuoteAction() == FORWARD) {
+                        // Enable send button if message to forward exists
+                        setSendButtonEnabled();
+                    } else {
+                        // Disable send button
+                        setSendButtonDisabled();
+                    }
+                    hideUserMentionList();
                 }
-                hideUserMentionList();
             }
         }
 
@@ -2744,6 +3104,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
             sendTypingEmit(s.length() > 0);
         }
     };
+
+    private void setSendButtonDisabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive_ripple));
+        } else {
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
+        }
+        ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+    }
+
+    private void setSendButtonEnabled() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_ripple));
+        } else {
+            ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send));
+        }
+        ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSend));
+    }
 
     private void checkAndSearchUserMentionList() {
         if (TapUI.getInstance(instanceKey).isMentionUsernameDisabled() || vm.getRoomParticipantsByUsername().isEmpty()) {
@@ -3139,6 +3517,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                     } else {
                         showDownloadFileDialog();
+                    }
+                    break;
+                case PlayPauseVoiceNote:
+                    TAPMessageModel voiceMessage = intent.getParcelableExtra(MESSAGE);
+                    boolean isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
+                    if (isPlaying) {
+                        if (vm.getMediaPlayer() != null && vm.getMediaPlayer().isPlaying()) {
+                            pauseVoiceNote();
+                        }
                     }
                     break;
                 case LongPressChatBubble:
@@ -4279,6 +4666,25 @@ public class TapUIChatActivity extends TAPBaseActivity {
             return null;
         }
     }
+
+    private TapAudioListener audioListener = new TapAudioListener() {
+        @Override
+        public void onPrepared() {
+
+        }
+
+        @Override
+        public void onSeekComplete() {
+
+        }
+
+        @Override
+        public void onPlayComplete() {
+//            setFinishedRecordingState();
+//            seekBar.setProgress(0);
+
+        }
+    };
 
 //    private SwipeBackLayout.SwipeBackInterface swipeInterface = new SwipeBackLayout.SwipeBackInterface() {
 //        @Override

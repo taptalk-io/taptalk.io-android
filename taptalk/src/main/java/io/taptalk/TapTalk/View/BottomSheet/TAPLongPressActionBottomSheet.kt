@@ -170,6 +170,14 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                                 longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
                             }
                         }
+                        TYPE_VOICE_MESSAGE -> {
+                            val menus = createVoiceBubbleLongPressMenu(message!!)
+                            if (menus.isEmpty()) {
+                                dismiss()
+                            } else {
+                                longPressAdapter = TAPAttachmentAdapter(instanceKey, menus, message, bottomSheetListener, onClickListener)
+                            }
+                        }
                         TYPE_LOCATION_MESSAGE -> {
                             val menus = createLocationBubbleLongPressMenu(message!!)
                             if (menus.isEmpty()) {
@@ -501,6 +509,51 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
         return attachMenus
     }
+
+    private fun createVoiceBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
+        val imageResIds: MutableList<Int> = ArrayList()
+        val titleResIds: MutableList<Int> = ArrayList()
+        val ids: MutableList<Int> = ArrayList()
+
+        if (!TapUI.getInstance(instanceKey).isReplyMessageMenuDisabled) {
+            // Reply
+            imageResIds.add(R.drawable.tap_ic_reply_orange)
+            titleResIds.add(R.string.tap_reply)
+            ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+        }
+
+        if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+            // Star
+            if (starredMessageIds.contains(messageModel.messageID)) {
+                imageResIds.add(R.drawable.tap_ic_star_filled_primary)
+                titleResIds.add(R.string.tap_unstar)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_star_outline)
+                titleResIds.add(R.string.tap_star)
+                ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            }
+        }
+
+        if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+            null != messageModel.sending && !messageModel.sending!!
+        ) {
+            // Delete
+            imageResIds.add(R.drawable.tap_ic_delete_red)
+            titleResIds.add(R.string.tap_delete)
+            ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
+        }
+
+        val attachMenus: MutableList<TAPAttachmentModel> = ArrayList()
+        val size = imageResIds.size
+        for (index in 0 until size) {
+            attachMenus.add(TAPAttachmentModel(imageResIds[index], titleResIds[index], ids[index]))
+        }
+        return attachMenus
+    }
+
 
     private fun createLocationBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()

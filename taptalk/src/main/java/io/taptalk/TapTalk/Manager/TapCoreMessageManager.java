@@ -414,6 +414,24 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance(instanceKey).sendFileMessage(TapTalk.appContext, room, uri, listener);
     }
 
+    public void sendVoiceMessage(File file, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, file, listener);
+    }
+
+    public void sendVoiceMessage(File file, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
+        TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, file, listener);
+    }
+
+    public void sendVoiceMessage(Uri uri, TAPRoomModel room, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, uri, listener);
+    }
+
+    public void sendVoiceMessage(Uri uri, TAPRoomModel room, TAPMessageModel quotedMessage, TapCoreSendMessageListener listener) {
+        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), quotedMessage, REPLY);
+        TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(TapTalk.appContext, room, uri, listener);
+    }
+
     public void sendForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, TapCoreSendMessageListener listener) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return;

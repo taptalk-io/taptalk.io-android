@@ -487,11 +487,10 @@
                 android:id="@+id/cl_quote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/et_chat">
+                app:layout_constraintBottom_toTopOf="@+id/iv_send">
 
                 <ImageView
                     android:id="@+id/iv_cancel_reply"
@@ -592,12 +591,10 @@
                 android:padding="12dp"
                 android:src="@drawable/tap_ic_burger_white"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/et_chat"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0"
                 app:tint="@color/tapIconChatComposerBurgerMenu" />
-
 
             <EditText
                 android:id="@+id/et_chat"
@@ -619,7 +616,7 @@
                 android:paddingBottom="6dp"
                 android:textCursorDrawable="@drawable/tap_cursor_color"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/iv_send"
+                app:layout_constraintEnd_toStartOf="@id/v_separator"
                 app:layout_constraintStart_toEndOf="@id/iv_chat_menu"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0"
@@ -634,6 +631,15 @@
                 app:layout_constraintBottom_toBottomOf="@id/et_chat"
                 app:layout_constraintEnd_toEndOf="@id/et_chat"
                 app:tint="@color/tapIconChatComposerAttach" />
+
+            <View
+                android:id="@+id/v_separator"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toStartOf="@id/iv_send"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <ImageView
                 android:id="@+id/iv_send_area"
@@ -658,7 +664,6 @@
                 android:src="@drawable/tap_ic_send_white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/et_chat"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0"
                 app:tint="@color/tapIconChatComposerSendInactive" />
@@ -666,11 +671,198 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_swipe_voice_note"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:elevation="7dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cl_voice_note"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+
+            <ImageView
+                android:id="@+id/iv_remove_voice_note"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:src="@drawable/tap_ic_trash_red"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageView
+                android:id="@+id/iv_left"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/tap_ic_chevron_left_grey"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_remove_voice_note"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_slide_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tap_slide_left_to_cancel"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toEndOf="@id/iv_left"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <SeekBar
+                android:id="@+id/seek_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@color/tapOrange20"
+                android:max="10000"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:progressBackgroundTint="@color/tapOrange20"
+                android:progressTint="@color/tapColorPrimary"
+                android:thumbTint="@color/tapColorPrimary"
+                android:visibility="gone"
+                app:layout_constraintStart_toEndOf="@id/iv_remove_voice_note"
+                app:layout_constraintEnd_toStartOf="@id/iv_recording"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_recording"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/tap_bg_circle_primary_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/tv_record_time" />
+
+            <TextView
+                android:id="@+id/tv_record_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:text="@string/zero_colon_zero"
+                android:textColor="@color/tapChatVoiceNoteRecordTimeColor"
+                app:layout_constraintEnd_toStartOf="@id/iv_voice_note_control"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ImageView
+                android:id="@+id/iv_voice_note_control"
+                android:layout_width="34dp"
+                android:layout_height="36dp"
+                android:padding="4dp"
+                android:layout_marginBottom="6dp"
+                android:layout_marginEnd="50dp"
+                android:layout_marginRight="50dp"
+                android:src="@drawable/tap_ic_stop_orange"
+                android:elevation="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_voice_note"
+            android:layout_width="34dp"
+            android:layout_height="108dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginBottom="6dp"
+            android:elevation="8dp"
+            android:visibility="gone"
+            android:background="@drawable/tap_bg_voice_note_swipe"
+            app:layout_constraintBottom_toBottomOf="@id/cl_chat_composer_and_history"
+            app:layout_constraintEnd_toEndOf="@id/cl_chat_composer_and_history">
+
+            <ImageView
+                android:id="@+id/iv_lock_voice_note"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/tap_ic_unlock_grey"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="4dp"
+                android:src="@drawable/tap_ic_chevron_up_grey"
+                app:layout_constraintTop_toBottomOf="@id/iv_lock_voice_note"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/iv_voice_note"
+            android:layout_width="34dp"
+            android:layout_height="36dp"
+            android:padding="6dp"
+            android:paddingEnd="4dp"
+            android:paddingRight="4dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginRight="50dp"
+            android:src="@drawable/tap_ic_mic_grey"
+            android:elevation="9dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_tooltip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:src="@drawable/tap_ic_tooltip_pointer"
+            android:elevation="9dp"
+            app:layout_constraintEnd_toEndOf="@id/iv_voice_note"
+            app:layout_constraintBottom_toTopOf="@id/iv_voice_note"
+            app:layout_constraintStart_toStartOf="@id/iv_voice_note" />
+
+        <TextView
+            android:id="@+id/tv_tooltip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:translationX="20dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            style="@style/tapFontFamilyMedium"
+            android:textColor="@color/tapWhite"
+            android:translationY="4dp"
+            android:background="@drawable/tap_bg_tooltip"
+            android:text="@string/tap_long_press_to_record"
+            android:elevation="9dp"
+            app:layout_constraintEnd_toEndOf="@id/iv_tooltip"
+            app:layout_constraintBottom_toTopOf="@id/iv_tooltip" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/g_tooltip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="iv_tooltip, tv_tooltip" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_chat_history"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/tapDeletedChatRoomInfoBackgroundColor"
-            android:elevation="6dp"
+            android:elevation="10dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent">
 
