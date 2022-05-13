@@ -3280,7 +3280,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     private MediaPlayer.OnPreparedListener preparedListener(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, int audioDuration) {
         return mediaPlayer -> {
-            duration = audioDuration;
+            duration = audioPlayer.getDuration();
             isMediaPlaying = true;
             seekBar.setEnabled(true);
             startProgressTimer(seekBar, activity);
@@ -3333,7 +3333,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             @Override
             public void run() {
                 activity.runOnUiThread(() -> {
-                    if (audioPlayer != null) {
+                    if (audioPlayer != null && duration != 0) {
                         seekBar.setProgress(audioPlayer.getCurrentPosition() * seekBar.getMax() / duration);
                     }
                 });
