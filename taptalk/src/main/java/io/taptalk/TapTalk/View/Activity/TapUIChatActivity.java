@@ -524,10 +524,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         }
 
-        // remove unsent voice note
-        if (recordingState != RECORDING_STATE.DEFAULT) {
-            removeRecording();
-        }
         if (vm.getMediaPlayer() != null) {
             vm.getMediaPlayer().release();
         }
@@ -1230,7 +1226,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
             vm.delete(message.getLocalID());
             if ((message.getType() == TYPE_IMAGE ||
                     message.getType() == TYPE_VIDEO ||
-                    message.getType() == TYPE_FILE)
+                    message.getType() == TYPE_FILE ||
+                    message.getType() == TYPE_VOICE)
             ) {
                 if (null != message.getData() &&
                         null != message.getData().get(FILE_ID) &&

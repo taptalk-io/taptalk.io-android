@@ -59,9 +59,8 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_AUDIO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VOICE;
 import static io.taptalk.TapTalk.Helper.TapTalk.appContext;
 
 public class TAPFileDownloadManager {
@@ -429,8 +428,8 @@ public class TAPFileDownloadManager {
             case TYPE_VIDEO:
                 folder = " Videos";
                 break;
-            case TYPE_AUDIO:
-                folder = " Voice Note";
+            case TYPE_VOICE:
+                folder = " Voice Notes";
                 break;
             default:
                 folder = " Files";
