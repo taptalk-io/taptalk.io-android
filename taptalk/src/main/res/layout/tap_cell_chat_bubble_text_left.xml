@@ -4,19 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingLeft="12dp"
+    android:paddingStart="12dp">
+
+    <ImageView
+        android:id="@+id/iv_select"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:visibility="gone"
+        android:src="@drawable/tap_ic_circle_inactive_transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <io.taptalk.TapTalk.Helper.CircleImageView
         android:id="@+id/civ_avatar"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        app:layout_goneMarginLeft="4dp"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toStartOf="@id/fl_bubble"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_select"
         app:layout_constraintTop_toTopOf="@id/fl_bubble"
         tools:src="@drawable/tap_bg_circle_9b9b9b" />
 
@@ -62,8 +76,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/civ_avatar"
         app:layout_constraintTop_toBottomOf="@id/v_separator"
-        app:layout_goneMarginTop="0dp"
-        app:layout_goneMarginStart="16dp">
+        app:layout_goneMarginTop="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
