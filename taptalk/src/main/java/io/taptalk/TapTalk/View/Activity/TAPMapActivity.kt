@@ -187,7 +187,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
         }
     }
 
-    override fun onMapReady(map: GoogleMap?) {
+    override fun onMapReady(map: GoogleMap) {
         googleMap = map
         var latLng: LatLng?
         if (0.0 == longitude && 0.0 == latitude && 0.0 == currentLongitude && 0.0 == currentLatitude) {
@@ -469,7 +469,7 @@ class TAPMapActivity : TAPBaseActivity(), OnMapReadyCallback, GoogleMap.OnCamera
             latitude = currentLatitude
             longitude = currentLongitude
             centerOfMap = LatLng(currentLatitude, currentLongitude)
-            val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap, 16.toFloat())
+            val locations: CameraUpdate = CameraUpdateFactory.newLatLngZoom(centerOfMap ?: return, 16.toFloat())
             googleMap?.animateCamera(locations)
         }
     }
