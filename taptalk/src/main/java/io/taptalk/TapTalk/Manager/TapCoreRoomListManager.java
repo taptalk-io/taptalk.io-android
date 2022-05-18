@@ -10,12 +10,14 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
+import io.taptalk.TapTalk.Listener.TapCoreUpdateMessageStatusListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
@@ -26,11 +28,14 @@ import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CHAT_ROOM_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
+
+import android.util.Log;
 
 @Keep
 public class TapCoreRoomListManager {
@@ -481,7 +486,14 @@ public class TapCoreRoomListManager {
         TAPDataManager.getInstance(instanceKey).markRoomAsUnread(roomIDs, new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetUnreadRoomIdsResponse response) {
-                super.onSuccess(response);
+                // Save updated IDs to preference
+                ArrayList<String> unreadRoomListIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
+                for (String unreadID : response.getUnreadRoomIDs()) {
+                    if (!unreadRoomListIds.contains(unreadID)) {
+                        unreadRoomListIds.add(unreadID);
+                    }
+                }
+                TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(unreadRoomListIds);
                 if (null != listener) {
                     String successMessage = "Successfully marked room as unread.";
                     listener.onSuccess(successMessage);
@@ -504,6 +516,92 @@ public class TapCoreRoomListManager {
         });
     }
 
+    public void removeUnreadMarkFromChatRoom(String roomID, TapCommonListener listener) {
+        ArrayList<String> roomIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
+        if (roomIds.contains(roomID)) {
+            TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, new TAPDatabaseListener<>() {
+                @Override
+                public void onSelectFinished(List<TAPMessageEntity> entities) {
+                    if (!entities.isEmpty()) {
+                        List<String> unreadList = new ArrayList<>();
+                        unreadList.add(entities.get(0).getMessageID());
+                        TapCoreMessageManager.getInstance(instanceKey).markMessagesAsRead(unreadList, new TapCoreUpdateMessageStatusListener() {
+                            @Override
+                            public void onSuccess(List<String> updatedMessageIDs) {
+                                roomIds.remove(roomID);
+                                TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(roomIds);
+                                if (null != listener) {
+                                    listener.onSuccess("Successfully removed unread mark from the selected chat room.");
+                                }
+                            }
+
+                            @Override
+                            public void onError(String errorCode, String errorMessage) {
+                                if (null != listener) {
+                                    listener.onError(errorCode, errorMessage);
+                                }
+                            }
+                        });
+                    } else {
+                        if (null != listener) {
+                            listener.onError(ERROR_CODE_CHAT_ROOM_NOT_FOUND,"The selected chat room is not marked as unread.");
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    public void removeUnreadMarkFromChatRooms(List<String> roomIDs, TapCommonListener listener) {
+        ArrayList<String> unreadRoomIDs = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
+        List<String> unreadList = new ArrayList<>();
+        final int[] count = {0};
+        for (String roomID : roomIDs) {
+            if (unreadRoomIDs.contains(roomID)) {
+                TAPDataManager.getInstance(instanceKey).getMessagesFromDatabaseDesc(roomID, new TAPDatabaseListener<>() {
+                    @Override
+                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                        if (!entities.isEmpty()) {
+                            unreadList.add(entities.get(0).getMessageID());
+                            if (++count[0] == roomIDs.size()) {
+                                markUnreadChatRoomMessagesAsRead(unreadList, unreadRoomIDs, listener);
+                            }
+                        }
+                    }
+                });
+            }
+            else if (++count[0] == roomIDs.size()) {
+                markUnreadChatRoomMessagesAsRead(unreadList, unreadRoomIDs, listener);
+            }
+        }
+    }
+
+    private void markUnreadChatRoomMessagesAsRead(List<String> unreadList, ArrayList<String> unreadRoomIDs, TapCommonListener listener) {
+        if (!unreadList.isEmpty()) {
+            TapCoreMessageManager.getInstance(instanceKey).markMessagesAsRead(unreadList, new TapCoreUpdateMessageStatusListener() {
+                @Override
+                public void onSuccess(List<String> updatedMessageIDs) {
+                    unreadRoomIDs.removeAll(unreadList);
+                    TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(unreadRoomIDs);
+                    if (null != listener) {
+                        listener.onSuccess("Successfully removed unread mark from the selected chat room(s).");
+                    }
+                }
+
+                @Override
+                public void onError(String errorCode, String errorMessage) {
+                    if (null != listener) {
+                        listener.onError(errorCode, errorMessage);
+                    }
+                }
+            });
+        } else {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_CHAT_ROOM_NOT_FOUND,"The selected chat rooms are not marked as unread.");
+            }
+        }
+    }
+
     private final TAPDefaultDataView<TAPGetMultipleUserResponse> getMultipleUserView = new TAPDefaultDataView<TAPGetMultipleUserResponse>() {
         @Override
         public void onSuccess(TAPGetMultipleUserResponse response) {
@@ -518,8 +616,11 @@ public class TapCoreRoomListManager {
         TAPDataManager.getInstance(instanceKey).getUnreadRoomIds(new TAPDefaultDataView<>() {
             @Override
             public void onSuccess(TapGetUnreadRoomIdsResponse response) {
-                super.onSuccess(response);
-                listener.onSuccess(new ArrayList<>(response.getUnreadRoomIDs()));
+                ArrayList<String> roomIDs = new ArrayList<>(response.getUnreadRoomIDs());
+                TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(roomIDs);
+                if (null != listener) {
+                    listener.onSuccess(roomIDs);
+                }
             }
 
             @Override

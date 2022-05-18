@@ -897,8 +897,6 @@ public class TapUIRoomListFragment extends Fragment {
         TapCoreRoomListManager.getInstance(instanceKey).getMarkedAsUnreadChatRoomList(new TapCoreGetStringArrayListener() {
             @Override
             public void onSuccess(@NonNull ArrayList<String> arrayList) {
-                super.onSuccess(arrayList);
-                TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(arrayList);
                 for(String id : arrayList) {
                     updateRoomUnreadMark(id, true);
                     adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(id)));
@@ -1155,7 +1153,8 @@ public class TapUIRoomListFragment extends Fragment {
             } else {
                 // unread button
                 TapCoreRoomListManager.getInstance(instanceKey).markChatRoomAsUnread(roomId, null);
-                addUnreadRoomToPreference(roomId);
+                //addUnreadRoomToPreference(roomId);
+                updateRoomUnreadMark(roomId, true);
             }
             adapter.notifyItemChanged(position);
         }
@@ -1168,14 +1167,14 @@ public class TapUIRoomListFragment extends Fragment {
         updateRoomUnreadMark(roomId, false);
     }
 
-    private void addUnreadRoomToPreference(String roomId) {
-        ArrayList<String> unreadRoomListIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
-        if (!unreadRoomListIds.contains(roomId)) {
-            unreadRoomListIds.add(roomId);
-            TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(unreadRoomListIds);
-            updateRoomUnreadMark(roomId, true);
-        }
-    }
+//    private void addUnreadRoomToPreference(String roomId) {
+//        ArrayList<String> unreadRoomListIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
+//        if (!unreadRoomListIds.contains(roomId)) {
+//            unreadRoomListIds.add(roomId);
+//            TAPDataManager.getInstance(instanceKey).saveUnreadRoomIDs(unreadRoomListIds);
+//            updateRoomUnreadMark(roomId, true);
+//        }
+//    }
 
     private void updateRoomUnreadMark(String roomId, boolean isMarkAsUnread) {
         TAPRoomListModel room = vm.getRoomPointer().get(roomId);
