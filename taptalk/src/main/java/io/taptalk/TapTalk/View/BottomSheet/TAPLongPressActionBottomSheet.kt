@@ -318,7 +318,6 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         return attachMenus
     }
 
-    // TODO: 4 March 2019 TEMPORARILY DISABLED FORWARD
     private fun createImageBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
@@ -330,6 +329,15 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             imageResIds.add(R.drawable.tap_ic_reply_orange)
             titleResIds.add(R.string.tap_reply)
             ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+        }
+
+        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
+            messageModel.room.type != RoomType.TYPE_TRANSACTION
+        ) {
+            // Forward
+            imageResIds.add(R.drawable.tap_ic_forward_orange)
+            titleResIds.add(R.string.tap_forward)
+            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
         }
 
         if (null != messageData) {
@@ -387,7 +395,6 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         return attachMenus
     }
 
-    // TODO: 4 March 2019 TEMPORARILY DISABLED FORWARD
     private fun createVideoBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
@@ -399,6 +406,15 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             imageResIds.add(R.drawable.tap_ic_reply_orange)
             titleResIds.add(R.string.tap_reply)
             ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+        }
+
+        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
+            messageModel.room.type != RoomType.TYPE_TRANSACTION
+        ) {
+            // Forward
+            imageResIds.add(R.drawable.tap_ic_forward_orange)
+            titleResIds.add(R.string.tap_forward)
+            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
         }
 
         if (null != messageData) {
@@ -453,7 +469,6 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         return attachMenus
     }
 
-    // TODO: 4 March 2019 TEMPORARILY DISABLED FORWARD
     private fun createFileBubbleLongPressMenu(messageModel: TAPMessageModel): List<TAPAttachmentModel> {
         val imageResIds: MutableList<Int> = ArrayList()
         val titleResIds: MutableList<Int> = ArrayList()
@@ -465,6 +480,15 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             imageResIds.add(R.drawable.tap_ic_reply_orange)
             titleResIds.add(R.string.tap_reply)
             ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+        }
+
+        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
+            messageModel.room.type != RoomType.TYPE_TRANSACTION
+        ) {
+            // Forward
+            imageResIds.add(R.drawable.tap_ic_forward_orange)
+            titleResIds.add(R.string.tap_forward)
+            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
         }
 
         if (null != messageData) {
@@ -520,6 +544,15 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             imageResIds.add(R.drawable.tap_ic_reply_orange)
             titleResIds.add(R.string.tap_reply)
             ids.add(TAPAttachmentModel.LONG_PRESS_REPLY)
+        }
+
+        if (!TapUI.getInstance(instanceKey).isForwardMessageMenuDisabled &&
+            messageModel.room.type != RoomType.TYPE_TRANSACTION
+        ) {
+            // Forward
+            imageResIds.add(R.drawable.tap_ic_forward_orange)
+            titleResIds.add(R.string.tap_forward)
+            ids.add(TAPAttachmentModel.LONG_PRESS_FORWARD)
         }
 
         if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
