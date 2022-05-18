@@ -377,11 +377,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             activity?.runOnUiThread {
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveMyCountryCode(countryCallingCode)
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveMyCountryFlagUrl(countryFlagUrl)
-                if (BuildConfig.DEBUG) {
-                    TapDevLandingActivity.start(context, (activity as TAPBaseActivity).instanceKey)
-                } else {
-                    TapUIRoomListActivity.start(context, (activity as TAPBaseActivity).instanceKey)
-                }
+                TapUIRoomListActivity.start(context, (activity as TAPBaseActivity).instanceKey)
                 activity?.finish()
             }
         }
