@@ -398,5 +398,6 @@
     <string name="tap_long_press_to_record">Long press mic to record.</string>
     <string name="tap_slide_left_to_cancel">Slide left to cancel</string>
     <string name="zero_colon_zero">00:00</string>
+    <string name="tap_selected">Selected</string>
 
 </resources>
