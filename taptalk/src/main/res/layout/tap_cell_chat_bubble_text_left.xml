@@ -17,7 +17,7 @@
         android:visibility="gone"
         android:src="@drawable/tap_ic_circle_inactive_transparent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/fl_bubble" />
 
     <io.taptalk.TapTalk.Helper.CircleImageView
         android:id="@+id/civ_avatar"
