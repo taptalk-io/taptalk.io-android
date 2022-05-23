@@ -549,6 +549,10 @@ public class TapCoreRoomListManager {
                     }
                 }
             });
+        } else {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_CHAT_ROOM_NOT_FOUND,"The selected chat room is not marked as unread.");
+            }
         }
     }
 
@@ -563,9 +567,9 @@ public class TapCoreRoomListManager {
                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                         if (!entities.isEmpty()) {
                             unreadList.add(entities.get(0).getMessageID());
-                            if (++count[0] == roomIDs.size()) {
-                                markUnreadChatRoomMessagesAsRead(unreadList, unreadRoomIDs, listener);
-                            }
+                        }
+                        if (++count[0] == roomIDs.size()) {
+                            markUnreadChatRoomMessagesAsRead(unreadList, unreadRoomIDs, listener);
                         }
                     }
                 });
