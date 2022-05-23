@@ -355,4 +355,13 @@
         app:layout_constraintHorizontal_bias="1"
         app:tint="@color/tapIconRoomListMessageSending" />
 
+    <View
+        android:id="@+id/v_bubble_area"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/tapTransparentWhite"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -331,4 +331,13 @@
     <!--        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"-->
     <!--        app:layout_constraintStart_toEndOf="@id/fl_bubble" />-->
 
+    <View
+        android:id="@+id/v_bubble_area"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/tapTransparentWhite"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
