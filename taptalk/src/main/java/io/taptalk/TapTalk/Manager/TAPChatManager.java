@@ -1260,6 +1260,7 @@ public class TAPChatManager {
      * @return true if forwarded message is sent
      * false if forwarded message does not exist
      */
+
     public boolean checkAndSendForwardedMessage(TAPRoomModel roomModel) {
         String roomID = roomModel.getRoomID();
         if (null != getQuoteActions().get(roomID) && getQuoteActions().get(roomID) == FORWARD) {

@@ -334,6 +334,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private RequestManager glide;
     private TAPSocketListener socketListener;
 
+    // Multiple forward
+    private ConstraintLayout clForward;
+    private TextView tvForwardCount;
+    private final static int MAX_FORWARD_COUNT = 30;
+
     // Scroll state
     private enum STATE {WORKING, LOADED, DONE}
     // Voice Note State
@@ -538,17 +543,22 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
             hideKeyboards();
         } else {
-            //TAPNotificationManager.getInstance(instanceKey).updateUnreadCount();
-            new Thread(() -> TAPChatManager.getInstance(instanceKey).putUnsentMessageToList()).start();
-            if (isTaskRoot()) {
-                // Trigger listener callback if no other activity is open
-                for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
-                    listener.onTaskRootChatRoomClosed(this);
+            if (vm.isSelectState()) {
+                hideSelectState();
+                vm.setSelectState(false);
+            } else {
+                //TAPNotificationManager.getInstance(instanceKey).updateUnreadCount();
+                new Thread(() -> TAPChatManager.getInstance(instanceKey).putUnsentMessageToList()).start();
+                if (isTaskRoot()) {
+                    // Trigger listener callback if no other activity is open
+                    for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
+                        listener.onTaskRootChatRoomClosed(this);
+                    }
                 }
+                setResult(RESULT_OK);
+                finish();
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
             }
-            setResult(RESULT_OK);
-            finish();
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
         }
     }
 
@@ -593,6 +603,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case FORWARD_MESSAGE:
+                    // TODO: 20/05/22 handle multiple forward here MU
                     TAPRoomModel room = intent.getParcelableExtra(ROOM);
                     if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
                         // Show message in composer
@@ -810,6 +821,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         gTooltip = findViewById(R.id.g_tooltip);
         seekBar = findViewById(R.id.seek_bar);
         vSeparator = findViewById(R.id.v_separator);
+        clForward = findViewById(R.id.cl_forward);
+        tvForwardCount = findViewById(R.id.tv_forward_count);
     }
 
     private boolean initViewModel() {
@@ -914,7 +927,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Initialize chat message RecyclerView
-        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm.getMessageMentionIndexes(), vm.getStarredMessageIds());
+        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm.getMessageMentionIndexes(), vm.getStarredMessageIds(), vm);
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true) {
             @Override
@@ -1397,6 +1410,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     hideTypingIndicator();
                 }
             }
+        }
+
+        @Override
+        public void onMessageSelected(String localId) {
+            if (vm.getSelectedMessageIds().contains(localId)) {
+                vm.removeSelectedMessageId(localId);
+            } else {
+                vm.addSelectedMessageId(localId);
+            }
+            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId)));
+            String forwardCountText = vm.getSelectedMessageIds().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
+            tvForwardCount.setText(forwardCountText);
         }
     };
 
@@ -2055,7 +2080,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onForwardSelected(TAPMessageModel message) {
-            TAPForwardPickerActivity.start(TapUIChatActivity.this, instanceKey, message);
+            // TODO: 20/05/22 handle select state here MU
+            if (vm.getMediaPlayer() != null && vm.getMediaPlayer().isPlaying()) {
+                pauseVoiceNote();
+            }
+            vm.setSelectState(true);
+            showSelectState();
+//            TAPForwardPickerActivity.start(TapUIChatActivity.this, instanceKey, message);
         }
 
         @Override
@@ -4685,6 +4716,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         }
     };
+
+    private void showSelectState() {
+        clForward.setVisibility(View.VISIBLE);
+        ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
+        String forwardCountText = "0/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
+        tvForwardCount.setText(forwardCountText);
+        messageAdapter.notifyDataSetChanged();
+    }
+
+    private void hideSelectState() {
+        clForward.setVisibility(View.GONE);
+        ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
+        vm.clearSelectedMessageIds();
+        messageAdapter.notifyDataSetChanged();
+    }
 
 //    private SwipeBackLayout.SwipeBackInterface swipeInterface = new SwipeBackLayout.SwipeBackInterface() {
 //        @Override

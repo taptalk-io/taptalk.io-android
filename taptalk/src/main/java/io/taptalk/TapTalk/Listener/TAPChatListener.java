@@ -97,4 +97,9 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     @Override
     public void onReadMessage(String roomID) {
     }
+
+    @Override
+    public void onMessageSelected(String localId) {
+
+    }
 }

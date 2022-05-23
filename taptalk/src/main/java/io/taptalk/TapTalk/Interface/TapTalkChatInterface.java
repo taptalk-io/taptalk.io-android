@@ -49,4 +49,6 @@ public interface TapTalkChatInterface {
     void onUserOnlineStatusUpdate(TAPOnlineStatusModel onlineStatus);
 
     void onReadMessage(String roomID);
+
+    void onMessageSelected(String localId);
 }
