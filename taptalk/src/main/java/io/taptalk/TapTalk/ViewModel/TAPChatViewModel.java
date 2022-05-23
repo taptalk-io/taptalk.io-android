@@ -49,7 +49,8 @@ public class TAPChatViewModel extends AndroidViewModel {
     private LinkedHashMap<String, Integer> dateSeparatorIndexes;
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
-    private ArrayList<String> starredMessageIds, selectedMessageIds;
+    private ArrayList<String> starredMessageIds;
+    private ArrayList<TAPMessageModel> selectedMessages;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
     private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage, unreadIndicator, loadingIndicator;
@@ -678,23 +679,23 @@ public class TAPChatViewModel extends AndroidViewModel {
         isSelectState = selectState;
     }
 
-    public ArrayList<String> getSelectedMessageIds() {
-        return null == selectedMessageIds ? selectedMessageIds = new ArrayList<>() : selectedMessageIds;
+    public ArrayList<TAPMessageModel> getSelectedMessages() {
+        return null == selectedMessages ? selectedMessages = new ArrayList<>() : selectedMessages;
     }
 
-    public void setSelectedMessageIds(ArrayList<String> selectedMessageIds) {
-        this.selectedMessageIds = selectedMessageIds;
+    public void setSelectedMessages(ArrayList<TAPMessageModel> selectedMessages) {
+        this.selectedMessages = selectedMessages;
     }
 
-    public void removeSelectedMessageId(String localId) {
-        getSelectedMessageIds().remove(localId);
+    public void removeSelectedMessage(TAPMessageModel message) {
+        getSelectedMessages().remove(message);
     }
 
-    public void addSelectedMessageId(String localId) {
-        getSelectedMessageIds().add(localId);
+    public void addSelectedMessage(TAPMessageModel message) {
+        getSelectedMessages().add(message);
     }
 
-    public void clearSelectedMessageIds() {
-        getSelectedMessageIds().clear();
+    public void clearSelectedMessages() {
+        getSelectedMessages().clear();
     }
 }

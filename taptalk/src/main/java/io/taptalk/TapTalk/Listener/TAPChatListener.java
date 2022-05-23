@@ -99,7 +99,7 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     }
 
     @Override
-    public void onMessageSelected(String localId) {
+    public void onMessageSelected(TAPMessageModel message) {
 
     }
 }

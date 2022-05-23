@@ -425,7 +425,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setMessageBodyText(tvMessageBody, item, item.getBody());
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            setSelectedState(item.getLocalID(), ivSelect, vBubbleArea);
+            setSelectedState(item, ivSelect, vBubbleArea);
             //expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
 
@@ -438,7 +438,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item.getLocalID()));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             if (roomType != RoomType.STARRED) {
                 flBubble.setOnClickListener(v -> onStatusImageClicked(item));
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -575,7 +575,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setProgress(item);
             setImageData(item, position);
             fixBubbleMarginForGroupRoom(item, flBubble);
-            setSelectedState(item.getLocalID(), ivSelect, vBubbleArea);
+            setSelectedState(item, ivSelect, vBubbleArea);
 
             markMessageAsRead(item, myUserModel);
             if (roomType != RoomType.STARRED) {
@@ -592,7 +592,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), rcivImageBody, item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item.getLocalID()));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -960,7 +960,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageTimestampImage.setText(item.getMessageStatusText());
 
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            setSelectedState(item.getLocalID(), ivSelect, vBubbleArea);
+            setSelectedState(item, ivSelect, vBubbleArea);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             setVideoProgress(item, position);
@@ -981,7 +981,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item.getLocalID()));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -1410,7 +1410,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             tvMessageTimestamp.setText(item.getMessageStatusText());
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            setSelectedState(item.getLocalID(), ivSelect, vBubbleArea);
+            setSelectedState(item, ivSelect, vBubbleArea);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             setFileProgress(item);
@@ -1420,7 +1420,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item.getLocalID()));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             if (roomType != RoomType.STARRED) {
                 flBubble.setOnClickListener(v -> flFileIcon.performClick());
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -1679,7 +1679,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             tvMessageTimestamp.setText(item.getMessageStatusText());
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            setSelectedState(item.getLocalID(), ivSelect, vBubbleArea);
+            setSelectedState(item, ivSelect, vBubbleArea);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             setFileProgress(item);
@@ -1689,7 +1689,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item.getLocalID()));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             if (roomType != RoomType.STARRED) {
                 flBubble.setOnClickListener(v -> flVoiceIcon.performClick());
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -1942,7 +1942,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageTimestamp.setText(item.getMessageStatusText());
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
-            setSelectedState(item.getLocalID(), ivSelect, vBubbleArea);
+            setSelectedState(item, ivSelect, vBubbleArea);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             fixBubbleMarginForGroupRoom(item, flBubble);
 
@@ -1997,7 +1997,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item.getLocalID()));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -3453,11 +3453,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         stopProgressTimer();
     }
 
-    private void setSelectedState(String localId, ImageView selectRadioButton, View bubbleArea) {
+    private void setSelectedState(TAPMessageModel message, ImageView selectRadioButton, View bubbleArea) {
         if (vm.isSelectState()) {
             selectRadioButton.setVisibility(View.VISIBLE);
             bubbleArea.setVisibility(View.VISIBLE);
-            if (vm.getSelectedMessageIds().contains(localId)) {
+            if (vm.getSelectedMessages().contains(message)) {
                 glide.load(R.drawable.tap_ic_circle_active_check).fitCenter().into(selectRadioButton);
             } else {
                 glide.load(R.drawable.tap_ic_circle_inactive_transparent).fitCenter().into(selectRadioButton);

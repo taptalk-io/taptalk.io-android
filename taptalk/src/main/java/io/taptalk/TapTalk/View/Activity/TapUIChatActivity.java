@@ -338,6 +338,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private ConstraintLayout clForward;
     private TextView tvForwardCount;
     private final static int MAX_FORWARD_COUNT = 30;
+    private ImageView ivForward;
 
     // Scroll state
     private enum STATE {WORKING, LOADED, DONE}
@@ -823,6 +824,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vSeparator = findViewById(R.id.v_separator);
         clForward = findViewById(R.id.cl_forward);
         tvForwardCount = findViewById(R.id.tv_forward_count);
+        ivForward = findViewById(R.id.iv_forward);
     }
 
     private boolean initViewModel() {
@@ -1052,6 +1054,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flMessageList.setOnClickListener(v -> chatListener.onOutsideClicked(null));
         flLoading.setOnClickListener(v -> {
         });
+        ivForward.setOnClickListener(v -> forwardMessages());
 
         if (TapUI.getInstance().isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
@@ -1413,14 +1416,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         @Override
-        public void onMessageSelected(String localId) {
-            if (vm.getSelectedMessageIds().contains(localId)) {
-                vm.removeSelectedMessageId(localId);
+        public void onMessageSelected(TAPMessageModel message) {
+            if (vm.getSelectedMessages().contains(message)) {
+                vm.removeSelectedMessage(message);
             } else {
-                vm.addSelectedMessageId(localId);
+                vm.addSelectedMessage(message);
             }
-            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId)));
-            String forwardCountText = vm.getSelectedMessageIds().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
+            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
+            String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
             tvForwardCount.setText(forwardCountText);
         }
     };
@@ -2086,7 +2089,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
             vm.setSelectState(true);
             showSelectState();
-//            TAPForwardPickerActivity.start(TapUIChatActivity.this, instanceKey, message);
         }
 
         @Override
@@ -4728,8 +4730,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void hideSelectState() {
         clForward.setVisibility(View.GONE);
         ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
-        vm.clearSelectedMessageIds();
+        vm.clearSelectedMessages();
         messageAdapter.notifyDataSetChanged();
+    }
+
+    private void forwardMessages() {
+//        TAPForwardPickerActivity.start(TapUIChatActivity.this, instanceKey, vm.getSelectedMessages());
     }
 
 //    private SwipeBackLayout.SwipeBackInterface swipeInterface = new SwipeBackLayout.SwipeBackInterface() {

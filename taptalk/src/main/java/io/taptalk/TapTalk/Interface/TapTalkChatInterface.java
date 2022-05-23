@@ -50,5 +50,5 @@ public interface TapTalkChatInterface {
 
     void onReadMessage(String roomID);
 
-    void onMessageSelected(String localId);
+    void onMessageSelected(TAPMessageModel message);
 }
