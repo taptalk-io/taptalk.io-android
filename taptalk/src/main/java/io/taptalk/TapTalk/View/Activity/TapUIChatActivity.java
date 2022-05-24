@@ -2131,6 +2131,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (vm.getMediaPlayer() != null && vm.getMediaPlayer().isPlaying()) {
                 pauseVoiceNote();
             }
+            vm.addSelectedMessage(message);
             vm.setSelectState(true);
             showSelectState();
         }
@@ -4766,7 +4767,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showSelectState() {
         clForward.setVisibility(View.VISIBLE);
         ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
-        String forwardCountText = "0/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
+        String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
         tvForwardCount.setText(forwardCountText);
         messageAdapter.notifyDataSetChanged();
     }
