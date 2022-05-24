@@ -442,7 +442,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
         TapUI.getInstance(instanceKey).setCurrentTapTalkChatActivity(this);
         etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft(vm.getRoom().getRoomID()));
-        showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
+        checkForwardLayout(vm.getQuotedMessage(), vm.getForwardedMessages(), vm.getQuoteAction());
 
         getStarredMessageIds();
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
@@ -546,7 +546,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else {
             if (vm.isSelectState()) {
                 hideSelectState();
-                vm.setSelectState(false);
             } else {
                 //TAPNotificationManager.getInstance(instanceKey).updateUnreadCount();
                 new Thread(() -> TAPChatManager.getInstance(instanceKey).putUnsentMessageToList()).start();
@@ -604,14 +603,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case FORWARD_MESSAGE:
-                    // TODO: 20/05/22 handle multiple forward here MU
                     TAPRoomModel room = intent.getParcelableExtra(ROOM);
+                    if (vm.isSelectState()) {
+                        hideSelectState();
+                    }
                     if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
                         // Show message in composer
-                        showQuoteLayout(intent.getParcelableExtra(MESSAGE), FORWARD, false);
+                        checkForwardLayout(null, intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                     } else {
                         // Open selected chat room
-                        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE), FORWARD);
+                        TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                         start(TapUIChatActivity.this, instanceKey, room);
                         finish();
                     }
@@ -1548,6 +1549,48 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
     }
 
+    private void checkForwardLayout(@Nullable TAPMessageModel message, @Nullable ArrayList<TAPMessageModel> messages, int quoteAction) {
+        runOnUiThread(() -> {
+            if (quoteAction == FORWARD) {
+                if (messages == null || messages.isEmpty()) {
+                    return;
+                }
+                if (messages.size() > 1) {
+                    vm.setForwardedMessages(messages, quoteAction);
+                    clQuote.setVisibility(View.VISIBLE);
+                    vQuoteDecoration.setVisibility(View.VISIBLE);
+                    rcivQuoteImage.setVisibility(View.GONE);
+                    String titleText = String.format(getString(R.string.tap_forwarded_sf_messages), messages.size());
+                    tvQuoteTitle.setText(titleText);
+                    ArrayList<String> senders = new ArrayList<>();
+                    for (TAPMessageModel forwardedMessage : messages) {
+                        String name;
+                        boolean ownMessage = null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
+                                TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(forwardedMessage.getUser().getUserID());
+                        if (ownMessage) {
+                            name = getString(R.string.tap_you);
+                        } else {
+                            name = TAPUtils.getFirstWordOfString(forwardedMessage.getUser().getFullname());
+                        }
+                        if (!senders.contains(name)) {
+                            senders.add(name);
+                        }
+                    }
+                    tvQuoteContent.setText(getString(R.string.tap_from) + " " + TAPUtils.concatStringList(senders));
+                    tvQuoteContent.setMaxLines(2);
+                    boolean hadFocus = etChat.hasFocus();
+                    if (!hadFocus && etChat.getSelectionEnd() == 0) {
+                        etChat.setSelection(etChat.getText().length());
+                    }
+                } else {
+                    showQuoteLayout(messages.get(0), quoteAction, false);
+                }
+            } else {
+                showQuoteLayout(message, quoteAction, false);
+            }
+        });
+    }
+
     private void showQuoteLayout(@Nullable TAPMessageModel message, int quoteAction, boolean showKeyboard) {
         if (null == message) {
             return;
@@ -1667,6 +1710,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void hideQuoteLayout() {
         vm.setQuotedMessage(null, 0);
+        vm.setForwardedMessages(null, 0);
         boolean hasFocus = etChat.hasFocus();
         if (clQuote.getVisibility() == View.VISIBLE) {
             runOnUiThread(() -> {
@@ -4728,6 +4772,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void hideSelectState() {
+        vm.setSelectState(false);
         clForward.setVisibility(View.GONE);
         ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
         vm.clearSelectedMessages();
@@ -4735,7 +4780,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void forwardMessages() {
-//        TAPForwardPickerActivity.start(TapUIChatActivity.this, instanceKey, vm.getSelectedMessages());
+        TAPForwardPickerActivity.start(TapUIChatActivity.this, instanceKey, vm.getSelectedMessages());
     }
 
 //    private SwipeBackLayout.SwipeBackInterface swipeInterface = new SwipeBackLayout.SwipeBackInterface() {

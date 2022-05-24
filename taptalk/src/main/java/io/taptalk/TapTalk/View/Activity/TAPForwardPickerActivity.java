@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,11 +63,11 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     public static void start(
             Activity context,
             String instanceKey,
-            TAPMessageModel message
+            ArrayList<TAPMessageModel> message
     ) {
         Intent intent = new Intent(context, TAPForwardPickerActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
-        intent.putExtra(MESSAGE, message);
+        intent.putParcelableArrayListExtra(MESSAGE, message);
         context.startActivityForResult(intent, FORWARD_MESSAGE);
         context.overridePendingTransition(R.anim.tap_slide_up, R.anim.tap_stay);
     }
@@ -96,7 +97,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                 new TAPSearchChatViewModel.TAPSearchChatViewModelFactory(
                         getApplication(), instanceKey))
                 .get(TAPSearchChatViewModel.class);
-        vm.setSelectedMessage(getIntent().getParcelableExtra(MESSAGE));
+        vm.setSelectedMessages(getIntent().getParcelableArrayListExtra(MESSAGE));
     }
 
     private void initView() {
@@ -226,7 +227,7 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
         @Override
         public void onRoomSelected(TAPRoomModel roomModel) {
             Intent intent = new Intent();
-            intent.putExtra(MESSAGE, vm.getSelectedMessage());
+            intent.putParcelableArrayListExtra(MESSAGE, vm.getSelectedMessages());
             intent.putExtra(ROOM, roomModel);
             setResult(RESULT_OK, intent);
             finish();

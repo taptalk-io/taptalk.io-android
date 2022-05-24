@@ -50,7 +50,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private ArrayList<String> starredMessageIds;
-    private ArrayList<TAPMessageModel> selectedMessages;
+    private ArrayList<TAPMessageModel> selectedMessages, forwardedMessages;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
     private TAPMessageModel quotedMessage, pendingDownloadMessage, openedFileMessage, unreadIndicator, loadingIndicator;
@@ -291,6 +291,7 @@ public class TAPChatViewModel extends AndroidViewModel {
         this.initialUnreadCount = initialUnreadCount;
     }
 
+    // TODO: 24/05/22 set quote action MU
     public Integer getQuoteAction() {
         return null == quoteAction ? null == TAPChatManager.getInstance(instanceKey).getQuoteAction(room.getRoomID()) ? -1 : TAPChatManager.getInstance(instanceKey).getQuoteAction(room.getRoomID()) : quoteAction;
     }
@@ -697,5 +698,15 @@ public class TAPChatViewModel extends AndroidViewModel {
 
     public void clearSelectedMessages() {
         getSelectedMessages().clear();
+    }
+
+    public ArrayList<TAPMessageModel> getForwardedMessages() {
+        return null == forwardedMessages? TAPChatManager.getInstance(instanceKey).getForwardedMessages(room.getRoomID()) : forwardedMessages;
+    }
+
+    public void setForwardedMessages(ArrayList<TAPMessageModel> forwardedMessages, int quoteAction) {
+        this.forwardedMessages = forwardedMessages;
+        this.quoteAction = quoteAction;
+        TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), forwardedMessages, quoteAction);
     }
 }
