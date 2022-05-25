@@ -1634,7 +1634,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (quotedOwnMessage) {
                     tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                 } else {
-                    tvQuoteTitle.setText(message.getUser().getFullname());
+                    if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                        tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                    } else {
+                        tvQuoteTitle.setText(message.getUser().getFullname());
+                    }
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
@@ -1661,7 +1665,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (quotedOwnMessage) {
                     tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                 } else {
-                    tvQuoteTitle.setText(message.getUser().getFullname());
+                    if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                        tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                    } else {
+                        tvQuoteTitle.setText(message.getUser().getFullname());
+                    }
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
@@ -1677,7 +1685,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (quotedOwnMessage) {
                     tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                 } else {
-                    tvQuoteTitle.setText(message.getUser().getFullname());
+                    if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                        tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                    } else {
+                        tvQuoteTitle.setText(message.getUser().getFullname());
+                    }
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
@@ -1689,7 +1701,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (quotedOwnMessage) {
                     tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                 } else {
-                    tvQuoteTitle.setText(message.getUser().getFullname());
+                    if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                        tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                    } else {
+                        tvQuoteTitle.setText(message.getUser().getFullname());
+                    }
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
