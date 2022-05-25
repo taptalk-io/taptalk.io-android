@@ -185,18 +185,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String instanceKey,
             RequestManager glide,
             TAPChatListener chatListener,
-            Map<String, List<Integer>> messageMentionIndexes,
-            ArrayList<String> starredMessageIds,
             TAPChatViewModel vm
     ) {
         myUserModel = TAPChatManager.getInstance(instanceKey).getActiveUser();
         this.instanceKey = instanceKey;
         this.chatListener = chatListener;
         this.glide = glide;
-        this.messageMentionIndexes = messageMentionIndexes;
+        this.messageMentionIndexes = vm.getMessageMentionIndexes();
         pendingAnimationMessages = new ArrayList<>();
         animatingMessages = new ArrayList<>();
-        this.starredMessageIds = starredMessageIds;
+        this.starredMessageIds = vm.getStarredMessageIds();
         this.vm = vm;
     }
 
