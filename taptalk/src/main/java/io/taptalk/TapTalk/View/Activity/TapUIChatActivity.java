@@ -1631,11 +1631,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
 
-                if (quotedOwnMessage) {
-                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                 } else {
-                    if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
-                        tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                    if (quotedOwnMessage) {
+                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
                         tvQuoteTitle.setText(message.getUser().getFullname());
                     }
@@ -1662,11 +1662,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 vQuoteDecoration.setVisibility(View.GONE);
 
-                if (quotedOwnMessage) {
-                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                 } else {
-                    if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
-                        tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                    if (quotedOwnMessage) {
+                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
                         tvQuoteTitle.setText(message.getUser().getFullname());
                     }
@@ -1682,11 +1682,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 vQuoteDecoration.setVisibility(View.GONE);
 
-                if (quotedOwnMessage) {
-                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                 } else {
-                    if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
-                        tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                    if (quotedOwnMessage) {
+                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
                         tvQuoteTitle.setText(message.getUser().getFullname());
                     }
@@ -1698,11 +1698,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
 
-                if (quotedOwnMessage) {
-                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                 } else {
-                    if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
-                        tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                    if (quotedOwnMessage) {
+                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
                         tvQuoteTitle.setText(message.getUser().getFullname());
                     }
