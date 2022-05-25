@@ -399,6 +399,6 @@
     <string name="tap_slide_left_to_cancel">Slide left to cancel</string>
     <string name="zero_colon_zero">00:00</string>
     <string name="tap_selected">Selected</string>
-    <string name="tap_forwarded_sf_messages">Forwarded %d Messages</string>
+    <string name="tap_forward_sf_messages">Forward %d Messages</string>
 
 </resources>

@@ -1560,7 +1560,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     clQuote.setVisibility(View.VISIBLE);
                     vQuoteDecoration.setVisibility(View.VISIBLE);
                     rcivQuoteImage.setVisibility(View.GONE);
-                    String titleText = String.format(getString(R.string.tap_forwarded_sf_messages), messages.size());
+                    String titleText = String.format(getString(R.string.tap_forward_sf_messages), messages.size());
                     tvQuoteTitle.setText(titleText);
                     ArrayList<String> senders = new ArrayList<>();
                     for (TAPMessageModel forwardedMessage : messages) {
