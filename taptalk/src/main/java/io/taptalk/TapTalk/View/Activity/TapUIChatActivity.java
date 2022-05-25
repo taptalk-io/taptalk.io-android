@@ -930,7 +930,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Initialize chat message RecyclerView
-        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm);
+        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm.getMessageMentionIndexes(), vm.getStarredMessageIds(), vm);
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true) {
             @Override
