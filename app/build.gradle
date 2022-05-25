@@ -20,8 +20,8 @@ android {
         minSdk 16
 //        targetSdk 31
         targetSdk 30
-        versionCode 111
-        versionName '1.7.2'
+        versionCode 112
+        versionName '1.8.0'
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
