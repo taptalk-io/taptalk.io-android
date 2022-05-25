@@ -75,14 +75,17 @@
             android:paddingEnd="10dp"
             android:paddingBottom="10dp">
 
+
             <include
                 android:id="@+id/cl_forwarded"
                 layout="@layout/tap_layout_forwarded_bubble_right"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@id/cl_quote"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_goneMarginBottom="10dp" />
 
             <View
