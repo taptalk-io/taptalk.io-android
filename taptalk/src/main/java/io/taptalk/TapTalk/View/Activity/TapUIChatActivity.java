@@ -1565,10 +1565,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     ArrayList<String> senders = new ArrayList<>();
                     for (TAPMessageModel forwardedMessage : messages) {
                         String name;
-                        boolean ownMessage = null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
-                                TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(forwardedMessage.getUser().getUserID());
-                        if (ownMessage) {
-                            name = getString(R.string.tap_you);
+                        if (forwardedMessage.getForwardFrom() != null && !forwardedMessage.getForwardFrom().getFullname().isEmpty()) {
+                            name = TAPUtils.getFirstWordOfString(forwardedMessage.getForwardFrom().getFullname());
                         } else {
                             name = TAPUtils.getFirstWordOfString(forwardedMessage.getUser().getFullname());
                         }
@@ -1576,7 +1574,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             senders.add(name);
                         }
                     }
-                    tvQuoteContent.setText(getString(R.string.tap_from) + " " + TAPUtils.concatStringList(senders));
+                    String quoteContent = getString(R.string.tap_from) + " " + TAPUtils.concatStringList(senders);
+                    tvQuoteContent.setText(quoteContent);
                     tvQuoteContent.setMaxLines(2);
                     boolean hadFocus = etChat.hasFocus();
                     if (!hadFocus && etChat.getSelectionEnd() == 0) {
