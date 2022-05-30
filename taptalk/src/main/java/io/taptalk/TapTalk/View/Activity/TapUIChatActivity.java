@@ -1905,9 +1905,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 setPlayingState();
                 startProgressTimer();
                 vm.getMediaPlayer().start();
-                if (messageAdapter.lastPosition != -1) {
+                if (!messageAdapter.lastLocalId.isEmpty()) {
                     messageAdapter.removePlayer();
-                    messageAdapter.notifyItemChanged(messageAdapter.lastPosition);
+                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(messageAdapter.lastLocalId)));
                 }
             }
         } catch (IllegalStateException e) {
@@ -1936,9 +1936,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
             case HOLD_RECORD:
             case LOCKED_RECORD:
                 stopRecording();
-                if (messageAdapter.lastPosition != -1) {
+                if (!messageAdapter.lastLocalId.isEmpty()) {
                     messageAdapter.removePlayer();
-                    messageAdapter.notifyItemChanged(messageAdapter.lastPosition);
+                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(messageAdapter.lastLocalId)));
                 }
                 vm.setAudioFile(audioManager.getRecording());
                 MediaScannerConnection.scanFile(
