@@ -26,7 +26,7 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
     private List<TAPSearchChatModel> searchResults;
     private List<TAPSearchChatModel> recentSearches;
     private Map<String, TAPRoomModel> roomPointer;
-    private TAPMessageModel selectedMessage;
+    private ArrayList<TAPMessageModel> selectedMessages;
     private String searchKeyword, pendingSearch;
     private int searchState = 0;
 
@@ -93,12 +93,12 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
         return getRoomPointer().containsKey(roomID);
     }
 
-    public TAPMessageModel getSelectedMessage() {
-        return selectedMessage;
+    public ArrayList<TAPMessageModel> getSelectedMessages() {
+        return selectedMessages;
     }
 
-    public void setSelectedMessage(TAPMessageModel selectedMessage) {
-        this.selectedMessage = selectedMessage;
+    public void setSelectedMessages(ArrayList<TAPMessageModel> selectedMessages) {
+        this.selectedMessages = selectedMessages;
     }
 
     public String getSearchKeyword() {
