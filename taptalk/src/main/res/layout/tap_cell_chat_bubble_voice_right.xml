@@ -35,13 +35,24 @@
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/iv_select"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:visibility="gone"
+        android:src="@drawable/tap_ic_circle_inactive_transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/fl_bubble" />
+
     <FrameLayout
         android:id="@+id/fl_bubble"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="64dp"
-        android:layout_marginLeft="64dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:background="@drawable/tap_bg_chat_bubble_right_default"
@@ -49,10 +60,11 @@
         app:layout_constraintBottom_toTopOf="@id/tv_message_status"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_select"
         app:layout_constraintTop_toBottomOf="@id/v_separator"
         app:layout_goneMarginBottom="8dp"
-        app:layout_goneMarginTop="0dp">
+        app:layout_goneMarginTop="0dp"
+        app:layout_goneMarginStart="64dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
@@ -63,14 +75,17 @@
             android:paddingEnd="10dp"
             android:paddingBottom="10dp">
 
+
             <include
                 android:id="@+id/cl_forwarded"
                 layout="@layout/tap_layout_forwarded_bubble_right"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 app:layout_constraintBottom_toTopOf="@id/cl_quote"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_goneMarginBottom="10dp" />
 
             <View
@@ -250,5 +265,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1"
         app:tint="@color/tapIconRoomListMessageSending" />
+
+    <View
+        android:id="@+id/v_bubble_area"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/tapTransparentWhite"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

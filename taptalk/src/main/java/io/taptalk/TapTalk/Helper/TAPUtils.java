@@ -1140,6 +1140,24 @@ public class TAPUtils {
         }
     }
 
+    public static String concatStringList(ArrayList<String> words) {
+        StringBuilder resultString = new StringBuilder();
+        if (words.size() > 1) {
+            int index = 0;
+            for (String word : words) {
+                resultString.append(word);
+                index++;
+                if (index != words.size()) {
+                    resultString.append(", ");
+                }
+            }
+        } else {
+            resultString.append(words.get(0));
+        }
+
+        return resultString.toString();
+    }
+
     public static String removeNonAlphaNumeric(String s) {
         return s.replaceAll("[^A-Za-z0-9]", "");
     }

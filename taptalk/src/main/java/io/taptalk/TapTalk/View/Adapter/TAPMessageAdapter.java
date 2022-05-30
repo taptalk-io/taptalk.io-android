@@ -82,7 +82,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity;
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity;
-import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
+import io.taptalk.TapTalk.ViewModel.TAPChatViewModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.BubbleType.TYPE_BUBBLE_DELETED_LEFT;
@@ -173,7 +173,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private MediaPlayer audioPlayer = null;
     private Timer durationTimer;
     private int duration, pausedPosition;
-    public int lastPosition = -1;
+    public String lastLocalId = "";
+    private SeekBar playingSeekbar;
+
+    private TAPChatViewModel vm;
 
     public enum RoomType {
         DEFAULT, STARRED
@@ -183,17 +186,17 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String instanceKey,
             RequestManager glide,
             TAPChatListener chatListener,
-            Map<String, List<Integer>> messageMentionIndexes,
-            ArrayList<String> starredMessageIds
+            TAPChatViewModel vm
     ) {
         myUserModel = TAPChatManager.getInstance(instanceKey).getActiveUser();
         this.instanceKey = instanceKey;
         this.chatListener = chatListener;
         this.glide = glide;
-        this.messageMentionIndexes = messageMentionIndexes;
+        this.messageMentionIndexes = vm.getMessageMentionIndexes();
         pendingAnimationMessages = new ArrayList<>();
         animatingMessages = new ArrayList<>();
-        this.starredMessageIds = starredMessageIds;
+        this.starredMessageIds = vm.getStarredMessageIds();
+        this.vm = vm;
     }
 
     public TAPMessageAdapter(
@@ -373,6 +376,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteDecoration;
         private ImageView ivStarMessage;
         private View vSeparator;
+        private View vBubbleArea;
+        private ImageView ivSelect;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -394,6 +399,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             vSeparator = itemView.findViewById(R.id.v_separator);
+            vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
+            ivSelect = itemView.findViewById(R.id.iv_select);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -417,6 +424,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setMessageBodyText(tvMessageBody, item, item.getBody());
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            setSelectedState(item, ivSelect, vBubbleArea);
             //expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
 
@@ -429,6 +437,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             if (roomType != RoomType.STARRED) {
                 flBubble.setOnClickListener(v -> onStatusImageClicked(item));
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -500,6 +509,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageView ivStarMessage;
         private ImageView ivStarMessageBody;
         private View vSeparator;
+        private View vBubbleArea;
+        private ImageView ivSelect;
 
         private TAPMessageModel obtainedItem;
         private Drawable thumbnail;
@@ -532,6 +543,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             ivStarMessageBody = itemView.findViewById(R.id.iv_star_message_body);
             vSeparator = itemView.findViewById(R.id.v_separator);
+            vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
+            ivSelect = itemView.findViewById(R.id.iv_select);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -561,6 +574,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setProgress(item);
             setImageData(item, position);
             fixBubbleMarginForGroupRoom(item, flBubble);
+            setSelectedState(item, ivSelect, vBubbleArea);
 
             markMessageAsRead(item, myUserModel);
             if (roomType != RoomType.STARRED) {
@@ -577,6 +591,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), rcivImageBody, item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -880,6 +895,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageView ivStarMessage;
         private ImageView ivStarMessageBody;
         private View vSeparator;
+        private View vBubbleArea;
+        private ImageView ivSelect;
 
         private TAPMessageModel obtainedItem;
         private Uri videoUri;
@@ -914,6 +931,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             ivStarMessageBody = itemView.findViewById(R.id.iv_star_message_body);
             vSeparator = itemView.findViewById(R.id.v_separator);
+            vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
+            ivSelect = itemView.findViewById(R.id.iv_select);
 
             if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -940,6 +959,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageTimestampImage.setText(item.getMessageStatusText());
 
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            setSelectedState(item, ivSelect, vBubbleArea);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             setVideoProgress(item, position);
@@ -960,6 +980,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), rcivVideoThumbnail, item);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -1325,6 +1346,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
         private View vSeparator;
+        private View vBubbleArea;
+        private ImageView ivSelect;
 
         private Uri fileUri;
 
@@ -1353,6 +1376,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             vSeparator = itemView.findViewById(R.id.v_separator);
+            vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
+            ivSelect = itemView.findViewById(R.id.iv_select);
 
             if (bubbleType == TYPE_BUBBLE_FILE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -1384,6 +1409,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             tvMessageTimestamp.setText(item.getMessageStatusText());
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            setSelectedState(item, ivSelect, vBubbleArea);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             setFileProgress(item);
@@ -1393,6 +1419,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             if (roomType != RoomType.STARRED) {
                 flBubble.setOnClickListener(v -> flFileIcon.performClick());
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -1599,6 +1626,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageView ivStarMessage;
         private View vSeparator;
         private SeekBar seekBar;
+        private View vBubbleArea;
+        private ImageView ivSelect;
 
         private Uri fileUri;
 
@@ -1626,6 +1655,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             vSeparator = itemView.findViewById(R.id.v_separator);
             seekBar = itemView.findViewById(R.id.seek_bar);
+            vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
+            ivSelect = itemView.findViewById(R.id.iv_select);
 
             if (bubbleType == TYPE_BUBBLE_VOICE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -1647,6 +1678,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
             tvMessageTimestamp.setText(item.getMessageStatusText());
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            setSelectedState(item, ivSelect, vBubbleArea);
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             setFileProgress(item);
@@ -1656,6 +1688,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setStarredIcon(item.getMessageID(), ivStarMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             if (roomType != RoomType.STARRED) {
                 flBubble.setOnClickListener(v -> flVoiceIcon.performClick());
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
@@ -1733,13 +1766,26 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 tvVoiceTime.setText(durationString);
                 ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_play_white));
                 pbProgress.setVisibility(View.GONE);
-                seekBar.getThumb().mutate().setAlpha(255);
-                seekBar.setOnSeekBarChangeListener(null);
-                seekBar.setProgress(0);
-                seekBar.setEnabled(false);
                 // TODO: 18/04/22 handle play pause voice note MU
                 // TODO: 18/04/22 handle seekbar logic MU
-                flVoiceIcon.setOnClickListener(v -> playPauseVoiceNote(seekBar, (Activity) itemView.getContext(), tvVoiceTime, ivVoiceIcon, fileUri, item, getAbsoluteAdapterPosition(), duration != null ? duration.intValue() : 1));
+                flVoiceIcon.setOnClickListener(v -> playPauseVoiceNote(seekBar, (Activity) itemView.getContext(), tvVoiceTime, ivVoiceIcon, fileUri, item, item.getLocalID(), duration != null ? duration.intValue() : 1));
+                if (!lastLocalId.equals(item.getLocalID())) {
+                    seekBar.getThumb().mutate().setAlpha(255);
+                    seekBar.setOnSeekBarChangeListener(null);
+                    seekBar.setProgress(0);
+                    seekBar.setEnabled(false);
+                    tvVoiceTime.setText(durationString);
+                } else {
+                    seekBar.setProgress(pausedPosition);
+                    playingSeekbar = seekBar;
+                    seekBar.setOnSeekBarChangeListener(seekBarChangeListener(tvVoiceTime));
+                    if (audioPlayer != null && audioPlayer.isPlaying()) {
+                        seekBar.setEnabled(true);
+                        ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_pause_white));
+                    } else {
+                        seekBar.setEnabled(false);
+                    }
+                }
             } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
                     && null == downloadProgressPercent)) {
                 // File is not downloaded
@@ -1807,7 +1853,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
         }
 
-        private void playPauseVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, TAPMessageModel item, int currentPosition, int audioDuration) {
+        private void playPauseVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, TAPMessageModel item, String currentLocalId, int audioDuration) {
             // TODO: 18/04/22 play voice note MU
             if (roomType == RoomType.STARRED) {
                 chatListener.onOutsideClicked(item);
@@ -1816,8 +1862,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 intent.putExtra(MESSAGE, item);
                 intent.putExtra(IS_PLAYING, true);
                 LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
-                seekBar.setOnSeekBarChangeListener(seekBarChangeListener(activity, tvDuration, image));
-                playBubbleVoiceNote(seekBar, activity, tvDuration, image, fileUri, currentPosition, audioDuration);
+                playBubbleVoiceNote(seekBar, activity, tvDuration, image, fileUri, currentLocalId, audioDuration);
             }
         }
 
@@ -1853,6 +1898,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private MapView mapView;
         private ImageView ivStarMessage;
         private View vSeparator;
+        private View vBubbleArea;
+        private ImageView ivSelect;
 
         LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -1880,6 +1927,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             mapView.onCreate(new Bundle());
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             vSeparator = itemView.findViewById(R.id.v_separator);
+            vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
+            ivSelect = itemView.findViewById(R.id.iv_select);
 
             if (bubbleType == TYPE_BUBBLE_LOCATION_LEFT) {
                 clBubbleTop = itemView.findViewById(R.id.cl_bubble_top);
@@ -1904,6 +1953,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvMessageTimestamp.setText(item.getMessageStatusText());
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
+            setSelectedState(item, ivSelect, vBubbleArea);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             fixBubbleMarginForGroupRoom(item, flBubble);
 
@@ -1958,6 +2008,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
+            vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
             //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
         }
 
@@ -3243,14 +3294,16 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         try {
             audioPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             audioPlayer.setDataSource(activity, fileUri);
-            audioPlayer.setOnPreparedListener(preparedListener(seekBar, activity, tvDuration, image, audioDuration));
-            audioPlayer.setOnCompletionListener(completionListener(seekBar, activity, image));
+            playingSeekbar = seekBar;
+            playingSeekbar.setOnSeekBarChangeListener(seekBarChangeListener(tvDuration));
+            audioPlayer.setOnPreparedListener(preparedListener(activity, tvDuration, image, audioDuration));
+            audioPlayer.setOnCompletionListener(completionListener(activity, image));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private SeekBar.OnSeekBarChangeListener seekBarChangeListener(Activity activity, TextView tvDuration, ImageView image) {
+    private SeekBar.OnSeekBarChangeListener seekBarChangeListener(TextView tvDuration) {
         return new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -3261,7 +3314,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     e.printStackTrace();
                 }
                 if (isSeeking) {
-                    audioPlayer.seekTo(audioPlayer.getDuration() * seekBar.getProgress() / seekBar.getMax());
+                    audioPlayer.seekTo(audioPlayer.getDuration() * playingSeekbar.getProgress() / playingSeekbar.getMax());
                 }
             }
 
@@ -3273,20 +3326,21 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 isSeeking = false;
-                audioPlayer.seekTo(audioPlayer.getDuration() * seekBar.getProgress() / seekBar.getMax());
+                audioPlayer.seekTo(audioPlayer.getDuration() * playingSeekbar.getProgress() / playingSeekbar.getMax());
             }
         };
     }
 
-    private MediaPlayer.OnPreparedListener preparedListener(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, int audioDuration) {
+    private MediaPlayer.OnPreparedListener preparedListener(Activity activity, TextView tvDuration, ImageView image, int audioDuration) {
         return mediaPlayer -> {
             duration = audioPlayer.getDuration();
             isMediaPlaying = true;
-            seekBar.setEnabled(true);
-            startProgressTimer(seekBar, activity);
+            playingSeekbar.setEnabled(true);
+            stopProgressTimer();
+            startProgressTimer(activity);
             tvDuration.setText(TAPUtils.getMediaDurationString(duration, duration));
             mediaPlayer.seekTo(pausedPosition);
-            mediaPlayer.setOnSeekCompleteListener(onSeekListener(seekBar, activity, tvDuration));
+            mediaPlayer.setOnSeekCompleteListener(onSeekListener(activity, tvDuration));
             audioPlayer = mediaPlayer;
             activity.runOnUiThread(() -> {
                 audioPlayer.start();
@@ -3295,7 +3349,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         };
     }
 
-    private MediaPlayer.OnSeekCompleteListener onSeekListener(SeekBar seekBar, Activity activity, TextView tvDuration) {
+    private MediaPlayer.OnSeekCompleteListener onSeekListener(Activity activity, TextView tvDuration) {
        return mediaPlayer -> {
            try {
                tvDuration.setText(TAPUtils.getMediaDurationString(mediaPlayer.getCurrentPosition(), duration));
@@ -3304,7 +3358,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
            }
            if (!isSeeking && isMediaPlaying) {
                mediaPlayer.start();
-               startProgressTimer(seekBar, activity);
+               startProgressTimer(activity);
            } else {
                pausedPosition = mediaPlayer.getCurrentPosition();
                if (pausedPosition >= duration) {
@@ -3314,17 +3368,19 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
        };
     }
 
-    private MediaPlayer.OnCompletionListener completionListener(SeekBar seekBar, Activity activity, ImageView image) {
-        return mediaPlayer -> setFinishPlayingState(seekBar, activity, image);
+    private MediaPlayer.OnCompletionListener completionListener(Activity activity, ImageView image) {
+        return mediaPlayer -> setFinishPlayingState(activity, image);
     }
 
-    private void setFinishPlayingState(SeekBar seekBar, Activity activity, ImageView image) {
-            seekBar.setEnabled(false);
+    private void setFinishPlayingState(Activity activity, ImageView image) {
+            playingSeekbar.setEnabled(false);
             pausedPosition = 0;
+            playingSeekbar.setProgress(0);
             image.setImageDrawable(ContextCompat.getDrawable(activity, R.drawable.tap_ic_play_white));
+            notifyItemChanged(getItems().indexOf(vm.getMessagePointer().get(lastLocalId)));
     }
 
-    private void startProgressTimer(SeekBar seekBar, Activity activity) {
+    private void startProgressTimer(Activity activity) {
         if (null != durationTimer) {
             return;
         }
@@ -3334,7 +3390,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             public void run() {
                 activity.runOnUiThread(() -> {
                     if (audioPlayer != null && duration != 0) {
-                        seekBar.setProgress(audioPlayer.getCurrentPosition() * seekBar.getMax() / duration);
+                        playingSeekbar.setProgress(audioPlayer.getCurrentPosition() * playingSeekbar.getMax() / duration);
                     }
                 });
             }
@@ -3349,36 +3405,36 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         durationTimer = null;
     }
 
-    private void playBubbleVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, int currentPosition, int audioDuration) {
+    private void playBubbleVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, String currentLocalId, int audioDuration) {
         try {
             if (audioPlayer == null) {
                 audioPlayer = new MediaPlayer();
                 voiceUri = fileUri;
                 loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
                 audioPlayer.prepareAsync();
-                lastPosition = currentPosition;
+                lastLocalId = currentLocalId;
             } else {
                 if (audioPlayer.isPlaying()) {
-                    if (voiceUri != fileUri) {
+                    if (!lastLocalId.equals(currentLocalId)) {
                         voiceUri = fileUri;
                         pausedPosition = 0;
                         removePlayer();
                         audioPlayer = new MediaPlayer();
                         loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
-                        notifyItemChanged(lastPosition);
+                        notifyItemChanged(getItems().indexOf(vm.getMessagePointer().get(lastLocalId)));
                         audioPlayer.prepareAsync();
-                        lastPosition = currentPosition;
+                        lastLocalId = currentLocalId;
                     } else {
                         pauseBubbleVoiceNote(image, activity);
                     }
                 } else {
-                    if (voiceUri != fileUri) {
+                    if (!lastLocalId.equals(currentLocalId)) {
                         voiceUri = fileUri;
                         pausedPosition = 0;
                         removePlayer();
                         audioPlayer = new MediaPlayer();
                         loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
-                        notifyItemChanged(lastPosition);
+                        notifyItemChanged(getItems().indexOf(vm.getMessagePointer().get(lastLocalId)));
                     } else {
                         audioPlayer.release();
                         audioPlayer = null;
@@ -3386,7 +3442,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         loadMediaPlayer(seekBar, activity, tvDuration, image, fileUri, audioDuration);
                     }
                     audioPlayer.prepareAsync();
-                    lastPosition = currentPosition;
+                    lastLocalId = currentLocalId;
                 }
             }
         } catch (IllegalStateException e) {
@@ -3413,4 +3469,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         stopProgressTimer();
     }
 
+    private void setSelectedState(TAPMessageModel message, ImageView selectRadioButton, View bubbleArea) {
+        if (vm.isSelectState()) {
+            selectRadioButton.setVisibility(View.VISIBLE);
+            bubbleArea.setVisibility(View.VISIBLE);
+            if (vm.getSelectedMessages().contains(message)) {
+                glide.load(R.drawable.tap_ic_circle_active_check).fitCenter().into(selectRadioButton);
+            } else {
+                glide.load(R.drawable.tap_ic_circle_inactive_transparent).fitCenter().into(selectRadioButton);
+            }
+        } else {
+            selectRadioButton.setVisibility(View.GONE);
+            bubbleArea.setVisibility(View.GONE);
+        }
+    }
 }

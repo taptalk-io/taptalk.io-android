@@ -334,6 +334,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private RequestManager glide;
     private TAPSocketListener socketListener;
 
+    // Multiple forward
+    private ConstraintLayout clForward;
+    private TextView tvForwardCount;
+    private final static int MAX_FORWARD_COUNT = 30;
+    private ImageView ivForward;
+
     // Scroll state
     private enum STATE {WORKING, LOADED, DONE}
     // Voice Note State
@@ -436,7 +442,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
         TapUI.getInstance(instanceKey).setCurrentTapTalkChatActivity(this);
         etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft(vm.getRoom().getRoomID()));
-        showQuoteLayout(vm.getQuotedMessage(), vm.getQuoteAction(), false);
+        checkForwardLayout(vm.getQuotedMessage(), vm.getForwardedMessages(), vm.getQuoteAction());
 
         getStarredMessageIds();
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
@@ -538,17 +544,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (rvCustomKeyboard.getVisibility() == View.VISIBLE) {
             hideKeyboards();
         } else {
-            //TAPNotificationManager.getInstance(instanceKey).updateUnreadCount();
-            new Thread(() -> TAPChatManager.getInstance(instanceKey).putUnsentMessageToList()).start();
-            if (isTaskRoot()) {
-                // Trigger listener callback if no other activity is open
-                for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
-                    listener.onTaskRootChatRoomClosed(this);
+            if (vm.isSelectState()) {
+                hideSelectState();
+            } else {
+                //TAPNotificationManager.getInstance(instanceKey).updateUnreadCount();
+                new Thread(() -> TAPChatManager.getInstance(instanceKey).putUnsentMessageToList()).start();
+                if (isTaskRoot()) {
+                    // Trigger listener callback if no other activity is open
+                    for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
+                        listener.onTaskRootChatRoomClosed(this);
+                    }
                 }
+                setResult(RESULT_OK);
+                finish();
+                overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
             }
-            setResult(RESULT_OK);
-            finish();
-            overridePendingTransition(R.anim.tap_stay, R.anim.tap_slide_right);
         }
     }
 
@@ -594,12 +604,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     break;
                 case FORWARD_MESSAGE:
                     TAPRoomModel room = intent.getParcelableExtra(ROOM);
+                    if (vm.isSelectState()) {
+                        hideSelectState();
+                    }
                     if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
                         // Show message in composer
-                        showQuoteLayout(intent.getParcelableExtra(MESSAGE), FORWARD, false);
+                        checkForwardLayout(null, intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                     } else {
                         // Open selected chat room
-                        TAPChatManager.getInstance(instanceKey).setQuotedMessage(room.getRoomID(), intent.getParcelableExtra(MESSAGE), FORWARD);
+                        TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                         start(TapUIChatActivity.this, instanceKey, room);
                         finish();
                     }
@@ -810,6 +823,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         gTooltip = findViewById(R.id.g_tooltip);
         seekBar = findViewById(R.id.seek_bar);
         vSeparator = findViewById(R.id.v_separator);
+        clForward = findViewById(R.id.cl_forward);
+        tvForwardCount = findViewById(R.id.tv_forward_count);
+        ivForward = findViewById(R.id.iv_forward);
     }
 
     private boolean initViewModel() {
@@ -914,7 +930,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
 
         // Initialize chat message RecyclerView
-        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm.getMessageMentionIndexes(), vm.getStarredMessageIds());
+        messageAdapter = new TAPMessageAdapter(instanceKey, glide, chatListener, vm);
         messageAdapter.setMessages(vm.getMessageModels());
         messageLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true) {
             @Override
@@ -1039,6 +1055,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flMessageList.setOnClickListener(v -> chatListener.onOutsideClicked(null));
         flLoading.setOnClickListener(v -> {
         });
+        ivForward.setOnClickListener(v -> forwardMessages());
 
         if (TapUI.getInstance().isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
@@ -1398,6 +1415,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
         }
+
+        @Override
+        public void onMessageSelected(TAPMessageModel message) {
+            if (vm.getSelectedMessages().contains(message)) {
+                vm.removeSelectedMessage(message);
+            } else {
+                vm.addSelectedMessage(message);
+            }
+            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
+            String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
+            tvForwardCount.setText(forwardCountText);
+        }
     };
 
     private void closeActivity() {
@@ -1520,6 +1549,47 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
     }
 
+    private void checkForwardLayout(@Nullable TAPMessageModel message, @Nullable ArrayList<TAPMessageModel> messages, int quoteAction) {
+        runOnUiThread(() -> {
+            if (quoteAction == FORWARD) {
+                if (messages == null || messages.isEmpty()) {
+                    return;
+                }
+                if (messages.size() > 1) {
+                    vm.setForwardedMessages(messages, quoteAction);
+                    clQuote.setVisibility(View.VISIBLE);
+                    vQuoteDecoration.setVisibility(View.VISIBLE);
+                    rcivQuoteImage.setVisibility(View.GONE);
+                    String titleText = String.format(getString(R.string.tap_forward_sf_messages), messages.size());
+                    tvQuoteTitle.setText(titleText);
+                    ArrayList<String> senders = new ArrayList<>();
+                    for (TAPMessageModel forwardedMessage : messages) {
+                        String name;
+                        if (forwardedMessage.getForwardFrom() != null && !forwardedMessage.getForwardFrom().getFullname().isEmpty()) {
+                            name = TAPUtils.getFirstWordOfString(forwardedMessage.getForwardFrom().getFullname());
+                        } else {
+                            name = TAPUtils.getFirstWordOfString(forwardedMessage.getUser().getFullname());
+                        }
+                        if (!senders.contains(name)) {
+                            senders.add(name);
+                        }
+                    }
+                    String quoteContent = getString(R.string.tap_from) + " " + TAPUtils.concatStringList(senders);
+                    tvQuoteContent.setText(quoteContent);
+                    tvQuoteContent.setMaxLines(2);
+                    boolean hadFocus = etChat.hasFocus();
+                    if (!hadFocus && etChat.getSelectionEnd() == 0) {
+                        etChat.setSelection(etChat.getText().length());
+                    }
+                } else {
+                    showQuoteLayout(messages.get(0), quoteAction, false);
+                }
+            } else {
+                showQuoteLayout(message, quoteAction, false);
+            }
+        });
+    }
+
     private void showQuoteLayout(@Nullable TAPMessageModel message, int quoteAction, boolean showKeyboard) {
         if (null == message) {
             return;
@@ -1561,10 +1631,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
 
-                if (quotedOwnMessage) {
-                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                 } else {
-                    tvQuoteTitle.setText(message.getUser().getFullname());
+                    if (quotedOwnMessage) {
+                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                    } else {
+                        tvQuoteTitle.setText(message.getUser().getFullname());
+                    }
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
@@ -1588,10 +1662,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 vQuoteDecoration.setVisibility(View.GONE);
 
-                if (quotedOwnMessage) {
-                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                 } else {
-                    tvQuoteTitle.setText(message.getUser().getFullname());
+                    if (quotedOwnMessage) {
+                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                    } else {
+                        tvQuoteTitle.setText(message.getUser().getFullname());
+                    }
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
@@ -1604,10 +1682,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rcivQuoteImage.setVisibility(View.VISIBLE);
                 vQuoteDecoration.setVisibility(View.GONE);
 
-                if (quotedOwnMessage) {
-                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                 } else {
-                    tvQuoteTitle.setText(message.getUser().getFullname());
+                    if (quotedOwnMessage) {
+                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                    } else {
+                        tvQuoteTitle.setText(message.getUser().getFullname());
+                    }
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
@@ -1616,10 +1698,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vQuoteDecoration.setVisibility(View.VISIBLE);
                 rcivQuoteImage.setVisibility(View.GONE);
 
-                if (quotedOwnMessage) {
-                    tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
+                    tvQuoteTitle.setText(message.getForwardFrom().getFullname());
                 } else {
-                    tvQuoteTitle.setText(message.getUser().getFullname());
+                    if (quotedOwnMessage) {
+                        tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
+                    } else {
+                        tvQuoteTitle.setText(message.getUser().getFullname());
+                    }
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
@@ -1639,6 +1725,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void hideQuoteLayout() {
         vm.setQuotedMessage(null, 0);
+        vm.setForwardedMessages(null, 0);
         boolean hasFocus = etChat.hasFocus();
         if (clQuote.getVisibility() == View.VISIBLE) {
             runOnUiThread(() -> {
@@ -1818,9 +1905,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 setPlayingState();
                 startProgressTimer();
                 vm.getMediaPlayer().start();
-                if (messageAdapter.lastPosition != -1) {
+                if (!messageAdapter.lastLocalId.isEmpty()) {
                     messageAdapter.removePlayer();
-                    messageAdapter.notifyItemChanged(messageAdapter.lastPosition);
+                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(messageAdapter.lastLocalId)));
                 }
             }
         } catch (IllegalStateException e) {
@@ -1849,9 +1936,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
             case HOLD_RECORD:
             case LOCKED_RECORD:
                 stopRecording();
-                if (messageAdapter.lastPosition != -1) {
+                if (!messageAdapter.lastLocalId.isEmpty()) {
                     messageAdapter.removePlayer();
-                    messageAdapter.notifyItemChanged(messageAdapter.lastPosition);
+                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(messageAdapter.lastLocalId)));
                 }
                 vm.setAudioFile(audioManager.getRecording());
                 MediaScannerConnection.scanFile(
@@ -2055,7 +2142,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onForwardSelected(TAPMessageModel message) {
-            TAPForwardPickerActivity.start(TapUIChatActivity.this, instanceKey, message);
+            // TODO: 20/05/22 handle select state here MU
+            if (vm.getMediaPlayer() != null && vm.getMediaPlayer().isPlaying()) {
+                pauseVoiceNote();
+            }
+            vm.addSelectedMessage(message);
+            showSelectState();
         }
 
         @Override
@@ -4685,6 +4777,29 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         }
     };
+
+    private void showSelectState() {
+        vm.setSelectState(true);
+        vRoomImage.setEnabled(false);
+        clForward.setVisibility(View.VISIBLE);
+        ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_close_grey));
+        String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
+        tvForwardCount.setText(forwardCountText);
+        messageAdapter.notifyDataSetChanged();
+    }
+
+    private void hideSelectState() {
+        vm.setSelectState(false);
+        vRoomImage.setEnabled(true);
+        clForward.setVisibility(View.GONE);
+        ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
+        vm.clearSelectedMessages();
+        messageAdapter.notifyDataSetChanged();
+    }
+
+    private void forwardMessages() {
+        TAPForwardPickerActivity.start(TapUIChatActivity.this, instanceKey, vm.getSelectedMessages());
+    }
 
 //    private SwipeBackLayout.SwipeBackInterface swipeInterface = new SwipeBackLayout.SwipeBackInterface() {
 //        @Override
