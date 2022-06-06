@@ -378,6 +378,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vSeparator;
         private View vBubbleArea;
         private ImageView ivSelect;
+        private TextView tvEdited;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -401,6 +402,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
+            tvEdited = itemView.findViewById(R.id.tv_edited);
 
             if (bubbleType == TYPE_BUBBLE_TEXT_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -511,6 +513,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vSeparator;
         private View vBubbleArea;
         private ImageView ivSelect;
+        private TextView tvEdited;
+        private TextView tvEditedBody;
 
         private TAPMessageModel obtainedItem;
         private Drawable thumbnail;
@@ -545,6 +549,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
+            tvEdited = itemView.findViewById(R.id.tv_edited);
+            tvEditedBody = itemView.findViewById(R.id.tv_edited_body);
 
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
@@ -897,6 +903,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vSeparator;
         private View vBubbleArea;
         private ImageView ivSelect;
+        private TextView tvEdited;
+        private TextView tvEditedBody;
 
         private TAPMessageModel obtainedItem;
         private Uri videoUri;
@@ -933,6 +941,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
+            tvEdited = itemView.findViewById(R.id.tv_edited);
+            tvEditedBody = itemView.findViewById(R.id.tv_edited_body);
 
             if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
