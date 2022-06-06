@@ -299,6 +299,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
+        if (!TapUI.getInstance(instanceKey).isEditMessageMenuEnabled) {
+            // Edit
+            imageResIds.add(R.drawable.tap_ic_edit_orange)
+            titleResIds.add(R.string.tap_edit)
+            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
@@ -376,6 +383,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
+        if (!TapUI.getInstance(instanceKey).isEditMessageMenuEnabled) {
+            // Edit
+            imageResIds.add(R.drawable.tap_ic_edit_orange)
+            titleResIds.add(R.string.tap_edit)
+            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
@@ -448,6 +462,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 titleResIds.add(R.string.tap_star)
                 ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
             }
+        }
+
+        if (!TapUI.getInstance(instanceKey).isEditMessageMenuEnabled) {
+            // Edit
+            imageResIds.add(R.drawable.tap_ic_edit_orange)
+            titleResIds.add(R.string.tap_edit)
+            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
         }
 
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
