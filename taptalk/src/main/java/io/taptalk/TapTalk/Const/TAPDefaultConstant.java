@@ -354,6 +354,7 @@ public class TAPDefaultConstant {
     public static final class QuoteAction {
         public static final int REPLY = 1;
         public static final int FORWARD = 2;
+        public static final int EDIT = 3;
     }
 
     public static final class SystemMessageAction {
