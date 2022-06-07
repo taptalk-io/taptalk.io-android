@@ -62,6 +62,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.EDIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
@@ -1551,41 +1552,131 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void checkForwardLayout(@Nullable TAPMessageModel message, @Nullable ArrayList<TAPMessageModel> messages, int quoteAction) {
         runOnUiThread(() -> {
-            if (quoteAction == FORWARD) {
-                if (messages == null || messages.isEmpty()) {
-                    return;
+            switch (quoteAction) {
+                case FORWARD:
+                    if (messages == null || messages.isEmpty()) {
+                        return;
+                    }
+                    if (messages.size() > 1) {
+                        vm.setForwardedMessages(messages, quoteAction);
+                        clQuote.setVisibility(View.VISIBLE);
+                        vQuoteDecoration.setVisibility(View.VISIBLE);
+                        rcivQuoteImage.setVisibility(View.GONE);
+                        String titleText = String.format(getString(R.string.tap_forward_sf_messages), messages.size());
+                        tvQuoteTitle.setText(titleText);
+                        ArrayList<String> senders = new ArrayList<>();
+                        for (TAPMessageModel forwardedMessage : messages) {
+                            String name;
+                            if (forwardedMessage.getForwardFrom() != null && !forwardedMessage.getForwardFrom().getFullname().isEmpty()) {
+                                name = TAPUtils.getFirstWordOfString(forwardedMessage.getForwardFrom().getFullname());
+                            } else {
+                                name = TAPUtils.getFirstWordOfString(forwardedMessage.getUser().getFullname());
+                            }
+                            if (!senders.contains(name)) {
+                                senders.add(name);
+                            }
+                        }
+                        String quoteContent = getString(R.string.tap_from) + " " + TAPUtils.concatStringList(senders);
+                        tvQuoteContent.setText(quoteContent);
+                        tvQuoteContent.setMaxLines(2);
+                        boolean hadFocus = etChat.hasFocus();
+                        if (!hadFocus && etChat.getSelectionEnd() == 0) {
+                            etChat.setSelection(etChat.getText().length());
+                        }
+                    } else {
+                        showQuoteLayout(messages.get(0), quoteAction, false);
+                    }
+                    break;
+                case EDIT:
+                    showEditLayout(message, quoteAction);
+                    break;
+                default:
+                    showQuoteLayout(message, quoteAction, false);
+                    break;
+            }
+        });
+    }
+
+    private void showEditLayout(@Nullable TAPMessageModel message, int quoteAction) {
+        if (null == message) {
+            return;
+        }
+        vm.setQuotedMessage(message, quoteAction);
+        runOnUiThread(() -> {
+            clQuote.setVisibility(View.VISIBLE);
+            // Add other quotable message type here
+            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
+                // Show image quote
+                vQuoteDecoration.setVisibility(View.GONE);
+                // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
+                Drawable drawable = null;
+                String fileID = (String) message.getData().get(FILE_ID);
+                if (null != fileID && !fileID.isEmpty()) {
+                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
                 }
-                if (messages.size() > 1) {
-                    vm.setForwardedMessages(messages, quoteAction);
-                    clQuote.setVisibility(View.VISIBLE);
-                    vQuoteDecoration.setVisibility(View.VISIBLE);
-                    rcivQuoteImage.setVisibility(View.GONE);
-                    String titleText = String.format(getString(R.string.tap_forward_sf_messages), messages.size());
-                    tvQuoteTitle.setText(titleText);
-                    ArrayList<String> senders = new ArrayList<>();
-                    for (TAPMessageModel forwardedMessage : messages) {
-                        String name;
-                        if (forwardedMessage.getForwardFrom() != null && !forwardedMessage.getForwardFrom().getFullname().isEmpty()) {
-                            name = TAPUtils.getFirstWordOfString(forwardedMessage.getForwardFrom().getFullname());
-                        } else {
-                            name = TAPUtils.getFirstWordOfString(forwardedMessage.getUser().getFullname());
-                        }
-                        if (!senders.contains(name)) {
-                            senders.add(name);
-                        }
+                if (null == drawable) {
+                    String fileUrl = (String) message.getData().get(FILE_URL);
+                    if (null != fileUrl && !fileUrl.isEmpty()) {
+                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
                     }
-                    String quoteContent = getString(R.string.tap_from) + " " + TAPUtils.concatStringList(senders);
-                    tvQuoteContent.setText(quoteContent);
-                    tvQuoteContent.setMaxLines(2);
-                    boolean hadFocus = etChat.hasFocus();
-                    if (!hadFocus && etChat.getSelectionEnd() == 0) {
-                        etChat.setSelection(etChat.getText().length());
-                    }
+                }
+                if (null != drawable) {
+                    rcivQuoteImage.setImageDrawable(drawable);
                 } else {
-                    showQuoteLayout(messages.get(0), quoteAction, false);
+                    // Show small thumbnail
+                    Drawable thumbnail = new BitmapDrawable(
+                            getResources(),
+                            TAPFileUtils.decodeBase64(
+                                    (String) (null == message.getData().get(THUMBNAIL) ? "" :
+                                            message.getData().get(THUMBNAIL))));
+                    rcivQuoteImage.setImageDrawable(thumbnail);
                 }
+                rcivQuoteImage.setColorFilter(null);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteTitle.setText(R.string.tap_edit_message);
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
+                etChat.setText(message.getData().get("caption").toString());
+            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE) {
+                // Show image quote from file URL
+                glide.load((String) message.getData().get(FILE_URL)).into(rcivQuoteImage);
+                rcivQuoteImage.setColorFilter(null);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                vQuoteDecoration.setVisibility(View.GONE);
+                tvQuoteTitle.setText(R.string.tap_edit_message);
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
+                etChat.setText(message.getData().get("caption").toString());
+            } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
+                // Show image quote from image URL
+                glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
+                rcivQuoteImage.setColorFilter(null);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                vQuoteDecoration.setVisibility(View.GONE);
+                tvQuoteTitle.setText(R.string.tap_edit_message);
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
+                etChat.setText(message.getData().get("caption").toString());
             } else {
-                showQuoteLayout(message, quoteAction, false);
+                // Show text quote
+                vQuoteDecoration.setVisibility(View.VISIBLE);
+                rcivQuoteImage.setVisibility(View.GONE);
+                tvQuoteTitle.setText(R.string.tap_edit_message);
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(2);
+                etChat.setText(message.getBody());
+            }
+            boolean hadFocus = etChat.hasFocus();
+            TAPUtils.showKeyboard(this, etChat);
+            new Handler().postDelayed(() -> etChat.requestFocus(), 300L);
+            if (!hadFocus && etChat.getSelectionEnd() == 0) {
+                etChat.setSelection(etChat.getText().length());
             }
         });
     }
@@ -2312,6 +2403,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (vm.getMessagePointer().containsKey(message.getLocalID())) {
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
             }
+        }
+
+        @Override
+        public void onEditMessage(TAPMessageModel message) {
+            super.onEditMessage(message);
+            if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
+                return;
+            }
+            showEditLayout(message, EDIT);
         }
     };
 

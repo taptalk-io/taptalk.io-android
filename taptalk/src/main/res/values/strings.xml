@@ -403,5 +403,6 @@
     <string name="tap_selected">Selected</string>
     <string name="tap_forward_sf_messages">Forward %d Messages</string>
     <string name="tap_edited">Edited</string>
+    <string name="tap_edit_message">Edit Message</string>
 
 </resources>
