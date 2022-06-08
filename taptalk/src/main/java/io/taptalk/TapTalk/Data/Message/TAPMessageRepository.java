@@ -203,7 +203,7 @@ public class TAPMessageRepository {
                 room.getData(), room.getQuote(), room.getReplyTo(),
                 room.getForwardFrom(), room.getUpdated(), room.getDeleted(),
                 room.getIsRead(), room.getDelivered(),
-                room.getHidden(), room.getIsDeleted(),
+                room.getHidden(), room.getEdited(), room.getIsDeleted(),
                 room.getSending(), room.getFailedSend(), room.getRoomID(),
                 room.getXcRoomID(), room.getRoomName(), room.getRoomColor(),
                 room.getRoomType(), room.getRoomImage(),

@@ -72,6 +72,9 @@ public class TAPMessageModel implements Parcelable {
     @JsonProperty("isHidden")
     private Boolean isHidden;
     @Nullable
+    @JsonProperty("isEdited")
+    private Boolean isEdited;
+    @Nullable
     @JsonProperty("isDeleted")
     private Boolean isDeleted;
     @Nullable
@@ -113,6 +116,7 @@ public class TAPMessageModel implements Parcelable {
                            @Nullable Boolean isDelivered,
                            @Nullable Boolean isRead,
                            @Nullable Boolean isHidden,
+                           @Nullable Boolean isEdited,
                            @Nullable Long updated,
                            @Nullable Long deleted,
                            @Nullable String action,
@@ -136,6 +140,7 @@ public class TAPMessageModel implements Parcelable {
         this.isDelivered = isDelivered;
         this.isRead = isRead;
         this.isHidden = isHidden;
+        this.isEdited = isEdited;
         this.updated = updated;
         this.deleted = deleted;
         this.target = target;
@@ -150,7 +155,7 @@ public class TAPMessageModel implements Parcelable {
 
     public static TAPMessageModel Builder(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data) {
         String localID = TAPUtils.generateRandomString(32);
-        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, null, null, null, false, true, false, false, false, false, created, null, null, null);
+        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, null, null, null, false, true, false, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel BuilderWithQuotedMessage(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, TAPMessageModel quotedMessage) {
@@ -172,14 +177,14 @@ public class TAPMessageModel implements Parcelable {
         TAPReplyToModel reply = new TAPReplyToModel(quotedMessage.getMessageID()
                 , quotedMessage.getLocalID(), quotedMessage.getType()
                 , quotedMessage.getUser());
-        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, created, null, null, null);
+        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel BuilderWithQuote(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, String quoteTitle, String quoteContent, String quoteImageUrl) {
         String localID = TAPUtils.generateRandomString(32);
 
         TAPQuoteModel quote = new TAPQuoteModel(quoteTitle, quoteContent, "", quoteImageUrl, (null == quoteImageUrl || quoteImageUrl.isEmpty()) ? "" : IMAGE);
-        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, null, null, false, true, false, false, false, false, created, null, null, null);
+        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, null, null, false, true, false, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel BuilderForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, Long created, TAPUserModel user, String recipientID) {
@@ -190,12 +195,12 @@ public class TAPMessageModel implements Parcelable {
         } else {
             forwardFrom = messageToForward.getForwardFrom();
         }
-        return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, user, recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, created, null, null, null);
+        return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, user, recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel BuilderResendMessage(TAPMessageModel message, Long created) {
         String localID = TAPUtils.generateRandomString(32);
-        return new TAPMessageModel("0", localID, "", message.getBody(), message.getRoom(), message.getType(), created, message.getUser(), message.getRecipientID(), message.getData(), message.getQuote(), message.getReplyTo(), message.getForwardFrom(), false, true, false, false, false, false, created, null, null, null);
+        return new TAPMessageModel("0", localID, "", message.getBody(), message.getRoom(), message.getType(), created, message.getUser(), message.getRecipientID(), message.getData(), message.getQuote(), message.getReplyTo(), message.getForwardFrom(), false, true, false, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel fromMessageEntity(TAPMessageEntity messageEntity) {
@@ -229,6 +234,7 @@ public class TAPMessageModel implements Parcelable {
                 messageEntity.getDelivered(),
                 messageEntity.getIsRead(),
                 messageEntity.getHidden(),
+                messageEntity.getEdited(),
                 messageEntity.getUpdated(),
                 messageEntity.getUserDeleted(),
                 messageEntity.getAction(),
@@ -249,6 +255,8 @@ public class TAPMessageModel implements Parcelable {
             this.deleted = model.getDeleted();
         if (null != model && null != model.isHidden && (null == this.isHidden || !this.isHidden))
             this.isHidden = model.getHidden();
+        if (null != model && null != model.isEdited && (null == this.isEdited || !this.isEdited))
+            this.isEdited = model.getEdited();
         if (null != model && null != model.isDelivered && (null != this.isDelivered && !this.isDelivered))
             this.isDelivered = model.getDelivered();
         if (null != model && null != model.isRead && (null != this.isRead && !this.isRead))
@@ -293,6 +301,8 @@ public class TAPMessageModel implements Parcelable {
             this.deleted = model.getDeleted();
         if (null != model.getHidden() && (null == this.isHidden || !this.isHidden))
             this.isHidden = model.getHidden();
+        if (null != model.getEdited() && (null == this.isEdited || !this.isEdited))
+            this.isEdited = model.getEdited();
         if (null != model.getDelivered() && (null != this.isDelivered && !this.isDelivered))
             this.isDelivered = model.getDelivered();
         if (null != model.getIsRead() && (null != this.isRead && !this.isRead))
@@ -338,6 +348,7 @@ public class TAPMessageModel implements Parcelable {
                 getDelivered(),
                 getIsRead(),
                 getHidden(),
+                getEdited(),
                 getUpdated(),
                 getDeleted(),
                 getAction(),
@@ -505,6 +516,15 @@ public class TAPMessageModel implements Parcelable {
     }
 
     @Nullable
+    public Boolean getEdited() {
+        return isEdited;
+    }
+
+    public void setEdited(@Nullable Boolean edited) {
+        isEdited = edited;
+    }
+
+    @Nullable
     public Boolean getIsDeleted() {
         return isDeleted;
     }
@@ -594,6 +614,7 @@ public class TAPMessageModel implements Parcelable {
         dest.writeValue(this.isRead);
         dest.writeValue(this.isDelivered);
         dest.writeValue(this.isHidden);
+        dest.writeValue(this.isEdited);
         dest.writeValue(this.isDeleted);
         dest.writeValue(this.isSending);
         dest.writeValue(this.isFailedSend);
@@ -621,6 +642,7 @@ public class TAPMessageModel implements Parcelable {
         this.isRead = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isDelivered = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isHidden = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isEdited = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isDeleted = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isSending = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isFailedSend = (Boolean) in.readValue(Boolean.class.getClassLoader());

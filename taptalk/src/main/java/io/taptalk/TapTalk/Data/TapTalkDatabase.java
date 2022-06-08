@@ -52,6 +52,7 @@ public abstract class TapTalkDatabase extends RoomDatabase {
                         .addMigrations(MIGRATION_6_7)
                         .addMigrations(MIGRATION_7_8)
                         .addMigrations(MIGRATION_8_9)
+                        .addMigrations(MIGRATION_9_10)
 //                    .openHelperFactory(factory)
                         .build();
                 getDatabases().put(instanceKey, database);
@@ -126,6 +127,13 @@ public abstract class TapTalkDatabase extends RoomDatabase {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE 'MyContact' ADD COLUMN 'bio' TEXT");
+        }
+    };
+
+    private static final Migration MIGRATION_9_10 = new Migration(9, 10) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE 'Message_Table' ADD COLUMN 'isEdited' INTEGER");
         }
     };
 
