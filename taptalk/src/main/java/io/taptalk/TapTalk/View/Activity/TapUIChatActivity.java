@@ -2810,7 +2810,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
             setDefaultState();
         } else if (!TextUtils.isEmpty(message) && recordingState == RECORDING_STATE.DEFAULT) {
             etChat.setText("");
-            TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
+            if (vm.getQuotedMessage() != null && vm.getQuoteAction() == EDIT) {
+                // edit message
+                TAPMessageModel messageModel = vm.getQuotedMessage();
+                messageModel.setBody(message);
+                TAPChatManager.getInstance(instanceKey).editMessage(messageModel);
+            } else {
+                // send message
+                TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
+            }
             // Updated 2020/04/23
             //rvMessageList.scrollToPosition(0);
             rvMessageList.post(this::scrollToBottom);
