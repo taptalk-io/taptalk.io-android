@@ -1638,7 +1638,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(R.string.tap_edit_message);
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
-                etChat.setText(message.getData().get("caption").toString());
+                etChat.setText(message.getData().get(CAPTION).toString());
             } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE) {
                 // Show image quote from file URL
                 glide.load((String) message.getData().get(FILE_URL)).into(rcivQuoteImage);
@@ -1650,7 +1650,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(R.string.tap_edit_message);
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
-                etChat.setText(message.getData().get("caption").toString());
+                etChat.setText(message.getData().get(CAPTION).toString());
             } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
                 // Show image quote from image URL
                 glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
@@ -1662,7 +1662,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(R.string.tap_edit_message);
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
-                etChat.setText(message.getData().get("caption").toString());
+                etChat.setText(message.getData().get(CAPTION).toString());
             } else {
                 // Show text quote
                 vQuoteDecoration.setVisibility(View.VISIBLE);
@@ -2813,7 +2813,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (vm.getQuotedMessage() != null && vm.getQuoteAction() == EDIT) {
                 // edit message
                 TAPMessageModel messageModel = vm.getQuotedMessage();
-                messageModel.setBody(message);
+                if (messageModel.getType() == TYPE_TEXT) {
+                    messageModel.setBody(message);
+                } else if (messageModel.getType() == TYPE_IMAGE || messageModel.getType() == TYPE_VIDEO) {
+                    HashMap<String, Object> data = messageModel.getData();
+                    if (data != null) {
+                        data.put(CAPTION, message);
+                        messageModel.setData(data);
+                    }
+                } else {
+                    return;
+                }
                 TAPChatManager.getInstance(instanceKey).editMessage(messageModel);
             } else {
                 // send message
