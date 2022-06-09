@@ -105,7 +105,7 @@ public class TAPChatManager {
     private Map<String, TAPMessageModel> pendingMessages, waitingUploadProgress, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, ArrayList<TAPMessageModel>> forwardedMessages;
     private Map<String, Integer> quotedActions;
-    private Map<String, String> messageDrafts;
+    private Map<String, String> messageDrafts, pendingMessageActions;
     private HashMap<String, HashMap<String, Object>> userInfo;
     private HashMap<String, TapSendMessageInterface> sendMessageListeners;
     private List<TAPChatListener> chatListeners;
@@ -148,6 +148,7 @@ public class TAPChatManager {
         sendMessageListeners = new HashMap<>();
         saveMessages = new ArrayList<>();
         pendingMessages = new LinkedHashMap<>();
+        pendingMessageActions = new LinkedHashMap<>();
         waitingResponses = new LinkedHashMap<>();
         incomingMessages = new LinkedHashMap<>();
         waitingUploadProgress = new LinkedHashMap<>();
@@ -1347,7 +1348,7 @@ public class TAPChatManager {
                 }
             }
         }
-        runSendMessageSequence(messageModel);
+        runSendMessageSequence(messageModel, kSocketNewMessage);
     }
 
     /**
@@ -1467,8 +1468,9 @@ public class TAPChatManager {
     public void checkAndSendPendingMessages() {
         if (!pendingMessages.isEmpty()) {
             TAPMessageModel message = pendingMessages.entrySet().iterator().next().getValue();
-            runSendMessageSequence(message);
+            runSendMessageSequence(message, pendingMessageActions.get(message.getLocalID()));
             pendingMessages.remove(message.getLocalID());
+            pendingMessageActions.remove(message.getLocalID());
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -1479,9 +1481,17 @@ public class TAPChatManager {
     }
 
     /**
+     * Edit message
+     */
+
+    public void editMessage(TAPMessageModel message) {
+        runSendMessageSequence(message, kSocketUpdateMessage);
+    }
+
+    /**
      * Send message to server
      */
-    private void runSendMessageSequence(TAPMessageModel messageModel) {
+    private void runSendMessageSequence(TAPMessageModel messageModel, String connectionEvent) {
 
         // TODO TEMPORARY FLAG FOR SEND MESSAGE API
         if (isSendMessageDisabled) {
@@ -1500,10 +1510,11 @@ public class TAPChatManager {
         if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
             // Send message if socket is connected
             waitingResponses.put(messageModel.getLocalID(), messageModel);
-            sendEmit(kSocketNewMessage, messageModel);
+            sendEmit(pendingMessageActions.get(messageModel.getLocalID()), messageModel);
         } else {
             // Add message to queue if socket is not connected
             pendingMessages.put(messageModel.getLocalID(), messageModel);
+            pendingMessageActions.put(messageModel.getLocalID(), connectionEvent);
         }
     }
 
