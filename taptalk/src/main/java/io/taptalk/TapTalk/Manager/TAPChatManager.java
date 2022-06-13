@@ -72,6 +72,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
@@ -1484,8 +1485,44 @@ public class TAPChatManager {
      * Edit message
      */
 
-    public void editMessage(TAPMessageModel message) {
-        runSendMessageSequence(message, kSocketUpdateMessage);
+    public void editMessage(TAPMessageModel message, String textMessage, TapSendMessageInterface listener) {
+        int startIndex;
+
+        if (textMessage.length() > CHARACTER_LIMIT) {
+            // Message exceeds character limit
+            //List<TAPMessageEntity> messageEntities = new ArrayList<>();
+            int length = textMessage.length();
+            for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
+                String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
+
+                if (message.getType() == TYPE_TEXT) {
+                    message.setBody(substr);
+                } else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
+                    HashMap<String, Object> data = message.getData();
+                    if (data != null) {
+                        data.put(CAPTION, substr);
+                        message.setData(data);
+                    }
+                } else {
+                    return;
+                }
+
+                if (null != listener) {
+                    sendMessageListeners.put(message.getLocalID(), listener);
+                    listener.onStart(message);
+                }
+
+                // Edit truncated message
+                runSendMessageSequence(message, kSocketUpdateMessage);
+            }
+        } else {
+            if (null != listener) {
+                sendMessageListeners.put(message.getLocalID(), listener);
+                listener.onStart(message);
+            }
+            // Edit message
+            runSendMessageSequence(message, kSocketUpdateMessage);
+        }
     }
 
     /**
