@@ -112,6 +112,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             fragment.arguments = args
             return fragment
         }
+
+        private const val TWO_DAYS_IN_MILLIS : Long = 172800000
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -302,7 +304,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.sending && !messageModel.sending!!
+            null != messageModel.sending && !messageModel.sending!! &&
+            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
         ) {
             // Edit
             imageResIds.add(R.drawable.tap_ic_edit_orange)
@@ -390,7 +393,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.sending && !messageModel.sending!!
+            null != messageModel.sending && !messageModel.sending!! &&
+            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
         ) {
             // Edit
             imageResIds.add(R.drawable.tap_ic_edit_orange)
@@ -475,7 +479,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.sending && !messageModel.sending!!
+                null != messageModel.sending && !messageModel.sending!! &&
+            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
         ) {
             // Edit
             imageResIds.add(R.drawable.tap_ic_edit_orange)
