@@ -2811,12 +2811,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             //send voice note
             TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
             setDefaultState();
-        } else if (!TextUtils.isEmpty(message) && recordingState == RECORDING_STATE.DEFAULT) {
+        } else if (recordingState == RECORDING_STATE.DEFAULT) {
             etChat.setText("");
             if (vm.getQuotedMessage() != null && vm.getQuoteAction() == EDIT) {
                 // edit message
                 TAPMessageModel messageModel = vm.getQuotedMessage();
-                if (messageModel.getType() == TYPE_TEXT) {
+                if (messageModel.getType() == TYPE_TEXT && !TextUtils.isEmpty(message)) {
                     messageModel.setBody(message);
                 } else if (messageModel.getType() == TYPE_IMAGE || messageModel.getType() == TYPE_VIDEO) {
                     HashMap<String, Object> data = messageModel.getData();
@@ -2829,9 +2829,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
                 TAPChatManager.getInstance(instanceKey).editMessage(messageModel, message, null);
                 hideQuoteLayout();
-            } else {
+            } else if (!TextUtils.isEmpty(message)) {
                 // send message
                 TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
+            } else {
+                TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
+                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+                ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
             }
             // Updated 2020/04/23
             //rvMessageList.scrollToPosition(0);
@@ -3276,7 +3280,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Hide chat menu and enable send button when EditText is filled
                     ivChatMenu.setVisibility(View.GONE);
                     ivButtonChatMenu.setVisibility(View.GONE);
-                    setSendButtonEnabled();
+                    if (vm.getQuoteAction() == EDIT) {
+                        String caption = vm.getQuotedMessage().getData() != null? (String) vm.getQuotedMessage().getData().get(CAPTION) : "";
+                        caption = caption != null? caption : "";
+                        if ((vm.getQuotedMessage().getType() == TYPE_TEXT && vm.getQuotedMessage().getBody().equals(s.toString())) || ((vm.getQuotedMessage().getType() == TYPE_IMAGE || vm.getQuotedMessage().getType() == TYPE_VIDEO) &&
+                                caption.equals(s.toString()))) {
+                            setSendButtonDisabled();
+                        } else {
+                            setSendButtonEnabled();
+                        }
+                    } else {
+                        setSendButtonEnabled();
+                    }
                     checkAndSearchUserMentionList();
                     //checkAndHighlightTypedText();
                 } else if (s.length() > 0) {
@@ -3301,7 +3316,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         ivChatMenu.setVisibility(View.GONE);
                         ivButtonChatMenu.setVisibility(View.GONE);
                     }
-                    if (vm.getQuoteAction() == FORWARD) {
+                    String caption = (vm.getQuotedMessage() != null && vm.getQuotedMessage().getData() != null)? (String) vm.getQuotedMessage().getData().get(CAPTION) : "";
+                    caption = caption != null? caption : "";
+                    if (vm.getQuoteAction() == FORWARD || (vm.getQuoteAction() == EDIT && ((vm.getQuotedMessage().getType() == TYPE_IMAGE || vm.getQuotedMessage().getType() == TYPE_VIDEO) &&
+                            !caption.equals(s.toString())))) {
                         // Enable send button if message to forward exists
                         setSendButtonEnabled();
                     } else {
