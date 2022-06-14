@@ -1815,6 +1815,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void hideQuoteLayout() {
+        if (vm.getQuoteAction() == EDIT) {
+            etChat.setText("");
+        }
         vm.setQuotedMessage(null, 0);
         vm.setForwardedMessages(null, 0);
         boolean hasFocus = etChat.hasFocus();
