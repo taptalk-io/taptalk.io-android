@@ -2832,14 +2832,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else if (!TextUtils.isEmpty(message)) {
                 // send message
                 TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
+
+                // Updated 2020/04/23
+                //rvMessageList.scrollToPosition(0);
+                rvMessageList.post(this::scrollToBottom);
             } else {
                 TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
                 ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
             }
-            // Updated 2020/04/23
-            //rvMessageList.scrollToPosition(0);
-            rvMessageList.post(this::scrollToBottom);
         } else {
             TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
             ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
