@@ -1469,7 +1469,8 @@ public class TAPChatManager {
     public void checkAndSendPendingMessages() {
         if (!pendingMessages.isEmpty()) {
             TAPMessageModel message = pendingMessages.entrySet().iterator().next().getValue();
-            runSendMessageSequence(message, pendingMessageActions.get(message.getLocalID()));
+            String eventAction = pendingMessageActions.get(message.getLocalID());
+            runSendMessageSequence(message, eventAction);
             pendingMessages.remove(message.getLocalID());
             pendingMessageActions.remove(message.getLocalID());
             new Timer().schedule(new TimerTask() {
@@ -1547,7 +1548,7 @@ public class TAPChatManager {
         if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
             // Send message if socket is connected
             waitingResponses.put(messageModel.getLocalID(), messageModel);
-            sendEmit(pendingMessageActions.get(messageModel.getLocalID()), messageModel);
+            sendEmit(connectionEvent, messageModel);
         } else {
             // Add message to queue if socket is not connected
             pendingMessages.put(messageModel.getLocalID(), messageModel);
@@ -1986,6 +1987,7 @@ public class TAPChatManager {
     public void resetChatManager() {
         clearSaveMessages();
         pendingMessages.clear();
+        pendingMessageActions.clear();
         waitingUploadProgress.clear();
         waitingResponses.clear();
         incomingMessages.clear();
