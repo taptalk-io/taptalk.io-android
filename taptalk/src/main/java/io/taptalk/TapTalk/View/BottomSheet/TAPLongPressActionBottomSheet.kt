@@ -305,6 +305,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
             null != messageModel.sending && !messageModel.sending!! &&
+            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
             System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
         ) {
             // Edit
@@ -394,6 +395,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
             null != messageModel.sending && !messageModel.sending!! &&
+            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
             System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
         ) {
             // Edit
@@ -477,9 +479,10 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         }
 
         if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
-                null != TAPChatManager.getInstance(instanceKey).activeUser &&
-                messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.sending && !messageModel.sending!! &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+            null != messageModel.sending && !messageModel.sending!! &&
+            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
             System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
         ) {
             // Edit
