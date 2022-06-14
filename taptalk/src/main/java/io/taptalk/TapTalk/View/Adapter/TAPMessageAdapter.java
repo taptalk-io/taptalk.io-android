@@ -423,7 +423,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
             }
             tvMessageTimestamp.setText(item.getMessageStatusText());
-            setEditedMessage(item.getEdited() != null && item.getEdited(), tvEdited);
+            setEditedMessage(item.getMessageEdited() != null && item.getMessageEdited(), tvEdited);
             setMessageBodyText(tvMessageBody, item, item.getBody());
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
@@ -677,7 +677,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.VISIBLE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessageBody);
-                setEditedMessage(item.getEdited() != null && item.getEdited(), tvEditedBody);
+                setEditedMessage(item.getMessageEdited() != null && item.getMessageEdited(), tvEditedBody);
             } else {
                 // Hide caption
 //                rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(13));
@@ -689,7 +689,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.GONE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessage);
-                setEditedMessage(item.getEdited() != null && item.getEdited(), tvEdited);
+                setEditedMessage(item.getMessageEdited() != null && item.getMessageEdited(), tvEdited);
             }
 
             if (null != widthDimension && null != heightDimension && widthDimension.intValue() > 0 && heightDimension.intValue() > 0) {
@@ -1041,7 +1041,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.VISIBLE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessageBody);
-                setEditedMessage(item.getEdited() != null && item.getEdited(), tvEditedBody);
+                setEditedMessage(item.getMessageEdited() != null && item.getMessageEdited(), tvEditedBody);
             } else {
                 // Hide caption
 //                rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(13));
@@ -1053,7 +1053,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.GONE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessage);
-                setEditedMessage(item.getEdited() != null && item.getEdited(), tvEdited);
+                setEditedMessage(item.getMessageEdited() != null && item.getMessageEdited(), tvEdited);
             }
 
             if (null != widthDimension && null != heightDimension && widthDimension.intValue() > 0 && heightDimension.intValue() > 0) {

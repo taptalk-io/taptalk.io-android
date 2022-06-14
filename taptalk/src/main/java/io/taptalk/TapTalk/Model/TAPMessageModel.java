@@ -72,8 +72,8 @@ public class TAPMessageModel implements Parcelable {
     @JsonProperty("isHidden")
     private Boolean isHidden;
     @Nullable
-    @JsonProperty("isEdited")
-    private Boolean isEdited;
+    @JsonProperty("isMessageEdited")
+    private Boolean isMessageEdited;
     @Nullable
     @JsonProperty("isDeleted")
     private Boolean isDeleted;
@@ -116,7 +116,7 @@ public class TAPMessageModel implements Parcelable {
                            @Nullable Boolean isDelivered,
                            @Nullable Boolean isRead,
                            @Nullable Boolean isHidden,
-                           @Nullable Boolean isEdited,
+                           @Nullable Boolean isMessageEdited,
                            @Nullable Long updated,
                            @Nullable Long deleted,
                            @Nullable String action,
@@ -140,7 +140,7 @@ public class TAPMessageModel implements Parcelable {
         this.isDelivered = isDelivered;
         this.isRead = isRead;
         this.isHidden = isHidden;
-        this.isEdited = isEdited;
+        this.isMessageEdited = isMessageEdited;
         this.updated = updated;
         this.deleted = deleted;
         this.target = target;
@@ -234,7 +234,7 @@ public class TAPMessageModel implements Parcelable {
                 messageEntity.getDelivered(),
                 messageEntity.getIsRead(),
                 messageEntity.getHidden(),
-                messageEntity.getEdited(),
+                messageEntity.getMessageEdited(),
                 messageEntity.getUpdated(),
                 messageEntity.getUserDeleted(),
                 messageEntity.getAction(),
@@ -255,8 +255,8 @@ public class TAPMessageModel implements Parcelable {
             this.deleted = model.getDeleted();
         if (null != model && null != model.isHidden && (null == this.isHidden || !this.isHidden))
             this.isHidden = model.getHidden();
-        if (null != model && null != model.isEdited && (null == this.isEdited || !this.isEdited))
-            this.isEdited = model.getEdited();
+        if (null != model && null != model.isMessageEdited && (null == this.isMessageEdited || !this.isMessageEdited))
+            this.isMessageEdited = model.getMessageEdited();
         if (null != model && null != model.isDelivered && (null != this.isDelivered && !this.isDelivered))
             this.isDelivered = model.getDelivered();
         if (null != model && null != model.isRead && (null != this.isRead && !this.isRead))
@@ -301,8 +301,8 @@ public class TAPMessageModel implements Parcelable {
             this.deleted = model.getDeleted();
         if (null != model.getHidden() && (null == this.isHidden || !this.isHidden))
             this.isHidden = model.getHidden();
-        if (null != model.getEdited() && (null == this.isEdited || !this.isEdited))
-            this.isEdited = model.getEdited();
+        if (null != model.getMessageEdited() && (null == this.isMessageEdited || !this.isMessageEdited))
+            this.isMessageEdited = model.getMessageEdited();
         if (null != model.getDelivered() && (null != this.isDelivered && !this.isDelivered))
             this.isDelivered = model.getDelivered();
         if (null != model.getIsRead() && (null != this.isRead && !this.isRead))
@@ -348,7 +348,7 @@ public class TAPMessageModel implements Parcelable {
                 getDelivered(),
                 getIsRead(),
                 getHidden(),
-                getEdited(),
+                getMessageEdited(),
                 getUpdated(),
                 getDeleted(),
                 getAction(),
@@ -516,12 +516,12 @@ public class TAPMessageModel implements Parcelable {
     }
 
     @Nullable
-    public Boolean getEdited() {
-        return isEdited;
+    public Boolean getMessageEdited() {
+        return isMessageEdited;
     }
 
-    public void setEdited(@Nullable Boolean edited) {
-        isEdited = edited;
+    public void setMessageEdited(@Nullable Boolean edited) {
+        isMessageEdited = edited;
     }
 
     @Nullable
@@ -614,7 +614,7 @@ public class TAPMessageModel implements Parcelable {
         dest.writeValue(this.isRead);
         dest.writeValue(this.isDelivered);
         dest.writeValue(this.isHidden);
-        dest.writeValue(this.isEdited);
+        dest.writeValue(this.isMessageEdited);
         dest.writeValue(this.isDeleted);
         dest.writeValue(this.isSending);
         dest.writeValue(this.isFailedSend);
@@ -642,7 +642,7 @@ public class TAPMessageModel implements Parcelable {
         this.isRead = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isDelivered = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isHidden = (Boolean) in.readValue(Boolean.class.getClassLoader());
-        this.isEdited = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isMessageEdited = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isDeleted = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isSending = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isFailedSend = (Boolean) in.readValue(Boolean.class.getClassLoader());

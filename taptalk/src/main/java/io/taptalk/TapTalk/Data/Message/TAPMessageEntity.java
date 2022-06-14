@@ -57,8 +57,8 @@ public class TAPMessageEntity {
     @ColumnInfo(name = "isHidden")
     private Boolean isHidden;
     @Nullable
-    @ColumnInfo(name = "isEdited")
-    private Boolean isEdited;
+    @ColumnInfo(name = "isMessageEdited")
+    private Boolean isMessageEdited;
     @Nullable
     @ColumnInfo(name = "isDeleted")
     private Boolean isDeleted;
@@ -142,7 +142,7 @@ public class TAPMessageEntity {
                             @Nullable String data, @Nullable String quote, @Nullable String replyTo,
                             @Nullable String forwardFrom, @Nullable Long updated, @Nullable Long deleted,
                             @Nullable Boolean isRead, @Nullable Boolean isDelivered,
-                            @Nullable Boolean isHidden, @Nullable Boolean isEdited, @Nullable Boolean isDeleted,
+                            @Nullable Boolean isHidden, @Nullable Boolean isMessageEdited, @Nullable Boolean isDeleted,
                             @Nullable Boolean isSending, @Nullable Boolean isFailedSend, String roomID,
                             @Nullable String xcRoomID, @Nullable String roomName, @Nullable String roomColor,
                             @Nullable Integer roomType, @Nullable String roomImage,
@@ -170,7 +170,7 @@ public class TAPMessageEntity {
         this.isRead = isRead;
         this.isDelivered = isDelivered;
         this.isHidden = isHidden;
-        this.isEdited = isEdited;
+        this.isMessageEdited = isMessageEdited;
         this.isDeleted = isDeleted;
         this.isSending = isSending;
         this.isFailedSend = isFailedSend;
@@ -211,7 +211,7 @@ public class TAPMessageEntity {
                 null == messageModel.getReplyTo() ? null : TAPUtils.toJsonString(messageModel.getReplyTo()),
                 null == messageModel.getForwardFrom() ? null : TAPUtils.toJsonString(messageModel.getForwardFrom()),
                 messageModel.getUpdated(), messageModel.getDeleted(),
-                messageModel.getIsRead(), messageModel.getDelivered(), messageModel.getHidden(), messageModel.getEdited(), messageModel.getIsDeleted(),
+                messageModel.getIsRead(), messageModel.getDelivered(), messageModel.getHidden(), messageModel.getMessageEdited(), messageModel.getIsDeleted(),
                 messageModel.getSending(), messageModel.getFailedSend(), messageModel.getRoom().getRoomID(),
                 messageModel.getRoom().getXcRoomID(), messageModel.getRoom().getName(),
                 messageModel.getRoom().getColor(), messageModel.getRoom().getType(),
@@ -627,11 +627,11 @@ public class TAPMessageEntity {
     }
 
     @Nullable
-    public Boolean getEdited() {
-        return isEdited;
+    public Boolean getMessageEdited() {
+        return isMessageEdited;
     }
 
-    public void setEdited(@Nullable Boolean edited) {
-        isEdited = edited;
+    public void setMessageEdited(@Nullable Boolean edited) {
+        isMessageEdited = edited;
     }
 }

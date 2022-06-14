@@ -18,7 +18,6 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Model.TAPImageURL;
-import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 
@@ -203,7 +202,7 @@ public class TAPMessageRepository {
                 room.getData(), room.getQuote(), room.getReplyTo(),
                 room.getForwardFrom(), room.getUpdated(), room.getDeleted(),
                 room.getIsRead(), room.getDelivered(),
-                room.getHidden(), room.getEdited(), room.getIsDeleted(),
+                room.getHidden(), room.getMessageEdited(), room.getIsDeleted(),
                 room.getSending(), room.getFailedSend(), room.getRoomID(),
                 room.getXcRoomID(), room.getRoomName(), room.getRoomColor(),
                 room.getRoomType(), room.getRoomImage(),
