@@ -243,6 +243,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_form_container.setOnClickListener { clearAllFocus() }
         cl_password.setOnClickListener { openChangePasswordPage() }
         cl_logout.setOnClickListener { promptUserLogout() }
+        btn_delete_my_account.setOnClickListener { /*TODO: move to delete account page MU*/ }
 
         // Obtain text field style attributes
         val textFieldArray = obtainStyledAttributes(R.style.tapFormTextFieldStyle, R.styleable.TextAppearance)
@@ -288,6 +289,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_basic_info.visibility = View.VISIBLE
         tv_version_code.visibility = View.VISIBLE
         cl_logout.visibility = View.GONE
+        btn_delete_my_account.visibility = View.GONE
         et_bio.isEnabled = false
         et_bio.setText(vm.myUserModel.bio)
     }
@@ -319,6 +321,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         } else {
             cl_logout.visibility = View.GONE
         }
+        btn_delete_my_account.visibility = View.VISIBLE
         et_bio.isEnabled = true
     }
 
