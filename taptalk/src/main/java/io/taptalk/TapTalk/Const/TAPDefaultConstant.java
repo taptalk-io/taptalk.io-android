@@ -286,10 +286,10 @@ public class TAPDefaultConstant {
         public static final String ERROR_MESSAGE_DOWNLOAD_CANCELLED = "Download was cancelled";
         public static final String ERROR_MESSAGE_IMAGE_UNAVAILABLE = "Could not process compressed image";
         public static final String ERROR_MESSAGE_DOWNLOAD_INVALID_MESSAGE_TYPE = "Invalid message type. Allowed types are image (1002), video (1003), file (1004)";
-        public static final String ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT = "Media caption exceeds the %d character limit";
+        public static final String ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT = "Message or caption exceeds the %d character limit";
         public static final String ERROR_MESSAGE_PRODUCT_EMPTY = "Provided product list is empty";
         public static final String ERROR_MESSAGE_CHAT_ROOM_NOT_FOUND = "Selected chat room is not found";
-        public static final String ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE = "Invalid message type. Allowed types are text (1001), image (1002), video (1003), file (1004)";
+        public static final String ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE = "Invalid message type. Allowed types are text (1001), image (1002), video (1003)";
     }
 
     public static final class ClientSuccessMessages {

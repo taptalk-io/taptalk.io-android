@@ -4,6 +4,7 @@ import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
@@ -204,6 +205,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
+import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -2827,7 +2829,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 } else {
                     return;
                 }
-                TapCoreMessageManager.getInstance(instanceKey).editMessage(messageModel, message, null);
+                TapCoreMessageManager.getInstance(instanceKey).editMessage(messageModel, message, new TapCoreSendMessageListener() {
+                    @Override
+                    public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
+                        if (errorCode.equals(ERROR_CODE_CAPTION_EXCEEDS_LIMIT)) {
+                            new TapTalkDialog.Builder(TapUIChatActivity.this)
+                                    .setTitle(getString(R.string.tap_error_unable_to_edit_message))
+                                    .setMessage(errorMessage)
+                                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                                    .show();
+                        }
+                    }
+                });
                 hideQuoteLayout();
             } else if (!TextUtils.isEmpty(message)) {
                 // send message

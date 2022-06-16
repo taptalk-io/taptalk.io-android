@@ -225,6 +225,7 @@
     <string name="tap_error_active_user_is_null">Could not find active user data. Please make sure the client app is authenticated.</string>
     <string name="tap_error_we_are_experiencing_some_issues">Kami sedang mengalami masalah, silakan coba lagi nanti.</string>
     <string name="tap_currently_unavailable">Sedang tidak tersedia</string>
+    <string name="tap_error_unable_to_edit_message">Gagal Mengubah Pesan</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>

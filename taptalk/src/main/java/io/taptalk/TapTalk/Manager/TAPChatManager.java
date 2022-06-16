@@ -1488,31 +1488,32 @@ public class TAPChatManager {
      * Edit message
      */
 
-    public void editMessage(TAPMessageModel message, String textMessage, TapSendMessageInterface listener) {
-        if ((message.getType() == TYPE_TEXT && textMessage.length() > CHARACTER_LIMIT) ||
-            ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) &&
-                    textMessage.length() > TapTalk.getMaxCaptionLength(instanceKey))
-        ) {
-            // Message exceeds character limit
-            if (null != listener) {
-                listener.onError(message, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT);
-            }
-            return;
-        }
-
+    public void editMessage(TAPMessageModel message, String updatedText, TapSendMessageInterface listener) {
         if (message.getType() == TYPE_TEXT) {
-            message.setBody(textMessage);
+            if (updatedText.length() > CHARACTER_LIMIT) {
+                if (null != listener) {
+                    listener.onError(message, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, CHARACTER_LIMIT));
+                }
+                return;
+            }
+            message.setBody(updatedText);
         }
         else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
+            if (updatedText.length() > TapTalk.getMaxCaptionLength(instanceKey)) {
+                if (null != listener) {
+                    listener.onError(message, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, TapTalk.getMaxCaptionLength(instanceKey)));
+                }
+                return;
+            }
             HashMap<String, Object> data = message.getData();
             if (data != null) {
-                data.put(CAPTION, textMessage);
+                data.put(CAPTION, updatedText);
                 message.setData(data);
                 if (message.getType() == TYPE_IMAGE) {
-                    message.setBody(TAPChatManager.getInstance(instanceKey).generateImageCaption(textMessage));
+                    message.setBody(TAPChatManager.getInstance(instanceKey).generateImageCaption(updatedText));
                 }
                 else {
-                    message.setBody(TAPChatManager.getInstance(instanceKey).generateVideoCaption(textMessage));
+                    message.setBody(TAPChatManager.getInstance(instanceKey).generateVideoCaption(updatedText));
                 }
             }
         }
