@@ -9,7 +9,7 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
-        public static final int kDatabaseVersion = 9;
+        public static final int kDatabaseVersion = 10;
         public static final String DATABASE_NAME = "message_database";
     }
 
@@ -265,6 +265,7 @@ public class TAPDefaultConstant {
         public static final String ERROR_CODE_CAPTION_EXCEEDS_LIMIT = "90306";
         public static final String ERROR_CODE_PRODUCT_EMPTY = "90307";
         public static final String ERROR_CODE_DOWNLOAD_CANCELLED = "90308";
+        public static final String ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE = "90309";
         public static final String ERROR_CODE_CHAT_ROOM_NOT_FOUND = "90404";
         public static final String ERROR_CODE_OTHERS = "99999";
     }
@@ -288,6 +289,7 @@ public class TAPDefaultConstant {
         public static final String ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT = "Media caption exceeds the %d character limit";
         public static final String ERROR_MESSAGE_PRODUCT_EMPTY = "Provided product list is empty";
         public static final String ERROR_MESSAGE_CHAT_ROOM_NOT_FOUND = "Selected chat room is not found";
+        public static final String ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE = "Invalid message type. Allowed types are text (1001), image (1002), video (1003), file (1004)";
     }
 
     public static final class ClientSuccessMessages {
@@ -354,6 +356,7 @@ public class TAPDefaultConstant {
     public static final class QuoteAction {
         public static final int REPLY = 1;
         public static final int FORWARD = 2;
+        public static final int EDIT = 3;
     }
 
     public static final class SystemMessageAction {

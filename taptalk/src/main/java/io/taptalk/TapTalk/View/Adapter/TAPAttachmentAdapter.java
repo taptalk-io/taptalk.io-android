@@ -38,6 +38,7 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_CALL;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_COMPOSE_EMAIL;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_COPY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_DELETE;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_EDIT;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_FORWARD;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_OPEN_LINK;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_REPLY;
@@ -244,6 +245,9 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                 case LONG_PRESS_STAR:
                     setComponentColors(R.color.tapIconLongPressActionStarMessage, R.style.tapActionSheetDefaultLabelStyle);
                     break;
+                case LONG_PRESS_EDIT:
+                    setComponentColors(R.color.tapIconLongPressActionEditMessage, R.style.tapActionSheetDefaultLabelStyle);
+                    break;
             }
 
             if (getItemCount() - 1 == position) {
@@ -346,6 +350,10 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case LONG_PRESS_STAR:
                     attachmentListener.onMessageStarred(message);
+                    break;
+                case LONG_PRESS_EDIT:
+                    attachmentListener.onEditMessage(message);
+                    break;
             }
             onClickListener.onClick(itemView);
         }

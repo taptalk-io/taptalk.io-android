@@ -116,4 +116,9 @@ public abstract class TAPAttachmentListener implements TapTalkAttachmentInterfac
     public void onMessageStarred(TAPMessageModel message) {
 
     }
+
+    @Override
+    public void onEditMessage(TAPMessageModel message) {
+
+    }
 }
