@@ -130,6 +130,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.Html;
+import android.text.InputFilter;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -349,6 +350,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private enum RECORDING_STATE {
         DEFAULT, HOLD_RECORD, LOCKED_RECORD, FINISH, PLAY, PAUSE
     }
+
+    // Edit message
+    public static final int TEXT_CHARACTER_LIMIT = 4000;
 
 
     private STATE state = STATE.WORKING;
@@ -1640,6 +1644,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(R.string.tap_edit_message);
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
+                etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey))});
                 etChat.setText(message.getData().get(CAPTION).toString());
             } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE) {
                 // Show image quote from file URL
@@ -1652,6 +1657,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(R.string.tap_edit_message);
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
+                etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey))});
                 etChat.setText(message.getData().get(CAPTION).toString());
             } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
                 // Show image quote from image URL
@@ -1664,6 +1670,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(R.string.tap_edit_message);
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
+                etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey))});
                 etChat.setText(message.getData().get(CAPTION).toString());
             } else {
                 // Show text quote
@@ -1672,6 +1679,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(R.string.tap_edit_message);
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
+                etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TEXT_CHARACTER_LIMIT)});
                 etChat.setText(message.getBody());
             }
             boolean hadFocus = etChat.hasFocus();
@@ -1692,6 +1700,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID());
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
+            etChat.setFilters(new InputFilter[] { });
             // Add other quotable message type here
             if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
                 // Show image quote
@@ -1818,6 +1827,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void hideQuoteLayout() {
         if (vm.getQuoteAction() == EDIT) {
+            etChat.setFilters(new InputFilter[] { });
             etChat.setText("");
         }
         vm.setQuotedMessage(null, 0);
