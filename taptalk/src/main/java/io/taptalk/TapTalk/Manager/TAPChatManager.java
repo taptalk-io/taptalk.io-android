@@ -56,10 +56,12 @@ import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_URI_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
@@ -952,7 +954,7 @@ public class TAPChatManager {
         return messageModel;
     }
 
-    private String generateImageCaption(String caption) {
+    public String generateImageCaption(String caption) {
         return TapTalk.appContext.getString(R.string.tap_emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_photo) : caption);
     }
 
@@ -1023,7 +1025,7 @@ public class TAPChatManager {
         }
     }
 
-    private String generateVideoCaption(String caption) {
+    public String generateVideoCaption(String caption) {
         return TapTalk.appContext.getString(R.string.tap_emoji_video) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_video) : caption);
     }
 
@@ -1487,48 +1489,45 @@ public class TAPChatManager {
      */
 
     public void editMessage(TAPMessageModel message, String textMessage, TapSendMessageInterface listener) {
-        int startIndex;
-
-        if (textMessage.length() > CHARACTER_LIMIT) {
+        if ((message.getType() == TYPE_TEXT && textMessage.length() > CHARACTER_LIMIT) ||
+            ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) &&
+                    textMessage.length() > TapTalk.getMaxCaptionLength(instanceKey))
+        ) {
             // Message exceeds character limit
-            //List<TAPMessageEntity> messageEntities = new ArrayList<>();
-            int length = textMessage.length();
-            for (startIndex = 0; startIndex < length; startIndex += CHARACTER_LIMIT) {
-                String substr = TAPUtils.mySubString(textMessage, startIndex, CHARACTER_LIMIT);
-
-                if (message.getType() == TYPE_TEXT) {
-                    message.setBody(substr);
-                } else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
-                    HashMap<String, Object> data = message.getData();
-                    if (data != null) {
-                        data.put(CAPTION, substr);
-                        message.setData(data);
-                        if (message.getType() == TYPE_IMAGE) {
-                            message.setBody(generateImageCaption(substr));
-                        } else {
-                            message.setBody(generateVideoCaption(substr));
-                        }
-                    }
-                } else {
-                    return;
-                }
-
-                if (null != listener) {
-                    sendMessageListeners.put(message.getLocalID(), listener);
-                    listener.onStart(message);
-                }
-
-                // Edit truncated message
-                runSendMessageSequence(message, kSocketUpdateMessage);
-            }
-        } else {
             if (null != listener) {
-                sendMessageListeners.put(message.getLocalID(), listener);
-                listener.onStart(message);
+                listener.onError(message, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT);
             }
-            // Edit message
-            runSendMessageSequence(message, kSocketUpdateMessage);
+            return;
         }
+
+        if (message.getType() == TYPE_TEXT) {
+            message.setBody(textMessage);
+        }
+        else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
+            HashMap<String, Object> data = message.getData();
+            if (data != null) {
+                data.put(CAPTION, textMessage);
+                message.setData(data);
+                if (message.getType() == TYPE_IMAGE) {
+                    message.setBody(TAPChatManager.getInstance(instanceKey).generateImageCaption(textMessage));
+                }
+                else {
+                    message.setBody(TAPChatManager.getInstance(instanceKey).generateVideoCaption(textMessage));
+                }
+            }
+        }
+        else {
+            if (null != listener) {
+                listener.onError(message, ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE);
+            }
+            return;
+        }
+        if (null != listener) {
+            sendMessageListeners.put(message.getLocalID(), listener);
+            listener.onStart(message);
+        }
+        // Edit message
+        runSendMessageSequence(message, kSocketUpdateMessage);
     }
 
     /**

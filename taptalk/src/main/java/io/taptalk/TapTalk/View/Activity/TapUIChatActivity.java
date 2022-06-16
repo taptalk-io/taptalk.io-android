@@ -2827,7 +2827,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 } else {
                     return;
                 }
-                TAPChatManager.getInstance(instanceKey).editMessage(messageModel, message, null);
+                TapCoreMessageManager.getInstance(instanceKey).editMessage(messageModel, message, null);
                 hideQuoteLayout();
             } else if (!TextUtils.isEmpty(message)) {
                 // send message

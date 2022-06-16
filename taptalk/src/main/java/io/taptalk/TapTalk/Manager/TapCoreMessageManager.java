@@ -495,17 +495,6 @@ public class TapCoreMessageManager {
     }
 
     public void editMessage(TAPMessageModel message, String updatedText, TapCoreSendMessageListener listener) {
-        if (message.getType() == TYPE_TEXT) {
-            message.setBody(updatedText);
-        } else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
-            HashMap<String, Object> data = message.getData();
-            if (data != null) {
-                data.put(CAPTION, updatedText);
-                message.setData(data);
-            }
-        } else {
-            return;
-        }
         TAPChatManager.getInstance(instanceKey).editMessage(message, updatedText, listener);
     }
 
