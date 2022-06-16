@@ -1503,6 +1503,11 @@ public class TAPChatManager {
                     if (data != null) {
                         data.put(CAPTION, substr);
                         message.setData(data);
+                        if (message.getType() == TYPE_IMAGE) {
+                            message.setBody(generateImageCaption(substr));
+                        } else {
+                            message.setBody(generateVideoCaption(substr));
+                        }
                     }
                 } else {
                     return;
