@@ -237,16 +237,16 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
             } else if (null != item.lastMessage && null != item.lastMessage.isRead && item.lastMessage.isRead!! && !TapUI.getInstance(instanceKey).isReadStatusHidden) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_read_orange))
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.tapIconRoomListMessageRead)))
-            } else if (null != item.lastMessage && null != item.lastMessage.delivered && item.lastMessage.delivered!!) {
+            } else if (null != item.lastMessage && null != item.lastMessage.isDelivered && item.lastMessage.isDelivered!!) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_delivered_grey))
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.tapIconRoomListMessageDelivered)))
-            } else if (null != item.lastMessage && null != item.lastMessage.failedSend && item.lastMessage.failedSend!!) {
+            } else if (null != item.lastMessage && null != item.lastMessage.isFailedSend && item.lastMessage.isFailedSend!!) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_warning_red_circle_background))
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.tapIconRoomListMessageFailed)))
-            } else if (null != item.lastMessage && null != item.lastMessage.sending && !item.lastMessage.sending!!) {
+            } else if (null != item.lastMessage && null != item.lastMessage.isSending && !item.lastMessage.isSending!!) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_sent_grey))
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.tapIconRoomListMessageSent)))
-            } else if (null != item.lastMessage && null != item.lastMessage.sending && item.lastMessage.sending!!) {
+            } else if (null != item.lastMessage && null != item.lastMessage.isSending && item.lastMessage.isSending!!) {
                 ivMessageStatus.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.tap_ic_sending_grey))
                 ImageViewCompat.setImageTintList(ivMessageStatus, ColorStateList.valueOf(ContextCompat.getColor(itemView.context, R.color.tapIconRoomListMessageSending)))
             }

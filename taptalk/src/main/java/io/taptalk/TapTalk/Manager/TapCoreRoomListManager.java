@@ -10,7 +10,6 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
-import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
@@ -34,8 +33,6 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
-
-import android.util.Log;
 
 @Keep
 public class TapCoreRoomListManager {
@@ -85,7 +82,7 @@ public class TapCoreRoomListManager {
                             TAPMessageEntity entity = TAPMessageEntity.fromMessageModel(message);
                             messagesToSave.add(entity);
 
-                            if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
+                            if (null == message.getIsDelivered() || (null != message.getIsDelivered() && !message.getIsDelivered())) {
                                 deliveredMessages.add(message);
                             }
 
@@ -176,7 +173,7 @@ public class TapCoreRoomListManager {
                             resultMessages.add(message);
                             messagesToSave.add(entity);
 
-                            if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
+                            if (null == message.getIsDelivered() || (null != message.getIsDelivered() && !message.getIsDelivered())) {
                                 deliveredMessages.add(message);
                             }
 
@@ -348,7 +345,7 @@ public class TapCoreRoomListManager {
                                         tempMessage.add(entity);
 
                                         // Save undelivered messages to list
-                                        if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
+                                        if (null == message.getIsDelivered() || (null != message.getIsDelivered() && !message.getIsDelivered())) {
                                             deliveredMessages.add(message);
                                         }
 

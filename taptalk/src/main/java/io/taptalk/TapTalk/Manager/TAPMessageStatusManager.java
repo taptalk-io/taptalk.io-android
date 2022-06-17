@@ -238,8 +238,8 @@ public class TAPMessageStatusManager {
             List<String> messageIds = new ArrayList<>();
             for (TAPMessageModel model : newMessageModels) {
                 if (null != myUser && !model.getUser().getUserID().equals(myUser.getUserID())
-                        && null != model.getSending() && !model.getSending()
-                        && null != model.getDelivered() && !model.getDelivered()
+                        && null != model.getIsSending() && !model.getIsSending()
+                        && null != model.getIsDelivered() && !model.getIsDelivered()
                         && null != model.getIsRead() && !model.getIsRead())
                     messageIds.add(model.getMessageID());
             }

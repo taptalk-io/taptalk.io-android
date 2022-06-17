@@ -43,7 +43,8 @@ public class TAPRoomModel implements Parcelable {
     @Nullable
     @JsonProperty("admins")
     private List<String> admins;
-    @JsonIgnore private boolean isMuted;
+    @JsonIgnore
+    private boolean isMuted;
 
     public TAPRoomModel(String roomID, String name, int type, TAPImageURL imageURL, String color) {
         this.roomID = null != roomID ? roomID : "";
@@ -353,11 +354,13 @@ public class TAPRoomModel implements Parcelable {
         }
     }
 
+    @JsonIgnore
     @Nullable
     public Integer getNumOfParticipants() {
         return numOfParticipants;
     }
 
+    @JsonIgnore
     public void setNumOfParticipants(@Nullable Integer numOfParticipants) {
         this.numOfParticipants = numOfParticipants;
     }
@@ -371,11 +374,11 @@ public class TAPRoomModel implements Parcelable {
         this.admins = admins;
     }
 
-    public boolean isMuted() {
+    public boolean getIsMuted() {
         return isMuted;
     }
 
-    public void setMuted(boolean muted) {
+    public void setIsMuted(boolean muted) {
         isMuted = muted;
     }
 

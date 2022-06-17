@@ -477,7 +477,7 @@ public class TAPChatProfileActivityOld extends TAPBaseActivity {
                     R.drawable.tap_ic_notification_orange,
                     R.color.tapIconChatProfileMenuNotificationInactive,
                     R.style.tapChatProfileMenuLabelStyle);
-            menuNotification.setChecked(!vm.getRoom().isMuted());
+            menuNotification.setChecked(!vm.getRoom().getIsMuted());
 
             // Room color
             TapChatProfileItemModel menuRoomColor = new TapChatProfileItemModel(

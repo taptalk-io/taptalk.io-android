@@ -1779,8 +1779,8 @@ public class TAPChatManager {
         ) {
             if (kSocketNewMessage.equals(eventName) &&
                     !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
-                    null != newMessage.getHidden() &&
-                    !newMessage.getHidden() &&
+                    null != newMessage.getIsHidden() &&
+                    !newMessage.getIsHidden() &&
                     null != newMessage.getIsDeleted() &&
                     !newMessage.getIsDeleted()
             ) {
@@ -1806,8 +1806,8 @@ public class TAPChatManager {
         else if (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
             if (kSocketNewMessage.equals(eventName) &&
                     !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
-                    null != newMessage.getHidden() &&
-                    !newMessage.getHidden() &&
+                    null != newMessage.getIsHidden() &&
+                    !newMessage.getIsHidden() &&
                     null != newMessage.getIsDeleted()
                     && !newMessage.getIsDeleted()
             ) {
@@ -1832,8 +1832,8 @@ public class TAPChatManager {
 
         // Add to list delivered message
         if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())
-                && null != newMessage.getSending() && !newMessage.getSending()
-                && null != newMessage.getDelivered() && !newMessage.getDelivered()
+                && null != newMessage.getIsSending() && !newMessage.getIsSending()
+                && null != newMessage.getIsDelivered() && !newMessage.getIsDelivered()
                 && null != newMessage.getIsRead() && !newMessage.getIsRead()) {
             TAPMessageStatusManager.getInstance(instanceKey).addDeliveredMessageQueue(newMessage);
         }

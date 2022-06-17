@@ -2870,7 +2870,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             // Message is added after transition finishes in containerTransitionListener
             runOnUiThread(() -> {
                 // Remove empty chat layout if still shown
-                if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getHidden() || !newMessage.getHidden())) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getIsHidden() || !newMessage.getIsHidden())) {
                     clEmptyChat.setVisibility(View.GONE);
                     showMessageList();
                 }
@@ -2892,7 +2892,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Check previous message date and add new message
                     TAPMessageModel previousMessage = messageAdapter.getItemAt(0);
                     String currentDate = TAPTimeFormatter.formatDate(newMessage.getCreated());
-                    if ((null == newMessage.getHidden() || !newMessage.getHidden()) &&
+                    if ((null == newMessage.getIsHidden() || !newMessage.getIsHidden()) &&
                             newMessage.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
                             newMessage.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
                             newMessage.getType() != TYPE_DATE_SEPARATOR &&
@@ -2943,7 +2943,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             // Message is added after transition finishes in containerTransitionListener
             runOnUiThread(() -> {
                 // Remove empty chat layout if still shown
-                if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getHidden() || !newMessage.getHidden())) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getIsHidden() || !newMessage.getIsHidden())) {
                     clEmptyChat.setVisibility(View.GONE);
                     showMessageList();
                 }
@@ -2953,7 +2953,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
             TAPMessageModel previousMessage = messageAdapter.getItemAt(0);
             String currentDate = TAPTimeFormatter.formatDate(newMessage.getCreated());
-            if ((null == newMessage.getHidden() || !newMessage.getHidden()) &&
+            if ((null == newMessage.getIsHidden() || !newMessage.getIsHidden()) &&
                     newMessage.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
                     newMessage.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
                     newMessage.getType() != TYPE_DATE_SEPARATOR &&
@@ -3032,7 +3032,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         new Thread(() -> {
             vm.setFirstVisibleItemIndex(0);
             TAPMessageModel message = messageAdapter.getItemAt(vm.getFirstVisibleItemIndex());
-            while (null != message && null != message.getHidden() && message.getHidden()) {
+            while (null != message && null != message.getIsHidden() && message.getIsHidden()) {
                 vm.setFirstVisibleItemIndex(vm.getFirstVisibleItemIndex() + 1);
                 message = messageAdapter.getItemAt(vm.getFirstVisibleItemIndex());
             }
@@ -3044,7 +3044,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (null != message) {
             vm.setTappedMessageLocalID(null);
             if ((null != message.getIsDeleted() && message.getIsDeleted()) ||
-                    (null != message.getHidden() && message.getHidden())) {
+                    (null != message.getIsHidden() && message.getIsHidden())) {
                 // Message does not exist
                 runOnUiThread(() -> {
                     Toast.makeText(this, getResources().getString(R.string.tap_error_could_not_find_message), Toast.LENGTH_SHORT).show();
@@ -3709,8 +3709,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     localID = intent.getStringExtra(UploadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
-                        failedMessageModel.setFailedSend(true);
-                        failedMessageModel.setSending(false);
+                        failedMessageModel.setIsFailedSend(true);
+                        failedMessageModel.setIsSending(false);
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }
                     break;
@@ -3859,7 +3859,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 models.add(model);
                 vm.addMessagePointer(model);
 
-                if (allMessagesHidden && (null == model.getHidden() || !model.getHidden())) {
+                if (allMessagesHidden && (null == model.getIsHidden() || !model.getIsHidden())) {
                     allMessagesHidden = false;
                 }
 
@@ -4030,7 +4030,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         break;
                     }
                     previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
-                    if ((null != previousMessage.getHidden() && previousMessage.getHidden()) ||
+                    if ((null != previousMessage.getIsHidden() && previousMessage.getIsHidden()) ||
                             previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_DATE_SEPARATOR
@@ -4208,7 +4208,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             smallestUnreadCreated = message.getCreated();
                         }
 
-                        if (allMessagesHidden && (null == message.getHidden() || !message.getHidden())) {
+                        if (allMessagesHidden && (null == message.getIsHidden() || !message.getIsHidden())) {
                             allMessagesHidden = false;
                         }
 
@@ -4247,7 +4247,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             unreadMessageIds.add(message.getMessageID());
                         }
 
-                        if (allUnreadHidden != -1 && null != message.getHidden() && message.getHidden()) {
+                        if (allUnreadHidden != -1 && null != message.getIsHidden() && message.getIsHidden()) {
                             allUnreadHidden = 1;
                         } else {
                             // Set allUnreadHidden to false
@@ -4304,7 +4304,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             String previousDate = "";
             TAPMessageModel previousMessage = null;
             for (TAPMessageModel message : messageAdapter.getItems()) {
-                if ((null == message.getHidden() || !message.getHidden()) &&
+                if ((null == message.getIsHidden() || !message.getIsHidden()) &&
                         message.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_DATE_SEPARATOR
@@ -4473,7 +4473,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     messageBeforeModels.addAll(addBeforeTextMessage(message));
                     responseMessages.add(TAPMessageEntity.fromMessageModel(message));
-                    if (allMessagesHidden && (null == message.getHidden() || !message.getHidden())) {
+                    if (allMessagesHidden && (null == message.getIsHidden() || !message.getIsHidden())) {
                         allMessagesHidden = false;
                     }
                     updateMessageMentionIndexes(message);
@@ -4497,7 +4497,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         break;
                     }
                     previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
-                    if ((null != previousMessage.getHidden() && previousMessage.getHidden()) ||
+                    if ((null != previousMessage.getIsHidden() && previousMessage.getIsHidden()) ||
                             previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_DATE_SEPARATOR
@@ -4511,7 +4511,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
             for (TAPMessageModel message : messageBeforeModels) {
-                if ((null == message.getHidden() || !message.getHidden()) &&
+                if ((null == message.getIsHidden() || !message.getIsHidden()) &&
                         message.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_DATE_SEPARATOR
@@ -4647,7 +4647,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         break;
                     }
                     previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
-                    if ((null != previousMessage.getHidden() && previousMessage.getHidden()) ||
+                    if ((null != previousMessage.getIsHidden() && previousMessage.getIsHidden()) ||
                             previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_DATE_SEPARATOR
@@ -4661,7 +4661,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
             for (TAPMessageModel message : messageBeforeModels) {
-                if ((null == message.getHidden() || !message.getHidden()) &&
+                if ((null == message.getIsHidden() || !message.getIsHidden()) &&
                         message.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_DATE_SEPARATOR
@@ -4762,7 +4762,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 return;
             }
             firstMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
-            if ((null != firstMessage.getHidden() && firstMessage.getHidden()) ||
+            if ((null != firstMessage.getIsHidden() && firstMessage.getIsHidden()) ||
                     firstMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
                     firstMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
                     firstMessage.getType() == TYPE_DATE_SEPARATOR

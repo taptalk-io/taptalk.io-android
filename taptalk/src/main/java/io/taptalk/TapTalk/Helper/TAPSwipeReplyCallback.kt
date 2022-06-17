@@ -53,7 +53,7 @@ class TAPSwipeReplyCallback(
             return 0
         }
         if (viewHolder is TAPBaseChatViewHolder) {
-            if (null != viewHolder.item.failedSend && viewHolder.item.failedSend!!) {
+            if (null != viewHolder.item.isFailedSend && viewHolder.item.isFailedSend!!) {
                 // Disable swipe for messages that failed to send
                 return 0
             } else if (viewHolder.item.type != TYPE_TEXT &&

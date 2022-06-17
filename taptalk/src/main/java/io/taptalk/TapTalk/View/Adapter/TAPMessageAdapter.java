@@ -283,7 +283,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         try {
             TAPMessageModel messageModel = getItemAt(position);
             int messageType = 0;
-            if (null != messageModel && null != messageModel.getHidden() && messageModel.getHidden()) {
+            if (null != messageModel && null != messageModel.getIsHidden() && messageModel.getIsHidden()) {
                 // Return empty layout if item is hidden
                 return TYPE_EMPTY;
             } else if (null != messageModel && null != messageModel.getIsDeleted() && messageModel.getIsDeleted() && isMessageFromMySelf(messageModel)) {
@@ -424,7 +424,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 checkAndUpdateMessageStatus(this, item, ivMessageStatus, ivSending, civAvatar, tvAvatarLabel, tvUserName);
             }
             tvMessageTimestamp.setText(item.getMessageStatusText());
-            if (item.getMessageEdited() != null && item.getMessageEdited()) {
+            if (item.getIsMessageEdited() != null && item.getIsMessageEdited()) {
                 tvEdited.setVisibility(View.VISIBLE);
             } else {
                 tvEdited.setVisibility(View.GONE);
@@ -619,10 +619,10 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             String localID = item.getLocalID();
             Integer uploadProgressValue = TAPFileUploadManager.getInstance(instanceKey).getUploadProgressPercent(localID);
             Integer downloadProgressValue = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID());
-            if (null != item.getFailedSend() && item.getFailedSend()) {
+            if (null != item.getIsFailedSend() && item.getIsFailedSend()) {
                 flProgress.setVisibility(View.VISIBLE);
                 pbProgress.setVisibility(View.GONE);
-            } else if ((null == uploadProgressValue || (null != item.getSending() && !item.getSending()))
+            } else if ((null == uploadProgressValue || (null != item.getIsSending() && !item.getIsSending()))
                     && null == downloadProgressValue) {
                 flProgress.setVisibility(View.GONE);
 //                flBubble.setForeground(null);
@@ -682,7 +682,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.VISIBLE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessageBody);
-                setEditedMessage(item.getMessageEdited() != null && item.getMessageEdited(), tvEditedBody, tvEdited, ivStarMessage);
+                setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEditedBody, tvEdited, ivStarMessage);
             } else {
                 // Hide caption
 //                rcivImageBody.setBottomLeftRadius(TAPUtils.dpToPx(13));
@@ -694,7 +694,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.GONE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessage);
-                setEditedMessage(item.getMessageEdited() != null && item.getMessageEdited(), tvEdited, tvEditedBody, ivStarMessageBody);
+                setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEdited, tvEditedBody, ivStarMessageBody);
             }
 
             if (null != widthDimension && null != heightDimension && widthDimension.intValue() > 0 && heightDimension.intValue() > 0) {
@@ -796,7 +796,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         };
 
         private void setImageViewButtonProgress(TAPMessageModel item) {
-            if (null != item.getFailedSend() && item.getFailedSend()) {
+            if (null != item.getIsFailedSend() && item.getIsFailedSend()) {
                 // Failed to send
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileRetryUploadDownloadWhite)));
@@ -811,7 +811,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileUploadDownloadWhite)));
                 flProgress.setOnClickListener(v -> {});
                 tvMessageStatus.setVisibility(View.GONE);
-            } else if ((null == TAPFileUploadManager.getInstance(instanceKey).getUploadProgressPercent(item.getLocalID()) || (null != item.getSending() && !item.getSending()))
+            } else if ((null == TAPFileUploadManager.getInstance(instanceKey).getUploadProgressPercent(item.getLocalID()) || (null != item.getIsSending() && !item.getIsSending()))
                     && null == TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(item.getLocalID())) {
                 // Progress done
                 flProgress.setVisibility(View.GONE);
@@ -827,7 +827,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                  .cancelUploadImage(itemView.getContext(), item.getLocalID());
                      }
                 });
-                if (isMessageFromMySelf(item) && null != item.getSending() && item.getSending()) {
+                if (isMessageFromMySelf(item) && null != item.getIsSending() && item.getIsSending()) {
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_sending));
                 } else {
                     tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_downloading));
@@ -1046,7 +1046,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.VISIBLE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessageBody);
-                setEditedMessage(item.getMessageEdited() != null && item.getMessageEdited(), tvEditedBody, tvEdited, ivStarMessage);
+                setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEditedBody, tvEdited, ivStarMessage);
             } else {
                 // Hide caption
 //                rcivVideoThumbnail.setBottomLeftRadius(TAPUtils.dpToPx(13));
@@ -1058,7 +1058,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.GONE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessage);
-                setEditedMessage(item.getMessageEdited() != null && item.getMessageEdited(), tvEdited, tvEditedBody, ivStarMessageBody);
+                setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEdited, tvEditedBody, ivStarMessageBody);
             }
 
             if (null != widthDimension && null != heightDimension && widthDimension.intValue() > 0 && heightDimension.intValue() > 0) {
@@ -1080,7 +1080,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 fixImageOrVideoViewSize(item, rcivVideoThumbnail, llTimestampIconImage, clForwardedQuote, tvMessageTimestamp, ivMessageStatus);
             }
 
-            if (null != item.getFailedSend() && item.getFailedSend()) {
+            if (null != item.getIsFailedSend() && item.getIsFailedSend()) {
                 // Message failed to send
                 tvMessageStatus.setText(itemView.getContext().getString(R.string.tap_message_send_failed));
                 if (size != null && size.longValue() > 0L) {
@@ -1108,7 +1108,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 .diskCacheStrategy(DiskCacheStrategy.NONE))
                         .listener(videoThumbnailListener)
                         .into(rcivVideoThumbnail);
-            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+            } else if (((null == uploadProgressPercent || (null != item.getIsSending() && !item.getIsSending()))
                     && null == downloadProgressPercent) && (null != videoUri ||
                     TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item))) {
                 // Video has finished downloading or uploading
@@ -1168,7 +1168,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         });
                     }
                 }).start();
-            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+            } else if (((null == uploadProgressPercent || (null != item.getIsSending() && !item.getIsSending()))
                     && null == downloadProgressPercent)) {
                 // Video is not downloaded
                 String videoSize = null == size ? "" : TAPUtils.getStringSizeLengthFile(size.longValue());
@@ -1493,7 +1493,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //            tvFileInfoDummy.setText(String.format("%s%s", TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item), space));
             tvFileInfoDummy.setText(TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item));
 
-            if (null != item.getFailedSend() && item.getFailedSend()) {
+            if (null != item.getIsFailedSend() && item.getIsFailedSend()) {
                 // Message failed to send
                 tvFileInfo.setText(TAPUtils.getFileDisplayInfo(item));
                 ivFileIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white));
@@ -1509,7 +1509,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     flFileIcon.setOnClickListener(v -> downloadFile(item));
                 }
-            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+            } else if (((null == uploadProgressPercent || (null != item.getIsSending() && !item.getIsSending()))
                     && null == downloadProgressPercent) && (null != fileUri ||
                     TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item))) {
                 // File has finished downloading or uploading
@@ -1523,7 +1523,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                         R.color.tapIconFileWhite)));
                 pbProgress.setVisibility(View.GONE);
                 flFileIcon.setOnClickListener(v -> openFile(item));
-            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+            } else if (((null == uploadProgressPercent || (null != item.getIsSending() && !item.getIsSending()))
                     && null == downloadProgressPercent)) {
                 // File is not downloaded
                 tvFileInfo.setText(TAPUtils.getFileDisplayInfo(item));
@@ -1767,7 +1767,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (duration != null && duration.longValue() > 0L) {
                 durationString = TAPUtils.getMediaDurationString(duration.intValue(), duration.intValue());
             }
-            if (null != item.getFailedSend() && item.getFailedSend()) {
+            if (null != item.getIsFailedSend() && item.getIsFailedSend()) {
                 // Message failed to send
                 tvVoiceTime.setText(durationString);
                 ivVoiceIcon.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_retry_white_thin));
@@ -1779,7 +1779,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 } else {
                     flVoiceIcon.setOnClickListener(v -> downloadFile(item));
                 }
-            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+            } else if (((null == uploadProgressPercent || (null != item.getIsSending() && !item.getIsSending()))
                     && null == downloadProgressPercent) && (null != fileUri || TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(item))) {
                 // File has finished downloading or uploading
                 tvMessageStatus.setText(item.getMessageStatusText());
@@ -1806,7 +1806,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         seekBar.setEnabled(false);
                     }
                 }
-            } else if (((null == uploadProgressPercent || (null != item.getSending() && !item.getSending()))
+            } else if (((null == uploadProgressPercent || (null != item.getIsSending() && !item.getIsSending()))
                     && null == downloadProgressPercent)) {
                 // File is not downloaded
                 tvVoiceTime.setText(durationString);
@@ -2648,15 +2648,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 vh.onMessageRead(item);
             }
             // Message is delivered
-            else if (null != item.getDelivered() && item.getDelivered()) {
+            else if (null != item.getIsDelivered() && item.getIsDelivered()) {
                 vh.onMessageDelivered(item);
             }
             // Message failed to send
-            else if (null != item.getFailedSend() && item.getFailedSend()) {
+            else if (null != item.getIsFailedSend() && item.getIsFailedSend()) {
                 vh.onMessageFailedToSend(item);
             }
             // Message sent
-            else if ((null != item.getSending() && !item.getSending())) {
+            else if ((null != item.getIsSending() && !item.getIsSending())) {
                 vh.onMessageSent(item);
             }
             // Message sending
@@ -2991,7 +2991,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //    }
 
     private void onStatusImageClicked(TAPMessageModel item) {
-        if (null != item.getFailedSend() && item.getFailedSend()) {
+        if (null != item.getIsFailedSend() && item.getIsFailedSend()) {
             resendMessage(item);
         }
     }
@@ -3037,7 +3037,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                             ivSending.setAlpha(0f);
                             animatingMessages.remove(item);
                             if ((null != item.getIsRead() && item.getIsRead()) ||
-                                    (null != item.getDelivered() && item.getDelivered())) {
+                                    (null != item.getIsDelivered() && item.getIsDelivered())) {
                                 notifyItemChanged(getItems().indexOf(item));
                             }
                         })
