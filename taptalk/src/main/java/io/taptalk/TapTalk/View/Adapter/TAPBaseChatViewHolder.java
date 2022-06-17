@@ -18,7 +18,6 @@ import io.taptalk.TapTalk.Helper.TAPBaseViewHolder;
 import io.taptalk.TapTalk.Helper.TAPBetterLinkMovementMethod;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
-import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
@@ -76,7 +75,7 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
         }
         if (!myUserModel.getUserID().equals(item.getUser().getUserID()) &&
                 (null == item.getIsRead() || !item.getIsRead()) &&
-                (null != item.getSending() && !item.getSending()) &&
+                (null != item.getIsSending() && !item.getIsSending()) &&
                 !TAPMessageStatusManager.getInstance(instanceKey).getReadMessageQueue().contains(item.getMessageID()) &&
                 !TAPMessageStatusManager.getInstance(instanceKey).getMessagesMarkedAsRead().contains(item.getMessageID())
         ) {

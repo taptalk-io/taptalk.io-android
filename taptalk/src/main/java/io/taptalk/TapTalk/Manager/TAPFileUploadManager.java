@@ -973,8 +973,8 @@ public class TAPFileUploadManager {
             getBitmapQueue().remove(messageModelWithUri.getLocalID());
             cancelUpload(context, messageModelWithUri, roomID);
             if (hasConnection) {
-                messageModelWithUri.setSending(false);
-                messageModelWithUri.setFailedSend(true);
+                messageModelWithUri.setIsSending(false);
+                messageModelWithUri.setIsFailedSend(true);
                 TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(messageModelWithUri));
 
                 Intent intent = new Intent(UploadFailed);

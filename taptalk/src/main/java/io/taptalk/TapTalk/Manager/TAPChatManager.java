@@ -55,6 +55,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
@@ -128,7 +129,6 @@ public class TAPChatManager {
     private int maxRetryAttempt = 10;
     private int pendingRetryInterval = 60 * 1000;
     private final int maxImageSize = 2000;
-    private final Integer CHARACTER_LIMIT = 4000;
 
     public static TAPChatManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
@@ -1488,31 +1488,32 @@ public class TAPChatManager {
      * Edit message
      */
 
-    public void editMessage(TAPMessageModel message, String textMessage, TapSendMessageInterface listener) {
-        if ((message.getType() == TYPE_TEXT && textMessage.length() > CHARACTER_LIMIT) ||
-            ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) &&
-                    textMessage.length() > TapTalk.getMaxCaptionLength(instanceKey))
-        ) {
-            // Message exceeds character limit
-            if (null != listener) {
-                listener.onError(message, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT);
-            }
-            return;
-        }
-
+    public void editMessage(TAPMessageModel message, String updatedText, TapSendMessageInterface listener) {
         if (message.getType() == TYPE_TEXT) {
-            message.setBody(textMessage);
+            if (updatedText.length() > CHARACTER_LIMIT) {
+                if (null != listener) {
+                    listener.onError(message, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, CHARACTER_LIMIT));
+                }
+                return;
+            }
+            message.setBody(updatedText);
         }
         else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
+            if (updatedText.length() > TapTalk.getMaxCaptionLength(instanceKey)) {
+                if (null != listener) {
+                    listener.onError(message, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, TapTalk.getMaxCaptionLength(instanceKey)));
+                }
+                return;
+            }
             HashMap<String, Object> data = message.getData();
             if (data != null) {
-                data.put(CAPTION, textMessage);
+                data.put(CAPTION, updatedText);
                 message.setData(data);
                 if (message.getType() == TYPE_IMAGE) {
-                    message.setBody(TAPChatManager.getInstance(instanceKey).generateImageCaption(textMessage));
+                    message.setBody(TAPChatManager.getInstance(instanceKey).generateImageCaption(updatedText));
                 }
                 else {
-                    message.setBody(TAPChatManager.getInstance(instanceKey).generateVideoCaption(textMessage));
+                    message.setBody(TAPChatManager.getInstance(instanceKey).generateVideoCaption(updatedText));
                 }
             }
         }
@@ -1778,8 +1779,8 @@ public class TAPChatManager {
         ) {
             if (kSocketNewMessage.equals(eventName) &&
                     !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
-                    null != newMessage.getHidden() &&
-                    !newMessage.getHidden() &&
+                    null != newMessage.getIsHidden() &&
+                    !newMessage.getIsHidden() &&
                     null != newMessage.getIsDeleted() &&
                     !newMessage.getIsDeleted()
             ) {
@@ -1805,8 +1806,8 @@ public class TAPChatManager {
         else if (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
             if (kSocketNewMessage.equals(eventName) &&
                     !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
-                    null != newMessage.getHidden() &&
-                    !newMessage.getHidden() &&
+                    null != newMessage.getIsHidden() &&
+                    !newMessage.getIsHidden() &&
                     null != newMessage.getIsDeleted()
                     && !newMessage.getIsDeleted()
             ) {
@@ -1831,8 +1832,8 @@ public class TAPChatManager {
 
         // Add to list delivered message
         if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())
-                && null != newMessage.getSending() && !newMessage.getSending()
-                && null != newMessage.getDelivered() && !newMessage.getDelivered()
+                && null != newMessage.getIsSending() && !newMessage.getIsSending()
+                && null != newMessage.getIsDelivered() && !newMessage.getIsDelivered()
                 && null != newMessage.getIsRead() && !newMessage.getIsRead()) {
             TAPMessageStatusManager.getInstance(instanceKey).addDeliveredMessageQueue(newMessage);
         }
