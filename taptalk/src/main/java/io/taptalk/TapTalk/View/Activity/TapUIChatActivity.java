@@ -3,6 +3,7 @@ package io.taptalk.TapTalk.View.Activity;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
@@ -350,9 +351,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private enum RECORDING_STATE {
         DEFAULT, HOLD_RECORD, LOCKED_RECORD, FINISH, PLAY, PAUSE
     }
-
-    // Edit message
-    public static final int TEXT_CHARACTER_LIMIT = 4000;
 
 
     private STATE state = STATE.WORKING;
@@ -1679,7 +1677,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(R.string.tap_edit_message);
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(2);
-                etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TEXT_CHARACTER_LIMIT)});
+                etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(CHARACTER_LIMIT)});
                 etChat.setText(message.getBody());
             }
             boolean hadFocus = etChat.hasFocus();

@@ -55,6 +55,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
@@ -128,7 +129,6 @@ public class TAPChatManager {
     private int maxRetryAttempt = 10;
     private int pendingRetryInterval = 60 * 1000;
     private final int maxImageSize = 2000;
-    private final Integer CHARACTER_LIMIT = 4000;
 
     public static TAPChatManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {

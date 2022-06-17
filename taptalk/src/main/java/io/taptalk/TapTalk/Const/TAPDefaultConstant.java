@@ -466,6 +466,7 @@ public class TAPDefaultConstant {
     public static final String DEFAULT_GROUP_MAX_PARTICIPANTS = "100";
     public static final String DEFAULT_CHANNEL_MAX_PARTICIPANTS = "5000";
 
+    public static final int CHARACTER_LIMIT = 4000;
     public static final int MAX_ITEMS_PER_PAGE = 50;
     public static final int MAX_PRODUCT_SIZE = 20;
     public static final int DEFAULT_MAX_CAPTION_LENGTH = 100;
