@@ -225,6 +225,7 @@
     <string name="tap_error_active_user_is_null">Could not find active user data. Please make sure the client app is authenticated.</string>
     <string name="tap_error_we_are_experiencing_some_issues">Kami sedang mengalami masalah, silakan coba lagi nanti.</string>
     <string name="tap_currently_unavailable">Sedang tidak tersedia</string>
+    <string name="tap_error_unable_to_edit_message">Gagal Mengubah Pesan</string>
 
     <!--Attachment-->
     <string name="tap_photo">Photo</string>
@@ -411,5 +412,7 @@
     <string name="tap_tell_us_dots">Tell us why you’re leaving...</string>
     <string name="tap_wording_accpet_agreement">I understand that all my messages, my contacts and my account info will be deleted.</string>
     <string name="tap_warning_delete_account">Once you confirm, all your account data will be permanently deleted.</string>
+    <string name="tap_edited_dot">Edited •</string>
+    <string name="tap_edit_message">Edit Message</string>
 
 </resources>

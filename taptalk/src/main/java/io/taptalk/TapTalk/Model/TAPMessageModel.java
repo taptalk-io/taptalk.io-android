@@ -72,6 +72,9 @@ public class TAPMessageModel implements Parcelable {
     @JsonProperty("isHidden")
     private Boolean isHidden;
     @Nullable
+    @JsonProperty("isMessageEdited")
+    private Boolean isMessageEdited;
+    @Nullable
     @JsonProperty("isDeleted")
     private Boolean isDeleted;
     @Nullable
@@ -92,7 +95,8 @@ public class TAPMessageModel implements Parcelable {
     @Nullable
     @JsonProperty("target")
     private TAPMessageTargetModel target;
-    @JsonIgnore private String messageStatusText;
+    @JsonIgnore
+    private String messageStatusText;
 
     public TAPMessageModel(@Nullable String messageID,
                            @NonNull String localID,
@@ -113,6 +117,7 @@ public class TAPMessageModel implements Parcelable {
                            @Nullable Boolean isDelivered,
                            @Nullable Boolean isRead,
                            @Nullable Boolean isHidden,
+                           @Nullable Boolean isMessageEdited,
                            @Nullable Long updated,
                            @Nullable Long deleted,
                            @Nullable String action,
@@ -136,6 +141,7 @@ public class TAPMessageModel implements Parcelable {
         this.isDelivered = isDelivered;
         this.isRead = isRead;
         this.isHidden = isHidden;
+        this.isMessageEdited = isMessageEdited;
         this.updated = updated;
         this.deleted = deleted;
         this.target = target;
@@ -150,7 +156,7 @@ public class TAPMessageModel implements Parcelable {
 
     public static TAPMessageModel Builder(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data) {
         String localID = TAPUtils.generateRandomString(32);
-        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, null, null, null, false, true, false, false, false, false, created, null, null, null);
+        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, null, null, null, false, true, false, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel BuilderWithQuotedMessage(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, TAPMessageModel quotedMessage) {
@@ -172,14 +178,14 @@ public class TAPMessageModel implements Parcelable {
         TAPReplyToModel reply = new TAPReplyToModel(quotedMessage.getMessageID()
                 , quotedMessage.getLocalID(), quotedMessage.getType()
                 , quotedMessage.getUser());
-        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, created, null, null, null);
+        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, reply, null, false, true, false, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel BuilderWithQuote(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, String quoteTitle, String quoteContent, String quoteImageUrl) {
         String localID = TAPUtils.generateRandomString(32);
 
         TAPQuoteModel quote = new TAPQuoteModel(quoteTitle, quoteContent, "", quoteImageUrl, (null == quoteImageUrl || quoteImageUrl.isEmpty()) ? "" : IMAGE);
-        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, null, null, false, true, false, false, false, false, created, null, null, null);
+        return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, quote, null, null, false, true, false, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel BuilderForwardedMessage(TAPMessageModel messageToForward, TAPRoomModel room, Long created, TAPUserModel user, String recipientID) {
@@ -190,12 +196,12 @@ public class TAPMessageModel implements Parcelable {
         } else {
             forwardFrom = messageToForward.getForwardFrom();
         }
-        return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, user, recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, created, null, null, null);
+        return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, user, recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel BuilderResendMessage(TAPMessageModel message, Long created) {
         String localID = TAPUtils.generateRandomString(32);
-        return new TAPMessageModel("0", localID, "", message.getBody(), message.getRoom(), message.getType(), created, message.getUser(), message.getRecipientID(), message.getData(), message.getQuote(), message.getReplyTo(), message.getForwardFrom(), false, true, false, false, false, false, created, null, null, null);
+        return new TAPMessageModel("0", localID, "", message.getBody(), message.getRoom(), message.getType(), created, message.getUser(), message.getRecipientID(), message.getData(), message.getQuote(), message.getReplyTo(), message.getForwardFrom(), false, true, false, false, false, false, false, created, null, null, null);
     }
 
     public static TAPMessageModel fromMessageEntity(TAPMessageEntity messageEntity) {
@@ -229,6 +235,7 @@ public class TAPMessageModel implements Parcelable {
                 messageEntity.getDelivered(),
                 messageEntity.getIsRead(),
                 messageEntity.getHidden(),
+                messageEntity.getMessageEdited(),
                 messageEntity.getUpdated(),
                 messageEntity.getUserDeleted(),
                 messageEntity.getAction(),
@@ -248,9 +255,11 @@ public class TAPMessageModel implements Parcelable {
         if (null != model && null != model.deleted && (null == this.deleted || 0 == this.deleted))
             this.deleted = model.getDeleted();
         if (null != model && null != model.isHidden && (null == this.isHidden || !this.isHidden))
-            this.isHidden = model.getHidden();
+            this.isHidden = model.getIsHidden();
+        if (null != model && null != model.isMessageEdited && (null == this.isMessageEdited || !this.isMessageEdited))
+            this.isMessageEdited = model.getIsMessageEdited();
         if (null != model && null != model.isDelivered && (null != this.isDelivered && !this.isDelivered))
-            this.isDelivered = model.getDelivered();
+            this.isDelivered = model.getIsDelivered();
         if (null != model && null != model.isRead && (null != this.isRead && !this.isRead))
             this.isRead = model.getIsRead();
 
@@ -285,16 +294,18 @@ public class TAPMessageModel implements Parcelable {
         if (null != model.getForwardFrom()) this.forwardFrom = model.getForwardFrom();
         if (null != model.getIsDeleted() && (null == this.isDeleted || !this.isDeleted))
             this.isDeleted = model.getIsDeleted();
-        if (null != model.getSending()) this.isSending = model.getSending();
-        if (null != model.getFailedSend()) this.isFailedSend = model.getFailedSend();
+        if (null != model.getIsSending()) this.isSending = model.getIsSending();
+        if (null != model.getIsFailedSend()) this.isFailedSend = model.getIsFailedSend();
         if (null != model.getUpdated() && 0L < model.getUpdated())
             this.updated = model.getUpdated();
         if (null != model.getDeleted() && 0L < model.getDeleted() && (null == this.deleted || 0 == this.deleted))
             this.deleted = model.getDeleted();
-        if (null != model.getHidden() && (null == this.isHidden || !this.isHidden))
-            this.isHidden = model.getHidden();
-        if (null != model.getDelivered() && (null != this.isDelivered && !this.isDelivered))
-            this.isDelivered = model.getDelivered();
+        if (null != model.getIsHidden() && (null == this.isHidden || !this.isHidden))
+            this.isHidden = model.getIsHidden();
+        if (null != model.getIsMessageEdited() && (null == this.isMessageEdited || !this.isMessageEdited))
+            this.isMessageEdited = model.getIsMessageEdited();
+        if (null != model.getIsDelivered() && (null != this.isDelivered && !this.isDelivered))
+            this.isDelivered = model.getIsDelivered();
         if (null != model.getIsRead() && (null != this.isRead && !this.isRead))
             this.isRead = model.getIsRead();
         if (null != model.getAction()) this.action = model.getAction();
@@ -312,7 +323,7 @@ public class TAPMessageModel implements Parcelable {
 
     public void updateDeliveredMessage() {
         if (null != this.isDelivered && !this.isDelivered)
-            this.setDelivered(true);
+            this.setIsDelivered(true);
     }
 
     public TAPMessageModel copyMessageModel() {
@@ -333,11 +344,12 @@ public class TAPMessageModel implements Parcelable {
                 getReplyTo(),
                 getForwardFrom(),
                 getIsDeleted(),
-                getSending(),
-                getFailedSend(),
-                getDelivered(),
+                getIsSending(),
+                getIsFailedSend(),
+                getIsDelivered(),
                 getIsRead(),
-                getHidden(),
+                getIsHidden(),
+                getIsMessageEdited(),
                 getUpdated(),
                 getDeleted(),
                 getAction(),
@@ -486,22 +498,69 @@ public class TAPMessageModel implements Parcelable {
         isRead = read;
     }
 
+    @JsonIgnore
     @Nullable
+    @Deprecated
+    /**
+     * @deprecated Use {@link #getIsDelivered()} instead.
+     */
     public Boolean getDelivered() {
         return isDelivered;
     }
 
+    @Nullable
+    public Boolean getIsDelivered() {
+        return isDelivered;
+    }
+
+    @JsonIgnore
+    @Deprecated
+    /**
+     * @deprecated Use {@link #setIsDelivered()} instead.
+     */
     public void setDelivered(@Nullable Boolean delivered) {
         isDelivered = delivered;
     }
 
+    public void setIsDelivered(@Nullable Boolean delivered) {
+        isDelivered = delivered;
+    }
+
+    @JsonIgnore
     @Nullable
+    @Deprecated
+    /**
+     * @deprecated Use {@link #getIsHidden()} instead.
+     */
     public Boolean getHidden() {
         return isHidden;
     }
 
+    @Nullable
+    public Boolean getIsHidden() {
+        return isHidden;
+    }
+
+    @JsonIgnore
+    @Deprecated
+    /**
+     * @deprecated Use {@link #setIsHidden()} instead.
+     */
     public void setHidden(@Nullable Boolean hidden) {
         isHidden = hidden;
+    }
+
+    public void setIsHidden(@Nullable Boolean hidden) {
+        isHidden = hidden;
+    }
+
+    @Nullable
+    public Boolean getIsMessageEdited() {
+        return isMessageEdited;
+    }
+
+    public void setIsMessageEdited(@Nullable Boolean edited) {
+        isMessageEdited = edited;
     }
 
     @Nullable
@@ -513,21 +572,61 @@ public class TAPMessageModel implements Parcelable {
         isDeleted = deleted;
     }
 
+    @JsonIgnore
     @Nullable
+    @Deprecated
+    /**
+     * @deprecated Use {@link #getIsSending()} instead.
+     */
     public Boolean getSending() {
         return isSending;
     }
 
+    @Nullable
+    public Boolean getIsSending() {
+        return isSending;
+    }
+
+    @JsonIgnore
+    @Deprecated
+    /**
+     * @deprecated Use {@link #setIsSending()} instead.
+     */
     public void setSending(@Nullable Boolean sending) {
         isSending = sending;
     }
 
+    @JsonIgnore
+    public void setIsSending(@Nullable Boolean sending) {
+        isSending = sending;
+    }
+
+    @JsonIgnore
     @Nullable
+    @Deprecated
+    /**
+     * @deprecated Use {@link #getIsFailedSend()} instead.
+     */
     public Boolean getFailedSend() {
         return isFailedSend;
     }
 
+    @Nullable
+    public Boolean getIsFailedSend() {
+        return isFailedSend;
+    }
+
+    @JsonIgnore
+    @Deprecated
+    /**
+     * @deprecated Use {@link #setIsFailedSend()} instead.
+     */
     public void setFailedSend(@Nullable Boolean failedSend) {
+        isFailedSend = failedSend;
+    }
+
+    @JsonIgnore
+    public void setIsFailedSend(@Nullable Boolean failedSend) {
         isFailedSend = failedSend;
     }
 
@@ -567,6 +666,7 @@ public class TAPMessageModel implements Parcelable {
         this.target = target;
     }
 
+    @JsonIgnore
     public String getMessageStatusText() {
         return messageStatusText;
     }
@@ -594,6 +694,7 @@ public class TAPMessageModel implements Parcelable {
         dest.writeValue(this.isRead);
         dest.writeValue(this.isDelivered);
         dest.writeValue(this.isHidden);
+        dest.writeValue(this.isMessageEdited);
         dest.writeValue(this.isDeleted);
         dest.writeValue(this.isSending);
         dest.writeValue(this.isFailedSend);
@@ -621,6 +722,7 @@ public class TAPMessageModel implements Parcelable {
         this.isRead = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isDelivered = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isHidden = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.isMessageEdited = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isDeleted = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isSending = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.isFailedSend = (Boolean) in.readValue(Boolean.class.getClassLoader());

@@ -22,7 +22,6 @@ import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPAttachmentAdapter
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
-import java.util.*
 import kotlin.collections.ArrayList
 
 class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
@@ -112,6 +111,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             fragment.arguments = args
             return fragment
         }
+
+        private const val TWO_DAYS_IN_MILLIS : Long = 172800000
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -131,12 +132,12 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
         when (longPressType) {
             LongPressType.CHAT_BUBBLE_TYPE -> {
-                if (message!!.failedSend == true) {
+                if (message!!.isFailedSend == true) {
 //                    longPressAdapter = TAPAttachmentAdapter(createFailedMessageBubbleLongPressMenu(), message!!, bottomSheetListener, onClickListener)
                     dismiss()
                 } else if (message!!.isDeleted == true) {
                     dismiss()
-                } else if (!message!!.sending!!) {
+                } else if (!message!!.isSending!!) {
                     when (TapUI.getInstance(instanceKey).getLongPressMenuForMessageType(message!!.type)) {
                         TYPE_TEXT_MESSAGE -> {
                             val menus = createTextBubbleLongPressMenu(message!!)
@@ -299,10 +300,23 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
+        if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+            null != messageModel.isSending && !messageModel.isSending!! &&
+            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
+            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
+        ) {
+            // Edit
+            imageResIds.add(R.drawable.tap_ic_edit_orange)
+            titleResIds.add(R.string.tap_edit)
+            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.sending && !messageModel.sending!!
+                null != messageModel.isSending && !messageModel.isSending!!
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
@@ -376,10 +390,23 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
+        if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+            null != messageModel.isSending && !messageModel.isSending!! &&
+            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
+            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
+        ) {
+            // Edit
+            imageResIds.add(R.drawable.tap_ic_edit_orange)
+            titleResIds.add(R.string.tap_edit)
+            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.sending && !messageModel.sending!!
+                null != messageModel.isSending && !messageModel.isSending!!
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
@@ -450,10 +477,23 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
+        if (TapUI.getInstance(instanceKey).isEditMessageMenuEnabled &&
+            null != TAPChatManager.getInstance(instanceKey).activeUser &&
+            messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
+            null != messageModel.isSending && !messageModel.isSending!! &&
+            messageModel.forwardFrom?.localID.isNullOrEmpty() &&
+            System.currentTimeMillis() - messageModel.created < TWO_DAYS_IN_MILLIS
+        ) {
+            // Edit
+            imageResIds.add(R.drawable.tap_ic_edit_orange)
+            titleResIds.add(R.string.tap_edit)
+            ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.sending && !messageModel.sending!!
+                null != messageModel.isSending && !messageModel.isSending!!
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
@@ -518,7 +558,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.sending && !messageModel.sending!!
+                null != messageModel.isSending && !messageModel.isSending!!
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
@@ -571,7 +611,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
             null != TAPChatManager.getInstance(instanceKey).activeUser &&
             messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-            null != messageModel.sending && !messageModel.sending!!
+            null != messageModel.isSending && !messageModel.isSending!!
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
@@ -632,7 +672,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
-                null != messageModel.sending && !messageModel.sending!!
+                null != messageModel.isSending && !messageModel.isSending!!
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)

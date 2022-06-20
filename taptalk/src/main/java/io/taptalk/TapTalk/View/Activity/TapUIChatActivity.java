@@ -3,7 +3,9 @@ package io.taptalk.TapTalk.View.Activity;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.USER_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.CancelDownload;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadFile;
@@ -62,6 +64,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERM
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.EDIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
@@ -128,6 +131,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.Html;
+import android.text.InputFilter;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -203,6 +207,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
+import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -1551,41 +1556,135 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void checkForwardLayout(@Nullable TAPMessageModel message, @Nullable ArrayList<TAPMessageModel> messages, int quoteAction) {
         runOnUiThread(() -> {
-            if (quoteAction == FORWARD) {
-                if (messages == null || messages.isEmpty()) {
-                    return;
+            switch (quoteAction) {
+                case FORWARD:
+                    if (messages == null || messages.isEmpty()) {
+                        return;
+                    }
+                    if (messages.size() > 1) {
+                        vm.setForwardedMessages(messages, quoteAction);
+                        clQuote.setVisibility(View.VISIBLE);
+                        vQuoteDecoration.setVisibility(View.VISIBLE);
+                        rcivQuoteImage.setVisibility(View.GONE);
+                        String titleText = String.format(getString(R.string.tap_forward_sf_messages), messages.size());
+                        tvQuoteTitle.setText(titleText);
+                        ArrayList<String> senders = new ArrayList<>();
+                        for (TAPMessageModel forwardedMessage : messages) {
+                            String name;
+                            if (forwardedMessage.getForwardFrom() != null && !forwardedMessage.getForwardFrom().getFullname().isEmpty()) {
+                                name = TAPUtils.getFirstWordOfString(forwardedMessage.getForwardFrom().getFullname());
+                            } else {
+                                name = TAPUtils.getFirstWordOfString(forwardedMessage.getUser().getFullname());
+                            }
+                            if (!senders.contains(name)) {
+                                senders.add(name);
+                            }
+                        }
+                        String quoteContent = getString(R.string.tap_from) + " " + TAPUtils.concatStringList(senders);
+                        tvQuoteContent.setText(quoteContent);
+                        tvQuoteContent.setMaxLines(2);
+                        boolean hadFocus = etChat.hasFocus();
+                        if (!hadFocus && etChat.getSelectionEnd() == 0) {
+                            etChat.setSelection(etChat.getText().length());
+                        }
+                    } else {
+                        showQuoteLayout(messages.get(0), quoteAction, false);
+                    }
+                    break;
+                case EDIT:
+                    showEditLayout(message, quoteAction);
+                    break;
+                default:
+                    showQuoteLayout(message, quoteAction, false);
+                    break;
+            }
+        });
+    }
+
+    private void showEditLayout(@Nullable TAPMessageModel message, int quoteAction) {
+        if (null == message) {
+            return;
+        }
+        vm.setQuotedMessage(message, quoteAction);
+        runOnUiThread(() -> {
+            clQuote.setVisibility(View.VISIBLE);
+            // Add other quotable message type here
+            if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
+                // Show image quote
+                vQuoteDecoration.setVisibility(View.GONE);
+                // TODO: 29 January 2019 IMAGE MIGHT NOT EXIST IN CACHE
+                Drawable drawable = null;
+                String fileID = (String) message.getData().get(FILE_ID);
+                if (null != fileID && !fileID.isEmpty()) {
+                    drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
                 }
-                if (messages.size() > 1) {
-                    vm.setForwardedMessages(messages, quoteAction);
-                    clQuote.setVisibility(View.VISIBLE);
-                    vQuoteDecoration.setVisibility(View.VISIBLE);
-                    rcivQuoteImage.setVisibility(View.GONE);
-                    String titleText = String.format(getString(R.string.tap_forward_sf_messages), messages.size());
-                    tvQuoteTitle.setText(titleText);
-                    ArrayList<String> senders = new ArrayList<>();
-                    for (TAPMessageModel forwardedMessage : messages) {
-                        String name;
-                        if (forwardedMessage.getForwardFrom() != null && !forwardedMessage.getForwardFrom().getFullname().isEmpty()) {
-                            name = TAPUtils.getFirstWordOfString(forwardedMessage.getForwardFrom().getFullname());
-                        } else {
-                            name = TAPUtils.getFirstWordOfString(forwardedMessage.getUser().getFullname());
-                        }
-                        if (!senders.contains(name)) {
-                            senders.add(name);
-                        }
+                if (null == drawable) {
+                    String fileUrl = (String) message.getData().get(FILE_URL);
+                    if (null != fileUrl && !fileUrl.isEmpty()) {
+                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
                     }
-                    String quoteContent = getString(R.string.tap_from) + " " + TAPUtils.concatStringList(senders);
-                    tvQuoteContent.setText(quoteContent);
-                    tvQuoteContent.setMaxLines(2);
-                    boolean hadFocus = etChat.hasFocus();
-                    if (!hadFocus && etChat.getSelectionEnd() == 0) {
-                        etChat.setSelection(etChat.getText().length());
-                    }
+                }
+                if (null != drawable) {
+                    rcivQuoteImage.setImageDrawable(drawable);
                 } else {
-                    showQuoteLayout(messages.get(0), quoteAction, false);
+                    // Show small thumbnail
+                    Drawable thumbnail = new BitmapDrawable(
+                            getResources(),
+                            TAPFileUtils.decodeBase64(
+                                    (String) (null == message.getData().get(THUMBNAIL) ? "" :
+                                            message.getData().get(THUMBNAIL))));
+                    rcivQuoteImage.setImageDrawable(thumbnail);
                 }
+                rcivQuoteImage.setColorFilter(null);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                tvQuoteTitle.setText(R.string.tap_edit_message);
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
+                etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey))});
+                etChat.setText(message.getData().get(CAPTION).toString());
+            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE) {
+                // Show image quote from file URL
+                glide.load((String) message.getData().get(FILE_URL)).into(rcivQuoteImage);
+                rcivQuoteImage.setColorFilter(null);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                vQuoteDecoration.setVisibility(View.GONE);
+                tvQuoteTitle.setText(R.string.tap_edit_message);
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
+                etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey))});
+                etChat.setText(message.getData().get(CAPTION).toString());
+            } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
+                // Show image quote from image URL
+                glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
+                rcivQuoteImage.setColorFilter(null);
+                rcivQuoteImage.setBackground(null);
+                rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                rcivQuoteImage.setVisibility(View.VISIBLE);
+                vQuoteDecoration.setVisibility(View.GONE);
+                tvQuoteTitle.setText(R.string.tap_edit_message);
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(1);
+                etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey))});
+                etChat.setText(message.getData().get(CAPTION).toString());
             } else {
-                showQuoteLayout(message, quoteAction, false);
+                // Show text quote
+                vQuoteDecoration.setVisibility(View.VISIBLE);
+                rcivQuoteImage.setVisibility(View.GONE);
+                tvQuoteTitle.setText(R.string.tap_edit_message);
+                tvQuoteContent.setText(message.getBody());
+                tvQuoteContent.setMaxLines(2);
+                etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(CHARACTER_LIMIT)});
+                etChat.setText(message.getBody());
+            }
+            boolean hadFocus = etChat.hasFocus();
+            TAPUtils.showKeyboard(this, etChat);
+            new Handler().postDelayed(() -> etChat.requestFocus(), 300L);
+            if (!hadFocus && etChat.getSelectionEnd() == 0) {
+                etChat.setSelection(etChat.getText().length());
             }
         });
     }
@@ -1599,6 +1698,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID());
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
+            etChat.setFilters(new InputFilter[] { });
             // Add other quotable message type here
             if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
                 // Show image quote
@@ -1724,6 +1824,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void hideQuoteLayout() {
+        if (vm.getQuoteAction() == EDIT) {
+            etChat.setFilters(new InputFilter[] { });
+            etChat.setText("");
+        }
         vm.setQuotedMessage(null, 0);
         vm.setForwardedMessages(null, 0);
         boolean hasFocus = etChat.hasFocus();
@@ -2313,6 +2417,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
             }
         }
+
+        @Override
+        public void onEditMessage(TAPMessageModel message) {
+            super.onEditMessage(message);
+            if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
+                return;
+            }
+            showEditLayout(message, EDIT);
+        }
     };
 
     private void setChatRoomStatus(TAPOnlineStatusModel onlineStatus) {
@@ -2708,12 +2821,47 @@ public class TapUIChatActivity extends TAPBaseActivity {
             //send voice note
             TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
             setDefaultState();
-        } else if (!TextUtils.isEmpty(message) && recordingState == RECORDING_STATE.DEFAULT) {
+        } else if (recordingState == RECORDING_STATE.DEFAULT) {
             etChat.setText("");
-            TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
-            // Updated 2020/04/23
-            //rvMessageList.scrollToPosition(0);
-            rvMessageList.post(this::scrollToBottom);
+            if (vm.getQuotedMessage() != null && vm.getQuoteAction() == EDIT) {
+                // edit message
+                TAPMessageModel messageModel = vm.getQuotedMessage();
+                if (messageModel.getType() == TYPE_TEXT && !TextUtils.isEmpty(message)) {
+                    messageModel.setBody(message);
+                } else if (messageModel.getType() == TYPE_IMAGE || messageModel.getType() == TYPE_VIDEO) {
+                    HashMap<String, Object> data = messageModel.getData();
+                    if (data != null) {
+                        data.put(CAPTION, message);
+                        messageModel.setData(data);
+                    }
+                } else {
+                    return;
+                }
+                TapCoreMessageManager.getInstance(instanceKey).editMessage(messageModel, message, new TapCoreSendMessageListener() {
+                    @Override
+                    public void onError(@Nullable TAPMessageModel message, String errorCode, String errorMessage) {
+                        if (errorCode.equals(ERROR_CODE_CAPTION_EXCEEDS_LIMIT)) {
+                            new TapTalkDialog.Builder(TapUIChatActivity.this)
+                                    .setTitle(getString(R.string.tap_error_unable_to_edit_message))
+                                    .setMessage(errorMessage)
+                                    .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                                    .show();
+                        }
+                    }
+                });
+                hideQuoteLayout();
+            } else if (!TextUtils.isEmpty(message)) {
+                // send message
+                TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
+
+                // Updated 2020/04/23
+                //rvMessageList.scrollToPosition(0);
+                rvMessageList.post(this::scrollToBottom);
+            } else {
+                TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
+                ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
+                ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
+            }
         } else {
             TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
             ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
@@ -2730,7 +2878,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             // Message is added after transition finishes in containerTransitionListener
             runOnUiThread(() -> {
                 // Remove empty chat layout if still shown
-                if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getHidden() || !newMessage.getHidden())) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getIsHidden() || !newMessage.getIsHidden())) {
                     clEmptyChat.setVisibility(View.GONE);
                     showMessageList();
                 }
@@ -2752,7 +2900,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Check previous message date and add new message
                     TAPMessageModel previousMessage = messageAdapter.getItemAt(0);
                     String currentDate = TAPTimeFormatter.formatDate(newMessage.getCreated());
-                    if ((null == newMessage.getHidden() || !newMessage.getHidden()) &&
+                    if ((null == newMessage.getIsHidden() || !newMessage.getIsHidden()) &&
                             newMessage.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
                             newMessage.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
                             newMessage.getType() != TYPE_DATE_SEPARATOR &&
@@ -2803,7 +2951,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             // Message is added after transition finishes in containerTransitionListener
             runOnUiThread(() -> {
                 // Remove empty chat layout if still shown
-                if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getHidden() || !newMessage.getHidden())) {
+                if (clEmptyChat.getVisibility() == View.VISIBLE && (null == newMessage.getIsHidden() || !newMessage.getIsHidden())) {
                     clEmptyChat.setVisibility(View.GONE);
                     showMessageList();
                 }
@@ -2813,7 +2961,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
             TAPMessageModel previousMessage = messageAdapter.getItemAt(0);
             String currentDate = TAPTimeFormatter.formatDate(newMessage.getCreated());
-            if ((null == newMessage.getHidden() || !newMessage.getHidden()) &&
+            if ((null == newMessage.getIsHidden() || !newMessage.getIsHidden()) &&
                     newMessage.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
                     newMessage.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
                     newMessage.getType() != TYPE_DATE_SEPARATOR &&
@@ -2892,7 +3040,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         new Thread(() -> {
             vm.setFirstVisibleItemIndex(0);
             TAPMessageModel message = messageAdapter.getItemAt(vm.getFirstVisibleItemIndex());
-            while (null != message && null != message.getHidden() && message.getHidden()) {
+            while (null != message && null != message.getIsHidden() && message.getIsHidden()) {
                 vm.setFirstVisibleItemIndex(vm.getFirstVisibleItemIndex() + 1);
                 message = messageAdapter.getItemAt(vm.getFirstVisibleItemIndex());
             }
@@ -2904,7 +3052,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (null != message) {
             vm.setTappedMessageLocalID(null);
             if ((null != message.getIsDeleted() && message.getIsDeleted()) ||
-                    (null != message.getHidden() && message.getHidden())) {
+                    (null != message.getIsHidden() && message.getIsHidden())) {
                 // Message does not exist
                 runOnUiThread(() -> {
                     Toast.makeText(this, getResources().getString(R.string.tap_error_could_not_find_message), Toast.LENGTH_SHORT).show();
@@ -3154,7 +3302,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Hide chat menu and enable send button when EditText is filled
                     ivChatMenu.setVisibility(View.GONE);
                     ivButtonChatMenu.setVisibility(View.GONE);
-                    setSendButtonEnabled();
+                    if (vm.getQuoteAction() == EDIT) {
+                        String caption = vm.getQuotedMessage().getData() != null? (String) vm.getQuotedMessage().getData().get(CAPTION) : "";
+                        caption = caption != null? caption : "";
+                        if ((vm.getQuotedMessage().getType() == TYPE_TEXT && vm.getQuotedMessage().getBody().equals(s.toString())) || ((vm.getQuotedMessage().getType() == TYPE_IMAGE || vm.getQuotedMessage().getType() == TYPE_VIDEO) &&
+                                caption.equals(s.toString()))) {
+                            setSendButtonDisabled();
+                        } else {
+                            setSendButtonEnabled();
+                        }
+                    } else {
+                        setSendButtonEnabled();
+                    }
                     checkAndSearchUserMentionList();
                     //checkAndHighlightTypedText();
                 } else if (s.length() > 0) {
@@ -3179,7 +3338,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         ivChatMenu.setVisibility(View.GONE);
                         ivButtonChatMenu.setVisibility(View.GONE);
                     }
-                    if (vm.getQuoteAction() == FORWARD) {
+                    String caption = (vm.getQuotedMessage() != null && vm.getQuotedMessage().getData() != null)? (String) vm.getQuotedMessage().getData().get(CAPTION) : "";
+                    caption = caption != null? caption : "";
+                    if (vm.getQuoteAction() == FORWARD || (vm.getQuoteAction() == EDIT && ((vm.getQuotedMessage().getType() == TYPE_IMAGE || vm.getQuotedMessage().getType() == TYPE_VIDEO) &&
+                            !caption.equals(s.toString())))) {
                         // Enable send button if message to forward exists
                         setSendButtonEnabled();
                     } else {
@@ -3555,8 +3717,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     localID = intent.getStringExtra(UploadLocalID);
                     if (vm.getMessagePointer().containsKey(localID)) {
                         TAPMessageModel failedMessageModel = vm.getMessagePointer().get(localID);
-                        failedMessageModel.setFailedSend(true);
-                        failedMessageModel.setSending(false);
+                        failedMessageModel.setIsFailedSend(true);
+                        failedMessageModel.setIsSending(false);
                         messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(failedMessageModel));
                     }
                     break;
@@ -3705,7 +3867,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 models.add(model);
                 vm.addMessagePointer(model);
 
-                if (allMessagesHidden && (null == model.getHidden() || !model.getHidden())) {
+                if (allMessagesHidden && (null == model.getIsHidden() || !model.getIsHidden())) {
                     allMessagesHidden = false;
                 }
 
@@ -3876,7 +4038,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         break;
                     }
                     previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
-                    if ((null != previousMessage.getHidden() && previousMessage.getHidden()) ||
+                    if ((null != previousMessage.getIsHidden() && previousMessage.getIsHidden()) ||
                             previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_DATE_SEPARATOR
@@ -4054,7 +4216,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             smallestUnreadCreated = message.getCreated();
                         }
 
-                        if (allMessagesHidden && (null == message.getHidden() || !message.getHidden())) {
+                        if (allMessagesHidden && (null == message.getIsHidden() || !message.getIsHidden())) {
                             allMessagesHidden = false;
                         }
 
@@ -4093,7 +4255,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             unreadMessageIds.add(message.getMessageID());
                         }
 
-                        if (allUnreadHidden != -1 && null != message.getHidden() && message.getHidden()) {
+                        if (allUnreadHidden != -1 && null != message.getIsHidden() && message.getIsHidden()) {
                             allUnreadHidden = 1;
                         } else {
                             // Set allUnreadHidden to false
@@ -4150,7 +4312,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             String previousDate = "";
             TAPMessageModel previousMessage = null;
             for (TAPMessageModel message : messageAdapter.getItems()) {
-                if ((null == message.getHidden() || !message.getHidden()) &&
+                if ((null == message.getIsHidden() || !message.getIsHidden()) &&
                         message.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_DATE_SEPARATOR
@@ -4319,7 +4481,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
                     messageBeforeModels.addAll(addBeforeTextMessage(message));
                     responseMessages.add(TAPMessageEntity.fromMessageModel(message));
-                    if (allMessagesHidden && (null == message.getHidden() || !message.getHidden())) {
+                    if (allMessagesHidden && (null == message.getIsHidden() || !message.getIsHidden())) {
                         allMessagesHidden = false;
                     }
                     updateMessageMentionIndexes(message);
@@ -4343,7 +4505,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         break;
                     }
                     previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
-                    if ((null != previousMessage.getHidden() && previousMessage.getHidden()) ||
+                    if ((null != previousMessage.getIsHidden() && previousMessage.getIsHidden()) ||
                             previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_DATE_SEPARATOR
@@ -4357,7 +4519,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
             for (TAPMessageModel message : messageBeforeModels) {
-                if ((null == message.getHidden() || !message.getHidden()) &&
+                if ((null == message.getIsHidden() || !message.getIsHidden()) &&
                         message.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_DATE_SEPARATOR
@@ -4493,7 +4655,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         break;
                     }
                     previousMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
-                    if ((null != previousMessage.getHidden() && previousMessage.getHidden()) ||
+                    if ((null != previousMessage.getIsHidden() && previousMessage.getIsHidden()) ||
                             previousMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
                             previousMessage.getType() == TYPE_DATE_SEPARATOR
@@ -4507,7 +4669,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
             for (TAPMessageModel message : messageBeforeModels) {
-                if ((null == message.getHidden() || !message.getHidden()) &&
+                if ((null == message.getIsHidden() || !message.getIsHidden()) &&
                         message.getType() != TYPE_UNREAD_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_LOADING_MESSAGE_IDENTIFIER &&
                         message.getType() != TYPE_DATE_SEPARATOR
@@ -4608,7 +4770,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 return;
             }
             firstMessage = messageAdapter.getItemAt(messageAdapter.getItems().size() - offset);
-            if ((null != firstMessage.getHidden() && firstMessage.getHidden()) ||
+            if ((null != firstMessage.getIsHidden() && firstMessage.getIsHidden()) ||
                     firstMessage.getType() == TYPE_UNREAD_MESSAGE_IDENTIFIER ||
                     firstMessage.getType() == TYPE_LOADING_MESSAGE_IDENTIFIER ||
                     firstMessage.getType() == TYPE_DATE_SEPARATOR

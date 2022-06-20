@@ -625,7 +625,7 @@ public class TapUIRoomListFragment extends Fragment {
         String messageRoomID = message.getRoom().getRoomID();
         TAPRoomListModel roomList = vm.getRoomPointer().get(messageRoomID);
 
-        if (null != roomList && null != message.getHidden() && !message.getHidden()) {
+        if (null != roomList && null != message.getIsHidden() && !message.getIsHidden()) {
             // Received message in an existing room list
             roomList.setLastMessageTimestampWithLong(message.getCreated());
             TAPMessageModel roomLastMessage = roomList.getLastMessage();
@@ -674,7 +674,7 @@ public class TapUIRoomListFragment extends Fragment {
                     }
                 }
             }
-        } else if (null != activity && null != message.getHidden() && !message.getHidden()) {
+        } else if (null != activity && null != message.getIsHidden() && !message.getIsHidden()) {
             // Received message in a new room list
             TAPRoomListModel newRoomList = TAPRoomListModel.buildWithLastMessage(message);
             if (!newRoomList.getLastMessage().getUser().getUserID()
@@ -938,7 +938,7 @@ public class TapUIRoomListFragment extends Fragment {
                         tempMessage.add(entity);
 
                         // Save undelivered messages to list
-                        if (null == message.getDelivered() || (null != message.getDelivered() && !message.getDelivered())) {
+                        if (null == message.getIsDelivered() || (null != message.getIsDelivered() && !message.getIsDelivered())) {
                             deliveredMessages.add(message);
                         }
 

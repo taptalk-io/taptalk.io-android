@@ -55,11 +55,14 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Fragment.TapUIMainRoomListFragment;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CHARACTER_LIMIT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CAPTION_EXCEEDS_LIMIT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_URI_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kEventOpenRoom;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketAuthentication;
@@ -72,6 +75,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUpdateMessage;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
@@ -105,7 +109,7 @@ public class TAPChatManager {
     private Map<String, TAPMessageModel> pendingMessages, waitingUploadProgress, waitingResponses, incomingMessages, quotedMessages;
     private Map<String, ArrayList<TAPMessageModel>> forwardedMessages;
     private Map<String, Integer> quotedActions;
-    private Map<String, String> messageDrafts;
+    private Map<String, String> messageDrafts, pendingMessageActions;
     private HashMap<String, HashMap<String, Object>> userInfo;
     private HashMap<String, TapSendMessageInterface> sendMessageListeners;
     private List<TAPChatListener> chatListeners;
@@ -125,7 +129,6 @@ public class TAPChatManager {
     private int maxRetryAttempt = 10;
     private int pendingRetryInterval = 60 * 1000;
     private final int maxImageSize = 2000;
-    private final Integer CHARACTER_LIMIT = 4000;
 
     public static TAPChatManager getInstance(String instanceKey) {
         if (!getInstances().containsKey(instanceKey)) {
@@ -148,6 +151,7 @@ public class TAPChatManager {
         sendMessageListeners = new HashMap<>();
         saveMessages = new ArrayList<>();
         pendingMessages = new LinkedHashMap<>();
+        pendingMessageActions = new LinkedHashMap<>();
         waitingResponses = new LinkedHashMap<>();
         incomingMessages = new LinkedHashMap<>();
         waitingUploadProgress = new LinkedHashMap<>();
@@ -950,7 +954,7 @@ public class TAPChatManager {
         return messageModel;
     }
 
-    private String generateImageCaption(String caption) {
+    public String generateImageCaption(String caption) {
         return TapTalk.appContext.getString(R.string.tap_emoji_photo) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_photo) : caption);
     }
 
@@ -1021,7 +1025,7 @@ public class TAPChatManager {
         }
     }
 
-    private String generateVideoCaption(String caption) {
+    public String generateVideoCaption(String caption) {
         return TapTalk.appContext.getString(R.string.tap_emoji_video) + " " + (caption.isEmpty() ? TapTalk.appContext.getString(R.string.tap_video) : caption);
     }
 
@@ -1347,7 +1351,7 @@ public class TAPChatManager {
                 }
             }
         }
-        runSendMessageSequence(messageModel);
+        runSendMessageSequence(messageModel, kSocketNewMessage);
     }
 
     /**
@@ -1467,8 +1471,10 @@ public class TAPChatManager {
     public void checkAndSendPendingMessages() {
         if (!pendingMessages.isEmpty()) {
             TAPMessageModel message = pendingMessages.entrySet().iterator().next().getValue();
-            runSendMessageSequence(message);
+            String eventAction = pendingMessageActions.get(message.getLocalID());
+            runSendMessageSequence(message, eventAction);
             pendingMessages.remove(message.getLocalID());
+            pendingMessageActions.remove(message.getLocalID());
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -1479,9 +1485,56 @@ public class TAPChatManager {
     }
 
     /**
+     * Edit message
+     */
+
+    public void editMessage(TAPMessageModel message, String updatedText, TapSendMessageInterface listener) {
+        if (message.getType() == TYPE_TEXT) {
+            if (updatedText.length() > CHARACTER_LIMIT) {
+                if (null != listener) {
+                    listener.onError(message, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, CHARACTER_LIMIT));
+                }
+                return;
+            }
+            message.setBody(updatedText);
+        }
+        else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
+            if (updatedText.length() > TapTalk.getMaxCaptionLength(instanceKey)) {
+                if (null != listener) {
+                    listener.onError(message, ERROR_CODE_CAPTION_EXCEEDS_LIMIT, String.format(Locale.getDefault(), ERROR_MESSAGE_CAPTION_EXCEEDS_LIMIT, TapTalk.getMaxCaptionLength(instanceKey)));
+                }
+                return;
+            }
+            HashMap<String, Object> data = message.getData();
+            if (data != null) {
+                data.put(CAPTION, updatedText);
+                message.setData(data);
+                if (message.getType() == TYPE_IMAGE) {
+                    message.setBody(TAPChatManager.getInstance(instanceKey).generateImageCaption(updatedText));
+                }
+                else {
+                    message.setBody(TAPChatManager.getInstance(instanceKey).generateVideoCaption(updatedText));
+                }
+            }
+        }
+        else {
+            if (null != listener) {
+                listener.onError(message, ERROR_CODE_EDIT_INVALID_MESSAGE_TYPE, ERROR_MESSAGE_EDIT_INVALID_MESSAGE_TYPE);
+            }
+            return;
+        }
+        if (null != listener) {
+            sendMessageListeners.put(message.getLocalID(), listener);
+            listener.onStart(message);
+        }
+        // Edit message
+        runSendMessageSequence(message, kSocketUpdateMessage);
+    }
+
+    /**
      * Send message to server
      */
-    private void runSendMessageSequence(TAPMessageModel messageModel) {
+    private void runSendMessageSequence(TAPMessageModel messageModel, String connectionEvent) {
 
         // TODO TEMPORARY FLAG FOR SEND MESSAGE API
         if (isSendMessageDisabled) {
@@ -1500,10 +1553,11 @@ public class TAPChatManager {
         if (TAPConnectionManager.getInstance(instanceKey).getConnectionStatus() == TAPConnectionManager.ConnectionStatus.CONNECTED) {
             // Send message if socket is connected
             waitingResponses.put(messageModel.getLocalID(), messageModel);
-            sendEmit(kSocketNewMessage, messageModel);
+            sendEmit(connectionEvent, messageModel);
         } else {
             // Add message to queue if socket is not connected
             pendingMessages.put(messageModel.getLocalID(), messageModel);
+            pendingMessageActions.put(messageModel.getLocalID(), connectionEvent);
         }
     }
 
@@ -1725,8 +1779,8 @@ public class TAPChatManager {
         ) {
             if (kSocketNewMessage.equals(eventName) &&
                     !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
-                    null != newMessage.getHidden() &&
-                    !newMessage.getHidden() &&
+                    null != newMessage.getIsHidden() &&
+                    !newMessage.getIsHidden() &&
                     null != newMessage.getIsDeleted() &&
                     !newMessage.getIsDeleted()
             ) {
@@ -1752,8 +1806,8 @@ public class TAPChatManager {
         else if (null == activeRoom || !newMessage.getRoom().getRoomID().equals(activeRoom.getRoomID())) {
             if (kSocketNewMessage.equals(eventName) &&
                     !newMessage.getUser().getUserID().equals(activeUser.getUserID()) &&
-                    null != newMessage.getHidden() &&
-                    !newMessage.getHidden() &&
+                    null != newMessage.getIsHidden() &&
+                    !newMessage.getIsHidden() &&
                     null != newMessage.getIsDeleted()
                     && !newMessage.getIsDeleted()
             ) {
@@ -1778,8 +1832,8 @@ public class TAPChatManager {
 
         // Add to list delivered message
         if (kSocketNewMessage.equals(eventName) && !newMessage.getUser().getUserID().equals(activeUser.getUserID())
-                && null != newMessage.getSending() && !newMessage.getSending()
-                && null != newMessage.getDelivered() && !newMessage.getDelivered()
+                && null != newMessage.getIsSending() && !newMessage.getIsSending()
+                && null != newMessage.getIsDelivered() && !newMessage.getIsDelivered()
                 && null != newMessage.getIsRead() && !newMessage.getIsRead()) {
             TAPMessageStatusManager.getInstance(instanceKey).addDeliveredMessageQueue(newMessage);
         }
@@ -1938,6 +1992,7 @@ public class TAPChatManager {
     public void resetChatManager() {
         clearSaveMessages();
         pendingMessages.clear();
+        pendingMessageActions.clear();
         waitingUploadProgress.clear();
         waitingResponses.clear();
         incomingMessages.clear();

@@ -24,6 +24,12 @@ public class TAPEncryptorManager {
     private final String K_DATA = "data";
     private final String K_QUOTE = "quote";
     private final String K_CONTENT = "content";
+    private final String K_ROOM = "room";
+    private final String K_PARTICIPANTS = "participants";
+    private final String K_ADMINS = "admins";
+    private final String K_LOCKED = "locked";
+    private final String K_UNREAD_COUNT = "unreadCount";
+    private final String K_USER = "user";
 
     public static TAPEncryptorManager getInstance() {
         return instance == null ? (instance = new TAPEncryptorManager()) : instance;
@@ -95,9 +101,19 @@ public class TAPEncryptorManager {
                 quoteMap.put(K_CONTENT, encrypt(messageModel.getQuote().getContent(), localID));
                 encryptedMessageMap.put(K_QUOTE, quoteMap);
             }
+            // Remove unused fields for socket emit
+            encryptedMessageMap.remove(K_USER);
+            HashMap<String, Object> roomMap = (HashMap<String, Object>) encryptedMessageMap.get(K_ROOM);
+            if (roomMap != null) {
+                roomMap.remove(K_PARTICIPANTS);
+                roomMap.remove(K_ADMINS);
+                roomMap.remove(K_LOCKED);
+                roomMap.remove(K_UNREAD_COUNT);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Log.e(">>>>>>>", "encryptMessage encryptedMessageMap: " + TAPUtils.toJsonString(encryptedMessageMap));
         return encryptedMessageMap;
     }
 
