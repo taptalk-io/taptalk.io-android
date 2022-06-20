@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/tapChatRoomBackgroundColor"
+    tools:context=".View.Activity.TapDeleteAccountActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
+        android:elevation="2dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_button_back"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="16dp"
+            android:src="@drawable/tap_ic_chevron_left_white"
+            app:tint="@color/tapIconNavigationBarBackButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_toolbar_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_toolbar_title"
+            style="@style/tapNavBarTitleLabelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="?attr/actionBarSize"
+            android:layout_marginRight="?attr/actionBarSize"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="@string/tap_delete_my_account"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_button_back"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/tap_thank_you_using_taptalk"
+                style="@style/tapInfoLabelTitleStyle"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/tap_deleting_your_account"
+                style="@style/tapClickableDestructiveLabelStyle"
+                app:layout_constraintTop_toBottomOf="@id/tv_title"
+                app:layout_constraintStart_toStartOf="@id/tv_title"
+                app:layout_constraintEnd_toEndOf="@id/tv_title" />
+
+            <TextView
+                android:id="@+id/iv_bullet1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="@string/tap_dot"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toStartOf="@id/tv_title"
+                app:layout_constraintTop_toBottomOf="@id/tv_label"/>
+
+            <TextView
+                android:id="@+id/tv_point1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:text="@string/tap_wording_delete_account1"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toEndOf="@id/iv_bullet1"
+                app:layout_constraintTop_toTopOf="@id/iv_bullet1"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <TextView
+                android:id="@+id/iv_bullet2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="@string/tap_dot"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toStartOf="@id/tv_title"
+                app:layout_constraintTop_toBottomOf="@id/tv_point1"/>
+
+            <TextView
+                android:id="@+id/tv_point2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:text="@string/tap_wording_delete_account2"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toEndOf="@id/iv_bullet2"
+                app:layout_constraintTop_toTopOf="@id/iv_bullet2"
+                app:layout_constraintEnd_toEndOf="@id/tv_title" />
+
+            <TextView
+                android:id="@+id/iv_bullet3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="@string/tap_dot"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toStartOf="@id/tv_title"
+                app:layout_constraintTop_toBottomOf="@id/tv_point2"/>
+
+            <TextView
+                android:id="@+id/tv_point3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:text="@string/tap_wording_delete_account3"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toEndOf="@id/iv_bullet3"
+                app:layout_constraintTop_toTopOf="@id/iv_bullet3"
+                app:layout_constraintEnd_toEndOf="@id/tv_title" />
+
+            <TextView
+                android:id="@+id/iv_bullet4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="@string/tap_dot"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toStartOf="@id/tv_title"
+                app:layout_constraintTop_toBottomOf="@id/tv_point3"/>
+
+            <TextView
+                android:id="@+id/tv_point4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/tap_wording_delete_account4"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toEndOf="@id/iv_bullet4"
+                app:layout_constraintTop_toTopOf="@id/iv_bullet4"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_subtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Why are you deleting your account? (Optional)"
+                style="@style/tapInfoLabelSubtitleStyle"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/tv_point4"
+                app:layout_constraintStart_toStartOf="@id/tv_title"
+                app:layout_constraintEnd_toEndOf="@id/tv_title" />
+
+            <EditText
+                android:id="@+id/et_note"
+                android:layout_width="0dp"
+                android:layout_height="90dp"
+                android:layout_marginTop="8dp"
+                android:paddingTop="8dp"
+                style="@style/tapAreaEditText"
+                android:gravity="top"
+                android:hint="@string/tap_tell_us_dots"
+                app:layout_constraintTop_toBottomOf="@id/tv_subtitle"
+                app:layout_constraintStart_toStartOf="@id/tv_title"
+                app:layout_constraintEnd_toEndOf="@id/tv_title" />
+
+            <CheckBox
+                android:id="@+id/cb_agree"
+                android:layout_width="26dp"
+                android:layout_height="18dp"
+                android:layout_marginTop="12dp"
+                android:translationX="-8dp"
+                android:buttonTint="@color/tapTransparentBlack1920"
+                app:layout_constraintStart_toStartOf="@id/et_note"
+                app:layout_constraintTop_toBottomOf="@id/et_note" />
+
+            <TextView
+                android:id="@+id/tv_agree"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:translationX="-8dp"
+                android:text="@string/tap_wording_accpet_agreement"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintTop_toTopOf="@id/cb_agree"
+                app:layout_constraintStart_toEndOf="@id/cb_agree"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_warning"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="10dp"
+                android:outlineAmbientShadowColor="@color/tapTransparentBlack1910"
+                app:layout_constraintTop_toBottomOf="@id/tv_agree"
+                app:layout_constraintStart_toStartOf="@id/tv_title"
+                app:layout_constraintEnd_toEndOf="@id/tv_title">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp"
+                    android:background="@drawable/tap_bg_warning_card">
+
+                    <ImageView
+                        android:id="@+id/iv_warning"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:src="@drawable/tap_ic_warning_red_circle_background"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginRight="4dp"
+                        android:text="@string/tap_warning_delete_account"
+                        android:textSize="13sp"
+                        style="@style/tapChatProfileMenuDestructiveLabelStyle"
+                        app:layout_constraintTop_toTopOf="@id/iv_warning"
+                        app:layout_constraintStart_toEndOf="@id/iv_warning"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <Button
+                android:id="@+id/btn_delete"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/tap_delete_my_account"
+                android:enabled="false"
+                style="@style/tapDestructiveButtonStyle"
+                app:layout_constraintTop_toBottomOf="@id/cv_warning"
+                app:layout_constraintStart_toStartOf="@id/tv_title"
+                app:layout_constraintEnd_toEndOf="@id/tv_title"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
