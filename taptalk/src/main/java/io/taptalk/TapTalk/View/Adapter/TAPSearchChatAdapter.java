@@ -283,8 +283,13 @@ public class TAPSearchChatAdapter extends TAPBaseAdapter<TAPSearchChatModel, TAP
             }
 
             // Load avatar
-            if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
-                    null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
+            if (null != user && (null != user.getDeleted() && user.getDeleted() > 0L)) {
+                // Deleted user
+                glide.load(R.drawable.tap_ic_deleted_user).into(civAvatar);
+                civAvatar.setBackgroundColor(itemView.getResources().getColor(R.color.tapTransparentBlack40));
+                ImageViewCompat.setImageTintList(civAvatar, null);
+                tvAvatarLabel.setVisibility(View.GONE);
+            } else if (null != user  && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                 // Load user avatar
                 glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                     @Override

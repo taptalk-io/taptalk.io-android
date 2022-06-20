@@ -891,7 +891,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
             tvRoomImageLabel.setVisibility(View.GONE);
         } else if (null != vm.getRoom() &&
                 TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
-                (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L) &&
+                (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)) {
+            glide.load(R.drawable.tap_ic_deleted_user).into(civRoomImage);
+            civRoomImage.setBackgroundColor(getResources().getColor(R.color.tapTransparentBlack40));
+            ImageViewCompat.setImageTintList(civRoomImage, null);
+            tvRoomImageLabel.setVisibility(View.GONE);
+        } else if (null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
                 null != vm.getOtherUserModel().getImageURL().getThumbnail() &&
                 !vm.getOtherUserModel().getImageURL().getThumbnail().isEmpty()) {
             // Load user avatar URL

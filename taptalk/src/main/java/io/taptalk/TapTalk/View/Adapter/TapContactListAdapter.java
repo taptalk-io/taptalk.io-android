@@ -105,7 +105,13 @@ public class TapContactListAdapter extends TAPBaseAdapter<TapContactListModel, T
                 return;
             }
 
-            if (null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
+            if (null != user.getDeleted() && user.getDeleted() > 0L) {
+                // Deleted user
+                Glide.with(itemView.getContext()).load(R.drawable.tap_ic_deleted_user).into(civAvatar);
+                civAvatar.setBackgroundColor(itemView.getResources().getColor(R.color.tapTransparentBlack40));
+                ImageViewCompat.setImageTintList(civAvatar, null);
+                tvAvatarLabel.setVisibility(View.GONE);
+            } else if (null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                 // Load profile picture
                 Glide.with(itemView.getContext())
                         .load(user.getImageURL().getThumbnail())

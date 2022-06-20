@@ -2680,7 +2680,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 // Load avatar and name for other room types
                 TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(item.getUser().getUserID());
-                if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
+                if (null != civAvatar && null != tvAvatarLabel && ((null != user && null != user.getDeleted() && user.getDeleted() > 0L) || (null != item.getUser().getDeleted() && item.getUser().getDeleted() > 0L))) {
+                    glide.load(R.drawable.tap_ic_deleted_user).into(civAvatar);
+                    civAvatar.setBackgroundColor(vh.itemView.getResources().getColor(R.color.tapTransparentBlack40));
+                    ImageViewCompat.setImageTintList(civAvatar, null);
+                    tvAvatarLabel.setVisibility(View.GONE);
+                } else if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                     glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
