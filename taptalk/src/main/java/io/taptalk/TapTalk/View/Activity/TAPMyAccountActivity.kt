@@ -321,7 +321,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         } else {
             cl_logout.visibility = View.GONE
         }
-        btn_delete_my_account.visibility = View.VISIBLE
+        if (TapUI.getInstance(instanceKey).isDeleteAccountButtonVisible) {
+            btn_delete_my_account.visibility = View.VISIBLE
+        } else {
+            btn_delete_my_account.visibility = View.GONE
+        }
         et_bio.isEnabled = true
     }
 

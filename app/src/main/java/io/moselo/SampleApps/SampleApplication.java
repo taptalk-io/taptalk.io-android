@@ -51,6 +51,7 @@ public class SampleApplication extends MultiDexApplication {
 
         TapUI.getInstance(INSTANCE_KEY).setLogoutButtonVisible(true);
         TapUI.getInstance(INSTANCE_KEY).setConnectionStatusIndicatorVisible(false);
+        TapUI.getInstance(INSTANCE_KEY).setDeleteAccountButtonVisible(true);
 
         if (BuildConfig.DEBUG) {
             TapUI.getInstance(INSTANCE_KEY).setCloseButtonInRoomListVisible(true);
