@@ -130,10 +130,6 @@
             android:name="io.taptalk.TapTalk.View.Activity.TapStarredMessagesActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
-        <activity
-            android:name="io.taptalk.TapTalk.View.Activity.TapDeleteAccountActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

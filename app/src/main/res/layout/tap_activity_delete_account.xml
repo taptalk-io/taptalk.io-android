@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@color/tapChatRoomBackgroundColor"
-    tools:context=".View.Activity.TapDeleteAccountActivity">
+    tools:context="io.moselo.SampleApps.Activity.TapDeleteAccountActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_action_bar"
