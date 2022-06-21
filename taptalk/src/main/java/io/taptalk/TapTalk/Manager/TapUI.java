@@ -115,6 +115,7 @@ public class TapUI {
     private boolean isStarMessageMenuDisabled;
     private boolean isSendVoiceNoteMenuDisabled;
     private boolean isEditMessageMenuDisabled;
+    private boolean isDeleteAccountButtonVisible;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -1141,6 +1142,26 @@ public class TapUI {
             return;
         }
         getLongPressMenuMap().put(messageType, longPressMenuType);
+    }
+
+    /**
+     * ==========================================================================================
+     * ACCOUNT RELATED
+     * ==========================================================================================
+     */
+
+    public boolean isDeleteAccountButtonVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isDeleteAccountButtonVisible;
+    }
+
+    public void setDeleteAccountButtonVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isDeleteAccountButtonVisible = isVisible;
     }
 
     /**
