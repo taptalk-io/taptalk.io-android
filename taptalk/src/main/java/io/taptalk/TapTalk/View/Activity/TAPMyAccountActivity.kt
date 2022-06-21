@@ -243,7 +243,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_form_container.setOnClickListener { clearAllFocus() }
         cl_password.setOnClickListener { openChangePasswordPage() }
         cl_logout.setOnClickListener { promptUserLogout() }
-        btn_delete_my_account.setOnClickListener { /*TODO: move to delete account page MU*/ }
+        btn_delete_my_account.setOnClickListener {
+            TapUI.getInstance(instanceKey).triggerDeleteButtonInMyAccountPageTapped(this)
+        }
 
         // Obtain text field style attributes
         val textFieldArray = obtainStyledAttributes(R.style.tapFormTextFieldStyle, R.styleable.TextAppearance)
