@@ -31,6 +31,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
+import io.taptalk.TapTalk.BuildConfig
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_CAMERA
@@ -929,7 +930,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             } else {
                 info.versionCode
             }
-            tv_version_code.text = String.format("V %s(%s)", versionName, versionNumber)
+            if (BuildConfig.DEBUG) {
+                tv_version_code.text = String.format("V %s(%s)", versionName, versionNumber)
+            } else {
+                tv_version_code.text = String.format("V %s", versionName)
+            }
         }catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }
