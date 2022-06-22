@@ -1026,7 +1026,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
         // Load items from database for the first time
         if (vm.getRoom().isDeleted()) {
             //showRoomIsUnavailableState();
-            showChatAsHistory(getString(R.string.tap_group_unavailable));
+            if (vm.getRoom().getType() == TYPE_PERSONAL) {
+                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+            } else {
+                showChatAsHistory(getString(R.string.tap_group_unavailable));
+            }
         } else if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getDeleted()) {
             showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
         }
