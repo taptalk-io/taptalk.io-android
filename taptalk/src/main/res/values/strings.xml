@@ -252,7 +252,7 @@
     <string name="tap_compose">Compose</string>
     <string name="tap_call">Call</string>
     <string name="tap_send_sms">Send SMS</string>
-    <string name="tap_delete">Delete Message</string>
+    <string name="tap_delete_message">Delete Message</string>
     <string name="tap_view_profile">View Profile</string>
 
     <!--Products-->
@@ -416,5 +416,9 @@
     <string name="tap_warning_delete_account">Once you confirm, all your account data will be permanently deleted.</string>
     <string name="tap_edited_dot">Edited •</string>
     <string name="tap_edit_message">Edit Message</string>
+    <string name="tap_wording_oops_only_admin">Oops! You are the only admin in your group</string>
+    <string name="tap_wording_sign_to_another_member">Sign another group member as admin to take over the group if you still want to delete your TapTalk account.</string>
+    <string name="tap_wording_delete_account">You will delete all your account information, contacts and messages in TapTalk permanently. Are you sure you want to continue?</string>
+    <string name="tap_delete">Delete</string>
 
 </resources>
