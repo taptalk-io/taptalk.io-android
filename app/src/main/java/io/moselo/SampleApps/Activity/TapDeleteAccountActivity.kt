@@ -6,11 +6,15 @@ import android.os.Bundle
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalkSample.R
+import kotlinx.android.synthetic.main.tap_activity_delete_account.*
 
 class TapDeleteAccountActivity : TAPBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_delete_account)
+        cb_agree.setOnCheckedChangeListener { _, isChecked ->
+            btn_delete.isEnabled = isChecked
+        }
     }
 
     companion object {
