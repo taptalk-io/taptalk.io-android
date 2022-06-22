@@ -93,8 +93,7 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
             // Set room image
             if (null != user && null != user.deleted && user.deleted!! > 0L) {
                 // Deleted user
-                glide.load(R.drawable.tap_ic_deleted_user).into(civAvatar)
-                civAvatar.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.tapTransparentBlack40))
+                glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar)
                 ImageViewCompat.setImageTintList(civAvatar, null)
                 tvAvatarLabel.visibility = View.GONE
             } else if (null != user && null != user.imageURL && user.imageURL.thumbnail.isNotEmpty()) {
@@ -311,8 +310,7 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
             val room = item.lastMessage.room ?: return
             if (room.deleted > 0L) {
                 // Deleted user
-                glide.load(R.drawable.tap_ic_deleted_user).into(civAvatar)
-                civAvatar.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.tapTransparentBlack40))
+                glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar)
                 ImageViewCompat.setImageTintList(civAvatar, null)
                 tvAvatarLabel.visibility = View.GONE
             } else if (null != room.imageURL && room.imageURL!!.thumbnail.isNotEmpty()) {

@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.DiffUtil;
 
@@ -140,8 +141,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             // Set room image
             if (null != user && (null != user.getDeleted() && user.getDeleted() > 0L)) {
                 // Deleted user
-                glide.load(R.drawable.tap_ic_deleted_user).into(civAvatar);
-                civAvatar.setBackgroundColor(itemView.getResources().getColor(R.color.tapTransparentBlack40));
+                glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
             } else if (null != user  && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {

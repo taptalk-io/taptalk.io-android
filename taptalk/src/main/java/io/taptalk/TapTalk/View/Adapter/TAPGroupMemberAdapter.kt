@@ -103,8 +103,7 @@ class TAPGroupMemberAdapter(cellMode: Int, members: List<TAPUserModel>, adminLis
             // Load member avatar
             if (null != item?.deleted && item.deleted!! > 0L) {
                 // Deleted user
-                Glide.with(itemView.context).load(R.drawable.tap_ic_deleted_user).into(civAvatar)
-                civAvatar.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.tapTransparentBlack40))
+                Glide.with(itemView.context).load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar)
                 ImageViewCompat.setImageTintList(civAvatar, null)
                 tvAvatarLabel.visibility = View.GONE
             } else if (item?.imageURL?.thumbnail.isNullOrEmpty()) {

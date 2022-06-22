@@ -153,6 +153,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Group;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -892,8 +893,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else if (null != vm.getRoom() &&
                 TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
                 (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)) {
-            glide.load(R.drawable.tap_ic_deleted_user).into(civRoomImage);
-            civRoomImage.setBackgroundColor(getResources().getColor(R.color.tapTransparentBlack40));
+            glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civRoomImage);
             ImageViewCompat.setImageTintList(civRoomImage, null);
             tvRoomImageLabel.setVisibility(View.GONE);
         } else if (null != vm.getRoom() &&
