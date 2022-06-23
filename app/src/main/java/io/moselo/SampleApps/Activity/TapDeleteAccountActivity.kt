@@ -40,6 +40,14 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
                     .show()
             }
         }
+        iv_button_back.setOnClickListener {
+            onBackPressed()
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_right)
     }
 
     companion object {
