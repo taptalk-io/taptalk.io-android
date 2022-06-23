@@ -419,5 +419,6 @@
     <string name="tap_wording_delete_account">You will delete all your account information, contacts and messages in TapTalk permanently. Are you sure you want to continue?</string>
     <string name="tap_delete">Delete</string>
     <string name="tap_why_delete_account">Why are you deleting your account? (Optional)</string>
+    <string name="tap_verification">Verification</string>
 
 </resources>
