@@ -15,7 +15,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import io.moselo.SampleApps.Activity.TAPLoginActivity
 import io.moselo.SampleApps.Activity.TAPRegisterActivity
-import io.moselo.SampleApps.Activity.TapDevLandingActivity
+import io.moselo.SampleApps.Activity.TapDeleteAccountActivity
 import io.taptalk.TapTalk.API.Api.TAPApiManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
 import io.taptalk.TapTalk.Helper.TAPUtils
@@ -32,7 +32,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity
-import io.taptalk.TapTalkSample.BuildConfig
 import io.taptalk.TapTalkSample.R
 import kotlinx.android.synthetic.main.tap_fragment_login_verification.*
 
@@ -53,6 +52,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     var isFromBtnSendViaSMS = false //to check for update UI if call otp request from button send via sms
     var channel = "sms" //to check channel otp type sended
     var isTimerFinished = false; //to check if timer already finished
+    var otpType = LOGIN
 
     companion object {
         //Arguments Data
@@ -65,6 +65,9 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         val kCountryFlagUrl = "CountryFlagUrl"
         val kChannel = "Channel"
         val kWaitTime = "kWaitTime"
+        val kType = "kType"
+        const val LOGIN = "loginType"
+        const val VERIFICATION = "verificationType"
 
         fun getInstance(otpID: Long, otpKey: String, phoneNumber: String, phoneNumberWithCode: String, countryID: Int, countryCallingCode: String, countryFlagUrl: String, channel: String, waitTime: Int): TAPLoginVerificationFragment {
             val instance = TAPLoginVerificationFragment()
@@ -78,6 +81,14 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             args.putString(kCountryFlagUrl, countryFlagUrl)
             args.putString(kChannel, channel)
             args.putLong(kWaitTime, waitTime * 1000L)
+            instance.arguments = args
+            return instance
+        }
+
+        fun getInstance(type: String): TAPLoginVerificationFragment {
+            val instance = TAPLoginVerificationFragment()
+            val args = Bundle()
+            args.putString(kType, type)
             instance.arguments = args
             return instance
         }
@@ -114,6 +125,12 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         countryCallingCode = arguments?.getString(kCountryCallingCode, "") ?: ""
         countryFlagUrl = arguments?.getString(kCountryFlagUrl, "") ?: ""
         waitTime = arguments?.getLong(kWaitTime, 30L * 1000) ?: 30L * 1000
+        otpType = arguments?.getString(kType, LOGIN) ?: LOGIN
+        if (otpType == VERIFICATION) {
+            tv_toolbar_title.visibility = View.VISIBLE
+        } else {
+            tv_toolbar_title.visibility = View.GONE
+        }
         setTextandImageBasedOnOTPMethod(channel)
 
         TAPUtils.animateClickButton(iv_back_button, 0.95f)
@@ -128,69 +145,114 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         ll_request_otp_again.setOnClickListener {
             showRequestingOTPLoading()
             hideBtnSendViaSMS()
-            TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(countryID, phoneNumber, channel, object : TAPDefaultDataView<TAPLoginOTPResponse>() {
-                override fun onSuccess(response: TAPLoginOTPResponse) {
-                    super.onSuccess(response)
-                    et_otp_code.isEnabled = true
-                    val additional = HashMap<String, String>()
-                    additional.put("phoneNumber", phoneNumber)
-                    additional.put("countryCode", countryID.toString())
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Resend OTP Success", additional)
-                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds, response.whatsAppFailureReason)
-                }
+            if (otpType == LOGIN) {
+                TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                    .requestOTPLogin(
+                        countryID,
+                        phoneNumber,
+                        channel,
+                        object : TAPDefaultDataView<TAPLoginOTPResponse>() {
+                            override fun onSuccess(response: TAPLoginOTPResponse) {
+                                super.onSuccess(response)
+                                et_otp_code.isEnabled = true
+                                val additional = HashMap<String, String>()
+                                additional.put("phoneNumber", phoneNumber)
+                                additional.put("countryCode", countryID.toString())
+                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                                    .trackEvent("Resend OTP Success", additional)
+                                requestOTPInterface.onRequestSuccess(
+                                    response.otpID,
+                                    response.otpKey,
+                                    response.phoneWithCode,
+                                    response.isSuccess,
+                                    response.channel,
+                                    response.message,
+                                    response.nextRequestSeconds,
+                                    response.whatsAppFailureReason
+                                )
+                            }
 
-                override fun onError(error: TAPErrorModel) {
-                    super.onError(error)
-                    et_otp_code.isEnabled = true
-                    val additional = HashMap<String, String>()
-                    additional.put("phoneNumber", phoneNumber)
-                    additional.put("countryCode", countryID.toString())
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Resend OTP Failed", additional)
-                    requestOTPInterface.onRequestFailed(error.message, error.code)
-                }
+                            override fun onError(error: TAPErrorModel) {
+                                super.onError(error)
+                                et_otp_code.isEnabled = true
+                                val additional = HashMap<String, String>()
+                                additional.put("phoneNumber", phoneNumber)
+                                additional.put("countryCode", countryID.toString())
+                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                                    .trackEvent("Resend OTP Failed", additional)
+                                requestOTPInterface.onRequestFailed(error.message, error.code)
+                            }
 
-                override fun onError(errorMessage: String) {
-                    et_otp_code.isEnabled = true
-                    requestOTPInterface.onRequestFailed(errorMessage, "400")
-                }
-            })
+                            override fun onError(errorMessage: String) {
+                                et_otp_code.isEnabled = true
+                                requestOTPInterface.onRequestFailed(errorMessage, "400")
+                            }
+                        })
+            } else {
+                // TODO: 23/06/22 add verification API MU
+            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ll_btn_send_via_sms.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_border_ripple)
+            ll_btn_send_via_sms.background = ContextCompat.getDrawable(requireContext(), R.drawable.tap_bg_button_border_ripple)
         }
 
         ll_btn_send_via_sms.setOnClickListener {
             isFromBtnSendViaSMS = true
             showPopupLoading(getString(R.string.tap_loading))
             showRequestingOTPLoading()
-            TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestOTPLogin(countryID, phoneNumber, "sms", object : TAPDefaultDataView<TAPLoginOTPResponse>() {
-                override fun onSuccess(response: TAPLoginOTPResponse) {
-                    et_otp_code.isEnabled = true
-                    val additional = HashMap<String, String>()
-                    additional.put("phoneNumber", phoneNumberWithCode)
-                    additional.put("countryCode", countryID.toString())
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Request OTP Success", additional)
-                    super.onSuccess(response)
-                    requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds, response.whatsAppFailureReason)
-                }
+            if (otpType == LOGIN) {
+                TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                    .requestOTPLogin(
+                        countryID,
+                        phoneNumber,
+                        "sms",
+                        object : TAPDefaultDataView<TAPLoginOTPResponse>() {
+                            override fun onSuccess(response: TAPLoginOTPResponse) {
+                                et_otp_code.isEnabled = true
+                                val additional = HashMap<String, String>()
+                                additional.put("phoneNumber", phoneNumberWithCode)
+                                additional.put("countryCode", countryID.toString())
+                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                                    .trackEvent("Request OTP Success", additional)
+                                super.onSuccess(response)
+                                requestOTPInterface.onRequestSuccess(
+                                    response.otpID,
+                                    response.otpKey,
+                                    response.phoneWithCode,
+                                    response.isSuccess,
+                                    response.channel,
+                                    response.message,
+                                    response.nextRequestSeconds,
+                                    response.whatsAppFailureReason
+                                )
+                            }
 
-                override fun onError(error: TAPErrorModel) {
-                    et_otp_code.isEnabled = true
-                    super.onError(error)
-                    val additional = HashMap<String, String>()
-                    additional.put("phoneNumber", phoneNumberWithCode)
-                    additional.put("countryCode", countryID.toString())
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Request OTP Failed", error.code, error.message, additional)
-                    requestOTPInterface.onRequestFailed(error.message, error.code)
-                }
+                            override fun onError(error: TAPErrorModel) {
+                                et_otp_code.isEnabled = true
+                                super.onError(error)
+                                val additional = HashMap<String, String>()
+                                additional.put("phoneNumber", phoneNumberWithCode)
+                                additional.put("countryCode", countryID.toString())
+                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                                    .trackErrorEvent(
+                                        "Request OTP Failed",
+                                        error.code,
+                                        error.message,
+                                        additional
+                                    )
+                                requestOTPInterface.onRequestFailed(error.message, error.code)
+                            }
 
-                override fun onError(errorMessage: String?) {
-                    et_otp_code.isEnabled = true
-                    super.onError(errorMessage)
-                    requestOTPInterface.onRequestFailed(errorMessage, "400")
-                }
-            })
+                            override fun onError(errorMessage: String?) {
+                                et_otp_code.isEnabled = true
+                                super.onError(errorMessage)
+                                requestOTPInterface.onRequestFailed(errorMessage, "400")
+                            }
+                        })
+            } else {
+                // TODO: 23/06/22 add verification API MU
+            }
         }
     }
 
@@ -260,7 +322,11 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun setupTimer() {
-        val lastLoginTimestamp = (activity as TAPLoginActivity).vm.lastLoginTimestamp
+        val lastLoginTimestamp =
+            when (otpType) {
+                LOGIN -> (activity as TAPLoginActivity).vm.lastLoginTimestamp
+                else -> (activity as TapDeleteAccountActivity).vm.lastLoginTimestamp
+            }
         if (0L != lastLoginTimestamp && (System.currentTimeMillis() - lastLoginTimestamp) < waitTime) {
             // Resume timer with remaining time
             showTimer()
@@ -318,8 +384,13 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         }.start()
 
         if (this.waitTime == waitTime) {
-            (activity as TAPLoginActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
-            (activity as TAPLoginActivity).vm.waitTimeRequestOtp = (waitTime / 1000).toInt()
+            if (otpType == LOGIN) {
+                (activity as TAPLoginActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
+                (activity as TAPLoginActivity).vm.waitTimeRequestOtp = (waitTime / 1000).toInt()
+            } else {
+                (activity as TapDeleteAccountActivity).vm.lastLoginTimestamp = System.currentTimeMillis()
+                (activity as TapDeleteAccountActivity).vm.waitTimeRequestOtp = (waitTime / 1000).toInt()
+            }
         }
 
         if (isTimerFinished) {
@@ -333,46 +404,70 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
     private fun verifyOTP() {
         showVerifyingOTPLoading()
-        TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).verifyOTPLogin(otpID, otpKey, et_otp_code.text.toString(), object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
-            override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
-                et_otp_code.isEnabled = true
-                if (response.isRegistered) {
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success")
-                    TapTalk.authenticateWithAuthTicket((activity as TAPBaseActivity).instanceKey, response.ticket, true, object : TapCommonListener() {
-                        override fun onSuccess(successMessage: String) {
-                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
-                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Authenticate TapTalk.io Success")
-                            verifyOTPInterface.verifyOTPSuccessToLogin()
+        if (otpType == LOGIN) {
+            TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).verifyOTPLogin(
+                otpID,
+                otpKey,
+                et_otp_code.text.toString(),
+                object : TAPDefaultDataView<TAPLoginOTPVerifyResponse>() {
+                    override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
+                        et_otp_code.isEnabled = true
+                        if (response.isRegistered) {
+                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                                .identifyUser()
+                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                                .trackEvent("Login Success")
+                            TapTalk.authenticateWithAuthTicket(
+                                (activity as TAPBaseActivity).instanceKey,
+                                response.ticket,
+                                true,
+                                object : TapCommonListener() {
+                                    override fun onSuccess(successMessage: String) {
+                                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                                            .identifyUser()
+                                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                                            .trackEvent("Authenticate TapTalk.io Success")
+                                        verifyOTPInterface.verifyOTPSuccessToLogin()
+                                    }
+
+                                    override fun onError(errorCode: String, errorMessage: String) {
+                                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                                            .trackErrorEvent(
+                                                "Authenticate TapTalk.io Failed",
+                                                errorCode,
+                                                errorMessage
+                                            )
+                                        verifyOTPInterface.verifyOTPFailed(errorCode, errorMessage)
+                                    }
+                                })
+                        } else {
+                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                                .trackEvent("Login Success and Continue Register")
+                            verifyOTPInterface.verifyOTPSuccessToRegister()
                         }
 
-                        override fun onError(errorCode: String, errorMessage: String) {
-                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Authenticate TapTalk.io Failed", errorCode, errorMessage)
-                            verifyOTPInterface.verifyOTPFailed(errorCode, errorMessage)
-                        }
-                    })
-                } else {
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success and Continue Register")
-                    verifyOTPInterface.verifyOTPSuccessToRegister()
-                }
+                    }
 
-            }
+                    override fun onError(error: TAPErrorModel) {
+                        et_otp_code.isEnabled = true
+                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                            .trackErrorEvent("Login Failed", error.code, error.message)
+                        verifyOTPInterface.verifyOTPFailed(error.message, error.code)
+                    }
 
-            override fun onError(error: TAPErrorModel) {
-                et_otp_code.isEnabled = true
-                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Login Failed", error.code, error.message)
-                verifyOTPInterface.verifyOTPFailed(error.message, error.code)
-            }
-
-            override fun onError(errorMessage: String) {
-                et_otp_code.isEnabled = true
-                verifyOTPInterface.verifyOTPFailed(errorMessage, "400")
-            }
-        })
+                    override fun onError(errorMessage: String) {
+                        et_otp_code.isEnabled = true
+                        verifyOTPInterface.verifyOTPFailed(errorMessage, "400")
+                    }
+                })
+        } else {
+            // TODO: 23/06/22 add verify API MU
+        }
     }
 
     private val verifyOTPInterface = object : TAPVerifyOTPInterface {
         override fun verifyOTPSuccessToLogin() {
+            // TODO: 23/06/22 Add check delay MU 
             TAPApiManager.getInstance((activity as TAPBaseActivity).instanceKey).isLoggedOut = false
             activity?.runOnUiThread {
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveMyCountryCode(countryCallingCode)
@@ -594,7 +689,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             tv_method_and_phonenumber.text = String.format(getString(R.string.tap_format_ss_to), getString(R.string.tap_whatsapp), phoneNumberWithCode)
         } else {
             iv_otp_method.setImageResource(R.drawable.tap_ic_sms_orange)
-            iv_otp_method.setColorFilter(ContextCompat.getColor(context!!, R.color.tapBlack19))
+            iv_otp_method.setColorFilter(ContextCompat.getColor(requireContext(), R.color.tapBlack19))
             tv_method_and_phonenumber.text = String.format(getString(R.string.tap_format_ss_to), getString(R.string.tap_sms), phoneNumberWithCode)
             hideBtnSendViaSMS()
         }
@@ -602,7 +697,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
     private fun showPopupLoading(message: String) {
         activity?.runOnUiThread {
-            popup_loading.findViewById<ImageView>(R.id.iv_loading_image).setImageDrawable(ContextCompat.getDrawable(context!!, R.drawable.tap_ic_loading_progress_circle_white))
+            popup_loading.findViewById<ImageView>(R.id.iv_loading_image).setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.tap_ic_loading_progress_circle_white))
             if (null == popup_loading.findViewById<ImageView>(R.id.iv_loading_image).animation)
                 TAPUtils.rotateAnimateInfinitely(context, popup_loading.findViewById<ImageView>(R.id.iv_loading_image))
             popup_loading.findViewById<TextView>(R.id.tv_loading_text)?.text = message

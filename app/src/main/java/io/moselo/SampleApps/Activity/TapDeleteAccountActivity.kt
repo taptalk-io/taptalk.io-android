@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.tap_activity_delete_account.*
 
 class TapDeleteAccountActivity : TAPBaseActivity() {
 
-    private val viewModel : TapDeleteAccountViewModel by lazy {
+    val vm : TapDeleteAccountViewModel by lazy {
         ViewModelProvider(this)[TapDeleteAccountViewModel::class.java]
     }
 
@@ -78,9 +78,11 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
             }
             false
         }
+
         cb_agree.setOnCheckedChangeListener { _, isChecked ->
             btn_delete.isEnabled = isChecked
         }
+
         btn_delete.setOnClickListener {
             // TODO: 22/06/22 call check state api MU
             // TODO: 22/06/22 for testing purposes only MU
@@ -98,23 +100,36 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
                     .setMessage(getString(R.string.tap_wording_delete_account))
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setPrimaryButtonTitle(getString(R.string.tap_delete))
-                    .setPrimaryButtonListener { /* TODO: move to otp verification MU */ }
+                    .setPrimaryButtonListener {
+                        showOTPVerification()
+                    }
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                     .setSecondaryButtonListener {  }
                     .show()
             }
         }
+
         iv_button_back.setOnClickListener {
             onBackPressed()
         }
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        overridePendingTransition(io.taptalk.TapTalk.R.anim.tap_stay, io.taptalk.TapTalk.R.anim.tap_slide_right)
+        if (supportFragmentManager.fragments.isEmpty()) {
+            super.onBackPressed()
+            overridePendingTransition(
+                io.taptalk.TapTalk.R.anim.tap_stay,
+                io.taptalk.TapTalk.R.anim.tap_slide_right
+            )
+        } else {
+            hideOTPVerification()
+        }
     }
 
     private fun showOTPVerification() {
+        cl_action_bar.visibility = View.GONE
+        sv_delete_account.visibility = View.GONE
+        fl_container.visibility = View.VISIBLE
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(
                 R.animator.tap_slide_left_fragment,
@@ -124,13 +139,16 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
             )
             .replace(
                 R.id.fl_container,
-                TAPLoginVerificationFragment.getInstance()
+                TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION)
             )
             .addToBackStack(VERIFICATION_TAG)
             .commit()
     }
 
     private fun hideOTPVerification() {
+        cl_action_bar.visibility = View.VISIBLE
+        sv_delete_account.visibility = View.VISIBLE
+        fl_container.visibility = View.GONE
         supportFragmentManager.popBackStack(VERIFICATION_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 }
