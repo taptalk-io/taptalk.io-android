@@ -821,4 +821,10 @@
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="tapInfoBoldLabelSubtitleStyle" parent="tapFontFamilyBold">
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:textColor">@color/tapInfoLabelSubtitleColor</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>
