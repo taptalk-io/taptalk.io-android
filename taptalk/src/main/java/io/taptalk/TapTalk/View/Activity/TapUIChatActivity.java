@@ -2048,26 +2048,32 @@ public class TapUIChatActivity extends TAPBaseActivity {
             case DEFAULT:
             case HOLD_RECORD:
             case LOCKED_RECORD:
-                stopRecording();
                 if (!messageAdapter.lastLocalId.isEmpty()) {
                     messageAdapter.removePlayer();
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(messageAdapter.lastLocalId)));
                 }
-                vm.setAudioFile(audioManager.getRecording());
-                MediaScannerConnection.scanFile(
-                        TapUIChatActivity.this,
-                        new String[]{audioManager.getRecording().getAbsolutePath()}, null,
-                        (s, uri) -> {
-                            try {
-                                Log.v("onScanCompleted", uri.getPath());
-                                vm.setVoiceUri(uri);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        });
-                setFinishedRecordingState();
-                setSendButtonEnabled();
+                showFinishedRecording();
                 break;
+        }
+    }
+
+    private void showFinishedRecording() {
+        if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD) {
+            stopRecording();
+            vm.setAudioFile(audioManager.getRecording());
+            MediaScannerConnection.scanFile(
+                    TapUIChatActivity.this,
+                    new String[]{audioManager.getRecording().getAbsolutePath()}, null,
+                    (s, uri) -> {
+                        try {
+                            Log.v("onScanCompleted", uri.getPath());
+                            vm.setVoiceUri(uri);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+            setFinishedRecordingState();
+            setSendButtonEnabled();
         }
     }
 
@@ -3783,6 +3789,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case PlayPauseVoiceNote:
+                    showFinishedRecording();
                     TAPMessageModel voiceMessage = intent.getParcelableExtra(MESSAGE);
                     boolean isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
                     if (isPlaying) {
