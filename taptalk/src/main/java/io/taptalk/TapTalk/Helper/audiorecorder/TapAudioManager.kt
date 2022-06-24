@@ -209,9 +209,9 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
 
 
     private fun resetTimer() {
+        updateDisplay()
         timer = Timer()
         recordingTime = 0
-        recordingTimeString.postValue("00:00")
     }
 
     private fun updateDisplay(){
