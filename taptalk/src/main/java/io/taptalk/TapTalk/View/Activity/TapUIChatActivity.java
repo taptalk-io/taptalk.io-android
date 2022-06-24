@@ -153,7 +153,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Group;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -4961,6 +4960,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         hideQuoteLayout();
         hideKeyboards();
         etChat.setText("");
+        rvMessageList.disableSwipe();
     }
 
     private void hideSelectState() {
@@ -4970,6 +4970,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
         vm.clearSelectedMessages();
         messageAdapter.notifyDataSetChanged();
+        rvMessageList.enableSwipe();
     }
 
     private void forwardMessages() {
