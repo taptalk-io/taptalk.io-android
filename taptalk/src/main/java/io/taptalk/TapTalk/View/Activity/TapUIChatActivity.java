@@ -4958,6 +4958,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
         tvForwardCount.setText(forwardCountText);
         messageAdapter.notifyDataSetChanged();
+        hideQuoteLayout();
+        hideKeyboards();
+        etChat.setText("");
     }
 
     private void hideSelectState() {
