@@ -1071,7 +1071,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
         ivForward.setOnClickListener(v -> forwardMessages());
 
-        if (TapUI.getInstance().isSendVoiceNoteMenuEnabled()) {
+        if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
                 showTooltip();
             });
