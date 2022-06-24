@@ -38,6 +38,7 @@ class TAPSwipeReplyCallback(
     private var swipeBack = false
     private var isVibrate = false
     private var startTracking = false
+    var isSwipeEnabled = true
 
     interface SwipeReplyInterface {
         fun onItemSwiped(position: Int)
@@ -234,4 +235,9 @@ class TAPSwipeReplyCallback(
         DrawableCompat.setTintList(imageDrawable, ColorStateList.valueOf(
                 ContextCompat.getColor(context, R.color.tapColorPrimaryIcon)))
     }
+
+    override fun isItemViewSwipeEnabled(): Boolean {
+        return isSwipeEnabled
+    }
+
 }

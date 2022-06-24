@@ -16,6 +16,7 @@ public class TAPChatRecyclerView extends RecyclerView {
     public String instanceKey;
 
     private ItemTouchHelper swipeHelper;
+    private TAPSwipeReplyCallback swipeReplyCallback;
     private int oldHeight;
 
     public TAPChatRecyclerView(Context context) {
@@ -52,8 +53,17 @@ public class TAPChatRecyclerView extends RecyclerView {
     }
 
     public void setupSwipeHelper(Context context, TAPSwipeReplyCallback.SwipeReplyInterface swipeReplyInterface) {
-        swipeHelper = new ItemTouchHelper(new TAPSwipeReplyCallback(instanceKey, context, swipeReplyInterface));
+        swipeReplyCallback = new TAPSwipeReplyCallback(instanceKey, context, swipeReplyInterface);
+        swipeHelper = new ItemTouchHelper(swipeReplyCallback);
         swipeHelper.attachToRecyclerView(this);
+    }
+
+    public void disableSwipe() {
+        swipeReplyCallback.setSwipeEnabled(false);
+    }
+
+    public void enableSwipe() {
+        swipeReplyCallback.setSwipeEnabled(true);
     }
 
     @SuppressLint("ClickableViewAccessibility")
