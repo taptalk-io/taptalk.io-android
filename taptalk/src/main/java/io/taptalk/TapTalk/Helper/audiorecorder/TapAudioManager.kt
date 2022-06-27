@@ -42,6 +42,7 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
     private var timer = Timer()
     private var mediaPlayer: MediaPlayer? = MediaPlayer()
     private var previousDuration = 0
+    var isRecordingState = false
     private val recordingTimeString = MutableLiveData<String>()
 
     init {
@@ -88,6 +89,7 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
             mediaRecorder?.prepare()
             mediaRecorder?.start()
             startTimer()
+            isRecordingState = true
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         } catch (e: IOException) {
@@ -98,6 +100,7 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
 
     @SuppressLint("RestrictedApi")
     fun stopRecording(){
+        isRecordingState = false
         mediaRecorder?.stop()
         mediaRecorder?.release()
         mediaRecorder = null
