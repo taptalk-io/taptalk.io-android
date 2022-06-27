@@ -2059,21 +2059,25 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void showFinishedRecording() {
         if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD) {
-            stopRecording();
-            vm.setAudioFile(audioManager.getRecording());
-            MediaScannerConnection.scanFile(
-                    TapUIChatActivity.this,
-                    new String[]{audioManager.getRecording().getAbsolutePath()}, null,
-                    (s, uri) -> {
-                        try {
-                            Log.v("onScanCompleted", uri.getPath());
-                            vm.setVoiceUri(uri);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
-            setFinishedRecordingState();
-            setSendButtonEnabled();
+            if (audioManager.getRecordingSeconds() < 1) {
+                removeRecording();
+            } else {
+                stopRecording();
+                vm.setAudioFile(audioManager.getRecording());
+                MediaScannerConnection.scanFile(
+                        TapUIChatActivity.this,
+                        new String[]{audioManager.getRecording().getAbsolutePath()}, null,
+                        (s, uri) -> {
+                            try {
+                                Log.v("onScanCompleted", uri.getPath());
+                                vm.setVoiceUri(uri);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+                setFinishedRecordingState();
+                setSendButtonEnabled();
+            }
         }
     }
 
