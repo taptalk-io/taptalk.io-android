@@ -56,6 +56,7 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
         }
         mediaPlayer?.setOnCompletionListener {
             stopTimer()
+            updateDisplay()
             resetTimer()
             it.release()
             mediaPlayer = null
@@ -101,10 +102,16 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
     @SuppressLint("RestrictedApi")
     fun stopRecording(){
         isRecordingState = false
-        mediaRecorder?.stop()
-        mediaRecorder?.release()
+        try {
+            mediaRecorder?.stop()
+            mediaRecorder?.release()
+        } catch (e: java.lang.IllegalStateException) {
+            e.printStackTrace()
+        }
+
         mediaRecorder = null
         stopTimer()
+        updateDisplay()
         resetTimer()
 
         initRecorder()
@@ -156,6 +163,7 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
 
     fun deleteRecording(context: Context) {
         // Delete file from TapTalk folder
+        recordingTimeString.postValue("00:00")
         MediaScannerConnection.scanFile(context, arrayOf(outputFile.absolutePath), null
         ) { _, uri ->
             Log.i("onScanCompleted", uri.path.orEmpty())
@@ -212,7 +220,6 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
 
 
     private fun resetTimer() {
-        updateDisplay()
         timer = Timer()
         recordingTime = 0
     }
@@ -225,6 +232,8 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
     }
 
     fun getRecordingTime() = recordingTimeString
+
+    fun getRecordingSeconds() = recordingTime % 60
 
     fun getRecording() = outputFile
 
