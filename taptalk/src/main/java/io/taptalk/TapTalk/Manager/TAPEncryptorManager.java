@@ -113,7 +113,6 @@ public class TAPEncryptorManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.e(">>>>>>>", "encryptMessage encryptedMessageMap: " + TAPUtils.toJsonString(encryptedMessageMap));
         return encryptedMessageMap;
     }
 

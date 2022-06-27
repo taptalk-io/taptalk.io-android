@@ -455,6 +455,29 @@ public class TapCoreMessageManager {
         TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(room, listener);
     }
 
+    public void sendForwardedMessageToMultipleRooms(TAPMessageModel messageToForward, List<TAPRoomModel> rooms, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        ArrayList<TAPMessageModel> messagesToForward = new ArrayList<>();
+        messagesToForward.add(messageToForward);
+        for (TAPRoomModel room : rooms) {
+            TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), messagesToForward, TAPDefaultConstant.QuoteAction.FORWARD);
+            TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(room, listener);
+        }
+    }
+
+    public void sendForwardedMessagesToMultipleRooms(List<TAPMessageModel> messagesToForward, List<TAPRoomModel> rooms, TapCoreSendMessageListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        ArrayList<TAPMessageModel> messages = new ArrayList<>(messagesToForward);
+        for (TAPRoomModel room : rooms) {
+            TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), messages, TAPDefaultConstant.QuoteAction.FORWARD);
+            TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(room, listener);
+        }
+    }
+
     public TAPMessageModel constructTapTalkMessageModel(String messageBody, TAPRoomModel room, Integer type, @Nullable HashMap<String, Object> messageData) {
         if (!TapTalk.checkTapTalkInitialized()) {
             return null;
