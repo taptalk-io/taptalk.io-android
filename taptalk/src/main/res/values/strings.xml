@@ -404,7 +404,7 @@
     <string name="tap_selected">Selected</string>
     <string name="tap_forward_sf_messages">Forward %d Messages</string>
     <string name="tap_delete_my_account">Delete My Account</string>
-    <string name="tap_thank_you_using_taptalk">Thank you for using TapTalk!</string>
+    <string name="tap_thank_you_using_taptalk">Thank you for using TapTalk.io!</string>
     <string name="tap_deleting_your_account">Deleting your account means:</string>
     <string name="tap_dot">•</string>
     <string name="tap_wording_delete_account1">Delete your account info and profile photo from TapTalk.</string>
