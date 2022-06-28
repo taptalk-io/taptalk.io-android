@@ -87,6 +87,7 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
 
         try {
             println("Starting recording!")
+            recordingTimeString.postValue("00:00")
             mediaRecorder?.prepare()
             mediaRecorder?.start()
             startTimer()
@@ -115,50 +116,6 @@ class TapAudioManager(val instanceKey: String, val listener: TapAudioListener) {
         resetTimer()
 
         initRecorder()
-    }
-
-
-    @TargetApi(Build.VERSION_CODES.N)
-    @SuppressLint("RestrictedApi")
-    fun pauseRecording(){
-        // TODO: 25/04/22 change to pause player MU
-        if (mediaPlayer != null) {
-            mediaPlayer!!.pause()
-            stopTimer()
-            previousDuration = mediaPlayer!!.currentPosition
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.N)
-    @SuppressLint("RestrictedApi")
-    fun resumeRecording(context: Context, file: File){
-        // TODO: 25/04/22 change to resume player MU
-        if (mediaPlayer == null) {
-            initPlayer()
-        } else if (mediaPlayer!!.isPlaying) {
-            mediaPlayer?.stop()
-            resetTimer()
-        }
-        MediaScannerConnection.scanFile(context, arrayOf(file.absolutePath), null
-        ) { _, uri ->
-            Log.i("onScanCompleted", uri.path.orEmpty())
-            try {
-                println("Starting playing!")
-                mediaPlayer.apply {
-                    this?.setAudioStreamType(AudioManager.STREAM_MUSIC)
-                    this?.setDataSource(context, uri)
-                    this?.prepare()
-                    this?.seekTo(previousDuration)
-                    this?.start()
-                }
-//                timer = Timer()
-                startTimer()
-            } catch (e: IllegalStateException) {
-                e.printStackTrace()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
     }
 
     fun deleteRecording(context: Context) {
