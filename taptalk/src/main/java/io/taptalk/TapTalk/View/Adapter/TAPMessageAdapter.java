@@ -3519,4 +3519,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             bubbleArea.setVisibility(View.GONE);
         }
     }
+
+    public String getLastLocalId() {
+        return lastLocalId;
+    }
 }
