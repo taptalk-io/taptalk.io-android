@@ -15,6 +15,10 @@ public class TAPOTPRequest {
         this.channel = channel;
     }
 
+    public TAPOTPRequest(String channel) {
+        this.channel = channel;
+    }
+
     public TAPOTPRequest() {
     }
 

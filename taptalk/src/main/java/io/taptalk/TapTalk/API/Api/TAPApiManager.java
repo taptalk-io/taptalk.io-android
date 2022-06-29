@@ -651,4 +651,9 @@ public class TAPApiManager {
     public void getUnreadRoomIds(Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
         execute(homingPigeon.getUnreadRoomIds(), subscriber);
     }
+
+    public void requestDeleteAccountOtp(String channel, Subscriber<TAPBaseResponse<TAPOTPResponse>> subscriber) {
+        TAPOTPRequest request = new TAPOTPRequest(channel);
+        execute(homingPigeon.requestDeleteAccountOtp(request), subscriber);
+    }
 }

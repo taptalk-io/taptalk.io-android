@@ -1433,4 +1433,8 @@ public class TAPDataManager {
     public void getUnreadRoomIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
         TAPApiManager.getInstance(instanceKey).getUnreadRoomIds(new TAPDefaultSubscriber<>(view));
     }
+
+    public void requestDeleteAccountOtp(String channel, TAPDefaultDataView<TAPOTPResponse> view) {
+        TAPApiManager.getInstance(instanceKey).requestDeleteAccountOtp(channel, new TAPDefaultSubscriber<>(view));
+    }
 }
