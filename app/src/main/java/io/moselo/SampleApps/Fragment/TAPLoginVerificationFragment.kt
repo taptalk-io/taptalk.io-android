@@ -25,6 +25,7 @@ import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
 import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.AnalyticsManager
+import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse
@@ -85,10 +86,13 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             return instance
         }
 
-        fun getInstance(type: String): TAPLoginVerificationFragment {
+        fun getInstance(type: String, phoneNumberWithCode: String?, waitTime: Int, note: String?): TAPLoginVerificationFragment {
             val instance = TAPLoginVerificationFragment()
             val args = Bundle()
+            args.putString(kPhoneNumberWithCode, phoneNumberWithCode)
             args.putString(kType, type)
+            args.putString(kChannel, "whatsapp")
+            args.putLong(kWaitTime, waitTime * 1000L)
             instance.arguments = args
             return instance
         }

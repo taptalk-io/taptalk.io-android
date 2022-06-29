@@ -21,6 +21,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
@@ -113,23 +114,23 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
         }
     }
 
-    private fun showOTPVerification() {
+    private fun showOTPVerification(waitTime: Int) {
         cl_action_bar.visibility = View.GONE
         sv_delete_account.visibility = View.GONE
         fl_container.visibility = View.VISIBLE
-//        supportFragmentManager.beginTransaction()
-//            .setCustomAnimations(
-//                R.animator.tap_slide_left_fragment,
-//                R.animator.tap_fade_out_fragment,
-//                R.animator.tap_fade_in_fragment,
-//                R.animator.tap_slide_right_fragment
-//            )
-//            .replace(
-//                R.id.fl_container,
-//                TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, et_note.text.toString())
-//            )
-//            .addToBackStack(VERIFICATION_TAG)
-//            .commit()
+        supportFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.animator.tap_slide_left_fragment,
+                R.animator.tap_fade_out_fragment,
+                R.animator.tap_fade_in_fragment,
+                R.animator.tap_slide_right_fragment
+            )
+            .replace(
+                R.id.fl_container,
+                TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, waitTime, et_note.text.toString())
+            )
+            .addToBackStack(VERIFICATION_TAG)
+            .commit()
     }
 
     private fun hideOTPVerification() {
@@ -184,7 +185,7 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setPrimaryButtonTitle(getString(R.string.tap_delete))
                     .setPrimaryButtonListener {
-                        showOTPVerification()
+                        TAPDataManager.getInstance(instanceKey).requestDeleteAccountOtp("whatsapp", requestOtpView)
                     }
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                     .setSecondaryButtonListener {  }
@@ -198,6 +199,36 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
                     .setPrimaryButtonListener {  }
                     .show()
             }
+        }
+
+        override fun onError(error: TAPErrorModel?) {
+            super.onError(error)
+            endLoading()
+            showErrorDialog(error?.message)
+        }
+
+        override fun onError(errorMessage: String?) {
+            super.onError(errorMessage)
+            endLoading()
+            showErrorDialog(errorMessage)
+        }
+    }
+
+    private val requestOtpView = object : TAPDefaultDataView<TAPOTPResponse>() {
+        override fun startLoading() {
+            super.startLoading()
+            showLoading()
+        }
+
+        override fun endLoading() {
+            super.endLoading()
+            hideLoading()
+
+        }
+
+        override fun onSuccess(response: TAPOTPResponse?) {
+            super.onSuccess(response)
+            showOTPVerification(response?.nextRequestSeconds ?: 30)
         }
 
         override fun onError(error: TAPErrorModel?) {
