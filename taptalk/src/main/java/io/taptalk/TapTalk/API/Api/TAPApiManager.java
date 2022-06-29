@@ -42,7 +42,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPOTPRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
@@ -70,7 +70,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
@@ -282,8 +282,8 @@ public class TAPApiManager {
         execute(homingPigeon.getAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getAuthTicket()), subscriber);
     }
 
-    public void requestOTPLogin(String loginMethod, int countryID, String phone, String channel, Subscriber<TAPBaseResponse<TAPLoginOTPResponse>> subscriber) {
-        TAPLoginOTPRequest request = new TAPLoginOTPRequest(loginMethod, countryID, phone, channel);
+    public void requestOTPLogin(String loginMethod, int countryID, String phone, String channel, Subscriber<TAPBaseResponse<TAPOTPResponse>> subscriber) {
+        TAPOTPRequest request = new TAPOTPRequest(loginMethod, countryID, phone, channel);
         execute(homingPigeon.requestOTPLogin(request), subscriber);
     }
 

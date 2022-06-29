@@ -46,7 +46,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
@@ -60,7 +60,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
@@ -1108,7 +1107,7 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).getAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void requestOTPLogin(int countryID, String phone, String channel, TAPDefaultDataView<TAPLoginOTPResponse> view) {
+    public void requestOTPLogin(int countryID, String phone, String channel, TAPDefaultDataView<TAPOTPResponse> view) {
         TAPApiManager.getInstance(instanceKey).requestOTPLogin("phone", countryID, phone, channel, new TAPDefaultSubscriber<>(view));
     }
 
