@@ -193,7 +193,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                             }
                         })
             } else {
-                // TODO: 23/06/22 add verification API MU
+                requestDeleteAccountOtp(channel)
             }
         }
 
@@ -255,7 +255,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                             }
                         })
             } else {
-                // TODO: 23/06/22 add verification API MU
+                requestDeleteAccountOtp("sms")
             }
         }
     }
@@ -263,11 +263,13 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     private val requestOTPInterface: TAPRequestOTPInterface = object : TAPRequestOTPInterface {
         override fun onRequestSuccess(otpID: Long, otpKey: String?, phone: String?, succeess: Boolean, channel: String, message: String, nextRequestSeconds: Int, whatsAppFailureReason: String) {
             if (succeess) {
-                val loginActivity = activity as TAPLoginActivity
+                if (otpType == LOGIN) {
+                    val loginActivity = activity as TAPLoginActivity
+                    loginActivity.vm.otpID = otpID
+                    loginActivity.vm.otpKey = otpKey
+                }
                 this@TAPLoginVerificationFragment.otpID = otpID
-                loginActivity.vm.otpID = otpID
                 this@TAPLoginVerificationFragment.otpKey = otpKey ?: ""
-                loginActivity.vm.otpKey = otpKey
                 resendOtpSuccessMessage()
 
                 //update UI based on channel
@@ -314,6 +316,48 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                 TAPUtils.showNoInternetErrorDialog(context)
             }
         }
+    }
+
+    private fun requestDeleteAccountOtp(channel: String) {
+        TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).requestDeleteAccountOtp(channel,
+            object : TAPDefaultDataView<TAPOTPResponse>() {
+                override fun onSuccess(response: TAPOTPResponse) {
+                    super.onSuccess(response)
+                    et_otp_code.isEnabled = true
+                    val additional = HashMap<String, String>()
+                    additional.put("phoneNumber", phoneNumber)
+                    additional.put("countryCode", countryID.toString())
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                        .trackEvent("Resend OTP Success", additional)
+                    requestOTPInterface.onRequestSuccess(
+                        response.otpID,
+                        response.otpKey,
+                        response.phoneWithCode,
+                        response.isSuccess,
+                        response.channel,
+                        response.message,
+                        response.nextRequestSeconds,
+                        response.whatsAppFailureReason
+                    )
+                }
+
+                override fun onError(error: TAPErrorModel?) {
+                    super.onError(error)
+                    et_otp_code.isEnabled = true
+                    val additional = HashMap<String, String>()
+                    additional.put("phoneNumber", phoneNumber)
+                    additional.put("countryCode", countryID.toString())
+                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                        .trackEvent("Resend OTP Failed", additional)
+                    requestOTPInterface.onRequestFailed(error?.message, error?.code)
+                }
+
+                override fun onError(errorMessage: String?) {
+                    super.onError(errorMessage)
+                    et_otp_code.isEnabled = true
+                    requestOTPInterface.onRequestFailed(errorMessage, "400")
+                }
+            })
     }
 
     private fun resendOtpSuccessMessage() {
