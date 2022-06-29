@@ -77,6 +77,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
@@ -655,5 +656,9 @@ public class TAPApiManager {
     public void requestDeleteAccountOtp(String channel, Subscriber<TAPBaseResponse<TAPOTPResponse>> subscriber) {
         TAPOTPRequest request = new TAPOTPRequest(channel);
         execute(homingPigeon.requestDeleteAccountOtp(request), subscriber);
+    }
+
+    public void checkDeleteAccountState(Subscriber<TAPBaseResponse<TapCheckDeleteAccountStateResponse>> subscriber) {
+        execute(homingPigeon.checkDeleteAccountState(), subscriber);
     }
 }

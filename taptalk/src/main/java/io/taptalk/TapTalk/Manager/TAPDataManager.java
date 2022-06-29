@@ -53,6 +53,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
@@ -1436,5 +1437,9 @@ public class TAPDataManager {
 
     public void requestDeleteAccountOtp(String channel, TAPDefaultDataView<TAPOTPResponse> view) {
         TAPApiManager.getInstance(instanceKey).requestDeleteAccountOtp(channel, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void checkDeleteAccountState(TAPDefaultDataView<TapCheckDeleteAccountStateResponse> view) {
+        TAPApiManager.getInstance(instanceKey).checkDeleteAccountState(new TAPDefaultSubscriber<>(view));
     }
 }

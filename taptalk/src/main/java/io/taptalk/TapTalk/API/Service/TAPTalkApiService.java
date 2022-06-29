@@ -49,6 +49,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
@@ -202,4 +203,7 @@ public interface TAPTalkApiService {
 
     @POST("client/user/delete_account/request_otp")
     Observable<TAPBaseResponse<TAPOTPResponse>> requestDeleteAccountOtp(@Body TAPOTPRequest request);
+
+    @POST("client/user/delete_account/check_state")
+    Observable<TAPBaseResponse<TapCheckDeleteAccountStateResponse>> checkDeleteAccountState();
 }
