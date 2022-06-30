@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/tapColorPrimary</item>
+        <item name="colorPrimaryDark">@color/tapColorPrimaryDark</item>
+        <item name="colorAccent">@color/tapColorAccent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+</resources>
