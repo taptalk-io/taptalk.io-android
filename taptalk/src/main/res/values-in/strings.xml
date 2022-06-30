@@ -402,12 +402,12 @@
     <string name="tap_selected">Selected</string>
     <string name="tap_forward_sf_messages">Forward %d Messages</string>
     <string name="tap_delete_my_account">Hapus Akun Saya</string>
-    <string name="tap_thank_you_using_taptalk">Terima kasih telah menggunakan TapTalk.io!</string>
-    <string name="tap_deleting_your_account">Menghapus akun TapTalk.io kamu berarti:</string>
+    <string name="tap_thank_you_using_taptalk">Terima kasih telah menggunakan TapTalk!</string>
+    <string name="tap_deleting_your_account">Menghapus akun TapTalk kamu berarti:</string>
     <string name="tap_dot">•</string>
-    <string name="tap_wording_delete_account1">Menghapus semua informasi dan foto profilmu dari TapTalk.io</string>
+    <string name="tap_wording_delete_account1">Menghapus semua informasi dan foto profilmu dari TapTalk</string>
     <string name="tap_wording_delete_account2">Menghapus semua pesan obrolan</string>
-    <string name="tap_wording_delete_account3">Menghapusmu dari semua grup di TapTalk.io</string>
+    <string name="tap_wording_delete_account3">Menghapusmu dari semua grup di TapTalk</string>
     <string name="tap_wording_delete_account4">Kamu tidak akan bisa mendapatkan kembali akunmu saat kamu masuk kembali dengan nomor telepon yang sama</string>
     <string name="tap_tell_us_dots">Beritahu kami mengapa anda ingin pergi...</string>
     <string name="tap_wording_accpet_agreement">Saya telah memahami dan menyetujui penghapusan data, pesan obrolan dan kontak saya</string>
@@ -415,8 +415,8 @@
     <string name="tap_edited_dot">Edited •</string>
     <string name="tap_edit_message">Edit Message</string>
     <string name="tap_wording_oops_only_admin">Oops! Anda satu-satunya admin.</string>
-    <string name="tap_wording_sign_to_another_member">Kamu adalah admin satu-satunya di grup, berikan admin kepada anggota grup lainnya jika kamu tetap ingin melanjutkan penghapusan akun TapTalk.io mu.</string>
-    <string name="tap_wording_delete_account">Kamu akan menghapus seluruh data, kontak dan pesan obrolan di TapTalk.io secara permanen, lanjutkan?</string>
+    <string name="tap_wording_sign_to_another_member">Kamu adalah admin satu-satunya di grup, berikan admin kepada anggota grup lainnya jika kamu tetap ingin melanjutkan penghapusan akun TapTalk mu.</string>
+    <string name="tap_wording_delete_account">Kamu akan menghapus seluruh data, kontak dan pesan obrolan di TapTalk secara permanen, lanjutkan?</string>
     <string name="tap_delete">Hapus</string>
     <string name="tap_why_delete_account">Mengapa kamu ingin menghapus akunmu? (Opsional)</string>
     <string name="tap_verification">Verifikasi</string>
