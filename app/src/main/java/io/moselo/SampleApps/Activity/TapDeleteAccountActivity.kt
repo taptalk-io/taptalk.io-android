@@ -114,7 +114,7 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
         }
     }
 
-    private fun showOTPVerification(waitTime: Int) {
+    private fun showOTPVerification(waitTime: Int, channel: String?) {
         cl_action_bar.visibility = View.GONE
         sv_delete_account.visibility = View.GONE
         fl_container.visibility = View.VISIBLE
@@ -127,7 +127,7 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
             )
             .replace(
                 R.id.fl_container,
-                TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, waitTime, et_note.text.toString())
+                TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, waitTime, channel, et_note.text.toString())
             )
             .addToBackStack(VERIFICATION_TAG)
             .commit()
@@ -185,7 +185,7 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
                     .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
                     .setPrimaryButtonTitle(getString(R.string.tap_delete))
                     .setPrimaryButtonListener {
-                        TAPDataManager.getInstance(instanceKey).requestDeleteAccountOtp("whatsapp", requestOtpView)
+                        TAPDataManager.getInstance(instanceKey).requestDeleteAccountOtp("", requestOtpView)
                     }
                     .setSecondaryButtonTitle(getString(R.string.tap_cancel))
                     .setSecondaryButtonListener {  }
@@ -228,7 +228,7 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
 
         override fun onSuccess(response: TAPOTPResponse?) {
             super.onSuccess(response)
-            showOTPVerification(response?.nextRequestSeconds ?: 30)
+            showOTPVerification(response?.nextRequestSeconds ?: 30, response?.channel)
         }
 
         override fun onError(error: TAPErrorModel?) {

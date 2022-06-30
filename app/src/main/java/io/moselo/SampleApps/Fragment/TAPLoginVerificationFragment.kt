@@ -86,12 +86,12 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             return instance
         }
 
-        fun getInstance(type: String, phoneNumberWithCode: String?, waitTime: Int, note: String?): TAPLoginVerificationFragment {
+        fun getInstance(type: String, phoneNumberWithCode: String?, waitTime: Int, channel: String?, note: String?): TAPLoginVerificationFragment {
             val instance = TAPLoginVerificationFragment()
             val args = Bundle()
             args.putString(kPhoneNumberWithCode, phoneNumberWithCode)
             args.putString(kType, type)
-            args.putString(kChannel, "whatsapp")
+            args.putString(kChannel, channel)
             args.putLong(kWaitTime, waitTime * 1000L)
             instance.arguments = args
             return instance
