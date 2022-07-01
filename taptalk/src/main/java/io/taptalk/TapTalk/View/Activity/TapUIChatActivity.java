@@ -612,12 +612,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (vm.isSelectState()) {
                         hideSelectState();
                     }
+                    TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                     if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
                         // Show message in composer
                         checkForwardLayout(null, intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                     } else {
                         // Open selected chat room
-                        TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                         start(TapUIChatActivity.this, instanceKey, room);
                         finish();
                     }
@@ -4970,7 +4970,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
         tvForwardCount.setText(forwardCountText);
         messageAdapter.notifyDataSetChanged();
-        hideQuoteLayout();
+        if (clQuote.getVisibility() == View.VISIBLE) {
+            clQuote.setVisibility(View.GONE);
+        }
         hideKeyboards();
         etChat.setText("");
         rvMessageList.disableSwipe();
