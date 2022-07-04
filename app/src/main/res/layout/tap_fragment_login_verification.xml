@@ -79,9 +79,10 @@
         </LinearLayout>
         
         <ImageView
+            android:id="@+id/iv_check"
             android:layout_width="match_parent"
             android:layout_height="32dp"
-            android:layout_marginTop="26dp"
+            android:layout_marginTop="48dp"
             android:visibility="gone"
             android:src="@drawable/tap_ic_rounded_check_green" />
 

@@ -420,5 +420,6 @@
     <string name="tap_delete">Hapus</string>
     <string name="tap_why_delete_account">Mengapa kamu ingin menghapus akunmu? (Opsional)</string>
     <string name="tap_verification">Verifikasi</string>
+    <string name="tap_verification_succeed">Verification succeed, see you again!</string>
 
 </resources>

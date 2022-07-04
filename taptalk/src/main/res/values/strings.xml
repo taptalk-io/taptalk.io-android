@@ -422,5 +422,6 @@
     <string name="tap_delete">Delete</string>
     <string name="tap_why_delete_account">Why are you deleting your account? (Optional)</string>
     <string name="tap_verification">Verification</string>
+    <string name="tap_verification_succeed">Verification succeed, see you again!</string>
 
 </resources>
