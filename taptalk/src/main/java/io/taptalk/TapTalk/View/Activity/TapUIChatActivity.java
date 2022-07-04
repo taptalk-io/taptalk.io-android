@@ -2060,7 +2060,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void showFinishedRecording() {
-        if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD) {
+        if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD || recordingState == RECORDING_STATE.FINISH) {
             if (audioManager.getRecordingSeconds() < 1) {
                 removeRecording();
             } else {
@@ -2171,6 +2171,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             @Override
             public void run() {
                 runOnUiThread(() -> {
+                    // TODO: 04/07/22 prevent crash zero duration MU
                     if (vm.getMediaPlayer() != null) {
                         seekBar.setProgress(vm.getMediaPlayer().getCurrentPosition() * seekBar.getMax() / vm.getDuration());
                     }
@@ -2841,6 +2842,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (recordingState == RECORDING_STATE.FINISH || recordingState == RECORDING_STATE.PLAY || recordingState == RECORDING_STATE.PAUSE) {
             //send voice note
             TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
+            vm.setPausedPosition(0);
+            stopProgressTimer();
+            if (vm.getMediaPlayer() != null) {
+                if (vm.getMediaPlayer().isPlaying()) {
+                    vm.getMediaPlayer().stop();
+                }
+                vm.setMediaPlayer(null);
+            }
+            seekBar.setProgress(0);
             setDefaultState();
         } else if (recordingState == RECORDING_STATE.DEFAULT) {
             etChat.setText("");
