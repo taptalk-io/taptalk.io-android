@@ -43,7 +43,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPOTPRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPVerifyRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
@@ -289,7 +289,7 @@ public class TAPApiManager {
     }
 
     public void verifyingOTPLogin(long otpID, String otpKey, String otpCode, Subscriber<TAPBaseResponse<TAPLoginOTPVerifyResponse>> subscriber) {
-        TAPLoginOTPVerifyRequest request = new TAPLoginOTPVerifyRequest(otpID, otpKey, otpCode);
+        TAPOTPVerifyRequest request = new TAPOTPVerifyRequest(otpID, otpKey, otpCode);
         execute(homingPigeon.verifyingOTPLogin(request), subscriber);
     }
 
@@ -660,5 +660,10 @@ public class TAPApiManager {
 
     public void checkDeleteAccountState(Subscriber<TAPBaseResponse<TapCheckDeleteAccountStateResponse>> subscriber) {
         execute(homingPigeon.checkDeleteAccountState(), subscriber);
+    }
+
+    public void verifyOtpDeleteAccount(long otpID, String otpKey, String otpCode, String reason, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPOTPVerifyRequest request = new TAPOTPVerifyRequest(otpID, otpKey, otpCode, reason);
+        execute(homingPigeon.verifyOtpDeleteAccount(request), subscriber);
     }
 }

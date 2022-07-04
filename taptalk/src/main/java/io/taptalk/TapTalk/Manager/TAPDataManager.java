@@ -1442,4 +1442,8 @@ public class TAPDataManager {
     public void checkDeleteAccountState(TAPDefaultDataView<TapCheckDeleteAccountStateResponse> view) {
         TAPApiManager.getInstance(instanceKey).checkDeleteAccountState(new TAPDefaultSubscriber<>(view));
     }
+
+    public void verifyOtpDeleteAccount(long otpID, String otpKey, String otpCode, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).verifyOtpDeleteAccount(otpID, otpKey, otpCode, reason, new TAPDefaultSubscriber<>(view));
+    }
 }

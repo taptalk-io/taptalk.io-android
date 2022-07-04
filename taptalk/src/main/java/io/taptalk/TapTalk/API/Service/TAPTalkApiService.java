@@ -16,7 +16,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPOTPRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPVerifyRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
@@ -76,7 +76,7 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TAPOTPResponse>> requestOTPLogin(@Body TAPOTPRequest request);
 
     @POST("client/login/verify_otp")
-    Observable<TAPBaseResponse<TAPLoginOTPVerifyResponse>> verifyingOTPLogin(@Body TAPLoginOTPVerifyRequest request);
+    Observable<TAPBaseResponse<TAPLoginOTPVerifyResponse>> verifyingOTPLogin(@Body TAPOTPVerifyRequest request);
 
     @POST("chat/message/room_list_and_unread")
     Observable<TAPBaseResponse<TAPGetRoomListResponse>> getRoomList(@Body TAPCommonRequest request);
@@ -206,4 +206,7 @@ public interface TAPTalkApiService {
 
     @POST("client/user/delete_account/check_state")
     Observable<TAPBaseResponse<TapCheckDeleteAccountStateResponse>> checkDeleteAccountState();
+
+    @POST("client/user/delete_account/verify_otp")
+    Observable<TAPBaseResponse<TAPCommonResponse>> verifyOtpDeleteAccount(@Body TAPOTPVerifyRequest request);
 }
