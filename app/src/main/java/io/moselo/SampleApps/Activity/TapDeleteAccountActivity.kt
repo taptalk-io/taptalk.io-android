@@ -222,7 +222,7 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
                 )
                 .replace(
                     R.id.fl_container,
-                    TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, response?.otpID, response?.otpKey, response?.nextRequestSeconds ?: 30, response?.channel, et_note.text.toString())
+                    TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, response?.otpID ?: 0L, response?.otpKey, response?.nextRequestSeconds ?: 30, response?.channel, et_note.text.toString())
                 )
                 .addToBackStack(VERIFICATION_TAG)
                 .commit()
