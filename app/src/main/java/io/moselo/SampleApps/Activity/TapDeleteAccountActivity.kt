@@ -114,25 +114,6 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
         }
     }
 
-    private fun showOTPVerification(waitTime: Int, channel: String?) {
-        cl_action_bar.visibility = View.GONE
-        sv_delete_account.visibility = View.GONE
-        fl_container.visibility = View.VISIBLE
-        supportFragmentManager.beginTransaction()
-            .setCustomAnimations(
-                R.animator.tap_slide_left_fragment,
-                R.animator.tap_fade_out_fragment,
-                R.animator.tap_fade_in_fragment,
-                R.animator.tap_slide_right_fragment
-            )
-            .replace(
-                R.id.fl_container,
-                TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, waitTime, channel, et_note.text.toString())
-            )
-            .addToBackStack(VERIFICATION_TAG)
-            .commit()
-    }
-
     private fun hideOTPVerification() {
         cl_action_bar.visibility = View.VISIBLE
         sv_delete_account.visibility = View.VISIBLE
@@ -228,7 +209,23 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
 
         override fun onSuccess(response: TAPOTPResponse?) {
             super.onSuccess(response)
-            showOTPVerification(response?.nextRequestSeconds ?: 30, response?.channel)
+            // show verify otp
+            cl_action_bar.visibility = View.GONE
+            sv_delete_account.visibility = View.GONE
+            fl_container.visibility = View.VISIBLE
+            supportFragmentManager.beginTransaction()
+                .setCustomAnimations(
+                    R.animator.tap_slide_left_fragment,
+                    R.animator.tap_fade_out_fragment,
+                    R.animator.tap_fade_in_fragment,
+                    R.animator.tap_slide_right_fragment
+                )
+                .replace(
+                    R.id.fl_container,
+                    TAPLoginVerificationFragment.getInstance(TAPLoginVerificationFragment.VERIFICATION, TAPChatManager.getInstance(instanceKey).activeUser.phoneWithCode, response?.otpID, response?.otpKey, response?.nextRequestSeconds ?: 30, response?.channel, et_note.text.toString())
+                )
+                .addToBackStack(VERIFICATION_TAG)
+                .commit()
         }
 
         override fun onError(error: TAPErrorModel?) {
