@@ -110,7 +110,13 @@ class TapDeleteAccountActivity : TAPBaseActivity() {
                 io.taptalk.TapTalk.R.anim.tap_slide_right
             )
         } else {
-            hideOTPVerification()
+            if (!vm.isLoading) {
+                if (vm.isDeleted) {
+                    TAPLoginActivity.start(this, instanceKey)
+                } else {
+                    hideOTPVerification()
+                }
+            }
         }
     }
 

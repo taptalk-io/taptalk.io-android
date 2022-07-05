@@ -1,9 +1,6 @@
 package io.moselo.SampleApps.Fragment
 
-import android.os.Build
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
+import android.os.*
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -28,6 +25,7 @@ import io.taptalk.TapTalk.Manager.AnalyticsManager
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
+import io.taptalk.TapTalk.Model.ResponseModel.TAPCommonResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse
 import io.taptalk.TapTalk.Model.TAPErrorModel
@@ -53,6 +51,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
     var isFromBtnSendViaSMS = false //to check for update UI if call otp request from button send via sms
     var channel = "sms" //to check channel otp type sended
     var isTimerFinished = false; //to check if timer already finished
+    var note = ""
     var otpType = LOGIN
 
     companion object {
@@ -69,6 +68,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         val kType = "kType"
         const val LOGIN = "loginType"
         const val VERIFICATION = "verificationType"
+        const val kNote = "kNote"
 
         fun getInstance(otpID: Long, otpKey: String, phoneNumber: String, phoneNumberWithCode: String, countryID: Int, countryCallingCode: String, countryFlagUrl: String, channel: String, waitTime: Int): TAPLoginVerificationFragment {
             val instance = TAPLoginVerificationFragment()
@@ -95,6 +95,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
             args.putString(kType, type)
             args.putString(kChannel, channel)
             args.putLong(kWaitTime, waitTime * 1000L)
+            args.putString(kNote, note)
             instance.arguments = args
             return instance
         }
@@ -132,6 +133,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
         countryFlagUrl = arguments?.getString(kCountryFlagUrl, "") ?: ""
         waitTime = arguments?.getLong(kWaitTime, 30L * 1000) ?: 30L * 1000
         otpType = arguments?.getString(kType, LOGIN) ?: LOGIN
+        note = arguments?.getString(kNote, "") ?: ""
         if (otpType == VERIFICATION) {
             tv_toolbar_title.visibility = View.VISIBLE
         } else {
@@ -511,13 +513,45 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     }
                 })
         } else {
-            // TODO: 23/06/22 add verify API MU
+            (activity as TapDeleteAccountActivity).vm.isLoading = true
+            TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).verifyOtpDeleteAccount(
+                otpID,
+                otpKey,
+                et_otp_code.text.toString(),
+                note,
+                object : TAPDefaultDataView<TAPCommonResponse>() {
+                    override fun onSuccess(response: TAPCommonResponse) {
+                        (activity as TapDeleteAccountActivity).vm.isLoading = false
+                        (activity as TapDeleteAccountActivity).vm.isDeleted = true
+                        TapTalk.logoutAndClearAllTapTalkData((activity as TAPBaseActivity).instanceKey)
+                        fl_otp.visibility = View.GONE
+                        ll_loading_otp.visibility = View.GONE
+                        tv_didnt_receive_and_invalid.text = getString(R.string.tap_verification_succeed)
+                        iv_check.visibility = View.VISIBLE
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            TAPLoginActivity.start(activity, (activity as TAPBaseActivity).instanceKey)
+                        }, 3000L)
+                    }
+
+                    override fun onError(error: TAPErrorModel) {
+                        (activity as TapDeleteAccountActivity).vm.isLoading = false
+                        et_otp_code.isEnabled = true
+                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
+                            .trackErrorEvent("Login Failed", error.code, error.message)
+                        verifyOTPInterface.verifyOTPFailed(error.message, error.code)
+                    }
+
+                    override fun onError(errorMessage: String) {
+                        (activity as TapDeleteAccountActivity).vm.isLoading = false
+                        et_otp_code.isEnabled = true
+                        verifyOTPInterface.verifyOTPFailed(errorMessage, "400")
+                    }
+                })
         }
     }
 
     private val verifyOTPInterface = object : TAPVerifyOTPInterface {
         override fun verifyOTPSuccessToLogin() {
-            // TODO: 23/06/22 Add check delay MU 
             TAPApiManager.getInstance((activity as TAPBaseActivity).instanceKey).isLoggedOut = false
             activity?.runOnUiThread {
                 TAPDataManager.getInstance((activity as TAPBaseActivity).instanceKey).saveMyCountryCode(countryCallingCode)
