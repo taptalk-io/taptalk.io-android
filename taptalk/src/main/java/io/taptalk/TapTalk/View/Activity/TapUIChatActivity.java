@@ -266,6 +266,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private ConstraintLayout clQuote;
     private ConstraintLayout clChatComposer;
     private ConstraintLayout clUserMentionList;
+    private ConstraintLayout clRoomStatus;
     private ConstraintLayout clRoomOnlineStatus;
     private ConstraintLayout clRoomTypingStatus;
     private ConstraintLayout clChatHistory;
@@ -769,6 +770,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clUserMentionList = (ConstraintLayout) findViewById(R.id.cl_user_mention_list);
+        clRoomStatus = (ConstraintLayout) findViewById(R.id.cl_room_status);
         clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
         clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
         ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
@@ -895,6 +897,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civRoomImage);
             ImageViewCompat.setImageTintList(civRoomImage, null);
             tvRoomImageLabel.setVisibility(View.GONE);
+            clRoomStatus.setVisibility(View.GONE);
         } else if (null != vm.getRoom() &&
                 TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
                 null != vm.getOtherUserModel().getImageURL().getThumbnail() &&
@@ -2464,6 +2467,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showUserOnline() {
         runOnUiThread(() -> {
             if (0 >= vm.getGroupTypingSize()) {
+                clRoomStatus.setVisibility(View.VISIBLE);
                 clRoomTypingStatus.setVisibility(View.GONE);
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
@@ -2477,6 +2481,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showUserOffline() {
         runOnUiThread(() -> {
             if (0 >= vm.getGroupTypingSize()) {
+                clRoomStatus.setVisibility(View.VISIBLE);
                 clRoomTypingStatus.setVisibility(View.GONE);
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
@@ -2528,6 +2533,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         typingIndicatorTimeoutTimer.cancel();
         typingIndicatorTimeoutTimer.start();
         runOnUiThread(() -> {
+            clRoomStatus.setVisibility(View.VISIBLE);
             clRoomTypingStatus.setVisibility(View.VISIBLE);
             clRoomOnlineStatus.setVisibility(View.GONE);
 
@@ -2549,6 +2555,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         typingIndicatorTimeoutTimer.cancel();
         runOnUiThread(() -> {
             vm.getGroupTyping().clear();
+            clRoomStatus.setVisibility(View.VISIBLE);
             clRoomTypingStatus.setVisibility(View.GONE);
             clRoomOnlineStatus.setVisibility(View.VISIBLE);
         });
@@ -2730,9 +2737,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 rvCustomKeyboard.setVisibility(View.GONE);
                 clChatComposer.setVisibility(View.INVISIBLE);
                 etChat.clearFocus();
-            }
-            if (null != vRoomImage) {
-                vRoomImage.setClickable(false);
             }
             if (null != llButtonDeleteChat) {
                 llButtonDeleteChat.setOnClickListener(llDeleteGroupClickListener);
