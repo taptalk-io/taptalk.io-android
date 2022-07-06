@@ -986,7 +986,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
         };
-
+        // Disable swipe in deleted user room
+        if ((null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
+                (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L))) {
+            rvMessageList.disableSwipe();
+        }
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TAPChatManager.getInstance(instanceKey).getCustomKeyboardItems(vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel()));
         if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
@@ -3819,10 +3823,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case LongPressChatBubble:
+                    //disable long press in deleted user room
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds());
-                        chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
-                        TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                        if (TYPE_PERSONAL != vm.getRoom().getType() || (null != vm.getOtherUserModel() && (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L))) {
+                            TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds());
+                            chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
+                            TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                        }
                     }
                     break;
                 case LongPressLink:
