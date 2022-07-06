@@ -864,6 +864,8 @@
             android:layout_height="54dp"
             android:elevation="10dp"
             android:visibility="gone"
+            android:clickable="true"
+            android:focusable="true"
             android:background="@color/tapWhite"
             app:layout_constraintBottom_toBottomOf="parent">
 
