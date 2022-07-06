@@ -159,8 +159,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             null != vm!!.groupMemberUser -> {
                 vm!!.isGroupMemberProfile = true
                 vm!!.isGroupAdmin = intent.getBooleanExtra(Extras.IS_ADMIN, false)
-                vm!!.userDataFromManager =
-                    TAPContactManager.getInstance(instanceKey).getUserData(vm!!.groupMemberUser.userID)
             }
             vm!!.room.type == RoomType.TYPE_PERSONAL -> {
                 vm!!.userDataFromManager = TAPContactManager.getInstance(instanceKey).getUserData(
@@ -943,7 +941,10 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
     private fun triggerReportButtonTapped() {
-        if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
+        if (null != vm!!.groupMemberUser) {
+            TAPChatManager.getInstance(instanceKey)
+                .triggerChatProfileReportUserButtonTapped(this, vm!!.room, vm!!.groupMemberUser)
+        } else if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
             TAPChatManager.getInstance(instanceKey)
                 .triggerChatProfileReportUserButtonTapped(this, vm!!.room, vm!!.userDataFromManager)
         } else {
