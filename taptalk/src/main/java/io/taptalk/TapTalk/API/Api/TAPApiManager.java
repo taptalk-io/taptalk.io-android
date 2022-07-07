@@ -1,5 +1,9 @@
 package io.taptalk.TapTalk.API.Api;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.TOKEN_EXPIRED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -21,6 +25,7 @@ import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.AnalyticsManager;
@@ -38,8 +43,6 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPRequest;
@@ -51,6 +54,8 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
@@ -73,7 +78,6 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
@@ -92,10 +96,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.TOKEN_EXPIRED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
 
 public class TAPApiManager {
     private static final String TAG = TAPApiManager.class.getSimpleName();
@@ -273,11 +273,6 @@ public class TAPApiManager {
         execute(homingPigeon.getAuthTicket(request), subscriber);
     }
 
-    public void sendCustomMessage(Integer messageType, String body, String filterID, String senderUserID, String recipientUserID, Subscriber<TAPBaseResponse<TAPSendCustomMessageResponse>> subscriber) {
-        TAPSendCustomMessageRequest request = new TAPSendCustomMessageRequest(messageType, body, filterID, senderUserID, recipientUserID);
-        execute(homingPigeon.sendCustomMessage(request), subscriber);
-    }
-
     public void getAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
         execute(homingPigeon.getAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getAuthTicket()), subscriber);
     }
@@ -331,6 +326,20 @@ public class TAPApiManager {
     public void registerFcmTokenToServer(String fcmToken, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
         TAPPushNotificationRequest request = TAPPushNotificationRequest.Builder(fcmToken);
         execute(homingPigeon.registerFcmTokenToServer(request), subscriber);
+    }
+
+    public void sendCustomMessage(String roomID, String recipientUserID, String localID, Integer messageType, String body, HashMap<String, Object> data, String filterID, Boolean isHidden, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPSendCustomMessageRequest request = new TAPSendCustomMessageRequest(
+                roomID,
+                recipientUserID,
+                localID,
+                messageType,
+                body,
+                TAPUtils.toJsonString(data),
+                filterID,
+                isHidden
+        );
+        execute(homingPigeon.sendCustomMessage(request), subscriber);
     }
 
     public void getRoomList(String userID, Subscriber<TAPBaseResponse<TAPGetRoomListResponse>> subscriber) {

@@ -11,8 +11,6 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPRequest;
@@ -24,6 +22,8 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
@@ -46,13 +46,12 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import retrofit2.http.Body;
 import retrofit2.http.Header;
@@ -65,9 +64,6 @@ public interface TAPTalkApiService {
     @POST("server/auth_ticket/request")
     Observable<TAPBaseResponse<TAPAuthTicketResponse>> getAuthTicket(@Body TAPAuthTicketRequest request);
 
-    @POST("server/message/send/custom")
-    Observable<TAPBaseResponse<TAPSendCustomMessageResponse>> sendCustomMessage(@Body TAPSendCustomMessageRequest request);
-
     @POST("auth/access_token/request")
     Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> getAccessToken(@Header("Authorization") String authTicket);
 
@@ -76,6 +72,9 @@ public interface TAPTalkApiService {
 
     @POST("client/login/verify_otp")
     Observable<TAPBaseResponse<TAPLoginOTPVerifyResponse>> verifyingOTPLogin(@Body TAPLoginOTPVerifyRequest request);
+
+    @POST("chat/message/send/custom")
+    Observable<TAPBaseResponse<TAPCommonResponse>> sendCustomMessage(@Body TAPSendCustomMessageRequest request);
 
     @POST("chat/message/room_list_and_unread")
     Observable<TAPBaseResponse<TAPGetRoomListResponse>> getRoomList(@Body TAPCommonRequest request);
