@@ -523,13 +523,13 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     override fun onSuccess(response: TAPCommonResponse) {
                         (activity as TapDeleteAccountActivity).vm.isLoading = false
                         (activity as TapDeleteAccountActivity).vm.isDeleted = true
-                        TapTalk.logoutAndClearAllTapTalkData((activity as TAPBaseActivity).instanceKey)
                         fl_otp.visibility = View.GONE
                         ll_loading_otp.visibility = View.GONE
                         tv_didnt_receive_and_invalid.text = getString(R.string.tap_verification_succeed)
+                        tv_didnt_receive_and_invalid.setTextColor(ContextCompat.getColor(requireContext(), R.color.tapTransparentBlack1980))
                         iv_check.visibility = View.VISIBLE
                         Handler(Looper.getMainLooper()).postDelayed({
-                            TAPLoginActivity.start(activity, (activity as TAPBaseActivity).instanceKey)
+                            TapTalk.logoutAndClearAllTapTalkData((activity as TAPBaseActivity).instanceKey)
                         }, 3000L)
                     }
 
