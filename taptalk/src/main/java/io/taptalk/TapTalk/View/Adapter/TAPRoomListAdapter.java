@@ -217,8 +217,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Set room name
-            String roomName = TAPChatManager.getInstance(instanceKey).getRoomListTitleText(item, getBindingAdapterPosition(), itemView.getContext());
-            tvFullName.setText(roomName);
+            if (null != user && (null != user.getDeleted() && user.getDeleted() > 0L)) {
+                tvFullName.setText(user.getFullname());
+            } else {
+                String roomName = TAPChatManager.getInstance(instanceKey).getRoomListTitleText(item, getBindingAdapterPosition(), itemView.getContext());
+                tvFullName.setText(roomName);
+            }
 
             // Set last message timestamp
             tvLastMessageTime.setText(item.getLastMessageTimestamp());
