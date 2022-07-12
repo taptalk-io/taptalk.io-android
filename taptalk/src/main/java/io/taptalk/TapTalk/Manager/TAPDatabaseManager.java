@@ -213,6 +213,13 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void getMessageBySenderUserID(String userID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null != messageRepository)
+            messageRepository.getMessageBySenderUserID(userID, listener);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public void getRoomList(String myID, String username, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getRoomList(myID, username, saveMessages, isCheckUnreadFirst, listener);
