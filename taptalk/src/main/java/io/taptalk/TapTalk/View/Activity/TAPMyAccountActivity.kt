@@ -31,6 +31,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
+import io.taptalk.TapTalk.BuildConfig
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_PROFILE_IMAGE_CAMERA
@@ -243,6 +244,9 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_form_container.setOnClickListener { clearAllFocus() }
         cl_password.setOnClickListener { openChangePasswordPage() }
         cl_logout.setOnClickListener { promptUserLogout() }
+        btn_delete_my_account.setOnClickListener {
+            TapUI.getInstance(instanceKey).triggerDeleteButtonInMyAccountPageTapped(this)
+        }
 
         // Obtain text field style attributes
         val textFieldArray = obtainStyledAttributes(R.style.tapFormTextFieldStyle, R.styleable.TextAppearance)
@@ -288,6 +292,7 @@ class TAPMyAccountActivity : TAPBaseActivity() {
         cl_basic_info.visibility = View.VISIBLE
         tv_version_code.visibility = View.VISIBLE
         cl_logout.visibility = View.GONE
+        btn_delete_my_account.visibility = View.GONE
         et_bio.isEnabled = false
         et_bio.setText(vm.myUserModel.bio)
     }
@@ -318,6 +323,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             cl_logout.visibility = View.VISIBLE
         } else {
             cl_logout.visibility = View.GONE
+        }
+        if (TapUI.getInstance(instanceKey).isDeleteAccountButtonVisible) {
+            btn_delete_my_account.visibility = View.VISIBLE
+        } else {
+            btn_delete_my_account.visibility = View.GONE
         }
         et_bio.isEnabled = true
     }
@@ -920,7 +930,11 @@ class TAPMyAccountActivity : TAPBaseActivity() {
             } else {
                 info.versionCode
             }
-            tv_version_code.text = String.format("V %s(%s)", versionName, versionNumber)
+            if (BuildConfig.DEBUG) {
+                tv_version_code.text = String.format("V %s(%s)", versionName, versionNumber)
+            } else {
+                tv_version_code.text = String.format("V %s", versionName)
+            }
         }catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
         }

@@ -2,18 +2,26 @@ package io.taptalk.TapTalk.Model.RequestModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TAPLoginOTPVerifyRequest {
+public class TAPOTPVerifyRequest {
     @JsonProperty("otpID") private long otpID;
     @JsonProperty("otpKey") private String otpKey;
     @JsonProperty("otpCode") private String otpCode;
+    @JsonProperty("reason") private String reason;
 
-    public TAPLoginOTPVerifyRequest(long otpID, String otpKey, String otpCode) {
+    public TAPOTPVerifyRequest(long otpID, String otpKey, String otpCode) {
         this.otpID = otpID;
         this.otpKey = otpKey;
         this.otpCode = otpCode;
     }
 
-    public TAPLoginOTPVerifyRequest() {
+    public TAPOTPVerifyRequest(long otpID, String otpKey, String otpCode, String reason) {
+        this.otpID = otpID;
+        this.otpKey = otpKey;
+        this.otpCode = otpCode;
+        this.reason = reason;
+    }
+
+    public TAPOTPVerifyRequest() {
     }
 
     public long getOtpID() {
@@ -38,5 +46,13 @@ public class TAPLoginOTPVerifyRequest {
 
     public void setOtpCode(String otpCode) {
         this.otpCode = otpCode;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

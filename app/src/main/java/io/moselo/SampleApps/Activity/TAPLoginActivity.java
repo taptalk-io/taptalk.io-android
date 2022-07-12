@@ -135,7 +135,6 @@ public class TAPLoginActivity extends TAPBaseActivity {
                         );
                         vm.setPhoneNumber("0");
                         vm.setCountryID(0);
-                        onBackPressed();
                     }
                 }
 

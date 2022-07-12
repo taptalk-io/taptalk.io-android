@@ -19,6 +19,7 @@ import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapUIChatProfileListener;
 import io.taptalk.TapTalk.Listener.TapUIChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
+import io.taptalk.TapTalk.Listener.TapUIMyAccountListener;
 import io.taptalk.TapTalk.Listener.TapUIRoomListListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.TAPCustomKeyboardItemModel;
@@ -64,6 +65,7 @@ public class TapUI {
     private List<TapUIChatRoomListener> tapUIChatRoomListeners;
     private List<TapUIChatProfileListener> tapUIChatProfileListeners;
     private List<TapUICustomKeyboardListener> tapUICustomKeyboardListeners;
+    private List<TapUIMyAccountListener> tapUIMyAccountListeners;
     private HashMap<Integer, LongPressMenuType> longPressMenuMap;
 
     private TapUIRoomListFragment currentTapTalkRoomListFragment;
@@ -115,6 +117,7 @@ public class TapUI {
     private boolean isStarMessageMenuDisabled;
     private boolean isSendVoiceNoteMenuDisabled;
     private boolean isEditMessageMenuDisabled;
+    private boolean isDeleteAccountButtonVisible;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -226,6 +229,25 @@ public class TapUI {
             return;
         }
         getCustomKeyboardListeners().remove(listener);
+    }
+
+    private List<TapUIMyAccountListener> getMyAccountListeners() {
+        return null == tapUIMyAccountListeners ? tapUIMyAccountListeners = new ArrayList<>() : tapUIMyAccountListeners;
+    }
+
+    public void addMyAccountListener(TapUIMyAccountListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getMyAccountListeners().remove(listener);
+        getMyAccountListeners().add(listener);
+    }
+
+    public void removeMyAccountListener(TapUIMyAccountListener listener) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        getMyAccountListeners().remove(listener);
     }
 
     /**
@@ -1141,6 +1163,34 @@ public class TapUI {
             return;
         }
         getLongPressMenuMap().put(messageType, longPressMenuType);
+    }
+
+    /**
+     * ==========================================================================================
+     * ACCOUNT RELATED
+     * ==========================================================================================
+     */
+
+    public boolean isDeleteAccountButtonVisible() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return isDeleteAccountButtonVisible;
+    }
+
+    public void setDeleteAccountButtonVisible(boolean isVisible) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isDeleteAccountButtonVisible = isVisible;
+    }
+
+    public void triggerDeleteButtonInMyAccountPageTapped(Activity activity) {
+        for (TapUIMyAccountListener listener : getMyAccountListeners()) {
+            if (null != listener) {
+                listener.onDeleteButtonInMyAccountPageTapped(activity);
+            }
+        }
     }
 
     /**

@@ -458,13 +458,15 @@ public class TAPUtils {
             // Permission granted
             Intent intent;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                String[] mimeTypes = {INTENT_TYPE_IMAGE};
                 intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes); // Filter only images
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple); // Allow multiple select
             } else {
                 intent = new Intent(Intent.ACTION_GET_CONTENT);
             }
             intent.setType(INTENT_TYPE_IMAGE);
-            if (intent.resolveActivity(activity.getPackageManager()) != null) {
+            if (intent.resolveActivity(activity.getPackageManager()) != null || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)) {
                 activity.startActivityForResult(Intent.createChooser(intent, SELECT_PICTURE), requestCode);
             }
         }

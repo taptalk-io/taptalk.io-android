@@ -2,20 +2,24 @@ package io.taptalk.TapTalk.Model.RequestModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TAPLoginOTPRequest {
+public class TAPOTPRequest {
     @JsonProperty("method") private String method;
     @JsonProperty("countryID") private int countryID;
     @JsonProperty("phone") private String phone;
     @JsonProperty("channel") private String channel;
 
-    public TAPLoginOTPRequest(String method, int countryID, String phone, String channel) {
+    public TAPOTPRequest(String method, int countryID, String phone, String channel) {
         this.method = method;
         this.countryID = countryID;
         this.phone = phone;
         this.channel = channel;
     }
 
-    public TAPLoginOTPRequest() {
+    public TAPOTPRequest(String channel) {
+        this.channel = channel;
+    }
+
+    public TAPOTPRequest() {
     }
 
     public String getMethod() {

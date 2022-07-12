@@ -86,12 +86,13 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
@@ -1106,7 +1107,7 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).getAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void requestOTPLogin(int countryID, String phone, String channel, TAPDefaultDataView<TAPLoginOTPResponse> view) {
+    public void requestOTPLogin(int countryID, String phone, String channel, TAPDefaultDataView<TAPOTPResponse> view) {
         TAPApiManager.getInstance(instanceKey).requestOTPLogin("phone", countryID, phone, channel, new TAPDefaultSubscriber<>(view));
     }
 
@@ -1439,5 +1440,17 @@ public class TAPDataManager {
 
     public void getUnreadRoomIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
         TAPApiManager.getInstance(instanceKey).getUnreadRoomIds(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void requestDeleteAccountOtp(String channel, TAPDefaultDataView<TAPOTPResponse> view) {
+        TAPApiManager.getInstance(instanceKey).requestDeleteAccountOtp(channel, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void checkDeleteAccountState(TAPDefaultDataView<TapCheckDeleteAccountStateResponse> view) {
+        TAPApiManager.getInstance(instanceKey).checkDeleteAccountState(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void verifyOtpDeleteAccount(long otpID, String otpKey, String otpCode, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).verifyOtpDeleteAccount(otpID, otpKey, otpCode, reason, new TAPDefaultSubscriber<>(view));
     }
 }

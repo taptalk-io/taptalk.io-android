@@ -13,8 +13,8 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPVerifyRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPOTPRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
@@ -43,11 +43,12 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
@@ -68,10 +69,10 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TAPGetAccessTokenResponse>> getAccessToken(@Header("Authorization") String authTicket);
 
     @POST("client/login/request_otp/v1_6")
-    Observable<TAPBaseResponse<TAPLoginOTPResponse>> requestOTPLogin(@Body TAPLoginOTPRequest request);
+    Observable<TAPBaseResponse<TAPOTPResponse>> requestOTPLogin(@Body TAPOTPRequest request);
 
     @POST("client/login/verify_otp")
-    Observable<TAPBaseResponse<TAPLoginOTPVerifyResponse>> verifyingOTPLogin(@Body TAPLoginOTPVerifyRequest request);
+    Observable<TAPBaseResponse<TAPLoginOTPVerifyResponse>> verifyingOTPLogin(@Body TAPOTPVerifyRequest request);
 
     @POST("chat/message/send/custom")
     Observable<TAPBaseResponse<TAPCommonResponse>> sendCustomMessage(@Body TAPSendCustomMessageRequest request);
@@ -198,4 +199,13 @@ public interface TAPTalkApiService {
 
     @POST("client/room/get_unread_room_ids")
     Observable<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> getUnreadRoomIds();
+
+    @POST("client/user/delete_account/request_otp")
+    Observable<TAPBaseResponse<TAPOTPResponse>> requestDeleteAccountOtp(@Body TAPOTPRequest request);
+
+    @POST("client/user/delete_account/check_state")
+    Observable<TAPBaseResponse<TapCheckDeleteAccountStateResponse>> checkDeleteAccountState();
+
+    @POST("client/user/delete_account/verify_otp")
+    Observable<TAPBaseResponse<TAPCommonResponse>> verifyOtpDeleteAccount(@Body TAPOTPVerifyRequest request);
 }

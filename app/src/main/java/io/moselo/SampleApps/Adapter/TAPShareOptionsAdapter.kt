@@ -91,7 +91,12 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
             }
 
             // Set room image
-            if (null != user && (null == user.deleted || user.deleted!! <= 0L) && null != user.imageURL && user.imageURL.thumbnail.isNotEmpty()) {
+            if (null != user && null != user.deleted && user.deleted!! > 0L) {
+                // Deleted user
+                glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar)
+                ImageViewCompat.setImageTintList(civAvatar, null)
+                tvAvatarLabel.visibility = View.GONE
+            } else if (null != user && null != user.imageURL && user.imageURL.thumbnail.isNotEmpty()) {
                 // Load user avatar
                 glide.load(user.imageURL.thumbnail).listener(object : RequestListener<Drawable?> {
                     override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
@@ -303,7 +308,12 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
         private val vSeparatorFull = itemView.findViewById<View?>(R.id.v_separator_full)
         override fun onBind(item: TAPRoomListModel, position: Int) {
             val room = item.lastMessage.room ?: return
-            if (null != room.imageURL && room.imageURL!!.thumbnail.isNotEmpty()) {
+            if (room.deleted > 0L) {
+                // Deleted user
+                glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar)
+                ImageViewCompat.setImageTintList(civAvatar, null)
+                tvAvatarLabel.visibility = View.GONE
+            } else if (null != room.imageURL && room.imageURL!!.thumbnail.isNotEmpty()) {
                 // Load profile picture
                 Glide.with(itemView.context)
                         .load(room.imageURL!!.thumbnail)

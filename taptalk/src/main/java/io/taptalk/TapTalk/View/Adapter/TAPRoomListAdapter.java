@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.recyclerview.widget.DiffUtil;
 
@@ -138,8 +139,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Set room image
-            if (null != user && (null == user.getDeleted() || user.getDeleted() <= 0L) &&
-                    null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
+            if (null != user && (null != user.getDeleted() && user.getDeleted() > 0L)) {
+                // Deleted user
+                glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar);
+                ImageViewCompat.setImageTintList(civAvatar, null);
+                tvAvatarLabel.setVisibility(View.GONE);
+            } else if (null != user  && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                 // Load user avatar
                 glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                     @Override
@@ -212,8 +217,12 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Set room name
-            String roomName = TAPChatManager.getInstance(instanceKey).getRoomListTitleText(item, getBindingAdapterPosition(), itemView.getContext());
-            tvFullName.setText(roomName);
+            if (null != user && (null != user.getDeleted() && user.getDeleted() > 0L)) {
+                tvFullName.setText(user.getFullname());
+            } else {
+                String roomName = TAPChatManager.getInstance(instanceKey).getRoomListTitleText(item, getBindingAdapterPosition(), itemView.getContext());
+                tvFullName.setText(roomName);
+            }
 
             // Set last message timestamp
             tvLastMessageTime.setText(item.getLastMessageTimestamp());

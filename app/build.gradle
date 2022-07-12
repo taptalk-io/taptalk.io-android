@@ -21,7 +21,7 @@ android {
 //        targetSdk 31
         targetSdk 30
         versionCode 115
-        versionName '2.1.2'
+        versionName '2.2.0'
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

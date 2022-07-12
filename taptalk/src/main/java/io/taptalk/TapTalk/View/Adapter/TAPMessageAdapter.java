@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -2680,7 +2681,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 // Load avatar and name for other room types
                 TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(item.getUser().getUserID());
-                if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
+                if (null != civAvatar && null != tvAvatarLabel && ((null != user && null != user.getDeleted() && user.getDeleted() > 0L) || (null != item.getUser().getDeleted() && item.getUser().getDeleted() > 0L))) {
+                    glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar);
+                    ImageViewCompat.setImageTintList(civAvatar, null);
+                    tvAvatarLabel.setVisibility(View.GONE);
+                } else if (null != civAvatar && null != tvAvatarLabel && null != user && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                     glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -3513,5 +3518,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             selectRadioButton.setVisibility(View.GONE);
             bubbleArea.setVisibility(View.GONE);
         }
+    }
+
+    public String getLastLocalId() {
+        return lastLocalId;
     }
 }

@@ -95,6 +95,10 @@
                 <data android:mimeType="application/*" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="io.moselo.SampleApps.Activity.TapDeleteAccountActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
