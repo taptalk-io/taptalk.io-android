@@ -2725,7 +2725,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     showInitial(vh, item, civAvatar, tvAvatarLabel);
                 }
                 if (null != tvUserName) {
-                    tvUserName.setText(item.getUser().getFullname());
+                    if ((null != user && null != user.getDeleted() && user.getDeleted() > 0L) || (null != item.getUser().getDeleted() && item.getUser().getDeleted() > 0L)) {
+                        tvUserName.setText(R.string.tap_deleted_user);
+                    } else {
+                        tvUserName.setText(item.getUser().getFullname());
+                    }
                     tvUserName.setVisibility(View.VISIBLE);
                 }
                 if (null != civAvatar) {

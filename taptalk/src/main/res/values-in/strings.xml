@@ -421,5 +421,6 @@
     <string name="tap_why_delete_account">Mengapa kamu ingin menghapus akunmu? (Opsional)</string>
     <string name="tap_verification">Verifikasi</string>
     <string name="tap_verification_succeed">Verifikasi berhasil, sampai jumpa kembali!</string>
+    <string name="tap_deleted_user">Deleted User</string>
 
 </resources>
