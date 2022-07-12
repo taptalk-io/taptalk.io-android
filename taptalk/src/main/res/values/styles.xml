@@ -802,4 +802,11 @@
         <item name="android:textColor">@color/tapButtonLabelColor</item>
         <item name="android:textSize">12sp</item>
     </style>
+
+    <style name="tapEmptySavedMessageTitleStyle" parent="tapFontFamilyChatBold">
+        <item name="android:lineSpacingExtra">8sp</item>
+        <item name="android:textColor">@color/tapTitleLabelColor</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

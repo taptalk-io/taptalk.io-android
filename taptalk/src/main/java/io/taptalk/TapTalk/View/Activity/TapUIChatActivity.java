@@ -149,6 +149,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Group;
 import androidx.core.app.ActivityCompat;
@@ -312,6 +313,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private View vQuoteDecoration;
     private View vSeparator;
     private TAPConnectionStatusFragment fConnectionStatus;
+    private CardView cvEmptySavedMessages;
 
 //  Voice Note
     private ImageView ivVoiceNote;
@@ -831,6 +833,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clForward = findViewById(R.id.cl_forward);
         tvForwardCount = findViewById(R.id.tv_forward_count);
         ivForward = findViewById(R.id.iv_forward);
+        cvEmptySavedMessages = findViewById(R.id.cv_empty_saved_message);
     }
 
     private boolean initViewModel() {

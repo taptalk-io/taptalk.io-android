@@ -350,6 +350,113 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_empty_saved_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="54dp"
+        android:layout_marginEnd="54dp"
+        app:cardCornerRadius="8dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp">
+
+            <TextView
+                android:id="@+id/tv_title_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tap_wording_save_spesific_message"
+                style="@style/tapEmptySavedMessageTitleStyle"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+
+            <TextView
+                android:id="@+id/iv_bullet1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="@string/tap_dot"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toStartOf="@id/tv_title_empty"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_empty"/>
+
+            <TextView
+                android:id="@+id/tv_point1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:text="@string/tap_empty_saved_message_1"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toEndOf="@id/iv_bullet1"
+                app:layout_constraintTop_toTopOf="@id/iv_bullet1"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <TextView
+                android:id="@+id/iv_bullet2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="@string/tap_dot"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_point1"/>
+
+            <TextView
+                android:id="@+id/tv_point2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:text="@string/tap_empty_saved_message_2"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toEndOf="@id/iv_bullet2"
+                app:layout_constraintTop_toTopOf="@id/iv_bullet2"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/iv_bullet3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="@string/tap_dot"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toStartOf="@id/tv_title_empty"
+                app:layout_constraintTop_toBottomOf="@id/tv_point2"/>
+
+            <TextView
+                android:id="@+id/tv_point3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:text="@string/tap_empty_saved_message_3"
+                style="@style/tapInfoLabelBodyStyle"
+                app:layout_constraintStart_toEndOf="@id/iv_bullet3"
+                app:layout_constraintTop_toTopOf="@id/iv_bullet3"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
     <FrameLayout
         android:id="@+id/fl_message_list"
         android:layout_width="match_parent"

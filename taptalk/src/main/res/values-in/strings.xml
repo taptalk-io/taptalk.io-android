@@ -403,5 +403,10 @@
     <string name="tap_forward_sf_messages">Forward %d Messages</string>
     <string name="tap_edited_dot">Edited •</string>
     <string name="tap_edit_message">Edit Message</string>
+    <string name="tap_wording_save_spesific_message">Simpan pesan tertentu untuk di lihat kembali secara mudah</string>
+    <string name="tap_empty_saved_message_1">Teruskan pesan kesini</string>
+    <string name="tap_empty_saved_message_2">Kirim media dan berkas untuk disimpan</string>
+    <string name="tap_empty_saved_message_3">Akses obrolan dari perangkat kamu yang lain</string>
+    <string name="tap_dot">•</string>
 
 </resources>

@@ -405,5 +405,10 @@
     <string name="tap_forward_sf_messages">Forward %d Messages</string>
     <string name="tap_edited_dot">Edited •</string>
     <string name="tap_edit_message">Edit Message</string>
+    <string name="tap_wording_save_spesific_message">Save specific messages to quickly refer back to them later.</string>
+    <string name="tap_empty_saved_message_1">Forward messages here</string>
+    <string name="tap_empty_saved_message_2">Send media and files to save them</string>
+    <string name="tap_empty_saved_message_3">Access this chat personally from any device</string>
+    <string name="tap_dot">•</string>
 
 </resources>
