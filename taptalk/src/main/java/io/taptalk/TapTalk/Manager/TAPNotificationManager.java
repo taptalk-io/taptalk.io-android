@@ -478,12 +478,44 @@ public class TAPNotificationManager {
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(TapTalk.appContext);
             createNotificationChannel();
 
-            notificationManager.notify(notificationMessage.getRoom().getRoomID(), 0, build());
+            Map<String, List<TAPMessageModel>> notificationMap = TAPNotificationManager.getInstance(instanceKey).getNotificationMessagesMap();
+            List<TAPMessageModel> currentRoomNotificationList = notificationMap.get(notificationMessage.getRoom().getRoomID());
 
-            if (1 < TAPNotificationManager.getInstance(instanceKey).getNotificationMessagesMap().size()) {
-                notificationManager.notify(0, TAPNotificationManager.getInstance(instanceKey).createSummaryNotificationBubble(context, TapUIRoomListActivity.class).build());
+            // Check if message is already read to remove instead of show
+            if (notificationMessage.getIsRead() != null && notificationMessage.getIsRead()) {
+                if (currentRoomNotificationList != null && currentRoomNotificationList.size() > 0) {
+                    for (TAPMessageModel message : new ArrayList<>(currentRoomNotificationList)) {
+                        if (notificationMessage.getMessageID() != null &&
+                                notificationMessage.getMessageID().equals(message.getMessageID())
+                        ) {
+                            // Remove notification message from the list
+                            currentRoomNotificationList.remove(message);
+                            currentRoomNotificationList.remove(notificationMessage);
+                            if (currentRoomNotificationList.isEmpty()) {
+                                // Remove list from notification map
+                                notificationMap.remove(notificationMessage.getRoom().getRoomID());
+                            }
+                            break;
+                        }
+                    }
+                }
             }
 
+            if (currentRoomNotificationList != null && !currentRoomNotificationList.isEmpty()) {
+                // Show notification
+                notificationManager.notify(notificationMessage.getRoom().getRoomID(), 0, build());
+            } else {
+                // Remove notification
+                notificationManager.cancel(notificationMessage.getRoom().getRoomID(), 0);
+            }
+
+            if (notificationMap.size() > 1) {
+                // Show grouped notification
+                notificationManager.notify(0, TAPNotificationManager.getInstance(instanceKey).createSummaryNotificationBubble(context, TapUIRoomListActivity.class).build());
+            } else if (notificationMap.isEmpty()) {
+                // Remove grouped notification
+                notificationManager.cancel(0);
+            }
         }
     }
 }
