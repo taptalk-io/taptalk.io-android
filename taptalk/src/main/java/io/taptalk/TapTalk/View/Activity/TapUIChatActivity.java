@@ -888,6 +888,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             tvRoomImageLabel.setVisibility(View.GONE);
             clRoomStatus.setVisibility(View.GONE);
         } else if (null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getType() && TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+            glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civRoomImage);
+            ImageViewCompat.setImageTintList(civRoomImage, null);
+            tvRoomImageLabel.setVisibility(View.GONE);
+            clRoomStatus.setVisibility(View.GONE);
+        } else if (null != vm.getRoom() &&
                 TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
                 null != vm.getOtherUserModel().getImageURL().getThumbnail() &&
                 !vm.getOtherUserModel().getImageURL().getThumbnail().isEmpty()) {
