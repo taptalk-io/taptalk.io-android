@@ -102,4 +102,9 @@ public abstract class TAPChatListener implements TapTalkChatInterface {
     public void onMessageSelected(TAPMessageModel message) {
 
     }
+
+    @Override
+    public void onArrowButtonClicked(TAPMessageModel message) {
+
+    }
 }

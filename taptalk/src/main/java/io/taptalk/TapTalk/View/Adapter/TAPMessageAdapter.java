@@ -3540,9 +3540,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (vm.isSelectState() || !message.getRoom().getRoomID().equals(String.format("%s-%s", userID, userID))) {
                 button.setVisibility(View.GONE);
             } else {
-                button.setOnClickListener(view -> {
-                    // TODO: 13/07/22 move to original message MU
-                });
+                button.setOnClickListener(view -> chatListener.onArrowButtonClicked(message));
                 button.setVisibility(View.VISIBLE);
             }
         }

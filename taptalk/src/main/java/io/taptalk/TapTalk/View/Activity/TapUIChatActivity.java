@@ -650,14 +650,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (intent != null) {
                         TAPMessageModel messageModel = intent.getParcelableExtra(MESSAGE);
                         if (messageModel != null) {
-                            if (vm.getRoom().getRoomID().equals(messageModel.getRoom().getRoomID())) {
-                                scrollToMessage(messageModel.getLocalID());
-                            } else {
-                                Intent roomIntent = new Intent(OPEN_CHAT);
-                                roomIntent.putExtra(MESSAGE, messageModel);
-                                LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(roomIntent);
-                                closeActivity();
-                            }
+                            goToMessage(messageModel);
                         } else {
                             vm.setDeleteGroup(true);
                             closeActivity();
@@ -668,14 +661,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (intent != null) {
                         TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
                         if (message != null) {
-                            if (vm.getRoom().getRoomID().equals(message.getRoom().getRoomID())) {
-                                scrollToMessage(message.getLocalID());
-                            } else {
-                                Intent roomIntent = new Intent(OPEN_CHAT);
-                                roomIntent.putExtra(MESSAGE, message);
-                                LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(roomIntent);
-                                closeActivity();
-                            }
+                           goToMessage(message);
                         } else if (intent.getBooleanExtra(CLOSE_ACTIVITY, false)) {
                             closeActivity();
                         }
@@ -1434,6 +1420,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
             String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
             tvForwardCount.setText(forwardCountText);
+        }
+
+        @Override
+        public void onArrowButtonClicked(TAPMessageModel message) {
+            super.onArrowButtonClicked(message);
+            goToMessage(message);
         }
     };
 
@@ -3087,6 +3079,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 Toast.makeText(this, getResources().getString(R.string.tap_error_could_not_find_message), Toast.LENGTH_SHORT).show();
                 hideUnreadButtonLoading();
             });
+        }
+    }
+
+    private void goToMessage(TAPMessageModel message) {
+        if (vm.getRoom().getRoomID().equals(message.getRoom().getRoomID())) {
+            scrollToMessage(message.getLocalID());
+        } else {
+            Intent roomIntent = new Intent(OPEN_CHAT);
+            roomIntent.putExtra(MESSAGE, message);
+            LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(roomIntent);
+            closeActivity();
         }
     }
 
