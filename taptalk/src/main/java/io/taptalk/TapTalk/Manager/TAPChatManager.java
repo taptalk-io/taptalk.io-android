@@ -1726,9 +1726,9 @@ public class TAPChatManager {
         }
 
         // Remove from waiting response hashmap
-        if (kSocketNewMessage.equals(eventName))
+        if (kSocketNewMessage.equals(eventName)) {
             waitingResponses.remove(newMessage.getLocalID());
-
+        }
 
         if ((LEAVE_ROOM.equals(newMessage.getAction()) || DELETE_ROOM.equals(newMessage.getAction()))
                 && getActiveUser().getUserID().equals(newMessage.getUser().getUserID())) {
@@ -1750,6 +1750,8 @@ public class TAPChatManager {
 //            incomingMessages.put(newMessage.getLocalID(), newMessage);
             TAPDataManager.getInstance(instanceKey).insertToDatabase(TAPMessageEntity.fromMessageModel(newMessage));
         }
+
+        TAPUtils.handleReceivedSystemMessage(instanceKey, newMessage);
 
         // Query Unread Message
         //TAPNotificationManager.getInstance(instanceKey).updateUnreadCount();

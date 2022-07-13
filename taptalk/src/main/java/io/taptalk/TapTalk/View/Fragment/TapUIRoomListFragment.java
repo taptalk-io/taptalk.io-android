@@ -964,6 +964,8 @@ public class TapUIRoomListFragment extends Fragment {
                             // Store update profile system message
                             updateProfileSystemMessage = message;
                         }
+
+                        TAPUtils.handleReceivedSystemMessage(instanceKey, message);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

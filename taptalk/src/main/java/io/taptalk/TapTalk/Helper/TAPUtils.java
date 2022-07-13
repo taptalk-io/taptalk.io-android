@@ -65,6 +65,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
+import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -100,6 +101,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.PermissionRequest.PERMISSION_CAMERA_CAMERA;
@@ -111,6 +113,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.DESCENDING;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_USER;
 
 public class TAPUtils {
 
@@ -1205,6 +1208,27 @@ public class TAPUtils {
                 text.startsWith("@" + activeUser.getUsername()) && text.contains("@" + activeUser.getUsername() + " ") ||
                 text.startsWith("@" + activeUser.getUsername()) && text.contains("@" + activeUser.getUsername() + "\n") ||
                 text.equals("@" + activeUser.getUsername());
+    }
+
+    public static void handleReceivedSystemMessage(String instanceKey, TAPMessageModel message) {
+        if (message.getType() != TYPE_SYSTEM_MESSAGE) {
+            return;
+        }
+        if (message.getAction() != null && message.getAction().equals(DELETE_USER)) {
+            // Set value for message.user.deleted for existing messages from the deleted user
+            TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
+            TAPDataManager.getInstance(instanceKey).getMessageBySenderUserIDFromDatabase(message.getUser().getUserID(), new TAPDatabaseListener<TAPMessageEntity>() {
+                @Override
+                public void onSelectFinished(List<TAPMessageEntity> entities) {
+                    List<TAPMessageEntity> updatedEntities = new ArrayList<>();
+                    for (TAPMessageEntity deletedUserMessage : entities) {
+                        deletedUserMessage.setUserDeleted(message.getUser().getDeleted());
+                        updatedEntities.add(deletedUserMessage);
+                    }
+                    TAPDataManager.getInstance(instanceKey).insertToDatabase(updatedEntities, false);
+                }
+            });
+        }
     }
 
     public static void mergeSort(List<TAPMessageModel> messages, int sortDirection) {
