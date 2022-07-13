@@ -159,8 +159,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             null != vm!!.groupMemberUser -> {
                 vm!!.isGroupMemberProfile = true
                 vm!!.isGroupAdmin = intent.getBooleanExtra(Extras.IS_ADMIN, false)
-                vm!!.userDataFromManager =
-                    TAPContactManager.getInstance(instanceKey).getUserData(vm!!.groupMemberUser.userID)
             }
             vm!!.room.type == RoomType.TYPE_PERSONAL -> {
                 vm!!.userDataFromManager = TAPContactManager.getInstance(instanceKey).getUserData(
@@ -251,42 +249,54 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
     private fun updateView() {
         // Set profile detail item
-        val imageURL: TAPImageURL?
-        val itemLabel: String?
+        var imageURL: TAPImageURL? = null
+        var itemLabel: String? = null
         var itemSubLabel: String? = ""
+        var isUserDeleted = false
         var textStyleResource = 0
         if (null != vm!!.userDataFromManager &&
             vm!!.userDataFromManager.fullname.isNotEmpty()
         ) {
-            // Set name & avatar from contact manager
-            imageURL = vm!!.userDataFromManager.imageURL
-            itemLabel = vm!!.userDataFromManager.fullname
-            tv_title.text = itemLabel
-            if (!vm!!.userDataFromManager.username.isNullOrEmpty() &&
-                TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
-            ) {
-                itemSubLabel = vm!!.userDataFromManager.username
-                g_username.visibility = View.VISIBLE
-                tv_username_view.text = itemSubLabel
+            if (vm!!.userDataFromManager.deleted != null && vm!!.userDataFromManager.deleted!! > 0L) {
+                // set deleted user profile
+                isUserDeleted = true
+                setDeletedUserProfile()
+                tv_title.text = vm!!.userDataFromManager.fullname
             } else {
-                g_username.visibility = View.GONE
+                // Set name & avatar from contact manager
+                hideDeletedUserProfilePicture()
+                imageURL = vm!!.userDataFromManager.imageURL
+                itemLabel = vm!!.userDataFromManager.fullname
+                tv_title.text = itemLabel
+                if (!vm!!.userDataFromManager.username.isNullOrEmpty() &&
+                    TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
+                ) {
+                    itemSubLabel = vm!!.userDataFromManager.username
+                    g_username.visibility = View.VISIBLE
+                    tv_username_view.text = itemSubLabel
+                } else {
+                    g_username.visibility = View.GONE
+                }
+                setBasicInfo(
+                    vm!!.userDataFromManager.phoneWithCode,
+                    TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible,
+                    g_mobile_number,
+                    tv_mobile_number_view
+                )
+                setBasicInfo(
+                    vm!!.userDataFromManager.email,
+                    TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible,
+                    g_email,
+                    tv_email_view
+                )
+                setBasicInfo(
+                    vm!!.userDataFromManager.bio,
+                    TapUI.getInstance(instanceKey).isEditBioTextFieldVisible,
+                    g_bio,
+                    tv_bio_view
+                )
+                getPhotoList(vm!!.userDataFromManager.userID, itemLabel)
             }
-            setBasicInfo(
-                vm!!.userDataFromManager.phoneWithCode,
-                TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible,
-                g_mobile_number,
-                tv_mobile_number_view)
-            setBasicInfo(
-                vm!!.userDataFromManager.email,
-                TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible,
-                g_email,
-                tv_email_view)
-            setBasicInfo(
-                vm!!.userDataFromManager.bio,
-                TapUI.getInstance(instanceKey).isEditBioTextFieldVisible,
-                g_bio,
-                tv_bio_view)
-            getPhotoList(vm!!.userDataFromManager.userID, itemLabel)
         } else if (null != vm!!.groupDataFromManager &&
             vm!!.groupDataFromManager.name.isNotEmpty()
         ) {
@@ -304,38 +314,49 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 tv_member_count.visibility = View.VISIBLE
             }
         } else if (vm!!.isGroupMemberProfile) {
-            // Set name & avatar from passed member profile intent
-            imageURL = vm!!.groupMemberUser.imageURL
-            itemLabel = vm!!.groupMemberUser.fullname
-            tv_title.text = itemLabel
-            if (!vm!!.groupMemberUser.username.isNullOrEmpty() &&
-                TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
-            ) {
-                itemSubLabel = vm!!.groupMemberUser.username
-                tv_username_view.text = itemSubLabel
+            if (vm!!.groupMemberUser.deleted != null && vm!!.groupMemberUser.deleted!! > 0L) {
+                // set deleted user profile
+                isUserDeleted = true
+                setDeletedUserProfile()
+                tv_title.text = vm!!.groupMemberUser.fullname
+            } else {
+                // Set name & avatar from passed member profile intent
+                hideDeletedUserProfilePicture()
+                imageURL = vm!!.groupMemberUser.imageURL
+                itemLabel = vm!!.groupMemberUser.fullname
+                tv_title.text = itemLabel
+                if (!vm!!.groupMemberUser.username.isNullOrEmpty() &&
+                    TapUI.getInstance(instanceKey).isUsernameInChatProfileVisible
+                ) {
+                    itemSubLabel = vm!!.groupMemberUser.username
+                    tv_username_view.text = itemSubLabel
+                }
+                setBasicInfo(
+                    vm!!.groupMemberUser.phoneWithCode,
+                    TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible,
+                    g_mobile_number,
+                    tv_mobile_number_view
+                )
+                setBasicInfo(
+                    vm!!.groupMemberUser.email,
+                    TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible,
+                    g_email,
+                    tv_email_view
+                )
+                setBasicInfo(
+                    vm!!.groupMemberUser.bio,
+                    TapUI.getInstance(instanceKey).isEditBioTextFieldVisible,
+                    g_bio,
+                    tv_bio_view
+                )
+                getPhotoList(vm!!.groupMemberUser.userID, itemLabel)
             }
-            setBasicInfo(
-                vm!!.groupMemberUser.phoneWithCode,
-                TapUI.getInstance(instanceKey).isMobileNumberInChatProfileVisible,
-                g_mobile_number,
-                tv_mobile_number_view)
-            setBasicInfo(
-                vm!!.groupMemberUser.email,
-                TapUI.getInstance(instanceKey).isEmailAddressInChatProfileVisible,
-                g_email,
-                tv_email_view)
-            setBasicInfo(
-                vm!!.groupMemberUser.bio,
-                TapUI.getInstance(instanceKey).isEditBioTextFieldVisible,
-                g_bio,
-                tv_bio_view)
-            getPhotoList(vm!!.groupMemberUser.userID, itemLabel)
         } else {
             // Set name & avatar from passed room intent
             imageURL = vm!!.room.imageURL
             itemLabel = vm!!.room.name
             tv_title.text = itemLabel
-            if (!vm!!.room.participants!!.isNullOrEmpty()) {
+            if (vm!!.room.participants != null && vm!!.room.participants!!.isNotEmpty()) {
                 cl_basic_info.visibility = View.GONE
                 itemSubLabel = String.format(
                     getString(R.string.tap_format_d_group_member_count),
@@ -346,24 +367,26 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
 
-        if (!imageURL!!.fullsize.isNullOrEmpty()) {
-            val photosItemModel = TapPhotosItemModel()
-            photosItemModel.fullsizeImageURL = imageURL.fullsize
-            photosItemModel.thumbnailImageURL = imageURL.thumbnail
-            vm!!.profilePictureList.add(photosItemModel)
-            vp_profile_picture.adapter = profilePicturePagerAdapter
-            if (vm!!.room.type != RoomType.TYPE_GROUP && vm!!.profilePictureList.size > 1) {
-                tab_layout.visibility = View.VISIBLE
-                tab_layout.setupWithViewPager(vp_profile_picture)
+        if (!isUserDeleted) {
+            if (imageURL != null && !imageURL.fullsize.isNullOrEmpty()) {
+                val photosItemModel = TapPhotosItemModel()
+                photosItemModel.fullsizeImageURL = imageURL.fullsize
+                photosItemModel.thumbnailImageURL = imageURL.thumbnail
+                vm!!.profilePictureList.add(photosItemModel)
+                vp_profile_picture.adapter = profilePicturePagerAdapter
+                if (vm!!.room.type != RoomType.TYPE_GROUP && vm!!.profilePictureList.size > 1) {
+                    tab_layout.visibility = View.VISIBLE
+                    tab_layout.setupWithViewPager(vp_profile_picture)
+                }
+                tv_profile_picture_label.visibility = View.GONE
+            } else {
+                setInitialToProfilePicture(itemLabel)
             }
-            tv_profile_picture_label.visibility = View.GONE
-        } else {
-            setInitialToProfilePicture(itemLabel)
         }
 
         // Update room menu
         vm!!.adapterItems.removeAll(vm!!.menuItems)
-        vm!!.menuItems = generateChatProfileMenu()
+        vm!!.menuItems = generateChatProfileMenu(isUserDeleted)
         vm!!.adapterItems.addAll(vm!!.menuItems)
         if (null != adapter) {
             adapter!!.items = vm!!.adapterItems
@@ -386,6 +409,23 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             itemLabel, 2
         )
         tv_profile_picture_label.visibility = View.VISIBLE
+        iv_deleted_user.visibility = View.GONE
+    }
+
+    private fun showDeletedUserProfilePicture() {
+        vp_profile_picture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
+        tv_profile_picture_label.visibility = View.GONE
+        iv_deleted_user.visibility = View.VISIBLE
+    }
+
+    private fun hideDeletedUserProfilePicture() {
+        iv_deleted_user.visibility = View.GONE
+    }
+
+    private fun setDeletedUserProfile() {
+        showDeletedUserProfilePicture()
+        cl_basic_info.visibility = View.GONE
+        g_username.visibility = View.GONE
     }
 
     private fun getPhotoList(userId: String?, itemLabel: String?) {
@@ -415,43 +455,249 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
 
-    private fun generateChatProfileMenu(): List<TapChatProfileItemModel> {
+    private fun generateChatProfileMenu(isUserDeleted: Boolean = false): List<TapChatProfileItemModel> {
         val menuItems: MutableList<TapChatProfileItemModel> = ArrayList()
-        if (!vm!!.isGroupMemberProfile) {
-            // Notification
-            val menuNotification = TapChatProfileItemModel(
-                ChatProfileMenuType.MENU_NOTIFICATION,
-                getString(R.string.tap_notifications),
-                R.drawable.tap_ic_notification_orange,
-                R.color.tapIconChatProfileMenuNotificationInactive,
-                R.style.tapChatProfileMenuLabelStyle
-            )
-            menuNotification.isChecked = !vm!!.room.isMuted
+        if (isUserDeleted) {
+            // Starred messages
+            if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                val menuStarredMessages = TapChatProfileItemModel(
+                    ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                    getString(R.string.tap_starred_messages),
+                    R.drawable.tap_ic_star_outline,
+                    R.color.tapIconChatProfileMenuStarredMessages,
+                    R.style.tapChatProfileMenuStarredLabelStyle
+                )
+                menuItems.add(menuStarredMessages)
+            }
+        } else {
+            if (!vm!!.isGroupMemberProfile) {
+                // Notification
+                val menuNotification = TapChatProfileItemModel(
+                    ChatProfileMenuType.MENU_NOTIFICATION,
+                    getString(R.string.tap_notifications),
+                    R.drawable.tap_ic_notification_orange,
+                    R.color.tapIconChatProfileMenuNotificationInactive,
+                    R.style.tapChatProfileMenuLabelStyle
+                )
+                menuNotification.isChecked = !vm!!.room.isMuted
 
-            // Room color
-            val menuRoomColor = TapChatProfileItemModel(
-                ChatProfileMenuType.MENU_ROOM_COLOR,
-                getString(R.string.tap_conversation_color),
-                R.drawable.tap_ic_color_grey,
-                R.color.tapIconChatProfileMenuConversationColor,
-                R.style.tapChatProfileMenuLabelStyle
-            )
+                // Room color
+                val menuRoomColor = TapChatProfileItemModel(
+                    ChatProfileMenuType.MENU_ROOM_COLOR,
+                    getString(R.string.tap_conversation_color),
+                    R.drawable.tap_ic_color_grey,
+                    R.color.tapIconChatProfileMenuConversationColor,
+                    R.style.tapChatProfileMenuLabelStyle
+                )
 
-            // Search chat
-            val menuRoomSearchChat = TapChatProfileItemModel(
-                ChatProfileMenuType.MENU_ROOM_SEARCH_CHAT,
-                getString(R.string.tap_search_chat),
-                R.drawable.tap_ic_search_grey_small,
-                R.color.tapIconChatProfileMenuSearchChat,
-                R.style.tapChatProfileMenuLabelStyle
-            )
+                // Search chat
+                val menuRoomSearchChat = TapChatProfileItemModel(
+                    ChatProfileMenuType.MENU_ROOM_SEARCH_CHAT,
+                    getString(R.string.tap_search_chat),
+                    R.drawable.tap_ic_search_grey_small,
+                    R.color.tapIconChatProfileMenuSearchChat,
+                    R.style.tapChatProfileMenuLabelStyle
+                )
 
-            // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
+                // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
 //        menuItems.add(menuNotification);
 //        menuItems.add(menuRoomColor);
 //        menuItems.add(menuRoomSearchChat);
-            if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
-                //// Personal chat room
+                if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
+                    //// Personal chat room
+
+                    // Starred messages
+                    if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                        val menuStarredMessages = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                            getString(R.string.tap_starred_messages),
+                            R.drawable.tap_ic_star_outline,
+                            R.color.tapIconChatProfileMenuStarredMessages,
+                            R.style.tapChatProfileMenuStarredLabelStyle
+                        )
+                        menuItems.add(menuStarredMessages)
+                    }
+                    // Add to contacts
+                    if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
+                            instanceKey
+                        ).isAddToContactsButtonInChatProfileVisible
+                    ) {
+                        val contact = TAPContactManager.getInstance(instanceKey).getUserData(
+                            TAPChatManager.getInstance(instanceKey)
+                                .getOtherUserIdFromRoom(vm!!.room.roomID)
+                        )
+                        if (null == contact || null == contact.isContact || contact.isContact == 0) {
+                            val menuAddToContact = TapChatProfileItemModel(
+                                ChatProfileMenuType.MENU_ADD_TO_CONTACTS,
+                                getString(R.string.tap_add_to_contacts),
+                                R.drawable.tap_ic_add_circle_orange,
+                                R.color.tapIconGroupMemberProfileMenuAddToContacts,
+                                R.style.tapChatProfileMenuLabelStyle
+                            )
+                            menuItems.add(menuAddToContact)
+                        }
+                    }
+                    if (intent.getBooleanExtra(Extras.IS_NON_PARTICIPANT_USER_PROFILE, false)) {
+                        // Send message
+                        val menuSendMessage = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_SEND_MESSAGE,
+                            getString(R.string.tap_send_message),
+                            R.drawable.tap_ic_send_message_orange,
+                            R.color.tapIconGroupMemberProfileMenuSendMessage,
+                            R.style.tapChatProfileMenuLabelStyle
+                        )
+                        menuItems.add(menuSendMessage)
+                    }
+
+                    // Block user
+                    val menuBlock = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_BLOCK,
+                        getString(R.string.tap_block_user),
+                        R.drawable.tap_ic_block_red,
+                        R.color.tapIconChatProfileMenuBlockUser,
+                        R.style.tapChatProfileMenuLabelStyle
+                    )
+
+                    // Clear chat
+                    val menuClearChat = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_CLEAR_CHAT,
+                        getString(R.string.tap_clear_chat),
+                        R.drawable.tap_ic_delete_red,
+                        R.color.tapIconChatProfileMenuClearChat,
+                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                    )
+
+                    // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
+//            menuItems.add(2, menuBlock);
+//            menuItems.add(menuClearChat);
+                    if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+                        // Report user
+                        val menuReport = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_REPORT,
+                            getString(R.string.tap_report_user),
+                            R.drawable.tap_ic_flag_black,
+                            R.color.tapIconChatProfileMenuReportUserOrGroup,
+                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                        )
+                        menuItems.add(menuReport)
+                    }
+                } else if (vm!!.room.type == RoomType.TYPE_GROUP && null != vm!!.room.admins &&
+                    vm!!.room.admins!!
+                        .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID)
+                ) {
+                    //// Group chat where the active user is admin
+
+                    // View members
+                    val menuViewMembers = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_VIEW_MEMBERS,
+                        getString(R.string.tap_view_members),
+                        R.drawable.tap_ic_members_orange,
+                        R.color.tapIconGroupProfileMenuViewMembers,
+                        R.style.tapChatProfileMenuLabelStyle
+                    )
+                    menuItems.add(menuViewMembers)
+
+                    // Edit group
+                    val menuEditGroup = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_EDIT_GROUP,
+                        getString(R.string.tap_edit_group_small),
+                        R.drawable.tap_ic_edit_orange,
+                        R.color.tapIconGroupProfileMenuEditGroup,
+                        R.style.tapChatProfileMenuLabelStyle
+                    )
+                    menuItems.add(menuEditGroup)
+                    // Starred messages
+                    if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                        val menuStarredMessages = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                            getString(R.string.tap_starred_messages),
+                            R.drawable.tap_ic_star_outline,
+                            R.color.tapIconChatProfileMenuStarredMessages,
+                            R.style.tapChatProfileMenuStarredLabelStyle
+                        )
+                        menuItems.add(menuStarredMessages)
+                    }
+                    if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+                        // Report group
+                        val menuReport = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_REPORT,
+                            getString(R.string.tap_report_group),
+                            R.drawable.tap_ic_flag_black,
+                            R.color.tapIconChatProfileMenuReportUserOrGroup,
+                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                        )
+                        menuItems.add(menuReport)
+                    }
+                    if (null != vm!!.room.participants &&
+                        1 < vm!!.room.participants!!.size
+                    ) {
+                        // Exit group
+                        val menuExitGroup = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_EXIT_GROUP,
+                            getString(R.string.tap_leave_group),
+                            R.drawable.tap_ic_logout_red,
+                            R.color.tapIconChatProfileMenuClearChat,
+                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                        )
+                        menuItems.add(menuExitGroup)
+                    } else {
+                        // Delete group
+                        val menuDeleteGroup = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_DELETE_GROUP,
+                            getString(R.string.tap_delete_group),
+                            R.drawable.tap_ic_delete_red,
+                            R.color.tapIconChatProfileMenuClearChat,
+                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                        )
+                        menuItems.add(menuDeleteGroup)
+                    }
+                } else if (vm!!.room.type == RoomType.TYPE_GROUP && null != vm!!.room.participants && 1 < vm!!.room.participants!!.size) {
+                    //// Group chat with more than 1 member
+
+                    // View members
+                    val menuViewMembers = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_VIEW_MEMBERS,
+                        getString(R.string.tap_view_members),
+                        R.drawable.tap_ic_members_orange,
+                        R.color.tapIconGroupProfileMenuViewMembers,
+                        R.style.tapChatProfileMenuLabelStyle
+                    )
+                    menuItems.add(menuViewMembers)
+                    // Starred messages
+                    if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
+                        val menuStarredMessages = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_STARRED_MESSAGES,
+                            getString(R.string.tap_starred_messages),
+                            R.drawable.tap_ic_star_outline,
+                            R.color.tapIconChatProfileMenuStarredMessages,
+                            R.style.tapChatProfileMenuStarredLabelStyle
+                        )
+                        menuItems.add(menuStarredMessages)
+                    }
+                    if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
+                        // Report group
+                        val menuReport = TapChatProfileItemModel(
+                            ChatProfileMenuType.MENU_REPORT,
+                            getString(R.string.tap_report_group),
+                            R.drawable.tap_ic_flag_black,
+                            R.color.tapIconChatProfileMenuReportUserOrGroup,
+                            R.style.tapChatProfileMenuDestructiveLabelStyle
+                        )
+                        menuItems.add(menuReport)
+                    }
+
+                    // Exit group
+                    val menuExitGroup = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_EXIT_GROUP,
+                        getString(R.string.tap_leave_group),
+                        R.drawable.tap_ic_logout_red,
+                        R.color.tapIconChatProfileMenuClearChat,
+                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                    )
+                    menuItems.add(menuExitGroup)
+                }
+            } else {
+                //// Group chat member profile
 
                 // Starred messages
                 if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
@@ -470,8 +716,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     ).isAddToContactsButtonInChatProfileVisible
                 ) {
                     val contact = TAPContactManager.getInstance(instanceKey).getUserData(
-                        TAPChatManager.getInstance(instanceKey)
-                            .getOtherUserIdFromRoom(vm!!.room.roomID)
+                        vm!!.groupMemberUser.userID
                     )
                     if (null == contact || null == contact.isContact || contact.isContact == 0) {
                         val menuAddToContact = TapChatProfileItemModel(
@@ -484,39 +729,59 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         menuItems.add(menuAddToContact)
                     }
                 }
-                if (intent.getBooleanExtra(Extras.IS_NON_PARTICIPANT_USER_PROFILE, false)) {
-                    // Send message
-                    val menuSendMessage = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_SEND_MESSAGE,
-                        getString(R.string.tap_send_message),
-                        R.drawable.tap_ic_send_message_orange,
-                        R.color.tapIconGroupMemberProfileMenuSendMessage,
-                        R.style.tapChatProfileMenuLabelStyle
-                    )
-                    menuItems.add(menuSendMessage)
-                }
 
-                // Block user
-                val menuBlock = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_BLOCK,
-                    getString(R.string.tap_block_user),
-                    R.drawable.tap_ic_block_red,
-                    R.color.tapIconChatProfileMenuBlockUser,
+                // Send message
+                val menuSendMessage = TapChatProfileItemModel(
+                    ChatProfileMenuType.MENU_SEND_MESSAGE,
+                    getString(R.string.tap_send_message),
+                    R.drawable.tap_ic_send_message_orange,
+                    R.color.tapIconGroupMemberProfileMenuSendMessage,
                     R.style.tapChatProfileMenuLabelStyle
                 )
+                menuItems.add(menuSendMessage)
 
-                // Clear chat
-                val menuClearChat = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_CLEAR_CHAT,
-                    getString(R.string.tap_clear_chat),
-                    R.drawable.tap_ic_delete_red,
-                    R.color.tapIconChatProfileMenuClearChat,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle
-                )
+                // Promote admin
+                if (null != vm!!.room.admins &&
+                    vm!!.room.admins!!
+                        .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID) &&
+                    !vm!!.room.admins!!.contains(vm!!.groupMemberUser.userID)
+                ) {
+                    val menuPromoteAdmin = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_PROMOTE_ADMIN,
+                        getString(R.string.tap_promote_admin),
+                        R.drawable.tap_ic_appoint_admin,
+                        R.color.tapIconGroupMemberProfileMenuPromoteAdmin,
+                        R.style.tapChatProfileMenuLabelStyle
+                    )
+                    menuItems.add(menuPromoteAdmin)
+                } else if (null != vm!!.room.admins &&
+                    vm!!.room.admins!!
+                        .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID)
+                ) {
+                    val menuDemoteAdmin = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_DEMOTE_ADMIN,
+                        getString(R.string.tap_demote_admin),
+                        R.drawable.tap_ic_demote_admin,
+                        R.color.tapIconGroupMemberProfileMenuDemoteAdmin,
+                        R.style.tapChatProfileMenuLabelStyle
+                    )
+                    menuItems.add(menuDemoteAdmin)
+                }
 
-                // TODO: 9 May 2019 TEMPORARILY DISABLED FEATURE
-//            menuItems.add(2, menuBlock);
-//            menuItems.add(menuClearChat);
+                // Remove member
+                if (null != vm!!.room.admins &&
+                    vm!!.room.admins!!
+                        .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID)
+                ) {
+                    val menuRemoveMember = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_REMOVE_MEMBER,
+                        getString(R.string.tap_remove_group_member),
+                        R.drawable.tap_ic_delete_red,
+                        R.color.tapIconGroupMemberProfileMenuRemoveMember,
+                        R.style.tapChatProfileMenuDestructiveLabelStyle
+                    )
+                    menuItems.add(menuRemoveMember)
+                }
                 if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
                     // Report user
                     val menuReport = TapChatProfileItemModel(
@@ -528,217 +793,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     )
                     menuItems.add(menuReport)
                 }
-            } else if (vm!!.room.type == RoomType.TYPE_GROUP && null != vm!!.room.admins &&
-                vm!!.room.admins!!
-                    .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID)
-            ) {
-                //// Group chat where the active user is admin
-
-                // View members
-                val menuViewMembers = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_VIEW_MEMBERS,
-                    getString(R.string.tap_view_members),
-                    R.drawable.tap_ic_members_orange,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle
-                )
-                menuItems.add(menuViewMembers)
-
-                // Edit group
-                val menuEditGroup = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_EDIT_GROUP,
-                    getString(R.string.tap_edit_group_small),
-                    R.drawable.tap_ic_edit_orange,
-                    R.color.tapIconGroupProfileMenuEditGroup,
-                    R.style.tapChatProfileMenuLabelStyle
-                )
-                menuItems.add(menuEditGroup)
-                 // Starred messages
-                if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
-                    val menuStarredMessages = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_STARRED_MESSAGES,
-                        getString(R.string.tap_starred_messages),
-                        R.drawable.tap_ic_star_outline,
-                        R.color.tapIconChatProfileMenuStarredMessages,
-                        R.style.tapChatProfileMenuStarredLabelStyle
-                    )
-                    menuItems.add(menuStarredMessages)
-                }
-                if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
-                    // Report group
-                    val menuReport = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_REPORT,
-                        getString(R.string.tap_report_group),
-                        R.drawable.tap_ic_flag_black,
-                        R.color.tapIconChatProfileMenuReportUserOrGroup,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle
-                    )
-                    menuItems.add(menuReport)
-                }
-                if (null != vm!!.room.participants &&
-                    1 < vm!!.room.participants!!.size
-                ) {
-                    // Exit group
-                    val menuExitGroup = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_EXIT_GROUP,
-                        getString(R.string.tap_leave_group),
-                        R.drawable.tap_ic_logout_red,
-                        R.color.tapIconChatProfileMenuClearChat,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle
-                    )
-                    menuItems.add(menuExitGroup)
-                } else {
-                    // Delete group
-                    val menuDeleteGroup = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_DELETE_GROUP,
-                        getString(R.string.tap_delete_group),
-                        R.drawable.tap_ic_delete_red,
-                        R.color.tapIconChatProfileMenuClearChat,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle
-                    )
-                    menuItems.add(menuDeleteGroup)
-                }
-            } else if (vm!!.room.type == RoomType.TYPE_GROUP && null != vm!!.room.participants && 1 < vm!!.room.participants!!.size) {
-                //// Group chat with more than 1 member
-
-                // View members
-                val menuViewMembers = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_VIEW_MEMBERS,
-                    getString(R.string.tap_view_members),
-                    R.drawable.tap_ic_members_orange,
-                    R.color.tapIconGroupProfileMenuViewMembers,
-                    R.style.tapChatProfileMenuLabelStyle
-                )
-                menuItems.add(menuViewMembers)
-                // Starred messages
-                if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
-                    val menuStarredMessages = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_STARRED_MESSAGES,
-                        getString(R.string.tap_starred_messages),
-                        R.drawable.tap_ic_star_outline,
-                        R.color.tapIconChatProfileMenuStarredMessages,
-                        R.style.tapChatProfileMenuStarredLabelStyle
-                    )
-                    menuItems.add(menuStarredMessages)
-                }
-                if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
-                    // Report group
-                    val menuReport = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_REPORT,
-                        getString(R.string.tap_report_group),
-                        R.drawable.tap_ic_flag_black,
-                        R.color.tapIconChatProfileMenuReportUserOrGroup,
-                        R.style.tapChatProfileMenuDestructiveLabelStyle
-                    )
-                    menuItems.add(menuReport)
-                }
-
-                // Exit group
-                val menuExitGroup = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_EXIT_GROUP,
-                    getString(R.string.tap_leave_group),
-                    R.drawable.tap_ic_logout_red,
-                    R.color.tapIconChatProfileMenuClearChat,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle
-                )
-                menuItems.add(menuExitGroup)
-            }
-        } else {
-            //// Group chat member profile
-
-            // Starred messages
-            if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
-                val menuStarredMessages = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_STARRED_MESSAGES,
-                    getString(R.string.tap_starred_messages),
-                    R.drawable.tap_ic_star_outline,
-                    R.color.tapIconChatProfileMenuStarredMessages,
-                    R.style.tapChatProfileMenuStarredLabelStyle
-                )
-                menuItems.add(menuStarredMessages)
-            }
-            // Add to contacts
-            if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
-                    instanceKey
-                ).isAddToContactsButtonInChatProfileVisible
-            ) {
-                val contact = TAPContactManager.getInstance(instanceKey).getUserData(
-                    vm!!.groupMemberUser.userID
-                )
-                if (null == contact || null == contact.isContact || contact.isContact == 0) {
-                    val menuAddToContact = TapChatProfileItemModel(
-                        ChatProfileMenuType.MENU_ADD_TO_CONTACTS,
-                        getString(R.string.tap_add_to_contacts),
-                        R.drawable.tap_ic_add_circle_orange,
-                        R.color.tapIconGroupMemberProfileMenuAddToContacts,
-                        R.style.tapChatProfileMenuLabelStyle
-                    )
-                    menuItems.add(menuAddToContact)
-                }
-            }
-
-            // Send message
-            val menuSendMessage = TapChatProfileItemModel(
-                ChatProfileMenuType.MENU_SEND_MESSAGE,
-                getString(R.string.tap_send_message),
-                R.drawable.tap_ic_send_message_orange,
-                R.color.tapIconGroupMemberProfileMenuSendMessage,
-                R.style.tapChatProfileMenuLabelStyle
-            )
-            menuItems.add(menuSendMessage)
-
-            // Promote admin
-            if (null != vm!!.room.admins &&
-                vm!!.room.admins!!
-                    .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID) &&
-                !vm!!.room.admins!!.contains(vm!!.groupMemberUser.userID)
-            ) {
-                val menuPromoteAdmin = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_PROMOTE_ADMIN,
-                    getString(R.string.tap_promote_admin),
-                    R.drawable.tap_ic_appoint_admin,
-                    R.color.tapIconGroupMemberProfileMenuPromoteAdmin,
-                    R.style.tapChatProfileMenuLabelStyle
-                )
-                menuItems.add(menuPromoteAdmin)
-            } else if (null != vm!!.room.admins &&
-                vm!!.room.admins!!
-                    .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID)
-            ) {
-                val menuDemoteAdmin = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_DEMOTE_ADMIN,
-                    getString(R.string.tap_demote_admin),
-                    R.drawable.tap_ic_demote_admin,
-                    R.color.tapIconGroupMemberProfileMenuDemoteAdmin,
-                    R.style.tapChatProfileMenuLabelStyle
-                )
-                menuItems.add(menuDemoteAdmin)
-            }
-
-            // Remove member
-            if (null != vm!!.room.admins &&
-                vm!!.room.admins!!
-                    .contains(TAPChatManager.getInstance(instanceKey).activeUser.userID)
-            ) {
-                val menuRemoveMember = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_REMOVE_MEMBER,
-                    getString(R.string.tap_remove_group_member),
-                    R.drawable.tap_ic_delete_red,
-                    R.color.tapIconGroupMemberProfileMenuRemoveMember,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle
-                )
-                menuItems.add(menuRemoveMember)
-            }
-            if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
-                // Report user
-                val menuReport = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_REPORT,
-                    getString(R.string.tap_report_user),
-                    R.drawable.tap_ic_flag_black,
-                    R.color.tapIconChatProfileMenuReportUserOrGroup,
-                    R.style.tapChatProfileMenuDestructiveLabelStyle
-                )
-                menuItems.add(menuReport)
             }
         }
         return menuItems
@@ -887,7 +941,10 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
     private fun triggerReportButtonTapped() {
-        if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
+        if (null != vm!!.groupMemberUser) {
+            TAPChatManager.getInstance(instanceKey)
+                .triggerChatProfileReportUserButtonTapped(this, vm!!.room, vm!!.groupMemberUser)
+        } else if (vm!!.room.type == RoomType.TYPE_PERSONAL) {
             TAPChatManager.getInstance(instanceKey)
                 .triggerChatProfileReportUserButtonTapped(this, vm!!.room, vm!!.userDataFromManager)
         } else {

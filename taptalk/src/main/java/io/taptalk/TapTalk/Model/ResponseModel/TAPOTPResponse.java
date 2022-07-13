@@ -2,7 +2,7 @@ package io.taptalk.TapTalk.Model.ResponseModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TAPLoginOTPResponse {
+public class TAPOTPResponse {
     @JsonProperty("success") private boolean success;
     @JsonProperty("message") private String message;
     @JsonProperty("phoneWithCode") private String phoneWithCode;
@@ -13,7 +13,7 @@ public class TAPLoginOTPResponse {
     @JsonProperty("whatsAppFailureReason") private String whatsAppFailureReason;
     @JsonProperty("nextRequestSeconds") private int nextRequestSeconds;
 
-    public TAPLoginOTPResponse(boolean success, String message, String phoneWithCode, long otpID, String otpKey, int codeLength, String channel, String whatsAppFailureReason, int nextRequestSeconds) {
+    public TAPOTPResponse(boolean success, String message, String phoneWithCode, long otpID, String otpKey, int codeLength, String channel, String whatsAppFailureReason, int nextRequestSeconds) {
         this.success = success;
         this.message = message;
         this.phoneWithCode = phoneWithCode;
@@ -25,7 +25,7 @@ public class TAPLoginOTPResponse {
         this.nextRequestSeconds = nextRequestSeconds;
     }
 
-    public TAPLoginOTPResponse() {
+    public TAPOTPResponse() {
     }
 
     public boolean isSuccess() {

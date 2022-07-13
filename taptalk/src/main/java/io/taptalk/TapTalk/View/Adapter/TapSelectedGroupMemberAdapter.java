@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import com.bumptech.glide.Glide;
@@ -75,7 +76,12 @@ public class TapSelectedGroupMemberAdapter extends TAPBaseAdapter<TapContactList
             if (null == user) {
                 return;
             }
-            if (null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
+            if (null != user.getDeleted() && user.getDeleted() > 0L) {
+                // Deleted user
+                Glide.with(itemView.getContext()).load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar);
+                ImageViewCompat.setImageTintList(civAvatar, null);
+                tvAvatarLabel.setVisibility(View.GONE);
+            } else if (null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                 Glide.with(itemView.getContext())
                         .load(user.getImageURL().getThumbnail())
                         .listener(new RequestListener<Drawable>() {

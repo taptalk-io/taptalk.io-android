@@ -10,6 +10,7 @@ import java.util.Map;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
@@ -95,6 +96,8 @@ public class TapCoreRoomListManager {
                             if (null != message.getIsDeleted() && message.getIsDeleted()) {
                                 TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
                             }
+
+                            TAPUtils.handleReceivedSystemMessage(instanceKey, message);
                         } catch (Exception e) {
                             if (null != listener) {
                                 listener.onError(ERROR_CODE_OTHERS, e.getMessage());
@@ -186,6 +189,8 @@ public class TapCoreRoomListManager {
                             if (null != message.getIsDeleted() && message.getIsDeleted()) {
                                 TAPDataManager.getInstance(instanceKey).deletePhysicalFile(entity);
                             }
+
+                            TAPUtils.handleReceivedSystemMessage(instanceKey, message);
                         } catch (Exception e) {
                             if (null != listener) {
                                 listener.onError(ERROR_CODE_OTHERS, e.getMessage());

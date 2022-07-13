@@ -105,6 +105,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OPEN_CHAT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.REFRESH_TOKEN_RENEWED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_PROFILE_PICTURE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RELOAD_ROOM_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
@@ -703,7 +704,7 @@ public class TapUIRoomListFragment extends Fragment {
 
         if (null != roomList && message.getType() == TYPE_SYSTEM_MESSAGE &&
                 null != message.getAction() &&
-                (message.getAction().equals(UPDATE_ROOM) || message.getAction().equals(UPDATE_USER))) {
+                (message.getAction().equals(UPDATE_ROOM) || message.getAction().equals(UPDATE_USER) || message.getAction().equals(DELETE_USER)) ) {
             // Update room details
             activity.runOnUiThread(() -> adapter.notifyItemChanged(vm.getRoomList().indexOf(roomList)));
         }
@@ -963,6 +964,8 @@ public class TapUIRoomListFragment extends Fragment {
                             // Store update profile system message
                             updateProfileSystemMessage = message;
                         }
+
+                        TAPUtils.handleReceivedSystemMessage(instanceKey, message);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

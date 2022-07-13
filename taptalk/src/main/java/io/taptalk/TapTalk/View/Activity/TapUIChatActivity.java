@@ -267,6 +267,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private ConstraintLayout clQuote;
     private ConstraintLayout clChatComposer;
     private ConstraintLayout clUserMentionList;
+    private ConstraintLayout clRoomStatus;
     private ConstraintLayout clRoomOnlineStatus;
     private ConstraintLayout clRoomTypingStatus;
     private ConstraintLayout clChatHistory;
@@ -614,12 +615,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (vm.isSelectState()) {
                         hideSelectState();
                     }
+                    TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                     if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
                         // Show message in composer
                         checkForwardLayout(null, intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                     } else {
                         // Open selected chat room
-                        TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                         start(TapUIChatActivity.this, instanceKey, room);
                         finish();
                     }
@@ -757,6 +758,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         clQuote = (ConstraintLayout) findViewById(R.id.cl_quote);
         clChatComposer = (ConstraintLayout) findViewById(R.id.cl_chat_composer);
         clUserMentionList = (ConstraintLayout) findViewById(R.id.cl_user_mention_list);
+        clRoomStatus = (ConstraintLayout) findViewById(R.id.cl_room_status);
         clRoomOnlineStatus = (ConstraintLayout) findViewById(R.id.cl_room_online_status);
         clRoomTypingStatus = (ConstraintLayout) findViewById(R.id.cl_room_typing_status);
         ivButtonBack = (ImageView) findViewById(R.id.iv_button_back);
@@ -880,7 +882,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
             tvRoomImageLabel.setVisibility(View.GONE);
         } else if (null != vm.getRoom() &&
                 TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
-                (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L) &&
+                (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L)) {
+            glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civRoomImage);
+            ImageViewCompat.setImageTintList(civRoomImage, null);
+            tvRoomImageLabel.setVisibility(View.GONE);
+            clRoomStatus.setVisibility(View.GONE);
+        } else if (null != vm.getRoom() &&
+                TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
                 null != vm.getOtherUserModel().getImageURL().getThumbnail() &&
                 !vm.getOtherUserModel().getImageURL().getThumbnail().isEmpty()) {
             // Load user avatar URL
@@ -967,7 +975,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
             }
         };
-
+        // Disable swipe in deleted user room
+        if ((null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType() && null != vm.getOtherUserModel() &&
+                (null != vm.getOtherUserModel().getDeleted() && vm.getOtherUserModel().getDeleted() > 0L))) {
+            rvMessageList.disableSwipe();
+        }
         // Initialize custom keyboard
         vm.setCustomKeyboardItems(TAPChatManager.getInstance(instanceKey).getCustomKeyboardItems(vm.getRoom(), vm.getMyUserModel(), vm.getOtherUserModel()));
         if (null != vm.getCustomKeyboardItems() && vm.getCustomKeyboardItems().size() > 0) {
@@ -1009,7 +1021,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
         // Load items from database for the first time
         if (vm.getRoom().isDeleted()) {
             //showRoomIsUnavailableState();
-            showChatAsHistory(getString(R.string.tap_group_unavailable));
+            if (vm.getRoom().getType() == TYPE_PERSONAL) {
+                showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
+            } else {
+                showChatAsHistory(getString(R.string.tap_group_unavailable));
+            }
         } else if (null != vm.getOtherUserModel() && null != vm.getOtherUserModel().getDeleted()) {
             showChatAsHistory(getString(R.string.tap_this_user_is_no_longer_available));
         }
@@ -1051,7 +1067,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
         ivForward.setOnClickListener(v -> forwardMessages());
 
-        if (TapUI.getInstance().isSendVoiceNoteMenuEnabled()) {
+        if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
                 showTooltip();
             });
@@ -1966,6 +1982,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_RECORD_AUDIO);
         } else {
+            messageAdapter.removePlayer();
+            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(messageAdapter.getLastLocalId())));
             setLockedRecordingState();
             audioManager.startRecording();
             audioManager.getRecordingTime().observe(TapUIChatActivity.this, s -> tvRecordTime.setText(s));
@@ -2034,11 +2052,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
             case DEFAULT:
             case HOLD_RECORD:
             case LOCKED_RECORD:
-                stopRecording();
                 if (!messageAdapter.lastLocalId.isEmpty()) {
                     messageAdapter.removePlayer();
                     messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(messageAdapter.lastLocalId)));
                 }
+                showFinishedRecording();
+                break;
+        }
+    }
+
+    private void showFinishedRecording() {
+        if (recordingState == RECORDING_STATE.HOLD_RECORD || recordingState == RECORDING_STATE.LOCKED_RECORD || recordingState == RECORDING_STATE.FINISH) {
+            if (audioManager.getRecordingSeconds() < 1) {
+                removeRecording();
+            } else {
+                stopRecording();
                 vm.setAudioFile(audioManager.getRecording());
                 MediaScannerConnection.scanFile(
                         TapUIChatActivity.this,
@@ -2053,7 +2081,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         });
                 setFinishedRecordingState();
                 setSendButtonEnabled();
-                break;
+            }
         }
     }
 
@@ -2145,6 +2173,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             @Override
             public void run() {
                 runOnUiThread(() -> {
+                    // TODO: 04/07/22 prevent crash zero duration MU
                     if (vm.getMediaPlayer() != null) {
                         seekBar.setProgress(vm.getMediaPlayer().getCurrentPosition() * seekBar.getMax() / vm.getDuration());
                     }
@@ -2437,6 +2466,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showUserOnline() {
         runOnUiThread(() -> {
             if (0 >= vm.getGroupTypingSize()) {
+                clRoomStatus.setVisibility(View.VISIBLE);
                 clRoomTypingStatus.setVisibility(View.GONE);
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
@@ -2450,6 +2480,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private void showUserOffline() {
         runOnUiThread(() -> {
             if (0 >= vm.getGroupTypingSize()) {
+                clRoomStatus.setVisibility(View.VISIBLE);
                 clRoomTypingStatus.setVisibility(View.GONE);
                 clRoomOnlineStatus.setVisibility(View.VISIBLE);
             }
@@ -2501,6 +2532,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         typingIndicatorTimeoutTimer.cancel();
         typingIndicatorTimeoutTimer.start();
         runOnUiThread(() -> {
+            clRoomStatus.setVisibility(View.VISIBLE);
             clRoomTypingStatus.setVisibility(View.VISIBLE);
             clRoomOnlineStatus.setVisibility(View.GONE);
 
@@ -2522,6 +2554,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         typingIndicatorTimeoutTimer.cancel();
         runOnUiThread(() -> {
             vm.getGroupTyping().clear();
+            clRoomStatus.setVisibility(View.VISIBLE);
             clRoomTypingStatus.setVisibility(View.GONE);
             clRoomOnlineStatus.setVisibility(View.VISIBLE);
         });
@@ -2704,9 +2737,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 clChatComposer.setVisibility(View.INVISIBLE);
                 etChat.clearFocus();
             }
-            if (null != vRoomImage) {
-                vRoomImage.setClickable(false);
-            }
             if (null != llButtonDeleteChat) {
                 llButtonDeleteChat.setOnClickListener(llDeleteGroupClickListener);
             }
@@ -2815,6 +2845,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
         if (recordingState == RECORDING_STATE.FINISH || recordingState == RECORDING_STATE.PLAY || recordingState == RECORDING_STATE.PAUSE) {
             //send voice note
             TAPChatManager.getInstance(instanceKey).sendVoiceNoteMessage(this, vm.getRoom(), audioManager.getRecording());
+            vm.setPausedPosition(0);
+            stopProgressTimer();
+            if (vm.getMediaPlayer() != null) {
+                if (vm.getMediaPlayer().isPlaying()) {
+                    vm.getMediaPlayer().stop();
+                }
+                vm.setMediaPlayer(null);
+            }
+            seekBar.setProgress(0);
             setDefaultState();
         } else if (recordingState == RECORDING_STATE.DEFAULT) {
             etChat.setText("");
@@ -3780,6 +3819,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case PlayPauseVoiceNote:
+                    showFinishedRecording();
                     TAPMessageModel voiceMessage = intent.getParcelableExtra(MESSAGE);
                     boolean isPlaying = intent.getBooleanExtra(IS_PLAYING, false);
                     if (isPlaying) {
@@ -3789,10 +3829,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     break;
                 case LongPressChatBubble:
+                    //disable long press in deleted user room
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
-                        TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds());
-                        chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
-                        TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                        if (TYPE_PERSONAL != vm.getRoom().getType() || (null != vm.getOtherUserModel() && (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L))) {
+                            TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds());
+                            chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
+                            TAPUtils.dismissKeyboard(TapUIChatActivity.this);
+                        }
                     }
                     break;
                 case LongPressLink:
@@ -4954,6 +4997,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
         String forwardCountText = vm.getSelectedMessages().size() + "/" + MAX_FORWARD_COUNT +" " + getString(R.string.tap_selected);
         tvForwardCount.setText(forwardCountText);
         messageAdapter.notifyDataSetChanged();
+        if (clQuote.getVisibility() == View.VISIBLE) {
+            clQuote.setVisibility(View.GONE);
+        }
+        hideKeyboards();
+        etChat.setText("");
+        rvMessageList.disableSwipe();
     }
 
     private void hideSelectState() {
@@ -4963,6 +5012,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ivButtonBack.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.tap_ic_chevron_left_white));
         vm.clearSelectedMessages();
         messageAdapter.notifyDataSetChanged();
+        rvMessageList.enableSwipe();
     }
 
     private void forwardMessages() {

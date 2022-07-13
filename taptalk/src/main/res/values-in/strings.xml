@@ -250,7 +250,7 @@
     <string name="tap_compose">Tulis</string>
     <string name="tap_call">Telepon</string>
     <string name="tap_send_sms">SMS</string>
-    <string name="tap_delete">Hapus Pesan</string>
+    <string name="tap_delete_message">Hapus Pesan</string>
     <string name="tap_view_profile">Lihat Profil</string>
 
     <!--Products-->
@@ -401,12 +401,30 @@
     <string name="zero_colon_zero">00:00</string>
     <string name="tap_selected">Selected</string>
     <string name="tap_forward_sf_messages">Forward %d Messages</string>
+    <string name="tap_delete_my_account">Hapus Akun Saya</string>
+    <string name="tap_thank_you_using_taptalk">Terima kasih telah menggunakan TapTalk!</string>
+    <string name="tap_deleting_your_account">Menghapus akun TapTalk kamu berarti:</string>
+    <string name="tap_dot">•</string>
+    <string name="tap_wording_delete_account1">Menghapus semua informasi dan foto profilmu dari TapTalk</string>
+    <string name="tap_wording_delete_account2">Menghapus semua pesan obrolan</string>
+    <string name="tap_wording_delete_account3">Menghapusmu dari semua grup di TapTalk</string>
+    <string name="tap_wording_delete_account4">Kamu tidak akan bisa mendapatkan kembali akunmu saat kamu masuk kembali dengan nomor telepon yang sama</string>
+    <string name="tap_tell_us_dots">Beritahu kami mengapa anda ingin pergi...</string>
+    <string name="tap_wording_accpet_agreement">Saya telah memahami dan menyetujui penghapusan data, pesan obrolan dan kontak saya</string>
+    <string name="tap_warning_delete_account">Setelah terkonfirmasi, semua data di akun anda akan terhapus secara permanen.</string>
     <string name="tap_edited_dot">Edited •</string>
     <string name="tap_edit_message">Edit Message</string>
     <string name="tap_wording_save_spesific_message">Simpan pesan tertentu untuk di lihat kembali secara mudah</string>
     <string name="tap_empty_saved_message_1">Teruskan pesan kesini</string>
     <string name="tap_empty_saved_message_2">Kirim media dan berkas untuk disimpan</string>
     <string name="tap_empty_saved_message_3">Akses obrolan dari perangkat kamu yang lain</string>
-    <string name="tap_dot">•</string>
+    <string name="tap_wording_oops_only_admin">Oops! Anda satu-satunya admin.</string>
+    <string name="tap_wording_sign_to_another_member">Kamu adalah admin satu-satunya di grup, berikan admin kepada anggota grup lainnya jika kamu tetap ingin melanjutkan penghapusan akun TapTalk mu.</string>
+    <string name="tap_wording_delete_account">Kamu akan menghapus seluruh data, kontak dan pesan obrolan di TapTalk secara permanen, lanjutkan?</string>
+    <string name="tap_delete">Hapus</string>
+    <string name="tap_why_delete_account">Mengapa kamu ingin menghapus akunmu? (Opsional)</string>
+    <string name="tap_verification">Verifikasi</string>
+    <string name="tap_verification_succeed">Verifikasi berhasil, sampai jumpa kembali!</string>
+    <string name="tap_deleted_user">Deleted User</string>
 
 </resources>

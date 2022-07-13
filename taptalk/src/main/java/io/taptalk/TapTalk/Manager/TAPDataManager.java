@@ -1,5 +1,45 @@
 package io.taptalk.TapTalk.Manager;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_AGENT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_CONTACT_SYNC_ALLOWED_BY_USER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASKED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_CHAT_ROOM_CONTACT_ACTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_CONTACT_LIST_UPDATED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_UNREAD_ROOM_LIST;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_CODE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_FLAG_URL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.CORE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.CUSTOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.PROJECT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -46,13 +86,13 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
@@ -60,51 +100,10 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
-import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.Model.TapConfigs;
 import okhttp3.ResponseBody;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.APP_SECRET;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CustomHeaderKey.USER_AGENT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_CONTACT_SYNC_ALLOWED_BY_USER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IS_PERMISSION_SYNC_ASKED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_ACCESS_TOKEN_EXPIRY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_AUTH_TICKET;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_CHAT_ROOM_CONTACT_ACTION;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_COUNTRY_LIST;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_PATH_MAP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_FILE_URI_MAP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_GROUP_DATA_MAP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_CONTACT_LIST_UPDATED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_UNREAD_ROOM_LIST;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_USER_LAST_ACTIVITY;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.LAST_CALL_COUNTRY_TIMESTAMP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_CODE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MY_COUNTRY_FLAG_URL;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_ID;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_FIREBASE_TOKEN;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Notification.K_NOTIFICATION_MESSAGE_MAP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.OldDataConst.K_LAST_DELETE_TIMESTAMP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.CORE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.CUSTOM;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigType.PROJECT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_GROUP;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadCancelled;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.UploadBroadcastEvent.UploadLocalID;
 
 public class TAPDataManager {
     private static final String TAG = TAPDataManager.class.getSimpleName();
@@ -897,6 +896,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance(instanceKey).getMessageByLocalIDs(localIDs, listener);
     }
 
+    public void getMessageBySenderUserIDFromDatabase(String userID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getMessageBySenderUserID(userID, listener);
+    }
+
     public void getRoomList(List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser()) {
             return;
@@ -1100,15 +1103,11 @@ public class TAPDataManager {
                 fullname, email, phone, username, new TAPDefaultSubscriber<>(view));
     }
 
-    public void sendCustomMessage(Integer messageType, String body, String filterID, String senderUserID, String recipientUserID, TAPDefaultDataView<TAPSendCustomMessageResponse> view) {
-        TAPApiManager.getInstance(instanceKey).sendCustomMessage(messageType, body, filterID, senderUserID, recipientUserID, new TAPDefaultSubscriber<>(view));
-    }
-
     public void getAccessTokenFromApi(TAPDefaultDataView<TAPGetAccessTokenResponse> view) {
         TAPApiManager.getInstance(instanceKey).getAccessToken(new TAPDefaultSubscriber<>(view));
     }
 
-    public void requestOTPLogin(int countryID, String phone, String channel, TAPDefaultDataView<TAPLoginOTPResponse> view) {
+    public void requestOTPLogin(int countryID, String phone, String channel, TAPDefaultDataView<TAPOTPResponse> view) {
         TAPApiManager.getInstance(instanceKey).requestOTPLogin("phone", countryID, phone, channel, new TAPDefaultSubscriber<>(view));
     }
 
@@ -1131,6 +1130,14 @@ public class TAPDataManager {
 
     public void registerFcmTokenToServer(String fcmToken, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance(instanceKey).registerFcmTokenToServer(fcmToken, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void sendCustomMessage(String roomID, String localID, Integer messageType, String body, HashMap<String, Object> data, String filterID, Boolean isHidden, TAPDefaultDataView<TAPCommonResponse> view) {
+        String recipientUserID = "";
+        if (roomID.contains("-")) {
+            recipientUserID = TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomID);
+        }
+        TAPApiManager.getInstance(instanceKey).sendCustomMessage(recipientUserID.isEmpty() ? roomID : "", recipientUserID, localID, messageType, body, data, filterID, isHidden, new TAPDefaultSubscriber<>(view));
     }
 
     public void getMessageRoomListAndUnread(String userID, TAPDefaultDataView<TAPGetRoomListResponse> view) {
@@ -1433,5 +1440,17 @@ public class TAPDataManager {
 
     public void getUnreadRoomIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
         TAPApiManager.getInstance(instanceKey).getUnreadRoomIds(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void requestDeleteAccountOtp(String channel, TAPDefaultDataView<TAPOTPResponse> view) {
+        TAPApiManager.getInstance(instanceKey).requestDeleteAccountOtp(channel, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void checkDeleteAccountState(TAPDefaultDataView<TapCheckDeleteAccountStateResponse> view) {
+        TAPApiManager.getInstance(instanceKey).checkDeleteAccountState(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void verifyOtpDeleteAccount(long otpID, String otpKey, String otpCode, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
+        TAPApiManager.getInstance(instanceKey).verifyOtpDeleteAccount(otpID, otpKey, otpCode, reason, new TAPDefaultSubscriber<>(view));
     }
 }

@@ -8,13 +8,16 @@ import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_BASE_URL;
 
 import android.app.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.multidex.MultiDexApplication;
 
 import com.facebook.stetho.Stetho;
 
 import io.moselo.SampleApps.Activity.TAPLoginActivity;
+import io.moselo.SampleApps.Activity.TapDeleteAccountActivity;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
+import io.taptalk.TapTalk.Listener.TapUIMyAccountListener;
 import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
@@ -51,6 +54,14 @@ public class SampleApplication extends MultiDexApplication {
 
         TapUI.getInstance(INSTANCE_KEY).setLogoutButtonVisible(true);
         TapUI.getInstance(INSTANCE_KEY).setConnectionStatusIndicatorVisible(false);
+        TapUI.getInstance(INSTANCE_KEY).setDeleteAccountButtonVisible(true);
+        TapUI.getInstance(INSTANCE_KEY).addMyAccountListener(new TapUIMyAccountListener() {
+            @Override
+            public void onDeleteButtonInMyAccountPageTapped(@NonNull Activity activity) {
+                super.onDeleteButtonInMyAccountPageTapped(activity);
+                TapDeleteAccountActivity.Companion.start(activity, INSTANCE_KEY);
+            }
+        });
 
         if (BuildConfig.DEBUG) {
             TapUI.getInstance(INSTANCE_KEY).setCloseButtonInRoomListVisible(true);

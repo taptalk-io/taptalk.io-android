@@ -106,6 +106,19 @@
                 app:layout_constraintTop_toTopOf="@id/vp_profile_picture"
                 tools:text="MU" />
 
+            <ImageView
+                android:id="@+id/iv_deleted_user"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                android:scaleType="centerInside"
+                android:src="@drawable/tap_ic_deleted_user_large"
+                app:layout_constraintBottom_toBottomOf="@id/vp_profile_picture"
+                app:layout_constraintEnd_toEndOf="@id/vp_profile_picture"
+                app:layout_constraintStart_toStartOf="@id/vp_profile_picture"
+                app:layout_constraintTop_toTopOf="@id/vp_profile_picture"
+                tools:text="MU" />
+
             <include
                 android:id="@+id/cl_basic_info"
                 android:layout_height="wrap_content"

@@ -196,6 +196,13 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getMessageBySenderUserID(String userID, final TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> entities = messageDao.getMessageBySenderUserID(userID);
+            listener.onSelectFinished(entities);
+        }).start();
+    }
+
     public TAPMessageEntity generateMessageEntity(TAPMessageEntityWithUnreadCount room) {
         return new TAPMessageEntity(room.getMessageID(), room.getLocalID(), room.getFilterID(),
                 room.getBody(), room.getRecipientID(), room.getType(), room.getCreated(),

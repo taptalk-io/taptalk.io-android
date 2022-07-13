@@ -320,7 +320,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete)
+            titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
@@ -410,7 +410,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete)
+            titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
@@ -497,7 +497,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete)
+            titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
@@ -562,7 +562,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete)
+            titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
@@ -615,7 +615,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete)
+            titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 
@@ -676,7 +676,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         ) {
             // Delete
             imageResIds.add(R.drawable.tap_ic_delete_red)
-            titleResIds.add(R.string.tap_delete)
+            titleResIds.add(R.string.tap_delete_message)
             ids.add(TAPAttachmentModel.LONG_PRESS_DELETE)
         }
 

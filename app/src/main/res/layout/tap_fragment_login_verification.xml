@@ -17,9 +17,26 @@
         android:paddingRight="15dp"
         android:paddingBottom="12dp"
         android:src="@drawable/tap_ic_chevron_left_white"
-        android:tint="@color/tapIconNavigationBarBackButton"
+        app:tint="@color/tapIconNavigationBarBackButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_toolbar_title"
+        style="@style/tapNavBarTitleLabelStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="?attr/actionBarSize"
+        android:layout_marginRight="?attr/actionBarSize"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="@string/tap_verification"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/iv_back_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_back_button"
+        app:layout_constraintTop_toTopOf="@id/iv_back_button" />
 
     <LinearLayout
         android:id="@+id/ll_otp_verification"
@@ -60,8 +77,18 @@
                 android:layout_gravity="center_horizontal"
                 tools:text="SMS to +628197304402" />
         </LinearLayout>
+        
+        <ImageView
+            android:id="@+id/iv_check"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginTop="48dp"
+            android:visibility="gone"
+            android:src="@drawable/tap_ic_rounded_check_green" />
 
         <FrameLayout
+            android:id="@+id/fl_otp"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -336,7 +363,7 @@
                     android:layout_marginRight="6dp"
                     android:layout_marginEnd="6dp"
                     android:src="@drawable/tap_ic_loading_progress_circle_white"
-                    android:tint="@color/tapIconLoadingProgressPrimary" />
+                    app:tint="@color/tapIconLoadingProgressPrimary" />
 
                 <TextView
                     android:id="@+id/tv_loading_otp"
@@ -364,7 +391,7 @@
                     android:layout_marginRight="6dp"
                     android:layout_marginEnd="6dp"
                     android:src="@drawable/tap_ic_circle_active"
-                    android:tint="@color/tapLoginVerificationStatusSuccessLabelColor" />
+                    app:tint="@color/tapLoginVerificationStatusSuccessLabelColor" />
 
                 <TextView
                     android:id="@+id/tv_otp_sent"

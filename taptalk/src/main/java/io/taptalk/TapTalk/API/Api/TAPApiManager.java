@@ -1,5 +1,9 @@
 package io.taptalk.TapTalk.API.Api;
 
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.TOKEN_EXPIRED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -21,6 +25,7 @@ import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Exception.TAPApiRefreshTokenRunningException;
 import io.taptalk.TapTalk.Exception.TAPApiSessionExpiredException;
 import io.taptalk.TapTalk.Exception.TAPAuthException;
+import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.AnalyticsManager;
@@ -38,12 +43,10 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomAfterRequest
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMessageListByRoomBeforeRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetMultipleUserByIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetRoomByXcRoomIDRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByUsernameRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPGetUserByXcUserIdRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TAPLoginOTPVerifyRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPOTPRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TAPOTPVerifyRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPPushNotificationRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPRegisterRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPSendCustomMessageRequest;
@@ -51,6 +54,8 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
@@ -70,13 +75,13 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TAPOTPResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPLoginOTPVerifyResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPRegisterResponse;
-import io.taptalk.TapTalk.Model.ResponseModel.TAPSendCustomMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
@@ -92,10 +97,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.TOKEN_EXPIRED;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.RESPONSE_SUCCESS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.HttpResponseStatusCode.UNAUTHORIZED;
 
 public class TAPApiManager {
     private static final String TAG = TAPApiManager.class.getSimpleName();
@@ -273,22 +274,17 @@ public class TAPApiManager {
         execute(homingPigeon.getAuthTicket(request), subscriber);
     }
 
-    public void sendCustomMessage(Integer messageType, String body, String filterID, String senderUserID, String recipientUserID, Subscriber<TAPBaseResponse<TAPSendCustomMessageResponse>> subscriber) {
-        TAPSendCustomMessageRequest request = new TAPSendCustomMessageRequest(messageType, body, filterID, senderUserID, recipientUserID);
-        execute(homingPigeon.sendCustomMessage(request), subscriber);
-    }
-
     public void getAccessToken(Subscriber<TAPBaseResponse<TAPGetAccessTokenResponse>> subscriber) {
         execute(homingPigeon.getAccessToken("Bearer " + TAPDataManager.getInstance(instanceKey).getAuthTicket()), subscriber);
     }
 
-    public void requestOTPLogin(String loginMethod, int countryID, String phone, String channel, Subscriber<TAPBaseResponse<TAPLoginOTPResponse>> subscriber) {
-        TAPLoginOTPRequest request = new TAPLoginOTPRequest(loginMethod, countryID, phone, channel);
+    public void requestOTPLogin(String loginMethod, int countryID, String phone, String channel, Subscriber<TAPBaseResponse<TAPOTPResponse>> subscriber) {
+        TAPOTPRequest request = new TAPOTPRequest(loginMethod, countryID, phone, channel);
         execute(homingPigeon.requestOTPLogin(request), subscriber);
     }
 
     public void verifyingOTPLogin(long otpID, String otpKey, String otpCode, Subscriber<TAPBaseResponse<TAPLoginOTPVerifyResponse>> subscriber) {
-        TAPLoginOTPVerifyRequest request = new TAPLoginOTPVerifyRequest(otpID, otpKey, otpCode);
+        TAPOTPVerifyRequest request = new TAPOTPVerifyRequest(otpID, otpKey, otpCode);
         execute(homingPigeon.verifyingOTPLogin(request), subscriber);
     }
 
@@ -331,6 +327,20 @@ public class TAPApiManager {
     public void registerFcmTokenToServer(String fcmToken, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
         TAPPushNotificationRequest request = TAPPushNotificationRequest.Builder(fcmToken);
         execute(homingPigeon.registerFcmTokenToServer(request), subscriber);
+    }
+
+    public void sendCustomMessage(String roomID, String recipientUserID, String localID, Integer messageType, String body, HashMap<String, Object> data, String filterID, Boolean isHidden, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPSendCustomMessageRequest request = new TAPSendCustomMessageRequest(
+                roomID,
+                recipientUserID,
+                localID,
+                messageType,
+                body,
+                TAPUtils.toJsonString(data),
+                filterID,
+                isHidden
+        );
+        execute(homingPigeon.sendCustomMessage(request), subscriber);
     }
 
     public void getRoomList(String userID, Subscriber<TAPBaseResponse<TAPGetRoomListResponse>> subscriber) {
@@ -650,5 +660,19 @@ public class TAPApiManager {
 
     public void getUnreadRoomIds(Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
         execute(homingPigeon.getUnreadRoomIds(), subscriber);
+    }
+
+    public void requestDeleteAccountOtp(String channel, Subscriber<TAPBaseResponse<TAPOTPResponse>> subscriber) {
+        TAPOTPRequest request = new TAPOTPRequest(channel);
+        execute(homingPigeon.requestDeleteAccountOtp(request), subscriber);
+    }
+
+    public void checkDeleteAccountState(Subscriber<TAPBaseResponse<TapCheckDeleteAccountStateResponse>> subscriber) {
+        execute(homingPigeon.checkDeleteAccountState(), subscriber);
+    }
+
+    public void verifyOtpDeleteAccount(long otpID, String otpKey, String otpCode, String reason, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
+        TAPOTPVerifyRequest request = new TAPOTPVerifyRequest(otpID, otpKey, otpCode, reason);
+        execute(homingPigeon.verifyOtpDeleteAccount(request), subscriber);
     }
 }

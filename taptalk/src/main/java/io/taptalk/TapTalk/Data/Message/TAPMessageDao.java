@@ -80,6 +80,9 @@ public interface TAPMessageDao {
     @Query("select * from Message_Table where localID in (:localIDs) order by created desc")
     List<TAPMessageEntity> getMessageByLocalIDs(List<String> localIDs);
 
+    @Query("select * from Message_Table where userID like :userID order by created desc")
+    List<TAPMessageEntity> getMessageBySenderUserID(String userID);
+
     @Query("select * from (select roomID, max(created) as max_created from Message_Table where isHidden = 0 group by roomID) secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created " +
             "group by firstQuery.roomID order by firstQuery.created desc")
     List<TAPMessageEntity> getAllRoomList();
