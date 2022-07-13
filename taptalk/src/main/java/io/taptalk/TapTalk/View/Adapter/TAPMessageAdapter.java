@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -380,6 +381,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vBubbleArea;
         private ImageView ivSelect;
         private TextView tvEdited;
+        private ImageButton ibOriginalMessage;
 
         TextVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -409,6 +411,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
                 tvUserName = itemView.findViewById(R.id.tv_user_name);
+                ibOriginalMessage = itemView.findViewById(R.id.ib_original_message);
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivSending = itemView.findViewById(R.id.iv_sending);
@@ -433,6 +436,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             showForwardedFrom(item, clForwarded, tvForwardedFrom);
             showOrHideQuote(item, itemView, clQuote, tvQuoteTitle, tvQuoteContent, rcivQuoteImage, vQuoteBackground, vQuoteDecoration);
             setSelectedState(item, ivSelect, vBubbleArea);
+            setOriginalMessageButton(item, ibOriginalMessage);
             //expandOrShrinkBubble(item, itemView, flBubble, tvMessageStatus, ivMessageStatus, ivReply, false);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
 
@@ -521,6 +525,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageView ivSelect;
         private TextView tvEdited;
         private TextView tvEditedBody;
+        private ImageButton ibOriginalMessage;
 
         private TAPMessageModel obtainedItem;
         private Drawable thumbnail;
@@ -561,6 +566,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (bubbleType == TYPE_BUBBLE_IMAGE_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
+                ibOriginalMessage = itemView.findViewById(R.id.ib_original_message);
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivMessageStatusImage = itemView.findViewById(R.id.iv_message_status_image);
@@ -587,6 +593,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setImageData(item, position);
             fixBubbleMarginForGroupRoom(item, flBubble);
             setSelectedState(item, ivSelect, vBubbleArea);
+            setOriginalMessageButton(item, ibOriginalMessage);
 
             markMessageAsRead(item, myUserModel);
             if (roomType != RoomType.STARRED) {
@@ -913,6 +920,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ImageView ivSelect;
         private TextView tvEdited;
         private TextView tvEditedBody;
+        private ImageButton ibOriginalMessage;
 
         private TAPMessageModel obtainedItem;
         private Uri videoUri;
@@ -955,6 +963,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (bubbleType == TYPE_BUBBLE_VIDEO_LEFT) {
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
+                ibOriginalMessage = itemView.findViewById(R.id.ib_original_message);
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivMessageStatusImage = itemView.findViewById(R.id.iv_message_status_image);
@@ -982,6 +991,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             setVideoProgress(item, position);
             fixBubbleMarginForGroupRoom(item, flBubble);
+            setOriginalMessageButton(item, ibOriginalMessage);
 
             markMessageAsRead(item, myUserModel);
             if (roomType != RoomType.STARRED) {
@@ -1368,6 +1378,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vSeparator;
         private View vBubbleArea;
         private ImageView ivSelect;
+        private ImageButton ibOriginalMessage;
 
         private Uri fileUri;
 
@@ -1403,6 +1414,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
                 tvUserName = itemView.findViewById(R.id.tv_user_name);
+                ibOriginalMessage = itemView.findViewById(R.id.ib_original_message);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     flFileIcon.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_file_button_left_ripple));
                 } else {
@@ -1437,6 +1449,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
+            setOriginalMessageButton(item, ibOriginalMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
@@ -1648,6 +1661,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private SeekBar seekBar;
         private View vBubbleArea;
         private ImageView ivSelect;
+        private ImageButton ibOriginalMessage;
 
         private Uri fileUri;
 
@@ -1682,6 +1696,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
                 tvUserName = itemView.findViewById(R.id.tv_user_name);
+                ibOriginalMessage = itemView.findViewById(R.id.ib_original_message);
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivSending = itemView.findViewById(R.id.iv_sending);
@@ -1706,6 +1721,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
+            setOriginalMessageButton(item, ibOriginalMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
@@ -1920,6 +1936,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vSeparator;
         private View vBubbleArea;
         private ImageView ivSelect;
+        private ImageButton ibOriginalMessage;
 
         LocationVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -1955,6 +1972,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 civAvatar = itemView.findViewById(R.id.civ_avatar);
                 tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
                 tvUserName = itemView.findViewById(R.id.tv_user_name);
+                ibOriginalMessage = itemView.findViewById(R.id.ib_original_message);
             } else {
                 ivMessageStatus = itemView.findViewById(R.id.iv_message_status);
                 ivSending = itemView.findViewById(R.id.iv_sending);
@@ -1976,6 +1994,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setSelectedState(item, ivSelect, vBubbleArea);
             checkAndAnimateHighlight(item, ivBubbleHighlight);
             fixBubbleMarginForGroupRoom(item, flBubble);
+            setOriginalMessageButton(item, ibOriginalMessage);
 
             if ((null != item.getQuote() && null != item.getQuote().getTitle() && !item.getQuote().getTitle().isEmpty()) ||
                     (null != item.getForwardFrom() && null != item.getForwardFrom().getFullname() && !item.getForwardFrom().getFullname().isEmpty()) ||
@@ -3512,6 +3531,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         } else {
             selectRadioButton.setVisibility(View.GONE);
             bubbleArea.setVisibility(View.GONE);
+        }
+    }
+
+    private void setOriginalMessageButton(TAPMessageModel message, View button) {
+        if (button != null) {
+            String userID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+            if (vm.isSelectState() || !message.getRoom().getRoomID().equals(String.format("%s-%s", userID, userID))) {
+                button.setVisibility(View.GONE);
+            } else {
+                button.setOnClickListener(view -> {
+                    // TODO: 13/07/22 move to original message MU
+                });
+                button.setVisibility(View.VISIBLE);
+            }
         }
     }
 }
