@@ -69,6 +69,7 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
@@ -1289,5 +1290,10 @@ public class TAPUtils {
             indexRight += 1;
             indexCombine += 1;
         }
+    }
+
+    public static boolean isSavedMessagesRoom(String roomID, String instanceKey) {
+        String userID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+        return roomID.equals(String.format("%s-%s", userID, userID));
     }
 }

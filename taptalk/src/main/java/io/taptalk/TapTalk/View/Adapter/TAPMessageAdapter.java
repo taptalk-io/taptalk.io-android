@@ -31,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -3545,8 +3544,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     private void setOriginalMessageButton(TAPMessageModel message, View button) {
         if (button != null) {
-            String userID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
-            if (vm.isSelectState() || !message.getRoom().getRoomID().equals(String.format("%s-%s", userID, userID))) {
+            if (vm.isSelectState() || !TAPUtils.isSavedMessagesRoom(message.getRoom().getRoomID(), instanceKey)) {
                 button.setVisibility(View.GONE);
             } else {
                 button.setOnClickListener(view -> chatListener.onArrowButtonClicked(message));

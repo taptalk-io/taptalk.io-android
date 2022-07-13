@@ -2913,7 +2913,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             runOnUiThread(() -> {
                 // Remove empty chat layout if still shown
                 if (null == newMessage.getIsHidden() || !newMessage.getIsHidden()) {
-                    if (isSavedMessages() && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
+                    if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
                         cvEmptySavedMessages.setVisibility(View.GONE);
                     } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
                         clEmptyChat.setVisibility(View.GONE);
@@ -2990,7 +2990,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             runOnUiThread(() -> {
                 // Remove empty chat layout if still shown
                 if (null == newMessage.getIsHidden() || !newMessage.getIsHidden()) {
-                    if (isSavedMessages() && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
+                    if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
                         cvEmptySavedMessages.setVisibility(View.GONE);
                     } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
                         clEmptyChat.setVisibility(View.GONE);
@@ -3976,7 +3976,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (models.size() == 0 || finalAllMessagesHidden) {
                         // Chat is empty
                         // TODO: 24 September 2018 CHECK ROOM TYPE
-                        if (isSavedMessages()) {
+                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
                             cvEmptySavedMessages.setVisibility(View.VISIBLE);
                         } else {
                             clEmptyChat.setVisibility(View.VISIBLE);
@@ -4012,7 +4012,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         vm.setMessageModels(models);
                         state = STATE.LOADED;
                         if (!finalAllMessagesHidden) {
-                            if (isSavedMessages() && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
+                            if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
                                 cvEmptySavedMessages.setVisibility(View.GONE);
                             } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
                                 clEmptyChat.setVisibility(View.GONE);
@@ -4050,7 +4050,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             } else if (null != messageAdapter) {
                 runOnUiThread(() -> {
                     if (!finalAllMessagesHidden) {
-                        if (isSavedMessages() && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
+                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
                             cvEmptySavedMessages.setVisibility(View.GONE);
                         } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
                             clEmptyChat.setVisibility(View.GONE);
@@ -4402,7 +4402,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             boolean finalAllMessagesHidden = allMessagesHidden;
             runOnUiThread(() -> {
                 if (!finalAllMessagesHidden) {
-                    if (isSavedMessages() && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
+                    if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
                         cvEmptySavedMessages.setVisibility(View.GONE);
                     } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
                         clEmptyChat.setVisibility(View.GONE);
@@ -4617,14 +4617,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
             runOnUiThread(() -> {
                 if (0 < finalMessageBeforeModels.size() &&
                         !finalAllMessagesHidden) {
-                    if (isSavedMessages() && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
+                    if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
                         cvEmptySavedMessages.setVisibility(View.GONE);
                     } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
                         clEmptyChat.setVisibility(View.GONE);
                     }
                 }
                 if (!finalAllMessagesHidden) {
-                    if (isSavedMessages() && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
+                    if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && cvEmptySavedMessages.getVisibility() == View.VISIBLE) {
                         cvEmptySavedMessages.setVisibility(View.GONE);
                     } else if (clEmptyChat.getVisibility() == View.VISIBLE) {
                         clEmptyChat.setVisibility(View.GONE);
@@ -5050,11 +5050,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void forwardMessages() {
         TAPForwardPickerActivity.start(TapUIChatActivity.this, instanceKey, vm.getSelectedMessages());
-    }
-
-    private boolean isSavedMessages() {
-        String userId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
-        return vm.getRoom().getRoomID().equals(String.format("%s-%s", userId, userId));
     }
 
 //    private SwipeBackLayout.SwipeBackInterface swipeInterface = new SwipeBackLayout.SwipeBackInterface() {
