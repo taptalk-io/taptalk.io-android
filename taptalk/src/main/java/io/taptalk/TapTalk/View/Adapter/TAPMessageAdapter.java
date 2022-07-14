@@ -284,8 +284,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         try {
             TAPMessageModel messageModel = getItemAt(position);
             int messageType = 0;
-            if (null != messageModel && null != messageModel.getIsHidden() && messageModel.getIsHidden()) {
-                // Return empty layout if item is hidden
+            if (null != messageModel &&
+                    ((null != messageModel.getIsHidden() && messageModel.getIsHidden()) ||
+                    (null != messageModel.getIsDeleted() && messageModel.getIsDeleted() &&
+                    TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)))) {
+                // Return empty layout if item is hidden or deleted in saved messages room
                 return TYPE_EMPTY;
             } else if (null != messageModel && null != messageModel.getIsDeleted() && messageModel.getIsDeleted() && isMessageFromMySelf(messageModel)) {
                 return TYPE_BUBBLE_DELETED_RIGHT;
@@ -351,7 +354,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private boolean isMessageFromMySelf(TAPMessageModel messageModel) {
-        return myUserModel.getUserID().equals(messageModel.getUser().getUserID());
+        if (myUserModel.getUserID().equals(messageModel.getUser().getUserID())) {
+            if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                // forwarded message in saved messages room use left bubble
+                return messageModel.getForwardFrom() == null;
+            } else return true;
+        } else return false;
     }
 
     public class TextVH extends TAPBaseChatViewHolder {
