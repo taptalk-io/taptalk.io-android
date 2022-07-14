@@ -69,6 +69,7 @@ import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CustomMaterialFilePicker.ui.FilePickerActivity;
 import io.taptalk.TapTalk.Helper.CustomTabLayout.TAPCustomTabActivityHelper;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
@@ -1215,8 +1216,10 @@ public class TAPUtils {
             return;
         }
         if (message.getAction() != null && message.getAction().equals(DELETE_USER)) {
-            // Set value for message.user.deleted for existing messages from the deleted user
+            // Save user data
             TAPContactManager.getInstance(instanceKey).updateUserData(message.getUser());
+
+            // Set value for message.user.deleted for existing messages from the deleted user
             TAPDataManager.getInstance(instanceKey).getMessageBySenderUserIDFromDatabase(message.getUser().getUserID(), new TAPDatabaseListener<TAPMessageEntity>() {
                 @Override
                 public void onSelectFinished(List<TAPMessageEntity> entities) {
@@ -1225,7 +1228,28 @@ public class TAPUtils {
                         deletedUserMessage.setUserDeleted(message.getUser().getDeleted());
                         updatedEntities.add(deletedUserMessage);
                     }
-                    TAPDataManager.getInstance(instanceKey).insertToDatabase(updatedEntities, false);
+                    TAPDataManager.getInstance(instanceKey).insertToDatabase(updatedEntities, false, new TAPDatabaseListener() {
+                        @Override
+                        public void onInsertFinished() {
+                            // Set value for message.room.deleted for existing messages in deleted user's room
+                            String roomID = TAPChatManager.getInstance(instanceKey).arrangeRoomId(
+                                    TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(),
+                                    message.getUser().getUserID());
+                            TAPDataManager.getInstance(instanceKey).getAllMessagesInRoomFromDatabase(roomID, false, new TAPDatabaseListener<TAPMessageEntity>() {
+                                @Override
+                                public void onSelectFinished(List<TAPMessageEntity> entities) {
+                                    List<TAPMessageEntity> updatedEntities = new ArrayList<>();
+                                    for (TAPMessageEntity deletedRoomMessage : entities) {
+                                        deletedRoomMessage.setRoomLocked(true);
+                                        deletedRoomMessage.setRoomDeleted(true);
+                                        deletedRoomMessage.setRoomDeletedTimestamp(message.getUser().getDeleted());
+                                        updatedEntities.add(deletedRoomMessage);
+                                    }
+                                    TAPDataManager.getInstance(instanceKey).insertToDatabase(updatedEntities, false);
+                                }
+                            });
+                        }
+                    });
                 }
             });
         }
