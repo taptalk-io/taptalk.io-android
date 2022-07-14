@@ -144,6 +144,11 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
+            } else if (TAPUtils.isSavedMessagesRoom(room.getRoomID(), instanceKey)) {
+                // Saved messages
+                glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civAvatar);
+                ImageViewCompat.setImageTintList(civAvatar, null);
+                tvAvatarLabel.setVisibility(View.GONE);
             } else if (null != user  && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                 // Load user avatar
                 glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
