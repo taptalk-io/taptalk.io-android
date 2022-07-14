@@ -1354,7 +1354,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onGroupMemberAvatarClicked(TAPMessageModel message) {
-            if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID())) {
+            if (null == vm.getRoom() || !message.getRoom().getRoomID().equals(vm.getRoom().getRoomID()) ||
+                    (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) &&
+                    (message.getForwardFrom() == null || message.getForwardFrom().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())))) {
                 return;
             }
             openGroupMemberProfile(message.getUser());
