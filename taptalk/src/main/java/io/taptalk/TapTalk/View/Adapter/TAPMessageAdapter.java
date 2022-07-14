@@ -2694,15 +2694,64 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         } else {
             // Message from others
             if (item.getRoom().getType() == TYPE_PERSONAL) {
-                // Hide avatar and name for personal room
-                if (null != civAvatar) {
-                    civAvatar.setVisibility(View.GONE);
-                }
-                if (null != tvAvatarLabel) {
-                    tvAvatarLabel.setVisibility(View.GONE);
-                }
-                if (null != tvUserName) {
-                    tvUserName.setVisibility(View.GONE);
+                if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && item.getForwardFrom() != null) {
+                    // Saved messages room
+                    if (null != tvUserName) {
+                        tvUserName.setText(item.getForwardFrom().getFullname());
+                        tvUserName.setVisibility(View.VISIBLE);
+                    }
+                    if (null != civAvatar && null != tvAvatarLabel) {
+                        TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(item.getForwardFrom().getUserID());
+                        if (user != null) {
+                            if (null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
+                                glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
+                                    @Override
+                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                        if (vh.itemView.getContext() instanceof Activity) {
+                                            ((Activity) vh.itemView.getContext()).runOnUiThread(() -> showInitial(vh, item.getForwardFrom().getFullname(), civAvatar, tvAvatarLabel));
+                                        }
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                        return false;
+                                    }
+                                }).into(civAvatar);
+                                ImageViewCompat.setImageTintList(civAvatar, null);
+                                civAvatar.setVisibility(View.VISIBLE);
+                                tvAvatarLabel.setVisibility(View.GONE);
+                            } else {
+                                showInitial(vh, item.getForwardFrom().getFullname(), civAvatar, tvAvatarLabel);
+                            }
+                        } else {
+                            chatListener.onRequestUserData(item);
+                            showInitial(vh, item.getForwardFrom().getFullname(), civAvatar, tvAvatarLabel);
+                        }
+                        civAvatar.setOnClickListener(v -> {
+                            // Open group member profile
+                            if (roomType == RoomType.STARRED) {
+                                chatListener.onOutsideClicked(item);
+                            } else {
+                                Activity activity = (Activity) vh.itemView.getContext();
+                                if (null == activity) {
+                                    return;
+                                }
+                                chatListener.onGroupMemberAvatarClicked(item);
+                            }
+                        });
+                    }
+                } else {
+                    // Hide avatar and name for personal room
+                    if (null != civAvatar) {
+                        civAvatar.setVisibility(View.GONE);
+                    }
+                    if (null != tvAvatarLabel) {
+                        tvAvatarLabel.setVisibility(View.GONE);
+                    }
+                    if (null != tvUserName) {
+                        tvUserName.setVisibility(View.GONE);
+                    }
                 }
             } else {
                 // Load avatar and name for other room types
@@ -2716,7 +2765,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             if (vh.itemView.getContext() instanceof Activity) {
-                                ((Activity) vh.itemView.getContext()).runOnUiThread(() -> showInitial(vh, item, civAvatar, tvAvatarLabel));
+                                ((Activity) vh.itemView.getContext()).runOnUiThread(() -> showInitial(vh, item.getUser().getFullname(), civAvatar, tvAvatarLabel));
                             }
                             return false;
                         }
@@ -2734,7 +2783,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             if (vh.itemView.getContext() instanceof Activity) {
-                                ((Activity) vh.itemView.getContext()).runOnUiThread(() -> showInitial(vh, item, civAvatar, tvAvatarLabel));
+                                ((Activity) vh.itemView.getContext()).runOnUiThread(() -> showInitial(vh, item.getUser().getFullname(), civAvatar, tvAvatarLabel));
                             }
                             return false;
                         }
@@ -2748,7 +2797,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     civAvatar.setVisibility(View.VISIBLE);
                     tvAvatarLabel.setVisibility(View.GONE);
                 } else if (null != civAvatar && null != tvAvatarLabel) {
-                    showInitial(vh, item, civAvatar, tvAvatarLabel);
+                    showInitial(vh, item.getUser().getFullname(), civAvatar, tvAvatarLabel);
                 }
                 if (null != tvUserName) {
                     if ((null != user && null != user.getDeleted() && user.getDeleted() > 0L) || (null != item.getUser().getDeleted() && item.getUser().getDeleted() > 0L)) {
@@ -2777,12 +2826,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
-    private void showInitial(TAPBaseChatViewHolder vh, TAPMessageModel item,
+    private void showInitial(TAPBaseChatViewHolder vh, String fullName,
                              CircleImageView civAvatar, TextView tvAvatarLabel) {
         // Show initial
-        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(vh.itemView.getContext(), item.getUser().getFullname())));
+        ImageViewCompat.setImageTintList(civAvatar, ColorStateList.valueOf(TAPUtils.getRandomColor(vh.itemView.getContext(), fullName)));
         civAvatar.setImageDrawable(ContextCompat.getDrawable(vh.itemView.getContext(), R.drawable.tap_bg_circle_9b9b9b));
-        tvAvatarLabel.setText(TAPUtils.getInitials(item.getUser().getFullname(), 2));
+        tvAvatarLabel.setText(TAPUtils.getInitials(fullName, 2));
         civAvatar.setVisibility(View.VISIBLE);
         tvAvatarLabel.setVisibility(View.VISIBLE);
     }

@@ -1449,6 +1449,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
             super.onArrowButtonClicked(message);
             goToMessage(message);
         }
+
+        @Override
+        public void onRequestUserData(TAPMessageModel message) {
+            super.onRequestUserData(message);
+            if (message.getForwardFrom() != null) {
+                TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(message.getForwardFrom().getUserID(), new TAPDefaultDataView<>() {
+                    @Override
+                    public void onSuccess(TAPGetUserResponse response) {
+                        super.onSuccess(response);
+                        TAPContactManager.getInstance(instanceKey).updateUserData(response.getUser());
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
+                    }
+                });
+            }
+        }
     };
 
     private void closeActivity() {
