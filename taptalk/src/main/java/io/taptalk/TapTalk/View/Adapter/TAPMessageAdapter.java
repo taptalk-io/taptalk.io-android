@@ -284,10 +284,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         try {
             TAPMessageModel messageModel = getItemAt(position);
             int messageType = 0;
-            if (null != messageModel &&
-                    ((null != messageModel.getIsHidden() && messageModel.getIsHidden()) ||
-                    (null != messageModel.getIsDeleted() && messageModel.getIsDeleted() &&
-                    TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)))) {
+            if (null != messageModel && null != messageModel.getIsHidden() && messageModel.getIsHidden()) {
                 // Return empty layout if item is hidden or deleted in saved messages room
                 return TYPE_EMPTY;
             } else if (null != messageModel && null != messageModel.getIsDeleted() && messageModel.getIsDeleted() && isMessageFromMySelf(messageModel)) {
