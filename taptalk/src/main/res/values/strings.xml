@@ -428,5 +428,6 @@
     <string name="tap_verification">Verification</string>
     <string name="tap_verification_succeed">Verification succeed, see you again!</string>
     <string name="tap_deleted_user">Deleted User</string>
+    <string name="tap_saved_messages">Saved Messages</string>
 
 </resources>

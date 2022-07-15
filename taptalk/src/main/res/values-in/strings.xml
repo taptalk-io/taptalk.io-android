@@ -426,5 +426,6 @@
     <string name="tap_verification">Verifikasi</string>
     <string name="tap_verification_succeed">Verifikasi berhasil, sampai jumpa kembali!</string>
     <string name="tap_deleted_user">Deleted User</string>
+    <string name="tap_saved_messages">Saved Messages</string>
 
 </resources>

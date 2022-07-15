@@ -252,19 +252,25 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         var imageURL: TAPImageURL? = null
         var itemLabel: String? = null
         var itemSubLabel: String? = ""
-        var isUserDeleted = false
-        var textStyleResource = 0
+        var isSimpleProfile = false
         if (null != vm!!.userDataFromManager &&
             vm!!.userDataFromManager.fullname.isNotEmpty()
         ) {
             if (vm!!.userDataFromManager.deleted != null && vm!!.userDataFromManager.deleted!! > 0L) {
                 // set deleted user profile
-                isUserDeleted = true
-                setDeletedUserProfile()
+                isSimpleProfile = true
+                setSimpleProfile()
+                showDeletedUserProfilePicture()
                 tv_title.text = vm!!.userDataFromManager.fullname
+            } else if (TAPUtils.isSavedMessagesRoom(vm!!.room.roomID, instanceKey)) {
+                // set saved messages profile
+                isSimpleProfile = true
+                setSimpleProfile()
+                showSavedMessagesProfilePicture()
+                tv_title.text = getString(R.string.tap_saved_messages)
             } else {
                 // Set name & avatar from contact manager
-                hideDeletedUserProfilePicture()
+                hideSimpleProfilePicture()
                 imageURL = vm!!.userDataFromManager.imageURL
                 itemLabel = vm!!.userDataFromManager.fullname
                 tv_title.text = itemLabel
@@ -316,12 +322,19 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         } else if (vm!!.isGroupMemberProfile) {
             if (vm!!.groupMemberUser.deleted != null && vm!!.groupMemberUser.deleted!! > 0L) {
                 // set deleted user profile
-                isUserDeleted = true
-                setDeletedUserProfile()
+                isSimpleProfile = true
+                setSimpleProfile()
+                showDeletedUserProfilePicture()
                 tv_title.text = vm!!.groupMemberUser.fullname
+            } else if (TAPUtils.isSavedMessagesRoom(vm!!.room.roomID, instanceKey)) {
+                // set saved messages profile
+                isSimpleProfile = true
+                setSimpleProfile()
+                showSavedMessagesProfilePicture()
+                tv_title.text = getString(R.string.tap_saved_messages)
             } else {
                 // Set name & avatar from passed member profile intent
-                hideDeletedUserProfilePicture()
+                hideSimpleProfilePicture()
                 imageURL = vm!!.groupMemberUser.imageURL
                 itemLabel = vm!!.groupMemberUser.fullname
                 tv_title.text = itemLabel
@@ -367,7 +380,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         }
 
-        if (!isUserDeleted) {
+        if (!isSimpleProfile) {
             if (imageURL != null && !imageURL.fullsize.isNullOrEmpty()) {
                 val photosItemModel = TapPhotosItemModel()
                 photosItemModel.fullsizeImageURL = imageURL.fullsize
@@ -386,7 +399,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
 
         // Update room menu
         vm!!.adapterItems.removeAll(vm!!.menuItems)
-        vm!!.menuItems = generateChatProfileMenu(isUserDeleted)
+        vm!!.menuItems = generateChatProfileMenu(isSimpleProfile)
         vm!!.adapterItems.addAll(vm!!.menuItems)
         if (null != adapter) {
             adapter!!.items = vm!!.adapterItems
@@ -409,23 +422,28 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             itemLabel, 2
         )
         tv_profile_picture_label.visibility = View.VISIBLE
-        iv_deleted_user.visibility = View.GONE
+        iv_simple_profile_picture.visibility = View.GONE
     }
 
     private fun showDeletedUserProfilePicture() {
         vp_profile_picture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapTransparentBlack1940))
-        tv_profile_picture_label.visibility = View.GONE
-        iv_deleted_user.visibility = View.VISIBLE
+        glide?.load(R.drawable.tap_ic_deleted_user_large)?.centerInside()?.into(iv_simple_profile_picture)
     }
 
-    private fun hideDeletedUserProfilePicture() {
-        iv_deleted_user.visibility = View.GONE
+    private fun showSavedMessagesProfilePicture() {
+        vp_profile_picture.setBackgroundColor(ContextCompat.getColor(this, R.color.tapColorPrimary))
+        glide?.load(R.drawable.tap_ic_bookmark_large)?.centerInside()?.into(iv_simple_profile_picture)
     }
 
-    private fun setDeletedUserProfile() {
-        showDeletedUserProfilePicture()
+    private fun hideSimpleProfilePicture() {
+        iv_simple_profile_picture.visibility = View.GONE
+    }
+
+    private fun setSimpleProfile() {
         cl_basic_info.visibility = View.GONE
         g_username.visibility = View.GONE
+        tv_profile_picture_label.visibility = View.GONE
+        iv_simple_profile_picture.visibility = View.VISIBLE
     }
 
     private fun getPhotoList(userId: String?, itemLabel: String?) {
@@ -455,9 +473,9 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     }
 
 
-    private fun generateChatProfileMenu(isUserDeleted: Boolean = false): List<TapChatProfileItemModel> {
+    private fun generateChatProfileMenu(isSimpleProfile: Boolean = false): List<TapChatProfileItemModel> {
         val menuItems: MutableList<TapChatProfileItemModel> = ArrayList()
-        if (isUserDeleted) {
+        if (isSimpleProfile) {
             // Starred messages
             if (TapUI.getInstance(instanceKey).isStarMessageMenuEnabled) {
                 val menuStarredMessages = TapChatProfileItemModel(
