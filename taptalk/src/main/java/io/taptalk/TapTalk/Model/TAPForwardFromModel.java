@@ -16,13 +16,15 @@ public class TAPForwardFromModel implements Parcelable {
     @JsonProperty("fullname") private String fullname;
     @JsonProperty("messageID") private String messageID;
     @JsonProperty("localID") private String localID;
+    @JsonProperty("roomID") private String roomID;
 
-    public TAPForwardFromModel(String userID, String xcUserID, String fullname, String messageID, String localID) {
+    public TAPForwardFromModel(String userID, String xcUserID, String fullname, String messageID, String localID, String roomID) {
         this.userID = userID;
         this.xcUserID = xcUserID;
         this.fullname = fullname;
         this.messageID = messageID;
         this.localID = localID;
+        this.roomID = roomID;
     }
 
     public static TAPForwardFromModel fromHashMap(HashMap<String, Object> hashMap) {
@@ -78,6 +80,14 @@ public class TAPForwardFromModel implements Parcelable {
         this.localID = localID;
     }
 
+    public String getRoomID() {
+        return roomID;
+    }
+
+    public void setRoomID(String roomID) {
+        this.roomID = roomID;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -90,6 +100,7 @@ public class TAPForwardFromModel implements Parcelable {
         dest.writeString(this.fullname);
         dest.writeString(this.messageID);
         dest.writeString(this.localID);
+        dest.writeString(this.roomID);
     }
 
     public TAPForwardFromModel() {
@@ -101,6 +112,7 @@ public class TAPForwardFromModel implements Parcelable {
         this.fullname = in.readString();
         this.messageID = in.readString();
         this.localID = in.readString();
+        this.roomID = in.readString();
     }
 
     public static final Creator<TAPForwardFromModel> CREATOR = new Creator<TAPForwardFromModel>() {

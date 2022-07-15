@@ -192,9 +192,12 @@ public class TAPMessageModel implements Parcelable {
         String localID = TAPUtils.generateRandomString(32);
         TAPForwardFromModel forwardFrom;
         if (null == messageToForward.getForwardFrom() || null == messageToForward.getForwardFrom().getFullname() || messageToForward.getForwardFrom().getFullname().isEmpty()) {
-            forwardFrom = new TAPForwardFromModel(messageToForward.getUser().getUserID(), messageToForward.getUser().getXcUserID(), messageToForward.getUser().getFullname(), messageToForward.getMessageID(), messageToForward.getLocalID());
+            forwardFrom = new TAPForwardFromModel(messageToForward.getUser().getUserID(), messageToForward.getUser().getXcUserID(), messageToForward.getUser().getFullname(), messageToForward.getMessageID(), messageToForward.getLocalID(), messageToForward.getRoom().getRoomID());
         } else {
             forwardFrom = messageToForward.getForwardFrom();
+            forwardFrom.setRoomID(messageToForward.getRoom().getRoomID());
+            forwardFrom.setMessageID(messageToForward.getMessageID());
+            forwardFrom.setLocalID(messageToForward.getLocalID());
         }
         return new TAPMessageModel("0", localID, "", messageToForward.getBody(), room, messageToForward.getType(), created, user, recipientID, messageToForward.getData(), messageToForward.getQuote(), messageToForward.getReplyTo(), forwardFrom, false, true, false, false, false, false, false, created, null, null, null);
     }
