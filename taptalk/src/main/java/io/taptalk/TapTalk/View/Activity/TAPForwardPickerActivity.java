@@ -183,10 +183,12 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                     vm.addRecentSearches(recentTitleItem);
 
                     for (TAPMessageEntity entity : entities) {
-                        TAPSearchChatModel recentItem = new TAPSearchChatModel(ROOM_ITEM);
-                        TAPRoomModel roomModel = TAPRoomModel.Builder(entity);
-                        recentItem.setRoom(roomModel);
-                        vm.addRecentSearches(recentItem);
+                        if (entity.getRoomDeleted() == null || !entity.getRoomDeleted()) {
+                            TAPSearchChatModel recentItem = new TAPSearchChatModel(ROOM_ITEM);
+                            TAPRoomModel roomModel = TAPRoomModel.Builder(entity);
+                            recentItem.setRoom(roomModel);
+                            vm.addRecentSearches(recentItem);
+                        }
                     }
                 }
                 showRecentChats();
@@ -242,12 +244,14 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
                 for (TAPMessageEntity entity : entities) {
-                    TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
-                    // Convert message to room model
-                    TAPRoomModel room = TAPRoomModel.Builder(entity);
-                    room.setUnreadCount(unreadMap.get(room.getRoomID()));
-                    result.setRoom(room);
-                    vm.addSearchResult(result);
+                    if (entity.getRoomDeleted() == null || !entity.getRoomDeleted()) {
+                        TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
+                        // Convert message to room model
+                        TAPRoomModel room = TAPRoomModel.Builder(entity);
+                        room.setUnreadCount(unreadMap.get(room.getRoomID()));
+                        result.setRoom(room);
+                        vm.addSearchResult(result);
+                    }
                 }
                 runOnUiThread(() -> {
                     adapter.setItems(vm.getSearchResults(), false);
@@ -269,20 +273,22 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                     vm.addSearchResult(sectionTitleChatsAndContacts);
                 }
                 for (TAPUserModel contact : entities) {
-                    TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
-                    // Convert contact to room model
-                    // TODO: 18 October 2018 LENGKAPIN DATA
-                    TAPRoomModel room = new TAPRoomModel(
-                            TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), contact.getUserID()),
-                            contact.getFullname(),
-                            TYPE_PERSONAL,
-                            contact.getImageURL(),
-                            /* SET DEFAULT ROOM COLOR*/""
-                    );
-                    // Check if result already contains contact from chat room query
-                    if (!vm.resultContainsRoom(room.getRoomID())) {
-                        result.setRoom(room);
-                        vm.addSearchResult(result);
+                    if (contact.getDeleted() == null || contact.getDeleted() <= 0) {
+                        TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
+                        // Convert contact to room model
+                        // TODO: 18 October 2018 LENGKAPIN DATA
+                        TAPRoomModel room = new TAPRoomModel(
+                                TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), contact.getUserID()),
+                                contact.getFullname(),
+                                TYPE_PERSONAL,
+                                contact.getImageURL(),
+                                /* SET DEFAULT ROOM COLOR*/""
+                        );
+                        // Check if result already contains contact from chat room query
+                        if (!vm.resultContainsRoom(room.getRoomID())) {
+                            result.setRoom(room);
+                            vm.addSearchResult(result);
+                        }
                     }
                 }
                 vm.getSearchResults().get(vm.getSearchResults().size() - 1).setLastInSection(true);
