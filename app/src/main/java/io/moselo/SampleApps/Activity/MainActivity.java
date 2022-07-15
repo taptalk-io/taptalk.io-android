@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.View.Activity.TapUIRoomListActivity;
 import io.taptalk.TapTalkSample.BuildConfig;
@@ -28,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             TAPLoginActivity.start(MainActivity.this, instanceKey, false);
         }
-        AnalyticsManager.getInstance(instanceKey).trackActiveUser();
+//        AnalyticsManager.getInstance(instanceKey).trackActiveUser();
         finish();
     }
 }

@@ -28,7 +28,6 @@ import io.taptalk.TapTalk.Exception.TAPAuthException;
 import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TapListener;
-import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
 import io.taptalk.TapTalk.Manager.TAPEncryptorManager;
 import io.taptalk.TapTalk.Model.RequestModel.TAPAddContactByPhoneRequest;
@@ -224,7 +223,7 @@ public class TAPApiManager {
                     }
                 }
             } else {
-                AnalyticsManager.getInstance(instanceKey).trackErrorEvent(br.getError().getMessage(), br.getError().getCode(), br.getError().getMessage());
+//                AnalyticsManager.getInstance(instanceKey).trackErrorEvent(br.getError().getMessage(), br.getError().getCode(), br.getError().getMessage());
                 if (!isLoggedOut) {
                     if (isRefreshTokenRunning) {
                         return raiseApiRefreshTokenRunningException();
@@ -300,7 +299,7 @@ public class TAPApiManager {
                         Observable.error(new TAPAuthException(response.getError().getMessage()));
                     } else if (UNAUTHORIZED == response.getStatus() &&
                             lastRefreshToken.equals(TAPDataManager.getInstance(instanceKey).getRefreshToken())) {
-                        AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Refresh Token Failed", response.getError().getCode(), response.getError().getMessage());
+//                        AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Refresh Token Failed", response.getError().getCode(), response.getError().getMessage());
                         TapTalk.clearAllTapTalkData(instanceKey);
                         List<TapListener> tapListeners = TapTalk.getTapTalkListeners(instanceKey);
                         if (null != tapListeners && !tapListeners.isEmpty()) {

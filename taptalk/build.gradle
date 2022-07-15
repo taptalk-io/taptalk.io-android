@@ -125,7 +125,7 @@ dependencies {
     implementation 'androidx.browser:browser:1.4.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.mixpanel.android:mixpanel-android:5.7.0'
+//    implementation 'com.mixpanel.android:mixpanel-android:5.7.0'
 }
 
 task androidSourcesJar(type: Jar) {

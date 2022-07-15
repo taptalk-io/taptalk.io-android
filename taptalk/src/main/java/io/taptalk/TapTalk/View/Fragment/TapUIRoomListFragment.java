@@ -68,7 +68,6 @@ import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapListener;
-import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
 import io.taptalk.TapTalk.Manager.TAPContactManager;
@@ -541,7 +540,7 @@ public class TapUIRoomListFragment extends Fragment {
             runFullRefreshSequence();
         } else if (TapTalk.checkTapTalkInitialized() && TapTalk.isAuthenticated(instanceKey)) {
             // Clear data when refresh token is expired
-            AnalyticsManager.getInstance(instanceKey).trackEvent("View Loaded Sequence Failed");
+//            AnalyticsManager.getInstance(instanceKey).trackEvent("View Loaded Sequence Failed");
             TapTalk.clearAllTapTalkData(instanceKey);
             for (TapListener listener : TapTalk.getTapTalkListeners(instanceKey)) {
                 listener.onTapTalkRefreshTokenExpired();

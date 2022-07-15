@@ -524,10 +524,10 @@ class TAPMyAccountActivity : TAPBaseActivity() {
     }
 
     private fun logout() {
-        AnalyticsManager.getInstance(instanceKey).trackEvent("Logout")
+//        AnalyticsManager.getInstance(instanceKey).trackEvent("Logout")
         TapTalk.clearAllTapTalkData(instanceKey)
         hideLoading()
-        AnalyticsManager.getInstance(instanceKey).identifyUser()
+//        AnalyticsManager.getInstance(instanceKey).identifyUser()
         for (listener in TapTalk.getTapTalkListeners(instanceKey)) {
             listener.onUserLogout()
         }
