@@ -369,12 +369,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Return if logged out (active user is null)
                 return;
             }
-            String myUserID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
-            if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
-                TapUIChatActivity.start(itemView.getContext(), instanceKey, item.getLastMessage().getRoom(), item.getTypingUsers());
-            } else {
-                Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.tap_error_invalid_room), Toast.LENGTH_SHORT).show();
-            }
+            TapUIChatActivity.start(itemView.getContext(), instanceKey, item.getLastMessage().getRoom(), item.getTypingUsers());
         }
     }
 
