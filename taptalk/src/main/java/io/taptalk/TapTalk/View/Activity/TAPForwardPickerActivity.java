@@ -31,6 +31,7 @@ import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPDataManager;
+import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPSearchChatModel;
@@ -182,13 +183,28 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                     recentTitleItem.setSectionTitle(getString(R.string.tap_recent_chats));
                     vm.addRecentSearches(recentTitleItem);
 
+                    boolean isSavedMessagesExist = false;
+                    String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
                     for (TAPMessageEntity entity : entities) {
                         if (entity.getRoomDeleted() == null || !entity.getRoomDeleted()) {
                             TAPSearchChatModel recentItem = new TAPSearchChatModel(ROOM_ITEM);
                             TAPRoomModel roomModel = TAPRoomModel.Builder(entity);
                             recentItem.setRoom(roomModel);
-                            vm.addRecentSearches(recentItem);
+                            if (TAPUtils.isSavedMessagesRoom(recentItem.getRoom().getRoomID(), instanceKey)) {
+                                vm.addRecentSearches(0, recentItem);
+                                isSavedMessagesExist = true;
+                            } else {
+                                vm.addRecentSearches(recentItem);
+                            }
                         }
+                    }
+                    if (!isSavedMessagesExist) {
+                        TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
+                        // Add saved messages to search result
+                        String savedMessagesRoomID = String.format("%s-%s", myId, myId);
+                        TAPRoomModel room = TAPRoomModel.Builder(savedMessagesRoomID, getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
+                        savedMessagesRoom.setRoom(room);
+                        vm.addRecentSearches(0, savedMessagesRoom);
                     }
                 }
                 showRecentChats();
@@ -243,15 +259,30 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                 TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
+                boolean isSavedMessagesExist = false;
+                String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
                 for (TAPMessageEntity entity : entities) {
                     if (entity.getRoomDeleted() == null || !entity.getRoomDeleted()) {
                         TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
                         // Convert message to room model
                         TAPRoomModel room = TAPRoomModel.Builder(entity);
-                        room.setUnreadCount(unreadMap.get(room.getRoomID()));
                         result.setRoom(room);
-                        vm.addSearchResult(result);
+                        if (TAPUtils.isSavedMessagesRoom(result.getRoom().getRoomID(), instanceKey)) {
+                            vm.addSearchResult(0, result);
+                            isSavedMessagesExist = true;
+                        } else {
+                            room.setUnreadCount(unreadMap.get(room.getRoomID()));
+                            vm.addSearchResult(result);
+                        }
                     }
+                }
+                if (!isSavedMessagesExist) {
+                    TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
+                    // Add saved messages to search result
+                    String savedMessagesRoomID = String.format("%s-%s", myId, myId);
+                    TAPRoomModel room = TAPRoomModel.Builder(savedMessagesRoomID, getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
+                    savedMessagesRoom.setRoom(room);
+                    vm.addSearchResult(0, savedMessagesRoom);
                 }
                 runOnUiThread(() -> {
                     adapter.setItems(vm.getSearchResults(), false);

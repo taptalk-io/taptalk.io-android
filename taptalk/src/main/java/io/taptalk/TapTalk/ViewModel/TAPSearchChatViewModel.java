@@ -134,7 +134,11 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
     }
 
     public void addRecentSearches(TAPSearchChatModel item) {
-        getRecentSearches().add(item);
+        addRecentSearches(getRecentSearches().size(), item);
+    }
+
+    public void addRecentSearches(int index, TAPSearchChatModel item) {
+        getRecentSearches().add(index, item);
     }
 
     public void setRecentSearches(List<TAPSearchChatModel> recentSearches) {
