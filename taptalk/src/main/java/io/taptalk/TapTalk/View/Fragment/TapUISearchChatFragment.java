@@ -254,8 +254,9 @@ public class TapUISearchChatFragment extends Fragment {
                 TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
+                boolean isSavedMessagesExist = false;
+                String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
                 for (TAPMessageEntity entity : entities) {
-                    String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
                     // Exclude active user's own room
                     if (!entity.getRoomID().equals(TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId))) {
                         TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
@@ -270,8 +271,21 @@ public class TapUISearchChatFragment extends Fragment {
                         if (null != mentionCount) {
                             result.setRoomMentionCount(mentionCount);
                         }
-                        vm.addSearchResult(result);
+                        if (TAPUtils.isSavedMessagesRoom(result.getRoom().getRoomID(), instanceKey)) {
+                            vm.addSearchResult(0, result);
+                            isSavedMessagesExist = true;
+                        } else {
+                            vm.addSearchResult(result);
+                        }
                     }
+                }
+                if (!isSavedMessagesExist) {
+                    TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
+                    // Add saved messages to search result
+                    String savedMessagesRoomID = String.format("%s-%s", myId, myId);
+                    TAPRoomModel room = TAPRoomModel.Builder(savedMessagesRoomID, getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
+                    savedMessagesRoom.setRoom(room);
+                    vm.addSearchResult(0, savedMessagesRoom);
                 }
                 if (null != contactSearchListener) {
                     getActivity().runOnUiThread(() -> {

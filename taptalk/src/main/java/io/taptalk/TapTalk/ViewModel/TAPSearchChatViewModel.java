@@ -77,7 +77,11 @@ public class TAPSearchChatViewModel extends AndroidViewModel {
     }
 
     public void addSearchResult(TAPSearchChatModel model) {
-        getSearchResults().add(model);
+        addSearchResult(getSearchResults().size(), model);
+    }
+
+    public void addSearchResult(int index, TAPSearchChatModel model) {
+        getSearchResults().add(index, model);
         TAPRoomModel room = model.getRoom();
         if (null != room) {
             getRoomPointer().put(room.getRoomID(), room);

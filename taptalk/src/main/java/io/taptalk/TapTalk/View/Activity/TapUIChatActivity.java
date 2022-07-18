@@ -384,13 +384,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     public static void start(Context context, String instanceKey, TAPRoomModel roomModel, LinkedHashMap<String, TAPUserModel> typingUser, @Nullable String jumpToMessageLocalID, boolean isConnected) {
-        if (TYPE_PERSONAL == roomModel.getType() &&
-                TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(
-                        TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomModel.getRoomID()))) {
-            // Disable opening active user's own room
-            return;
-        }
-
         TAPChatManager.getInstance(instanceKey).saveUnsentMessage();
         Intent intent = new Intent(context, TapUIChatActivity.class);
         intent.putExtra(INSTANCE_KEY, instanceKey);
@@ -842,7 +835,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             return false;
         }
         if (null == vm.getOtherUserModel() && TYPE_PERSONAL == vm.getRoom().getType()) {
-            vm.setOtherUserModel(TAPContactManager.getInstance(instanceKey).getUserData(vm.getOtherUserID()));
+            setOtherUserModel(TAPContactManager.getInstance(instanceKey).getUserData(vm.getOtherUserID()));
         }
 
         // Updated 2020/02/10
@@ -2669,10 +2662,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPChatManager.getInstance(instanceKey).setNeedToCallUpdateRoomStatusAPI(false);
 
                     if (null == vm.getOtherUserModel()) {
-                        vm.setOtherUserModel(updatedContact);
+                        setOtherUserModel(updatedContact);
                         initRoom();
                     } else {
-                        vm.setOtherUserModel(updatedContact);
+                        setOtherUserModel(updatedContact);
                     }
 
                     if (!TapUI.getInstance(instanceKey).isAddContactDisabled() &&
@@ -2853,7 +2846,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             // Update user details
             vm.getRoom().setName(message.getUser().getFullname());
             vm.getRoom().setImageURL(message.getUser().getImageURL());
-            vm.setOtherUserModel(message.getUser());
+            setOtherUserModel(message.getUser());
             runOnUiThread(() -> {
                 tvRoomName.setText(vm.getOtherUserModel().getFullname());
                 if (null != vm.getRoom().getImageURL()) {
@@ -5073,6 +5066,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void forwardMessages() {
         TAPForwardPickerActivity.start(TapUIChatActivity.this, instanceKey, vm.getSelectedMessages());
+    }
+
+    private void setOtherUserModel(TAPUserModel otherUserModel) {
+        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+            vm.setOtherUserModel(TAPChatManager.getInstance(instanceKey).getActiveUser());
+        } else {
+            vm.setOtherUserModel(otherUserModel);
+        }
     }
 
 //    private SwipeBackLayout.SwipeBackInterface swipeInterface = new SwipeBackLayout.SwipeBackInterface() {
