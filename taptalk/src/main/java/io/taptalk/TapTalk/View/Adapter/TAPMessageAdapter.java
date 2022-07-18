@@ -351,12 +351,11 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private boolean isMessageFromMySelf(TAPMessageModel messageModel) {
-        if (myUserModel.getUserID().equals(messageModel.getUser().getUserID())) {
-            if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
-                // forwarded message in saved messages room use left bubble
-                return messageModel.getForwardFrom() == null;
-            } else return true;
-        } else return false;
+        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+            // forwarded message in saved messages room use left bubble
+            return messageModel.getForwardFrom() == null || messageModel.getForwardFrom().getRoomID().isEmpty();
+        } else
+            return myUserModel.getUserID().equals(messageModel.getUser().getUserID());
     }
 
     public class TextVH extends TAPBaseChatViewHolder {
