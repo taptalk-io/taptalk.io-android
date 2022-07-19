@@ -366,17 +366,25 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             }
         } else {
             // Set name & avatar from passed room intent
-            imageURL = vm!!.room.imageURL
-            itemLabel = vm!!.room.name
-            tv_title.text = itemLabel
-            if (vm!!.room.participants != null && vm!!.room.participants!!.isNotEmpty()) {
-                cl_basic_info.visibility = View.GONE
-                itemSubLabel = String.format(
-                    getString(R.string.tap_format_d_group_member_count),
-                    vm!!.room.participants!!.size
-                )
-                tv_member_count.text = itemSubLabel
-                tv_member_count.visibility = View.VISIBLE
+            if (TAPUtils.isSavedMessagesRoom(vm!!.room.roomID, instanceKey)) {
+                // set saved messages profile
+                isSimpleProfile = true
+                setSimpleProfile()
+                showSavedMessagesProfilePicture()
+                tv_title.text = getString(R.string.tap_saved_messages)
+            } else {
+                imageURL = vm!!.room.imageURL
+                itemLabel = vm!!.room.name
+                tv_title.text = itemLabel
+                if (vm!!.room.participants != null && vm!!.room.participants!!.isNotEmpty()) {
+                    cl_basic_info.visibility = View.GONE
+                    itemSubLabel = String.format(
+                        getString(R.string.tap_format_d_group_member_count),
+                        vm!!.room.participants!!.size
+                    )
+                    tv_member_count.text = itemSubLabel
+                    tv_member_count.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -1514,9 +1522,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             isAdmin: Boolean? = null,
             isNonParticipantUserProfile: Boolean = false
         ) {
-            if (null != user && TAPChatManager.getInstance(instanceKey).activeUser.userID == user.userID) {
-                return
-            }
             val intent = Intent(context, TAPChatProfileActivity::class.java)
             intent.putExtra(Extras.INSTANCE_KEY, instanceKey)
             intent.putExtra(Extras.ROOM, room)

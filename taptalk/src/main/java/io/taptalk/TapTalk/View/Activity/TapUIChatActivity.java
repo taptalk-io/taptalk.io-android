@@ -861,7 +861,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         getWindow().setBackgroundDrawable(null);
 
         // Set room name
-        if (vm.getRoom().getType() == TYPE_PERSONAL && null != vm.getOtherUserModel() &&
+        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)){
+            tvRoomName.setText(R.string.tap_saved_messages);
+        } else if (vm.getRoom().getType() == TYPE_PERSONAL && null != vm.getOtherUserModel() &&
                 (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L) &&
                 !vm.getOtherUserModel().getFullname().isEmpty()) {
             tvRoomName.setText(vm.getOtherUserModel().getFullname());
@@ -2630,8 +2632,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     // Room image is empty
                     loadInitialsToProfilePicture(civRoomImage, tvRoomImageLabel);
                 }
-
-                tvRoomName.setText(vm.getRoom().getName());
+                if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)){
+                    tvRoomName.setText(R.string.tap_saved_messages);
+                } else {
+                    tvRoomName.setText(vm.getRoom().getName());
+                }
 
                 if (vm.getRoom().getType() == TYPE_GROUP && null != vm.getRoom().getParticipants()) {
                     // Show number of participants for group room
@@ -2835,7 +2840,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
             vm.getRoom().setImageURL(message.getRoom().getImageURL());
             TAPGroupManager.Companion.getInstance(instanceKey).addGroupData(vm.getRoom());
             runOnUiThread(() -> {
-                tvRoomName.setText(vm.getRoom().getName());
+                if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)){
+                    tvRoomName.setText(R.string.tap_saved_messages);
+                } else {
+                    tvRoomName.setText(vm.getRoom().getName());
+                }
                 if (null != vm.getRoom().getImageURL()) {
                     civRoomImage.post(() -> loadProfilePicture(vm.getRoom().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
                 }
@@ -2848,7 +2857,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
             vm.getRoom().setImageURL(message.getUser().getImageURL());
             setOtherUserModel(message.getUser());
             runOnUiThread(() -> {
-                tvRoomName.setText(vm.getOtherUserModel().getFullname());
+                if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)){
+                    tvRoomName.setText(R.string.tap_saved_messages);
+                } else {
+                    tvRoomName.setText(vm.getOtherUserModel().getFullname());
+                }
                 if (null != vm.getRoom().getImageURL()) {
                     civRoomImage.post(() -> loadProfilePicture(vm.getOtherUserModel().getImageURL().getThumbnail(), civRoomImage, tvRoomImageLabel));
                 }
