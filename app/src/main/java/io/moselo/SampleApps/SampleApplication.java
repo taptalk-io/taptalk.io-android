@@ -1,7 +1,6 @@
 package io.moselo.SampleApps;
 
 import static io.taptalk.TapTalk.Helper.TapTalk.TapTalkImplementationType.TapTalkImplementationTypeCombine;
-import static io.taptalk.TapTalkSample.BuildConfig.GCP_ANALYTICS_KEY;
 import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_ID;
 import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_APP_KEY_SECRET;
 import static io.taptalk.TapTalkSample.BuildConfig.TAPTALK_SDK_BASE_URL;
@@ -35,7 +34,6 @@ public class SampleApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         TapTalk.setLoggingEnabled(true);
-        TapTalk.initializeAnalyticsForSampleApps(GCP_ANALYTICS_KEY);
         TapTalk.init(
                 this,
                 TAPTALK_SDK_APP_KEY_ID,

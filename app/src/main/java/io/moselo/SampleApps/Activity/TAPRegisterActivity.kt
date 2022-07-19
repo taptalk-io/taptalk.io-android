@@ -40,7 +40,6 @@ import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TapCommonListener
-import io.taptalk.TapTalk.Manager.AnalyticsManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileUploadManager
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
@@ -297,7 +296,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             // Valid username, continue to check if username exists
             TAPDataManager.getInstance(instanceKey).checkUsernameExists(et_username.text.toString(), checkUsernameView)
         } else if (et_username.text.isEmpty()) {
-            AnalyticsManager.getInstance(instanceKey).trackEvent("Username Empty")
+//            AnalyticsManager.getInstance(instanceKey).trackEvent("Username Empty")
             // Not filled
             vm.formCheck[indexUsername] = stateEmpty
             ll_username_error.visibility = View.GONE
@@ -305,7 +304,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
             checkContinueButtonAvailability()
         } else {
             // Invalid username
-            AnalyticsManager.getInstance(instanceKey).trackEvent("Username Invalid")
+//            AnalyticsManager.getInstance(instanceKey).trackEvent("Username Invalid")
             vm.formCheck[indexUsername] = stateInvalid
             if (et_username.text.length in 4..32) {
                 tv_label_username_error.text = getString(R.string.tap_error_invalid_username)
@@ -326,12 +325,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
             updateEditTextBackground(et_email_address, hasFocus)
         } else if (et_email_address.text.isEmpty()) {
             // Not filled
-            AnalyticsManager.getInstance(instanceKey).trackEvent("Email Empty")
+//            AnalyticsManager.getInstance(instanceKey).trackEvent("Email Empty")
             vm.formCheck[indexEmail] = stateEmpty
             ll_email_address_error.visibility = View.GONE
             updateEditTextBackground(et_email_address, hasFocus)
         } else {
-            AnalyticsManager.getInstance(instanceKey).trackEvent("Email Invalid")
+//            AnalyticsManager.getInstance(instanceKey).trackEvent("Email Invalid")
             // Invalid email address
             vm.formCheck[indexEmail] = stateInvalid
             ll_email_address_error.visibility = View.VISIBLE
@@ -350,13 +349,13 @@ class TAPRegisterActivity : TAPBaseActivity() {
             updateEditTextBackground(cl_password, hasFocus)
         } else if (et_password.text.isEmpty()) {
             // Not filled
-            AnalyticsManager.getInstance(instanceKey).trackEvent("Password Empty")
+//            AnalyticsManager.getInstance(instanceKey).trackEvent("Password Empty")
             vm.formCheck[indexPassword] = stateEmpty
             tv_label_password_error.visibility = View.GONE
             updateEditTextBackground(cl_password, hasFocus)
         } else {
             // Invalid password
-            AnalyticsManager.getInstance(instanceKey).trackEvent("Password Invalid")
+//            AnalyticsManager.getInstance(instanceKey).trackEvent("Password Invalid")
             vm.formCheck[indexPassword] = stateInvalid
             tv_label_password_error.visibility = View.VISIBLE
             cl_password.background = ContextCompat.getDrawable(this, R.drawable.tap_bg_text_field_error)
@@ -810,12 +809,12 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onSuccess(response: TAPRegisterResponse?) {
-            AnalyticsManager.getInstance(instanceKey).identifyUser()
-            AnalyticsManager.getInstance(instanceKey).trackEvent("Register Success")
+//            AnalyticsManager.getInstance(instanceKey).identifyUser()
+//            AnalyticsManager.getInstance(instanceKey).trackEvent("Register Success")
             TapTalk.authenticateWithAuthTicket(instanceKey,response?.ticket ?: "", true,
                     object : TapCommonListener() {
                         override fun onSuccess(successMessage: String?) {
-                            AnalyticsManager.getInstance(instanceKey).identifyUser()
+//                            AnalyticsManager.getInstance(instanceKey).identifyUser()
                             TAPDataManager.getInstance(instanceKey).saveMyCountryCode(vm.countryCallingCode)
                             TAPDataManager.getInstance(instanceKey).saveMyCountryFlagUrl(vm.countryFlagUrl)
                             if (null != vm.profilePictureUri) {
@@ -844,7 +843,7 @@ class TAPRegisterActivity : TAPBaseActivity() {
         }
 
         override fun onError(error: TAPErrorModel?) {
-            AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Register Failed", error?.code, error?.message)
+//            AnalyticsManager.getInstance(instanceKey).trackErrorEvent("Register Failed", error?.code, error?.message)
             showErrorDialog(error?.message ?: getString(R.string.tap_error_message_general))
         }
 

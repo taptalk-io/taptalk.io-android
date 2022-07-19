@@ -70,7 +70,6 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreProjectConfigsListener;
 import io.taptalk.TapTalk.Listener.TapListener;
-import io.taptalk.TapTalk.Manager.AnalyticsManager;
 import io.taptalk.TapTalk.Manager.TAPCacheManager;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
 import io.taptalk.TapTalk.Manager.TAPConnectionManager;
@@ -109,7 +108,7 @@ public class TapTalk implements LifecycleObserver {
     private static boolean handleMessageIfAppsCrashing = true;
 
     public static Context appContext;
-    public static String mixpanelToken = "";
+//    public static String mixpanelToken = "";
     public static String sdkVersion = ""; // FIXME: BuildConfig.VERSION_NAME NOT FOUND IN JITPACK BUILD
     public static boolean isForeground;
     public static boolean isLoggingEnabled = false;
@@ -248,7 +247,7 @@ public class TapTalk implements LifecycleObserver {
             TAPFileDownloadManager.getInstance(instanceKey).getFileProviderPathFromPreference();
             TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUriFromPreference();
             TAPOldDataManager.getInstance(instanceKey).startAutoCleanProcess();
-            AnalyticsManager.getInstance(instanceKey).identifyUser();
+//            AnalyticsManager.getInstance(instanceKey).identifyUser();
         }
 
         TAPDataManager.getInstance(instanceKey).updateSendingMessageToFailed();
@@ -283,13 +282,9 @@ public class TapTalk implements LifecycleObserver {
         }
 
         if (sdkVersion.isEmpty()) {
-            String version = "2.2.0";
+            String version = "2.2.1";
             sdkVersion = String.format("%s-%s", version, BuildConfig.BUILD_TYPE);
         }
-    }
-
-    public static void initializeAnalyticsForSampleApps(String analyticsKey) {
-        mixpanelToken = analyticsKey;
     }
 
     private TAPChatListener chatListener = new TAPChatListener() {

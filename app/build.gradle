@@ -20,8 +20,8 @@ android {
         minSdk 16
 //        targetSdk 31
         targetSdk 30
-        versionCode 116
-        versionName '2.2.0'
+        versionCode 117
+        versionName '2.2.1'
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -91,11 +91,11 @@ android {
             } else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
-            if (project.hasProperty('RELEASE_GCP_ANALYTICS_KEY')) {
-                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${RELEASE_GCP_ANALYTICS_KEY}\"")
-            } else {
-                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
-            }
+//            if (project.hasProperty('RELEASE_GCP_ANALYTICS_KEY')) {
+//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${RELEASE_GCP_ANALYTICS_KEY}\"")
+//            } else {
+//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
+//            }
         }
         staging {
             signingConfig signingConfigs.debug
@@ -123,11 +123,11 @@ android {
             } else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
-            if (project.hasProperty('STAGING_GCP_ANALYTICS_KEY')) {
-                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${STAGING_GCP_ANALYTICS_KEY}\"")
-            } else {
-                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
-            }
+//            if (project.hasProperty('STAGING_GCP_ANALYTICS_KEY')) {
+//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${STAGING_GCP_ANALYTICS_KEY}\"")
+//            } else {
+//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
+//            }
         }
         stagingUpload {
             signingConfig signingConfigs.release
@@ -155,11 +155,11 @@ android {
             } else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
-            if (project.hasProperty('STAGING_GCP_ANALYTICS_KEY')) {
-                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${STAGING_GCP_ANALYTICS_KEY}\"")
-            } else {
-                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
-            }
+//            if (project.hasProperty('STAGING_GCP_ANALYTICS_KEY')) {
+//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${STAGING_GCP_ANALYTICS_KEY}\"")
+//            } else {
+//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
+//            }
         }
         dev {
             signingConfig signingConfigs.debug
@@ -187,11 +187,11 @@ android {
             } else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
-            if (project.hasProperty('DEV_GCP_ANALYTICS_KEY')) {
-                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${DEV_GCP_ANALYTICS_KEY}\"")
-            } else {
-                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
-            }
+//            if (project.hasProperty('DEV_GCP_ANALYTICS_KEY')) {
+//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${DEV_GCP_ANALYTICS_KEY}\"")
+//            } else {
+//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
+//            }
         }
         devUpload {
             signingConfig signingConfigs.release
@@ -219,11 +219,11 @@ android {
             } else {
                 buildConfigField("String", "TAPTALK_SDK_BASE_URL", "\"\"")
             }
-            if (project.hasProperty('DEV_GCP_ANALYTICS_KEY')) {
-                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${DEV_GCP_ANALYTICS_KEY}\"")
-            } else {
-                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
-            }
+//            if (project.hasProperty('DEV_GCP_ANALYTICS_KEY')) {
+//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"${DEV_GCP_ANALYTICS_KEY}\"")
+//            } else {
+//                buildConfigField("String", "GCP_ANALYTICS_KEY", "\"\"")
+//            }
         }
     }
 

@@ -35,6 +35,10 @@ public class TAPAutoStartPermission {
                                 e.printStackTrace();
                             }
                         })
+                        .setSecondaryButtonTitle("Skip")
+                        .setSecondaryButtonListener(v -> {
+
+                        })
                         .show();
                 break;
             }

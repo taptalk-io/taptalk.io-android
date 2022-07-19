@@ -21,7 +21,6 @@ import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
 import io.taptalk.TapTalk.Interface.TAPVerifyOTPInterface
 import io.taptalk.TapTalk.Listener.TapCommonListener
-import io.taptalk.TapTalk.Manager.AnalyticsManager
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
@@ -166,8 +165,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                                 val additional = HashMap<String, String>()
                                 additional.put("phoneNumber", phoneNumber)
                                 additional.put("countryCode", countryID.toString())
-                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                                    .trackEvent("Resend OTP Success", additional)
+//                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Resend OTP Success", additional)
                                 requestOTPInterface.onRequestSuccess(
                                     response.otpID,
                                     response.otpKey,
@@ -186,8 +184,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                                 val additional = HashMap<String, String>()
                                 additional.put("phoneNumber", phoneNumber)
                                 additional.put("countryCode", countryID.toString())
-                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                                    .trackEvent("Resend OTP Failed", additional)
+//                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Resend OTP Failed", additional)
                                 requestOTPInterface.onRequestFailed(error.message, error.code)
                             }
 
@@ -221,8 +218,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                                 val additional = HashMap<String, String>()
                                 additional.put("phoneNumber", phoneNumberWithCode)
                                 additional.put("countryCode", countryID.toString())
-                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                                    .trackEvent("Request OTP Success", additional)
+//                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Request OTP Success", additional)
                                 super.onSuccess(response)
                                 requestOTPInterface.onRequestSuccess(
                                     response.otpID,
@@ -242,13 +238,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                                 val additional = HashMap<String, String>()
                                 additional.put("phoneNumber", phoneNumberWithCode)
                                 additional.put("countryCode", countryID.toString())
-                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                                    .trackErrorEvent(
-                                        "Request OTP Failed",
-                                        error.code,
-                                        error.message,
-                                        additional
-                                    )
+//                                AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Request OTP Failed", error.code, error.message, additional)
                                 requestOTPInterface.onRequestFailed(error.message, error.code)
                             }
 
@@ -331,8 +321,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", phoneNumber)
                     additional.put("countryCode", countryID.toString())
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                        .trackEvent("Resend OTP Success", additional)
+//                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Resend OTP Success", additional)
                     requestOTPInterface.onRequestSuccess(
                         response.otpID,
                         response.otpKey,
@@ -351,8 +340,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", phoneNumber)
                     additional.put("countryCode", countryID.toString())
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                        .trackEvent("Resend OTP Failed", additional)
+//                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Resend OTP Failed", additional)
                     requestOTPInterface.onRequestFailed(error?.message, error?.code)
                 }
 
@@ -465,36 +453,26 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     override fun onSuccess(response: TAPLoginOTPVerifyResponse) {
                         et_otp_code.isEnabled = true
                         if (response.isRegistered) {
-                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                                .identifyUser()
-                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                                .trackEvent("Login Success")
+//                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
+//                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success")
                             TapTalk.authenticateWithAuthTicket(
                                 (activity as TAPBaseActivity).instanceKey,
                                 response.ticket,
                                 true,
                                 object : TapCommonListener() {
                                     override fun onSuccess(successMessage: String) {
-                                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                                            .identifyUser()
-                                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                                            .trackEvent("Authenticate TapTalk.io Success")
+//                                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).identifyUser()
+//                                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Authenticate TapTalk.io Success")
                                         verifyOTPInterface.verifyOTPSuccessToLogin()
                                     }
 
                                     override fun onError(errorCode: String, errorMessage: String) {
-                                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                                            .trackErrorEvent(
-                                                "Authenticate TapTalk.io Failed",
-                                                errorCode,
-                                                errorMessage
-                                            )
+//                                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Authenticate TapTalk.io Failed", errorCode, errorMessage)
                                         verifyOTPInterface.verifyOTPFailed(errorCode, errorMessage)
                                     }
                                 })
                         } else {
-                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                                .trackEvent("Login Success and Continue Register")
+//                            AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Login Success and Continue Register")
                             verifyOTPInterface.verifyOTPSuccessToRegister()
                         }
 
@@ -502,8 +480,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
 
                     override fun onError(error: TAPErrorModel) {
                         et_otp_code.isEnabled = true
-                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                            .trackErrorEvent("Login Failed", error.code, error.message)
+//                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Login Failed", error.code, error.message)
                         verifyOTPInterface.verifyOTPFailed(error.message, error.code)
                     }
 
@@ -536,8 +513,7 @@ class TAPLoginVerificationFragment : androidx.fragment.app.Fragment() {
                     override fun onError(error: TAPErrorModel) {
                         (activity as TapDeleteAccountActivity).vm.isLoading = false
                         et_otp_code.isEnabled = true
-                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey)
-                            .trackErrorEvent("Login Failed", error.code, error.message)
+//                        AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Login Failed", error.code, error.message)
                         verifyOTPInterface.verifyOTPFailed(error.message, error.code)
                     }
 

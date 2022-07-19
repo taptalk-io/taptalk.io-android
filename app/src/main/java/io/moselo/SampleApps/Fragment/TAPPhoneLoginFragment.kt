@@ -22,7 +22,6 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.COUNTRY_PICK
 import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TAPRequestOTPInterface
-import io.taptalk.TapTalk.Manager.AnalyticsManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TAPCountryListResponse
@@ -174,7 +173,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", defaultCallingCode + checkAndEditPhoneNumber())
                     additional.put("countryCode", defaultCountryID.toString())
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Request OTP Success", additional)
+//                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackEvent("Request OTP Success", additional)
                     super.onSuccess(response)
                     requestOTPInterface.onRequestSuccess(response.otpID, response.otpKey, response.phoneWithCode, response.isSuccess, response.channel, response.message, response.nextRequestSeconds, response.whatsAppFailureReason)
                 }
@@ -184,7 +183,7 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
                     val additional = HashMap<String, String>()
                     additional.put("phoneNumber", defaultCallingCode + checkAndEditPhoneNumber())
                     additional.put("countryCode", defaultCountryID.toString())
-                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Request OTP Failed", error.code, error.message, additional)
+//                    AnalyticsManager.getInstance((activity as TAPBaseActivity).instanceKey).trackErrorEvent("Request OTP Failed", error.code, error.message, additional)
                     requestOTPInterface.onRequestFailed(error.message, error.code)
                 }
 
@@ -374,20 +373,24 @@ class TAPPhoneLoginFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun changeButtonContinueStateEnabled() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_active_ripple)
-        } else {
-            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_active)
+        if (context != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                fl_continue_btn.background = ContextCompat.getDrawable(requireContext(), R.drawable.tap_bg_button_active_ripple)
+            } else {
+                fl_continue_btn.background = ContextCompat.getDrawable(requireContext(), R.drawable.tap_bg_button_active)
+            }
         }
         fl_continue_btn.setOnClickListener { attemptLogin() }
         fl_continue_btn.isClickable = true
     }
 
     private fun changeButtonContinueStateDisabled() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_inactive_ripple)
-        } else {
-            fl_continue_btn.background = ContextCompat.getDrawable(context!!, R.drawable.tap_bg_button_inactive)
+        if (context != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                fl_continue_btn.background = ContextCompat.getDrawable(requireContext(), R.drawable.tap_bg_button_inactive_ripple)
+            } else {
+                fl_continue_btn.background = ContextCompat.getDrawable(requireContext(), R.drawable.tap_bg_button_inactive)
+            }
         }
         fl_continue_btn.setOnClickListener(null)
         fl_continue_btn.isClickable = false
