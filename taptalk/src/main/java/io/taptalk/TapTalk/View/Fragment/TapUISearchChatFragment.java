@@ -250,12 +250,12 @@ public class TapUISearchChatFragment extends Fragment {
             } else if (vm.getSearchState() != vm.STATE_SEARCHING) {
                 return;
             }
+            boolean isSavedMessagesExist = false;
+            String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
             if (entities.size() > 0 && null != getActivity()) {
                 TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
-                boolean isSavedMessagesExist = false;
-                String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
                 for (TAPMessageEntity entity : entities) {
                     // Exclude active user's own room
                     if (!entity.getRoomID().equals(TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId))) {
@@ -293,8 +293,16 @@ public class TapUISearchChatFragment extends Fragment {
                         TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
                     });
                 }
-            } else if (null != contactSearchListener) {
-                TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
+            } else  {
+                TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
+                // Add saved messages to search result
+                String savedMessagesRoomID = String.format("%s-%s", myId, myId);
+                TAPRoomModel room = TAPRoomModel.Builder(savedMessagesRoomID, getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
+                savedMessagesRoom.setRoom(room);
+                vm.addSearchResult(0, savedMessagesRoom);
+                if (null != contactSearchListener) {
+                    TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
+                }
             }
         }
     };
