@@ -118,6 +118,7 @@ public class TapUI {
     private boolean isSendVoiceNoteMenuDisabled;
     private boolean isEditMessageMenuDisabled;
     private boolean isDeleteAccountButtonVisible;
+    private boolean isSavedMessagesMenuDisabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -1116,6 +1117,20 @@ public class TapUI {
             return;
         }
         isEditMessageMenuDisabled = !isEnabled;
+    }
+
+    public boolean isSavedMessagesMenuEnabled() {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return false;
+        }
+        return !isSavedMessagesMenuDisabled;
+    }
+
+    public void setSavedMessagesMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isSavedMessagesMenuDisabled = !isEnabled;
     }
 
     /**
