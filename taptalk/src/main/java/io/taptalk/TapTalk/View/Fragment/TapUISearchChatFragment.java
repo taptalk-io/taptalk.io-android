@@ -272,14 +272,16 @@ public class TapUISearchChatFragment extends Fragment {
                             result.setRoomMentionCount(mentionCount);
                         }
                         if (TAPUtils.isSavedMessagesRoom(result.getRoom().getRoomID(), instanceKey)) {
-                            vm.addSearchResult(0, result);
+                            if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
+                                vm.addSearchResult(0, result);
+                            }
                             isSavedMessagesExist = true;
                         } else {
                             vm.addSearchResult(result);
                         }
                     }
                 }
-                if (!isSavedMessagesExist) {
+                if (!isSavedMessagesExist && TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
                     TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
                     // Add saved messages to search result
                     String savedMessagesRoomID = String.format("%s-%s", myId, myId);
@@ -294,12 +296,14 @@ public class TapUISearchChatFragment extends Fragment {
                     });
                 }
             } else  {
-                TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
-                // Add saved messages to search result
-                String savedMessagesRoomID = String.format("%s-%s", myId, myId);
-                TAPRoomModel room = TAPRoomModel.Builder(savedMessagesRoomID, getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
-                savedMessagesRoom.setRoom(room);
-                vm.addSearchResult(0, savedMessagesRoom);
+                if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
+                    TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
+                    // Add saved messages to search result
+                    String savedMessagesRoomID = String.format("%s-%s", myId, myId);
+                    TAPRoomModel room = TAPRoomModel.Builder(savedMessagesRoomID, getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
+                    savedMessagesRoom.setRoom(room);
+                    vm.addSearchResult(0, savedMessagesRoom);
+                }
                 if (null != contactSearchListener) {
                     TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
                 }
