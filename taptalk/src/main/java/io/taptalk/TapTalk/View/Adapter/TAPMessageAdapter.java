@@ -353,7 +353,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private boolean isMessageFromMySelf(TAPMessageModel messageModel) {
         if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
             // forwarded message in saved messages room use left bubble
-            return messageModel.getForwardFrom() == null || messageModel.getForwardFrom().getRoomID().isEmpty();
+            return messageModel.getForwardFrom() == null || messageModel.getForwardFrom().getLocalID().isEmpty();
         } else
             return myUserModel.getUserID().equals(messageModel.getUser().getUserID());
     }
@@ -2924,7 +2924,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     private void showForwardedFrom(TAPMessageModel item, ConstraintLayout clForwardedFrom, TextView tvForwardedFrom) {
         TAPForwardFromModel forwardFrom = item.getForwardFrom();
-        if (null != forwardFrom && null != forwardFrom.getFullname() && !forwardFrom.getFullname().isEmpty()) {
+        if (null != forwardFrom && null != forwardFrom.getFullname() && !forwardFrom.getFullname().isEmpty() &&
+        !TAPUtils.isSavedMessagesRoom(item.getRoom().getRoomID(), instanceKey)) {
             // Show forwarded layout
             clForwardedFrom.setVisibility(View.VISIBLE);
             tvForwardedFrom.setText(forwardFrom.getFullname());
