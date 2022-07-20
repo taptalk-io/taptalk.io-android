@@ -16,6 +16,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetRoomListener;
 import io.taptalk.TapTalk.Listener.TapUIChatProfileListener;
 import io.taptalk.TapTalk.Listener.TapUIChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapUICustomKeyboardListener;
@@ -471,6 +472,16 @@ public class TapUI {
             }
         }
         openChatRoomWithRoomModel(context, roomModel);
+    }
+
+    public void openSavedMessagesChatRoom(Context context) {
+        TapCoreChatRoomManager.getInstance(instanceKey).getSavedMessagesChatRoom(new TapCoreGetRoomListener() {
+            @Override
+            public void onSuccess(TAPRoomModel room) {
+                super.onSuccess(room);
+                openChatRoomWithRoomModel(context, room);
+            }
+        });
     }
 
     public TapUIRoomListFragment getCurrentTapTalkRoomListFragment() {
