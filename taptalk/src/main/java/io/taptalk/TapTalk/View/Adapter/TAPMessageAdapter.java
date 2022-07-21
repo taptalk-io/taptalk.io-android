@@ -2044,17 +2044,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             } else {
                 tvMessageBody.setVisibility(View.VISIBLE);
             }
-            mapView.getMapAsync(googleMap -> {
-                Number latitude = (Number) mapData.get(LATITUDE);
-                Number longitude = (Number) mapData.get(LONGITUDE);
-                if (null != latitude && null != longitude) {
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-                            latitude.doubleValue(),
-                            longitude.doubleValue()), 16f));
-                    googleMap.getUiSettings().setAllGesturesEnabled(false);
-                    mapView.onResume();
-                }
-            });
+            try {
+                mapView.getMapAsync(googleMap -> {
+                    Number latitude = (Number) mapData.get(LATITUDE);
+                    Number longitude = (Number) mapData.get(LONGITUDE);
+                    if (null != latitude && null != longitude) {
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                                latitude.doubleValue(),
+                                longitude.doubleValue()), 16f));
+                        googleMap.getUiSettings().setAllGesturesEnabled(false);
+                        mapView.onResume();
+                    }
+                });
+            } catch (Exception e) {
+                mapView.onPause();
+                e.printStackTrace();
+            }
         }
 
         private void openMapDetail(HashMap<String, Object> mapData) {
