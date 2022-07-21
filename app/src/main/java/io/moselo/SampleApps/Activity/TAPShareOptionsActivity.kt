@@ -156,7 +156,11 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 val model = TAPMessageModel.fromMessageEntity(entity)
                 val roomModel = TAPRoomListModel.buildWithLastMessage(model)
                 roomModel.type = TAPRoomListModel.Type.SELECTABLE_ROOM
-                messageModels.add(roomModel)
+                if (TAPUtils.isSavedMessagesRoom(model.room.roomID, instanceKey)) {
+                    messageModels.add(0, roomModel)
+                } else {
+                    messageModels.add(roomModel)
+                }
                 vm?.addRoomPointer(roomModel)
             }
             vm?.roomList = messageModels
@@ -191,11 +195,20 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
             } else if (vm?.searchState != vm?.STATE_SEARCHING) {
                 return
             }
+            val myId = TAPChatManager.getInstance(instanceKey).activeUser.userID
             if (entities.isNotEmpty()) {
                 for (entity in entities) {
-                    val myId = TAPChatManager.getInstance(instanceKey).activeUser.userID
                     // Exclude active user's own room
-                    if (entity.roomID != TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId)) {
+                    if (TAPUtils.isSavedMessagesRoom(entity.roomID, instanceKey)) {
+                        val result = TAPRoomListModel()
+                        val room = TAPRoomModel.Builder(entity)
+                        if (result.lastMessage == null) {
+                            result.lastMessage = TAPMessageModel()
+                        }
+                        result.lastMessage.room = room
+                        result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
+                        vm?.groupContacts?.add(0, result)
+                    } else if (entity.roomID != TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId)) {
                         val result = TAPRoomListModel()
                         // Convert message to room model
                         val room = TAPRoomModel.Builder(entity)
@@ -216,7 +229,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                             }
                             vm?.personalContacts?.add(result)
                         } else if (room.type == TYPE_GROUP) {
-                            if (vm?.groupContacts!!.isEmpty()) {
+                            if (vm?.groupContacts!!.isEmpty() || (vm?.groupContacts!!.size == 1 && TAPUtils.isSavedMessagesRoom(vm?.groupContacts!![0].lastMessage.room.roomID, instanceKey))) {
                                 val groupSectionTitle = TAPRoomListModel(TAPRoomListModel.Type.SECTION)
                                 groupSectionTitle.title = getString(R.string.groups)
                                 vm?.groupContacts?.add(groupSectionTitle)
@@ -231,6 +244,18 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                     TAPDataManager.getInstance(instanceKey).searchContactsByName(vm?.searchKeyword, contactSearchListener)
                 }
             } else {
+                val result = TAPRoomListModel()
+                val room = TAPRoomModel.Builder(
+                    String.format("%s-%s", myId, myId),
+                    getString(R.string.tap_saved_messages),
+                    TYPE_PERSONAL,
+                    TAPImageURL("", ""),
+                    ""
+                )
+                result.lastMessage = TAPMessageModel()
+                result.lastMessage.room = room
+                result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
+                vm?.groupContacts?.add(0, result)
                 TAPDataManager.getInstance(instanceKey).searchContactsByName(vm?.searchKeyword, contactSearchListener)
             }
         }
@@ -365,7 +390,7 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
 
     private fun showSelectedRecipients() {
         g_selected_rooms.visibility = View.VISIBLE
-        selectedAdapter = TAPShareOptionsSelectedAdapter(vm?.selectedRooms!!.values.toList(), roomListener)
+        selectedAdapter = TAPShareOptionsSelectedAdapter(vm?.selectedRooms!!.values.toList(), roomListener, instanceKey)
         val selectedLlm = LinearLayoutManager(this, HORIZONTAL, false)
         rv_selected.adapter = selectedAdapter
         rv_selected.layoutManager = selectedLlm
