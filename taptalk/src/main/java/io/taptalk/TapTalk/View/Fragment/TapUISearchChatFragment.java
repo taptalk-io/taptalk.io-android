@@ -296,13 +296,14 @@ public class TapUISearchChatFragment extends Fragment {
                     });
                 }
             } else  {
-                if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
+                if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled() && null != getActivity()) {
                     TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
                     // Add saved messages to search result
                     String savedMessagesRoomID = String.format("%s-%s", myId, myId);
                     TAPRoomModel room = TAPRoomModel.Builder(savedMessagesRoomID, getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
                     savedMessagesRoom.setRoom(room);
                     vm.addSearchResult(0, savedMessagesRoom);
+                    getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
                 }
                 if (null != contactSearchListener) {
                     TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
