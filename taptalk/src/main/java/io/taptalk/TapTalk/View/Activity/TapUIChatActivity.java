@@ -1444,7 +1444,28 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onArrowButtonClicked(TAPMessageModel message) {
             super.onArrowButtonClicked(message);
-            goToMessage(message);
+            if (message.getForwardFrom() != null) {
+                String roomId = message.getForwardFrom().getRoomID();
+                String localId = message.getForwardFrom().getLocalID();
+                if (roomId.contains("-")) {
+                    //PERSONAL
+                    if (TAPUtils.isSavedMessagesRoom(roomId, instanceKey)) {
+                        scrollToMessage(localId);
+                    } else {
+                        String otherUserId = TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomId);
+                        TAPUserModel otherUser = TAPContactManager.getInstance(instanceKey).getUserData(otherUserId);
+                        TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, otherUser.getFullname(), otherUser.getImageURL(), TYPE_PERSONAL, message.getRoom().getColor(), localId);
+                    }
+                } else {
+                    //GROUP
+                    TAPRoomModel groupModel = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(roomId);
+                    if (groupModel != null ) {
+                        TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, groupModel.getName(), groupModel.getImageURL(), TYPE_GROUP, groupModel.getColor(), localId);
+                    } else {
+                        Toast.makeText(TapUIChatActivity.this, getString(R.string.tap_chatroom_not_available), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
         }
 
         @Override
