@@ -2828,7 +2828,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             lockChatRoom();
         } else {
             runOnUiThread(() -> clChatComposer.setVisibility(View.VISIBLE));
-
         }
     }
 
@@ -3115,16 +3114,56 @@ public class TapUIChatActivity extends TAPBaseActivity {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
             if (-1 != position) {
                 // Update message in pointer and adapter
+                TAPMessageModel existingMessage = messageAdapter.getItemAt(position).copyMessageModel();
                 vm.updateMessagePointer(message);
-                TAPMessageModel existingMessage = messageAdapter.getItemAt(position);
                 if (null != existingMessage) {
+                    if (message.getIsHidden() != null && message.getIsHidden() &&
+                        (existingMessage.getIsHidden() == null || !existingMessage.getIsHidden()) &&
+                        messageAdapter.getItemCount() > (position + 1)
+                    ) {
+                        // Message was updated to hidden, check if need to remove date separator
+                        TAPMessageModel messageAbove = null;
+                        for (int aboveIndex = position + 1; aboveIndex < messageAdapter.getItemCount(); aboveIndex++) {
+                            // Get first visible message above updated message
+                            TAPMessageModel loopedMessage = messageAdapter.getItemAt(aboveIndex);
+                            if (loopedMessage.getIsHidden() == null || !loopedMessage.getIsHidden()) {
+                                messageAbove = loopedMessage;
+                                break;
+                            }
+                        }
+                        if (messageAbove != null && messageAbove.getType() == TYPE_DATE_SEPARATOR) {
+                            if (position == 0) {
+                                // Updated message is at first index, remove date separator above
+                                vm.getDateSeparators().remove(messageAbove.getLocalID());
+                                vm.getDateSeparatorIndexes().remove(messageAbove.getLocalID());
+                                messageAdapter.removeMessage(messageAbove);
+                            } else {
+                                TAPMessageModel messageBelow = null;
+                                for (int belowIndex = position - 1; belowIndex >= 0; belowIndex--) {
+                                    // Get first visible message below updated message
+                                    TAPMessageModel loopedMessage = messageAdapter.getItemAt(belowIndex);
+                                    if (loopedMessage.getIsHidden() == null || !loopedMessage.getIsHidden()) {
+                                        messageBelow = loopedMessage;
+                                        break;
+                                    }
+                                }
+                                if (messageBelow == null ||
+                                    !TAPTimeFormatter.dateStampString(this, message.getCreated()).equals(
+                                    TAPTimeFormatter.dateStampString(this, messageAdapter.getItemAt(position - 1).getCreated()))
+                                ) {
+                                    // Message below updated message has different date, remove date separator
+                                    vm.getDateSeparators().remove(messageAbove.getLocalID());
+                                    vm.getDateSeparatorIndexes().remove(messageAbove.getLocalID());
+                                    messageAdapter.removeMessage(messageAbove);
+                                }
+                            }
+                        }
+                    }
+                    // Update message and notify
                     existingMessage.updateValue(message);
                     messageAdapter.notifyItemChanged(position);
                 }
             }
-//            else {
-//                new Thread(() -> updateMessage(message)).start();
-//            }
             if (0 == position) {
                 updateFirstVisibleMessageIndex();
             }
@@ -4100,7 +4139,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         // Only fetch newer messages from API if message is below 50
                         callApiAfter();
                         if (!TAPNetworkStateManager.getInstance(instanceKey).hasNetworkConnection(TapUIChatActivity.this)) {
-                            insertDateSeparatorToLastIndex();
+                            insertDateSeparatorToLastIndex(false);
                         }
                         if (null != vm.getTappedMessageLocalID()) {
                             scrollToMessage(vm.getTappedMessageLocalID());
@@ -4138,7 +4177,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         rvMessageList.setVisibility(View.VISIBLE);
                     }
                     if (state == STATE.DONE) {
-                        insertDateSeparatorToLastIndex();
+                        insertDateSeparatorToLastIndex(false);
                         updateMessageDecoration();
                     }
                     if (!models.isEmpty()) {
@@ -4496,7 +4535,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     rvMessageList.setVisibility(View.VISIBLE);
                 }
                 if (state == STATE.DONE) {
-                    insertDateSeparatorToLastIndex();
+                    insertDateSeparatorToLastIndex(true);
                     updateMessageDecoration();
                 }
             });
@@ -4731,7 +4770,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 setRecyclerViewAnimator();
 
                 if (state == STATE.DONE) {
-                    insertDateSeparatorToLastIndex();
+                    insertDateSeparatorToLastIndex(false);
                     updateMessageDecoration();
                 } else if (state == STATE.LOADED) {
                     rvMessageList.addOnScrollListener(endlessScrollListener);
@@ -4759,7 +4798,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         public void onError(Throwable throwable) {
             setRecyclerViewAnimator();
             hideLoadingOlderMessagesIndicator();
-            insertDateSeparatorToLastIndex();
+            insertDateSeparatorToLastIndex(false);
         }
 
         private void setRecyclerViewAnimator() {
@@ -4860,7 +4899,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     rvMessageList.setVisibility(View.VISIBLE);
                 }
                 if (state == STATE.DONE) {
-                    insertDateSeparatorToLastIndex();
+                    insertDateSeparatorToLastIndex(false);
                 }
                 updateMessageDecoration();
             });
@@ -4877,7 +4916,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onError(Throwable throwable) {
             hideLoadingOlderMessagesIndicator();
-            insertDateSeparatorToLastIndex();
+            insertDateSeparatorToLastIndex(false);
         }
     };
 
@@ -4911,7 +4950,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vm.getDateSeparators().putAll(dateSeparators);
     }
 
-    private void insertDateSeparatorToLastIndex() {
+    private void insertDateSeparatorToLastIndex(boolean notifyDataSet) {
         if (null == messageAdapter || messageAdapter.getItems().isEmpty()) {
             return;
         }
@@ -4936,7 +4975,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vm.getDateSeparatorIndexes().put(dateSeparator.getLocalID(), messageAdapter.getItems().size());
         runOnUiThread(() -> {
             messageAdapter.addItem(messageAdapter.getItems().size(), dateSeparator);
-            messageAdapter.notifyItemInserted(messageAdapter.getItems().indexOf(dateSeparator));
+            if (notifyDataSet) {
+                // Notify all to fix message bubble duplicated when After API is called on DONE state
+                messageAdapter.notifyDataSetChanged();
+            } else {
+                messageAdapter.notifyItemInserted(messageAdapter.getItems().indexOf(dateSeparator));
+            }
         });
     }
 
