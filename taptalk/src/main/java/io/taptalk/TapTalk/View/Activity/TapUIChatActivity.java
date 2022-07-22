@@ -4434,7 +4434,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (rvMessageList.getVisibility() != View.VISIBLE) {
                     rvMessageList.setVisibility(View.VISIBLE);
                 }
-                Log.e(">>>>>", "AFTER onSuccess: state " + state);
                 if (state == STATE.DONE) {
                     insertDateSeparatorToLastIndex(true);
                     updateMessageDecoration();
