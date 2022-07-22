@@ -3041,16 +3041,56 @@ public class TapUIChatActivity extends TAPBaseActivity {
             int position = messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID()));
             if (-1 != position) {
                 // Update message in pointer and adapter
+                TAPMessageModel existingMessage = messageAdapter.getItemAt(position).copyMessageModel();
                 vm.updateMessagePointer(message);
-                TAPMessageModel existingMessage = messageAdapter.getItemAt(position);
                 if (null != existingMessage) {
+                    if (message.getIsHidden() != null && message.getIsHidden() &&
+                        (existingMessage.getIsHidden() == null || !existingMessage.getIsHidden()) &&
+                        messageAdapter.getItemCount() > (position + 1)
+                    ) {
+                        // Message was updated to hidden, check if need to remove date separator
+                        TAPMessageModel messageAbove = null;
+                        for (int aboveIndex = position + 1; aboveIndex < messageAdapter.getItemCount(); aboveIndex++) {
+                            // Get first visible message above updated message
+                            TAPMessageModel loopedMessage = messageAdapter.getItemAt(aboveIndex);
+                            if (loopedMessage.getIsHidden() == null || !loopedMessage.getIsHidden()) {
+                                messageAbove = loopedMessage;
+                                break;
+                            }
+                        }
+                        if (messageAbove != null && messageAbove.getType() == TYPE_DATE_SEPARATOR) {
+                            if (position == 0) {
+                                // Updated message is at first index, remove date separator above
+                                vm.getDateSeparators().remove(messageAbove.getLocalID());
+                                vm.getDateSeparatorIndexes().remove(messageAbove.getLocalID());
+                                messageAdapter.removeMessage(messageAbove);
+                            } else {
+                                TAPMessageModel messageBelow = null;
+                                for (int belowIndex = position - 1; belowIndex >= 0; belowIndex--) {
+                                    // Get first visible message below updated message
+                                    TAPMessageModel loopedMessage = messageAdapter.getItemAt(belowIndex);
+                                    if (loopedMessage.getIsHidden() == null || !loopedMessage.getIsHidden()) {
+                                        messageBelow = loopedMessage;
+                                        break;
+                                    }
+                                }
+                                if (messageBelow == null ||
+                                    !TAPTimeFormatter.dateStampString(this, message.getCreated()).equals(
+                                    TAPTimeFormatter.dateStampString(this, messageAdapter.getItemAt(position - 1).getCreated()))
+                                ) {
+                                    // Message below updated message has different date, remove date separator
+                                    vm.getDateSeparators().remove(messageAbove.getLocalID());
+                                    vm.getDateSeparatorIndexes().remove(messageAbove.getLocalID());
+                                    messageAdapter.removeMessage(messageAbove);
+                                }
+                            }
+                        }
+                    }
+                    // Update message and notify
                     existingMessage.updateValue(message);
                     messageAdapter.notifyItemChanged(position);
                 }
             }
-//            else {
-//                new Thread(() -> updateMessage(message)).start();
-//            }
             if (0 == position) {
                 updateFirstVisibleMessageIndex();
             }
