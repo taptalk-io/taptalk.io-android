@@ -2696,6 +2696,20 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         tvUserName.setText(item.getForwardFrom().getFullname());
                         tvUserName.setVisibility(View.VISIBLE);
                     }
+                    if (null != civAvatar) {
+                        civAvatar.setOnClickListener(v -> {
+                            // Open group member profile
+                            if (roomType == RoomType.STARRED) {
+                                chatListener.onOutsideClicked(item);
+                            } else {
+                                Activity activity = (Activity) vh.itemView.getContext();
+                                if (null == activity) {
+                                    return;
+                                }
+                                chatListener.onGroupMemberAvatarClicked(item);
+                            }
+                        });
+                    }
                     if (null != civAvatar && null != tvAvatarLabel) {
                         TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(item.getForwardFrom().getUserID());
                         if (user != null) {

@@ -1354,7 +1354,27 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     (message.getForwardFrom() == null || message.getForwardFrom().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())))) {
                 return;
             }
-            openGroupMemberProfile(message.getUser());
+            if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && message.getForwardFrom() != null) {
+                String roomId = message.getForwardFrom().getRoomID();
+                TAPUserModel userModel = TAPContactManager.getInstance(instanceKey).getUserData(message.getForwardFrom().getUserID());
+                if (roomId.contains("-")) {
+                    //PERSONAL
+                    TAPChatManager.getInstance(instanceKey).triggerChatRoomProfileButtonTapped(TapUIChatActivity.this,
+                            TAPRoomModel.Builder(roomId, userModel.getFullname(), TYPE_PERSONAL, userModel.getImageURL(), ""), userModel);
+                } else {
+                    //GROUP
+                    TAPRoomModel groupModel = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(roomId);
+                    if (groupModel != null) {
+                        TAPChatManager.getInstance(instanceKey).triggerChatRoomProfileButtonTapped(TapUIChatActivity.this,
+                                groupModel, userModel);
+                    } else {
+                        Toast.makeText(TapUIChatActivity.this, getString(R.string.tap_chatroom_not_available), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                hideUnreadButton();
+            } else {
+                openGroupMemberProfile(message.getUser());
+            }
         }
 
         @Override
