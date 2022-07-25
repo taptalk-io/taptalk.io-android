@@ -612,6 +612,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         if (!room.getRoomID().equals(vm.getRoom().getRoomID())) {
                             start(TapUIChatActivity.this, instanceKey, room);
                         }
+                        vm.setForwardedMessages(null, 0);
+                        vm.setQuotedMessage(null, 0);
                     } else {
                         TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
                         if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
