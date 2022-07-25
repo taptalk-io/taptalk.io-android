@@ -44,6 +44,7 @@ import io.taptalk.TapTalk.R;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.FORWARD;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SHORT_ANIMATION_TIME;
@@ -247,6 +248,10 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
     private TapTalkRoomListInterface roomListInterface = new TapTalkRoomListInterface() {
         @Override
         public void onRoomSelected(TAPRoomModel roomModel) {
+            if (TAPUtils.isSavedMessagesRoom(roomModel.getRoomID(), instanceKey)) {
+                TAPChatManager.getInstance(instanceKey).setForwardedMessages(roomModel.getRoomID(), vm.getSelectedMessages(), FORWARD);
+                TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(roomModel);
+            }
             Intent intent = new Intent();
             intent.putParcelableArrayListExtra(MESSAGE, vm.getSelectedMessages());
             intent.putExtra(ROOM, roomModel);

@@ -608,14 +608,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (vm.isSelectState()) {
                         hideSelectState();
                     }
-                    TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
-                    if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
-                        // Show message in composer
-                        checkForwardLayout(null, intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
+                    if (TAPUtils.isSavedMessagesRoom(room.getRoomID(), instanceKey)) {
+                        if (!room.getRoomID().equals(vm.getRoom().getRoomID())) {
+                            start(TapUIChatActivity.this, instanceKey, room);
+                        }
                     } else {
-                        // Open selected chat room
-                        start(TapUIChatActivity.this, instanceKey, room);
-                        finish();
+                        TAPChatManager.getInstance(instanceKey).setForwardedMessages(room.getRoomID(), intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
+                        if (room.getRoomID().equals(vm.getRoom().getRoomID())) {
+                            // Show message in composer
+                            checkForwardLayout(null, intent.getParcelableArrayListExtra(MESSAGE), FORWARD);
+                        } else {
+                            // Open selected chat room
+                            start(TapUIChatActivity.this, instanceKey, room);
+                            finish();
+                        }
                     }
                     break;
                 case PICK_LOCATION:
