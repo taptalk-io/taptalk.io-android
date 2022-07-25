@@ -1770,8 +1770,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
             return;
         }
         vm.setQuotedMessage(message, quoteAction);
-        boolean quotedOwnMessage = null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
-                TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID());
+        boolean quotedOwnMessage;
+        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+            quotedOwnMessage = message.getForwardFrom() == null || message.getForwardFrom().getLocalID().isEmpty();
+        } else {
+            quotedOwnMessage = null != TAPChatManager.getInstance(instanceKey).getActiveUser() &&
+                    TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID().equals(message.getUser().getUserID());
+        }
         runOnUiThread(() -> {
             clQuote.setVisibility(View.VISIBLE);
             etChat.setFilters(new InputFilter[] { });
@@ -1813,7 +1818,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (quotedOwnMessage) {
                         tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
-                        tvQuoteTitle.setText(message.getUser().getFullname());
+                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                            tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                        } else {
+                            tvQuoteTitle.setText(message.getUser().getFullname());
+                        }
                     }
                 }
                 tvQuoteContent.setText(message.getBody());
@@ -1844,7 +1853,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (quotedOwnMessage) {
                         tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
-                        tvQuoteTitle.setText(message.getUser().getFullname());
+                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                            tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                        } else {
+                            tvQuoteTitle.setText(message.getUser().getFullname());
+                        }
                     }
                 }
                 tvQuoteContent.setText(message.getBody());
@@ -1864,7 +1877,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (quotedOwnMessage) {
                         tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
-                        tvQuoteTitle.setText(message.getUser().getFullname());
+                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                            tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                        } else {
+                            tvQuoteTitle.setText(message.getUser().getFullname());
+                        }
                     }
                 }
                 tvQuoteContent.setText(message.getBody());
@@ -1880,7 +1897,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (quotedOwnMessage) {
                         tvQuoteTitle.setText(getResources().getText(R.string.tap_you));
                     } else {
-                        tvQuoteTitle.setText(message.getUser().getFullname());
+                        if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                            tvQuoteTitle.setText(message.getForwardFrom().getFullname());
+                        } else {
+                            tvQuoteTitle.setText(message.getUser().getFullname());
+                        }
                     }
                 }
                 tvQuoteContent.setText(message.getBody());
