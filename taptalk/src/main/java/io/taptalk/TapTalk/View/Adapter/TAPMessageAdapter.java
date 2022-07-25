@@ -2965,7 +2965,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             if (null != item.getReplyTo() && null != item.getReplyTo().getUserID()
                     && item.getReplyTo().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
-                tvQuoteTitle.setText(itemView.getResources().getString(R.string.tap_you));
+                if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                    // TODO: 25/07/22 handle "you" for own messages MU
+                    tvQuoteTitle.setText(quote.getTitle());
+                } else {
+                    tvQuoteTitle.setText(itemView.getResources().getString(R.string.tap_you));
+                }
             } else {
                 tvQuoteTitle.setText(quote.getTitle());
             }
