@@ -37,6 +37,7 @@ import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TapCoreMessageManager
+import io.taptalk.TapTalk.Manager.TapUI
 import io.taptalk.TapTalk.Model.*
 import io.taptalk.TapTalk.View.Activity.TAPBaseActivity
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity
@@ -157,7 +158,9 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 val roomModel = TAPRoomListModel.buildWithLastMessage(model)
                 roomModel.type = TAPRoomListModel.Type.SELECTABLE_ROOM
                 if (TAPUtils.isSavedMessagesRoom(model.room.roomID, instanceKey)) {
-                    messageModels.add(0, roomModel)
+                    if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled) {
+                        messageModels.add(0, roomModel)
+                    }
                 } else {
                     messageModels.add(roomModel)
                 }
@@ -200,14 +203,16 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 for (entity in entities) {
                     // Exclude active user's own room
                     if (TAPUtils.isSavedMessagesRoom(entity.roomID, instanceKey)) {
-                        val result = TAPRoomListModel()
-                        val room = TAPRoomModel.Builder(entity)
-                        if (result.lastMessage == null) {
-                            result.lastMessage = TAPMessageModel()
+                        if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled) {
+                            val result = TAPRoomListModel()
+                            val room = TAPRoomModel.Builder(entity)
+                            if (result.lastMessage == null) {
+                                result.lastMessage = TAPMessageModel()
+                            }
+                            result.lastMessage.room = room
+                            result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
+                            vm?.groupContacts?.add(0, result)
                         }
-                        result.lastMessage.room = room
-                        result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
-                        vm?.groupContacts?.add(0, result)
                     } else if (entity.roomID != TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId)) {
                         val result = TAPRoomListModel()
                         // Convert message to room model
