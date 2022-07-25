@@ -159,14 +159,22 @@ public class TAPMessageModel implements Parcelable {
         return new TAPMessageModel("0", localID, "", body, room, type, created, user, recipientID, data, null, null, null, false, true, false, false, false, false, false, created, null, null, null);
     }
 
-    public static TAPMessageModel BuilderWithQuotedMessage(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, TAPMessageModel quotedMessage) {
+    public static TAPMessageModel BuilderWithQuotedMessage(String body, TAPRoomModel room, Integer type, Long created, TAPUserModel user, String recipientID, @Nullable HashMap<String, Object> data, TAPMessageModel quotedMessage, String instanceKey) {
         String localID = TAPUtils.generateRandomString(32);
         String quoteTitle, quoteContent;
         if (quotedMessage.getType() == TYPE_FILE) {
             quoteTitle = TAPUtils.getFileDisplayName(quotedMessage);
             quoteContent = TAPUtils.getFileDisplayInfo(quotedMessage);
         } else {
-            quoteTitle = quotedMessage.getUser().getFullname();
+            if (TAPUtils.isSavedMessagesRoom(quotedMessage.getRoom().getRoomID(), instanceKey)) {
+                if (quotedMessage.getForwardFrom() == null || quotedMessage.getForwardFrom().getLocalID().isEmpty()) {
+                    quoteTitle = quotedMessage.getUser().getFullname();
+                } else {
+                    quoteTitle = quotedMessage.getForwardFrom().getFullname();
+                }
+            } else {
+                quoteTitle = quotedMessage.getUser().getFullname();
+            }
             quoteContent = quotedMessage.getBody();
         }
         String quoteFileID = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(FILE_ID);
