@@ -170,6 +170,7 @@ public class TAPMessageModel implements Parcelable {
                 if (quotedMessage.getForwardFrom() == null || quotedMessage.getForwardFrom().getLocalID().isEmpty()) {
                     quoteTitle = quotedMessage.getUser().getFullname();
                 } else {
+                    quotedMessage.getUser().setUserID(quotedMessage.getForwardFrom().getUserID());
                     quoteTitle = quotedMessage.getForwardFrom().getFullname();
                 }
             } else {
