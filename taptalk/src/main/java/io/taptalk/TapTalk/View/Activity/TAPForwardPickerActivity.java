@@ -195,6 +195,8 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                             if (TAPUtils.isSavedMessagesRoom(recentItem.getRoom().getRoomID(), instanceKey)) {
                                 if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
                                     vm.addRecentSearches(0, recentItem);
+                                } else {
+                                    vm.addRecentSearches(recentItem);
                                 }
                                 isSavedMessagesExist = true;
                             } else {
@@ -278,6 +280,8 @@ public class TAPForwardPickerActivity extends TAPBaseActivity {
                         if (TAPUtils.isSavedMessagesRoom(result.getRoom().getRoomID(), instanceKey)) {
                             if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
                                 vm.addSearchResult(0, result);
+                            } else {
+                                vm.addSearchResult(result);
                             }
                             isSavedMessagesExist = true;
                         } else {

@@ -274,6 +274,8 @@ public class TapUISearchChatFragment extends Fragment {
                         if (TAPUtils.isSavedMessagesRoom(result.getRoom().getRoomID(), instanceKey)) {
                             if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
                                 vm.addSearchResult(0, result);
+                            } else {
+                                vm.addSearchResult(result);
                             }
                             isSavedMessagesExist = true;
                         } else {

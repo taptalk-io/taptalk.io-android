@@ -160,6 +160,8 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 if (TAPUtils.isSavedMessagesRoom(model.room.roomID, instanceKey)) {
                     if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled) {
                         messageModels.add(0, roomModel)
+                    } else {
+                        messageModels.add(roomModel)
                     }
                 } else {
                     messageModels.add(roomModel)
@@ -203,15 +205,17 @@ class TAPShareOptionsActivity : TAPBaseActivity() {
                 for (entity in entities) {
                     // Exclude active user's own room
                     if (TAPUtils.isSavedMessagesRoom(entity.roomID, instanceKey)) {
+                        val result = TAPRoomListModel()
+                        val room = TAPRoomModel.Builder(entity)
+                        if (result.lastMessage == null) {
+                            result.lastMessage = TAPMessageModel()
+                        }
+                        result.lastMessage.room = room
+                        result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
                         if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled) {
-                            val result = TAPRoomListModel()
-                            val room = TAPRoomModel.Builder(entity)
-                            if (result.lastMessage == null) {
-                                result.lastMessage = TAPMessageModel()
-                            }
-                            result.lastMessage.room = room
-                            result.type = TAPRoomListModel.Type.SELECTABLE_CONTACT
                             vm?.groupContacts?.add(0, result)
+                        } else {
+                            vm?.groupContacts?.add(result)
                         }
                     } else if (entity.roomID != TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId)) {
                         val result = TAPRoomListModel()
