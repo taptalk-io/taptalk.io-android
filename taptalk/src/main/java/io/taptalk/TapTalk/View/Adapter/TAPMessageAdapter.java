@@ -3622,7 +3622,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     private void setOriginalMessageButton(TAPMessageModel message, View button) {
         if (button != null) {
-            if (vm.isSelectState() || !TAPUtils.isSavedMessagesRoom(message.getRoom().getRoomID(), instanceKey)) {
+            if (vm.isSelectState() || !TAPUtils.isSavedMessagesRoom(message.getRoom().getRoomID(), instanceKey) || roomType == RoomType.STARRED) {
                 button.setVisibility(View.GONE);
             } else {
                 button.setOnClickListener(view -> chatListener.onArrowButtonClicked(message));
