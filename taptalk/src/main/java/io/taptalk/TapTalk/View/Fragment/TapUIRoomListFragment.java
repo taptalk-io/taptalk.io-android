@@ -1315,11 +1315,19 @@ public class TapUIRoomListFragment extends Fragment {
                                     @Override
                                     public void onSelectFinished(List<TAPMessageEntity> entities) {
                                         super.onSelectFinished(entities);
-                                        TAPMessageModel messageModel = TAPMessageModel.fromMessageEntity(entities.get(entities.size() -1 ));
-                                        vm.getRoomList().get(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))).setLastMessage(messageModel);
-                                        if (null != adapter) {
+                                        if (entities.size() > 0) {
+                                            TAPMessageModel messageModel = TAPMessageModel.fromMessageEntity(entities.get(entities.size() - 1));
+                                            vm.getRoomList().get(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))).setLastMessage(messageModel);
+                                            if (null != adapter) {
+                                                activity.runOnUiThread(() -> {
+                                                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
+                                                });
+                                            }
+                                        } else {
                                             activity.runOnUiThread(() -> {
-                                                adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
+                                                int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID));
+                                                vm.getRoomList().remove(index);
+                                                adapter.notifyItemRemoved(index);
                                             });
                                         }
                                     }
