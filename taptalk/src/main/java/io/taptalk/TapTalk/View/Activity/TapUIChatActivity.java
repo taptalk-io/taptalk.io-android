@@ -18,6 +18,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.CLOSE_ACTIVITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.GROUP_TYPING_MAP;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.INSTANCE_KEY;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NEED_REFRESH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.JUMP_TO_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MEDIA_PREVIEWS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -355,6 +356,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
         DEFAULT, HOLD_RECORD, LOCKED_RECORD, FINISH, PLAY, PAUSE
     }
 
+    // Saved Messages Delete Message Check
+    private boolean isLastMessageNeedRefresh = false;
 
     private STATE state = STATE.WORKING;
     private RECORDING_STATE recordingState = RECORDING_STATE.DEFAULT;
@@ -512,6 +515,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         // Reload UI in room list
         Intent intent = new Intent(RELOAD_ROOM_LIST);
         intent.putExtra(ROOM_ID, vm.getRoom().getRoomID());
+        if (isLastMessageNeedRefresh) {
+            intent.putExtra(IS_NEED_REFRESH, true);
+        }
         LocalBroadcastManager.getInstance(TapTalk.appContext).sendBroadcast(intent);
 
         TAPBroadcastManager.unregister(this, broadcastReceiver);
@@ -1363,23 +1369,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 return;
             }
             if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey) && message.getForwardFrom() != null) {
-                String roomId = message.getForwardFrom().getRoomID();
+                String roomId = TAPChatManager.getInstance(instanceKey).arrangeRoomId(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID(), message.getForwardFrom().getUserID());
                 TAPUserModel userModel = TAPContactManager.getInstance(instanceKey).getUserData(message.getForwardFrom().getUserID());
-                if (roomId.contains("-")) {
-                    //PERSONAL
-                    TAPChatManager.getInstance(instanceKey).triggerChatRoomProfileButtonTapped(TapUIChatActivity.this,
-                            TAPRoomModel.Builder(roomId, userModel.getFullname(), TYPE_PERSONAL, userModel.getImageURL(), ""), userModel);
+                if (userModel != null) {
+                    TAPChatProfileActivity.Companion.start(TapUIChatActivity.this, instanceKey, TAPRoomModel.Builder(roomId, userModel.getFullname(), TYPE_PERSONAL, userModel.getImageURL(), ""), userModel);
+                    hideUnreadButton();
                 } else {
-                    //GROUP
-                    TAPRoomModel groupModel = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(roomId);
-                    if (groupModel != null) {
-                        TAPChatManager.getInstance(instanceKey).triggerChatRoomProfileButtonTapped(TapUIChatActivity.this,
-                                groupModel, userModel);
-                    } else {
-                        Toast.makeText(TapUIChatActivity.this, getString(R.string.tap_chatroom_not_available), Toast.LENGTH_SHORT).show();
-                    }
+                    TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(message.getForwardFrom().getUserID(), new TAPDefaultDataView<>() {
+                        @Override
+                        public void onSuccess(TAPGetUserResponse response) {
+                            super.onSuccess(response);
+                            TAPContactManager.getInstance(instanceKey).updateUserData(response.getUser());
+                            TAPChatManager.getInstance(instanceKey).triggerChatRoomProfileButtonTapped(TapUIChatActivity.this,
+                                    TAPRoomModel.Builder(roomId, response.getUser().getFullname(), TYPE_PERSONAL, response.getUser().getImageURL(), ""), response.getUser());
+                            TAPChatProfileActivity.Companion.start(TapUIChatActivity.this, instanceKey, TAPRoomModel.Builder(roomId, response.getUser().getFullname(), TYPE_PERSONAL, response.getUser().getImageURL(), ""), response.getUser());
+                            hideUnreadButton();
+                        }
+                    });
                 }
-                hideUnreadButton();
             } else {
                 openGroupMemberProfile(message.getUser());
             }
@@ -1482,7 +1489,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     } else {
                         String otherUserId = TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomId);
                         TAPUserModel otherUser = TAPContactManager.getInstance(instanceKey).getUserData(otherUserId);
-                        TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, otherUser.getFullname(), otherUser.getImageURL(), TYPE_PERSONAL, message.getRoom().getColor(), localId);
+                        if (otherUser != null) {
+                            TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, otherUser.getFullname(), otherUser.getImageURL(), TYPE_PERSONAL, message.getRoom().getColor(), localId);
+                        } else {
+                            TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(message.getForwardFrom().getUserID(), new TAPDefaultDataView<>() {
+                                @Override
+                                public void onSuccess(TAPGetUserResponse response) {
+                                    super.onSuccess(response);
+                                    TAPContactManager.getInstance(instanceKey).updateUserData(response.getUser());
+                                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
+                                    TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, response.getUser().getFullname(), response.getUser().getImageURL(), TYPE_PERSONAL, message.getRoom().getColor(), localId);
+                                }
+                            });
+                        }
                     }
                 } else {
                     //GROUP
@@ -1490,7 +1509,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (groupModel != null ) {
                         TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, groupModel.getName(), groupModel.getImageURL(), TYPE_GROUP, groupModel.getColor(), localId);
                     } else {
-                        Toast.makeText(TapUIChatActivity.this, getString(R.string.tap_chatroom_not_available), Toast.LENGTH_SHORT).show();
+                        TAPDataManager.getInstance(instanceKey).getChatRoomData(roomId, new TAPDefaultDataView<>() {
+                            @Override
+                            public void onSuccess(TAPCreateRoomResponse response) {
+                                super.onSuccess(response);
+                                TAPRoomModel room = response.getRoom();
+                                if (room != null) {
+                                    room.setAdmins(response.getAdmins());
+                                    room.setParticipants(response.getParticipants());
+                                    TAPGroupManager.Companion.getInstance(instanceKey).addGroupData(room);
+                                    TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, room.getName(), room.getImageURL(), TYPE_GROUP, room.getColor(), localId);
+                                }
+                            }
+                        });
                     }
                 }
             }
@@ -2537,6 +2568,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 return;
             }
             showEditLayout(message, EDIT);
+        }
+
+        @Override
+        public void onDeleteMessage(String roomID, TAPMessageModel message) {
+            super.onDeleteMessage(roomID, message);
+            isLastMessageNeedRefresh = true;
         }
     };
 
