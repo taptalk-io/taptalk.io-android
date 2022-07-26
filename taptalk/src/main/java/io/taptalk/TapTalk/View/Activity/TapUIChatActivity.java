@@ -3200,9 +3200,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         if (messageAbove != null && messageAbove.getType() == TYPE_DATE_SEPARATOR) {
                             if (position == 0) {
                                 // Updated message is at first index, remove date separator above
-                                vm.getDateSeparators().remove(messageAbove.getLocalID());
-                                vm.getDateSeparatorIndexes().remove(messageAbove.getLocalID());
-                                messageAdapter.removeMessage(messageAbove);
+                                removeDateSeparator(messageAbove);
+                                if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                                    TAPDataManager.getInstance(instanceKey).getRoomLastMessage(vm.getRoom().getRoomID(), new TAPDatabaseListener<>() {
+                                        @Override
+                                        public void onSelectFinished(List<TAPMessageEntity> entities) {
+                                            super.onSelectFinished(entities);
+                                            if (entities.size() == 0) {
+                                                runOnUiThread(() -> {
+                                                    cvEmptySavedMessages.setVisibility(View.VISIBLE);
+                                                    flMessageList.setVisibility(View.GONE);
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
                             } else {
                                 TAPMessageModel messageBelow = null;
                                 for (int belowIndex = position - 1; belowIndex >= 0; belowIndex--) {
@@ -3218,9 +3230,21 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                     TAPTimeFormatter.dateStampString(this, messageAdapter.getItemAt(position - 1).getCreated()))
                                 ) {
                                     // Message below updated message has different date, remove date separator
-                                    vm.getDateSeparators().remove(messageAbove.getLocalID());
-                                    vm.getDateSeparatorIndexes().remove(messageAbove.getLocalID());
-                                    messageAdapter.removeMessage(messageAbove);
+                                    removeDateSeparator(messageAbove);
+                                    if (TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
+                                        TAPDataManager.getInstance(instanceKey).getRoomLastMessage(vm.getRoom().getRoomID(), new TAPDatabaseListener<>() {
+                                            @Override
+                                            public void onSelectFinished(List<TAPMessageEntity> entities) {
+                                                super.onSelectFinished(entities);
+                                                if (entities.size() == 0) {
+                                                    runOnUiThread(() -> {
+                                                        cvEmptySavedMessages.setVisibility(View.VISIBLE);
+                                                        flMessageList.setVisibility(View.GONE);
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
                                 }
                             }
                         }
@@ -3234,6 +3258,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 updateFirstVisibleMessageIndex();
             }
         });
+    }
+
+    private void removeDateSeparator(TAPMessageModel message) {
+        vm.getDateSeparators().remove(message.getLocalID());
+        vm.getDateSeparatorIndexes().remove(message.getLocalID());
+        messageAdapter.removeMessage(message);
     }
 
     private List<TAPMessageModel> addBeforeTextMessage(final TAPMessageModel newMessage) {
