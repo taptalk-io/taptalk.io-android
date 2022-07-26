@@ -3276,11 +3276,13 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivBubbleHighlight.animate()
                             .alpha(0f)
                             .setDuration(750L)
-                            .withEndAction(() -> ivBubbleHighlight.setVisibility(View.GONE))
+                            .withEndAction(() -> {
+                                ivBubbleHighlight.setVisibility(View.GONE);
+                                highlightedMessage = null;
+                            })
                             .start();
                 }, 1000L))
                 .start();
-        highlightedMessage = null;
     }
 
     public void setMessages(List<TAPMessageModel> messages) {
