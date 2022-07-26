@@ -97,6 +97,7 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NEED_REFRESH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
@@ -1309,6 +1310,21 @@ public class TapUIRoomListFragment extends Fragment {
                     String roomID = intent.getStringExtra(ROOM_ID);
                     switch (intent.getAction()) {
                         case RELOAD_ROOM_LIST:
+                            if (intent.getBooleanExtra(IS_NEED_REFRESH, false)) {
+                                TAPDataManager.getInstance(instanceKey).getRoomLastMessage(roomID, new TAPDatabaseListener<>() {
+                                    @Override
+                                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                                        super.onSelectFinished(entities);
+                                        TAPMessageModel messageModel = TAPMessageModel.fromMessageEntity(entities.get(entities.size() -1 ));
+                                        vm.getRoomList().get(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))).setLastMessage(messageModel);
+                                        if (null != adapter) {
+                                            activity.runOnUiThread(() -> {
+                                                adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
+                                            });
+                                        }
+                                    }
+                                });
+                            }
                             if (null != adapter) {
                                 adapter.notifyItemChanged(vm.getRoomList().indexOf(
                                         vm.getRoomPointer().get(roomID)));
