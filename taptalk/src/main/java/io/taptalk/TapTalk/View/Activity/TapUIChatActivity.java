@@ -356,8 +356,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         DEFAULT, HOLD_RECORD, LOCKED_RECORD, FINISH, PLAY, PAUSE
     }
 
-    // Saved Messages Delete Message Check
+    // Saved Messages
     private boolean isLastMessageNeedRefresh = false;
+    private boolean isArrowButtonTapped = false;
 
     private STATE state = STATE.WORKING;
     private RECORDING_STATE recordingState = RECORDING_STATE.DEFAULT;
@@ -443,6 +444,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        isArrowButtonTapped = false;
         TAPChatManager.getInstance(instanceKey).setActiveRoom(vm.getRoom());
         TapUI.getInstance(instanceKey).setCurrentTapTalkChatActivity(this);
         etChat.setText(TAPChatManager.getInstance(instanceKey).getMessageFromDraft(vm.getRoom().getRoomID()));
@@ -1479,49 +1481,53 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onArrowButtonClicked(TAPMessageModel message) {
             super.onArrowButtonClicked(message);
-            if (message.getForwardFrom() != null) {
-                String roomId = message.getForwardFrom().getRoomID();
-                String localId = message.getForwardFrom().getLocalID();
-                if (roomId.contains("-")) {
-                    //PERSONAL
-                    if (TAPUtils.isSavedMessagesRoom(roomId, instanceKey)) {
-                        scrollToMessage(localId);
-                    } else {
-                        String otherUserId = TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomId);
-                        TAPUserModel otherUser = TAPContactManager.getInstance(instanceKey).getUserData(otherUserId);
-                        if (otherUser != null) {
-                            TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, otherUser.getFullname(), otherUser.getImageURL(), TYPE_PERSONAL, message.getRoom().getColor(), localId);
+            if (!isArrowButtonTapped) {
+                if (message.getForwardFrom() != null) {
+                    isArrowButtonTapped = true;
+                    String roomId = message.getForwardFrom().getRoomID();
+                    String localId = message.getForwardFrom().getLocalID();
+                    if (roomId.contains("-")) {
+                        //PERSONAL
+                        if (TAPUtils.isSavedMessagesRoom(roomId, instanceKey)) {
+                            scrollToMessage(localId);
+                            isArrowButtonTapped = false;
                         } else {
-                            TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(message.getForwardFrom().getUserID(), new TAPDefaultDataView<>() {
+                            String otherUserId = TAPChatManager.getInstance(instanceKey).getOtherUserIdFromRoom(roomId);
+                            TAPUserModel otherUser = TAPContactManager.getInstance(instanceKey).getUserData(otherUserId);
+                            if (otherUser != null) {
+                                TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, otherUser.getFullname(), otherUser.getImageURL(), TYPE_PERSONAL, message.getRoom().getColor(), localId);
+                            } else {
+                                TAPDataManager.getInstance(instanceKey).getUserByIdFromApi(message.getForwardFrom().getUserID(), new TAPDefaultDataView<>() {
+                                    @Override
+                                    public void onSuccess(TAPGetUserResponse response) {
+                                        super.onSuccess(response);
+                                        TAPContactManager.getInstance(instanceKey).updateUserData(response.getUser());
+                                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
+                                        TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, response.getUser().getFullname(), response.getUser().getImageURL(), TYPE_PERSONAL, message.getRoom().getColor(), localId);
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        //GROUP
+                        TAPRoomModel groupModel = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(roomId);
+                        if (groupModel != null) {
+                            TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, groupModel.getName(), groupModel.getImageURL(), TYPE_GROUP, groupModel.getColor(), localId);
+                        } else {
+                            TAPDataManager.getInstance(instanceKey).getChatRoomData(roomId, new TAPDefaultDataView<>() {
                                 @Override
-                                public void onSuccess(TAPGetUserResponse response) {
+                                public void onSuccess(TAPCreateRoomResponse response) {
                                     super.onSuccess(response);
-                                    TAPContactManager.getInstance(instanceKey).updateUserData(response.getUser());
-                                    messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
-                                    TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, response.getUser().getFullname(), response.getUser().getImageURL(), TYPE_PERSONAL, message.getRoom().getColor(), localId);
+                                    TAPRoomModel room = response.getRoom();
+                                    if (room != null) {
+                                        room.setAdmins(response.getAdmins());
+                                        room.setParticipants(response.getParticipants());
+                                        TAPGroupManager.Companion.getInstance(instanceKey).addGroupData(room);
+                                        TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, room.getName(), room.getImageURL(), TYPE_GROUP, room.getColor(), localId);
+                                    }
                                 }
                             });
                         }
-                    }
-                } else {
-                    //GROUP
-                    TAPRoomModel groupModel = TAPGroupManager.Companion.getInstance(instanceKey).getGroupData(roomId);
-                    if (groupModel != null ) {
-                        TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, groupModel.getName(), groupModel.getImageURL(), TYPE_GROUP, groupModel.getColor(), localId);
-                    } else {
-                        TAPDataManager.getInstance(instanceKey).getChatRoomData(roomId, new TAPDefaultDataView<>() {
-                            @Override
-                            public void onSuccess(TAPCreateRoomResponse response) {
-                                super.onSuccess(response);
-                                TAPRoomModel room = response.getRoom();
-                                if (room != null) {
-                                    room.setAdmins(response.getAdmins());
-                                    room.setParticipants(response.getParticipants());
-                                    TAPGroupManager.Companion.getInstance(instanceKey).addGroupData(room);
-                                    TapUIChatActivity.start(TapUIChatActivity.this, instanceKey, roomId, room.getName(), room.getImageURL(), TYPE_GROUP, room.getColor(), localId);
-                                }
-                            }
-                        });
                     }
                 }
             }
