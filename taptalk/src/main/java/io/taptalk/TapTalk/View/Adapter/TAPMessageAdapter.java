@@ -2740,7 +2740,6 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 showInitial(vh, item.getForwardFrom().getFullname(), civAvatar, tvAvatarLabel);
                             }
                         } else {
-                            chatListener.onRequestUserData(item);
                             showInitial(vh, item.getForwardFrom().getFullname(), civAvatar, tvAvatarLabel);
                         }
                         civAvatar.setOnClickListener(v -> {
