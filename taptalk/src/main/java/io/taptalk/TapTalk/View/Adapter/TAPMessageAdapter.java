@@ -2716,7 +2716,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         });
                     }
                     if (null != civAvatar && null != tvAvatarLabel) {
-                        TAPUserModel user = TAPContactManager.getInstance(instanceKey).getUserData(item.getForwardFrom().getUserID());
+                        String forwardedFromUserID = item.getForwardFrom().getUserID();
+                        TAPUserModel activeUser = TAPChatManager.getInstance(instanceKey).getActiveUser();
+                        TAPUserModel user;
+                        if (forwardedFromUserID.equals(activeUser.getUserID())) {
+                            user = activeUser;
+                        } else {
+                            user = TAPContactManager.getInstance(instanceKey).getUserData(forwardedFromUserID);
+                        }
                         if (user != null) {
                             if (null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                                 glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
@@ -2740,7 +2747,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                                 showInitial(vh, item.getForwardFrom().getFullname(), civAvatar, tvAvatarLabel);
                             }
                         } else {
-//                            chatListener.onRequestUserData(item);
+                            chatListener.onRequestUserData(item);
                             showInitial(vh, item.getForwardFrom().getFullname(), civAvatar, tvAvatarLabel);
                         }
                         civAvatar.setOnClickListener(v -> {
