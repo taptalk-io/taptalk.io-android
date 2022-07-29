@@ -23,7 +23,7 @@ import io.taptalk.TapTalk.Model.TAPRoomListModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPBaseAdapter
 
-class TAPShareOptionsSelectedAdapter(list: List<TAPRoomListModel>, private val listener: TAPShareOptionsInterface): TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>>() {
+class TAPShareOptionsSelectedAdapter(list: List<TAPRoomListModel>, private val listener: TAPShareOptionsInterface, private val instanceKey: String): TAPBaseAdapter<TAPRoomListModel, TAPBaseViewHolder<TAPRoomListModel>>() {
 
     init {
         items = list
@@ -40,7 +40,12 @@ class TAPShareOptionsSelectedAdapter(list: List<TAPRoomListModel>, private val l
         private val tvFullName: TextView = itemView.findViewById(R.id.tv_full_name)
         override fun onBind(item: TAPRoomListModel, position: Int) {
             val room = item.lastMessage.room ?: return
-            if (null != room.imageURL && room.imageURL!!.thumbnail.isNotEmpty()) {
+            if (TAPUtils.isSavedMessagesRoom(room.roomID,instanceKey)) {
+                Glide.with(itemView.context)
+                    .load(R.drawable.tap_ic_bookmark_round).into(civAvatar)
+                ImageViewCompat.setImageTintList(civAvatar, null)
+                tvAvatarLabel.visibility = View.GONE
+            } else if (null != room.imageURL && room.imageURL!!.thumbnail.isNotEmpty()) {
                 Glide.with(itemView.context)
                         .load(room.imageURL!!.thumbnail)
                         .listener(object : RequestListener<Drawable?> {
@@ -75,7 +80,7 @@ class TAPShareOptionsSelectedAdapter(list: List<TAPRoomListModel>, private val l
 
             // Set name
             val fullName = room.name
-            if (fullName.contains(" ")) {
+            if (fullName.contains(" ") && !TAPUtils.isSavedMessagesRoom(room.roomID,instanceKey)) {
                 tvFullName.text = fullName.substring(0, fullName.indexOf(' '))
             } else {
                 tvFullName.text = fullName

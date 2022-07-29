@@ -98,8 +98,12 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
             return false
         }
         if (null == vm.otherUserModel && RoomType.TYPE_PERSONAL == vm.room.type) {
-            vm.otherUserModel =
-                TAPContactManager.getInstance(instanceKey).getUserData(vm.otherUserID)
+            if (TAPUtils.isSavedMessagesRoom(vm.room.roomID, instanceKey)) {
+                vm.otherUserModel = TAPChatManager.getInstance(instanceKey).activeUser
+            } else {
+                vm.otherUserModel =
+                    TAPContactManager.getInstance(instanceKey).getUserData(vm.otherUserID)
+            }
         }
 
         // Updated 2020/02/10

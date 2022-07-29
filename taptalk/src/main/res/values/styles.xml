@@ -813,6 +813,13 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="tapEmptySavedMessageTitleStyle" parent="tapFontFamilyChatBold">
+        <item name="android:lineSpacingExtra">8sp</item>
+        <item name="android:textColor">@color/tapTitleLabelColor</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="tapDestructiveButtonStyle" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:background">@drawable/tap_bg_destructive_button</item>
         <item name="android:textSize">16sp</item>

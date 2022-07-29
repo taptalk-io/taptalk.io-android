@@ -416,6 +416,10 @@
     <string name="tap_warning_delete_account">Once you confirm, all your account data will be permanently deleted.</string>
     <string name="tap_edited_dot">Edited •</string>
     <string name="tap_edit_message">Edit Message</string>
+    <string name="tap_wording_save_spesific_message">Save specific messages to quickly refer back to them later.</string>
+    <string name="tap_empty_saved_message_1">Forward messages here</string>
+    <string name="tap_empty_saved_message_2">Send media and files to save them</string>
+    <string name="tap_empty_saved_message_3">Access this chat personally from any device</string>
     <string name="tap_wording_oops_only_admin">Oops! You’re the only admin.</string>
     <string name="tap_wording_sign_to_another_member">You are the only admin in your group, sign another group member as admin to take over the group if you still want to delete your TapTalk account.</string>
     <string name="tap_wording_delete_account">You will delete all your account information, contacts and messages in TapTalk permanently. Are you sure you want to continue?</string>
@@ -424,5 +428,7 @@
     <string name="tap_verification">Verification</string>
     <string name="tap_verification_succeed">Verification succeed, see you again!</string>
     <string name="tap_deleted_user">Deleted User</string>
+    <string name="tap_saved_messages">Saved Messages</string>
+    <string name="tap_chatroom_not_available">Chatroom is not available.</string>
 
 </resources>

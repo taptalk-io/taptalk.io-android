@@ -481,8 +481,11 @@ public class TAPNotificationManager {
             Map<String, List<TAPMessageModel>> notificationMap = TAPNotificationManager.getInstance(instanceKey).getNotificationMessagesMap();
             List<TAPMessageModel> currentRoomNotificationList = notificationMap.get(notificationMessage.getRoom().getRoomID());
 
-            // Check if message is already read to remove instead of show
-            if (notificationMessage.getIsRead() != null && notificationMessage.getIsRead()) {
+            // Check message state to remove notification instead of show
+            if ((notificationMessage.getIsRead() != null && notificationMessage.getIsRead()) ||
+                (notificationMessage.getIsDeleted() != null && notificationMessage.getIsDeleted()) ||
+                (notificationMessage.getIsHidden() != null && notificationMessage.getIsHidden())
+            ) {
                 if (currentRoomNotificationList != null && currentRoomNotificationList.size() > 0) {
                     for (TAPMessageModel message : new ArrayList<>(currentRoomNotificationList)) {
                         if (notificationMessage.getMessageID() != null &&
