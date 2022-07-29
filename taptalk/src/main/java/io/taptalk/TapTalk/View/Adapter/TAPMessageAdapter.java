@@ -2125,7 +2125,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             return;
         }
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) flBubble.getLayoutParams();
-        if (item.getRoom().getType() == TYPE_GROUP) {
+        if (item.getRoom().getType() == TYPE_GROUP || TAPUtils.isSavedMessagesRoom(vm.getRoom().getRoomID(), instanceKey)) {
             // Fix bubble margin on group room
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 params.setMarginEnd(TAPUtils.dpToPx(48));
