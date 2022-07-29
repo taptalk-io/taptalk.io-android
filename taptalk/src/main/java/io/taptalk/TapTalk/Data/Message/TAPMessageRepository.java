@@ -261,6 +261,17 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getRoomLastMessage(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> messageEntities = messageDao.getRoomLastMessage(roomID);
+            try {
+                listener.onSelectFinished(messageEntities);
+            } catch (Exception e) {
+                listener.onSelectFailed(e.getMessage());
+            }
+        }).start();
+    }
+
     public void getAllUnreadMessagesFromRoom(String myID, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         new Thread(() -> {
             List<TAPMessageEntity> messageEntities = messageDao.getAllUnreadMessagesFromRoom(myID, roomID);

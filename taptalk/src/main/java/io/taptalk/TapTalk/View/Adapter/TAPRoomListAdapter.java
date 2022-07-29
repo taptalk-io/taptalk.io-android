@@ -144,6 +144,11 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar);
                 ImageViewCompat.setImageTintList(civAvatar, null);
                 tvAvatarLabel.setVisibility(View.GONE);
+            } else if (TAPUtils.isSavedMessagesRoom(room.getRoomID(), instanceKey)) {
+                // Saved messages
+                glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civAvatar);
+                ImageViewCompat.setImageTintList(civAvatar, null);
+                tvAvatarLabel.setVisibility(View.GONE);
             } else if (null != user  && null != user.getImageURL() && !user.getImageURL().getThumbnail().isEmpty()) {
                 // Load user avatar
                 glide.load(user.getImageURL().getThumbnail()).listener(new RequestListener<Drawable>() {
@@ -364,12 +369,7 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
                 // Return if logged out (active user is null)
                 return;
             }
-            String myUserID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
-            if (!(myUserID + "-" + myUserID).equals(item.getLastMessage().getRoom().getRoomID())) {
-                TapUIChatActivity.start(itemView.getContext(), instanceKey, item.getLastMessage().getRoom(), item.getTypingUsers());
-            } else {
-                Toast.makeText(itemView.getContext(), itemView.getContext().getString(R.string.tap_error_invalid_room), Toast.LENGTH_SHORT).show();
-            }
+            TapUIChatActivity.start(itemView.getContext(), instanceKey, item.getLastMessage().getRoom(), item.getTypingUsers());
         }
     }
 

@@ -96,6 +96,11 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
                 glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar)
                 ImageViewCompat.setImageTintList(civAvatar, null)
                 tvAvatarLabel.visibility = View.GONE
+            } else if (TAPUtils.isSavedMessagesRoom(room.roomID, instanceKey)) {
+                // Saved messages
+                glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civAvatar)
+                ImageViewCompat.setImageTintList(civAvatar, null)
+                tvAvatarLabel.visibility = View.GONE
             } else if (null != user && null != user.imageURL && user.imageURL.thumbnail.isNotEmpty()) {
                 // Load user avatar
                 glide.load(user.imageURL.thumbnail).listener(object : RequestListener<Drawable?> {
@@ -311,6 +316,11 @@ class TAPShareOptionsAdapter(val instanceKey: String, list: List<TAPRoomListMode
             if (room.deleted > 0L) {
                 // Deleted user
                 glide.load(R.drawable.tap_ic_deleted_user).fitCenter().into(civAvatar)
+                ImageViewCompat.setImageTintList(civAvatar, null)
+                tvAvatarLabel.visibility = View.GONE
+            } else if (TAPUtils.isSavedMessagesRoom(room.roomID, instanceKey)) {
+                // Saved messages
+                glide.load(R.drawable.tap_ic_bookmark_round).fitCenter().into(civAvatar)
                 ImageViewCompat.setImageTintList(civAvatar, null)
                 tvAvatarLabel.visibility = View.GONE
             } else if (null != room.imageURL && room.imageURL!!.thumbnail.isNotEmpty()) {

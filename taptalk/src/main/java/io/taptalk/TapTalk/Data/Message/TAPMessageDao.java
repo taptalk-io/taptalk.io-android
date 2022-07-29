@@ -87,6 +87,9 @@ public interface TAPMessageDao {
             "group by firstQuery.roomID order by firstQuery.created desc")
     List<TAPMessageEntity> getAllRoomList();
 
+    @Query("select * from (select roomID, max(created) as max_created from Message_Table where isHidden = 0 and roomID = :roomID group by roomID) secondQuery join Message_Table firstQuery on firstQuery.roomID = secondQuery.roomID and firstQuery.created = secondQuery.max_created group by firstQuery.roomID order by firstQuery.created desc")
+    List<TAPMessageEntity> getRoomLastMessage(String roomID);
+
     @Query("select * from (select roomID, SUM(CASE WHEN (userID not like :userID and isRead = 0) THEN 1 ELSE 0 END) as unreadCount, " +
             "SUM(CASE WHEN (userID not like :userID and isRead = 0 and isDeleted = 0 " +
             "and type in (" + TYPE_TEXT + ", " + TYPE_IMAGE + ", " + TYPE_VIDEO + ") " +

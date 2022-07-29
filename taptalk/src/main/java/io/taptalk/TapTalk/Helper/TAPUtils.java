@@ -1314,4 +1314,9 @@ public class TAPUtils {
             indexCombine += 1;
         }
     }
+
+    public static boolean isSavedMessagesRoom(String roomID, String instanceKey) {
+        String userID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+        return roomID.equals(String.format("%s-%s", userID, userID));
+    }
 }

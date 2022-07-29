@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -223,6 +222,12 @@ public class TAPDatabaseManager {
     public void getRoomList(String myID, String username, List<TAPMessageEntity> saveMessages, boolean isCheckUnreadFirst, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getRoomList(myID, username, saveMessages, isCheckUnreadFirst, listener);
+        else throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void getRoomLastMessage(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null != messageRepository)
+            messageRepository.getRoomLastMessage(roomID, listener);
         else throw new IllegalStateException("Message Repository was not initialized.");
     }
 

@@ -414,6 +414,10 @@
     <string name="tap_warning_delete_account">Setelah terkonfirmasi, semua data di akun anda akan terhapus secara permanen.</string>
     <string name="tap_edited_dot">Edited •</string>
     <string name="tap_edit_message">Edit Message</string>
+    <string name="tap_wording_save_spesific_message">Simpan pesan tertentu untuk di lihat kembali secara mudah</string>
+    <string name="tap_empty_saved_message_1">Teruskan pesan kesini</string>
+    <string name="tap_empty_saved_message_2">Kirim media dan berkas untuk disimpan</string>
+    <string name="tap_empty_saved_message_3">Akses obrolan dari perangkat kamu yang lain</string>
     <string name="tap_wording_oops_only_admin">Oops! Anda satu-satunya admin.</string>
     <string name="tap_wording_sign_to_another_member">Kamu adalah admin satu-satunya di grup, berikan admin kepada anggota grup lainnya jika kamu tetap ingin melanjutkan penghapusan akun TapTalk mu.</string>
     <string name="tap_wording_delete_account">Kamu akan menghapus seluruh data, kontak dan pesan obrolan di TapTalk secara permanen, lanjutkan?</string>
@@ -422,5 +426,7 @@
     <string name="tap_verification">Verifikasi</string>
     <string name="tap_verification_succeed">Verifikasi berhasil, sampai jumpa kembali!</string>
     <string name="tap_deleted_user">Deleted User</string>
+    <string name="tap_saved_messages">Saved Messages</string>
+    <string name="tap_chatroom_not_available">Chatroom is not available.</string>
 
 </resources>

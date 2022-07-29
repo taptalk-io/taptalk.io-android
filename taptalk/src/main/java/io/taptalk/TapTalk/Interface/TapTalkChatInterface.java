@@ -51,4 +51,9 @@ public interface TapTalkChatInterface {
     void onReadMessage(String roomID);
 
     void onMessageSelected(TAPMessageModel message);
+
+    void onArrowButtonClicked(TAPMessageModel message);
+
+    void onRequestUserData(TAPMessageModel message);
+
 }

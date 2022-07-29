@@ -907,6 +907,10 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance(instanceKey).getRoomList(getActiveUser().getUserID(), getActiveUser().getUsername(), saveMessages, isCheckUnreadFirst, listener);
     }
 
+    public void getRoomLastMessage(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getRoomLastMessage(roomID, listener);
+    }
+
     public void getAllUnreadMessagesFromRoom(String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null == getActiveUser())
             return;

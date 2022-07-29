@@ -1,7 +1,6 @@
 package io.taptalk.TapTalk.Manager;
 
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.Keep;
 
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView;
-import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
@@ -23,10 +21,12 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPCreateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
+import io.taptalk.TapTalk.Model.TAPImageURL;
 import io.taptalk.TapTalk.Model.TAPOnlineStatusModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPTypingModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.PERMISSION_DENIED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ApiErrorCode.ROOM_NOT_FOUND;
@@ -694,5 +694,19 @@ public class TapCoreChatRoomManager {
             return;
         }
         TAPChatManager.getInstance(instanceKey).sendStopTypingEmit(roomID);
+    }
+
+    public void getSavedMessagesChatRoom(TapCoreGetRoomListener listener) {
+        if (TAPChatManager.getInstance(instanceKey).getActiveUser() == null) {
+            if (null != listener) {
+                listener.onError(ERROR_CODE_ACTIVE_USER_NOT_FOUND, ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND);
+            }
+            return;
+        }
+        String userId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
+        TAPRoomModel room = TAPRoomModel.Builder(String.format("%s-%s", userId, userId), TapTalk.appContext.getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
+        if (null != listener) {
+            listener.onSuccess(room);
+        }
     }
 }
