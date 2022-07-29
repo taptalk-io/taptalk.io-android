@@ -250,12 +250,13 @@ public class TapUISearchChatFragment extends Fragment {
             } else if (vm.getSearchState() != vm.STATE_SEARCHING) {
                 return;
             }
+            boolean isSavedMessagesExist = false;
+            String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
             if (entities.size() > 0 && null != getActivity()) {
                 TAPSearchChatModel sectionTitleChatsAndContacts = new TAPSearchChatModel(SECTION_TITLE);
                 sectionTitleChatsAndContacts.setSectionTitle(getString(R.string.tap_chats_and_contacts));
                 vm.addSearchResult(sectionTitleChatsAndContacts);
                 for (TAPMessageEntity entity : entities) {
-                    String myId = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
                     // Exclude active user's own room
                     if (!entity.getRoomID().equals(TAPChatManager.getInstance(instanceKey).arrangeRoomId(myId, myId))) {
                         TAPSearchChatModel result = new TAPSearchChatModel(ROOM_ITEM);
@@ -270,8 +271,25 @@ public class TapUISearchChatFragment extends Fragment {
                         if (null != mentionCount) {
                             result.setRoomMentionCount(mentionCount);
                         }
-                        vm.addSearchResult(result);
+                        if (TAPUtils.isSavedMessagesRoom(result.getRoom().getRoomID(), instanceKey)) {
+                            if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
+                                vm.addSearchResult(0, result);
+                            } else {
+                                vm.addSearchResult(result);
+                            }
+                            isSavedMessagesExist = true;
+                        } else {
+                            vm.addSearchResult(result);
+                        }
                     }
+                }
+                if (!isSavedMessagesExist && TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled()) {
+                    TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
+                    // Add saved messages to search result
+                    String savedMessagesRoomID = String.format("%s-%s", myId, myId);
+                    TAPRoomModel room = TAPRoomModel.Builder(savedMessagesRoomID, getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
+                    savedMessagesRoom.setRoom(room);
+                    vm.addSearchResult(0, savedMessagesRoom);
                 }
                 if (null != contactSearchListener) {
                     getActivity().runOnUiThread(() -> {
@@ -279,8 +297,19 @@ public class TapUISearchChatFragment extends Fragment {
                         TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
                     });
                 }
-            } else if (null != contactSearchListener) {
-                TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
+            } else  {
+                if (TapUI.getInstance(instanceKey).isSavedMessagesMenuEnabled() && null != getActivity()) {
+                    TAPSearchChatModel savedMessagesRoom = new TAPSearchChatModel(ROOM_ITEM);
+                    // Add saved messages to search result
+                    String savedMessagesRoomID = String.format("%s-%s", myId, myId);
+                    TAPRoomModel room = TAPRoomModel.Builder(savedMessagesRoomID, getString(R.string.tap_saved_messages), TYPE_PERSONAL, new TAPImageURL("", ""), "");
+                    savedMessagesRoom.setRoom(room);
+                    vm.addSearchResult(0, savedMessagesRoom);
+                    getActivity().runOnUiThread(() -> adapter.setItems(vm.getSearchResults(), false));
+                }
+                if (null != contactSearchListener) {
+                    TAPDataManager.getInstance(instanceKey).searchContactsByName(vm.getSearchKeyword(), contactSearchListener);
+                }
             }
         }
     };

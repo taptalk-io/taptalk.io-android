@@ -97,6 +97,7 @@ import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST_BADGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.IS_NEED_REFRESH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM_ID;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
@@ -660,13 +661,20 @@ public class TapUIRoomListFragment extends Fragment {
 
                     // Move room to top
                     vm.getRoomList().remove(roomList);
-                    vm.getRoomList().add(0, roomList);
+                    int index;
+                    if (TAPUtils.isSavedMessagesRoom(roomList.getLastMessage().getRoom().getRoomID(), instanceKey) ||
+                        !TAPUtils.isSavedMessagesRoom(vm.getRoomList().get(0).getLastMessage().getRoom().getRoomID(), instanceKey)) {
+                        index = 0;
+                    } else {
+                        index = 1;
+                    }
+                    vm.getRoomList().add(index, roomList);
 
                     if (null != activity) {
                         activity.runOnUiThread(() -> {
                             llRoomEmpty.setVisibility(View.GONE);
                             adapter.notifyItemChanged(oldPos);
-                            adapter.notifyItemMoved(oldPos, 0);
+                            adapter.notifyItemMoved(oldPos, index);
                             // Scroll to top
                             if (llm.findFirstCompletelyVisibleItemPosition() == 0)
                                 rvContactList.scrollToPosition(0);
@@ -688,13 +696,21 @@ public class TapUIRoomListFragment extends Fragment {
                 newRoomList.setNumberOfUnreadMentions(1);
             }
 
+            int index;
+            if (TAPUtils.isSavedMessagesRoom(newRoomList.getLastMessage().getRoom().getRoomID(), instanceKey) ||
+                    vm.getRoomList().size() == 0 ||
+                    !TAPUtils.isSavedMessagesRoom(vm.getRoomList().get(0).getLastMessage().getRoom().getRoomID(), instanceKey)) {
+                index = 0;
+            } else {
+                index = 1;
+            }
             vm.addRoomPointer(newRoomList);
-            vm.getRoomList().add(0, newRoomList);
+            vm.getRoomList().add(index, newRoomList);
             activity.runOnUiThread(() -> {
                 llRoomEmpty.setVisibility(View.GONE);
                 if (0 == adapter.getItems().size())
                     adapter.addItem(newRoomList);
-                adapter.notifyItemInserted(0);
+                adapter.notifyItemInserted(index);
 
                 if (llm.findFirstCompletelyVisibleItemPosition() == 0)
                     rvContactList.scrollToPosition(0);
@@ -1072,7 +1088,11 @@ public class TapUIRoomListFragment extends Fragment {
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
-                messageModels.add(roomModel);
+                if (TAPUtils.isSavedMessagesRoom(model.getRoom().getRoomID(), instanceKey)) {
+                    messageModels.add(0, roomModel);
+                } else {
+                    messageModels.add(roomModel);
+                }
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1109,7 +1129,11 @@ public class TapUIRoomListFragment extends Fragment {
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
-                messageModels.add(roomModel);
+                if (TAPUtils.isSavedMessagesRoom(model.getRoom().getRoomID(), instanceKey)) {
+                    messageModels.add(0, roomModel);
+                } else {
+                    messageModels.add(roomModel);
+                }
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1130,7 +1154,11 @@ public class TapUIRoomListFragment extends Fragment {
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
-                messageModels.add(roomModel);
+                if (TAPUtils.isSavedMessagesRoom(model.getRoom().getRoomID(), instanceKey)) {
+                    messageModels.add(0, roomModel);
+                } else {
+                    messageModels.add(roomModel);
+                }
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1282,6 +1310,29 @@ public class TapUIRoomListFragment extends Fragment {
                     String roomID = intent.getStringExtra(ROOM_ID);
                     switch (intent.getAction()) {
                         case RELOAD_ROOM_LIST:
+                            if (intent.getBooleanExtra(IS_NEED_REFRESH, false)) {
+                                TAPDataManager.getInstance(instanceKey).getRoomLastMessage(roomID, new TAPDatabaseListener<>() {
+                                    @Override
+                                    public void onSelectFinished(List<TAPMessageEntity> entities) {
+                                        super.onSelectFinished(entities);
+                                        if (entities.size() > 0) {
+                                            TAPMessageModel messageModel = TAPMessageModel.fromMessageEntity(entities.get(entities.size() - 1));
+                                            vm.getRoomList().get(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID))).setLastMessage(messageModel);
+                                            if (null != adapter) {
+                                                activity.runOnUiThread(() -> {
+                                                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID)));
+                                                });
+                                            }
+                                        } else {
+                                            activity.runOnUiThread(() -> {
+                                                int index = vm.getRoomList().indexOf(vm.getRoomPointer().get(roomID));
+                                                vm.getRoomList().remove(index);
+                                                adapter.notifyItemRemoved(index);
+                                            });
+                                        }
+                                    }
+                                });
+                            }
                             if (null != adapter) {
                                 adapter.notifyItemChanged(vm.getRoomList().indexOf(
                                         vm.getRoomPointer().get(roomID)));

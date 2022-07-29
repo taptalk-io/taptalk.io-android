@@ -492,7 +492,8 @@ public class TAPChatManager {
                     System.currentTimeMillis(),
                     user, TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
                     data,
-                    getQuotedMessages().get(room.getRoomID())
+                    getQuotedMessages().get(room.getRoomID()),
+                    instanceKey
             );
             setQuotedMessage(room.getRoomID(), null, 0);
             return messageWithQuote;
@@ -543,7 +544,8 @@ public class TAPChatManager {
                     activeUser,
                     TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
                     data,
-                    getQuotedMessage(roomModel.getRoomID()));
+                    getQuotedMessage(roomModel.getRoomID()),
+                    instanceKey);
             setQuotedMessage(roomModel.getRoomID(), null, 0);
             return messageWithQuote;
         }
@@ -602,7 +604,8 @@ public class TAPChatManager {
                         activeUser,
                         TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
                         data,
-                        getQuotedMessage(roomModel.getRoomID()));
+                        getQuotedMessage(roomModel.getRoomID()),
+                        instanceKey);
                 setQuotedMessage(roomModel.getRoomID(), null, 0);
             }
             // Save file Uri
@@ -767,7 +770,8 @@ public class TAPChatManager {
                         activeUser,
                         TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
                         data,
-                        getQuotedMessage(roomModel.getRoomID()));
+                        getQuotedMessage(roomModel.getRoomID()),
+                        instanceKey);
                 setQuotedMessage(roomModel.getRoomID(), null, 0);
             }
             // Save file Uri
@@ -913,7 +917,8 @@ public class TAPChatManager {
                     activeUser,
                     TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
                     data,
-                    getQuotedMessage(roomModel.getRoomID()));
+                    getQuotedMessage(roomModel.getRoomID()),
+                    instanceKey);
             setQuotedMessage(roomModel.getRoomID(), null, 0);
         }
         return messageModel;
@@ -948,7 +953,8 @@ public class TAPChatManager {
                     activeUser,
                     TYPE_PERSONAL == roomModel.getType() ? getOtherUserIdFromRoom(roomModel.getRoomID()) : "0",
                     data,
-                    getQuotedMessage(roomModel.getRoomID()));
+                    getQuotedMessage(roomModel.getRoomID()),
+                    instanceKey);
             setQuotedMessage(roomModel.getRoomID(), null, 0);
         }
         return messageModel;
@@ -1011,7 +1017,8 @@ public class TAPChatManager {
                         activeUser,
                         TYPE_PERSONAL == room.getType() ? getOtherUserIdFromRoom(room.getRoomID()) : "0",
                         data,
-                        getQuotedMessage(room.getRoomID()));
+                        getQuotedMessage(room.getRoomID()),
+                        instanceKey);
                 setQuotedMessage(room.getRoomID(), null, 0);
             }
 //        TAPFileDownloadManager.getInstance(instanceKey).saveFileMessageUri(messageModel.getRoom().getRoomID(), messageModel.getLocalID(), videoPath);

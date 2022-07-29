@@ -153,6 +153,7 @@ public class TAPDefaultConstant {
         public static final String IS_NON_PARTICIPANT_USER_PROFILE = "kTAPIsNotParticipantUserProfile";
         public static final String FROM_NOTIF = "kTAPFromNotification";
         public static final String SOCKET_CONNECTED = "kSocketConnected";
+        public static final String IS_NEED_REFRESH = "kSocketConnected";
     }
 
     public static final class RequestCode {

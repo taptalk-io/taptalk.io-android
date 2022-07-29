@@ -193,6 +193,20 @@
 
     </FrameLayout>
 
+    <ImageButton
+        android:id="@+id/ib_original_message"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:padding="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:background="@color/tapTransparentBlack"
+        android:src="@drawable/tap_ic_arrow_right_circle"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/fl_bubble"
+        app:layout_constraintTop_toTopOf="@id/fl_bubble"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"/>
+
     <ImageView
         android:id="@+id/iv_bubble_highlight"
         android:layout_width="0dp"
