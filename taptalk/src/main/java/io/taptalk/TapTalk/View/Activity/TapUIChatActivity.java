@@ -2581,6 +2581,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
             super.onDeleteMessage(roomID, message);
             isLastMessageNeedRefresh = true;
         }
+
+        @Override
+        public void onMessagePinned(TAPMessageModel message) {
+            super.onMessagePinned(message);
+            // TODO: 01/08/22 set pin / unpin message MU 
+        }
     };
 
     private void setChatRoomStatus(TAPOnlineStatusModel onlineStatus) {
