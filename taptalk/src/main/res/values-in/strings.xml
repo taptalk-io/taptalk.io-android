@@ -428,5 +428,7 @@
     <string name="tap_deleted_user">Deleted User</string>
     <string name="tap_saved_messages">Saved Messages</string>
     <string name="tap_chatroom_not_available">Chatroom is not available.</string>
+    <string name="tap_pin">Pin</string>
+    <string name="tap_unpin">Lepas Sematan</string>
 
 </resources>
