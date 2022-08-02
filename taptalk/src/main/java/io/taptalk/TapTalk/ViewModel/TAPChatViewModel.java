@@ -50,6 +50,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private ArrayList<String> starredMessageIds;
+    private ArrayList<String> pinnedMessageIds;
     private ArrayList<TAPMessageModel> selectedMessages, forwardedMessages;
     private TAPUserModel myUserModel, otherUserModel;
     private TAPRoomModel room;
@@ -598,6 +599,28 @@ public class TAPChatViewModel extends AndroidViewModel {
             starredMessageIds = new ArrayList<>();
         }
         this.starredMessageIds.remove(messageId);
+    }
+
+    public ArrayList<String> getPinnedMessageIds() {
+        return null == pinnedMessageIds? new ArrayList<>() : pinnedMessageIds;
+    }
+
+    public void setPinnedMessageIds(ArrayList<String> pinnedMessageIds) {
+        this.pinnedMessageIds = pinnedMessageIds;
+    }
+
+    public void addPinnedMessageId(String messageId) {
+        if (pinnedMessageIds == null) {
+            pinnedMessageIds = new ArrayList<>();
+        }
+        this.pinnedMessageIds.add(messageId);
+    }
+
+    public void removePinnedMessageId(String messageId) {
+        if (pinnedMessageIds == null) {
+            pinnedMessageIds = new ArrayList<>();
+        }
+        this.pinnedMessageIds.remove(messageId);
     }
 
     public boolean isHasMoreData() {
