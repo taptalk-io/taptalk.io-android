@@ -22,8 +22,9 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapSetMainPhotoRequest;
@@ -51,6 +52,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TapConfigs;
@@ -189,7 +191,7 @@ public interface TAPTalkApiService {
     Observable<TAPBaseResponse<TapUnstarMessageResponse>> unStarMessage(@Body TapStarMessageRequest request);
 
     @POST("chat/message/get_starred_list")
-    Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getStarredMessages(@Body TapGetStarredMessagesRequest request);
+    Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getStarredMessages(@Body TapRoomIdWithPagingRequest request);
 
     @POST("chat/message/get_starred_ids")
     Observable<TAPBaseResponse<TapStarMessageResponse>> getStarredMessageIds(@Body TAPCommonRequest request);

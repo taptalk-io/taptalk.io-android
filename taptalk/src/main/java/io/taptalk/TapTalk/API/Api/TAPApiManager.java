@@ -53,7 +53,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
-import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdsRequest;
@@ -638,7 +638,7 @@ public class TAPApiManager {
     }
 
     public void getStarredMessages(String roomId, int pageNumber, int pageSize, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
-        TapGetStarredMessagesRequest request = new TapGetStarredMessagesRequest();
+        TapRoomIdWithPagingRequest request = new TapRoomIdWithPagingRequest();
         request.setRoomID(roomId);
         request.setPageNumber(pageNumber);
         request.setPageSize(pageSize);

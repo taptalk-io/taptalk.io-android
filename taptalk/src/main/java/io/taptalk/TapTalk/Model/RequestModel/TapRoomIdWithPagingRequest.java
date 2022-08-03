@@ -2,7 +2,7 @@ package io.taptalk.TapTalk.Model.RequestModel;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TapGetStarredMessagesRequest{
+public class TapRoomIdWithPagingRequest {
 
 	@JsonProperty("pageNumber")
 	private int pageNumber;
