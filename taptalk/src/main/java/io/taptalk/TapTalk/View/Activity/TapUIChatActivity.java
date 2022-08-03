@@ -363,6 +363,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private STATE state = STATE.WORKING;
     private RECORDING_STATE recordingState = RECORDING_STATE.DEFAULT;
 
+    // Star and Pin Messages
+    private boolean isStarredIdsLoaded = true;
+    private boolean isPinnedIdsLoaded = true;
+
     /**
      * =========================================================================================== *
      * START ACTIVITY
@@ -451,6 +455,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         checkForwardLayout(vm.getQuotedMessage(), vm.getForwardedMessages(), vm.getQuoteAction());
 
         getStarredMessageIds();
+        getPinnedMessageIds();
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
             callApiGetUserByUserID();
         } else {
@@ -464,15 +469,54 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void getStarredMessageIds() {
+        isStarredIdsLoaded = false;
         TapCoreMessageManager.getInstance(instanceKey).getStarredMessageIds(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
             @Override
             public void onSuccess(@NonNull ArrayList<String> arrayList) {
                 super.onSuccess(arrayList);
+                isStarredIdsLoaded = true;
                 vm.setStarredMessageIds(arrayList);
                 messageAdapter.setStarredMessageIds(arrayList);
-                messageAdapter.notifyDataSetChanged();
+                if (isPinnedIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
+                super.onError(errorCode, errorMessage);
+                isStarredIdsLoaded = true;
+                if (isPinnedIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
             }
         });
+    }
+
+    private void getPinnedMessageIds() {
+        isPinnedIdsLoaded = false;
+        TapCoreMessageManager.getInstance(instanceKey).getPinnedMessageIDs(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
+            @Override
+            public void onSuccess(@NonNull ArrayList<String> arrayList) {
+                super.onSuccess(arrayList);
+                isPinnedIdsLoaded = true;
+                vm.setPinnedMessageIds(arrayList);
+                messageAdapter.setPinnedMessageIds(arrayList);
+                if (isStarredIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
+                super.onError(errorCode, errorMessage);
+                isPinnedIdsLoaded = true;
+                if (isStarredIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
     }
 
     private void checkInitSocket() {
@@ -2585,7 +2629,20 @@ public class TapUIChatActivity extends TAPBaseActivity {
         @Override
         public void onMessagePinned(TAPMessageModel message) {
             super.onMessagePinned(message);
-            // TODO: 01/08/22 set pin / unpin message MU 
+            String messageId = message.getMessageID();
+            if (vm.getPinnedMessageIds().contains(messageId)) {
+                //unpin
+                TapCoreMessageManager.getInstance(instanceKey).unpinMessage(message.getRoom().getRoomID(), messageId);
+                vm.removePinnedMessageId(messageId);
+            } else {
+                //pin
+                TapCoreMessageManager.getInstance(instanceKey).pinMessage(message.getRoom().getRoomID(), messageId);
+                vm.addPinnedMessageId(messageId);
+            }
+            messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+            if (vm.getMessagePointer().containsKey(message.getLocalID())) {
+                messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(message.getLocalID())));
+            }
         }
     };
 
@@ -4057,7 +4114,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     //disable long press in deleted user room
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
                         if (TYPE_PERSONAL != vm.getRoom().getType() || (null != vm.getOtherUserModel() && (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L))) {
-                            TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds());
+                            TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds(), vm.getPinnedMessageIds());
                             chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
                             TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                         }
