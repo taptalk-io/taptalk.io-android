@@ -95,6 +95,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
@@ -1456,5 +1457,21 @@ public class TAPDataManager {
 
     public void verifyOtpDeleteAccount(long otpID, String otpKey, String otpCode, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance(instanceKey).verifyOtpDeleteAccount(otpID, otpKey, otpCode, reason, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getPinnedMessages(String roomId, int pageNumber, int pageSize, TAPDefaultDataView<TAPGetMessageListByRoomResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getPinnedMessages(roomId, pageNumber, pageSize, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getPinnedMessageIds(String roomId, TAPDefaultDataView<TapPinMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getPinnedMessageIds(roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void pinMessages(String roomId, List<String> messageIds, TAPDefaultDataView<TapPinMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).pinMessages(roomId, messageIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unPinMessages(String roomId, List<String> messageIds, TAPDefaultDataView<TapPinMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unpinMessages(roomId, messageIds, new TAPDefaultSubscriber<>(view));
     }
 }

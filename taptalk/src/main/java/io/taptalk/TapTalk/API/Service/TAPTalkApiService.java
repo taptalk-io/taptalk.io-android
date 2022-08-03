@@ -210,4 +210,16 @@ public interface TAPTalkApiService {
 
     @POST("client/user/delete_account/verify_otp")
     Observable<TAPBaseResponse<TAPCommonResponse>> verifyOtpDeleteAccount(@Body TAPOTPVerifyRequest request);
+
+    @POST("chat/message/get_pinned_list")
+    Observable<TAPBaseResponse<TAPGetMessageListByRoomResponse>> getPinnedMessages(@Body TapRoomIdWithPagingRequest request);
+
+    @POST("chat/message/get_pinned_ids")
+    Observable<TAPBaseResponse<TapPinMessageResponse>> getPinnedMessageIds(@Body TAPCommonRequest request);
+
+    @POST("chat/message/pin")
+    Observable<TAPBaseResponse<TapPinMessageResponse>> pinMessages(@Body TapMessageIdsRequest request);
+
+    @POST("chat/message/unpin")
+    Observable<TAPBaseResponse<TapPinMessageResponse>> unpinMessages(@Body TapMessageIdsRequest request);
 }

@@ -53,6 +53,7 @@ import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateBioRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateMessageStatusRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUpdateRoomRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TAPUserIdRequest;
+import io.taptalk.TapTalk.Model.RequestModel.TapMessageIdsRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRoomIdWithPagingRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapIdRequest;
 import io.taptalk.TapTalk.Model.RequestModel.TapRemovePhotoRequest;
@@ -83,6 +84,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -673,5 +675,29 @@ public class TAPApiManager {
     public void verifyOtpDeleteAccount(long otpID, String otpKey, String otpCode, String reason, Subscriber<TAPBaseResponse<TAPCommonResponse>> subscriber) {
         TAPOTPVerifyRequest request = new TAPOTPVerifyRequest(otpID, otpKey, otpCode, reason);
         execute(homingPigeon.verifyOtpDeleteAccount(request), subscriber);
+    }
+
+    public void getPinnedMessages(String roomId, int pageNumber, int pageSize, Subscriber<TAPBaseResponse<TAPGetMessageListByRoomResponse>> subscriber) {
+        TapRoomIdWithPagingRequest request = new TapRoomIdWithPagingRequest();
+        request.setRoomID(roomId);
+        request.setPageNumber(pageNumber);
+        request.setPageSize(pageSize);
+        execute(homingPigeon.getPinnedMessages(request), subscriber);
+    }
+
+    public void getPinnedMessageIds(String roomId, Subscriber<TAPBaseResponse<TapPinMessageResponse>> subscriber) {
+        TAPCommonRequest request = new TAPCommonRequest();
+        request.setRoomID(roomId);
+        execute(homingPigeon.getPinnedMessageIds(request), subscriber);
+    }
+
+    public void pinMessages(String roomId, List<String> messageIds, Subscriber<TAPBaseResponse<TapPinMessageResponse>> subscriber) {
+        TapMessageIdsRequest request = new TapMessageIdsRequest(roomId, messageIds);
+        execute(homingPigeon.pinMessages(request), subscriber);
+    }
+
+    public void unpinMessages(String roomId, List<String> messageIds, Subscriber<TAPBaseResponse<TapPinMessageResponse>> subscriber) {
+        TapMessageIdsRequest request = new TapMessageIdsRequest(roomId, messageIds);
+        execute(homingPigeon.unpinMessages(request), subscriber);
     }
 }
