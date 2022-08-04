@@ -83,8 +83,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.PIN_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_ADD_PARTICIPANT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_REMOVE_PARTICIPANT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UNPIN_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
@@ -1286,11 +1288,28 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
+            // TODO: 04/08/22 update pinned messages list for layout MU
+            // TODO: 04/08/22 set layout visibility MU
+            if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled()) {
+                // TODO: 04/08/22 update message model in message model list if exist
+            }
             updateMessageFromSocket(message);
         }
 
         @Override
         public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
+            // TODO: 04/08/22 update pinned messages list for layout MU
+            // TODO: 04/08/22 set layout visibility MU
+            if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled()) {
+                if (vm.getPinnedMessageIds().contains(message.getMessageID())) {
+                    if (vm.getPinnedMessageIds().get(0).equals(message.getMessageID())) {
+                        // TODO: 04/08/22 set newest message model to second index or null MU
+                    }
+                    vm.removePinnedMessageId(message.getMessageID());
+                    messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                }
+                // TODO: 04/08/22 remove message model in message model list if exist
+            }
             updateMessageFromSocket(message);
         }
 
@@ -3032,6 +3051,41 @@ public class TapUIChatActivity extends TAPBaseActivity {
             //TAPChatManager.getInstance(instanceKey).deleteMessageFromIncomingMessages(message.getLocalID());
             //showRoomIsUnavailableState();
             showChatAsHistory(getString(R.string.tap_group_unavailable));
+        } else if (PIN_MESSAGE.equals(message.getAction())) {
+            if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled() && message.getData() != null) {
+                String messageId = (String) message.getData().get("messageID");
+                String localId = (String) message.getData().get("localID");
+                // TODO: 04/08/22 update pinned messages list for layout MU
+                // TODO: 04/08/22 set layout visibility MU
+                if (!vm.getPinnedMessageIds().contains(messageId)) {
+                    vm.addPinnedMessageId(messageId);
+                    messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                }
+                if (vm.getMessagePointer().containsKey(localId)) {
+                    runOnUiThread(() -> {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId)));
+                    });
+                }
+            }
+        } else if (UNPIN_MESSAGE.equals(message.getAction())) {
+            if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled() && message.getData() != null) {
+                String messageId = (String) message.getData().get("messageID");
+                String localId = (String) message.getData().get("localID");
+                // TODO: 04/08/22 update pinned messages list for layout MU
+                // TODO: 04/08/22 set layout visibility MU
+                if (vm.getPinnedMessageIds().contains(messageId)) {
+                    if (vm.getPinnedMessageIds().get(0).equals(messageId)) {
+                        // TODO: 04/08/22 set newest message model to second index or null MU
+                    }
+                    vm.removePinnedMessageId(messageId);
+                    messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                }
+                if (vm.getMessagePointer().containsKey(localId)) {
+                    runOnUiThread(() -> {
+                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId)));
+                    });
+                }
+            }
         } else {
             updateRoomDetailFromSystemMessage(message);
         }

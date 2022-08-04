@@ -371,6 +371,8 @@ public class TAPDefaultConstant {
         public static final String ROOM_DEMOTE_ADMIN = "room/demoteAdmin";
         public static final String UPDATE_USER = "user/update";
         public static final String DELETE_USER = "user/delete";
+        public static final String PIN_MESSAGE = "message/pin";
+        public static final String UNPIN_MESSAGE = "message/unpin";
     }
 
     public static final class ProjectConfigType {
