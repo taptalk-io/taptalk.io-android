@@ -3062,9 +3062,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
                 }
                 if (vm.getMessagePointer().containsKey(localId)) {
-                    runOnUiThread(() -> {
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId)));
-                    });
+                    runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId))));
                 }
             }
         } else if (UNPIN_MESSAGE.equals(message.getAction())) {
@@ -3081,9 +3079,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
                 }
                 if (vm.getMessagePointer().containsKey(localId)) {
-                    runOnUiThread(() -> {
-                        messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId)));
-                    });
+                    runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId))));
                 }
             }
         } else {
