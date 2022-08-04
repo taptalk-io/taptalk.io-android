@@ -208,6 +208,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Listener.TapListener;
@@ -366,6 +367,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
     // Star and Pin Messages
     private boolean isStarredIdsLoaded = true;
     private boolean isPinnedIdsLoaded = true;
+    private final static int PAGE_SIZE = 50;
+    private int pageNumber = 1;
 
     /**
      * =========================================================================================== *
@@ -456,6 +459,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         getStarredMessageIds();
         getPinnedMessageIds();
+        pageNumber = 1;
+        getPinnedMessages();
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
             callApiGetUserByUserID();
         } else {
@@ -517,6 +522,27 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         });
 
+    }
+
+    private void getPinnedMessages() {
+        // TODO: 03/08/22 load last pinned message from pref if exist MU
+        TapCoreMessageManager.getInstance(instanceKey).getPinnedMessages(vm.getRoom().getRoomID(), pageNumber, PAGE_SIZE, new TapCoreGetOlderMessageListener() {
+            @Override
+            public void onSuccess(List<TAPMessageModel> messages, Boolean hasMoreData) {
+                super.onSuccess(messages, hasMoreData);
+                if (!messages.isEmpty()) {
+                    // TODO: 04/08/22 save first message to pref MU
+                } else {
+                    // TODO: 04/08/22 clear pref MU
+                }
+                // TODO: 03/08/22 save index to vm MU
+                // TODO: 03/08/22 update layout and pin messages list MU
+                // TODO: 03/08/22 update page number and has more MU
+                pageNumber++;
+                // TODO: 03/08/22 call api again when pinned message tapped in index 25 if item > 50 MU
+
+            }
+        });
     }
 
     private void checkInitSocket() {
