@@ -17,6 +17,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_CONTACT_LIST_UPDA
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_UNREAD_ROOM_LIST;
@@ -431,6 +432,26 @@ public class TAPDataManager {
         removePreference(K_LAST_UPDATED);
     }
 
+    /**
+     * NEWEST PINNED MESSAGE
+     */
+
+    public void saveNewestPinnedMessage(String roomID, TAPMessageModel message) {
+        HashMap<String, TAPMessageModel> newestPinnedMessages = Hawk.get(instanceKey + K_PINNED_MESSAGE, null);
+        if (newestPinnedMessages == null) {
+            newestPinnedMessages = new LinkedHashMap<>();
+        }
+        newestPinnedMessages.put(roomID, message);
+        Hawk.put(instanceKey + K_PINNED_MESSAGE, newestPinnedMessages);
+
+    }
+
+    public TAPMessageModel getNewestPinnedMessage(String roomID) {
+        HashMap<String, TAPMessageModel> newestPinnedMessages = Hawk.get(instanceKey + K_PINNED_MESSAGE, null);
+        if (newestPinnedMessages != null) {
+            return newestPinnedMessages.get(roomID);
+        } else return null;
+    }
     /**
      * USER LAST ACTIVITY
      */
