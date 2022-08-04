@@ -525,16 +525,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void getPinnedMessages() {
-        // TODO: 03/08/22 load last pinned message from pref if exist MU
         TapCoreMessageManager.getInstance(instanceKey).getPinnedMessages(vm.getRoom().getRoomID(), pageNumber, PAGE_SIZE, new TapCoreGetOlderMessageListener() {
             @Override
             public void onSuccess(List<TAPMessageModel> messages, Boolean hasMoreData) {
                 super.onSuccess(messages, hasMoreData);
+                TAPMessageModel newestPinnedMessage = null;
                 if (!messages.isEmpty()) {
-                    // TODO: 04/08/22 save first message to pref MU
-                } else {
-                    // TODO: 04/08/22 clear pref MU
+                    newestPinnedMessage = messages.get(0);
                 }
+                TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), newestPinnedMessage);
                 // TODO: 03/08/22 save index to vm MU
                 // TODO: 03/08/22 update layout and pin messages list MU
                 // TODO: 03/08/22 update page number and has more MU
@@ -1176,6 +1175,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //        if (null == vm.getRoom().getGroupParticipants()) {
 //            showChatAsHistory(getString(R.string.tap_not_a_participant));
 //        }
+
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled()) {
+            if (TAPDataManager.getInstance(instanceKey).getNewestPinnedMessage(vm.getRoom().getRoomID()) != null) {
+                // TODO: 04/08/22 show pinned message layout MU
+                // TODO: 04/08/22 set newest message to layout MU
+            }
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             llButtonDeleteChat.setBackground(getDrawable(R.drawable.tap_bg_button_destructive_ripple));
