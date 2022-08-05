@@ -432,5 +432,6 @@
     <string name="tap_chatroom_not_available">Chatroom is not available.</string>
     <string name="tap_pin">Pin</string>
     <string name="tap_unpin">Unpin</string>
+    <string name="pinned_message">Pinned Message</string>
 
 </resources>
