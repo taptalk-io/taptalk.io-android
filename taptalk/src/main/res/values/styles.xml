@@ -535,12 +535,12 @@
 
     <style name="tapRightBubbleMessageTimestampStyle" parent="tapFontFamilyChatRegular">
         <item name="android:textColor">@color/tapRightBubbleMessageTimestampColor</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">10sp</item>
     </style>
 
     <style name="tapLeftBubbleMessageTimestampStyle" parent="tapFontFamilyChatRegular">
         <item name="android:textColor">@color/tapLeftBubbleMessageTimestampColor</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">10sp</item>
     </style>
 
     <style name="tapBubbleMediaInfoStyle" parent="tapFontFamilyChatRegular">
