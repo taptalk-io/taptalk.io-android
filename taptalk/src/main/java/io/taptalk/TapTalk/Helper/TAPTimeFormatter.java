@@ -68,9 +68,9 @@ public class TAPTimeFormatter {
 
         if (timestamp == 0) {
             return "";
-        } else if (midnightTimeGap > timeGap) {
+        } else if (midnightTimeGap > timeGap && context != null) {
             return String.format("%s • %s", context.getString(R.string.tap_today), formatClock(timestamp));
-        } else if ((TAPTimeFormatter.times.get(3)) + midnightTimeGap > timeGap) {
+        } else if ((TAPTimeFormatter.times.get(3)) + midnightTimeGap > timeGap && context != null) {
             return String.format("%s • %s", context.getString(R.string.tap_yesterday), formatClock(timestamp));
         } else {
             return String.format("%s • %s", formatTime(timestamp, "dd/MM/yy"), formatClock(timestamp));
