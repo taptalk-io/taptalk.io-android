@@ -235,7 +235,7 @@
             android:layout_marginRight="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@string/pinned_message"
+            android:text="@string/tap_pinned_message"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toTopOf="@id/tv_pinned_message"
             app:layout_constraintEnd_toEndOf="parent"
