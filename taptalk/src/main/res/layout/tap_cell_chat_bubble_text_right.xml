@@ -188,7 +188,7 @@
                 android:layout_height="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="@id/barrier_end"
                 tools:src="@drawable/tap_ic_delivered_grey"
                 tools:tint="@color/tapWhite" />

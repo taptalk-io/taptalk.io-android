@@ -302,11 +302,10 @@
                 android:layout_height="16dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginBottom="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:visibility="gone"
                 app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:src="@drawable/tap_ic_delivered_grey"
                 tools:tint="@color/tapWhite" />
