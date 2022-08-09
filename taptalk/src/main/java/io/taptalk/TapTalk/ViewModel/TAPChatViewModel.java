@@ -47,7 +47,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private LinkedHashMap<String, TAPUserModel> groupTyping;
     private LinkedHashMap<String, TAPMessageModel> dateSeparators;
     private LinkedHashMap<String, Integer> dateSeparatorIndexes;
-    private List<TAPMessageModel> messageModels, pendingRecyclerMessages;
+    private List<TAPMessageModel> messageModels, pendingRecyclerMessages, pinnedMessages;
     private List<TAPCustomKeyboardItemModel> customKeyboardItems;
     private ArrayList<String> starredMessageIds;
     private ArrayList<String> pinnedMessageIds;
@@ -76,7 +76,7 @@ public class TAPChatViewModel extends AndroidViewModel {
     private Uri voiceUri;
     private MediaPlayer mediaPlayer;
     private Timer durationTimer;
-    private int duration, pausedPosition;
+    private int duration, pausedPosition, pinnedMessageIndex;
     private boolean isSelectState;
 
     public static class TAPChatViewModelFactory implements ViewModelProvider.Factory {
@@ -610,17 +610,15 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void addPinnedMessageId(String messageId) {
-        if (pinnedMessageIds == null) {
-            pinnedMessageIds = new ArrayList<>();
-        }
-        this.pinnedMessageIds.add(messageId);
+        getPinnedMessageIds().add(messageId);
+    }
+
+    public void addPinnedMessageId(int index, String messageId) {
+        getPinnedMessageIds().add(index, messageId);
     }
 
     public void removePinnedMessageId(String messageId) {
-        if (pinnedMessageIds == null) {
-            pinnedMessageIds = new ArrayList<>();
-        }
-        this.pinnedMessageIds.remove(messageId);
+        getPinnedMessageIds().remove(messageId);
     }
 
     public boolean isHasMoreData() {
@@ -722,6 +720,57 @@ public class TAPChatViewModel extends AndroidViewModel {
     public void clearSelectedMessages() {
         getSelectedMessages().clear();
     }
+
+    public List<TAPMessageModel> getPinnedMessages() {
+        return null == pinnedMessages ? pinnedMessages = new ArrayList<>() : pinnedMessages;
+    }
+
+    public void setPinnedMessages(List<TAPMessageModel> pinnedMessages) {
+        this.pinnedMessages = pinnedMessages;
+    }
+
+    public void removePinnedMessage(TAPMessageModel message) {
+        getPinnedMessages().remove(message);
+    }
+
+    public void addPinnedMessage(TAPMessageModel message) {
+        getPinnedMessages().add(message);
+    }
+
+    public void addPinnedMessage(int index, TAPMessageModel message) {
+        getPinnedMessages().add(index, message);
+    }
+
+    public void replacePinnedMessage(int index, TAPMessageModel message) {
+        getPinnedMessages().set(index, message);
+    }
+
+    public void addPinnedMessages(List<TAPMessageModel> pinnedMessages) {
+        getPinnedMessages().addAll(pinnedMessages);
+    }
+
+    public void clearPinnedMessages(List<TAPMessageModel> pinnedMessages) {
+        getPinnedMessages().clear();
+    }
+
+    public int getPinnedMessageIndex() {
+        return pinnedMessageIndex;
+    }
+
+    public void setPinnedMessageIndex(int index) {
+        this.pinnedMessageIndex = index;
+    }
+
+    public void increasePinnedMessageIndex(int increment) {
+        int increasedIndex;
+        if (getPinnedMessageIndex() + increment >= getPinnedMessageIds().size()) {
+            increasedIndex = 0;
+        } else {
+            increasedIndex = getPinnedMessageIndex() + increment;
+        }
+        setPinnedMessageIndex(increasedIndex);
+    }
+
 
     public ArrayList<TAPMessageModel> getForwardedMessages() {
         return null == forwardedMessages? TAPChatManager.getInstance(instanceKey).getForwardedMessages(room.getRoomID()) : forwardedMessages;
