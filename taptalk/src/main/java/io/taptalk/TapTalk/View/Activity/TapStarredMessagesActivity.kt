@@ -244,6 +244,13 @@ class TapStarredMessagesActivity : TAPBaseActivity() {
                     messageAdapter.itemCount - 1
                 )
             )
+            rv_starred_messages.addItemDecoration(
+                TAPVerticalDecoration(
+                    TAPUtils.dpToPx(16),
+                    0,
+                    0
+                )
+            )
         }
     }
 
