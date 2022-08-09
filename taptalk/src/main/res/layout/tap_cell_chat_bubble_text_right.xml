@@ -144,8 +144,9 @@
 
             <ImageView
                 android:id="@+id/iv_star_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:padding="2dp"
                 android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"
                 android:src="@drawable/tap_ic_star_filled_white"
