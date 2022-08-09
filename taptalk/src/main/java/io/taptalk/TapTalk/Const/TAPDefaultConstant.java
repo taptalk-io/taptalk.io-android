@@ -179,6 +179,7 @@ public class TAPDefaultConstant {
         public static final int PICK_GROUP_IMAGE_CAMERA = 93;
         public static final int PICK_GROUP_IMAGE_GALLERY = 94;
         public static final int OPEN_STARRED_MESSAGES = 95;
+        public static final int OPEN_PINNED_MESSAGES = 96;
     }
 
     public static final class PermissionRequest {

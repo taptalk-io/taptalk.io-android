@@ -431,5 +431,7 @@
     <string name="tap_pin">Pin</string>
     <string name="tap_unpin">Lepas Sematan</string>
     <string name="tap_pinned_message">Pinned Message</string>
+    <string name="tap_pinned_messages">Pinned Messages</string>
+    <string name="unpin_all_messages">Unpin All Messages</string>
 
 </resources>
