@@ -73,6 +73,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_ME
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PERSONAL_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PINNED_MESSAGES;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
@@ -761,6 +762,13 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                     }
                     break;
+                case OPEN_PINNED_MESSAGES:
+                    if (intent != null) {
+                        TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
+                        if (message != null) {
+                            scrollToMessage(message.getLocalID());
+                        }
+                    }
                 case OPEN_PERSONAL_PROFILE:
                     if (intent != null) {
                         TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
@@ -1174,7 +1182,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         });
         ivForward.setOnClickListener(v -> forwardMessages());
         ibPinnedMessages.setOnClickListener(v -> {
-            // TODO: 08/08/22 move to saved messages page MU 
+            new TapPinnedMessagesActivity().start(this, instanceKey, vm.getRoom());
         });
             clPinnedMessage.setOnClickListener(v -> {
                 if (!isLoadPinnedMessages) {
