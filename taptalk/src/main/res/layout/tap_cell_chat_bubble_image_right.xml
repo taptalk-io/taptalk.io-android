@@ -236,7 +236,6 @@
                 android:layout_marginRight="4dp"
                 android:src="@drawable/tap_ic_pin_white"
                 android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
                 app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toStartOf="@id/iv_star_message_body" />
