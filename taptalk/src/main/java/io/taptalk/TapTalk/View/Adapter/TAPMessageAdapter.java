@@ -464,10 +464,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -612,10 +614,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (!isBubbleTapOnly()) {
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
             } else {
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
@@ -1016,10 +1020,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (!isBubbleTapOnly()) {
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
             } else {
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
@@ -1482,10 +1488,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -1757,10 +1765,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -2069,10 +2079,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 }
             });
             if (isBubbleTapOnly()) {
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }

@@ -130,7 +130,7 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
         messageAdapter =
             TAPMessageAdapter(instanceKey, glide, chatListener, vm, TAPMessageAdapter.RoomType.PINNED)
         messageAdapter.setMessages(vm.messageModels)
-        messageLayoutManager = object : LinearLayoutManager(this, VERTICAL, false) {
+        messageLayoutManager = object : LinearLayoutManager(this, VERTICAL, true) {
             override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
                 try {
                     super.onLayoutChildren(recycler, state)
@@ -293,16 +293,9 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
             }
             rv_starred_messages.addItemDecoration(
                 TAPVerticalDecoration(
-                    0,
                     TAPUtils.dpToPx(16),
+                    0,
                     messageAdapter.itemCount - 1
-                )
-            )
-            rv_starred_messages.addItemDecoration(
-                TAPVerticalDecoration(
-                    TAPUtils.dpToPx(16),
-                    0,
-                    0
                 )
             )
         }

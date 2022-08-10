@@ -28,7 +28,7 @@
         android:layout_height="0dp"
         android:src="@drawable/tap_bg_chat_bubble_right_highlight"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/v_separator" />
