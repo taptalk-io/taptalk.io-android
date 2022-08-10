@@ -2162,7 +2162,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (clPinnedMessage.getVisibility() == View.GONE) {
                     clPinnedMessage.setVisibility(View.VISIBLE);
                 }
-                int number = vm.getPinnedMessageIds().size() - vm.getPinnedMessageIndex() + 1;
+                int number = vm.getPinnedMessageIds().size() - vm.getPinnedMessageIndex();
                 if (vm.getPinnedMessageIndex() == 0) {
                     tvPinnedLabel.setText(getString(R.string.tap_pinned_message));
                 } else {
