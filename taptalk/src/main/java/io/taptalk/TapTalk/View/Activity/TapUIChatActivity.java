@@ -3227,8 +3227,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                     if (!vm.getPinnedMessages().contains(pinnedMessage)) {
                                         vm.addPinnedMessage(index, pinnedMessage);
                                     }
-                                    vm.setPinnedMessageIndex(index);
-                                    setPinnedMessage(pinnedMessage);
+                                    if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+                                        vm.setPinnedMessageIndex(index);
+                                        setPinnedMessage(pinnedMessage);
+                                    }
                                     break;
                                 }
                             }
@@ -3240,8 +3242,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             if (!vm.getPinnedMessages().contains(pinnedMessage)) {
                                 vm.addPinnedMessage(pinnedMessage);
                             }
-                            vm.setPinnedMessageIndex(vm.getPinnedMessages().size() - 1);
-                            setPinnedMessage(pinnedMessage);
+                            if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+                                vm.setPinnedMessageIndex(vm.getPinnedMessages().size() - 1);
+                                setPinnedMessage(pinnedMessage);
+                            }
                         } else {
                             // TODO: 08/08/22 load more pin messages API then setPinnedMessage then save newest message MU
                         }
