@@ -178,6 +178,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -474,7 +475,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         getStarredMessageIds();
         getPinnedMessageIds();
-        pageNumber = 1;
         if (isLoadPinnedMessages) {
             getPinnedMessages();
         }
@@ -548,14 +548,25 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 super.onSuccess(messages, hasMoreData);
                 isLoadPinnedMessages = false;
                 TAPMessageModel newestPinnedMessage = null;
-                if (!messages.isEmpty()) {
-                    newestPinnedMessage = messages.get(0);
-                    vm.addPinnedMessages(messages);
-                    setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                TAPMessageModel shownMessage = null;
+                if (pageNumber == 1) {
+                    if (!messages.isEmpty()) {
+                        newestPinnedMessage = messages.get(0);
+                        vm.setPinnedMessages(messages);
+                        shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
+                    }
+                    TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), newestPinnedMessage);
+                } else {
+                    if (!messages.isEmpty()) {
+                        vm.addPinnedMessages(messages);
+                    }
+                    shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
                 }
-                TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), newestPinnedMessage);
+                setPinnedMessage(shownMessage);
                 hasLoadMore = hasMoreData;
-                pageNumber++;
+                if (hasLoadMore) {
+                    pageNumber++;
+                }
             }
         });
     }
@@ -1332,6 +1343,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         vm.replacePinnedMessage(index, message);
                         if (index == vm.getPinnedMessageIndex()) {
                             setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                            if (index == 0) {
+                                TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), message);
+                            }
                         }
                         break;
                     }
@@ -1351,6 +1365,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (vm.getPinnedMessageIndex() < vm.getPinnedMessages().size()) {
                         if (vm.getPinnedMessageIndex() >= vm.getPinnedMessageIds().size()) {
                             vm.setPinnedMessageIndex(0);
+                            TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), vm.getPinnedMessages().get(0));
                         }
                         setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
                     } else {
@@ -2133,33 +2148,57 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private void setPinnedMessage(TAPMessageModel message) {
         // TODO: 08/08/22 animate layout MU
-        if (message == null) {
-            vm.setPinnedMessageIndex(0);
-            clPinnedMessage.setVisibility(View.GONE);
-        } else {
-            if (clPinnedMessage.getVisibility() == View.GONE) {
-                clPinnedMessage.setVisibility(View.VISIBLE);
-            }
-            int number = vm.getPinnedMessageIds().size() - vm.getPinnedMessageIndex();
-            if (vm.getPinnedMessageIndex() == 0) {
-                tvPinnedLabel.setText(getString(R.string.tap_pinned_message));
+        runOnUiThread(() ->{
+            if (message == null) {
+                vm.setPinnedMessageIndex(0);
+                clPinnedMessage.setVisibility(View.GONE);
             } else {
-                tvPinnedLabel.setText(String.format(Locale.getDefault(), "%s #%d", getString(R.string.tap_pinned_message), number));
-            }
-            tvPinnedMessage.setText(message.getBody());
-            if (message.getData() != null && message.getData().get(THUMBNAIL) != null) {
-                rcivPinnedImage.setVisibility(View.VISIBLE);
-                Drawable thumbnail = new BitmapDrawable(
-                        getResources(), TAPFileUtils.decodeBase64((String) message.getData().get(THUMBNAIL)));
-                if (thumbnail.getIntrinsicHeight() <= 0) {
-                    // Set placeholder image if thumbnail fails to load
-                    thumbnail = ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_grey_e4);
+                if (clPinnedMessage.getVisibility() == View.GONE) {
+                    clPinnedMessage.setVisibility(View.VISIBLE);
                 }
-                rcivPinnedImage.setImageDrawable(thumbnail);
-            } else {
-                rcivPinnedImage.setVisibility(View.GONE);
+                int number = vm.getPinnedMessageIds().size() - vm.getPinnedMessageIndex() + 1;
+                if (vm.getPinnedMessageIndex() == 0) {
+                    tvPinnedLabel.setText(getString(R.string.tap_pinned_message));
+                } else {
+                    tvPinnedLabel.setText(String.format(Locale.getDefault(), "%s #%d", getString(R.string.tap_pinned_message), number));
+                }
+                tvPinnedMessage.setText(message.getBody());
+                if (message.getData() != null) {
+                    Drawable drawable = null;
+                    String fileID = (String) message.getData().get(FILE_ID);
+                    if (null != fileID && !fileID.isEmpty()) {
+                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
+                    }
+                    if (null == drawable) {
+                        String fileUrl = (String) message.getData().get(FILE_URL);
+                        if (null != fileUrl && !fileUrl.isEmpty()) {
+                            drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
+                        }
+                    }
+                    if (null != drawable) {
+                        rcivPinnedImage.setImageDrawable(drawable);
+                        rcivPinnedImage.setVisibility(View.VISIBLE);
+                    } else {
+                        if (message.getData().get(THUMBNAIL) != null) {
+                            // Show small thumbnail
+                            Drawable thumbnail = new BitmapDrawable(
+                                    getResources(),
+                                    TAPFileUtils.decodeBase64((String) (message.getData().get(THUMBNAIL))));
+                            if (thumbnail.getIntrinsicHeight() <= 0) {
+                                // Set placeholder image if thumbnail fails to load
+                                thumbnail = ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_grey_e4);
+                            }
+                            rcivPinnedImage.setImageDrawable(thumbnail);
+                            rcivPinnedImage.setVisibility(View.VISIBLE);
+                        } else {
+                            rcivPinnedImage.setVisibility(View.GONE);
+                        }
+                    }
+                } else {
+                    rcivPinnedImage.setVisibility(View.GONE);
+                }
             }
-        }
+        });
     }
 
     private void scrollToBottom() {
@@ -3138,22 +3177,34 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled() && message.getData() != null) {
                 String messageId = (String) message.getData().get("messageID");
                 String localId = (String) message.getData().get("localID");
-                HashMap<String, Object> data = (HashMap<String, Object>) message.getData().get(("data"));
-                String body = (String) message.getData().get("body");
-                Long createdTime = (Long) message.getData().get("createdTime");
-                if (data != null && createdTime != null) {
+                HashMap<String, Object> data = new LinkedHashMap<>();
+                String encryptedData = (String) message.getData().get("data");
+                if (encryptedData != null && !encryptedData.isEmpty()) {
+                    data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(encryptedData, localId));
+                }
+                String body = "";
+                String encryptedBody = (String) message.getData().get("body");
+                if (encryptedBody != null) {
+                    body = TAPEncryptorManager.getInstance().decrypt(encryptedBody, localId);
+                }
+                BigInteger createdTimeInteger = (BigInteger) message.getData().get("createdTime");
+                Long createdTime = 0L;
+                if (createdTimeInteger != null) {
+                    createdTime = createdTimeInteger.longValue();
+                }
+                if (createdTime > 0L) {
                     TAPMessageModel pinnedMessage = new TAPMessageModel();
                     pinnedMessage.setMessageID(messageId);
                     if (localId != null) {
                         pinnedMessage.setLocalID(localId);
                     }
+                    if (data != null && !data.isEmpty()) {
+                        pinnedMessage.setData(data);
+                    }
                     pinnedMessage.setBody(body);
-                    pinnedMessage.setData(data);
                     pinnedMessage.setCreated(createdTime);
 
-                    if (!vm.getPinnedMessages().isEmpty() && vm.getPinnedMessages().get(vm.getPinnedMessages().size()-1).getCreated() > createdTime) {
-                        // TODO: 08/08/22 load more pin messages API then setPinnedMessage then save newest message MU
-                    } else {
+                    if (vm.getPinnedMessages().isEmpty() || vm.getPinnedMessages().get(vm.getPinnedMessages().size()-1).getCreated() < createdTime) {
                         for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
                             if (createdTime > vm.getPinnedMessages().get(index).getCreated()) {
                                 if (!vm.getPinnedMessageIds().contains(messageId)) {
@@ -3163,11 +3214,24 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                 if (!vm.getPinnedMessages().contains(pinnedMessage)) {
                                     vm.addPinnedMessage(index, pinnedMessage);
                                 }
-                                if (vm.getPinnedMessageIndex() == index) {
-                                    setPinnedMessage(pinnedMessage);
-                                }
+                                vm.setPinnedMessageIndex(index);
+                                setPinnedMessage(pinnedMessage);
                                 break;
                             }
+                        }
+                    } else {
+                        if (vm.getPinnedMessages().size() == vm.getPinnedMessageIds().size()) {
+                            if (!vm.getPinnedMessageIds().contains(messageId)) {
+                                vm.addPinnedMessageId(messageId);
+                                messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                            }
+                            if (!vm.getPinnedMessages().contains(pinnedMessage)) {
+                                vm.addPinnedMessage(pinnedMessage);
+                            }
+                            vm.setPinnedMessageIndex(vm.getPinnedMessages().size()-1);
+                            setPinnedMessage(pinnedMessage);
+                        } else {
+                            // TODO: 08/08/22 load more pin messages API then setPinnedMessage then save newest message MU
                         }
                     }
                 }
@@ -3187,7 +3251,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (id != null && id.equals(messageId)) {
                         vm.removePinnedMessage(vm.getPinnedMessages().get(index));
                         if (vm.getPinnedMessageIndex() == index) {
-                            setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                            if (vm.getPinnedMessages().isEmpty()) {
+                                setPinnedMessage(null);
+                            } else {
+                                setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                            }
                         }
                         break;
                     }

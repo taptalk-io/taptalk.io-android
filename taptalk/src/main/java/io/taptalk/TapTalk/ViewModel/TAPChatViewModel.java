@@ -606,7 +606,8 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void setPinnedMessageIds(ArrayList<String> pinnedMessageIds) {
-        this.pinnedMessageIds = pinnedMessageIds;
+        this.pinnedMessageIds = new ArrayList<>();
+        this.pinnedMessageIds.addAll(pinnedMessageIds);
     }
 
     public void addPinnedMessageId(String messageId) {
@@ -726,7 +727,8 @@ public class TAPChatViewModel extends AndroidViewModel {
     }
 
     public void setPinnedMessages(List<TAPMessageModel> pinnedMessages) {
-        this.pinnedMessages = pinnedMessages;
+        this.pinnedMessages = new ArrayList<>();
+        this.pinnedMessages.addAll(pinnedMessages);
     }
 
     public void removePinnedMessage(TAPMessageModel message) {
@@ -749,7 +751,7 @@ public class TAPChatViewModel extends AndroidViewModel {
         getPinnedMessages().addAll(pinnedMessages);
     }
 
-    public void clearPinnedMessages(List<TAPMessageModel> pinnedMessages) {
+    public void clearPinnedMessages() {
         getPinnedMessages().clear();
     }
 
