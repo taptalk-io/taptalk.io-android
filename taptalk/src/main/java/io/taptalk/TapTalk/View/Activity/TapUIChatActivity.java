@@ -3452,7 +3452,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         // Scroll recycler to bottom if recycler is already on bottom
                         vm.setScrollFromKeyboard(true);
                         scrollToBottom();
-                    } else if (ownMessage) {
+                    } else if (ownMessage && !(newMessage.getAction().equals(PIN_MESSAGE) || newMessage.getAction().equals(UNPIN_MESSAGE))) {
                         // Scroll recycler to bottom if own message
                         scrollToBottom();
                     } else {
