@@ -126,4 +126,6 @@
                 style="@style/tapClickableLabelStyle"
                 android:text="@string/unpin_all_messages" />
     </LinearLayout>
+
+    <include layout="@layout/tap_layout_popup_loading_screen" />
 </androidx.constraintlayout.widget.ConstraintLayout>

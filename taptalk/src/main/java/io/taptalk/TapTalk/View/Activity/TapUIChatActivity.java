@@ -554,6 +554,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         newestPinnedMessage = messages.get(0);
                         vm.setPinnedMessages(messages);
                         shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
+                    } else {
+                        vm.clearPinnedMessages();
                     }
                     TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), newestPinnedMessage);
                 } else {
@@ -778,6 +780,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
                         if (message != null) {
                             scrollToMessage(message.getLocalID());
+                        }
+                        if (intent.getBooleanExtra(IS_NEED_REFRESH, false)) {
+                            pageNumber = 1;
+                            getPinnedMessages();
                         }
                     }
                 case OPEN_PERSONAL_PROFILE:
@@ -3204,23 +3210,29 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     pinnedMessage.setBody(body);
                     pinnedMessage.setCreated(createdTime);
 
-                    if (vm.getPinnedMessages().isEmpty() || vm.getPinnedMessages().get(vm.getPinnedMessages().size()-1).getCreated() < createdTime) {
-                        for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
-                            if (createdTime > vm.getPinnedMessages().get(index).getCreated()) {
-                                if (!vm.getPinnedMessageIds().contains(messageId)) {
-                                    vm.addPinnedMessageId(index, messageId);
-                                    messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
-                                }
-                                if (!vm.getPinnedMessages().contains(pinnedMessage)) {
-                                    vm.addPinnedMessage(index, pinnedMessage);
-                                }
-                                vm.setPinnedMessageIndex(index);
-                                setPinnedMessage(pinnedMessage);
-                                break;
-                            }
-                        }
+                    if (vm.getPinnedMessages().isEmpty()) {
+                        vm.addPinnedMessageId(messageId);
+                        messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                        vm.addPinnedMessage(pinnedMessage);
+                        vm.setPinnedMessageIndex(vm.getPinnedMessages().size()-1);
+                        setPinnedMessage(pinnedMessage);
                     } else {
-                        if (vm.getPinnedMessages().size() == vm.getPinnedMessageIds().size()) {
+                        if (vm.getPinnedMessages().get(vm.getPinnedMessages().size() - 1).getCreated() < createdTime) {
+                            for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
+                                if (createdTime > vm.getPinnedMessages().get(index).getCreated()) {
+                                    if (!vm.getPinnedMessageIds().contains(messageId)) {
+                                        vm.addPinnedMessageId(index, messageId);
+                                        messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                                    }
+                                    if (!vm.getPinnedMessages().contains(pinnedMessage)) {
+                                        vm.addPinnedMessage(index, pinnedMessage);
+                                    }
+                                    vm.setPinnedMessageIndex(index);
+                                    setPinnedMessage(pinnedMessage);
+                                    break;
+                                }
+                            }
+                        } else if (vm.getPinnedMessages().size() == vm.getPinnedMessageIds().size()) {
                             if (!vm.getPinnedMessageIds().contains(messageId)) {
                                 vm.addPinnedMessageId(messageId);
                                 messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
@@ -3228,7 +3240,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             if (!vm.getPinnedMessages().contains(pinnedMessage)) {
                                 vm.addPinnedMessage(pinnedMessage);
                             }
-                            vm.setPinnedMessageIndex(vm.getPinnedMessages().size()-1);
+                            vm.setPinnedMessageIndex(vm.getPinnedMessages().size() - 1);
                             setPinnedMessage(pinnedMessage);
                         } else {
                             // TODO: 08/08/22 load more pin messages API then setPinnedMessage then save newest message MU

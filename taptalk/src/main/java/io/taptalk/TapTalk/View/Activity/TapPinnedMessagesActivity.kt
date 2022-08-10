@@ -3,7 +3,9 @@ package io.taptalk.TapTalk.View.Activity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,12 +14,10 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
-import io.taptalk.TapTalk.Helper.TAPEndlessScrollListener
-import io.taptalk.TapTalk.Helper.TAPUtils
-import io.taptalk.TapTalk.Helper.TAPVerticalDecoration
-import io.taptalk.TapTalk.Helper.TapTalk
+import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Listener.TAPChatListener
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener
+import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener
 import io.taptalk.TapTalk.Manager.TAPChatManager
 import io.taptalk.TapTalk.Manager.TAPContactManager
 import io.taptalk.TapTalk.Manager.TAPGroupManager
@@ -28,6 +28,7 @@ import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.TAPMessageAdapter
 import io.taptalk.TapTalk.ViewModel.TAPChatViewModel
 import kotlinx.android.synthetic.main.tap_activity_starred_messages.*
+import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 
 class TapPinnedMessagesActivity : TAPBaseActivity() {
     private lateinit var vm : TAPChatViewModel
@@ -164,7 +165,33 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
         }
         iv_button_back.setOnClickListener { onBackPressed() }
         cl_unpin_all.setOnClickListener{
-//            TapCoreMessageManager.getInstance(instanceKey).unstarMessages(vm.room.roomID, )
+            showLoading()
+            TapCoreMessageManager.getInstance(instanceKey).getPinnedMessageIDs(vm.room.roomID, object : TapCoreGetStringArrayListener() {
+                override fun onSuccess(arrayList: ArrayList<String>) {
+                    super.onSuccess(arrayList)
+                    TapCoreMessageManager.getInstance(instanceKey).unpinMessage(vm.room.roomID, arrayList, object : TapCoreGetStringArrayListener() {
+                        override fun onSuccess(arrayList: ArrayList<String>) {
+                            super.onSuccess(arrayList)
+                            hideLoading()
+                            intent.putExtra(TAPDefaultConstant.Extras.IS_NEED_REFRESH, true)
+                            setResult(RESULT_OK, intent)
+                            finish()
+                        }
+
+                        override fun onError(errorCode: String?, errorMessage: String?) {
+                            super.onError(errorCode, errorMessage)
+                            hideLoading()
+                            showErrorDialog(errorMessage)
+                        }
+                    })
+                }
+
+                override fun onError(errorCode: String?, errorMessage: String?) {
+                    super.onError(errorCode, errorMessage)
+                    hideLoading()
+                    showErrorDialog(errorMessage)
+                }
+            })
         }
     }
 
@@ -231,6 +258,31 @@ class TapPinnedMessagesActivity : TAPBaseActivity() {
                 checkMessageList()
             }
         }
+    }
+
+    private fun showLoading() {
+        runOnUiThread {
+            iv_loading_image.setImageDrawable(ContextCompat.getDrawable(this, io.taptalk.TapTalk.R.drawable.tap_ic_loading_progress_circle_white))
+            if (null == iv_loading_image.animation)
+                TAPUtils.rotateAnimateInfinitely(this, iv_loading_image)
+            tv_loading_text.text = getString(R.string.tap_loading)
+            fl_loading.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideLoading() {
+        fl_loading.visibility = View.GONE
+    }
+
+    private fun showErrorDialog(message: String?) {
+        TapTalkDialog.Builder(this)
+            .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+            .setTitle(getString(R.string.tap_error))
+            .setMessage(message)
+            .setPrimaryButtonTitle(getString(R.string.tap_ok))
+            .setPrimaryButtonListener(true) { }
+            .setCancelable(true)
+            .show()
     }
 
     private fun updateMessageDecoration() {
