@@ -476,9 +476,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         getStarredMessageIds();
         getPinnedMessageIds();
-        if (isLoadPinnedMessages) {
-            getPinnedMessages();
-        }
+        getPinnedMessages("");
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
             callApiGetUserByUserID();
         } else {
@@ -543,7 +541,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     }
 
-    private void getPinnedMessages() {
+    private void getPinnedMessages(String messageId) {
         TapCoreMessageManager.getInstance(instanceKey).getPinnedMessages(vm.getRoom().getRoomID(), pageNumber, PAGE_SIZE, new TapCoreGetOlderMessageListener() {
             @Override
             public void onSuccess(List<TAPMessageModel> messages, Boolean hasMoreData) {
@@ -563,6 +561,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 } else {
                     if (!messages.isEmpty()) {
                         vm.addPinnedMessages(messages);
+                        if (!messageId.isEmpty()) {
+                            for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
+                                if (vm.getPinnedMessages().get(index).getMessageID() != null && vm.getPinnedMessages().get(index).getMessageID().equals(messageId)) {
+                                    vm.addPinnedMessageId(index, messageId);
+                                    break;
+                                }
+                            }
+                        }
                     }
                     shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
                 }
@@ -785,7 +791,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                         if (intent.getBooleanExtra(IS_NEED_REFRESH, false)) {
                             pageNumber = 1;
-                            getPinnedMessages();
+                            getPinnedMessages("");
                         }
                     }
                 case OPEN_PERSONAL_PROFILE:
@@ -1378,7 +1384,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                         setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
                     } else {
-                        // TODO: 08/08/22 load more pin messages API then setPinnedMessage MU
+                        getPinnedMessages("");
                     }
                 }
                 messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
@@ -2147,18 +2153,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void pinnedMessageLayoutOnClick() {
-        // TODO: 08/08/22 animate layout changes MU
         scrollToMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()).getLocalID());
         vm.increasePinnedMessageIndex(1);
         clPinnedIndicator.select(vm.getPinnedMessageIndex());
         setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
         if (vm.getPinnedMessageIndex() >= PAGE_SIZE/2 && hasLoadMore) {
-            getPinnedMessages();
+            getPinnedMessages("");
         }
     }
 
     private void setPinnedMessage(TAPMessageModel message) {
-        // TODO: 08/08/22 animate layout MU
         runOnUiThread(() ->{
             if (message == null) {
                 vm.setPinnedMessageIndex(0);
@@ -3237,10 +3241,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                     if (!vm.getPinnedMessages().contains(pinnedMessage)) {
                                         vm.addPinnedMessage(index, pinnedMessage);
                                     }
-                                    if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
-                                        vm.setPinnedMessageIndex(index);
-                                        runOnUiThread(() -> clPinnedIndicator.select(vm.getPinnedMessageIndex()));
-                                        setPinnedMessage(pinnedMessage);
+                                    if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) ||
+                                        vm.getPinnedMessageIndex() == 0) {
+                                            vm.setPinnedMessageIndex(index);
+                                            runOnUiThread(() -> clPinnedIndicator.select(vm.getPinnedMessageIndex()));
+                                            setPinnedMessage(pinnedMessage);
                                     }
                                     break;
                                 }
@@ -3260,11 +3265,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                 setPinnedMessage(pinnedMessage);
                             }
                         } else {
-                            // TODO: 08/08/22 load more pin messages API then setPinnedMessage then save newest message then update pinned indicator size MU
+                            getPinnedMessages(messageId);
                         }
                     }
                 }
-                // TODO: 07/08/22 animate layout MU
                 if (vm.getMessagePointer().containsKey(localId)) {
                     runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId))));
                 }
@@ -3300,7 +3304,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         runOnUiThread(() -> clPinnedIndicator.select(vm.getPinnedMessageIndex()));
                     } else {
                         if (vm.getPinnedMessageIndex() >= vm.getPinnedMessages().size()) {
-                            // TODO: 08/08/22 load more pin messages API then setPinnedMessage then save newest message MU
+                            getPinnedMessages(messageId);
                         }
                     }
                 }
