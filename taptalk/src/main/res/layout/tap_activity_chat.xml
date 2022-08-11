@@ -199,15 +199,19 @@
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <io.taptalk.TapTalk.Helper.TapVerticalIndicator
             android:id="@+id/cl_pinned_message_indicator"
             android:layout_width="9dp"
             android:layout_height="0dp"
+            android:paddingStart="4dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="8dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
             android:id="@+id/rciv_pinned_image"

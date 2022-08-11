@@ -206,6 +206,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Helper.TapVerticalIndicator;
 import io.taptalk.TapTalk.Helper.audiorecorder.TapAudioManager;
 import io.taptalk.TapTalk.Interface.TapAudioListener;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
@@ -352,7 +353,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     // Pinned Messages
     private ConstraintLayout clPinnedMessage;
-    private ConstraintLayout clPinnedIndicator;
+    private TapVerticalIndicator clPinnedIndicator;
     private TAPRoundedCornerImageView rcivPinnedImage;
     private TextView tvPinnedLabel;
     private TextView tvPinnedMessage;
@@ -524,6 +525,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 isPinnedIdsLoaded = true;
                 vm.setPinnedMessageIds(arrayList);
                 messageAdapter.setPinnedMessageIds(arrayList);
+                clPinnedIndicator.setSize(vm.getPinnedMessageIds().size());
                 if (isStarredIdsLoaded) {
                     messageAdapter.notifyDataSetChanged();
                 }
@@ -1201,11 +1203,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
         ibPinnedMessages.setOnClickListener(v -> {
             new TapPinnedMessagesActivity().start(this, instanceKey, vm.getRoom());
         });
-            clPinnedMessage.setOnClickListener(v -> {
-                if (!isLoadPinnedMessages) {
-                    pinnedMessageLayoutOnClick();
-                }
-            });
+        clPinnedMessage.setOnClickListener(v -> {
+            if (!isLoadPinnedMessages) {
+                pinnedMessageLayoutOnClick();
+            }
+        });
 
         if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
@@ -1372,6 +1374,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         if (vm.getPinnedMessageIndex() >= vm.getPinnedMessageIds().size()) {
                             vm.setPinnedMessageIndex(0);
                             TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), vm.getPinnedMessages().get(0));
+                            runOnUiThread(() -> clPinnedIndicator.select(0));
                         }
                         setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
                     } else {
@@ -1379,6 +1382,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                 }
                 messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                runOnUiThread(() -> clPinnedIndicator.setSize(vm.getPinnedMessageIds().size()));
             }
             updateMessageFromSocket(message);
         }
@@ -2146,6 +2150,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
         // TODO: 08/08/22 animate layout changes MU
         scrollToMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()).getLocalID());
         vm.increasePinnedMessageIndex(1);
+        clPinnedIndicator.select(vm.getPinnedMessageIndex());
         setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
         if (vm.getPinnedMessageIndex() >= PAGE_SIZE/2 && hasLoadMore) {
             getPinnedMessages();
@@ -3215,6 +3220,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
                         vm.addPinnedMessage(pinnedMessage);
                         vm.setPinnedMessageIndex(vm.getPinnedMessages().size()-1);
+                        runOnUiThread(() -> {
+                            clPinnedIndicator.setSize(vm.getPinnedMessageIds().size());
+                            clPinnedIndicator.select(vm.getPinnedMessageIndex());
+                            });
                         setPinnedMessage(pinnedMessage);
                     } else {
                         if (vm.getPinnedMessages().get(vm.getPinnedMessages().size() - 1).getCreated() < createdTime) {
@@ -3223,12 +3232,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                     if (!vm.getPinnedMessageIds().contains(messageId)) {
                                         vm.addPinnedMessageId(index, messageId);
                                         messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                                        runOnUiThread(() -> clPinnedIndicator.setSize(vm.getPinnedMessageIds().size()));
                                     }
                                     if (!vm.getPinnedMessages().contains(pinnedMessage)) {
                                         vm.addPinnedMessage(index, pinnedMessage);
                                     }
                                     if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                                         vm.setPinnedMessageIndex(index);
+                                        runOnUiThread(() -> clPinnedIndicator.select(vm.getPinnedMessageIndex()));
                                         setPinnedMessage(pinnedMessage);
                                     }
                                     break;
@@ -3238,16 +3249,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             if (!vm.getPinnedMessageIds().contains(messageId)) {
                                 vm.addPinnedMessageId(messageId);
                                 messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                                runOnUiThread(() -> clPinnedIndicator.setSize(vm.getPinnedMessageIds().size()));
                             }
                             if (!vm.getPinnedMessages().contains(pinnedMessage)) {
                                 vm.addPinnedMessage(pinnedMessage);
                             }
                             if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
                                 vm.setPinnedMessageIndex(vm.getPinnedMessages().size() - 1);
+                                runOnUiThread(() -> clPinnedIndicator.select(vm.getPinnedMessageIndex()));
                                 setPinnedMessage(pinnedMessage);
                             }
                         } else {
-                            // TODO: 08/08/22 load more pin messages API then setPinnedMessage then save newest message MU
+                            // TODO: 08/08/22 load more pin messages API then setPinnedMessage then save newest message then update pinned indicator size MU
                         }
                     }
                 }
@@ -3262,6 +3275,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 String localId = (String) message.getData().get("localID");
                 vm.removePinnedMessageId(messageId);
                 messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                runOnUiThread(() -> clPinnedIndicator.setSize(vm.getPinnedMessageIds().size()));
                 for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
                     String id = vm.getPinnedMessages().get(index).getMessageID();
                     if (id != null && id.equals(messageId)) {
@@ -3283,6 +3297,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (vm.getPinnedMessageIndex() >= vm.getPinnedMessageIds().size()) {
                         vm.setPinnedMessageIndex(0);
                         TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                        runOnUiThread(() -> clPinnedIndicator.select(vm.getPinnedMessageIndex()));
                     } else {
                         if (vm.getPinnedMessageIndex() >= vm.getPinnedMessages().size()) {
                             // TODO: 08/08/22 load more pin messages API then setPinnedMessage then save newest message MU
