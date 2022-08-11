@@ -1354,11 +1354,32 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
                     String id = vm.getPinnedMessages().get(index).getMessageID();
                     if (id != null && id.equals(message.getMessageID())) {
-                        vm.replacePinnedMessage(index, message);
-                        if (index == vm.getPinnedMessageIndex()) {
-                            setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
-                            if (index == 0) {
-                                TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), message);
+                        if (message.getDeleted() != null && message.getDeleted() > 0) {
+                            vm.removePinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIds().indexOf(message.getMessageID())));
+                            vm.removePinnedMessageId(message.getMessageID());
+                            if (vm.getPinnedMessages().isEmpty()) {
+                                setPinnedMessage(null);
+                            } else {
+                                if (vm.getPinnedMessageIndex() < vm.getPinnedMessages().size()) {
+                                    if (vm.getPinnedMessageIndex() >= vm.getPinnedMessageIds().size()) {
+                                        vm.setPinnedMessageIndex(0);
+                                        TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), vm.getPinnedMessages().get(0));
+                                        runOnUiThread(() -> clPinnedIndicator.select(0));
+                                    }
+                                    setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                                } else if (vm.getPinnedMessageIndex() < vm.getPinnedMessages().size()) {
+                                    setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                                } else {
+                                    getPinnedMessages("");
+                                }
+                            }
+                        } else {
+                            vm.replacePinnedMessage(index, message);
+                            if (index == vm.getPinnedMessageIndex()) {
+                                setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                                if (index == 0) {
+                                    TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), message);
+                                }
                             }
                         }
                         break;
