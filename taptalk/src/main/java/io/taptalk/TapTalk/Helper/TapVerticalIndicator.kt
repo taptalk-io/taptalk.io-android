@@ -67,7 +67,6 @@ class TapVerticalIndicator(context : Context, attrs : AttributeSet?) : Constrain
         if (size > indicators.size) {
             val viewIndex : Int =
                 when {
-                    selectedIndex == size -1 -> indicators.size - 1
                     selectedIndex >= indicators.size -1 -> indicators.size - 2
                     else -> selectedIndex
                 }
