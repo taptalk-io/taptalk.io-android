@@ -82,7 +82,11 @@ class TapVerticalIndicator(context : Context, attrs : AttributeSet?) : Constrain
             if (i == index) {
                 indicators[i].setBackgroundColor(ContextCompat.getColor(context, R.color.tapColorPrimary))
             } else {
-                indicators[i].setBackgroundColor(ContextCompat.getColor(context, R.color.tapOrange10))
+                if (indicators[i] == vIndicator1) {
+                    indicators[i].setBackgroundColor(ContextCompat.getColor(context, R.color.tapOrange10))
+                } else {
+                    indicators[i].setBackgroundColor(ContextCompat.getColor(context, R.color.tapOrange20))
+                }
             }
         }
     }
