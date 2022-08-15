@@ -546,7 +546,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             @Override
             public void onSuccess(List<TAPMessageModel> messages, Boolean hasMoreData) {
                 super.onSuccess(messages, hasMoreData);
-                isLoadPinnedMessages = false;
                 TAPMessageModel newestPinnedMessage = null;
                 TAPMessageModel shownMessage = null;
                 if (pageNumber == 1) {
@@ -560,7 +559,11 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), newestPinnedMessage);
                 } else {
                     if (!messages.isEmpty()) {
-                        vm.addPinnedMessages(messages);
+                        for (int messageIndex = 0; messageIndex < messages.size(); messageIndex++)  {
+                            if (!vm.getPinnedMessages().contains(messages.get(messageIndex))) {
+                                vm.addPinnedMessage(messages.get(messageIndex));
+                            }
+                        }
                         if (!messageId.isEmpty()) {
                             for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
                                 if (vm.getPinnedMessages().get(index).getMessageID() != null && vm.getPinnedMessages().get(index).getMessageID().equals(messageId)) {
@@ -577,6 +580,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 if (hasLoadMore) {
                     pageNumber++;
                 }
+                isLoadPinnedMessages = false;
             }
         });
     }
@@ -2178,7 +2182,9 @@ public class TapUIChatActivity extends TAPBaseActivity {
         vm.increasePinnedMessageIndex(1);
         clPinnedIndicator.select(vm.getPinnedMessageIndex());
         setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
-        if (vm.getPinnedMessageIndex() >= PAGE_SIZE/2 && hasLoadMore) {
+        int indexLimit = PAGE_SIZE * (pageNumber - 1) - PAGE_SIZE / 2;
+        if (vm.getPinnedMessageIndex() >= indexLimit && hasLoadMore && vm.getPinnedMessages().size() <= PAGE_SIZE * pageNumber) {
+            isLoadPinnedMessages = true;
             getPinnedMessages("");
         }
     }
