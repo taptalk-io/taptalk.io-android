@@ -3500,8 +3500,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         scrollToBottom();
                     } else {
                         // Message from other people is received when recycler is scrolled up
-                        vm.addUnreadMessage(newMessage);
-                        updateUnreadCount();
+                        if (newMessage.getAction() == null || !newMessage.getAction().equals(UNPIN_MESSAGE)) {
+                            vm.addUnreadMessage(newMessage);
+                            updateUnreadCount();
+                        }
                         updateMentionCount();
                     }
                 }
