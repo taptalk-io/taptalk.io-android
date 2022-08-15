@@ -3262,8 +3262,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                                     if (!vm.getPinnedMessages().contains(pinnedMessage)) {
                                         vm.addPinnedMessage(index, pinnedMessage);
                                     }
-                                    if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) ||
-                                        vm.getPinnedMessageIndex() == 0) {
+                                    if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) || vm.getPinnedMessageIds().get(0).equals(messageId)) {
                                             vm.setPinnedMessageIndex(index);
                                             runOnUiThread(() -> clPinnedIndicator.select(vm.getPinnedMessageIndex()));
                                             setPinnedMessage(pinnedMessage);
