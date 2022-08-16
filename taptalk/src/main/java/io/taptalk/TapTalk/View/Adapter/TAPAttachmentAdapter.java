@@ -41,6 +41,7 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_DELETE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_EDIT;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_FORWARD;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_OPEN_LINK;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_PIN;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_REPLY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_DOWNLOADS;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_IMAGE_GALLERY;
@@ -248,6 +249,9 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                 case LONG_PRESS_EDIT:
                     setComponentColors(R.color.tapIconLongPressActionEditMessage, R.style.tapActionSheetDefaultLabelStyle);
                     break;
+                case LONG_PRESS_PIN:
+                    setComponentColors(R.color.tapIconLongPressActionPinMessage, R.style.tapActionSheetDefaultLabelStyle);
+                    break;
             }
 
             if (getItemCount() - 1 == position) {
@@ -353,6 +357,9 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case LONG_PRESS_EDIT:
                     attachmentListener.onEditMessage(message);
+                    break;
+                case LONG_PRESS_PIN:
+                    attachmentListener.onMessagePinned(message);
                     break;
             }
             onClickListener.onClick(itemView);

@@ -51,4 +51,6 @@ public interface TapTalkAttachmentInterface {
     void onMessageStarred(TAPMessageModel message);
 
     void onEditMessage(TAPMessageModel message);
+
+    void onMessagePinned(TAPMessageModel message);
 }

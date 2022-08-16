@@ -179,6 +179,7 @@ public class TAPDefaultConstant {
         public static final int PICK_GROUP_IMAGE_CAMERA = 93;
         public static final int PICK_GROUP_IMAGE_GALLERY = 94;
         public static final int OPEN_STARRED_MESSAGES = 95;
+        public static final int OPEN_PINNED_MESSAGES = 96;
     }
 
     public static final class PermissionRequest {
@@ -371,6 +372,8 @@ public class TAPDefaultConstant {
         public static final String ROOM_DEMOTE_ADMIN = "room/demoteAdmin";
         public static final String UPDATE_USER = "user/update";
         public static final String DELETE_USER = "user/delete";
+        public static final String PIN_MESSAGE = "message/pin";
+        public static final String UNPIN_MESSAGE = "message/unpin";
     }
 
     public static final class ProjectConfigType {
@@ -459,6 +462,7 @@ public class TAPDefaultConstant {
     public static final String K_CHAT_ROOM_CONTACT_ACTION = "kTAPChatRoomContactAction";
     public static final String K_IS_CONTACT_LIST_UPDATED = "kTAPIsContactListUpdated";
     public static final String K_UNREAD_ROOM_LIST = "kTAPUnreadRoomList";
+    public static final String K_PINNED_MESSAGE = "kTAPPinnedMessage";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 
