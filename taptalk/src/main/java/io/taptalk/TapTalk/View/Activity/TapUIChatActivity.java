@@ -3262,6 +3262,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         runOnUiThread(() -> {
                             clPinnedIndicator.setSize(vm.getPinnedMessageIds().size());
                             clPinnedIndicator.select(vm.getPinnedMessageIndex());
+                            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId)));
                             });
                         setPinnedMessage(pinnedMessage);
                     } else {
