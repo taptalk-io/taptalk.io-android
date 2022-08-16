@@ -161,6 +161,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private TAPChatListener chatListener;
     private List<TAPMessageModel> pendingAnimationMessages, animatingMessages;
     private ArrayList<String> starredMessageIds = new ArrayList<>();
+    private ArrayList<String> pinnedMessageIds = new ArrayList<>();
     private TAPMessageModel highlightedMessage;
     private TAPUserModel myUserModel;
     private Map<String, List<Integer>> messageMentionIndexes;
@@ -180,7 +181,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private TAPChatViewModel vm;
 
     public enum RoomType {
-        DEFAULT, STARRED
+        DEFAULT, STARRED, PINNED
     }
 
     public TAPMessageAdapter(
@@ -197,6 +198,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         pendingAnimationMessages = new ArrayList<>();
         animatingMessages = new ArrayList<>();
         this.starredMessageIds = vm.getStarredMessageIds();
+        this.pinnedMessageIds = vm.getPinnedMessageIds();
         this.vm = vm;
     }
 
@@ -381,6 +383,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteBackground;
         private View vQuoteDecoration;
         private ImageView ivStarMessage;
+        private ImageView ivPinMessage;
         private View vSeparator;
         private View vBubbleArea;
         private ImageView ivSelect;
@@ -406,6 +409,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteBackground = itemView.findViewById(R.id.v_quote_background);
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            ivPinMessage = itemView.findViewById(R.id.iv_pin);
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
@@ -445,24 +449,27 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             checkAndAnimateHighlight(item, ivBubbleHighlight);
 
             markMessageAsRead(item, myUserModel);
-            if (roomType != RoomType.STARRED) {
+            if (!isBubbleTapOnly()) {
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
             }
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
+            setPinnedIcon(item.getMessageID(), ivPinMessage);
 
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
-            if (roomType != RoomType.STARRED) {
+            if (!isBubbleTapOnly()) {
                 flBubble.setOnClickListener(v -> onStatusImageClicked(item));
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -524,6 +531,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
         private ImageView ivStarMessageBody;
+        private ImageView ivPinMessage;
+        private ImageView ivPinMessageBody;
         private View vSeparator;
         private View vBubbleArea;
         private ImageView ivSelect;
@@ -561,6 +570,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             ivStarMessageBody = itemView.findViewById(R.id.iv_star_message_body);
+            ivPinMessage = itemView.findViewById(R.id.iv_pin);
+            ivPinMessageBody = itemView.findViewById(R.id.iv_pin_body);
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
@@ -600,13 +611,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setOriginalMessageButton(item, ibOriginalMessage);
 
             markMessageAsRead(item, myUserModel);
-            if (roomType != RoomType.STARRED) {
+            if (!isBubbleTapOnly()) {
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
             } else {
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
@@ -619,7 +632,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openImageDetailPreview(TAPMessageModel message) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(message);
             } else {
                 TAPImageDetailPreviewActivity.start(itemView.getContext(), instanceKey, message, rcivImageBody);
@@ -683,7 +696,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                rcivImageBody.setBottomRightRadius(TAPUtils.dpToPx(2));
                 //tvMessageBody.setText(imageCaption);
                 setMessageBodyText(tvMessageBody, item, imageCaption);
-                if (roomType != RoomType.STARRED) {
+                if (!isBubbleTapOnly()) {
                     setLinkDetection(itemView.getContext(), item, tvMessageBody);
                 }
                 tvMessageBody.setVisibility(View.VISIBLE);
@@ -693,6 +706,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.VISIBLE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessageBody);
+                setPinnedIcon(item.getMessageID(), ivPinMessageBody);
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEditedBody, tvEdited, ivStarMessage);
             } else {
                 // Hide caption
@@ -705,6 +719,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.GONE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessage);
+                setPinnedIcon(item.getMessageID(), ivPinMessage);
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEdited, tvEditedBody, ivStarMessageBody);
             }
 
@@ -831,7 +846,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 ivButtonProgress.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_ic_cancel_white));
                 ImageViewCompat.setImageTintList(ivButtonProgress, ColorStateList.valueOf(ContextCompat.getColor(itemView.getContext(), R.color.tapIconFileCancelUploadDownloadWhite)));
                 flProgress.setOnClickListener(v -> {
-                     if (roomType == RoomType.STARRED) {
+                     if (isBubbleTapOnly()) {
                         chatListener.onOutsideClicked(item);
                      } else {
                          TAPDataManager.getInstance(instanceKey)
@@ -919,6 +934,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
         private ImageView ivStarMessageBody;
+        private ImageView ivPinMessage;
+        private ImageView ivPinMessageBody;
         private View vSeparator;
         private View vBubbleArea;
         private ImageView ivSelect;
@@ -958,6 +975,8 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
             ivStarMessageBody = itemView.findViewById(R.id.iv_star_message_body);
+            ivPinMessage = itemView.findViewById(R.id.iv_pin);
+            ivPinMessageBody = itemView.findViewById(R.id.iv_pin_body);
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
@@ -998,13 +1017,15 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             setOriginalMessageButton(item, ibOriginalMessage);
 
             markMessageAsRead(item, myUserModel);
-            if (roomType != RoomType.STARRED) {
+            if (!isBubbleTapOnly()) {
                 setLinkDetection(itemView.getContext(), item, tvMessageBody);
             } else {
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
@@ -1050,7 +1071,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 //                rcivImageBody.setBottomRightRadius(TAPUtils.dpToPx(2));
                 //tvMessageBody.setText(videoCaption);
                 setMessageBodyText(tvMessageBody, item, videoCaption);
-                if (roomType != RoomType.STARRED) {
+                if (!isBubbleTapOnly()) {
                     setLinkDetection(itemView.getContext(), item, tvMessageBody);
                 }
                 tvMessageBody.setVisibility(View.VISIBLE);
@@ -1060,6 +1081,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.VISIBLE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessageBody);
+                setPinnedIcon(item.getMessageID(), ivPinMessageBody);
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEditedBody, tvEdited, ivStarMessage);
             } else {
                 // Hide caption
@@ -1072,6 +1094,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     ivMessageStatus.setVisibility(View.GONE);
                 }
                 setStarredIcon(item.getMessageID(), ivStarMessage);
+                setPinnedIcon(item.getMessageID(), ivPinMessage);
                 setEditedMessage(item.getIsMessageEdited() != null && item.getIsMessageEdited(), tvEdited, tvEditedBody, ivStarMessageBody);
             }
 
@@ -1253,7 +1276,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         };
 
         private void downloadVideo(TAPMessageModel item) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(DownloadFile);
@@ -1263,7 +1286,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void cancelDownload(TAPMessageModel item) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(CancelDownload);
@@ -1273,7 +1296,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void cancelUpload(TAPMessageModel item) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(UploadCancelled);
@@ -1286,7 +1309,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             if (null == message.getData()) {
                 return;
             }
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(message);
             } else {
                 Uri videoUri = TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message);
@@ -1379,6 +1402,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteDecoration;
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
+        private ImageView ivPinMessage;
         private View vSeparator;
         private View vBubbleArea;
         private ImageView ivSelect;
@@ -1410,6 +1434,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            ivPinMessage = itemView.findViewById(R.id.iv_pin);
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
@@ -1453,19 +1478,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
+            setPinnedIcon(item.getMessageID(), ivPinMessage);
             setOriginalMessageButton(item, ibOriginalMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
-            if (roomType != RoomType.STARRED) {
+            if (!isBubbleTapOnly()) {
                 flBubble.setOnClickListener(v -> flFileIcon.performClick());
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -1594,7 +1622,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void downloadFile(TAPMessageModel item) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(DownloadFile);
@@ -1604,7 +1632,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void cancelDownload(TAPMessageModel item) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(CancelDownload);
@@ -1614,7 +1642,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void cancelUpload(TAPMessageModel item) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(UploadCancelled);
@@ -1624,7 +1652,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void openFile(TAPMessageModel item) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(OpenFile);
@@ -1661,6 +1689,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vQuoteDecoration;
         private ProgressBar pbProgress;
         private ImageView ivStarMessage;
+        private ImageView ivPinMessage;
         private View vSeparator;
         private SeekBar seekBar;
         private View vBubbleArea;
@@ -1691,6 +1720,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             vQuoteDecoration = itemView.findViewById(R.id.v_quote_decoration);
             pbProgress = itemView.findViewById(R.id.pb_progress);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            ivPinMessage = itemView.findViewById(R.id.iv_pin);
             vSeparator = itemView.findViewById(R.id.v_separator);
             seekBar = itemView.findViewById(R.id.seek_bar);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
@@ -1725,19 +1755,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             markMessageAsRead(item, myUserModel);
             enableLongPress(itemView.getContext(), flBubble, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
+            setPinnedIcon(item.getMessageID(), ivPinMessage);
             setOriginalMessageButton(item, ibOriginalMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             vBubbleArea.setOnClickListener(v -> chatListener.onMessageSelected(item));
-            if (roomType != RoomType.STARRED) {
+            if (!isBubbleTapOnly()) {
                 flBubble.setOnClickListener(v -> flVoiceIcon.performClick());
                 //ivReply.setOnClickListener(v -> onReplyButtonClicked(item));
             } else {
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -1864,7 +1897,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void downloadFile(TAPMessageModel item) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(DownloadFile);
@@ -1874,7 +1907,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void cancelDownload(TAPMessageModel item) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(CancelDownload);
@@ -1884,7 +1917,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
 
         private void cancelUpload(TAPMessageModel item) {
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(UploadCancelled);
@@ -1895,7 +1928,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
         private void playPauseVoiceNote(SeekBar seekBar, Activity activity, TextView tvDuration, ImageView image, Uri fileUri, TAPMessageModel item, String currentLocalId, int audioDuration) {
             // TODO: 18/04/22 play voice note MU
-            if (roomType == RoomType.STARRED) {
+            if (isBubbleTapOnly()) {
                 chatListener.onOutsideClicked(item);
             } else {
                 Intent intent = new Intent(PlayPauseVoiceNote);
@@ -1937,6 +1970,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private View vMapBorder;
         private MapView mapView;
         private ImageView ivStarMessage;
+        private ImageView ivPinMessage;
         private View vSeparator;
         private View vBubbleArea;
         private ImageView ivSelect;
@@ -1967,6 +2001,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             mapView = itemView.findViewById(R.id.map_view);
             mapView.onCreate(new Bundle());
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            ivPinMessage = itemView.findViewById(R.id.iv_pin);
             vSeparator = itemView.findViewById(R.id.v_separator);
             vBubbleArea = itemView.findViewById(R.id.v_bubble_area);
             ivSelect = itemView.findViewById(R.id.iv_select);
@@ -2034,19 +2069,22 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             enableLongPress(itemView.getContext(), flBubble, item);
             enableLongPress(itemView.getContext(), vMapBorder, item);
             setStarredIcon(item.getMessageID(), ivStarMessage);
+            setPinnedIcon(item.getMessageID(), ivPinMessage);
 
             vMapBorder.setOnClickListener(v -> {
-                if (roomType == RoomType.STARRED) {
+                if (isBubbleTapOnly()) {
                     chatListener.onOutsideClicked(item);
                 } else {
                     openMapDetail(mapData);
                 }
             });
-            if (roomType == RoomType.STARRED) {
-                if (position != 0) {
-                    vSeparator.setVisibility(View.VISIBLE);
-                } else {
-                    vSeparator.setVisibility(View.GONE);
+            if (isBubbleTapOnly()) {
+                if (roomType == RoomType.STARRED) {
+                    if (position != 0) {
+                        vSeparator.setVisibility(View.VISIBLE);
+                    } else {
+                        vSeparator.setVisibility(View.GONE);
+                    }
                 }
                 flBubble.setOnClickListener(v -> chatListener.onOutsideClicked(item));
             }
@@ -2371,6 +2409,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         private TextView tvMessageStatus;
         private View vQuoteBackground;
         private ImageView ivStarMessage;
+        private ImageView ivPinMessage;
 
         UnsupportedVH(ViewGroup parent, int itemLayoutId, int bubbleType) {
             super(parent, itemLayoutId);
@@ -2387,6 +2426,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             tvAvatarLabel = itemView.findViewById(R.id.tv_avatar_label);
             tvUserName = itemView.findViewById(R.id.tv_user_name);
             ivStarMessage = itemView.findViewById(R.id.iv_star_message);
+            ivPinMessage = itemView.findViewById(R.id.iv_pin);
         }
 
         @Override
@@ -2405,6 +2445,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
             markMessageAsRead(item, myUserModel);
             setStarredIcon(item.getMessageID(), ivStarMessage);
+            setPinnedIcon(item.getMessageID(), ivPinMessage);
 
             clContainer.setOnClickListener(v -> chatListener.onOutsideClicked(item));
         }
@@ -2704,7 +2745,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     if (null != civAvatar) {
                         civAvatar.setOnClickListener(v -> {
                             // Open group member profile
-                            if (roomType == RoomType.STARRED) {
+                            if (isBubbleTapOnly()) {
                                 chatListener.onOutsideClicked(item);
                             } else {
                                 Activity activity = (Activity) vh.itemView.getContext();
@@ -2752,7 +2793,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                         }
                         civAvatar.setOnClickListener(v -> {
                             // Open group member profile
-                            if (roomType == RoomType.STARRED) {
+                            if (isBubbleTapOnly()) {
                                 chatListener.onOutsideClicked(item);
                             } else {
                                 Activity activity = (Activity) vh.itemView.getContext();
@@ -2832,7 +2873,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 if (null != civAvatar) {
                     civAvatar.setOnClickListener(v -> {
                         // Open group member profile
-                        if (roomType == RoomType.STARRED) {
+                        if (isBubbleTapOnly()) {
                             chatListener.onOutsideClicked(item);
                         } else {
                             Activity activity = (Activity) vh.itemView.getContext();
@@ -3057,7 +3098,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                 rcivQuoteImage.setVisibility(View.GONE);
             }
             vQuoteBackground.setOnClickListener(v -> {
-                if (roomType == RoomType.STARRED) {
+                if (isBubbleTapOnly()) {
                     chatListener.onOutsideClicked(item);
                 } else {
                     chatListener.onMessageQuoteClicked(item);
@@ -3113,7 +3154,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     }
 
     private void resendMessage(TAPMessageModel item) {
-        if (roomType == RoomType.STARRED) {
+        if (isBubbleTapOnly()) {
             chatListener.onOutsideClicked(item);
         } else {
             removeMessage(item);
@@ -3417,6 +3458,14 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
         }
     }
 
+    private void setPinnedIcon(String id, ImageView imageView) {
+        if (pinnedMessageIds.contains(id) || roomType == RoomType.PINNED) {
+            imageView.setVisibility(View.VISIBLE);
+        } else {
+            imageView.setVisibility(View.GONE);
+        }
+    }
+
     private void setEditedMessage(boolean isEdited, TextView shownTextView, TextView hiddenTextView, ImageView hiddenImage) {
         if (isEdited) {
             shownTextView.setVisibility(View.VISIBLE);
@@ -3432,6 +3481,12 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     public void setStarredMessageIds(List<String> starredMessageIds) {
         this.starredMessageIds.clear();
         this.starredMessageIds.addAll(starredMessageIds);
+    }
+
+    // update list when context use pin message feature
+    public void setPinnedMessageIds(List<String> pinnedMessageIds) {
+        this.pinnedMessageIds.clear();
+        this.pinnedMessageIds.addAll(pinnedMessageIds);
     }
 
 
@@ -3631,7 +3686,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     private void setOriginalMessageButton(TAPMessageModel message, View button) {
         if (button != null) {
-            if (vm.isSelectState() || !TAPUtils.isSavedMessagesRoom(message.getRoom().getRoomID(), instanceKey) || roomType == RoomType.STARRED) {
+            if (vm.isSelectState() || !TAPUtils.isSavedMessagesRoom(message.getRoom().getRoomID(), instanceKey) || isBubbleTapOnly()) {
                 button.setVisibility(View.GONE);
             } else {
                 button.setOnClickListener(view -> chatListener.onArrowButtonClicked(message));
@@ -3642,5 +3697,9 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
 
     public String getLastLocalId() {
         return lastLocalId;
+    }
+
+    private boolean isBubbleTapOnly() {
+        return roomType == RoomType.STARRED || roomType == RoomType.PINNED;
     }
 }

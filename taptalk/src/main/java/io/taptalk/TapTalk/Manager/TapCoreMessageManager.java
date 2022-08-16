@@ -18,11 +18,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent.DownloadedFile;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_PRODUCT_SIZE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.ITEMS;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
-import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteAction.REPLY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
@@ -72,10 +68,10 @@ import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapCoreMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreUpdateMessageStatusListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
-import io.taptalk.TapTalk.Model.RequestModel.TapGetStarredMessagesRequest;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -1505,6 +1501,148 @@ public class TapCoreMessageManager {
             public void onSuccess(TapStarMessageResponse response) {
                 super.onSuccess(response);
                 listener.onSuccess(new ArrayList<>(response.getStarredMessageIDs()));
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+
+    public void getPinnedMessages(String roomId, int pageNumber, int numberOfItems, TapCoreGetOlderMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getPinnedMessages(roomId, pageNumber, numberOfItems, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TAPGetMessageListByRoomResponse response) {
+                super.onSuccess(response);
+                if (listener != null) {
+                    List<TAPMessageModel> pinnedMessageList = new ArrayList<>();
+                    for (HashMap<String, Object> messageMap : response.getMessages()) {
+                        try {
+                            TAPMessageModel message = TAPEncryptorManager.getInstance().decryptMessage(messageMap);
+                            pinnedMessageList.add(message);
+
+                        } catch (Exception e) {
+                            listener.onError(ERROR_CODE_OTHERS, e.getMessage());
+                        }
+                    }
+                    listener.onSuccess(pinnedMessageList, response.getHasMore());
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void pinMessage(String roomID, String messageID) {
+        pinMessage(roomID, messageID, null);
+    }
+
+    public void pinMessage(String roomID, String messageID, TapCoreGetStringArrayListener listener) {
+        List<String> idList = new ArrayList<>();
+        idList.add(messageID);
+        pinMessage(roomID, idList, listener);
+    }
+
+    public void pinMessage(String roomID, List<String> messageIDs) {
+        pinMessage(roomID, messageIDs, null);
+    }
+
+    public void pinMessage(String roomID, List<String> messageIDs, TapCoreGetStringArrayListener listener) {
+        TAPDataManager.getInstance(instanceKey).pinMessages(roomID, messageIDs, new TAPDefaultDataView<>() {
+
+            @Override
+            public void onSuccess(TapPinMessageResponse response) {
+                super.onSuccess(response);
+                if (null != listener) {
+                    listener.onSuccess(new ArrayList<>(response.getMessageIDs()));
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void unpinMessage(String roomID, String messageID) {
+        unpinMessage(roomID, messageID, null);
+    }
+    public void unpinMessage(String roomID, String messageID, TapCoreGetStringArrayListener listener) {
+        List<String> idList = new ArrayList<>();
+        idList.add(messageID);
+        unpinMessage(roomID, idList, listener);
+    }
+
+    public void unpinMessage(String roomID, List<String> messageIDs) {
+        unpinMessage(roomID, messageIDs, null);
+    }
+
+    public void unpinMessage(String roomID, List<String> messageIDs, TapCoreGetStringArrayListener listener) {
+        TAPDataManager.getInstance(instanceKey).unPinMessages(roomID, messageIDs, new TAPDefaultDataView<>() {
+
+            @Override
+            public void onSuccess(TapPinMessageResponse response) {
+                super.onSuccess(response);
+                if (null != listener) {
+                    listener.onSuccess(new ArrayList<>(response.getMessageIDs()));
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void getPinnedMessageIDs(String roomId, TapCoreGetStringArrayListener listener) {
+        TAPDataManager.getInstance(instanceKey).getPinnedMessageIds(roomId, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapPinMessageResponse response) {
+                super.onSuccess(response);
+                listener.onSuccess(new ArrayList<>(response.getMessageIDs()));
             }
 
             @Override

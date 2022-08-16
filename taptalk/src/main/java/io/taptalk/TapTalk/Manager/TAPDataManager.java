@@ -17,6 +17,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_CONTACT_LIST_UPDA
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_IS_ROOM_LIST_SETUP_FINISHED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_UNREAD_ROOM_LIST;
@@ -95,6 +96,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPCountryListItem;
@@ -430,6 +432,26 @@ public class TAPDataManager {
         removePreference(K_LAST_UPDATED);
     }
 
+    /**
+     * NEWEST PINNED MESSAGE
+     */
+
+    public void saveNewestPinnedMessage(String roomID, TAPMessageModel message) {
+        HashMap<String, TAPMessageModel> newestPinnedMessages = Hawk.get(instanceKey + K_PINNED_MESSAGE, null);
+        if (newestPinnedMessages == null) {
+            newestPinnedMessages = new LinkedHashMap<>();
+        }
+        newestPinnedMessages.put(roomID, message);
+        Hawk.put(instanceKey + K_PINNED_MESSAGE, newestPinnedMessages);
+
+    }
+
+    public TAPMessageModel getNewestPinnedMessage(String roomID) {
+        HashMap<String, TAPMessageModel> newestPinnedMessages = Hawk.get(instanceKey + K_PINNED_MESSAGE, null);
+        if (newestPinnedMessages != null) {
+            return newestPinnedMessages.get(roomID);
+        } else return null;
+    }
     /**
      * USER LAST ACTIVITY
      */
@@ -1456,5 +1478,21 @@ public class TAPDataManager {
 
     public void verifyOtpDeleteAccount(long otpID, String otpKey, String otpCode, String reason, TAPDefaultDataView<TAPCommonResponse> view) {
         TAPApiManager.getInstance(instanceKey).verifyOtpDeleteAccount(otpID, otpKey, otpCode, reason, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getPinnedMessages(String roomId, int pageNumber, int pageSize, TAPDefaultDataView<TAPGetMessageListByRoomResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getPinnedMessages(roomId, pageNumber, pageSize, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getPinnedMessageIds(String roomId, TAPDefaultDataView<TapPinMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getPinnedMessageIds(roomId, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void pinMessages(String roomId, List<String> messageIds, TAPDefaultDataView<TapPinMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).pinMessages(roomId, messageIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unPinMessages(String roomId, List<String> messageIds, TAPDefaultDataView<TapPinMessageResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unpinMessages(roomId, messageIds, new TAPDefaultSubscriber<>(view));
     }
 }

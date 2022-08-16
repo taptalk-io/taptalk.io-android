@@ -73,6 +73,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.FORWARD_ME
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_GROUP_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_MEMBER_PROFILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PERSONAL_PROFILE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_PINNED_MESSAGES;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.PICK_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.SEND_IMAGE_FROM_CAMERA;
@@ -83,8 +84,10 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Sorting.ASCENDING;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.DELETE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.LEAVE_ROOM;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.PIN_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_ADD_PARTICIPANT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.ROOM_REMOVE_PARTICIPANT;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UNPIN_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.SystemMessageAction.UPDATE_USER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.TYPING_EMIT_DELAY;
@@ -142,6 +145,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -174,12 +178,14 @@ import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -200,6 +206,7 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TAPVerticalDecoration;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.TapTalkDialog;
+import io.taptalk.TapTalk.Helper.TapVerticalIndicator;
 import io.taptalk.TapTalk.Helper.audiorecorder.TapAudioManager;
 import io.taptalk.TapTalk.Interface.TapAudioListener;
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface;
@@ -208,6 +215,7 @@ import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Listener.TapListener;
@@ -343,6 +351,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
     private RequestManager glide;
     private TAPSocketListener socketListener;
 
+    // Pinned Messages
+    private ConstraintLayout clPinnedMessage;
+    private TapVerticalIndicator clPinnedIndicator;
+    private TAPRoundedCornerImageView rcivPinnedImage;
+    private TextView tvPinnedLabel;
+    private TextView tvPinnedMessage;
+    private ImageButton ibPinnedMessages;
+
     // Multiple forward
     private ConstraintLayout clForward;
     private TextView tvForwardCount;
@@ -362,6 +378,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
     private STATE state = STATE.WORKING;
     private RECORDING_STATE recordingState = RECORDING_STATE.DEFAULT;
+
+    // Star and Pin Messages
+    private boolean isStarredIdsLoaded = true;
+    private boolean isPinnedIdsLoaded = true;
+    private boolean isLoadPinnedMessages = true;
+    private boolean hasLoadMore = false;
+    private final static int PAGE_SIZE = 50;
+    private int pageNumber = 1;
 
     /**
      * =========================================================================================== *
@@ -451,6 +475,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         checkForwardLayout(vm.getQuotedMessage(), vm.getForwardedMessages(), vm.getQuoteAction());
 
         getStarredMessageIds();
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled()) {
+            getPinnedMessageIds();
+            getPinnedMessages("");
+        }
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
             callApiGetUserByUserID();
         } else {
@@ -464,13 +492,101 @@ public class TapUIChatActivity extends TAPBaseActivity {
     }
 
     private void getStarredMessageIds() {
+        isStarredIdsLoaded = false;
         TapCoreMessageManager.getInstance(instanceKey).getStarredMessageIds(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
             @Override
             public void onSuccess(@NonNull ArrayList<String> arrayList) {
                 super.onSuccess(arrayList);
+                isStarredIdsLoaded = true;
                 vm.setStarredMessageIds(arrayList);
                 messageAdapter.setStarredMessageIds(arrayList);
-                messageAdapter.notifyDataSetChanged();
+                if (isPinnedIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
+                super.onError(errorCode, errorMessage);
+                isStarredIdsLoaded = true;
+                if (isPinnedIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    private void getPinnedMessageIds() {
+        isPinnedIdsLoaded = false;
+        TapCoreMessageManager.getInstance(instanceKey).getPinnedMessageIDs(vm.getRoom().getRoomID(), new TapCoreGetStringArrayListener() {
+            @Override
+            public void onSuccess(@NonNull ArrayList<String> arrayList) {
+                super.onSuccess(arrayList);
+                isPinnedIdsLoaded = true;
+                vm.setPinnedMessageIds(arrayList);
+                messageAdapter.setPinnedMessageIds(arrayList);
+                clPinnedIndicator.setSize(vm.getPinnedMessageIds().size());
+                if (isStarredIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(@Nullable String errorCode, @Nullable String errorMessage) {
+                super.onError(errorCode, errorMessage);
+                isPinnedIdsLoaded = true;
+                if (isStarredIdsLoaded) {
+                    messageAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+    }
+
+    private void getPinnedMessages(String messageId) {
+        TapCoreMessageManager.getInstance(instanceKey).getPinnedMessages(vm.getRoom().getRoomID(), pageNumber, PAGE_SIZE, new TapCoreGetOlderMessageListener() {
+            @Override
+            public void onSuccess(List<TAPMessageModel> messages, Boolean hasMoreData) {
+                super.onSuccess(messages, hasMoreData);
+                TAPMessageModel newestPinnedMessage = null;
+                TAPMessageModel shownMessage = null;
+                if (pageNumber == 1) {
+                    if (!messages.isEmpty()) {
+                        newestPinnedMessage = messages.get(0);
+                        vm.setPinnedMessages(messages);
+                        shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
+                    } else {
+                        vm.clearPinnedMessages();
+                    }
+                    TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), newestPinnedMessage);
+                } else {
+                    if (!messages.isEmpty()) {
+                        for (int messageIndex = 0; messageIndex < messages.size(); messageIndex++)  {
+                            if (!vm.getPinnedMessages().contains(messages.get(messageIndex))) {
+                                vm.addPinnedMessage(messages.get(messageIndex));
+                            }
+                        }
+                        if (!messageId.isEmpty()) {
+                            runOnUiThread(() -> {
+                                for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
+                                    if (vm.getPinnedMessages().get(index).getMessageID() != null && vm.getPinnedMessages().get(index).getMessageID().equals(messageId)) {
+                                        vm.addPinnedMessageId(index, messageId);
+                                        messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                                            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(vm.getPinnedMessages().get(index).getLocalID())));
+                                        break;
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
+                }
+                hasLoadMore = hasMoreData;
+                if (hasLoadMore) {
+                    pageNumber++;
+                }
+                isLoadPinnedMessages = false;
+                setPinnedMessage(shownMessage);
             }
         });
     }
@@ -677,6 +793,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         }
                     }
                     break;
+                case OPEN_PINNED_MESSAGES:
+                    if (intent != null) {
+                        TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
+                        if (message != null) {
+                            scrollToMessage(message.getLocalID());
+                        }
+                        if (intent.getBooleanExtra(IS_NEED_REFRESH, false)) {
+                            pageNumber = 1;
+                            getPinnedMessages("");
+                        }
+                    }
                 case OPEN_PERSONAL_PROFILE:
                     if (intent != null) {
                         TAPMessageModel message = intent.getParcelableExtra(MESSAGE);
@@ -831,6 +958,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
         tvForwardCount = findViewById(R.id.tv_forward_count);
         ivForward = findViewById(R.id.iv_forward);
         cvEmptySavedMessages = findViewById(R.id.cv_empty_saved_message);
+        clPinnedMessage = findViewById(R.id.cl_pinned_message);
+        clPinnedIndicator = findViewById(R.id.cl_pinned_message_indicator);
+        rcivPinnedImage = findViewById(R.id.rciv_pinned_image);
+        tvPinnedLabel = findViewById(R.id.tv_pinned_label);
+        tvPinnedMessage = findViewById(R.id.tv_pinned_message);
+        ibPinnedMessages = findViewById(R.id.ib_pin_messages);
     }
 
     private boolean initViewModel() {
@@ -1083,6 +1216,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
         flLoading.setOnClickListener(v -> {
         });
         ivForward.setOnClickListener(v -> forwardMessages());
+        ibPinnedMessages.setOnClickListener(v -> {
+            new TapPinnedMessagesActivity().start(this, instanceKey, vm.getRoom());
+        });
+        clPinnedMessage.setOnClickListener(v -> {
+            if (!isLoadPinnedMessages) {
+                pinnedMessageLayoutOnClick();
+            }
+        });
 
         if (TapUI.getInstance(instanceKey).isSendVoiceNoteMenuEnabled()) {
             ivVoiceNote.setOnClickListener(v -> {
@@ -1106,6 +1247,17 @@ public class TapUIChatActivity extends TAPBaseActivity {
 //        if (null == vm.getRoom().getGroupParticipants()) {
 //            showChatAsHistory(getString(R.string.tap_not_a_participant));
 //        }
+
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled()) {
+            TAPMessageModel newestMessage = TAPDataManager.getInstance(instanceKey).getNewestPinnedMessage(vm.getRoom().getRoomID());
+            if (newestMessage != null) {
+                vm.addPinnedMessage(newestMessage);
+                vm.addPinnedMessageId(newestMessage.getMessageID());
+                setPinnedMessage(TAPDataManager.getInstance(instanceKey).getNewestPinnedMessage(vm.getRoom().getRoomID()));
+            } else {
+                isLoadPinnedMessages = false;
+            }
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             llButtonDeleteChat.setBackground(getDrawable(R.drawable.tap_bg_button_destructive_ripple));
@@ -1210,11 +1362,67 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onUpdateMessageInActiveRoom(TAPMessageModel message) {
+            if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled()) {
+                for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
+                    String id = vm.getPinnedMessages().get(index).getMessageID();
+                    if (id != null && id.equals(message.getMessageID())) {
+                        if (message.getDeleted() != null && message.getDeleted() > 0) {
+                            vm.removePinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIds().indexOf(message.getMessageID())));
+                            vm.removePinnedMessageId(message.getMessageID());
+                            if (vm.getPinnedMessages().isEmpty()) {
+                                setPinnedMessage(null);
+                            } else {
+                                if (vm.getPinnedMessageIndex() < vm.getPinnedMessages().size()) {
+                                    if (vm.getPinnedMessageIndex() >= vm.getPinnedMessageIds().size()) {
+                                        vm.setPinnedMessageIndex(0);
+                                        TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), vm.getPinnedMessages().get(0));
+                                        runOnUiThread(() -> clPinnedIndicator.select(0));
+                                    }
+                                    setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                                } else if (vm.getPinnedMessageIndex() < vm.getPinnedMessages().size()) {
+                                    setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                                } else {
+                                    getPinnedMessages("");
+                                }
+                            }
+                        } else {
+                            vm.replacePinnedMessage(index, message);
+                            if (index == vm.getPinnedMessageIndex()) {
+                                setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                                if (index == 0) {
+                                    TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), message);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
             updateMessageFromSocket(message);
         }
 
         @Override
         public void onDeleteMessageInActiveRoom(TAPMessageModel message) {
+            if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled()) {
+                vm.removePinnedMessage(message);
+                vm.removePinnedMessageId(message.getMessageID());
+                if (vm.getPinnedMessages().isEmpty()) {
+                    setPinnedMessage(null);
+                } else {
+                    if (vm.getPinnedMessageIndex() < vm.getPinnedMessages().size()) {
+                        if (vm.getPinnedMessageIndex() >= vm.getPinnedMessageIds().size()) {
+                            vm.setPinnedMessageIndex(0);
+                            TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), vm.getPinnedMessages().get(0));
+                            runOnUiThread(() -> clPinnedIndicator.select(0));
+                        }
+                        setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                    } else {
+                        getPinnedMessages("");
+                    }
+                }
+                messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                runOnUiThread(() -> clPinnedIndicator.setSize(vm.getPinnedMessageIds().size()));
+            }
             updateMessageFromSocket(message);
         }
 
@@ -1977,6 +2185,72 @@ public class TapUIChatActivity extends TAPBaseActivity {
         }
     }
 
+    private void pinnedMessageLayoutOnClick() {
+        scrollToMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()).getLocalID());
+        vm.increasePinnedMessageIndex(1);
+        clPinnedIndicator.select(vm.getPinnedMessageIndex());
+        setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+        int indexLimit = PAGE_SIZE * (pageNumber - 1) - PAGE_SIZE / 2;
+        if (vm.getPinnedMessageIndex() >= indexLimit && hasLoadMore && vm.getPinnedMessages().size() <= PAGE_SIZE * pageNumber) {
+            isLoadPinnedMessages = true;
+            getPinnedMessages("");
+        }
+    }
+
+    private void setPinnedMessage(TAPMessageModel message) {
+        runOnUiThread(() ->{
+            if (message == null) {
+                vm.setPinnedMessageIndex(0);
+                clPinnedMessage.setVisibility(View.GONE);
+            } else {
+                if (clPinnedMessage.getVisibility() == View.GONE) {
+                    clPinnedMessage.setVisibility(View.VISIBLE);
+                }
+                int number = vm.getPinnedMessageIds().size() - vm.getPinnedMessageIndex();
+                if (vm.getPinnedMessageIndex() == 0) {
+                    tvPinnedLabel.setText(getString(R.string.tap_pinned_message));
+                } else {
+                    tvPinnedLabel.setText(String.format(Locale.getDefault(), "%s #%d", getString(R.string.tap_pinned_message), number));
+                }
+                tvPinnedMessage.setText(message.getBody());
+                if (message.getData() != null) {
+                    Drawable drawable = null;
+                    String fileID = (String) message.getData().get(FILE_ID);
+                    if (null != fileID && !fileID.isEmpty()) {
+                        drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(fileID);
+                    }
+                    if (null == drawable) {
+                        String fileUrl = (String) message.getData().get(FILE_URL);
+                        if (null != fileUrl && !fileUrl.isEmpty()) {
+                            drawable = TAPCacheManager.getInstance(this).getBitmapDrawable(TAPUtils.removeNonAlphaNumeric(fileUrl).toLowerCase());
+                        }
+                    }
+                    if (null != drawable) {
+                        rcivPinnedImage.setImageDrawable(drawable);
+                        rcivPinnedImage.setVisibility(View.VISIBLE);
+                    } else {
+                        if (message.getData().get(THUMBNAIL) != null) {
+                            // Show small thumbnail
+                            Drawable thumbnail = new BitmapDrawable(
+                                    getResources(),
+                                    TAPFileUtils.decodeBase64((String) (message.getData().get(THUMBNAIL))));
+                            if (thumbnail.getIntrinsicHeight() <= 0) {
+                                // Set placeholder image if thumbnail fails to load
+                                thumbnail = ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_grey_e4);
+                            }
+                            rcivPinnedImage.setImageDrawable(thumbnail);
+                            rcivPinnedImage.setVisibility(View.VISIBLE);
+                        } else {
+                            rcivPinnedImage.setVisibility(View.GONE);
+                        }
+                    }
+                } else {
+                    rcivPinnedImage.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
     private void scrollToBottom() {
         ivToBottom.setVisibility(View.GONE);
         rvMessageList.scrollToPosition(0);
@@ -2395,7 +2669,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
 
         @Override
         public void onForwardSelected(TAPMessageModel message) {
-            // TODO: 20/05/22 handle select state here MU
             if (vm.getMediaPlayer() != null && vm.getMediaPlayer().isPlaying()) {
                 pauseVoiceNote();
             }
@@ -2580,6 +2853,19 @@ public class TapUIChatActivity extends TAPBaseActivity {
         public void onDeleteMessage(String roomID, TAPMessageModel message) {
             super.onDeleteMessage(roomID, message);
             isLastMessageNeedRefresh = true;
+        }
+
+        @Override
+        public void onMessagePinned(TAPMessageModel message) {
+            super.onMessagePinned(message);
+            String messageId = message.getMessageID();
+            if (vm.getPinnedMessageIds().contains(messageId)) {
+                //unpin
+                TapCoreMessageManager.getInstance(instanceKey).unpinMessage(message.getRoom().getRoomID(), messageId);
+            } else {
+                //pin
+                TapCoreMessageManager.getInstance(instanceKey).pinMessage(message.getRoom().getRoomID(), messageId);
+            }
         }
     };
 
@@ -2937,6 +3223,130 @@ public class TapUIChatActivity extends TAPBaseActivity {
             //TAPChatManager.getInstance(instanceKey).deleteMessageFromIncomingMessages(message.getLocalID());
             //showRoomIsUnavailableState();
             showChatAsHistory(getString(R.string.tap_group_unavailable));
+        } else if (PIN_MESSAGE.equals(message.getAction())) {
+            if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled() && message.getData() != null) {
+                String messageId = (String) message.getData().get("messageID");
+                String localId = (String) message.getData().get("localID");
+                HashMap<String, Object> data = new LinkedHashMap<>();
+                String encryptedData = (String) message.getData().get("data");
+                if (encryptedData != null && !encryptedData.isEmpty()) {
+                    data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(encryptedData, localId));
+                }
+                String body = "";
+                String encryptedBody = (String) message.getData().get("body");
+                if (encryptedBody != null) {
+                    body = TAPEncryptorManager.getInstance().decrypt(encryptedBody, localId);
+                }
+                BigInteger createdTimeInteger = (BigInteger) message.getData().get("createdTime");
+                Long createdTime = 0L;
+                if (createdTimeInteger != null) {
+                    createdTime = createdTimeInteger.longValue();
+                }
+                if (createdTime > 0L) {
+                    TAPMessageModel pinnedMessage = new TAPMessageModel();
+                    pinnedMessage.setMessageID(messageId);
+                    if (localId != null) {
+                        pinnedMessage.setLocalID(localId);
+                    }
+                    if (data != null && !data.isEmpty()) {
+                        pinnedMessage.setData(data);
+                    }
+                    pinnedMessage.setBody(body);
+                    pinnedMessage.setCreated(createdTime);
+
+                    if (vm.getPinnedMessages().isEmpty()) {
+                        vm.addPinnedMessageId(messageId);
+                        messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                        vm.addPinnedMessage(pinnedMessage);
+                        vm.setPinnedMessageIndex(vm.getPinnedMessages().size()-1);
+                        runOnUiThread(() -> {
+                            clPinnedIndicator.setSize(vm.getPinnedMessageIds().size());
+                            clPinnedIndicator.select(vm.getPinnedMessageIndex());
+                            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId)));
+                            });
+                        setPinnedMessage(pinnedMessage);
+                    } else {
+                        if (vm.getPinnedMessages().get(vm.getPinnedMessages().size() - 1).getCreated() < createdTime) {
+                            for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
+                                if (createdTime > vm.getPinnedMessages().get(index).getCreated()) {
+                                    if (!vm.getPinnedMessageIds().contains(messageId)) {
+                                        vm.addPinnedMessageId(index, messageId);
+                                        messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                                        runOnUiThread(() -> clPinnedIndicator.setSize(vm.getPinnedMessageIds().size()));
+                                    }
+                                    if (!vm.getPinnedMessages().contains(pinnedMessage)) {
+                                        vm.addPinnedMessage(index, pinnedMessage);
+                                    }
+                                    if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID()) || vm.getPinnedMessageIds().get(0).equals(messageId)) {
+                                            vm.setPinnedMessageIndex(index);
+                                            runOnUiThread(() -> clPinnedIndicator.select(vm.getPinnedMessageIndex()));
+                                            setPinnedMessage(pinnedMessage);
+                                    }
+                                    break;
+                                }
+                            }
+                        } else if (vm.getPinnedMessages().size() == vm.getPinnedMessageIds().size()) {
+                            if (!vm.getPinnedMessageIds().contains(messageId)) {
+                                vm.addPinnedMessageId(messageId);
+                                messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                                runOnUiThread(() -> clPinnedIndicator.setSize(vm.getPinnedMessageIds().size()));
+                            }
+                            if (!vm.getPinnedMessages().contains(pinnedMessage)) {
+                                vm.addPinnedMessage(pinnedMessage);
+                            }
+                            if (message.getUser().getUserID().equals(TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID())) {
+                                vm.setPinnedMessageIndex(vm.getPinnedMessages().size() - 1);
+                                runOnUiThread(() -> clPinnedIndicator.select(vm.getPinnedMessageIndex()));
+                                setPinnedMessage(pinnedMessage);
+                            }
+                        } else {
+                            getPinnedMessages(messageId);
+                        }
+                    }
+                }
+                if (vm.getMessagePointer().containsKey(localId)) {
+                    runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId))));
+                }
+            }
+        } else if (UNPIN_MESSAGE.equals(message.getAction())) {
+            if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled() && message.getData() != null) {
+                String messageId = (String) message.getData().get("messageID");
+                String localId = (String) message.getData().get("localID");
+                vm.removePinnedMessageId(messageId);
+                messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                runOnUiThread(() -> clPinnedIndicator.setSize(vm.getPinnedMessageIds().size()));
+                for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
+                    String id = vm.getPinnedMessages().get(index).getMessageID();
+                    if (id != null && id.equals(messageId)) {
+                        vm.removePinnedMessage(vm.getPinnedMessages().get(index));
+                        if (vm.getPinnedMessageIndex() == index) {
+                            if (vm.getPinnedMessages().isEmpty()) {
+                                setPinnedMessage(null);
+                            } else {
+                                setPinnedMessage(vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                            }
+                        }
+                        break;
+                    }
+                }
+                if (vm.getPinnedMessageIds().isEmpty()) {
+                    setPinnedMessage(null);
+                    TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), null);
+                } else {
+                    if (vm.getPinnedMessageIndex() >= vm.getPinnedMessageIds().size()) {
+                        vm.setPinnedMessageIndex(0);
+                        TAPDataManager.getInstance(instanceKey).saveNewestPinnedMessage(vm.getRoom().getRoomID(), vm.getPinnedMessages().get(vm.getPinnedMessageIndex()));
+                        runOnUiThread(() -> clPinnedIndicator.select(vm.getPinnedMessageIndex()));
+                    } else {
+                        if (vm.getPinnedMessageIndex() >= vm.getPinnedMessages().size()) {
+                            getPinnedMessages(messageId);
+                        }
+                    }
+                }
+                if (vm.getMessagePointer().containsKey(localId)) {
+                    runOnUiThread(() -> messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(localId))));
+                }
+            }
         } else {
             updateRoomDetailFromSystemMessage(message);
         }
@@ -3100,13 +3510,15 @@ public class TapUIChatActivity extends TAPBaseActivity {
                         // Scroll recycler to bottom if recycler is already on bottom
                         vm.setScrollFromKeyboard(true);
                         scrollToBottom();
-                    } else if (ownMessage) {
+                    } else if (ownMessage && !(newMessage.getAction().equals(PIN_MESSAGE) || newMessage.getAction().equals(UNPIN_MESSAGE))) {
                         // Scroll recycler to bottom if own message
                         scrollToBottom();
                     } else {
                         // Message from other people is received when recycler is scrolled up
-                        vm.addUnreadMessage(newMessage);
-                        updateUnreadCount();
+                        if (newMessage.getAction() == null || !newMessage.getAction().equals(UNPIN_MESSAGE)) {
+                            vm.addUnreadMessage(newMessage);
+                            updateUnreadCount();
+                        }
                         updateMentionCount();
                     }
                 }
@@ -4051,7 +4463,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     //disable long press in deleted user room
                     if (null != intent.getParcelableExtra(MESSAGE) && intent.getParcelableExtra(MESSAGE) instanceof TAPMessageModel) {
                         if (TYPE_PERSONAL != vm.getRoom().getType() || (null != vm.getOtherUserModel() && (null == vm.getOtherUserModel().getDeleted() || vm.getOtherUserModel().getDeleted() <= 0L))) {
-                            TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds());
+                            TAPLongPressActionBottomSheet chatBubbleBottomSheet = TAPLongPressActionBottomSheet.Companion.newInstance(instanceKey, CHAT_BUBBLE_TYPE, (TAPMessageModel) intent.getParcelableExtra(MESSAGE), attachmentListener, vm.getStarredMessageIds(), vm.getPinnedMessageIds());
                             chatBubbleBottomSheet.show(getSupportFragmentManager(), "");
                             TAPUtils.dismissKeyboard(TapUIChatActivity.this);
                         }

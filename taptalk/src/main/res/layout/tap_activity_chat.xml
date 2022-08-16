@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/tapDefaultNavBarBackgroundColor"
-        android:elevation="2dp"
+        android:elevation="3dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -190,13 +190,105 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_pinned_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:background="@color/tapDefaultNavBarBackgroundColor"
+        android:elevation="2dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+
+        <io.taptalk.TapTalk.Helper.TapVerticalIndicator
+            android:id="@+id/cl_pinned_message_indicator"
+            android:layout_width="9dp"
+            android:layout_height="0dp"
+            android:paddingStart="4dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="8dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
+            android:id="@+id/rciv_pinned_image"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cl_pinned_message_indicator"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/tap_img_chat_empty" />
+
+        <TextView
+            android:id="@+id/tv_pinned_label"
+            style="@style/tapClickableLabelStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="12sp"
+            android:text="@string/tap_pinned_message"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toTopOf="@id/tv_pinned_message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@id/rciv_pinned_image"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tv_pinned_message"
+            style="@style/tapActionSheetDefaultLabelStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="14sp"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ib_pin_messages"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@id/tv_pinned_label"
+            app:layout_constraintTop_toBottomOf="@id/tv_pinned_label"
+            app:layout_goneMarginBottom="0dp"
+            tools:text="In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit" />
+
+        <ImageButton
+            android:id="@+id/ib_pin_messages"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/tap_ic_pin_message_orange"
+            android:background="@color/tapTransparentWhite"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_contact_action"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="@color/tapDefaultNavBarBackgroundColor"
         android:elevation="1dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+        app:layout_constraintTop_toBottomOf="@id/cl_pinned_message">
 
         <TextView
             android:id="@+id/tv_button_block_contact"
