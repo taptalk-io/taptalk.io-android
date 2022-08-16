@@ -475,8 +475,10 @@ public class TapUIChatActivity extends TAPBaseActivity {
         checkForwardLayout(vm.getQuotedMessage(), vm.getForwardedMessages(), vm.getQuoteAction());
 
         getStarredMessageIds();
-        getPinnedMessageIds();
-        getPinnedMessages("");
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled()) {
+            getPinnedMessageIds();
+            getPinnedMessages("");
+        }
         if (null != vm.getRoom() && TYPE_PERSONAL == vm.getRoom().getType()) {
             callApiGetUserByUserID();
         } else {
