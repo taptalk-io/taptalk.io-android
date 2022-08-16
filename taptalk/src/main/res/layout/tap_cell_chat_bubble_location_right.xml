@@ -22,6 +22,17 @@
     <!--        app:layout_constraintHorizontal_chainStyle="packed"-->
     <!--        app:layout_constraintStart_toStartOf="parent" />-->
 
+    <ImageView
+        android:id="@+id/iv_bubble_highlight"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/tap_bg_chat_bubble_right_highlight"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/v_separator" />
+
     <View
         android:id="@+id/v_separator"
         android:layout_width="match_parent"
@@ -179,11 +190,24 @@
                 tools:text="Jalan Kyai Maja No. 25C, Gunung, Kebayoran Baru, RT.12/RW.2, Gunung, Kby. Baru, Kota Jakarta Selatan, DKI Jakarta 12120" />
 
             <ImageView
-                android:id="@+id/iv_star_message"
+                android:id="@+id/iv_pin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:layout_marginRight="6dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:src="@drawable/tap_ic_pin_white"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
+                app:layout_constraintEnd_toStartOf="@id/iv_star_message" />
+
+            <ImageView
+                android:id="@+id/iv_star_message"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:padding="2dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
                 android:src="@drawable/tap_ic_star_filled_white"
                 android:visibility="gone"
                 app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
@@ -212,9 +236,9 @@
                 android:layout_height="16dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginBottom="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintBottom_toBottomOf="@id/tv_message_timestamp"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:ignore="RtlSymmetry"
                 tools:src="@drawable/tap_ic_delivered_grey"
@@ -223,17 +247,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
-
-    <ImageView
-        android:id="@+id/iv_bubble_highlight"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:src="@drawable/tap_bg_chat_bubble_right_highlight"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/fl_bubble"
-        app:layout_constraintEnd_toEndOf="@id/fl_bubble"
-        app:layout_constraintStart_toStartOf="@id/fl_bubble"
-        app:layout_constraintTop_toTopOf="@id/fl_bubble" />
 
     <TextView
         android:id="@+id/tv_message_status"

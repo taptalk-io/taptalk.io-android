@@ -120,6 +120,7 @@ public class TapUI {
     private boolean isEditMessageMenuDisabled;
     private boolean isDeleteAccountButtonVisible;
     private boolean isSavedMessagesMenuDisabled;
+    private boolean isPinMessageMenuDisabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -1142,6 +1143,14 @@ public class TapUI {
             return;
         }
         isSavedMessagesMenuDisabled = !isEnabled;
+    }
+
+    public boolean isPinMessageMenuEnabled() {
+        return !isPinMessageMenuDisabled;
+    }
+
+    public void setPinMessageMenuEnabled(boolean isEnabled) {
+        isPinMessageMenuDisabled = !isEnabled;
     }
 
     /**
