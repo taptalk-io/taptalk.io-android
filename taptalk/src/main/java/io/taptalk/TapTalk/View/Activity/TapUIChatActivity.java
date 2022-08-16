@@ -579,12 +579,12 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     }
                     shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
                 }
-                setPinnedMessage(shownMessage);
                 hasLoadMore = hasMoreData;
                 if (hasLoadMore) {
                     pageNumber++;
                 }
                 isLoadPinnedMessages = false;
+                setPinnedMessage(shownMessage);
             }
         });
     }
@@ -1252,6 +1252,8 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 vm.addPinnedMessage(newestMessage);
                 vm.addPinnedMessageId(newestMessage.getMessageID());
                 setPinnedMessage(TAPDataManager.getInstance(instanceKey).getNewestPinnedMessage(vm.getRoom().getRoomID()));
+            } else {
+                isLoadPinnedMessages = false;
             }
         }
 
