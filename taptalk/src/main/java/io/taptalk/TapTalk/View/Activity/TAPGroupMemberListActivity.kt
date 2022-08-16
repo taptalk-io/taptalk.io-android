@@ -193,6 +193,8 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
 
                     if (groupViewModel?.groupData?.participants?.size ?: 0 >= TAPGroupManager.getInstance(instanceKey).getGroupMaxParticipants()) {
                         fl_add_members.visibility = View.GONE
+                    } else {
+                        fl_add_members.visibility = View.VISIBLE
                     }
                     groupViewModel?.isUpdateMember = true
                 }
@@ -208,6 +210,11 @@ class TAPGroupMemberListActivity : TAPBaseActivity(), View.OnClickListener {
                         // Set total member count
                         if (!adapter?.items?.contains(groupViewModel?.memberCountModel)!!) {
                             adapter?.addItem(groupViewModel?.memberCountModel)
+                        }
+                        if (groupViewModel?.groupData?.participants?.size ?: 0 >= TAPGroupManager.getInstance(instanceKey).getGroupMaxParticipants()) {
+                            fl_add_members.visibility = View.GONE
+                        } else {
+                            fl_add_members.visibility = View.VISIBLE
                         }
                         groupViewModel?.isUpdateMember = true
                     }
