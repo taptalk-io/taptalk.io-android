@@ -565,12 +565,16 @@ public class TapUIChatActivity extends TAPBaseActivity {
                             }
                         }
                         if (!messageId.isEmpty()) {
-                            for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
-                                if (vm.getPinnedMessages().get(index).getMessageID() != null && vm.getPinnedMessages().get(index).getMessageID().equals(messageId)) {
-                                    vm.addPinnedMessageId(index, messageId);
-                                    break;
+                            runOnUiThread(() -> {
+                                for (int index = 0; index < vm.getPinnedMessages().size(); index++) {
+                                    if (vm.getPinnedMessages().get(index).getMessageID() != null && vm.getPinnedMessages().get(index).getMessageID().equals(messageId)) {
+                                        vm.addPinnedMessageId(index, messageId);
+                                        messageAdapter.setPinnedMessageIds(vm.getPinnedMessageIds());
+                                            messageAdapter.notifyItemChanged(messageAdapter.getItems().indexOf(vm.getMessagePointer().get(vm.getPinnedMessages().get(index).getLocalID())));
+                                        break;
+                                    }
                                 }
-                            }
+                            });
                         }
                     }
                     shownMessage = vm.getPinnedMessages().get(vm.getPinnedMessageIndex());
