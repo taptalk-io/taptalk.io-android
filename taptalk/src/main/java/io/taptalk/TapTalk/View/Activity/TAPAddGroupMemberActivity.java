@@ -227,7 +227,7 @@ public class TAPAddGroupMemberActivity extends TAPBaseActivity {
                 TAPUtils.dismissKeyboard(TAPAddGroupMemberActivity.this);
                 new Handler().post(waitAnimationsToFinishRunnable);
                 if (!vm.getSelectedContactList().contains(contact)) {
-                    if (vm.getSelectedContactList().size() + vm.getInitialGroupSize() >= TAPGroupManager.Companion.getInstance(instanceKey).getGroupMaxParticipants()) {
+                    if (vm.getSelectedContactList().size() + vm.getInitialGroupSize() > TAPGroupManager.Companion.getInstance(instanceKey).getGroupMaxParticipants()) {
                         // TODO: 20 September 2018 CHANGE DIALOG LISTENER
                         // Member count exceeds limit
                         new TapTalkDialog.Builder(TAPAddGroupMemberActivity.this)
