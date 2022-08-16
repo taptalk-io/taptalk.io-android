@@ -226,8 +226,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 }
             }
         }
-        rv_shared_media.adapter = sharedMediaAdapter
-        rv_shared_media.layoutManager = sharedMediaGlm
 
         iv_button_back.setOnClickListener { onBackPressed() }
         fl_loading.setOnClickListener { }
@@ -543,6 +541,14 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         )
                         menuItems.add(menuStarredMessages)
                     }
+                    val menuSharedMedia = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_SHARED_MEDIA,
+                        getString(R.string.tap_shared_media),
+                        R.drawable.tap_ic_attach_orange,
+                        R.color.tapIconChatProfileMenuSharedMedia,
+                        R.style.tapChatProfileMenuStarredLabelStyle
+                    )
+                    menuItems.add(menuSharedMedia)
                     // Add to contacts
                     if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
                             instanceKey
@@ -643,6 +649,14 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         )
                         menuItems.add(menuStarredMessages)
                     }
+                    val menuSharedMedia = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_SHARED_MEDIA,
+                        getString(R.string.tap_shared_media),
+                        R.drawable.tap_ic_attach_orange,
+                        R.color.tapIconChatProfileMenuSharedMedia,
+                        R.style.tapChatProfileMenuStarredLabelStyle
+                    )
+                    menuItems.add(menuSharedMedia)
                     if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
                         // Report group
                         val menuReport = TapChatProfileItemModel(
@@ -700,6 +714,14 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         )
                         menuItems.add(menuStarredMessages)
                     }
+                    val menuSharedMedia = TapChatProfileItemModel(
+                        ChatProfileMenuType.MENU_SHARED_MEDIA,
+                        getString(R.string.tap_shared_media),
+                        R.drawable.tap_ic_attach_orange,
+                        R.color.tapIconChatProfileMenuSharedMedia,
+                        R.style.tapChatProfileMenuStarredLabelStyle
+                    )
+                    menuItems.add(menuSharedMedia)
                     if (TapUI.getInstance(instanceKey).isReportButtonInChatProfileVisible) {
                         // Report group
                         val menuReport = TapChatProfileItemModel(
@@ -736,6 +758,14 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                     )
                     menuItems.add(menuStarredMessages)
                 }
+                val menuSharedMedia = TapChatProfileItemModel(
+                    ChatProfileMenuType.MENU_SHARED_MEDIA,
+                    getString(R.string.tap_shared_media),
+                    R.drawable.tap_ic_attach_orange,
+                    R.color.tapIconChatProfileMenuSharedMedia,
+                    R.style.tapChatProfileMenuStarredLabelStyle
+                )
+                menuItems.add(menuSharedMedia)
                 // Add to contacts
                 if (!TapUI.getInstance(instanceKey).isAddContactDisabled && TapUI.getInstance(
                         instanceKey
@@ -1413,8 +1443,8 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         // No shared media
                         vm!!.isFinishedLoadingSharedMedia = true
                         runOnUiThread {
-                            rv_shared_media.visibility = View.GONE
-                            rv_shared_media!!.post { hideSharedMediaLoading() }
+                            // TODO: 16/08/22 hide shared media and loading MU
+//                            rv_shared_media.visibility = View.GONE
                         }
                     } else {
                         // Has shared media
@@ -1426,7 +1456,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             vm!!.sharedMediaAdapterItems.add(vm!!.sharedMediaSectionTitle)
                             sharedMediaAdapter!!.setMediaThumbnailStartIndex(vm!!.sharedMediaAdapterItems.indexOf(vm!!.sharedMediaSectionTitle) + NEXT_VALUE)
                             runOnUiThread {
-                                rv_shared_media.visibility = View.VISIBLE
                                 if (MAX_ITEMS_PER_PAGE <= entities.size) {
                                     sharedMediaPagingScrollListener = OnScrollChangedListener {
                                         if (!vm!!.isFinishedLoadingSharedMedia && sharedMediaGlm!!.findLastVisibleItemPosition() > vm!!.sharedMedias.size - MAX_ITEMS_PER_PAGE / 2) {
@@ -1445,9 +1474,10 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                                             }
                                         }
                                     }
-                                    rv_shared_media!!.viewTreeObserver.addOnScrollChangedListener(
-                                        sharedMediaPagingScrollListener
-                                    )
+                                    // TODO: 16/08/22 add on scroll changed listener MU
+//                                    rv_shared_media!!.viewTreeObserver.addOnScrollChangedListener(
+//                                        sharedMediaPagingScrollListener
+//                                    )
                                 }
                             }
                         }
@@ -1456,9 +1486,10 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             // TODO: 10 May 2019 CALL API BEFORE?
                             vm!!.isFinishedLoadingSharedMedia = true
                             runOnUiThread {
-                                rv_shared_media!!.viewTreeObserver.removeOnScrollChangedListener(
-                                    sharedMediaPagingScrollListener
-                                )
+                                // TODO: 16/08/22 remove onscrollchangedlistener MU
+//                                rv_shared_media!!.viewTreeObserver.removeOnScrollChangedListener(
+//                                    sharedMediaPagingScrollListener
+//                                )
                             }
                         }
                         for (entity in entities) {
@@ -1470,12 +1501,9 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                             vm!!.sharedMedias[vm!!.sharedMedias.size - 1].created
                         vm!!.isLoadingSharedMedia = false
                         runOnUiThread {
-                            rv_shared_media!!.post {
-                                hideSharedMediaLoading()
-                                rv_shared_media!!.post {
-                                    sharedMediaAdapter!!.notifyItemRangeInserted(previousSize + NEXT_VALUE, entities.size)
-                                }
-                            }
+                            // TODO: 16/08/22 hide loading MU
+                            // TODO: 16/08/22 notify item inserted MU
+//                            sharedMediaAdapter!!.notifyItemRangeInserted(previousSize + NEXT_VALUE, entities.size)
                         }
                     }
                 }.start()

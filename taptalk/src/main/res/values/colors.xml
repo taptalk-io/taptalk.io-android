@@ -143,6 +143,7 @@
     <color name="tapIconChatProfileMenuSearchChat">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuClearChat">@color/tapColorDestructiveIcon</color>
     <color name="tapIconChatProfileMenuStarredMessages">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconChatProfileMenuSharedMedia">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupProfileMenuEditGroup">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupMemberProfileMenuAddToContacts">@color/tapColorPrimaryIcon</color>
