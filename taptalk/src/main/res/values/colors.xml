@@ -61,8 +61,8 @@
     <color name="tapLeftBubbleQuoteDecorationBackgroundColor">@color/tapColorPrimary</color>
     <color name="tapRightBubbleBackgroundColor">@color/tapDefaultRightBubbleBackgroundColor</color>
     <color name="tapLeftBubbleBackgroundColor">@color/tapDefaultLeftBubbleBackgroundColor</color>
-    <color name="tapRightBubbleHighlightBackgroundColor">#665eecff</color>
-    <color name="tapLeftBubbleHighlightBackgroundColor">#665eecff</color>
+    <color name="tapRightBubbleHighlightBackgroundColor">#FFF4B1</color>
+    <color name="tapLeftBubbleHighlightBackgroundColor">#FFF4B1</color>
     <color name="tapRightBubbleQuoteBackgroundColor">@color/tapDefaultRightBubbleDarkBackgroundColor</color>
     <color name="tapLeftBubbleQuoteBackgroundColor">@color/tapDefaultLeftBubbleDarkBackgroundColor</color>
     <color name="tapRightFileButtonBackgroundColor">@color/tapWhite</color>
@@ -172,6 +172,7 @@
     <color name="tapIconLongPressActionSendMessage">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressActionStarMessage">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressActionEditMessage">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconLongPressActionPinMessage">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachDocuments">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachCamera">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachGallery">@color/tapColorPrimaryIcon</color>
@@ -415,6 +416,7 @@
     <color name="tapOrangeish">#ff9049</color>
     <color name="tapOrangeYellow">#ff9f00</color>
     <color name="tapOrange20">#FFCB99</color>
+    <color name="tapOrange10">#FFF2E5</color>
     <color name="tapMango">#ff9833</color>
     <color name="tapLightOrange">#ffa145</color>
     <color name="tapLightOrangeTwo">#ffa045</color>

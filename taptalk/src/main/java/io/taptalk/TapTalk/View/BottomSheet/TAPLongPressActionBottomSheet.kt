@@ -44,6 +44,7 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
     private val onClickListener = View.OnClickListener { dismiss() }
     private var bottomSheetListener: TAPAttachmentListener? = null
     private var starredMessageIds: ArrayList<String> = arrayListOf()
+    private var pinnedMessageIds: ArrayList<String> = arrayListOf()
 
     constructor() : super()
 
@@ -64,12 +65,13 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
         this.linkifyResult = linkifyResult
     }
 
-    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener, starredMessageIds: ArrayList<String>) {
+    constructor(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener, starredMessageIds: ArrayList<String>, pinnedMessageIds: ArrayList<String>) {
         this.instanceKey = instanceKey
         this.longPressType = longPressType
         this.message = message
         this.bottomSheetListener = bottomSheetListener
         this.starredMessageIds = starredMessageIds
+        this.pinnedMessageIds = pinnedMessageIds
     }
 
     constructor(instanceKey: String, longPressType: LongPressType, bitmap: Bitmap, bottomSheetListener: TAPAttachmentListener) {
@@ -81,8 +83,8 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
 
     companion object {
         // Chat Bubble
-        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener, starredMessageIds: ArrayList<String>): TAPLongPressActionBottomSheet {
-            val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, message, bottomSheetListener, starredMessageIds)
+        fun newInstance(instanceKey: String, longPressType: LongPressType, message: TAPMessageModel, bottomSheetListener: TAPAttachmentListener, starredMessageIds: ArrayList<String>, pinnedMessageIds: ArrayList<String>): TAPLongPressActionBottomSheet {
+            val fragment = TAPLongPressActionBottomSheet(instanceKey, longPressType, message, bottomSheetListener, starredMessageIds, pinnedMessageIds)
             val args = Bundle()
             fragment.arguments = args
             return fragment
@@ -313,6 +315,19 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
         }
 
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+            // Pin
+            if (pinnedMessageIds.contains(messageModel.messageID)) {
+                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+                titleResIds.add(R.string.tap_unpin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+                titleResIds.add(R.string.tap_pin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            }
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
@@ -403,6 +418,19 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
         }
 
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+            // Pin
+            if (pinnedMessageIds.contains(messageModel.messageID)) {
+                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+                titleResIds.add(R.string.tap_unpin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+                titleResIds.add(R.string.tap_pin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            }
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
@@ -490,6 +518,19 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             ids.add(TAPAttachmentModel.LONG_PRESS_EDIT)
         }
 
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+            // Pin
+            if (pinnedMessageIds.contains(messageModel.messageID)) {
+                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+                titleResIds.add(R.string.tap_unpin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+                titleResIds.add(R.string.tap_pin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            }
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
@@ -555,6 +596,19 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
             }
         }
 
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+            // Pin
+            if (pinnedMessageIds.contains(messageModel.messageID)) {
+                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+                titleResIds.add(R.string.tap_unpin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+                titleResIds.add(R.string.tap_pin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            }
+        }
+
         if (!TapUI.getInstance(instanceKey).isDeleteMessageMenuDisabled &&
                 null != TAPChatManager.getInstance(instanceKey).activeUser &&
                 messageModel.user.userID == TAPChatManager.getInstance(instanceKey).activeUser.userID &&
@@ -605,6 +659,19 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 imageResIds.add(R.drawable.tap_ic_star_outline)
                 titleResIds.add(R.string.tap_star)
                 ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            }
+        }
+
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+            // Pin
+            if (pinnedMessageIds.contains(messageModel.messageID)) {
+                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+                titleResIds.add(R.string.tap_unpin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+                titleResIds.add(R.string.tap_pin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
 
@@ -666,6 +733,19 @@ class TAPLongPressActionBottomSheet : BottomSheetDialogFragment {
                 imageResIds.add(R.drawable.tap_ic_star_outline)
                 titleResIds.add(R.string.tap_star)
                 ids.add(TAPAttachmentModel.LONG_PRESS_STAR)
+            }
+        }
+
+        if (TapUI.getInstance(instanceKey).isPinMessageMenuEnabled) {
+            // Pin
+            if (pinnedMessageIds.contains(messageModel.messageID)) {
+                imageResIds.add(R.drawable.tap_ic_unpin_message_orange)
+                titleResIds.add(R.string.tap_unpin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
+            } else {
+                imageResIds.add(R.drawable.tap_ic_pin_message_orange)
+                titleResIds.add(R.string.tap_pin)
+                ids.add(TAPAttachmentModel.LONG_PRESS_PIN)
             }
         }
 
