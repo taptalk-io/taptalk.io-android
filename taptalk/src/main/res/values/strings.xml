@@ -435,5 +435,8 @@
     <string name="tap_pinned_message">Pinned Message</string>
     <string name="tap_pinned_messages">Pinned Messages</string>
     <string name="unpin_all_messages">Unpin All Messages</string>
+    <string name="tap_m_e_d_i_a">m e d i a</string>
+    <string name="tap_l_i_n_k_s">l i n k s</string>
+    <string name="tap_d_o_c_u_m_e_n_t_s">d o c u m e n t s</string>
 
 </resources>
