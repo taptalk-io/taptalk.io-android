@@ -50,6 +50,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="38dp"
         android:paddingStart="56dp"
@@ -57,30 +58,17 @@
         android:elevation="1dp"
         app:tabMode="scrollable"
         app:tabIndicatorFullWidth="false"
-        app:tabTextAppearance=""
         app:tabTextColor="@color/tapColorPrimary"
         app:tabIndicatorColor="@color/tapColorPrimary"
         android:background="@color/tapWhite"
-        app:layout_constraintTop_toBottomOf="@id/cl_action_bar">
+        app:layout_constraintTop_toBottomOf="@id/cl_action_bar" />
 
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/tap_m_e_d_i_a"/>
-
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/tap_l_i_n_k_s"/>
-
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/tap_d_o_c_u_m_e_n_t_s"/>
-
-    </com.google.android.material.tabs.TabLayout>
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/vp_shared_media"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tab_layout"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 
     <include layout="@layout/tap_layout_popup_loading_screen" />

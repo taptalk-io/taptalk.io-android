@@ -349,6 +349,8 @@
     <color name="tapMediaPreviewSendLabelButtonColor">@color/tapColorTextLight</color>
     <color name="tapMediaPreviewWarningTitleColor">@color/tapColorTextLight</color>
     <color name="tapMediaPreviewWarningBodyColor">@color/tapColorTextLight</color>
+    <color name="tapMediaLinkColor">@color/tapColorPrimary</color>
+    <color name="tapMediaDocumentInfoColor">@color/tapTransparentBlack1940</color>
 
     <color name="tapImageDetailSenderNameColor">@color/tapColorTextLight</color>
     <color name="tapImageDetailMessageStatusColor">@color/tapColorTextLight</color>
