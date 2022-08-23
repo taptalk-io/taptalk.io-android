@@ -83,6 +83,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
@@ -699,5 +700,11 @@ public class TAPApiManager {
     public void unpinMessages(String roomId, List<String> messageIds, Subscriber<TAPBaseResponse<TapPinMessageResponse>> subscriber) {
         TapMessageIdsRequest request = new TapMessageIdsRequest(roomId, messageIds);
         execute(homingPigeon.unpinMessages(request), subscriber);
+    }
+
+    public void getSharedMedia(String roomId, Long minCreated, Subscriber<TAPBaseResponse<TapGetSharedContentResponse>> subscriber) {
+        TAPGetMessageListByRoomAfterRequest request = new TAPGetMessageListByRoomAfterRequest(roomId, minCreated, null);
+        execute(homingPigeon.getSharedMedia(request), subscriber);
+
     }
 }

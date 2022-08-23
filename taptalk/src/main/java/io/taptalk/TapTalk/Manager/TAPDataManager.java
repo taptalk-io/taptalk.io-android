@@ -95,6 +95,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
@@ -1494,5 +1495,9 @@ public class TAPDataManager {
 
     public void unPinMessages(String roomId, List<String> messageIds, TAPDefaultDataView<TapPinMessageResponse> view) {
         TAPApiManager.getInstance(instanceKey).unpinMessages(roomId, messageIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getSharedMedia(String roomId, Long minCreated, TAPDefaultDataView<TapGetSharedContentResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getSharedMedia(roomId, minCreated, new TAPDefaultSubscriber<>(view));
     }
 }
