@@ -50,6 +50,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_STICKER = 1007;
         public static final int TYPE_VOICE = 1008;
         public static final int TYPE_AUDIO = 1009;
+        public static final int TYPE_LINK = 1010;
 
         public static final int TYPE_PRODUCT = 2001;
         public static final int TYPE_CATEGORY = 2002;
@@ -93,6 +94,7 @@ public class TAPDefaultConstant {
         public static final String FILE_NAME = "fileName";
         public static final String FILE_URL = "url";
         public static final String URL = "url";
+        public static final String URLS = "urls";
         public static final String IMAGE_URL = "imageURL";
         public static final String MEDIA_TYPE = "mediaType";
         public static final String DURATION = "duration";
