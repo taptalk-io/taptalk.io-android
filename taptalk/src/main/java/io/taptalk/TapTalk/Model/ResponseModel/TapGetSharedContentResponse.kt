@@ -7,5 +7,8 @@ data class TapGetSharedContentResponse(
 	val files: List<TapSharedMediaItemModel?>? = null,
 
 	@field:JsonProperty("media")
-	val media: List<TapSharedMediaItemModel?>? = null
+	val media: List<TapSharedMediaItemModel?>? = null,
+	
+	@field:JsonProperty("links")
+	val links: List<TapSharedMediaItemModel?>? = null
 )
