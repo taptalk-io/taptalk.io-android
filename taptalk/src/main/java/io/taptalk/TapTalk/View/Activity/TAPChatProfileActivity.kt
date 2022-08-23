@@ -1150,6 +1150,10 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         }
     }
 
+    private fun openSharedMedia() {
+        TapSharedMediaActivity.start(this, instanceKey, vm!!.room)
+    }
+
     private val profilePictureListener = object : TapProfilePicturePagerAdapter.ProfilePictureListener {
         override fun onLongClick(bitmap: BitmapDrawable) {
             if (vm!!.room.type == RoomType.TYPE_GROUP) {
@@ -1223,6 +1227,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 ChatProfileMenuType.MENU_DELETE_GROUP -> showDeleteChatRoomDialog()
                 ChatProfileMenuType.MENU_REPORT -> triggerReportButtonTapped()
                 ChatProfileMenuType.MENU_STARRED_MESSAGES -> openStarredMessages()
+                ChatProfileMenuType.MENU_SHARED_MEDIA -> openSharedMedia()
             }
         }
 
