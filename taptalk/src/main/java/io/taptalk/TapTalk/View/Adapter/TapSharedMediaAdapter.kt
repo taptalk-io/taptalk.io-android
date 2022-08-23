@@ -32,10 +32,10 @@ import io.taptalk.TapTalk.Interface.TapSharedMediaInterface
 import io.taptalk.TapTalk.Manager.TAPCacheManager
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager
 import io.taptalk.TapTalk.Model.TAPMessageModel
-import io.taptalk.TapTalk.Model.TapSharedMediaItemModel.Companion.TYPE_DATE_SECTION
-import io.taptalk.TapTalk.Model.TapSharedMediaItemModel.Companion.TYPE_DOCUMENT
-import io.taptalk.TapTalk.Model.TapSharedMediaItemModel.Companion.TYPE_LINK
-import io.taptalk.TapTalk.Model.TapSharedMediaItemModel.Companion.TYPE_MEDIA
+import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_DATE_SECTION
+import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_DOCUMENT
+import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_LINK
+import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_MEDIA
 import io.taptalk.TapTalk.R
 import java.lang.Exception
 
