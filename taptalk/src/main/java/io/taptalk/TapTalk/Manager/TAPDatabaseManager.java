@@ -263,6 +263,20 @@ public class TAPDatabaseManager {
             throw new IllegalStateException("Message Repository was not initialized.");
     }
 
+    public void getRoomFiles(Long lastTimestamp, String roomID, int numberOfItems, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null != messageRepository)
+            messageRepository.getRoomFiles(lastTimestamp, roomID, numberOfItems, listener);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
+    public void getRoomLinks(Long lastTimestamp, String roomID, int numberOfItems, TAPDatabaseListener<TAPMessageEntity> listener) {
+        if (null != messageRepository)
+            messageRepository.getRoomLinks(lastTimestamp, roomID, numberOfItems, listener);
+        else
+            throw new IllegalStateException("Message Repository was not initialized.");
+    }
+
     public void getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {
         if (null != messageRepository)
             messageRepository.getRoomMediaMessageBeforeTimestamp(roomID, minimumTimestamp, listener);

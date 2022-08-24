@@ -12,6 +12,7 @@ import java.util.List;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MAX_ITEMS_PER_PAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LINK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 
@@ -130,6 +131,26 @@ public interface TAPMessageDao {
             ") and created < :lastTimestamp and roomID = :roomID and isSending = 0 and isHidden = 0 and isDeleted = 0 and (isFailedSend = 0 or isFailedSend IS NULL) " +
             "order by created desc limit :numberOfItems")
     List<TAPMessageEntity> getRoomMedias(Long lastTimestamp, String roomID, int numberOfItems);
+
+    @Query("select * /*localID, messageID, body, type, created, data, roomID, userID, xcUserID, username, userFullName, userImage*/ " +
+            "from Message_Table where type in (" + TYPE_FILE + ") and roomID = :roomID and isSending = 0 and isHidden = 0 and isDeleted = 0 and (isFailedSend = 0 or isFailedSend IS NULL) " +
+            "order by created desc limit :numberOfItems")
+    List<TAPMessageEntity> getRoomFiles(String roomID, int numberOfItems);
+
+    @Query("select * /*localID, messageID, body, type, created, data, roomID, userID, xcUserID, username, userFullName, userImage*/ " +
+            "from Message_Table where type in (" + TYPE_FILE + ") and created < :lastTimestamp and roomID = :roomID and isSending = 0 and isHidden = 0 and isDeleted = 0 and (isFailedSend = 0 or isFailedSend IS NULL) " +
+            "order by created desc limit :numberOfItems")
+    List<TAPMessageEntity> getRoomFiles(Long lastTimestamp, String roomID, int numberOfItems);
+
+    @Query("select * /*localID, messageID, body, type, created, data, roomID, userID, xcUserID, username, userFullName, userImage*/ " +
+            "from Message_Table where type in (" + TYPE_LINK + ") and roomID = :roomID and isSending = 0 and isHidden = 0 and isDeleted = 0 and (isFailedSend = 0 or isFailedSend IS NULL) " +
+            "order by created desc limit :numberOfItems")
+    List<TAPMessageEntity> getRoomLinks(String roomID, int numberOfItems);
+
+    @Query("select * /*localID, messageID, body, type, created, data, roomID, userID, xcUserID, username, userFullName, userImage*/ " +
+            "from Message_Table where type in (" + TYPE_LINK + ") and created < :lastTimestamp and roomID = :roomID and isSending = 0 and isHidden = 0 and isDeleted = 0 and (isFailedSend = 0 or isFailedSend IS NULL) " +
+            "order by created desc limit :numberOfItems")
+    List<TAPMessageEntity> getRoomLinks(Long lastTimestamp, String roomID, int numberOfItems);
 
     @Query("select * from message_table where" +
             " type in (" + TYPE_IMAGE + ", " + TYPE_FILE + ", " + TYPE_VIDEO + ") " +

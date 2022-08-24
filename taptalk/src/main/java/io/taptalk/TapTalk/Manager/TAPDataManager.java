@@ -975,6 +975,22 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance(instanceKey).getRoomMedias(lastTimestamp, roomID, numberOfItems, listener);
     }
 
+    public void getRoomFiles(Long lastTimestamp, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        getRoomFiles(lastTimestamp, roomID, MAX_ITEMS_PER_PAGE, listener);
+    }
+
+    public void getRoomFiles(Long lastTimestamp, String roomID, int numberOfItems, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getRoomFiles(lastTimestamp, roomID, numberOfItems, listener);
+    }
+
+    public void getRoomLinks(Long lastTimestamp, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        getRoomLinks(lastTimestamp, roomID, MAX_ITEMS_PER_PAGE, listener);
+    }
+
+    public void getRoomLinks(Long lastTimestamp, String roomID, int numberOfItems, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getRoomLinks(lastTimestamp, roomID, numberOfItems, listener);
+    }
+
     public void getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance(instanceKey).getRoomMediaMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
     }
