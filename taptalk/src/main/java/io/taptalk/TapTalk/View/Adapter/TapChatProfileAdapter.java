@@ -523,20 +523,14 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
     class LoadingLayoutViewHolder extends TAPBaseViewHolder<TapChatProfileItemModel> {
 
         private LinearLayout llReloadSharedMedia;
-        private ImageView ivLoading;
 
         LoadingLayoutViewHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             llReloadSharedMedia = itemView.findViewById(R.id.ll_reload_shared_media);
-            ivLoading = itemView.findViewById(R.id.iv_shared_media_loading);
         }
 
         @Override
         protected void onBind(TapChatProfileItemModel item, int position) {
-            if (null == ivLoading.getAnimation()) {
-                TAPUtils.rotateAnimateInfinitely(itemView.getContext(), ivLoading);
-            }
-
             // TODO: 15 October 2019 SHOW RELOAD SHARED MEDIA ON API FAILURE
             llReloadSharedMedia.setVisibility(View.GONE);
             llReloadSharedMedia.setOnClickListener(v -> chatProfileInterface.onReloadSharedMedia());
