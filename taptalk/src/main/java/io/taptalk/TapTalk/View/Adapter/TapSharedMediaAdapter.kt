@@ -35,6 +35,7 @@ import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_DATE_SECTION
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_DOCUMENT
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_LINK
+import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_LOADING
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_MEDIA
 import io.taptalk.TapTalk.R
 import java.lang.Exception
@@ -42,7 +43,6 @@ import java.lang.Exception
 class TapSharedMediaAdapter(private val instanceKey: String, mediaItems: List<TAPMessageModel>, private val glide: RequestManager, private val listener: TapSharedMediaInterface) : TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>>() {
 
     private var gridWidth : Int
-    private var mediaThumbnailStartIndex = 0
     init {
         setItems(mediaItems, true)
         gridWidth = (TAPUtils.getScreenWidth() - TAPUtils.dpToPx(34)) / 3
@@ -56,6 +56,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, mediaItems: List<TA
             TYPE_MEDIA -> MediaViewHolder(parent, R.layout.tap_cell_media_thumbnail_grid)
             TYPE_LINK -> LinkViewHolder(parent, R.layout.tap_cell_media_link)
             TYPE_DOCUMENT -> DocumentViewHolder(parent, R.layout.tap_cell_media_document)
+            TYPE_LOADING -> LoadingViewHolder(parent, R.layout.tap_cell_shared_media_loading)
             else -> {
                 DateSeparatorViewHolder(parent, R.layout.tap_cell_shared_media_title)
             }
@@ -67,6 +68,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, mediaItems: List<TA
             TYPE_VIDEO, TYPE_IMAGE -> TYPE_MEDIA
             MessageType.TYPE_LINK -> TYPE_LINK
             TYPE_FILE -> TYPE_DOCUMENT
+            TYPE_LOADING_MESSAGE_IDENTIFIER -> TYPE_LOADING
             else -> TYPE_DATE_SECTION
         }
     }
@@ -93,7 +95,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, mediaItems: List<TA
             if (clContainer.layoutParams is MarginLayoutParams) {
                 // Update left/right margin per item
                 val params = clContainer.layoutParams as MarginLayoutParams
-                when ((bindingAdapterPosition - mediaThumbnailStartIndex) % 3) {
+                when (bindingAdapterPosition % 3) {
                     0 -> params.leftMargin = TAPUtils.dpToPx(14)
                     1 -> params.leftMargin = TAPUtils.dpToPx(5)
                     2 -> params.leftMargin = TAPUtils.dpToPx(-4)
@@ -430,7 +432,9 @@ class TapSharedMediaAdapter(private val instanceKey: String, mediaItems: List<TA
 
     }
 
-    fun setMediaThumbnailStartIndex(mediaThumbnailStartIndex: Int) {
-        this.mediaThumbnailStartIndex = mediaThumbnailStartIndex
+    inner class LoadingViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPMessageModel>(parent, itemLayoutId) {
+        override fun onBind(item: TAPMessageModel?, position: Int) {
+
+        }
     }
 }
