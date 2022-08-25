@@ -33,5 +33,6 @@ data class TapSharedMediaItemModel(
         const val TYPE_MEDIA = 2
         const val TYPE_LINK = 3
         const val TYPE_DOCUMENT = 4
+        const val TYPE_LOADING = 5
     }
 }
