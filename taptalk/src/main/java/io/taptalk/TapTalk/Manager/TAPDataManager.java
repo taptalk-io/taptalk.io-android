@@ -1513,7 +1513,7 @@ public class TAPDataManager {
         TAPApiManager.getInstance(instanceKey).unpinMessages(roomId, messageIds, new TAPDefaultSubscriber<>(view));
     }
 
-    public void getSharedMedia(String roomId, Long minCreated, TAPDefaultDataView<TapGetSharedContentResponse> view) {
-        TAPApiManager.getInstance(instanceKey).getSharedMedia(roomId, minCreated, new TAPDefaultSubscriber<>(view));
+    public void getSharedMedia(String roomId, Long maxCreated, TAPDefaultDataView<TapGetSharedContentResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getSharedMedia(roomId, maxCreated, new TAPDefaultSubscriber<>(view));
     }
 }
