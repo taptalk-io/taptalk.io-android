@@ -29,10 +29,10 @@ data class TapSharedMediaItemModel(
     val userID: String? = null
 ) : Parcelable {
     companion object {
-        const val TYPE_DATE_SECTION = 1
-        const val TYPE_MEDIA = 2
-        const val TYPE_LINK = 3
-        const val TYPE_DOCUMENT = 4
-        const val TYPE_LOADING = 5
+        const val TYPE_MEDIA = 0
+        const val TYPE_LINK = 1
+        const val TYPE_DOCUMENT = 2
+        const val TYPE_DATE_SECTION = 3
+        const val TYPE_LOADING = 4
     }
 }

@@ -1,18 +1,20 @@
 package io.taptalk.TapTalk.View.Activity
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
+import androidx.lifecycle.ViewModelProvider
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.RequestCode.OPEN_SHARED_MEDIA
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapSharedMediaPagerAdapter
+import io.taptalk.TapTalk.ViewModel.TapSharedMediaViewModel
 import kotlinx.android.synthetic.main.tap_activity_shared_media.*
 
 class TapSharedMediaActivity : TAPBaseActivity() {
+
+    private lateinit var vm : TapSharedMediaViewModel
 
     companion object {
         fun start(
@@ -30,9 +32,11 @@ class TapSharedMediaActivity : TAPBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tap_activity_shared_media)
-
-        vp_shared_media.adapter = TapSharedMediaPagerAdapter(this, instanceKey, supportFragmentManager)
+        vm = ViewModelProvider(this, TapSharedMediaViewModel.TapSharedMediaViewModelFactory(application))[TapSharedMediaViewModel::class.java]
+        vm.room = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
+        vp_shared_media.adapter = TapSharedMediaPagerAdapter(this, instanceKey, supportFragmentManager, vm.room)
         tab_layout.setupWithViewPager(vp_shared_media)
+        iv_button_back.setOnClickListener { onBackPressed() }
         // TODO: 23/08/22 setup view pager MU
         // TODO: 23/08/22 load local data MU
         // TODO: 23/08/22 load api from api MU

@@ -40,12 +40,12 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.
 import io.taptalk.TapTalk.R
 import java.lang.Exception
 
-class TapSharedMediaAdapter(private val instanceKey: String, mediaItems: List<TAPMessageModel>, private val glide: RequestManager, private val listener: TapSharedMediaInterface) : TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>>() {
+class TapSharedMediaAdapter(private val instanceKey: String, private val mediaItems: List<TAPMessageModel>, private val glide: RequestManager, private val listener: TapSharedMediaInterface) : TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>>() {
 
-    private var gridWidth : Int
+    private var gridWidth : Int = (TAPUtils.getScreenWidth() - TAPUtils.dpToPx(40)) / 3
+
     init {
         setItems(mediaItems, true)
-        gridWidth = (TAPUtils.getScreenWidth() - TAPUtils.dpToPx(34)) / 3
     }
 
     override fun onCreateViewHolder(
@@ -72,6 +72,8 @@ class TapSharedMediaAdapter(private val instanceKey: String, mediaItems: List<TA
             else -> TYPE_DATE_SECTION
         }
     }
+
+    override fun getItemCount(): Int = mediaItems.size
 
     inner class MediaViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPMessageModel>(parent, itemLayoutId) {
         private val activity: Activity = itemView.context as Activity
