@@ -345,8 +345,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 )
                 pbProgress.visibility = View.GONE
                 itemView.setOnClickListener { downloadFile(item) }
-            } else if (((null != item.isSending && !item.isSending!!)
-                        && null == downloadProgressPercent) && (null != fileUri ||
+            } else if ((null == downloadProgressPercent) && (null != fileUri ||
                         TAPFileDownloadManager.getInstance(instanceKey)
                             .checkPhysicalFileExists(item))
             ) {
@@ -360,9 +359,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 )
                 pbProgress.visibility = View.GONE
                 itemView.setOnClickListener { openFile(item) }
-            } else if ((null != item.isSending && !item.isSending!!)
-                && null == downloadProgressPercent
-            ) {
+            } else if (null == downloadProgressPercent) {
                 // File is not downloaded
                 tvFileInfo.text = TAPUtils.getFileDisplayInfo(item)
                 if (TAPFileDownloadManager.getInstance(instanceKey).failedDownloads.contains(item.localID)) {

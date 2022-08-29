@@ -35,6 +35,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Activity.TapSharedMediaActivity
 import io.taptalk.TapTalk.View.Adapter.TapSharedMediaAdapter
 import io.taptalk.TapTalk.ViewModel.TapSharedMediaViewModel
 import kotlinx.android.synthetic.main.tap_fragment_shared_media.*
@@ -99,7 +100,9 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         recycler_view.layoutManager = sharedMediaGlm
         recycler_view.adapter = sharedMediaAdapter
         if (!vm.isFinishedLoading) {
-            showSharedMediaLoading()
+            if (vm.sharedMedias.isEmpty()) {
+                recycler_view.visibility = View.GONE
+            }
             Thread {
                 when (type) {
                     TYPE_MEDIA -> {
@@ -172,12 +175,14 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             override fun onSelectFinished(entities: List<TAPMessageEntity>) {
                 Thread {
                     if (entities.isEmpty() && 0 == vm.sharedMedias.size) {
-                        // No shared media
+                        // No shared media in database, load from api
                         vm.isFinishedLoading = true
                         requireActivity().runOnUiThread {
-                            recycler_view.visibility = View.GONE
-                            g_empty_shared_media.visibility = View.VISIBLE
-                            recycler_view.post { hideSharedMediaLoading() }
+                            vm.isLoading = true
+                            showLoading()
+                            Thread {
+                                (requireActivity() as TapSharedMediaActivity).getMoreSharedMedias(type)
+                            }.start()
                         }
                     } else {
                         // Has shared media
@@ -227,11 +232,27 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                             }
                         }
                         if (TAPDefaultConstant.MAX_ITEMS_PER_PAGE > entities.size) {
-                            // No more medias in database
-                            // TODO: 29/08/22 load more from API MU
+                            // No more medias in database, load from api
                             vm.isFinishedLoading = true
                             requireActivity().runOnUiThread {
+                                recycler_view.visibility = View.VISIBLE
                                 recycler_view!!.viewTreeObserver.removeOnScrollChangedListener(
+                                    sharedMediaPagingScrollListener
+                                )
+                                sharedMediaPagingScrollListener =
+                                    ViewTreeObserver.OnScrollChangedListener {
+                                        if (!vm.isRemoteContentFetched && sharedMediaGlm!!.findLastVisibleItemPosition() > vm.sharedMedias.size - TAPDefaultConstant.MAX_ITEMS_PER_PAGE / 2) {
+                                            // Load more if view holder is visible
+                                            if (!vm.isLoading) {
+                                                vm.isLoading = true
+                                                showSharedMediaLoading()
+                                                Thread {
+                                                    (requireActivity() as TapSharedMediaActivity).getMoreSharedMedias(type)
+                                                }.start()
+                                            }
+                                        }
+                                    }
+                                recycler_view!!.viewTreeObserver.addOnScrollChangedListener(
                                     sharedMediaPagingScrollListener
                                 )
                             }
@@ -246,6 +267,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         vm.isLoading = false
                         requireActivity().runOnUiThread {
                             hideSharedMediaLoading()
+                            hideLoading()
                             recycler_view.post {
                                 sharedMediaAdapter?.notifyItemRangeInserted(previousSize + 1, entities.size)
                             }
@@ -254,6 +276,31 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                 }.start()
             }
         }
+
+    fun addRemoteSharedMedias(sharedMedias : List<TAPMessageModel>) {
+        vm.addSharedMedias(sharedMedias)
+        vm.sharedMediaAdapterItems.addAll(sharedMedias)
+        if (vm.sharedMedias.isEmpty()) {
+            requireActivity().runOnUiThread {
+                recycler_view.visibility = View.GONE
+                g_empty_shared_media.visibility = View.VISIBLE
+                hideLoading()
+            }
+        } else {
+            vm.lastTimestamp = vm.sharedMedias[vm.sharedMedias.size - 1].created
+            requireActivity().runOnUiThread {
+                recycler_view.visibility = View.VISIBLE
+                recycler_view!!.viewTreeObserver.removeOnScrollChangedListener(sharedMediaPagingScrollListener)
+                hideSharedMediaLoading()
+                hideLoading()
+                recycler_view.post {
+                    sharedMediaAdapter?.notifyItemRangeInserted(vm.sharedMedias.size + 1, sharedMedias.size)
+                }
+            }
+        }
+        vm.isRemoteContentFetched = true
+        vm.isLoading = false
+    }
 
     private fun startVideoDownload(message: TAPMessageModel?) {
         if (!TAPUtils.hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -300,20 +347,18 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     }
 
     private fun showSharedMediaLoading() {
-        if (vm.sharedMediaAdapterItems.contains(vm.getLoadingItem())) {
-            return
+        if (!vm.sharedMediaAdapterItems.contains(vm.getLoadingItem())) {
+            vm.sharedMediaAdapterItems.add(vm.getLoadingItem())
+            sharedMediaAdapter?.notifyItemInserted(sharedMediaAdapter!!.itemCount - 1)
         }
-        vm.sharedMediaAdapterItems.add(vm.getLoadingItem())
-        sharedMediaAdapter?.notifyItemInserted(sharedMediaAdapter!!.itemCount - 1)
     }
 
     private fun hideSharedMediaLoading() {
-        if (!vm.sharedMediaAdapterItems.contains(vm.getLoadingItem())) {
-            return
+        if (vm.sharedMediaAdapterItems.contains(vm.getLoadingItem())) {
+            val index = vm.sharedMediaAdapterItems.indexOf(vm.getLoadingItem())
+            vm.sharedMediaAdapterItems.removeAt(index)
+            sharedMediaAdapter?.notifyItemRemoved(index)
         }
-        val index = vm.sharedMediaAdapterItems.indexOf(vm.getLoadingItem())
-        vm.sharedMediaAdapterItems.removeAt(index)
-        sharedMediaAdapter?.notifyItemRemoved(index)
     }
 
     private fun showLoading() {

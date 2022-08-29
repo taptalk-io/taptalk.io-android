@@ -25,6 +25,11 @@ class TapSharedMediaViewModel(application: Application): AndroidViewModel(applic
     var pendingDownloadMessage: TAPMessageModel? = null
     var sharedMedias: MutableList<TAPMessageModel> = arrayListOf()
     var sharedMediaAdapterItems: MutableList<TAPMessageModel> = arrayListOf()
+    var oldestCreatedTime : Long? = null
+    var isRemoteContentFetched = false
+    var remoteMedias: MutableList<TAPMessageModel> = arrayListOf()
+    var remoteDocuments: MutableList<TAPMessageModel> = arrayListOf()
+    var remoteLinks: MutableList<TAPMessageModel> = arrayListOf()
     private var loadingItem : TAPMessageModel? = null
 
     fun getLoadingItem(): TAPMessageModel {
@@ -40,8 +45,16 @@ class TapSharedMediaViewModel(application: Application): AndroidViewModel(applic
     }
 
     fun addSharedMedia(sharedMedia : TAPMessageModel) {
-        sharedMedias.add(sharedMedia)
-        sharedMediasMap[sharedMedia.localID] = sharedMedia
+        if (!sharedMediasMap.containsKey(sharedMedia.localID)) {
+            sharedMedias.add(sharedMedia)
+            sharedMediasMap[sharedMedia.localID] = sharedMedia
+        }
+    }
+
+    fun addSharedMedias(sharedMediaList : List<TAPMessageModel>) {
+        for (item in sharedMediaList) {
+            addSharedMedia(item)
+        }
     }
 
     fun getSharedMedia(localId : String): TAPMessageModel? {
