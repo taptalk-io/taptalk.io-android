@@ -838,6 +838,7 @@
     <style name="tapMediaLinkStyle" parent="tapFontFamilyMedium">
         <item name="android:textColor">@color/tapMediaLinkColor</item>
         <item name="android:textSize">14sp</item>
+        <item name="android:maxLines">1</item>
         <item name="android:ellipsize">middle</item>
     </style>
 
