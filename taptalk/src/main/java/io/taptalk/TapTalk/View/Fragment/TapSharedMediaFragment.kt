@@ -24,8 +24,7 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
@@ -220,7 +219,11 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         }
 
         override fun onLinkClicked(item: TAPMessageModel) {
-//            TODO("Not yet implemented")
+            var url: String = item.data?.get(URL) as String
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "http://$url"
+            }
+            TAPUtils.openCustomTabLayout(activity, url)
         }
 
         override fun onItemLongClicked(item: TAPMessageModel) {
