@@ -23,6 +23,7 @@ class TapSharedMediaViewModel(application: Application): AndroidViewModel(applic
     var lastTimestamp = 0L
     var sharedMediasMap: HashMap<String, TAPMessageModel> = HashMap()
     var pendingDownloadMessage: TAPMessageModel? = null
+    var openedFileMessage: TAPMessageModel? = null
     var sharedMedias: MutableList<TAPMessageModel> = arrayListOf()
     var sharedMediaAdapterItems: MutableList<TAPMessageModel> = arrayListOf()
     var oldestCreatedTime : Long? = null

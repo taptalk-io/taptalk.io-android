@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,26 +20,38 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.Const.TAPDefaultConstant
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager
 import io.taptalk.TapTalk.Helper.TAPUtils
+import io.taptalk.TapTalk.Helper.TapTalk
+import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TapSharedMediaInterface
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
+import io.taptalk.TapTalk.Manager.TAPCacheManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager
+import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_DOCUMENT
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_LINK
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_MEDIA
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
 import io.taptalk.TapTalk.R
+import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity
+import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity
 import io.taptalk.TapTalk.View.Activity.TapSharedMediaActivity
 import io.taptalk.TapTalk.View.Adapter.TapSharedMediaAdapter
 import io.taptalk.TapTalk.ViewModel.TapSharedMediaViewModel
 import kotlinx.android.synthetic.main.tap_fragment_shared_media.*
+import java.util.*
 
 class TapSharedMediaFragment(private val instanceKey: String, private val type: Int): Fragment() {
 
@@ -69,9 +82,12 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         TAPBroadcastManager.register(
             context,
             downloadProgressReceiver,
-            TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading,
-            TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish,
-            TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed
+            DownloadBroadcastEvent.DownloadProgressLoading,
+            DownloadBroadcastEvent.DownloadFinish,
+            DownloadBroadcastEvent.DownloadFailed,
+            DownloadBroadcastEvent.DownloadFile,
+            DownloadBroadcastEvent.OpenFile,
+            DownloadBroadcastEvent.CancelDownload,
         )
         sharedMediaAdapter = TapSharedMediaAdapter(instanceKey, vm.sharedMediaAdapterItems, glide, sharedMediaAdapterListener)
         sharedMediaGlm = object : GridLayoutManager(context, 3) {
@@ -150,11 +166,53 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             ivThumbnail: ImageView?,
             isMediaReady: Boolean
         ) {
-//            TODO("Not yet implemented")
+            if (item.type == TYPE_IMAGE && isMediaReady) {
+            // Preview image detail
+            TAPImageDetailPreviewActivity.start(
+                context,
+                instanceKey,
+                item,
+                ivThumbnail
+            )
+            } else if (item.type == TYPE_IMAGE) {
+                // Download image
+                TAPFileDownloadManager.getInstance(instanceKey)
+                    .downloadImage(context, item)
+                notifyItemChanged(item)
+            } else if (item.type == TYPE_VIDEO && isMediaReady && null != item.data) {
+                val videoUri =
+                    TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item)
+                if (null == videoUri) {
+                    // Prompt download
+                    val fileID = item.data!![MessageData.FILE_ID] as String?
+                    TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache(fileID)
+                    notifyItemChanged(item)
+                    TapTalkDialog.Builder(context)
+                        .setTitle(getString(R.string.tap_error_could_not_find_file))
+                        .setMessage(getString(R.string.tap_error_redownload_file))
+                        .setCancelable(true)
+                        .setPrimaryButtonTitle(getString(R.string.tap_ok))
+                        .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+                        .setPrimaryButtonListener { startVideoDownload(item) }
+                        .show()
+                } else {
+                    // Open video player
+                    TAPVideoPlayerActivity.start(
+                        context,
+                        instanceKey,
+                        videoUri,
+                        item
+                    )
+                }
+            } else if (item.type == TYPE_VIDEO) {
+                // Download video
+                startVideoDownload(item)
+            }
         }
 
         override fun onCancelDownloadClicked(item: TAPMessageModel) {
-//            TODO("Not yet implemented")
+            TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(item.localID)
+            notifyItemChanged(item)
         }
 
         override fun onDocumentClicked(item: TAPMessageModel) {
@@ -269,7 +327,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                             hideSharedMediaLoading()
                             hideLoading()
                             recycler_view.post {
-                                sharedMediaAdapter?.notifyItemRangeInserted(previousSize + 1, entities.size)
+                                sharedMediaAdapter?.notifyItemRangeInserted(previousSize, entities.size)
                             }
                         }
                     }
@@ -294,7 +352,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                 hideSharedMediaLoading()
                 hideLoading()
                 recycler_view.post {
-                    sharedMediaAdapter?.notifyItemRangeInserted(vm.sharedMedias.size + 1, sharedMedias.size)
+                    sharedMediaAdapter?.notifyItemRangeInserted(vm.sharedMedias.size, sharedMedias.size)
                 }
             }
         }
@@ -324,16 +382,45 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     private val downloadProgressReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
-            val localID = intent.getStringExtra(TAPDefaultConstant.DownloadBroadcastEvent.DownloadLocalID)
+            val localID = intent.getStringExtra(DownloadBroadcastEvent.DownloadLocalID)
             if (null == action || null == localID) {
                 return
             }
             when (action) {
-                TAPDefaultConstant.DownloadBroadcastEvent.DownloadProgressLoading, TAPDefaultConstant.DownloadBroadcastEvent.DownloadFinish, TAPDefaultConstant.DownloadBroadcastEvent.DownloadFailed -> requireActivity().runOnUiThread {
+                DownloadBroadcastEvent.DownloadProgressLoading, DownloadBroadcastEvent.DownloadFinish -> requireActivity().runOnUiThread {
                     if (vm.getSharedMedia(localID) != null) {
                         notifyItemChanged(
                             vm.getSharedMedia(localID)
                         )
+                    }
+                }
+                DownloadBroadcastEvent.DownloadFailed -> requireActivity().runOnUiThread {
+                    TAPFileDownloadManager.getInstance(instanceKey).addFailedDownload(localID)
+                    if (vm.getSharedMedia(localID) != null) {
+                        notifyItemChanged(
+                            vm.getSharedMedia(localID)
+                        )
+                    }
+                }
+                DownloadBroadcastEvent.DownloadFile -> requireActivity().runOnUiThread {
+                    startFileDownload(intent.getParcelableExtra(MESSAGE))
+                }
+                DownloadBroadcastEvent.CancelDownload -> requireActivity().runOnUiThread {
+                    TAPFileDownloadManager.getInstance(instanceKey).cancelFileDownload(localID)
+                    if (vm.sharedMediasMap.containsKey(localID)) {
+                        notifyItemChanged(vm.sharedMediasMap[localID])
+                    }
+                }
+                DownloadBroadcastEvent.OpenFile -> requireActivity().runOnUiThread {
+                    val message: TAPMessageModel? = intent.getParcelableExtra(MESSAGE)
+                    val fileUri: Uri? = intent.getParcelableExtra(FILE_URI)
+                    vm.openedFileMessage = message
+                    if (null != fileUri && null != message?.data && null != message.data?.get(MEDIA_TYPE)) {
+                        if (!TAPUtils.openFile(instanceKey, context, fileUri, message.data?.get(MEDIA_TYPE) as String)) {
+                            showDownloadFileDialog()
+                        }
+                    } else {
+                        showDownloadFileDialog()
                     }
                 }
             }
@@ -342,7 +429,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
 
     private fun notifyItemChanged(mediaMessage: TAPMessageModel?) {
         requireActivity().runOnUiThread {
-            sharedMediaAdapter?.notifyItemChanged( vm.sharedMedias.indexOf(mediaMessage) + 1)
+            sharedMediaAdapter?.notifyItemChanged( vm.sharedMedias.indexOf(mediaMessage))
         }
     }
 
@@ -367,5 +454,52 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
 
     private fun hideLoading() {
         progress_circular.visibility = View.GONE
+    }
+
+    private fun startFileDownload(message: TAPMessageModel?) {
+        if (!TAPUtils.hasPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Request storage permission
+            vm.pendingDownloadMessage = message
+            ActivityCompat.requestPermissions(
+                requireActivity(), arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ),
+                TAPDefaultConstant.PermissionRequest.PERMISSION_WRITE_EXTERNAL_STORAGE_SAVE_FILE
+            )
+        } else {
+            // Download file
+            vm.pendingDownloadMessage = null
+            TAPFileDownloadManager.getInstance(instanceKey).downloadMessageFile(message)
+        }
+    }
+
+    private fun showDownloadFileDialog() {
+        // Prompt download if file does not exist
+        if (null == vm.openedFileMessage) {
+            return
+        }
+        if (null != vm.openedFileMessage?.data) {
+            val fileId = vm.openedFileMessage?.data?.get(MessageData.FILE_ID) as String
+            var fileUrl = vm.openedFileMessage?.data?.get(MessageData.FILE_URL) as String
+            fileUrl = TAPUtils.removeNonAlphaNumeric(fileUrl).lowercase(Locale.getDefault())
+            TAPFileDownloadManager.getInstance(instanceKey)
+                .removeFileMessageUri(vm.room?.roomID, fileId)
+            TAPFileDownloadManager.getInstance(instanceKey)
+                .removeFileMessageUri(vm.room?.roomID, fileUrl)
+        }
+        notifyItemChanged(vm.openedFileMessage)
+        TapTalkDialog.Builder(context)
+            .setTitle(getString(R.string.tap_error_could_not_find_file))
+            .setMessage(getString(R.string.tap_error_redownload_file))
+            .setCancelable(true)
+            .setPrimaryButtonTitle(getString(R.string.tap_ok))
+            .setSecondaryButtonTitle(getString(R.string.tap_cancel))
+            .setPrimaryButtonListener {
+                startFileDownload(
+                    vm.openedFileMessage
+                )
+            }
+            .show()
     }
 }
