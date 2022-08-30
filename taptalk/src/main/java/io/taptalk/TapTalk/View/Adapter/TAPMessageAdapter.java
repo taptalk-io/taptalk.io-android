@@ -129,6 +129,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.WIDTH;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LINK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_PRODUCT;
@@ -298,6 +299,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
             }
 
             switch (messageType) {
+                case TYPE_LINK:
                 case TYPE_TEXT:
                     if (isMessageFromMySelf(messageModel)) {
                         return TYPE_BUBBLE_TEXT_RIGHT;
@@ -2648,7 +2650,7 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
     private void setMessageBodyText(TextView tvMessageBody, TAPMessageModel item, String body) {
         String originalText;
         String spaceAppend = "";
-        if (item.getType() == TYPE_TEXT) {
+        if (item.getType() == TYPE_TEXT || item.getType() == TYPE_LINK) {
             originalText = item.getBody();
         } else if ((item.getType() == TYPE_IMAGE || item.getType() == TYPE_VIDEO) && null != item.getData()) {
             originalText = (String) item.getData().get(CAPTION);

@@ -58,6 +58,7 @@ class TAPSwipeReplyCallback(
                 // Disable swipe for messages that failed to send
                 return 0
             } else if (viewHolder.item.type != TYPE_TEXT &&
+                    viewHolder.item.type != TYPE_LINK &&
                     viewHolder.item.type != TYPE_IMAGE &&
                     viewHolder.item.type != TYPE_VIDEO &&
                     viewHolder.item.type != TYPE_FILE &&
