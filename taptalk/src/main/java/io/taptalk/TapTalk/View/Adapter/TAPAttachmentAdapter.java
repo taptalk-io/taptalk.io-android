@@ -49,6 +49,7 @@ import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_PROFIL
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SAVE_VIDEO_GALLERY;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_MESSAGE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SEND_SMS;
+import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_SHARED_MEDIA;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_STAR;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.LONG_PRESS_VIEW_PROFILE;
 import static io.taptalk.TapTalk.Model.TAPAttachmentModel.SELECT_PICTURE_CAMERA;
@@ -252,6 +253,9 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                 case LONG_PRESS_PIN:
                     setComponentColors(R.color.tapIconLongPressActionPinMessage, R.style.tapActionSheetDefaultLabelStyle);
                     break;
+                case LONG_PRESS_SHARED_MEDIA:
+                    setComponentColors(R.color.tapIconLongPressSharedMedia, R.style.tapActionSheetDefaultLabelStyle);
+                    break;
             }
 
             if (getItemCount() - 1 == position) {
@@ -360,6 +364,9 @@ public class TAPAttachmentAdapter extends TAPBaseAdapter<TAPAttachmentModel, TAP
                     break;
                 case LONG_PRESS_PIN:
                     attachmentListener.onMessagePinned(message);
+                    break;
+                case LONG_PRESS_SHARED_MEDIA:
+                    attachmentListener.onViewInChat(message);
                     break;
             }
             onClickListener.onClick(itemView);

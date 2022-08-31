@@ -58,6 +58,15 @@ class TapSharedMediaActivity : TAPBaseActivity() {
         })
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val message = data?.getParcelableExtra<TAPMessageModel>(TAPDefaultConstant.Extras.MESSAGE)
+        val intent = Intent()
+        intent.putExtra(TAPDefaultConstant.Extras.MESSAGE, message)
+        setResult(RESULT_OK, intent)
+        finish()
+    }
+
     fun getMoreSharedMedias(type : Int) {
         if (vm.isRemoteContentFetched) {
             // LOAD DATA FROM VM

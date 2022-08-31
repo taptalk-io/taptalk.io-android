@@ -1,6 +1,7 @@
 package io.taptalk.TapTalk.View.Fragment
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -33,11 +34,11 @@ import io.taptalk.TapTalk.Helper.TAPUtils
 import io.taptalk.TapTalk.Helper.TapTalk
 import io.taptalk.TapTalk.Helper.TapTalkDialog
 import io.taptalk.TapTalk.Interface.TapSharedMediaInterface
+import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
 import io.taptalk.TapTalk.Manager.TAPCacheManager
 import io.taptalk.TapTalk.Manager.TAPDataManager
 import io.taptalk.TapTalk.Manager.TAPFileDownloadManager
-import io.taptalk.TapTalk.Manager.TAPNetworkStateManager
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_DOCUMENT
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_LINK
 import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel.Companion.TYPE_MEDIA
@@ -48,6 +49,7 @@ import io.taptalk.TapTalk.View.Activity.TAPImageDetailPreviewActivity
 import io.taptalk.TapTalk.View.Activity.TAPVideoPlayerActivity
 import io.taptalk.TapTalk.View.Activity.TapSharedMediaActivity
 import io.taptalk.TapTalk.View.Adapter.TapSharedMediaAdapter
+import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
 import io.taptalk.TapTalk.ViewModel.TapSharedMediaViewModel
 import kotlinx.android.synthetic.main.tap_fragment_shared_media.*
 import java.util.*
@@ -183,7 +185,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                     TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(item)
                 if (null == videoUri) {
                     // Prompt download
-                    val fileID = item.data!![MessageData.FILE_ID] as String?
+                    val fileID = item.data!![FILE_ID] as String?
                     TAPCacheManager.getInstance(TapTalk.appContext).removeFromCache(fileID)
                     notifyItemChanged(item)
                     TapTalkDialog.Builder(context)
@@ -227,7 +229,16 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         }
 
         override fun onItemLongClicked(item: TAPMessageModel) {
-//            TODO("Not yet implemented")
+            TAPLongPressActionBottomSheet.newInstance(instanceKey,
+                TAPLongPressActionBottomSheet.LongPressType.SHARED_MEDIA_TYPE, item, object : TAPAttachmentListener(instanceKey) {
+                    override fun onViewInChat(message: TAPMessageModel?) {
+                        super.onViewInChat(message)
+                        val intent = Intent()
+                        intent.putExtra(MESSAGE, message)
+                        activity?.setResult(RESULT_OK, intent)
+                        activity?.finish()
+                    }
+            }).show(childFragmentManager, "")
         }
     }
 
@@ -483,8 +494,8 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             return
         }
         if (null != vm.openedFileMessage?.data) {
-            val fileId = vm.openedFileMessage?.data?.get(MessageData.FILE_ID) as String
-            var fileUrl = vm.openedFileMessage?.data?.get(MessageData.FILE_URL) as String
+            val fileId = vm.openedFileMessage?.data?.get(FILE_ID) as String
+            var fileUrl = vm.openedFileMessage?.data?.get(FILE_URL) as String
             fileUrl = TAPUtils.removeNonAlphaNumeric(fileUrl).lowercase(Locale.getDefault())
             TAPFileDownloadManager.getInstance(instanceKey)
                 .removeFileMessageUri(vm.room?.roomID, fileId)

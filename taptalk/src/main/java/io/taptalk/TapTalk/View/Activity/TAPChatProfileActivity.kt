@@ -135,7 +135,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                         onBackPressed()
                     }
                 }
-                RequestCode.OPEN_STARRED_MESSAGES -> {
+                RequestCode.OPEN_STARRED_MESSAGES, RequestCode.OPEN_SHARED_MEDIA -> {
                     val message = data?.getParcelableExtra<TAPMessageModel>(Extras.MESSAGE)
                     if (message != null) {
                         val intent = Intent()
