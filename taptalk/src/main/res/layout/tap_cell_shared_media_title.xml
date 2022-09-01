@@ -10,9 +10,17 @@
         android:id="@+id/v_separator_1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="2dp"
+        android:visibility="gone"
         android:background="@color/tapTransparentBlack1910"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/v_separator_2"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@color/tapDefaultBackgroundColor"
+        app:layout_constraintTop_toBottomOf="@id/v_separator_1" />
 
     <TextView
         android:id="@+id/tv_section_title"
@@ -25,7 +33,7 @@
         android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toTopOf="@id/v_separator"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/v_separator_1"
+        app:layout_constraintTop_toBottomOf="@id/v_separator_2"
         android:text="@string/tap_shared_media" />
 
     <View

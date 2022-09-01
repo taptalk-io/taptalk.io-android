@@ -425,11 +425,19 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
     inner class DateSeparatorViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPMessageModel>(parent, itemLayoutId) {
         private val tvSectionTitle: TextView = itemView.findViewById(R.id.tv_section_title)
         private val vTopSeparator: View = itemView.findViewById(R.id.v_separator_1)
+        private val vTopGap: View = itemView.findViewById(R.id.v_separator_2)
         override fun onBind(item: TAPMessageModel?, position: Int) {
             if (bindingAdapterPosition == 0) {
                 vTopSeparator.visibility = View.GONE
+                vTopGap.visibility = View.GONE
             } else {
-                vTopSeparator.visibility = View.VISIBLE
+                if (items[absoluteAdapterPosition + 1].type == TYPE_IMAGE || items[absoluteAdapterPosition + 1].type == TYPE_VIDEO) {
+                    vTopSeparator.visibility = View.VISIBLE
+                    vTopGap.visibility = View.GONE
+                } else {
+                    vTopSeparator.visibility = View.GONE
+                    vTopGap.visibility = View.VISIBLE
+                }
             }
             tvSectionTitle.text = item?.body
         }
