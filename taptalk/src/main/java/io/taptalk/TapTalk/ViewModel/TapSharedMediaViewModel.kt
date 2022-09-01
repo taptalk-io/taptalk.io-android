@@ -5,9 +5,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.LOADING_INDICATOR_LOCAL_ID
+import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER
+import io.taptalk.TapTalk.Helper.TAPTimeFormatter
 import io.taptalk.TapTalk.Model.TAPMessageModel
 import io.taptalk.TapTalk.Model.TAPRoomModel
+import java.util.LinkedHashMap
 
 class TapSharedMediaViewModel(application: Application): AndroidViewModel(application) {
 
@@ -31,6 +34,8 @@ class TapSharedMediaViewModel(application: Application): AndroidViewModel(applic
     var remoteMedias: MutableList<TAPMessageModel> = arrayListOf()
     var remoteDocuments: MutableList<TAPMessageModel> = arrayListOf()
     var remoteLinks: MutableList<TAPMessageModel> = arrayListOf()
+    val dateSeparators: LinkedHashMap<String, TAPMessageModel> = linkedMapOf()
+    val dateSeparatorIndexes: LinkedHashMap<String, Int> = linkedMapOf()
     private var loadingItem : TAPMessageModel? = null
 
     fun getLoadingItem(): TAPMessageModel {
@@ -52,13 +57,19 @@ class TapSharedMediaViewModel(application: Application): AndroidViewModel(applic
         }
     }
 
-    fun addSharedMedias(sharedMediaList : List<TAPMessageModel>) {
-        for (item in sharedMediaList) {
-            addSharedMedia(item)
-        }
-    }
-
     fun getSharedMedia(localId : String): TAPMessageModel? {
         return sharedMediasMap[localId]
+    }
+
+    fun generateDateSeparator(message: TAPMessageModel): TAPMessageModel {
+        return TAPMessageModel.Builder(
+            TAPTimeFormatter.formatMonth(message.created),
+            room,
+            TYPE_DATE_SEPARATOR,
+            message.created - 1,
+            message.user,
+            "",
+            null
+        )
     }
 }

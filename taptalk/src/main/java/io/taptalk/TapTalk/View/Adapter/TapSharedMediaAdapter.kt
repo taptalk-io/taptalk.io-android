@@ -422,13 +422,17 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
 
     }
 
-    // TODO: 23/08/22 handle date separator logic MU
     inner class DateSeparatorViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPMessageModel>(parent, itemLayoutId) {
-
+        private val tvSectionTitle: TextView = itemView.findViewById(R.id.tv_section_title)
+        private val vTopSeparator: View = itemView.findViewById(R.id.v_separator_1)
         override fun onBind(item: TAPMessageModel?, position: Int) {
-
+            if (bindingAdapterPosition == 0) {
+                vTopSeparator.visibility = View.GONE
+            } else {
+                vTopSeparator.visibility = View.VISIBLE
+            }
+            tvSectionTitle.text = item?.body
         }
-
     }
 
     inner class LoadingViewHolder(parent: ViewGroup?, itemLayoutId: Int) : TAPBaseViewHolder<TAPMessageModel>(parent, itemLayoutId) {

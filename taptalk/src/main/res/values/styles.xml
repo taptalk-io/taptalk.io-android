@@ -854,4 +854,10 @@
         <item name="android:textColor">@color/tapMediaDocumentInfoColor</item>
         <item name="android:textSize">10sp</item>
     </style>
+
+    <style name="tapSectionTitleStyle" parent="tapFontFamilyMedium">
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:textColor">@color/tapInfoLabelTitleColor</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

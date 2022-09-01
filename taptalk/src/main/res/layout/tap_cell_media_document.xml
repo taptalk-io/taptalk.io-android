@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="57dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/tapWhite">
 
     <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
         android:id="@+id/rciv_image"

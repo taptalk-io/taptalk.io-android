@@ -24,15 +24,11 @@ import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.DownloadBroadcastEvent
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM
-import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.*
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
-import io.taptalk.TapTalk.Helper.TAPBroadcastManager
-import io.taptalk.TapTalk.Helper.TAPUtils
-import io.taptalk.TapTalk.Helper.TapTalk
-import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Interface.TapSharedMediaInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
@@ -329,8 +325,19 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                                 )
                             }
                         }
+                        var previousDate = ""
+                        var previousMessage: TAPMessageModel? = null
                         for (entity in entities) {
                             val mediaMessage = TAPMessageModel.fromMessageEntity(entity)
+                            val currentDate = TAPTimeFormatter.formatMonth(mediaMessage.created)
+                            if (previousMessage == null || !currentDate.equals(previousDate)) {
+                                val dateSeparator = vm.generateDateSeparator(mediaMessage)
+                                previousDate = currentDate
+                                previousMessage = mediaMessage
+                                vm.dateSeparators[currentDate] = dateSeparator
+                                vm.sharedMediaAdapterItems.add(dateSeparator)
+                                vm.dateSeparatorIndexes[currentDate] = vm.sharedMediaAdapterItems.indexOf(dateSeparator)
+                            }
                             vm.addSharedMedia(mediaMessage)
                             vm.sharedMediaAdapterItems.add(mediaMessage)
                         }
@@ -350,8 +357,21 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         }
 
     fun addRemoteSharedMedias(sharedMedias : List<TAPMessageModel>) {
-        vm.addSharedMedias(sharedMedias)
-        vm.sharedMediaAdapterItems.addAll(sharedMedias)
+        var previousDate = ""
+        var previousMessage: TAPMessageModel? = null
+        for (item in sharedMedias) {
+            val currentDate = TAPTimeFormatter.formatMonth(item.created)
+            if (!vm.dateSeparators.containsKey(currentDate) && (previousMessage == null || !currentDate.equals(previousDate))) {
+                val dateSeparator = vm.generateDateSeparator(item)
+                previousDate = currentDate
+                previousMessage = item
+                vm.dateSeparators[currentDate] = dateSeparator
+                vm.sharedMediaAdapterItems.add(dateSeparator)
+                vm.dateSeparatorIndexes[currentDate] = vm.sharedMediaAdapterItems.indexOf(dateSeparator)
+            }
+            vm.addSharedMedia(item)
+            vm.sharedMediaAdapterItems.add(item)
+        }
         if (vm.sharedMedias.isEmpty()) {
             requireActivity().runOnUiThread {
                 recycler_view.visibility = View.GONE
