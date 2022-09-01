@@ -75,7 +75,7 @@ class TapSharedMediaActivity : TAPBaseActivity() {
             vm.isLoading = true
             if (vm.oldestCreatedTime != null) {
                 // LOAD DATA FROM API
-                TAPDataManager.getInstance(instanceKey).getSharedMedia(vm.room?.roomID, vm.oldestCreatedTime, object : TAPDefaultDataView<TapGetSharedContentResponse>() {
+                TAPDataManager.getInstance(instanceKey).getSharedMedia(vm.room?.roomID, 0L, vm.oldestCreatedTime, object : TAPDefaultDataView<TapGetSharedContentResponse>() {
                     override fun onSuccess(response: TapGetSharedContentResponse?) {
                         super.onSuccess(response)
                         if (response == null) {

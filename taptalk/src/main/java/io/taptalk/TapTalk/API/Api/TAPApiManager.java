@@ -702,8 +702,8 @@ public class TAPApiManager {
         execute(homingPigeon.unpinMessages(request), subscriber);
     }
 
-    public void getSharedMedia(String roomId, Long maxCreated, Subscriber<TAPBaseResponse<TapGetSharedContentResponse>> subscriber) {
-        TAPGetMessageListByRoomAfterRequest request = new TAPGetMessageListByRoomAfterRequest(roomId, 0L, null);
+    public void getSharedMedia(String roomId, Long minCreated, Long maxCreated, Subscriber<TAPBaseResponse<TapGetSharedContentResponse>> subscriber) {
+        TAPGetMessageListByRoomAfterRequest request = new TAPGetMessageListByRoomAfterRequest(roomId, minCreated, null);
         request.setMaxCreated(maxCreated);
         execute(homingPigeon.getSharedMedia(request), subscriber);
 
