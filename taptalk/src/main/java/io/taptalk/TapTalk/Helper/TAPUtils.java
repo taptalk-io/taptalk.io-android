@@ -649,6 +649,33 @@ public class TAPUtils {
         return "";
     }
 
+    public static String getFileDisplaySizeAndDate(Context context, TAPMessageModel message) {
+        HashMap<String, Object> data = message.getData();
+        if (null == data) {
+            return "";
+        }
+        Number size = (Number) data.get(SIZE);
+
+        String displaySize = "", displayDate = "", displayTime = "";
+        if (null != size && size.longValue() > 0L) {
+            displaySize = getStringSizeLengthFile(size.longValue());
+        }
+        if (null != message.getCreated()) {
+            displayDate = TAPTimeFormatter.dateStampString(context, message.getCreated());
+            displayTime = TAPTimeFormatter.formatClock(message.getCreated());
+        }
+
+
+        if (!displaySize.isEmpty() && !displayDate.isEmpty() && !displayTime.isEmpty()) {
+            return String.format("%s • %s • %s", displaySize.toUpperCase(), displayDate, displayTime);
+        } else if (!displayDate.isEmpty()) {
+            return String.format("%s • %s", displayDate, displayTime);
+        } else if (!displaySize.isEmpty()) {
+            return displaySize;
+        }
+        return "";
+    }
+
     public static String getFileDisplayProgress(TAPMessageModel message, Long progressBytes) {
         HashMap<String, Object> data = message.getData();
         if (null == data) {

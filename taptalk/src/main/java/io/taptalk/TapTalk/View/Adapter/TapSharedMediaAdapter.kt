@@ -336,7 +336,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
             //            tvFileInfoDummy.setText(String.format("%s%s", TAPUtils.getFileDisplayDummyInfo(itemView.getContext(), item), space));
             if (null != item.isFailedSend && item.isFailedSend!!) {
                 // Message failed to send
-                tvFileInfo.text = TAPUtils.getFileDisplayInfo(item)
+                tvFileInfo.text = TAPUtils.getFileDisplaySizeAndDate(itemView.context, item)
                 rcivImage.setImageDrawable(
                     ContextCompat.getDrawable(
                         itemView.context,
@@ -350,7 +350,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                             .checkPhysicalFileExists(item))
             ) {
                 // File has finished downloading or uploading
-                tvFileInfo.text = TAPUtils.getFileDisplayInfo(item)
+                tvFileInfo.text = TAPUtils.getFileDisplaySizeAndDate(itemView.context, item)
                 rcivImage.setImageDrawable(
                     ContextCompat.getDrawable(
                         itemView.context,
@@ -361,7 +361,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 itemView.setOnClickListener { openFile(item) }
             } else if (null == downloadProgressPercent) {
                 // File is not downloaded
-                tvFileInfo.text = TAPUtils.getFileDisplayInfo(item)
+                tvFileInfo.text = TAPUtils.getFileDisplaySizeAndDate(itemView.context, item)
                 if (TAPFileDownloadManager.getInstance(instanceKey).failedDownloads.contains(item.localID)) {
                     rcivImage.setImageDrawable(
                         ContextCompat.getDrawable(
