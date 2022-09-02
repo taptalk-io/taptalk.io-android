@@ -330,7 +330,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         for (entity in entities) {
                             val mediaMessage = TAPMessageModel.fromMessageEntity(entity)
                             val currentDate = TAPTimeFormatter.formatMonth(mediaMessage.created)
-                            if (previousMessage == null || !currentDate.equals(previousDate)) {
+                            if ((previousMessage == null || !currentDate.equals(previousDate)) && !vm.dateSeparators.containsKey(currentDate)) {
                                 val dateSeparator = vm.generateDateSeparator(mediaMessage)
                                 previousDate = currentDate
                                 previousMessage = mediaMessage
@@ -340,9 +340,9 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                             }
                             vm.addSharedMedia(mediaMessage)
                             vm.sharedMediaAdapterItems.add(mediaMessage)
+                            vm.sharedMediaIndexes[mediaMessage.localID] = vm.sharedMediaAdapterItems.indexOf(mediaMessage)
                         }
-                        vm.lastTimestamp =
-                            vm.sharedMedias[vm.sharedMedias.size - 1].created
+                        vm.lastTimestamp = vm.sharedMedias[0].created
                         vm.isLoading = false
                         requireActivity().runOnUiThread {
                             hideSharedMediaLoading()
@@ -366,11 +366,12 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                 previousDate = currentDate
                 previousMessage = item
                 vm.dateSeparators[currentDate] = dateSeparator
-                vm.sharedMediaAdapterItems.add(dateSeparator)
+                vm.sharedMediaAdapterItems.add(0, dateSeparator)
                 vm.dateSeparatorIndexes[currentDate] = vm.sharedMediaAdapterItems.indexOf(dateSeparator)
             }
-            vm.addSharedMedia(item)
-            vm.sharedMediaAdapterItems.add(item)
+            vm.addSharedMedia(item, 0)
+            vm.sharedMediaAdapterItems.add(1, item)
+            vm.sharedMediaIndexes[item.localID] = vm.sharedMediaAdapterItems.indexOf(item)
         }
         if (vm.sharedMedias.isEmpty()) {
             requireActivity().runOnUiThread {
@@ -379,14 +380,14 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                 hideLoading()
             }
         } else {
-            vm.lastTimestamp = vm.sharedMedias[vm.sharedMedias.size - 1].created
+            vm.lastTimestamp = vm.sharedMedias[0].created
             requireActivity().runOnUiThread {
                 recycler_view.visibility = View.VISIBLE
                 recycler_view!!.viewTreeObserver.removeOnScrollChangedListener(sharedMediaPagingScrollListener)
                 hideSharedMediaLoading()
                 hideLoading()
                 recycler_view.post {
-                    sharedMediaAdapter?.notifyItemRangeInserted(vm.sharedMedias.size, sharedMedias.size)
+                    sharedMediaAdapter?.notifyDataSetChanged()
                 }
             }
         }

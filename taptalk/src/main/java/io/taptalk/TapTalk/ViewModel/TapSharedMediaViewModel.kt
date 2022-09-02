@@ -28,6 +28,7 @@ class TapSharedMediaViewModel(application: Application): AndroidViewModel(applic
     var pendingDownloadMessage: TAPMessageModel? = null
     var openedFileMessage: TAPMessageModel? = null
     var sharedMedias: MutableList<TAPMessageModel> = arrayListOf()
+    val sharedMediaIndexes: LinkedHashMap<String, Int> = linkedMapOf()
     var sharedMediaAdapterItems: MutableList<TAPMessageModel> = arrayListOf()
     var oldestCreatedTime : Long? = null
     var isRemoteContentFetched = false
@@ -50,9 +51,13 @@ class TapSharedMediaViewModel(application: Application): AndroidViewModel(applic
         }
     }
 
-    fun addSharedMedia(sharedMedia : TAPMessageModel) {
+    fun addSharedMedia(sharedMedia : TAPMessageModel, index : Int = sharedMedias.size - 1) {
         if (!sharedMediasMap.containsKey(sharedMedia.localID)) {
-            sharedMedias.add(sharedMedia)
+            if (sharedMedias.isNotEmpty()) {
+                sharedMedias.add(index, sharedMedia)
+            } else {
+                sharedMedias.add(sharedMedia)
+            }
             sharedMediasMap[sharedMedia.localID] = sharedMedia
         }
     }
