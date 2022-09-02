@@ -13,9 +13,10 @@
 
     <ImageView
         android:id="@+id/iv_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="132dp"
         android:layout_marginBottom="24dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/tap_img_empty_shared_media"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
