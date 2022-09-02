@@ -483,11 +483,15 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     }
 
     private fun showLoading() {
-        progress_circular.visibility = View.VISIBLE
+        if (progress_circular != null) {
+            progress_circular.visibility = View.VISIBLE
+        }
     }
 
     private fun hideLoading() {
-        progress_circular.visibility = View.GONE
+        if (progress_circular != null) {
+            progress_circular.visibility = View.GONE
+        }
     }
 
     private fun startFileDownload(message: TAPMessageModel?) {
