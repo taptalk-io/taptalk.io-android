@@ -1968,7 +1968,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteContent.setMaxLines(1);
                 etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey))});
                 etChat.setText(message.getData().get(CAPTION).toString());
-            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE) {
+            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO)) {
                 // Show image quote from file URL
                 glide.load((String) message.getData().get(FILE_URL)).into(rcivQuoteImage);
                 rcivQuoteImage.setColorFilter(null);

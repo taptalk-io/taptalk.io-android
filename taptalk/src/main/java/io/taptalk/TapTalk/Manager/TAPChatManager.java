@@ -1584,6 +1584,22 @@ public class TAPChatManager {
                 return;
             }
             message.setBody(updatedText);
+            List<String> urls = TAPUtils.getUrlsFromString(updatedText);
+            if (urls.isEmpty()) {
+                HashMap<String, Object> data = message.getData();
+                if (data != null) {
+                    data.put(URL, null);
+                    data.put(URLS, null);
+                    message.setData(data);
+                }
+                message.setType(TYPE_TEXT);
+            } else {
+                HashMap<String, Object> data = message.getData() == null ? new HashMap<>() : message.getData();
+                data.put(URL, urls.get(0));
+                data.put(URLS, urls);
+                message.setData(data);
+                message.setType(TYPE_LINK);
+            }
         }
         else if (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) {
             if (updatedText.length() > TapTalk.getMaxCaptionLength(instanceKey)) {
