@@ -431,7 +431,7 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
                 vTopSeparator.visibility = View.GONE
                 vTopGap.visibility = View.GONE
             } else {
-                if (items[absoluteAdapterPosition + 1].type == TYPE_IMAGE || items[absoluteAdapterPosition + 1].type == TYPE_VIDEO) {
+                if (items[absoluteAdapterPosition - 1].type == TYPE_IMAGE || items[absoluteAdapterPosition - 1].type == TYPE_VIDEO) {
                     vTopSeparator.visibility = View.VISIBLE
                     vTopGap.visibility = View.GONE
                 } else {

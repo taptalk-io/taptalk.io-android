@@ -98,7 +98,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
         }
         (sharedMediaGlm as GridLayoutManager).spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (sharedMediaAdapter!!.getItemAt(position).type == TYPE_IMAGE || sharedMediaAdapter!!.getItemAt(position).type == TYPE_VIDEO) {
+                return if (vm.sharedMediaAdapterItems[position].type == TYPE_IMAGE || vm.sharedMediaAdapterItems[position].type == TYPE_VIDEO) {
                     1
                 } else {
                     3
@@ -348,7 +348,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                             hideSharedMediaLoading()
                             hideLoading()
                             recycler_view.post {
-                                sharedMediaAdapter?.notifyItemRangeInserted(previousSize, entities.size)
+                                sharedMediaAdapter?.notifyItemRangeInserted(vm.sharedMediaAdapterItems.size, entities.size)
                             }
                         }
                     }
@@ -359,6 +359,9 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     fun addRemoteSharedMedias(sharedMedias : List<TAPMessageModel>) {
         var previousDate = ""
         var previousMessage: TAPMessageModel? = null
+        val lastSharedMediaIndex = vm.sharedMedias.size
+        val lastSharedMediaSeparatorIndex = vm.sharedMediaAdapterItems.size
+        var lastSharedMediaAdapterIndex = vm.sharedMediaAdapterItems.size
         for (item in sharedMedias) {
             val currentDate = TAPTimeFormatter.formatMonth(item.created)
             if (!vm.dateSeparators.containsKey(currentDate) && (previousMessage == null || !currentDate.equals(previousDate))) {
@@ -366,11 +369,16 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                 previousDate = currentDate
                 previousMessage = item
                 vm.dateSeparators[currentDate] = dateSeparator
-                vm.sharedMediaAdapterItems.add(0, dateSeparator)
+                vm.sharedMediaAdapterItems.add(lastSharedMediaSeparatorIndex, dateSeparator)
                 vm.dateSeparatorIndexes[currentDate] = vm.sharedMediaAdapterItems.indexOf(dateSeparator)
+                lastSharedMediaAdapterIndex = lastSharedMediaSeparatorIndex + 1
             }
-            vm.addSharedMedia(item, 0)
-            vm.sharedMediaAdapterItems.add(1, item)
+            vm.addSharedMedia(item, lastSharedMediaIndex)
+            if (currentDate == previousDate) {
+                vm.sharedMediaAdapterItems.add(lastSharedMediaAdapterIndex, item)
+            } else {
+                vm.sharedMediaAdapterItems.add(lastSharedMediaSeparatorIndex, item)
+            }
             vm.sharedMediaIndexes[item.localID] = vm.sharedMediaAdapterItems.indexOf(item)
         }
         if (vm.sharedMedias.isEmpty()) {
@@ -387,7 +395,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                 hideSharedMediaLoading()
                 hideLoading()
                 recycler_view.post {
-                    sharedMediaAdapter?.notifyDataSetChanged()
+                    sharedMediaAdapter?.notifyItemRangeInserted(vm.sharedMedias.size, sharedMedias.size)
                 }
             }
         }
@@ -464,14 +472,14 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
 
     private fun notifyItemChanged(mediaMessage: TAPMessageModel?) {
         requireActivity().runOnUiThread {
-            sharedMediaAdapter?.notifyItemChanged( vm.sharedMedias.indexOf(mediaMessage))
+            sharedMediaAdapter?.notifyItemChanged(vm.sharedMedias.indexOf(mediaMessage))
         }
     }
 
     private fun showSharedMediaLoading() {
         if (!vm.sharedMediaAdapterItems.contains(vm.getLoadingItem())) {
             vm.sharedMediaAdapterItems.add(vm.getLoadingItem())
-            sharedMediaAdapter?.notifyItemInserted(sharedMediaAdapter!!.itemCount - 1)
+            sharedMediaAdapter?.notifyItemInserted(vm.sharedMediaAdapterItems.size)
         }
     }
 
