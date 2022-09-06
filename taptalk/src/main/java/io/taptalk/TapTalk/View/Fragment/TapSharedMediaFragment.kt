@@ -472,7 +472,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
 
     private fun notifyItemChanged(mediaMessage: TAPMessageModel?) {
         requireActivity().runOnUiThread {
-            sharedMediaAdapter?.notifyItemChanged(vm.sharedMedias.indexOf(mediaMessage))
+            sharedMediaAdapter?.notifyItemChanged(vm.sharedMediaAdapterItems.indexOf(mediaMessage))
         }
     }
 
