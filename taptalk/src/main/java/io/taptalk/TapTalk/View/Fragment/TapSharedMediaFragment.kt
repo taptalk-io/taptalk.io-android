@@ -327,6 +327,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         }
                         var previousDate = ""
                         var previousMessage: TAPMessageModel? = null
+                        var additionalSeparators = 0
                         for (entity in entities) {
                             val mediaMessage = TAPMessageModel.fromMessageEntity(entity)
                             val currentDate = TAPTimeFormatter.formatMonth(mediaMessage.created)
@@ -337,6 +338,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                                 vm.dateSeparators[currentDate] = dateSeparator
                                 vm.sharedMediaAdapterItems.add(dateSeparator)
                                 vm.dateSeparatorIndexes[currentDate] = vm.sharedMediaAdapterItems.indexOf(dateSeparator)
+                                additionalSeparators++
                             }
                             vm.addSharedMedia(mediaMessage)
                             vm.sharedMediaAdapterItems.add(mediaMessage)
@@ -344,6 +346,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                         }
                         vm.lastTimestamp = vm.sharedMedias[0].created
                         vm.isLoading = false
+                        sharedMediaAdapter?.setDateSeparators(vm.dateSeparators)
                         requireActivity().runOnUiThread {
                             hideSharedMediaLoading()
                             hideLoading()
@@ -359,8 +362,9 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
     fun addRemoteSharedMedias(sharedMedias : List<TAPMessageModel>) {
         var previousDate = ""
         var previousMessage: TAPMessageModel? = null
+        var additionalSeparators = 0
         val lastSharedMediaIndex = vm.sharedMedias.size
-        val lastSharedMediaSeparatorIndex = vm.sharedMediaAdapterItems.size
+        val lastSharedMediaSeparatorIndex = vm.sharedMedias.size + vm.dateSeparators.size
         var lastSharedMediaAdapterIndex = vm.sharedMediaAdapterItems.size
         for (item in sharedMedias) {
             val currentDate = TAPTimeFormatter.formatMonth(item.created)
@@ -372,6 +376,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
                 vm.sharedMediaAdapterItems.add(lastSharedMediaSeparatorIndex, dateSeparator)
                 vm.dateSeparatorIndexes[currentDate] = vm.sharedMediaAdapterItems.indexOf(dateSeparator)
                 lastSharedMediaAdapterIndex = lastSharedMediaSeparatorIndex + 1
+                additionalSeparators++
             }
             vm.addSharedMedia(item, lastSharedMediaIndex)
             if (currentDate == previousDate) {
@@ -389,6 +394,7 @@ class TapSharedMediaFragment(private val instanceKey: String, private val type: 
             }
         } else {
             vm.lastTimestamp = vm.sharedMedias[0].created
+            sharedMediaAdapter?.setDateSeparators(vm.dateSeparators)
             requireActivity().runOnUiThread {
                 recycler_view.visibility = View.VISIBLE
                 recycler_view!!.viewTreeObserver.removeOnScrollChangedListener(sharedMediaPagingScrollListener)

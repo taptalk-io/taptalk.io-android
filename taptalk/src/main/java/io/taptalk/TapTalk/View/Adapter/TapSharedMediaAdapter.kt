@@ -42,7 +42,8 @@ import java.lang.Exception
 
 class TapSharedMediaAdapter(private val instanceKey: String, private val mediaItems: List<TAPMessageModel>, private val glide: RequestManager, private val listener: TapSharedMediaInterface) : TAPBaseAdapter<TAPMessageModel, TAPBaseViewHolder<TAPMessageModel>>() {
 
-    private var gridWidth : Int = (TAPUtils.getScreenWidth() - TAPUtils.dpToPx(40)) / 3
+    private var gridWidth : Int = (TAPUtils.getScreenWidth() - TAPUtils.dpToPx(34)) / 3
+    private var dateSeparators : HashMap<String, TAPMessageModel> = linkedMapOf()
 
     init {
         setItems(mediaItems, true)
@@ -96,12 +97,15 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
             clContainer.layoutParams.width = gridWidth
             if (clContainer.layoutParams is MarginLayoutParams) {
                 // Update left/right margin per item
+                val currentDate = TAPTimeFormatter.formatMonth(message.created)
                 val params = clContainer.layoutParams as MarginLayoutParams
-                when (bindingAdapterPosition % 3) {
+                val itemPosition = bindingAdapterPosition - (items.indexOf(dateSeparators[currentDate]) + 1)
+                when (itemPosition % 3) {
                     0 -> params.leftMargin = TAPUtils.dpToPx(14)
                     1 -> params.leftMargin = TAPUtils.dpToPx(5)
                     2 -> params.leftMargin = TAPUtils.dpToPx(-4)
                 }
+                clContainer.layoutParams = params
                 clContainer.requestLayout()
             }
             rcivThumbnail.setImageDrawable(null)
@@ -447,5 +451,10 @@ class TapSharedMediaAdapter(private val instanceKey: String, private val mediaIt
         override fun onBind(item: TAPMessageModel?, position: Int) {
 
         }
+    }
+
+    fun setDateSeparators(dateSeparators : HashMap<String, TAPMessageModel>) {
+        this.dateSeparators.clear()
+        this.dateSeparators.putAll(dateSeparators)
     }
 }

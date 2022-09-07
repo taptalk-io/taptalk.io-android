@@ -83,7 +83,7 @@ class TapSharedMediaActivity : TAPBaseActivity() {
                         if (response == null) {
                             return
                         }
-                        if (response.media != null && response.media.isNotEmpty()) {
+                        if (response.media != null && response.media.isNotEmpty() && vm.remoteMedias.isEmpty()) {
                             for (media in response.media) {
                                 val data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(media?.data as String, media.localID))
                                 val message = TAPMessageModel.Builder(
@@ -98,7 +98,7 @@ class TapSharedMediaActivity : TAPBaseActivity() {
                                 vm.remoteMedias.add(message)
                             }
                         }
-                        if (response.files != null && response.files.isNotEmpty()) {
+                        if (response.files != null && response.files.isNotEmpty() && vm.remoteDocuments.isEmpty()) {
                             for (files in response.files) {
                                 val data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(files?.data as String, files.localID))
                                 val message = TAPMessageModel.Builder(
@@ -113,7 +113,7 @@ class TapSharedMediaActivity : TAPBaseActivity() {
                                 vm.remoteDocuments.add(message)
                             }
                         }
-                        if (response.links != null && response.links.isNotEmpty()) {
+                        if (response.links != null && response.links.isNotEmpty() && vm.remoteLinks.isEmpty()) {
                             for (links in response.links) {
                                 val data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(links?.data as String, links.localID))
                                 val message = TAPMessageModel.Builder(
@@ -143,6 +143,8 @@ class TapSharedMediaActivity : TAPBaseActivity() {
                         vm.isLoading = false
                     }
                 })
+            } else {
+                getMoreSharedMedias(type)
             }
         }
     }
