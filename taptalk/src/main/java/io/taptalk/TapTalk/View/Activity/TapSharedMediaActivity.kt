@@ -48,6 +48,8 @@ class TapSharedMediaActivity : TAPBaseActivity() {
         vm = ViewModelProvider(this, TapSharedMediaViewModel.TapSharedMediaViewModelFactory(application))[TapSharedMediaViewModel::class.java]
         vm.room = intent.getParcelableExtra(TAPDefaultConstant.Extras.ROOM)
         vp_shared_media.adapter = TapSharedMediaPagerAdapter(this, instanceKey, supportFragmentManager, vm.room)
+        //viewpager cache fragments
+        vp_shared_media.offscreenPageLimit = 3
         tab_layout.setupWithViewPager(vp_shared_media)
         iv_button_back.setOnClickListener { onBackPressed() }
         TAPDataManager.getInstance(instanceKey).getOldestCreatedTimeFromRoom(vm.room?.roomID, object : TAPDatabaseListener<Long>() {
