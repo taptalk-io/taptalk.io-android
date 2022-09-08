@@ -121,6 +121,7 @@ public class TapUI {
     private boolean isDeleteAccountButtonVisible;
     private boolean isSavedMessagesMenuDisabled;
     private boolean isPinMessageMenuDisabled;
+    private boolean isMuteRoomListSwipeMenuDisabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -1150,7 +1151,21 @@ public class TapUI {
     }
 
     public void setPinMessageMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
         isPinMessageMenuDisabled = !isEnabled;
+    }
+
+    public boolean isMuteRoomListSwipeMenuEnabled() {
+        return !isMuteRoomListSwipeMenuDisabled;
+    }
+
+    public void setMuteRoomListSwipeMenuEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isMuteRoomListSwipeMenuDisabled = !isEnabled;
     }
 
     /**
