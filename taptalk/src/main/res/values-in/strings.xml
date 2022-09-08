@@ -433,9 +433,9 @@
     <string name="tap_pinned_message">Pinned Message</string>
     <string name="tap_pinned_messages">Pinned Messages</string>
     <string name="unpin_all_messages">Unpin All Messages</string>
-    <string name="tap_m_e_d_i_a">m e d i a</string>
-    <string name="tap_l_i_n_k_s">t a u t a n</string>
-    <string name="tap_d_o_c_u_m_e_n_t_s">b e r k a s</string>
+    <string name="tap_media">m e d i a</string>
+    <string name="tap_links">t a u t a n</string>
+    <string name="tap_documents">b e r k a s</string>
     <string name="tap_no_shared_media">Tidak ada media bersama</string>
     <string name="tap_wording_empty_shared_media">Kamu dapat melihat semua media yang di bagikan di obrolan melalui halaman ini setelah kamu mulai membagikannya.</string>
     <string name="tap_view_in_chat">Lihat di Obrolan</string>

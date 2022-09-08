@@ -15,9 +15,9 @@ class TapSharedMediaPagerAdapter(private val context : Context, private val inst
 
     override fun getPageTitle(position: Int): CharSequence {
         return when (position) {
-            0 -> context.getString(R.string.tap_m_e_d_i_a)
-            1 -> context.getString(R.string.tap_l_i_n_k_s)
-            else -> context.getString(R.string.tap_d_o_c_u_m_e_n_t_s)
+            0 -> context.getString(R.string.tap_media)
+            1 -> context.getString(R.string.tap_links)
+            else -> context.getString(R.string.tap_documents)
         }
     }
 

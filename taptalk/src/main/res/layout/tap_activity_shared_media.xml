@@ -56,6 +56,7 @@
         android:elevation="1dp"
         app:tabMode="scrollable"
         app:tabGravity="center"
+        app:tabTextAppearance="@style/tapSharedMediaTabTextAppearance"
         app:tabIndicatorFullWidth="false"
         app:tabTextColor="@color/tapColorPrimary"
         app:tabIndicatorColor="@color/tapColorPrimary"
