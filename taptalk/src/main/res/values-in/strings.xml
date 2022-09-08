@@ -433,5 +433,7 @@
     <string name="tap_pinned_message">Pinned Message</string>
     <string name="tap_pinned_messages">Pinned Messages</string>
     <string name="unpin_all_messages">Unpin All Messages</string>
+    <string name="tap_mute">Senyap</string>
+    <string name="tap_unmute">Bunyikan</string>
 
 </resources>

@@ -46,6 +46,33 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_mute"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/iv_mute_button"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/tap_ic_mute_white"/>
+
+            <TextView
+                android:id="@+id/tv_mute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tap_mute"
+                android:layout_gravity="center"
+                style="@style/tapThinButtonLabelStyle"
+                android:padding="0dp"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
