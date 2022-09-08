@@ -435,9 +435,9 @@
     <string name="tap_pinned_message">Pinned Message</string>
     <string name="tap_pinned_messages">Pinned Messages</string>
     <string name="unpin_all_messages">Unpin All Messages</string>
-    <string name="tap_media">m e d i a</string>
-    <string name="tap_links">l i n k s</string>
-    <string name="tap_documents">d o c u m e n t s</string>
+    <string name="tap_media">media</string>
+    <string name="tap_links">links</string>
+    <string name="tap_documents">documents</string>
     <string name="tap_no_shared_media">No Shared Media</string>
     <string name="tap_wording_empty_shared_media">You can see all your shared media from this chat here once you start sharing them.</string>
     <string name="tap_view_in_chat">View in Chat</string>
