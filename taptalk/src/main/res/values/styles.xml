@@ -834,4 +834,30 @@
         <item name="android:textColor">@color/tapInfoLabelSubtitleColor</item>
         <item name="android:textSize">18sp</item>
     </style>
+
+    <style name="tapMediaLinkStyle" parent="tapFontFamilyMedium">
+        <item name="android:textColor">@color/tapMediaLinkColor</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">middle</item>
+    </style>
+
+    <style name="tapMediaDocumentTitleStyle" parent="tapFontFamilyChatBold">
+        <item name="android:lineSpacingExtra">8sp</item>
+        <item name="android:textColor">@color/tapTitleLabelColor</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="tapMediaDocumentInfoStyle" parent="tapFontFamilyChatRegular">
+        <item name="android:textColor">@color/tapMediaDocumentInfoColor</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="tapSectionTitleStyle" parent="tapFontFamilyMedium">
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:textColor">@color/tapInfoLabelTitleColor</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

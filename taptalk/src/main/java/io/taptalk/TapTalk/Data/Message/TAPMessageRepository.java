@@ -338,6 +338,30 @@ public class TAPMessageRepository {
         }).start();
     }
 
+    public void getRoomFiles(Long lastTimestamp, String roomID, int numberOfItems, final TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> roomFiles;
+            if (lastTimestamp == 0L) {
+                roomFiles = messageDao.getRoomFiles(roomID, numberOfItems);
+            } else {
+                roomFiles = messageDao.getRoomFiles(lastTimestamp, roomID, numberOfItems);
+            }
+            listener.onSelectFinished(roomFiles);
+        }).start();
+    }
+
+    public void getRoomLinks(Long lastTimestamp, String roomID, int numberOfItems, final TAPDatabaseListener<TAPMessageEntity> listener) {
+        new Thread(() -> {
+            List<TAPMessageEntity> roomLinks;
+            if (lastTimestamp == 0L) {
+                roomLinks = messageDao.getRoomLinks(roomID, numberOfItems);
+            } else {
+                roomLinks = messageDao.getRoomLinks(lastTimestamp, roomID, numberOfItems);
+            }
+            listener.onSelectFinished(roomLinks);
+        }).start();
+    }
+
     public void getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp, final TAPDatabaseListener<TAPMessageEntity> listener) {
         new Thread(() -> {
             List<TAPMessageEntity> messages = messageDao.getRoomMediaMessageBeforeTimestamp(roomID, minimumTimestamp);

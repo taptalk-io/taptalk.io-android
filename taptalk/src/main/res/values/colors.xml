@@ -143,6 +143,7 @@
     <color name="tapIconChatProfileMenuSearchChat">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuClearChat">@color/tapColorDestructiveIcon</color>
     <color name="tapIconChatProfileMenuStarredMessages">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconChatProfileMenuSharedMedia">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupProfileMenuEditGroup">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupMemberProfileMenuAddToContacts">@color/tapColorPrimaryIcon</color>
@@ -172,6 +173,7 @@
     <color name="tapIconLongPressActionStarMessage">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressActionEditMessage">@color/tapColorPrimaryIcon</color>
     <color name="tapIconLongPressActionPinMessage">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconLongPressSharedMedia">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachDocuments">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachCamera">@color/tapColorPrimaryIcon</color>
     <color name="tapIconAttachGallery">@color/tapColorPrimaryIcon</color>
@@ -348,6 +350,8 @@
     <color name="tapMediaPreviewSendLabelButtonColor">@color/tapColorTextLight</color>
     <color name="tapMediaPreviewWarningTitleColor">@color/tapColorTextLight</color>
     <color name="tapMediaPreviewWarningBodyColor">@color/tapColorTextLight</color>
+    <color name="tapMediaLinkColor">@color/tapColorPrimary</color>
+    <color name="tapMediaDocumentInfoColor">@color/tapTransparentBlack1940</color>
 
     <color name="tapImageDetailSenderNameColor">@color/tapColorTextLight</color>
     <color name="tapImageDetailMessageStatusColor">@color/tapColorTextLight</color>

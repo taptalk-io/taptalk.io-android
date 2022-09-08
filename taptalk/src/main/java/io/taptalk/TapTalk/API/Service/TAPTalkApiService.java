@@ -51,6 +51,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
@@ -222,4 +223,7 @@ public interface TAPTalkApiService {
 
     @POST("chat/message/unpin")
     Observable<TAPBaseResponse<TapPinMessageResponse>> unpinMessages(@Body TapMessageIdsRequest request);
+
+    @POST("chat/room/get_shared_content")
+    Observable<TAPBaseResponse<TapGetSharedContentResponse>> getSharedMedia(@Body TAPGetMessageListByRoomAfterRequest request);
 }

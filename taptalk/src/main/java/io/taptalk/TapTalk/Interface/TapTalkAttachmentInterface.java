@@ -53,4 +53,6 @@ public interface TapTalkAttachmentInterface {
     void onEditMessage(TAPMessageModel message);
 
     void onMessagePinned(TAPMessageModel message);
+
+    void onViewInChat(TAPMessageModel message);
 }
