@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/tapWhite">
+
+    <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
+        android:id="@+id/rciv_image"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:background="@drawable/tap_bg_rounded_primary_8dp"
+        android:scaleType="center"
+        android:src="@drawable/tap_ic_link_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/v_separator" />
+
+    <TextView
+        android:id="@+id/tv_link"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="22dp"
+        style="@style/tapMediaLinkStyle"
+        app:layout_constraintStart_toEndOf="@id/rciv_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rciv_image"
+        app:layout_constraintBottom_toBottomOf="@id/rciv_image" />
+
+    <View
+        android:id="@+id/v_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/tapTransparentBlack1910"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

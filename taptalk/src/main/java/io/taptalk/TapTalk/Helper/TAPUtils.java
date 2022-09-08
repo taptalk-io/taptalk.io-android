@@ -87,6 +87,7 @@ import io.taptalk.TapTalk.View.Activity.TAPWebBrowserActivity;
 import io.taptalk.TapTalk.R;
 
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
+import static androidx.core.util.PatternsCompat.WEB_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.ROOM;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.IntentType.GALLERY;
@@ -102,6 +103,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.MEDIA_TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LINK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_TEXT;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
@@ -641,6 +643,33 @@ public class TAPUtils {
             return String.format("%s %s", displaySize, displayExtension).toUpperCase();
         } else if (!displayExtension.isEmpty()) {
             return displayExtension;
+        } else if (!displaySize.isEmpty()) {
+            return displaySize;
+        }
+        return "";
+    }
+
+    public static String getFileDisplaySizeAndDate(Context context, TAPMessageModel message) {
+        HashMap<String, Object> data = message.getData();
+        if (null == data) {
+            return "";
+        }
+        Number size = (Number) data.get(SIZE);
+
+        String displaySize = "", displayDate = "", displayTime = "";
+        if (null != size && size.longValue() > 0L) {
+            displaySize = getStringSizeLengthFile(size.longValue());
+        }
+        if (null != message.getCreated()) {
+            displayDate = TAPTimeFormatter.dateStampString(context, message.getCreated());
+            displayTime = TAPTimeFormatter.formatClock(message.getCreated());
+        }
+
+
+        if (!displaySize.isEmpty() && !displayDate.isEmpty() && !displayTime.isEmpty()) {
+            return String.format("%s • %s • %s", displaySize.toUpperCase(), displayDate, displayTime);
+        } else if (!displayDate.isEmpty()) {
+            return String.format("%s • %s", displayDate, displayTime);
         } else if (!displaySize.isEmpty()) {
             return displaySize;
         }
@@ -1190,6 +1219,7 @@ public class TAPUtils {
         if (message.getUser().equals(activeUser) ||
                 message.getRoom().getType() == TYPE_PERSONAL ||
                 (message.getType() != TYPE_TEXT &&
+                        message.getType() != TYPE_LINK &&
                         message.getType() != TYPE_IMAGE &&
                         message.getType() != TYPE_VIDEO) ||
                 null == activeUser.getUsername() ||
@@ -1318,5 +1348,17 @@ public class TAPUtils {
     public static boolean isSavedMessagesRoom(String roomID, String instanceKey) {
         String userID = TAPChatManager.getInstance(instanceKey).getActiveUser().getUserID();
         return roomID.equals(String.format("%s-%s", userID, userID));
+    }
+
+    public static List<String> getUrlsFromString(String text) {
+        String [] parts = text.split("\\s+");
+        List<String> urls = new ArrayList<>();
+        // get every part
+        for( String item : parts ) {
+            if(WEB_URL.matcher(item).matches()) {
+                urls.add(item);
+            }
+        }
+        return urls;
     }
 }
