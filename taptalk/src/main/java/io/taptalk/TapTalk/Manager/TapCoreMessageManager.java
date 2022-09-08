@@ -64,6 +64,7 @@ import io.taptalk.TapTalk.Listener.TapCoreFileUploadListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetAllMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetOlderMessageListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetSharedContentMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapCoreMessageListener;
 import io.taptalk.TapTalk.Listener.TapCoreUpdateMessageStatusListener;
@@ -71,7 +72,9 @@ import io.taptalk.TapTalk.Listener.TapCoreSendMessageListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMessageListByRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapSharedMediaItemModel;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapUnstarMessageResponse;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
@@ -1643,6 +1646,90 @@ public class TapCoreMessageManager {
             public void onSuccess(TapPinMessageResponse response) {
                 super.onSuccess(response);
                 listener.onSuccess(new ArrayList<>(response.getMessageIDs()));
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void getSharedContentMessages(TAPRoomModel room,  long minCreatedTimestamp, long maxCreatedTimestamp, TapCoreGetSharedContentMessageListener listener) {
+        TAPDataManager.getInstance(instanceKey).getSharedMedia(room.getRoomID(), minCreatedTimestamp, maxCreatedTimestamp, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapGetSharedContentResponse response) {
+                super.onSuccess(response);
+                List<TAPMessageModel> mediaList = new ArrayList<>();
+                List<TAPMessageModel> fileList = new ArrayList<>();
+                List<TAPMessageModel> linkList = new ArrayList<>();
+                if (response.getMedia() != null) {
+                    for (TapSharedMediaItemModel item : response.getMedia()) {
+                        String dataString = "";
+                        if (item.getData() != null) {
+                            dataString = item.getData();
+                        }
+                        HashMap<String, Object> data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(dataString, item.getLocalID()));
+                        TAPMessageModel message = TAPMessageModel.Builder(
+                                "",
+                                room,
+                                item.getMessageType(),
+                                item.getCreated(),
+                                new TAPUserModel(item.getUserID(), item.getUserFullname()),
+                                "",
+                                data
+                        );
+                        mediaList.add(message);
+                    }
+                }
+                if (response.getFiles() != null) {
+                    for (TapSharedMediaItemModel item : response.getFiles()) {
+                        String dataString = "";
+                        if (item.getData() != null) {
+                            dataString = item.getData();
+                        }
+                        HashMap<String, Object> data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(dataString, item.getLocalID()));
+                        TAPMessageModel message = TAPMessageModel.Builder(
+                                "",
+                                room,
+                                item.getMessageType(),
+                                item.getCreated(),
+                                new TAPUserModel(item.getUserID(), item.getUserFullname()),
+                                "",
+                                data
+                        );
+                        fileList.add(message);
+                    }
+                }
+                if (response.getLinks() != null) {
+                    for (TapSharedMediaItemModel item : response.getLinks()) {
+                        String dataString = "";
+                        if (item.getData() != null) {
+                            dataString = item.getData();
+                        }
+                        HashMap<String, Object> data = TAPUtils.toHashMap(TAPEncryptorManager.getInstance().decrypt(dataString, item.getLocalID()));
+                        TAPMessageModel message = TAPMessageModel.Builder(
+                                "",
+                                room,
+                                item.getMessageType(),
+                                item.getCreated(),
+                                new TAPUserModel(item.getUserID(), item.getUserFullname()),
+                                "",
+                                data
+                        );
+                        linkList.add(message);
+                    }
+                }
+                listener.onSuccess(mediaList, fileList, linkList);
             }
 
             @Override

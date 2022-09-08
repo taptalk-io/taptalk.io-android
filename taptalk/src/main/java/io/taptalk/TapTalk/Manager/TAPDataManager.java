@@ -95,6 +95,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapPinMessageResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapStarMessageResponse;
@@ -974,6 +975,22 @@ public class TAPDataManager {
         TAPDatabaseManager.getInstance(instanceKey).getRoomMedias(lastTimestamp, roomID, numberOfItems, listener);
     }
 
+    public void getRoomFiles(Long lastTimestamp, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        getRoomFiles(lastTimestamp, roomID, MAX_ITEMS_PER_PAGE, listener);
+    }
+
+    public void getRoomFiles(Long lastTimestamp, String roomID, int numberOfItems, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getRoomFiles(lastTimestamp, roomID, numberOfItems, listener);
+    }
+
+    public void getRoomLinks(Long lastTimestamp, String roomID, TAPDatabaseListener<TAPMessageEntity> listener) {
+        getRoomLinks(lastTimestamp, roomID, MAX_ITEMS_PER_PAGE, listener);
+    }
+
+    public void getRoomLinks(Long lastTimestamp, String roomID, int numberOfItems, TAPDatabaseListener<TAPMessageEntity> listener) {
+        TAPDatabaseManager.getInstance(instanceKey).getRoomLinks(lastTimestamp, roomID, numberOfItems, listener);
+    }
+
     public void getRoomMediaMessageBeforeTimestamp(String roomID, long minimumTimestamp, TAPDatabaseListener<TAPMessageEntity> listener) {
         TAPDatabaseManager.getInstance(instanceKey).getRoomMediaMessageBeforeTimestamp(roomID, minimumTimestamp, listener);
     }
@@ -1494,5 +1511,9 @@ public class TAPDataManager {
 
     public void unPinMessages(String roomId, List<String> messageIds, TAPDefaultDataView<TapPinMessageResponse> view) {
         TAPApiManager.getInstance(instanceKey).unpinMessages(roomId, messageIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getSharedMedia(String roomId, Long minCreated, Long maxCreated, TAPDefaultDataView<TapGetSharedContentResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getSharedMedia(roomId, minCreated, maxCreated, new TAPDefaultSubscriber<>(view));
     }
 }

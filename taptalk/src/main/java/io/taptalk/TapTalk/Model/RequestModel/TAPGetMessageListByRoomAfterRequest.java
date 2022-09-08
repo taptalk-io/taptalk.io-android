@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TAPGetMessageListByRoomAfterRequest {
     @JsonProperty("roomID") private String roomID;
     @JsonProperty("minCreated") private Long minCreated;
+    @JsonProperty("maxCreated") private Long maxCreated;
     @JsonProperty("lastUpdated") private Long lastUpdated;
 
     public TAPGetMessageListByRoomAfterRequest(String roomID, Long minCreated, Long lastUpdated) {
@@ -27,6 +28,14 @@ public class TAPGetMessageListByRoomAfterRequest {
 
     public void setMinCreated(Long minCreated) {
         this.minCreated = minCreated;
+    }
+
+    public Long getMaxCreated() {
+        return maxCreated;
+    }
+
+    public void setMaxCreated(Long maxCreated) {
+        this.maxCreated = maxCreated;
     }
 
     public Long getLastUpdated() {

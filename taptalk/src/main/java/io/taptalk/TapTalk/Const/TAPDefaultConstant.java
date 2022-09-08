@@ -50,6 +50,7 @@ public class TAPDefaultConstant {
         public static final int TYPE_STICKER = 1007;
         public static final int TYPE_VOICE = 1008;
         public static final int TYPE_AUDIO = 1009;
+        public static final int TYPE_LINK = 1010;
 
         public static final int TYPE_PRODUCT = 2001;
         public static final int TYPE_CATEGORY = 2002;
@@ -93,6 +94,7 @@ public class TAPDefaultConstant {
         public static final String FILE_NAME = "fileName";
         public static final String FILE_URL = "url";
         public static final String URL = "url";
+        public static final String URLS = "urls";
         public static final String IMAGE_URL = "imageURL";
         public static final String MEDIA_TYPE = "mediaType";
         public static final String DURATION = "duration";
@@ -180,6 +182,7 @@ public class TAPDefaultConstant {
         public static final int PICK_GROUP_IMAGE_GALLERY = 94;
         public static final int OPEN_STARRED_MESSAGES = 95;
         public static final int OPEN_PINNED_MESSAGES = 96;
+        public static final int OPEN_SHARED_MEDIA = 97;
     }
 
     public static final class PermissionRequest {
@@ -439,6 +442,7 @@ public class TAPDefaultConstant {
         public static final int MENU_EDIT_GROUP = 14;
         public static final int MENU_REPORT = 15;
         public static final int MENU_STARRED_MESSAGES = 16;
+        public static final int MENU_SHARED_MEDIA = 17;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";

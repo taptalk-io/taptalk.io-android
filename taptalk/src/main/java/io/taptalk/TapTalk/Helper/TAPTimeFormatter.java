@@ -175,6 +175,11 @@ public class TAPTimeFormatter {
         return timeSdf.format(timestamp);
     }
 
+    public static String formatMonth(long timestamp) {
+        SimpleDateFormat timeSdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+        return timeSdf.format(timestamp);
+    }
+
     public static boolean isOverOneWeek(long timestamp) {
         return (System.currentTimeMillis() - timestamp) >= (times.get(2));
     }

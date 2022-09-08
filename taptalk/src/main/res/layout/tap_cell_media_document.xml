@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="57dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/tapWhite">
+
+    <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
+        android:id="@+id/rciv_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:background="@drawable/tap_bg_rounded_primary_8dp"
+        android:scaleType="center"
+        android:tint="@color/tapWhite"
+        android:src="@drawable/tap_ic_documents_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/v_separator" />
+
+    <ProgressBar
+        android:id="@+id/pb_progress"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100"
+        tools:progress="65"
+        android:indeterminate="false"
+        android:visibility="gone"
+        android:progressDrawable="@drawable/tap_file_circular_progress_white"
+        app:layout_constraintStart_toStartOf="@id/rciv_image"
+        app:layout_constraintTop_toTopOf="@id/rciv_image"
+        app:layout_constraintEnd_toEndOf="@id/rciv_image"
+        app:layout_constraintBottom_toBottomOf="@id/rciv_image" />
+
+    <TextView
+        android:id="@+id/tv_file_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="14dp"
+        style="@style/tapMediaDocumentTitleStyle"
+        app:layout_constraintStart_toEndOf="@id/rciv_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rciv_image" />
+
+    <TextView
+        android:id="@+id/tv_file_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/tapMediaDocumentInfoStyle"
+        app:layout_constraintStart_toStartOf="@id/tv_file_name"
+        app:layout_constraintEnd_toEndOf="@id/tv_file_name"
+        app:layout_constraintBottom_toBottomOf="@id/rciv_image"/>
+
+    <View
+        android:id="@+id/v_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/tapTransparentBlack1910"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

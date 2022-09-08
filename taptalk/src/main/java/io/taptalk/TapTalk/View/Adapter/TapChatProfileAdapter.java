@@ -51,6 +51,7 @@ import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
 import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_SHARED_MEDIA;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_STARRED_MESSAGES;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_VIEW_MEMBERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ANIMATION_TIME;
@@ -213,7 +214,8 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
             typedArray.recycle();
 
             // Show menu chevron
-            if (item.getMenuId() == MENU_VIEW_MEMBERS || item.getMenuId() == MENU_STARRED_MESSAGES) {
+            if (item.getMenuId() == MENU_VIEW_MEMBERS || item.getMenuId() == MENU_STARRED_MESSAGES ||
+                item.getMenuId() == MENU_SHARED_MEDIA) {
                 ivRightArrow.setVisibility(View.VISIBLE);
             } else {
                 ivRightArrow.setVisibility(View.GONE);
@@ -521,20 +523,14 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
     class LoadingLayoutViewHolder extends TAPBaseViewHolder<TapChatProfileItemModel> {
 
         private LinearLayout llReloadSharedMedia;
-        private ImageView ivLoading;
 
         LoadingLayoutViewHolder(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
             llReloadSharedMedia = itemView.findViewById(R.id.ll_reload_shared_media);
-            ivLoading = itemView.findViewById(R.id.iv_shared_media_loading);
         }
 
         @Override
         protected void onBind(TapChatProfileItemModel item, int position) {
-            if (null == ivLoading.getAnimation()) {
-                TAPUtils.rotateAnimateInfinitely(itemView.getContext(), ivLoading);
-            }
-
             // TODO: 15 October 2019 SHOW RELOAD SHARED MEDIA ON API FAILURE
             llReloadSharedMedia.setVisibility(View.GONE);
             llReloadSharedMedia.setOnClickListener(v -> chatProfileInterface.onReloadSharedMedia());

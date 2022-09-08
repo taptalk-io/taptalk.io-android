@@ -48,6 +48,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_DATE_SEPARATOR;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LINK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOADING_MESSAGE_IDENTIFIER;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LOCATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_SYSTEM_MESSAGE;
@@ -1967,7 +1968,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteContent.setMaxLines(1);
                 etChat.setFilters(new InputFilter[] {new InputFilter.LengthFilter(TapTalk.getMaxCaptionLength(instanceKey))});
                 etChat.setText(message.getData().get(CAPTION).toString());
-            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE) {
+            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && (message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO)) {
                 // Show image quote from file URL
                 glide.load((String) message.getData().get(FILE_URL)).into(rcivQuoteImage);
                 rcivQuoteImage.setColorFilter(null);
@@ -3411,7 +3412,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             if (vm.getQuotedMessage() != null && vm.getQuoteAction() == EDIT) {
                 // edit message
                 TAPMessageModel messageModel = vm.getQuotedMessage();
-                if (messageModel.getType() == TYPE_TEXT && !TextUtils.isEmpty(message)) {
+                if ((messageModel.getType() == TYPE_TEXT || messageModel.getType() == TYPE_LINK) && !TextUtils.isEmpty(message)) {
                     messageModel.setBody(message);
                 } else if (messageModel.getType() == TYPE_IMAGE || messageModel.getType() == TYPE_VIDEO) {
                     HashMap<String, Object> data = messageModel.getData();
@@ -3981,7 +3982,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     if (vm.getQuoteAction() == EDIT) {
                         String caption = vm.getQuotedMessage().getData() != null? (String) vm.getQuotedMessage().getData().get(CAPTION) : "";
                         caption = caption != null? caption : "";
-                        if ((vm.getQuotedMessage().getType() == TYPE_TEXT && vm.getQuotedMessage().getBody().equals(s.toString())) || ((vm.getQuotedMessage().getType() == TYPE_IMAGE || vm.getQuotedMessage().getType() == TYPE_VIDEO) &&
+                        if (((vm.getQuotedMessage().getType() == TYPE_TEXT || vm.getQuotedMessage().getType() == TYPE_LINK) && vm.getQuotedMessage().getBody().equals(s.toString())) || ((vm.getQuotedMessage().getType() == TYPE_IMAGE || vm.getQuotedMessage().getType() == TYPE_VIDEO) &&
                                 caption.equals(s.toString()))) {
                             setSendButtonDisabled();
                         } else {
@@ -4112,7 +4113,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
             return;
         }
         String originalText;
-        if (message.getType() == TYPE_TEXT) {
+        if (message.getType() == TYPE_TEXT || message.getType() == TYPE_LINK) {
             originalText = message.getBody();
         } else if ((message.getType() == TYPE_IMAGE || message.getType() == TYPE_VIDEO) && null != message.getData()) {
             originalText = (String) message.getData().get(CAPTION);

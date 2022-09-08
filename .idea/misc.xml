@@ -9,6 +9,86 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Documents/AndroidStudioProjects/taptalk-android/taptalk/src/main/res/layout/tap_cell_chat_bubble_text_left.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_dev_landing.xml" value="0.234375" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.234375" />
+        <entry key="app/src/main/res/layout/tap_activity_delete_account.xml" value="0.234375" />
+        <entry key="app/src/main/res/layout/tap_activity_landing.xml" value="0.234375" />
+        <entry key="app/src/main/res/layout/tap_activity_login.xml" value="0.234375" />
+        <entry key="app/src/main/res/layout/tap_activity_register.xml" value="0.234375" />
+        <entry key="app/src/main/res/layout/tap_fragment_login_verification.xml" value="0.234375" />
+        <entry key="app/src/main/res/layout/tap_fragment_phone_login.xml" value="0.234375" />
+        <entry key="app/src/main/res/layout/tap_layout_popup_loading_screen.xml" value="0.234375" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_bubble_quote_decoration_left.xml" value="0.20925925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_chat_bubble_left_highlight.xml" value="0.20185185185185187" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_chat_bubble_right_highlight.xml" value="0.13333333333333333" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_circle_66191919.xml" value="0.13333333333333333" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_circle_9b9b9b.xml" value="0.13333333333333333" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_destructive_button.xml" value="0.18425925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_destructive_button_inactive.xml" value="0.18425925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_primary_8dp.xml" value="0.20925925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_profile_picture_indicator_selected.xml" value="0.20925925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_rounded_primary_8dp.xml" value="0.20925925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_send_location_button_color.xml" value="0.20925925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_start_new_chat_button_ripple.xml" value="0.13333333333333333" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_warning_card.xml" value="0.18425925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_white_rounded_8dp.xml" value="0.19537037037037036" />
+        <entry key="taptalk/src/main/res/drawable/tap_bg_white_rounded_8dp_ripple.xml" value="0.20925925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_arrow_right_circle.xml" value="0.18425925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_attach_grey.xml" value="0.20925925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_bookmark_large.xml" value="0.18425925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_bookmark_round.xml" value="0.18425925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_circle_active.xml" value="0.18333333333333332" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_deleted_user.xml" value="0.13333333333333333" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_delivered_grey.xml" value="0.13333333333333333" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_documents_white.xml" value="0.21666666666666667" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_download_orange.xml" value="0.25052083333333336" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_group_icon.xml" value="0.25" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_mark_unread_white.xml" value="0.25052083333333336" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_open_link_orange.xml" value="0.20925925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_pin_white.xml" value="0.20925925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_rounded_check.xml" value="0.18425925925925926" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_sent_grey.xml" value="0.13333333333333333" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_star_filled_white.xml" value="0.25052083333333336" />
+        <entry key="taptalk/src/main/res/drawable/tap_ic_unpin_message_orange.xml" value="0.25052083333333336" />
+        <entry key="taptalk/src/main/res/layout/tap_activity_add_group_member.xml" value="0.13677536231884058" />
+        <entry key="taptalk/src/main/res/layout/tap_activity_chat.xml" value="0.5" />
+        <entry key="taptalk/src/main/res/layout/tap_activity_chat_profile.xml" value="0.125" />
+        <entry key="taptalk/src/main/res/layout/tap_activity_delete_account.xml" value="0.165" />
+        <entry key="taptalk/src/main/res/layout/tap_activity_my_account.xml" value="0.1" />
+        <entry key="taptalk/src/main/res/layout/tap_activity_saved_messages.xml" value="0.234375" />
+        <entry key="taptalk/src/main/res/layout/tap_activity_shared_media.xml" value="0.12200956937799043" />
+        <entry key="taptalk/src/main/res/layout/tap_activity_starred_messages.xml" value="0.335" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_deleted_left.xml" value="0.11398176291793313" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_file_left.xml" value="0.3888888888888889" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_file_right.xml" value="0.45" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_image_left.xml" value="0.5" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_image_right.xml" value="2.0" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_location_left.xml" value="0.335" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_location_right.xml" value="0.11398176291793313" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_product_list.xml" value="0.11398176291793313" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_text_left.xml" value="0.45" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_text_right.xml" value="0.375" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_voice_left.xml" value="0.21001630758079176" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_chat_bubble_voice_right.xml" value="0.41839080459770117" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_empty.xml" value="0.13677536231884058" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_media_document.xml" value="0.45" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_media_link.xml" value="0.45" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_media_preview_thumbnail.xml" value="0.234375" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_media_thumbnail_grid.xml" value="0.10192750472119749" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_section_title.xml" value="0.32875753117847006" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_shared_media_loading.xml" value="0.234375" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_shared_media_title.xml" value="0.335" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_user_contact.xml" value="0.335" />
+        <entry key="taptalk/src/main/res/layout/tap_cell_user_room.xml" value="0.335" />
+        <entry key="taptalk/src/main/res/layout/tap_dialog.xml" value="0.234375" />
+        <entry key="taptalk/src/main/res/layout/tap_fragment_room_list.xml" value="0.375" />
+        <entry key="taptalk/src/main/res/layout/tap_fragment_search_chat.xml" value="0.234375" />
+        <entry key="taptalk/src/main/res/layout/tap_fragment_shared_media.xml" value="0.11333333333333333" />
+        <entry key="taptalk/src/main/res/layout/tap_layout_forwarded_bubble_left.xml" value="0.375" />
+        <entry key="taptalk/src/main/res/layout/tap_layout_forwarded_bubble_right.xml" value="0.335" />
+        <entry key="taptalk/src/main/res/layout/tap_layout_popup_loading_screen.xml" value="0.13677536231884058" />
+        <entry key="taptalk/src/main/res/layout/tap_layout_quote_bubble_left.xml" value="0.375" />
+        <entry key="taptalk/src/main/res/layout/tap_layout_vertical_indicator.xml" value="0.45" />
       </map>
     </option>
   </component>
@@ -58,7 +138,7 @@
       </value>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

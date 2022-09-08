@@ -435,5 +435,11 @@
     <string name="unpin_all_messages">Unpin All Messages</string>
     <string name="tap_mute">Senyap</string>
     <string name="tap_unmute">Bunyikan</string>
+    <string name="tap_media">media</string>
+    <string name="tap_links">tautan</string>
+    <string name="tap_documents">berkas</string>
+    <string name="tap_no_shared_media">Tidak ada media bersama</string>
+    <string name="tap_wording_empty_shared_media">Kamu dapat melihat semua media yang di bagikan di obrolan melalui halaman ini setelah kamu mulai membagikannya.</string>
+    <string name="tap_view_in_chat">Lihat di Obrolan</string>
 
 </resources>
