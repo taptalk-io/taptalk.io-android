@@ -5,5 +5,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class TapGetMutedRoomIdsResponse(
 
 	@field:JsonProperty("mutedRooms")
-	val mutedRooms: List<TapMutedRoomListModel>? = null
+	val mutedRooms: List<TapMutedRoomListModel>
 )

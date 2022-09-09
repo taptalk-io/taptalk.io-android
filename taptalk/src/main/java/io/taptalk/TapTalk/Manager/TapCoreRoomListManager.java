@@ -15,12 +15,15 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetMessageListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetMutedChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetRoomListListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapCoreUpdateMessageStatusListener;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
@@ -627,6 +630,92 @@ public class TapCoreRoomListManager {
                 if (null != listener) {
                     listener.onSuccess(roomIDs);
                 }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void getMutedChatRoomIDs(TapCoreGetMutedChatRoomListener listener) {
+        TAPDataManager.getInstance(instanceKey).getMutedRoomIds(new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapGetMutedRoomIdsResponse response) {
+                HashMap<String, Long> roomMap = new HashMap<>();
+                for (TapMutedRoomListModel mutedRoom : response.getMutedRooms()) {
+                    roomMap.put(mutedRoom.getRoomID(), mutedRoom.getExpiredAt());
+                }
+                TAPDataManager.getInstance(instanceKey).saveMutedRoomIDs(roomMap);
+                if (null != listener) {
+                    listener.onSuccess(new ArrayList<>(response.getMutedRooms()));
+                }
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void muteChatRoom(List<String> roomIDs, Long expiredAt, TapCommonListener listener) {
+        TAPDataManager.getInstance(instanceKey).muteRoom(roomIDs, expiredAt, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapGetUnreadRoomIdsResponse response) {
+                super.onSuccess(response);
+                HashMap<String, Long> mutedRooms = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs();
+                for (String roomId : response.getUnreadRoomIDs()) {
+                    mutedRooms.put(roomId, expiredAt);
+                }
+                listener.onSuccess("Successfully mute rooms");
+            }
+
+            @Override
+            public void onError(TAPErrorModel error) {
+                if (null != listener) {
+                    listener.onError(error.getCode(), error.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                if (null != listener) {
+                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                }
+            }
+        });
+    }
+
+    public void unmuteChatRoom(List<String> roomIDs, TapCommonListener listener) {
+        TAPDataManager.getInstance(instanceKey).unmuteRoom(roomIDs, new TAPDefaultDataView<>() {
+            @Override
+            public void onSuccess(TapGetUnreadRoomIdsResponse response) {
+                super.onSuccess(response);
+                HashMap<String, Long> mutedRooms = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs();
+                for (String roomId : response.getUnreadRoomIDs()) {
+                    mutedRooms.remove(roomId);
+                }
+                listener.onSuccess("Successfully unmute rooms");
             }
 
             @Override
