@@ -236,6 +236,12 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+
+    <style name="tapActionSheetPrimaryLabelStyle" parent="tapFontFamilyMedium">
+        <item name="android:textColor">@color/tapActionSheetPrimaryLabelColor</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="tapActionSheetDestructiveLabelStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
         <item name="android:textColor">@color/tapActionSheetDestructiveLabelColor</item>

@@ -260,6 +260,7 @@
     <color name="tapPopupDialogButtonTextSecondaryColor">@color/tapColorTextMedium</color>
 
     <color name="tapActionSheetDefaultLabelColor">@color/tapColorTextDark</color>
+    <color name="tapActionSheetPrimaryLabelColor">@color/tapColorPrimary</color>
     <color name="tapActionSheetDestructiveLabelColor">@color/tapColorError</color>
 
     <color name="tapSectionHeaderLabelColor">@color/tapGrey9b</color>
