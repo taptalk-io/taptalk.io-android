@@ -442,5 +442,9 @@
     <string name="tap_wording_empty_shared_media">Kamu dapat melihat semua media yang di bagikan di obrolan melalui halaman ini setelah kamu mulai membagikannya.</string>
     <string name="tap_view_in_chat">Lihat di Obrolan</string>
     <string name="tap_tomorrow">besok</string>
+    <string name="tap_one_hour">1 Jam</string>
+    <string name="tap_eight_hours">8 Jam</string>
+    <string name="tap_three_days">3 Hari</string>
+    <string name="tap_always">Selalu</string>
 
 </resources>

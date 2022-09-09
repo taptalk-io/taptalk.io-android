@@ -444,5 +444,9 @@
     <string name="tap_wording_empty_shared_media">You can see all your shared media from this chat here once you start sharing them.</string>
     <string name="tap_view_in_chat">View in Chat</string>
     <string name="tap_tomorrow">tomorrow</string>
+    <string name="tap_one_hour">1 Hour</string>
+    <string name="tap_eight_hours">8 Hours</string>
+    <string name="tap_three_days">3 Days</string>
+    <string name="tap_always">Always</string>
 
 </resources>
