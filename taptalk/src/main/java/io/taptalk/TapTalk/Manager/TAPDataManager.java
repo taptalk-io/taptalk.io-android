@@ -94,6 +94,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
@@ -1515,5 +1516,17 @@ public class TAPDataManager {
 
     public void getSharedMedia(String roomId, Long minCreated, Long maxCreated, TAPDefaultDataView<TapGetSharedContentResponse> view) {
         TAPApiManager.getInstance(instanceKey).getSharedMedia(roomId, minCreated, maxCreated, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void getMutedRoomIds(TAPDefaultDataView<TapGetMutedRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getMutedRoomIds(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void muteRoom(List<String> roomIds, Long expiredAt, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).muteRoom(roomIds, expiredAt, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unmuteRoom(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unmuteRoom(roomIds, new TAPDefaultSubscriber<>(view));
     }
 }
