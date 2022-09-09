@@ -157,12 +157,13 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
+            app:layout_goneMarginEnd="30dp"
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="1"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toTopOf="@id/tv_group_sender_name"
-            app:layout_constraintEnd_toEndOf="@id/iv_mute"
+            app:layout_constraintEnd_toStartOf="@id/iv_mute"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toEndOf="@id/civ_avatar"
             app:layout_constraintTop_toTopOf="parent"
@@ -171,15 +172,17 @@
 
         <ImageView
             android:id="@+id/iv_mute"
-            android:layout_width="0dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
             android:scaleType="fitStart"
             android:src="@drawable/tap_ic_mute_grey"
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/tv_last_message_time"
             app:layout_constraintStart_toEndOf="@id/tv_full_name"
             app:layout_constraintTop_toTopOf="@+id/tv_full_name"
-            app:layout_constraintWidth_min="24dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_full_name"
             app:tint="@color/tapIconRoomListMuted" />
 
         <ImageView
@@ -234,14 +237,13 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginLeft="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginRight="4dp"
             android:layout_marginBottom="8dp"
+            app:layout_goneMarginEnd="30dp"
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_badge_mention"
+            app:layout_constraintEnd_toEndOf="@id/iv_mute"
             app:layout_constraintStart_toEndOf="@id/iv_personal_room_typing_indicator"
             app:layout_constraintTop_toBottomOf="@id/tv_group_sender_name"
             app:layout_constraintVertical_bias="0"
@@ -260,7 +262,6 @@
             android:gravity="end"
             android:maxLines="1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_mute"
             app:layout_constraintTop_toTopOf="@id/tv_full_name"
             tools:text="00:00" />
 
@@ -269,9 +270,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@id/tv_last_message_time"
             app:layout_constraintBottom_toBottomOf="@id/tv_last_message"
             app:layout_constraintEnd_toEndOf="@id/tv_last_message_time"
-            app:layout_constraintTop_toTopOf="@id/tv_last_message">
+            app:layout_constraintTop_toBottomOf="@id/tv_last_message_time">
 
             <ImageView
                 android:id="@+id/iv_message_status"
