@@ -64,6 +64,7 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
@@ -83,6 +84,7 @@ import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
 import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -93,6 +95,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
+import io.taptalk.TapTalk.View.BottomSheet.TapMuteBottomSheet;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
@@ -1191,7 +1194,19 @@ public class TapUIRoomListFragment extends Fragment {
 
         @Override
         public void onMuteOrUnmuteItem(int position) {
-            // TODO: 09/09/22 handle mute and unmute room MU
+            TAPRoomListModel room = vm.getRoomList().get(position);
+            String roomId = room.getLastMessage().getRoom().getRoomID();
+            // TODO: 09/09/22 handle if room is muted MU
+            TapMuteBottomSheet muteBottomSheet = new TapMuteBottomSheet(roomId, muteListener);
+            muteBottomSheet.show(getChildFragmentManager(), "");
+        }
+    };
+
+    TAPGeneralListener<TapMutedRoomListModel> muteListener = new TAPGeneralListener<>() {
+        @Override
+        public void onClick(int position, TapMutedRoomListModel item) {
+            super.onClick(position, item);
+            // TODO: 09/09/22 handle mute / unmute MU
         }
     };
 
