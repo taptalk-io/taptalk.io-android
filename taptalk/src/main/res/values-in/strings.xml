@@ -441,5 +441,6 @@
     <string name="tap_no_shared_media">Tidak ada media bersama</string>
     <string name="tap_wording_empty_shared_media">Kamu dapat melihat semua media yang di bagikan di obrolan melalui halaman ini setelah kamu mulai membagikannya.</string>
     <string name="tap_view_in_chat">Lihat di Obrolan</string>
+    <string name="tap_tomorrow">besok</string>
 
 </resources>

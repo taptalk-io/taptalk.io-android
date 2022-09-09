@@ -443,5 +443,6 @@
     <string name="tap_no_shared_media">No Shared Media</string>
     <string name="tap_wording_empty_shared_media">You can see all your shared media from this chat here once you start sharing them.</string>
     <string name="tap_view_in_chat">View in Chat</string>
+    <string name="tap_tomorrow">tomorrow</string>
 
 </resources>
