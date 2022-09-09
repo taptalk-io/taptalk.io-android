@@ -687,6 +687,7 @@ public class TapCoreRoomListManager {
                 for (String roomId : response.getUnreadRoomIDs()) {
                     mutedRooms.put(roomId, expiredAt);
                 }
+                TAPDataManager.getInstance(instanceKey).saveMutedRoomIDs(mutedRooms);
                 listener.onSuccess("Successfully mute rooms");
             }
 
@@ -715,6 +716,7 @@ public class TapCoreRoomListManager {
                 for (String roomId : response.getUnreadRoomIDs()) {
                     mutedRooms.remove(roomId);
                 }
+                TAPDataManager.getInstance(instanceKey).saveMutedRoomIDs(mutedRooms);
                 listener.onSuccess("Successfully unmute rooms");
             }
 
