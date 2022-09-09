@@ -53,7 +53,7 @@ import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
-import io.taptalk.TapTalk.Helper.SwipedListItem.ListItemSwipeCallback;
+import io.taptalk.TapTalk.Helper.SwipedListItem.TapRoomListItemSwipeCallback;
 import io.taptalk.TapTalk.Helper.SwipedListItem.OnMoveAndSwipeListener;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
@@ -137,7 +137,7 @@ public class TapUIRoomListFragment extends Fragment {
     private HashMap<String, CountDownTimer> typingIndicatorTimeoutTimers;
     private RequestManager glide;
     private TapTalkDialog userNullErrorDialog;
-    private ListItemSwipeCallback listItemSwipeCallback;
+    private TapRoomListItemSwipeCallback tapRoomListItemSwipeCallback;
 
     private TAPChatListener chatListener;
 
@@ -414,10 +414,10 @@ public class TapUIRoomListFragment extends Fragment {
         } catch (Exception e) {
             clamp = 48f;
         }
-        listItemSwipeCallback = new ListItemSwipeCallback(instanceKey);
-        listItemSwipeCallback.setClamp(clamp);
-        listItemSwipeCallback.setListener(onMoveAndSwipeListener);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(listItemSwipeCallback);
+        tapRoomListItemSwipeCallback = new TapRoomListItemSwipeCallback(instanceKey);
+        tapRoomListItemSwipeCallback.setClamp(clamp, -clamp);
+        tapRoomListItemSwipeCallback.setListener(onMoveAndSwipeListener);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(tapRoomListItemSwipeCallback);
         itemTouchHelper.attachToRecyclerView(rvContactList);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
@@ -1173,7 +1173,7 @@ public class TapUIRoomListFragment extends Fragment {
 
     OnMoveAndSwipeListener onMoveAndSwipeListener = new OnMoveAndSwipeListener() {
         @Override
-        public void onItemClick(int position) {
+        public void onReadOrUnreadItem(int position) {
             TAPRoomListModel room = vm.getRoomList().get(position);
             String roomId = room.getLastMessage().getRoom().getRoomID();
             if (room.isMarkedAsUnread() || room.getNumberOfUnreadMessages() > 0) {
@@ -1187,6 +1187,11 @@ public class TapUIRoomListFragment extends Fragment {
                 updateRoomUnreadMark(roomId, true);
             }
             adapter.notifyItemChanged(position);
+        }
+
+        @Override
+        public void onMuteOrUnmuteItem(int position) {
+            // TODO: 09/09/22 handle mute and unmute room MU
         }
     };
 
