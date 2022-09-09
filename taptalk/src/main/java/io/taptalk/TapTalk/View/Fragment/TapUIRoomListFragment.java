@@ -67,6 +67,7 @@ import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
 import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetMutedChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -931,6 +932,20 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
+    private void getMutedRoomList() {
+        TapCoreRoomListManager.getInstance(instanceKey).getMutedChatRoomIDs(new TapCoreGetMutedChatRoomListener() {
+            @Override
+            public void onSuccess(@NonNull ArrayList<TapMutedRoomListModel> mutedRoomList) {
+                super.onSuccess(mutedRoomList);
+                for (TapMutedRoomListModel mutedRoom : mutedRoomList) {
+                    boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(mutedRoom.getRoomID());
+                    updateMutedRooms(mutedRoom.getRoomID(), isMuted);
+                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(mutedRoom.getRoomID())));
+                }
+            }
+        });
+    }
+
     private TAPDefaultDataView<TAPGetRoomListResponse> roomListView = new TAPDefaultDataView<TAPGetRoomListResponse>() {
         @Override
         public void startLoading() {
@@ -943,6 +958,7 @@ public class TapUIRoomListFragment extends Fragment {
         @Override
         public void onSuccess(TAPGetRoomListResponse response) {
             vm.setDoneFirstSetup(true);
+
 
             if (response.getMessages().size() > 0) {
                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
@@ -1026,6 +1042,7 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setFetchingMessageListAndUnread(false);
 
             getUnreadRoomList();
+            getMutedRoomList();
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
 
@@ -1110,6 +1127,7 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
             getUnreadRoomList();
+            getMutedRoomList();
         }
 
         @Override
@@ -1196,8 +1214,12 @@ public class TapUIRoomListFragment extends Fragment {
         public void onMuteOrUnmuteItem(int position) {
             TAPRoomListModel room = vm.getRoomList().get(position);
             String roomId = room.getLastMessage().getRoom().getRoomID();
-            // TODO: 09/09/22 handle if room is muted MU
-            TapMuteBottomSheet muteBottomSheet = new TapMuteBottomSheet(roomId, muteListener);
+            TapMuteBottomSheet muteBottomSheet;
+            if (room.isMuted()) {
+                muteBottomSheet = new TapMuteBottomSheet(roomId, position, muteListener, TapMuteBottomSheet.MenuType.UNMUTE);
+            } else {
+                muteBottomSheet = new TapMuteBottomSheet(roomId, position, muteListener);
+            }
             muteBottomSheet.show(getChildFragmentManager(), "");
         }
     };
@@ -1206,9 +1228,47 @@ public class TapUIRoomListFragment extends Fragment {
         @Override
         public void onClick(int position, TapMutedRoomListModel item) {
             super.onClick(position, item);
-            // TODO: 09/09/22 handle mute / unmute MU
+            List<String> roomIds = new ArrayList<>();
+            roomIds.add(item.getRoomID());
+            if (item.getExpiredAt() == -1) {
+                // unmute
+                TapCoreRoomListManager.getInstance(instanceKey).unmuteChatRoom(roomIds, muteRoomListener(position, item.getRoomID()));
+            } else {
+                // mute
+                TapCoreRoomListManager.getInstance(instanceKey).muteChatRoom(roomIds, item.getExpiredAt(), muteRoomListener(position, item.getRoomID()));
+            }
         }
     };
+
+    private TapCommonListener muteRoomListener(int position, String roomId) {
+        return new TapCommonListener() {
+            @Override
+            public void onSuccess(String successMessage) {
+                super.onSuccess(successMessage);
+                boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(roomId);
+                updateMutedRooms(roomId, isMuted);
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(position));
+                }
+            }
+
+            @Override
+            public void onError(String errorCode, String errorMessage) {
+                super.onError(errorCode, errorMessage);
+                showErrorDialog(errorMessage);
+            }
+        };
+    }
+
+    private void showErrorDialog(String errorMessage) {
+        new TapTalkDialog(new TapTalkDialog.Builder(activity)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(getString(R.string.tap_error))
+                .setMessage(errorMessage)
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok)))
+                .show();
+    }
 
     private void removeUnreadRoomFromPreference(String roomId) {
         ArrayList<String> unreadRoomListIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
@@ -1233,6 +1293,13 @@ public class TapUIRoomListFragment extends Fragment {
             if (!isMarkAsUnread) {
                 room.setNumberOfUnreadMessages(0);
             }
+        }
+    }
+
+    private void updateMutedRooms(String roomId, boolean isMuted) {
+        TAPRoomListModel room = vm.getRoomPointer().get(roomId);
+        if (room != null) {
+            room.setMuted(isMuted);
         }
     }
 

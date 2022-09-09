@@ -14,12 +14,12 @@ import io.taptalk.TapTalk.View.Adapter.TapStringListAdapter
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
 import java.util.concurrent.TimeUnit
 
-class TapMuteBottomSheet(private val roomId: String, private  val clickListener: TAPGeneralListener<TapMutedRoomListModel>, private val menuType: MenuType = MenuType.MUTE) : BottomSheetDialogFragment() {
+class TapMuteBottomSheet(private val roomId: String, private val roomPosition: Int, private  val clickListener: TAPGeneralListener<TapMutedRoomListModel>, private val menuType: MenuType = MenuType.MUTE) : BottomSheetDialogFragment() {
     enum class MenuType {
         MUTE, UNMUTE
     }
 
-    constructor(roomId: String, clickListener: TAPGeneralListener<TapMutedRoomListModel>) : this(roomId, clickListener, MenuType.MUTE)
+    constructor(roomId: String, roomPosition: Int, clickListener: TAPGeneralListener<TapMutedRoomListModel>) : this(roomId, roomPosition, clickListener, MenuType.MUTE)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +55,7 @@ class TapMuteBottomSheet(private val roomId: String, private  val clickListener:
     private val onItemClickListener = object : TAPGeneralListener<String>() {
         override fun onClick(position: Int, item: String?) {
             super.onClick(position, item)
-            clickListener.onClick(position, TapMutedRoomListModel(
+            clickListener.onClick(roomPosition, TapMutedRoomListModel(
                 when (item) {
                 getString(R.string.tap_one_hour) -> {
                     System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)

@@ -8,8 +8,8 @@ import kotlinx.android.parcel.Parcelize
 data class TapMutedRoomListModel(
 
 	@field:JsonProperty("expiredAt")
-	val expiredAt: Long? = null,
+	var expiredAt: Long? = null,
 
 	@field:JsonProperty("roomID")
-	val roomID: String? = null
+	var roomID: String? = null
 ) : Parcelable
