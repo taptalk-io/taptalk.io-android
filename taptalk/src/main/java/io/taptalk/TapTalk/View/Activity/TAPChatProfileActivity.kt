@@ -33,6 +33,8 @@ import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
+import io.taptalk.TapTalk.Listener.TAPGeneralListener
+import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Model.*
@@ -42,6 +44,7 @@ import io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity.Companion.sta
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapProfilePicturePagerAdapter
 import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
+import io.taptalk.TapTalk.View.BottomSheet.TapMuteBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
 import kotlinx.android.synthetic.main.tap_activity_chat_profile.*
 import kotlinx.android.synthetic.main.tap_layout_basic_information.*
@@ -1180,6 +1183,51 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         TapSharedMediaActivity.start(this, instanceKey, vm!!.room)
     }
 
+    private fun showMuteBottomSheet() {
+        val roomId = vm?.room?.roomID
+        val muteBottomSheet: TapMuteBottomSheet = if (TAPDataManager.getInstance(instanceKey).mutedRoomIDs.containsKey(roomId)) {
+            TapMuteBottomSheet(roomId, muteListener, TapMuteBottomSheet.MenuType.UNMUTE)
+        } else {
+            TapMuteBottomSheet(roomId, muteListener)
+        }
+        muteBottomSheet.show(supportFragmentManager, "")
+    }
+
+    private val muteListener = object : TAPGeneralListener<TapMutedRoomListModel>() {
+        override fun onClick(position: Int, item: TapMutedRoomListModel) {
+            super.onClick(position, item)
+            val roomIds: MutableList<String?> = ArrayList()
+            roomIds.add(item.roomID)
+            if (item.expiredAt == -1L) {
+                // unmute
+                TapCoreRoomListManager.getInstance(instanceKey)
+                    .unmuteChatRoom(roomIds, muteRoomListener())
+            } else {
+                // mute
+                TapCoreRoomListManager.getInstance(instanceKey).muteChatRoom(
+                    roomIds,
+                    item.expiredAt,
+                    muteRoomListener()
+                )
+            }
+        }
+    }
+    private fun muteRoomListener(): TapCommonListener {
+        return object : TapCommonListener() {
+            override fun onSuccess(successMessage: String) {
+                super.onSuccess(successMessage)
+                runOnUiThread {
+                    updateView()
+                }
+            }
+
+            override fun onError(errorCode: String, errorMessage: String) {
+                super.onError(errorCode, errorMessage)
+                showErrorDialog(getString(R.string.tap_error), errorMessage)
+            }
+        }
+    }
+
     private val profilePictureListener = object : TapProfilePicturePagerAdapter.ProfilePictureListener {
         override fun onLongClick(bitmap: BitmapDrawable) {
             if (vm!!.room.type == RoomType.TYPE_GROUP) {
@@ -1254,7 +1302,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 ChatProfileMenuType.MENU_REPORT -> triggerReportButtonTapped()
                 ChatProfileMenuType.MENU_STARRED_MESSAGES -> openStarredMessages()
                 ChatProfileMenuType.MENU_SHARED_MEDIA -> openSharedMedia()
-                ChatProfileMenuType.MENU_MUTE -> {}//show bottom sheet
+                ChatProfileMenuType.MENU_MUTE -> showMuteBottomSheet()
             }
         }
 

@@ -14,12 +14,16 @@ import io.taptalk.TapTalk.View.Adapter.TapStringListAdapter
 import kotlinx.android.synthetic.main.tap_fragment_long_press_action_bottom_sheet.*
 import java.util.concurrent.TimeUnit
 
-class TapMuteBottomSheet(private val roomId: String, private val roomPosition: Int, private  val clickListener: TAPGeneralListener<TapMutedRoomListModel>, private val menuType: MenuType = MenuType.MUTE) : BottomSheetDialogFragment() {
+class TapMuteBottomSheet(private val roomId: String?, private val roomPosition: Int, private  val clickListener: TAPGeneralListener<TapMutedRoomListModel>, private val menuType: MenuType = MenuType.MUTE) : BottomSheetDialogFragment() {
     enum class MenuType {
         MUTE, UNMUTE
     }
 
-    constructor(roomId: String, roomPosition: Int, clickListener: TAPGeneralListener<TapMutedRoomListModel>) : this(roomId, roomPosition, clickListener, MenuType.MUTE)
+    constructor(roomId: String?, roomPosition: Int, clickListener: TAPGeneralListener<TapMutedRoomListModel>) : this(roomId, roomPosition, clickListener, MenuType.MUTE)
+
+    constructor(roomId: String?, clickListener: TAPGeneralListener<TapMutedRoomListModel>) : this(roomId, 0, clickListener, MenuType.MUTE)
+
+    constructor(roomId: String?, clickListener: TAPGeneralListener<TapMutedRoomListModel>, menuType: MenuType) : this(roomId, 0, clickListener, menuType)
 
     override fun onCreateView(
         inflater: LayoutInflater,
