@@ -329,6 +329,12 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="tapChatProfileMenuMuteLabelStyle" parent="tapFontFamilyRegular">
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:textColor">@color/tapChatProfileMenuLabelColor</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="tapChatProfileMenuStarredLabelStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
         <item name="android:textColor">@color/tapChatProfileMenuLabelColor</item>
@@ -338,6 +344,12 @@
     <style name="tapChatProfileMenuLabelStyle" parent="tapFontFamilyRegular">
         <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
         <item name="android:textColor">@color/tapChatProfileMenuLabelColor</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="tapChatProfileMenuInfoStyle" parent="tapFontFamilyRegular">
+        <item name="android:letterSpacing" tools:targetApi="lollipop">-0.01</item>
+        <item name="android:textColor">@color/tapChatProfileMenuInfoColor</item>
         <item name="android:textSize">16sp</item>
     </style>
 

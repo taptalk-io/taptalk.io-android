@@ -144,6 +144,7 @@
     <color name="tapIconChatProfileMenuClearChat">@color/tapColorDestructiveIcon</color>
     <color name="tapIconChatProfileMenuStarredMessages">@color/tapColorPrimaryIcon</color>
     <color name="tapIconChatProfileMenuSharedMedia">@color/tapColorPrimaryIcon</color>
+    <color name="tapIconChatProfileMenuMute">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupProfileMenuViewMembers">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupProfileMenuEditGroup">@color/tapColorPrimaryIcon</color>
     <color name="tapIconGroupMemberProfileMenuAddToContacts">@color/tapColorPrimaryIcon</color>
@@ -285,6 +286,7 @@
     <color name="tapChatProfileUsernameColor">@color/tapColorPrimary</color>
     <color name="tapChatProfileMemberCountColor">@color/tapColorTextMedium</color>
     <color name="tapChatProfileMenuLabelColor">@color/tapColorTextDark</color>
+    <color name="tapChatProfileMenuInfoColor">@color/tapTransparentBlack1960</color>
     <color name="tapChatProfileMenuDestructiveLabelColor">@color/tapColorError</color>
 
     <color name="tapMediaListInfoLabelColor">@color/tapColorTextLight</color>

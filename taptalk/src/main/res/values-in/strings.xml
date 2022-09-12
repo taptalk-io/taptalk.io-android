@@ -446,5 +446,8 @@
     <string name="tap_eight_hours">8 Jam</string>
     <string name="tap_three_days">3 Hari</string>
     <string name="tap_always">Selalu</string>
+    <string name="tap_muted">Muted</string>
+    <string name="tap_until">until</string>
+    <string name="tap_off">OFF</string>
 
 </resources>

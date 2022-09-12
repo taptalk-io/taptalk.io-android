@@ -30,6 +30,19 @@
         app:layout_constraintStart_toEndOf="@id/iv_menu_icon"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tv_menu_info"
+        style="@style/tapChatProfileMenuInfoStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="14dp"
+        android:layout_marginRight="14dp"
+        tools:text="@string/tap_off"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/iv_right_arrow"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/sw_menu_switch"
         android:layout_width="wrap_content"

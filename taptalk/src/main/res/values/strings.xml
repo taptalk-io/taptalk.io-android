@@ -448,5 +448,8 @@
     <string name="tap_eight_hours">8 Hours</string>
     <string name="tap_three_days">3 Days</string>
     <string name="tap_always">Always</string>
+    <string name="tap_muted">Muted</string>
+    <string name="tap_until">until</string>
+    <string name="tap_off">OFF</string>
 
 </resources>
