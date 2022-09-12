@@ -116,16 +116,16 @@ public class TAPTimeFormatter {
         midnightFromSendTime.set(Calendar.MINUTE, 0);
         midnightFromSendTime.set(Calendar.SECOND, 0);
         midnightFromSendTime.set(Calendar.MILLISECOND, 0);
-        midnightTimeGap = timestamp - midnightFromSendTime.getTimeInMillis();
+        midnightTimeGap = midnightFromSendTime.getTimeInMillis() - timeNow;
 
         if (timestamp == 0) {
             return "";
-        } else if (midnightTimeGap > timeGap) {
-            return formatClock(timestamp);
-        } else if ((TAPTimeFormatter.times.get(3)) + midnightTimeGap > timeGap) {
+        } else if ((TAPTimeFormatter.times.get(3)) + midnightTimeGap <= timeGap) {
+            return formatDate(timestamp);
+        } else if (midnightTimeGap <= timeGap) {
             return String.format("%s %s", context.getString(R.string.tap_tomorrow), formatClock(timestamp));
         } else {
-            return formatDate(timestamp);
+            return formatClock(timestamp);
         }
     }
 
