@@ -120,7 +120,7 @@ public class TAPTimeFormatter {
 
         if (timestamp == 0) {
             return "";
-        } else if ((TAPTimeFormatter.times.get(3)) + midnightTimeGap <= timeGap) {
+        } else if ((TAPTimeFormatter.times.get(3)) <= timeGap) {
             return formatDate(timestamp);
         } else if (midnightTimeGap <= timeGap) {
             return String.format("%s %s", context.getString(R.string.tap_tomorrow), formatClock(timestamp));
