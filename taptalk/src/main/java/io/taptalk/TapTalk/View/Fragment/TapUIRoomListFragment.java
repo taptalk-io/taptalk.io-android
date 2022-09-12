@@ -1113,6 +1113,7 @@ public class TapUIRoomListFragment extends Fragment {
                 } else {
                     messageModels.add(roomModel);
                 }
+                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1155,6 +1156,7 @@ public class TapUIRoomListFragment extends Fragment {
                 } else {
                     messageModels.add(roomModel);
                 }
+                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1180,6 +1182,7 @@ public class TapUIRoomListFragment extends Fragment {
                 } else {
                     messageModels.add(roomModel);
                 }
+                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
