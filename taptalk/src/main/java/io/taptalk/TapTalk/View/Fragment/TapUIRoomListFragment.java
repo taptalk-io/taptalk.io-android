@@ -1225,6 +1225,11 @@ public class TapUIRoomListFragment extends Fragment {
             }
             muteBottomSheet.show(getChildFragmentManager(), "");
         }
+
+        @Override
+        public void onPinOrUnpinItem(int position) {
+            // TODO: 13/09/22 handle pinand unpin room MU
+        }
     };
 
     TAPGeneralListener<TapMutedRoomListModel> muteListener = new TAPGeneralListener<>() {
