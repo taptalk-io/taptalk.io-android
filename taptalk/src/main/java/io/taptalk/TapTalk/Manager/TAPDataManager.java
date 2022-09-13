@@ -1549,4 +1549,16 @@ public class TAPDataManager {
     public void unmuteRoom(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
         TAPApiManager.getInstance(instanceKey).unmuteRoom(roomIds, new TAPDefaultSubscriber<>(view));
     }
+
+    public void getPinnedRoomIds(TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).getPinnedRoomIds(new TAPDefaultSubscriber<>(view));
+    }
+
+    public void pinRoom(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).pinRoom(roomIds, new TAPDefaultSubscriber<>(view));
+    }
+
+    public void unpinRoom(List<String> roomIds, TAPDefaultDataView<TapGetUnreadRoomIdsResponse> view) {
+        TAPApiManager.getInstance(instanceKey).unpinRoom(roomIds, new TAPDefaultSubscriber<>(view));
+    }
 }
