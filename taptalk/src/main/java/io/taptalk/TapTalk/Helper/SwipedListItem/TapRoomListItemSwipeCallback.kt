@@ -156,6 +156,7 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
         if (swipeState != SwipeState.CLAMP_LEFT && swipeState != SwipeState.CLAMP_RIGHT) {
             viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mark_read).setOnClickListener {  }
             viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mute).setOnClickListener {  }
+            viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin).setOnClickListener {  }
         } else if (swipeState == SwipeState.CLAMP_RIGHT){
             viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_mark_read).setOnClickListener {
                 setTag(viewHolder, SwipeState.IDLE)
