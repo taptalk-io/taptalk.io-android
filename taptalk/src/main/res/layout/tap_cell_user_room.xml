@@ -321,7 +321,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="end"
                 android:padding="2dp"
-                tools:src="@drawable/tap_ic_pin_outline_grey"
+                android:src="@drawable/tap_ic_pin_outline_grey"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:visibility="gone"/>
