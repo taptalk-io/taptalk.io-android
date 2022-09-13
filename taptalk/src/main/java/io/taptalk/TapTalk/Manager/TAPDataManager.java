@@ -19,6 +19,7 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_LAST_UPDATED;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MEDIA_VOLUME;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_MUTED_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_MESSAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_PINNED_ROOM_LIST;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_REFRESH_TOKEN_EXPIRY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.K_UNREAD_ROOM_LIST;
@@ -243,6 +244,7 @@ public class TAPDataManager {
         removeContactListUpdated();
         removeUnreadRoomIDs();
         removeMutedRoomIds();
+        removePinnedRoomIDs();
     }
 
     /**
@@ -559,7 +561,7 @@ public class TAPDataManager {
     }
 
     public void removeUnreadRoomIDs() {
-        removePreference(K_UNREAD_ROOM_LIST);
+        removePreference(instanceKey + K_UNREAD_ROOM_LIST);
     }
 
     public HashMap<String, Long> getMutedRoomIDs() {
@@ -575,9 +577,24 @@ public class TAPDataManager {
     }
 
     public void removeMutedRoomIds() {
-        removePreference(K_MUTED_ROOM_LIST);
+        removePreference(instanceKey + K_MUTED_ROOM_LIST);
     }
 
+    public ArrayList<String> getPinnedRoomIDs() {
+        return Hawk.get(instanceKey + K_PINNED_ROOM_LIST, new ArrayList<>());
+    }
+
+    public void savePinnedRoomIDs(ArrayList<String> pinnedRoomIDs) {
+        Hawk.put(instanceKey + K_PINNED_ROOM_LIST, pinnedRoomIDs);
+    }
+
+    public boolean isPinnedRoomIDsEmpty() {
+        return getPinnedRoomIDs().isEmpty();
+    }
+
+    public void removePinnedRoomIDs() {
+        removePreference(instanceKey + K_PINNED_ROOM_LIST);
+    }
 
 
     /**

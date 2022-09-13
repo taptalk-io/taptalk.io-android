@@ -469,6 +469,7 @@ public class TAPDefaultConstant {
     public static final String K_UNREAD_ROOM_LIST = "kTAPUnreadRoomList";
     public static final String K_PINNED_MESSAGE = "kTAPPinnedMessage";
     public static final String K_MUTED_ROOM_LIST = "kTAPMutedRoomList";
+    public static final String K_PINNED_ROOM_LIST = "kTAPPinnedRoomList";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 
