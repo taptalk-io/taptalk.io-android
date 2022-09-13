@@ -946,6 +946,20 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
+    private void getPinnedRoomList() {
+        TapCoreRoomListManager.getInstance(instanceKey).getPinnedChatRoomList(new TapCoreGetStringArrayListener() {
+            @Override
+            public void onSuccess(@NonNull ArrayList<String> pinnedRoomList) {
+                super.onSuccess(pinnedRoomList);
+                for (String pinnedRoom : pinnedRoomList) {
+                    boolean isPinned = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(pinnedRoom);
+                    updatePinnedRooms(pinnedRoom, isPinned);
+                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(pinnedRoom)));
+                }
+            }
+        });
+    }
+
     private TAPDefaultDataView<TAPGetRoomListResponse> roomListView = new TAPDefaultDataView<TAPGetRoomListResponse>() {
         @Override
         public void startLoading() {
@@ -1043,6 +1057,7 @@ public class TapUIRoomListFragment extends Fragment {
 
             getUnreadRoomList();
             getMutedRoomList();
+            getPinnedRoomList();
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
 
@@ -1129,6 +1144,7 @@ public class TapUIRoomListFragment extends Fragment {
             reloadLocalDataAndUpdateUILogic(false);
             getUnreadRoomList();
             getMutedRoomList();
+            getPinnedRoomList();
         }
 
         @Override
@@ -1228,7 +1244,19 @@ public class TapUIRoomListFragment extends Fragment {
 
         @Override
         public void onPinOrUnpinItem(int position) {
-            // TODO: 13/09/22 handle pinand unpin room MU
+            TAPRoomListModel room = vm.getRoomList().get(position);
+            String roomId = room.getLastMessage().getRoom().getRoomID();
+            if (room.isPinned()) {
+                // unpin button
+                TapCoreRoomListManager.getInstance(instanceKey).unpinChatRoom(roomId, pinRoomListener(position, roomId));
+                updatePinnedRooms(roomId, false);
+            } else {
+                // pin button
+                TapCoreRoomListManager.getInstance(instanceKey).pinChatRoom(roomId, pinRoomListener(position, roomId));
+                //addUnreadRoomToPreference(roomId);
+                updatePinnedRooms(roomId, true);
+            }
+            adapter.notifyItemChanged(position);
         }
     };
 
@@ -1253,6 +1281,26 @@ public class TapUIRoomListFragment extends Fragment {
                 super.onSuccess(successMessage);
                 boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(roomId);
                 updateMutedRooms(roomId, isMuted);
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(position));
+                }
+            }
+
+            @Override
+            public void onError(String errorCode, String errorMessage) {
+                super.onError(errorCode, errorMessage);
+                showErrorDialog(errorMessage);
+            }
+        };
+    }
+
+    private TapCommonListener pinRoomListener(int position, String roomId) {
+        return new TapCommonListener() {
+            @Override
+            public void onSuccess(String successMessage) {
+                super.onSuccess(successMessage);
+                boolean isPinned = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(roomId);
+                updatePinnedRooms(roomId, isPinned);
                 if (null != getActivity()) {
                     getActivity().runOnUiThread(() -> adapter.notifyItemChanged(position));
                 }
@@ -1308,6 +1356,14 @@ public class TapUIRoomListFragment extends Fragment {
             room.setMuted(isMuted);
         }
     }
+
+    private void updatePinnedRooms(String roomId, boolean isPinned) {
+        TAPRoomListModel room = vm.getRoomPointer().get(roomId);
+        if (room != null) {
+            room.setPinned(isPinned);
+        }
+    }
+
 
     private void updateQueryRoomListFromBackground() {
         if (TAPDataManager.getInstance(instanceKey).isNeedToQueryUpdateRoomList()) {
