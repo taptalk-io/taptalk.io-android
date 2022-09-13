@@ -707,6 +707,12 @@ public class TapCoreRoomListManager {
         });
     }
 
+    public void muteChatRoom(String roomID, Long expiredAt, TapCommonListener listener) {
+        List<String> roomIds = new ArrayList<>();
+        roomIds.add(roomID);
+        muteChatRoom(roomIds, expiredAt, listener);
+    }
+
     public void unmuteChatRoom(List<String> roomIDs, TapCommonListener listener) {
         TAPDataManager.getInstance(instanceKey).unmuteRoom(roomIDs, new TAPDefaultDataView<>() {
             @Override
@@ -734,5 +740,11 @@ public class TapCoreRoomListManager {
                 }
             }
         });
+    }
+
+    public void unmuteChatRoom(String roomID, TapCommonListener listener) {
+        List<String> roomIds = new ArrayList<>();
+        roomIds.add(roomID);
+        unmuteChatRoom(roomIds, listener);
     }
 }
