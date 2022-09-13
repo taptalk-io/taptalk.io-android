@@ -1198,16 +1198,14 @@ class TAPChatProfileActivity : TAPBaseActivity() {
     private val muteListener = object : TAPGeneralListener<TapMutedRoomListModel>() {
         override fun onClick(position: Int, item: TapMutedRoomListModel) {
             super.onClick(position, item)
-            val roomIds: MutableList<String?> = ArrayList()
-            roomIds.add(item.roomID)
             if (item.expiredAt == -1L) {
                 // unmute
                 TapCoreRoomListManager.getInstance(instanceKey)
-                    .unmuteChatRoom(roomIds, muteRoomListener())
+                    .unmuteChatRoom(item.roomID, muteRoomListener())
             } else {
                 // mute
                 TapCoreRoomListManager.getInstance(instanceKey).muteChatRoom(
-                    roomIds,
+                    item.roomID,
                     item.expiredAt,
                     muteRoomListener()
                 )

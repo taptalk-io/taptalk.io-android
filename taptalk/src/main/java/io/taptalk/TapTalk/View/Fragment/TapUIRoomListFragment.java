@@ -1231,14 +1231,12 @@ public class TapUIRoomListFragment extends Fragment {
         @Override
         public void onClick(int position, TapMutedRoomListModel item) {
             super.onClick(position, item);
-            List<String> roomIds = new ArrayList<>();
-            roomIds.add(item.getRoomID());
             if (item.getExpiredAt() == -1) {
                 // unmute
-                TapCoreRoomListManager.getInstance(instanceKey).unmuteChatRoom(roomIds, muteRoomListener(position, item.getRoomID()));
+                TapCoreRoomListManager.getInstance(instanceKey).unmuteChatRoom(item.getRoomID(), muteRoomListener(position, item.getRoomID()));
             } else {
                 // mute
-                TapCoreRoomListManager.getInstance(instanceKey).muteChatRoom(roomIds, item.getExpiredAt(), muteRoomListener(position, item.getRoomID()));
+                TapCoreRoomListManager.getInstance(instanceKey).muteChatRoom(item.getRoomID(), item.getExpiredAt(), muteRoomListener(position, item.getRoomID()));
             }
         }
     };
