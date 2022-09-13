@@ -21,6 +21,7 @@ public class TAPRoomListModel {
     private Type type;
     private boolean isMarkedAsUnread;
     private boolean isMuted;
+    private boolean isPinned;
 
     public TAPRoomListModel(TAPMessageModel lastMessage, int unreadCount) {
         this.lastMessage = lastMessage;
@@ -222,5 +223,13 @@ public class TAPRoomListModel {
 
     public void setMuted(boolean muted) {
         isMuted = muted;
+    }
+
+    public boolean isPinned() {
+        return isPinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        isPinned = pinned;
     }
 }
