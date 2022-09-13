@@ -103,6 +103,32 @@ public class TAPTimeFormatter {
         }
     }
 
+    public static String forwardDateStampString(Context context, long timestamp) {
+        long timeGap;
+        long timeNow = Calendar.getInstance().getTimeInMillis();
+        timeGap = timestamp - timeNow;
+
+        long midnightTimeGap;
+        Calendar midnightFromSendTime = Calendar.getInstance();
+        midnightFromSendTime.setTime(new Date(timestamp));
+        midnightFromSendTime.add(Calendar.DATE, 1);
+        midnightFromSendTime.set(Calendar.HOUR_OF_DAY, 0);
+        midnightFromSendTime.set(Calendar.MINUTE, 0);
+        midnightFromSendTime.set(Calendar.SECOND, 0);
+        midnightFromSendTime.set(Calendar.MILLISECOND, 0);
+        midnightTimeGap = midnightFromSendTime.getTimeInMillis() - timeNow;
+
+        if (timestamp == 0) {
+            return "";
+        } else if ((TAPTimeFormatter.times.get(3)) <= timeGap) {
+            return formatDate(timestamp);
+        } else if (midnightTimeGap <= timeGap) {
+            return String.format("%s %s", context.getString(R.string.tap_tomorrow), formatClock(timestamp));
+        } else {
+            return formatClock(timestamp);
+        }
+    }
+
     public static String getLastActivityString(Context context, long timestamp) {
         long timeGap;
         long timeNow = Calendar.getInstance().getTimeInMillis();

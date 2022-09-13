@@ -435,11 +435,21 @@
     <string name="tap_pinned_message">Pinned Message</string>
     <string name="tap_pinned_messages">Pinned Messages</string>
     <string name="unpin_all_messages">Unpin All Messages</string>
+    <string name="tap_mute">Mute</string>
+    <string name="tap_unmute">Unmute</string>
     <string name="tap_media">media</string>
     <string name="tap_links">links</string>
     <string name="tap_documents">documents</string>
     <string name="tap_no_shared_media">No Shared Media</string>
     <string name="tap_wording_empty_shared_media">You can see all your shared media from this chat here once you start sharing them.</string>
     <string name="tap_view_in_chat">View in Chat</string>
+    <string name="tap_tomorrow">tomorrow</string>
+    <string name="tap_one_hour">1 Hour</string>
+    <string name="tap_eight_hours">8 Hours</string>
+    <string name="tap_three_days">3 Days</string>
+    <string name="tap_always">Always</string>
+    <string name="tap_muted">Muted</string>
+    <string name="tap_until">until</string>
+    <string name="tap_off">OFF</string>
 
 </resources>

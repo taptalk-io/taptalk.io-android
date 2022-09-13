@@ -97,6 +97,9 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
         private LinearLayout llMarkRead;
         private TextView tvMarkRead;
         private ImageView ivMarkRead;
+        private LinearLayout llMute;
+        private TextView tvMute;
+        private ImageView ivMuteButton;
 
         RoomListVH(ViewGroup parent, int itemLayoutId) {
             super(parent, itemLayoutId);
@@ -119,6 +122,9 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             llMarkRead = itemView.findViewById(R.id.ll_mark_read);
             tvMarkRead = itemView.findViewById(R.id.tv_mark_read);
             ivMarkRead = itemView.findViewById(R.id.iv_mark_read);
+            llMute = itemView.findViewById(R.id.ll_mute);
+            tvMute = itemView.findViewById(R.id.tv_mute);
+            ivMuteButton = itemView.findViewById(R.id.iv_mute_button);
         }
 
         @Override
@@ -280,12 +286,14 @@ public class TAPRoomListAdapter extends TAPBaseAdapter<TAPRoomListModel, TAPBase
             }
 
             // Check if room is muted
-            if (room.getIsMuted()) {
+            if (item.isMuted()) {
                 ivMute.setVisibility(View.VISIBLE);
-                tvBadgeUnread.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_room_list_unread_badge_inactive));
+                glide.load(R.drawable.tap_ic_unmute_white).fitCenter().into(ivMuteButton);
+                tvMute.setText(R.string.tap_unmute);
             } else {
                 ivMute.setVisibility(View.GONE);
-                tvBadgeUnread.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_room_list_unread_badge));
+                glide.load(R.drawable.tap_ic_mute_white).fitCenter().into(ivMuteButton);
+                tvMute.setText(R.string.tap_mute);
             }
 
             // Change Status Message Icon

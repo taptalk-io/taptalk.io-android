@@ -1887,7 +1887,8 @@ public class TAPChatManager {
                     null != newMessage.getIsHidden() &&
                     !newMessage.getIsHidden() &&
                     null != newMessage.getIsDeleted() &&
-                    !newMessage.getIsDeleted()
+                    !newMessage.getIsDeleted() &&
+                    !TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(newMessage.getRoom().getRoomID())
             ) {
                 // TODO: CHECK IF NEED TO SHOW IN-APP NOTIFICATION
                 // Show notification for new messages from other users
@@ -1914,7 +1915,8 @@ public class TAPChatManager {
                     null != newMessage.getIsHidden() &&
                     !newMessage.getIsHidden() &&
                     null != newMessage.getIsDeleted()
-                    && !newMessage.getIsDeleted()
+                    && !newMessage.getIsDeleted() &&
+                    !TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(newMessage.getRoom().getRoomID())
             ) {
                 // TODO: CHECK IF NEED TO SHOW IN-APP NOTIFICATION
                 // Show notification for new messages from other users

@@ -53,7 +53,7 @@ import io.taptalk.TapTalk.BuildConfig;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.CircleImageView;
 import io.taptalk.TapTalk.Helper.OverScrolled.OverScrollDecoratorHelper;
-import io.taptalk.TapTalk.Helper.SwipedListItem.ListItemSwipeCallback;
+import io.taptalk.TapTalk.Helper.SwipedListItem.TapRoomListItemSwipeCallback;
 import io.taptalk.TapTalk.Helper.SwipedListItem.OnMoveAndSwipeListener;
 import io.taptalk.TapTalk.Helper.TAPBroadcastManager;
 import io.taptalk.TapTalk.Helper.TAPChatRecyclerView;
@@ -64,8 +64,10 @@ import io.taptalk.TapTalk.Interface.TapTalkNetworkInterface;
 import io.taptalk.TapTalk.Interface.TapTalkRoomListInterface;
 import io.taptalk.TapTalk.Listener.TAPChatListener;
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener;
+import io.taptalk.TapTalk.Listener.TAPGeneralListener;
 import io.taptalk.TapTalk.Listener.TAPSocketListener;
 import io.taptalk.TapTalk.Listener.TapCommonListener;
+import io.taptalk.TapTalk.Listener.TapCoreGetMutedChatRoomListener;
 import io.taptalk.TapTalk.Listener.TapCoreGetStringArrayListener;
 import io.taptalk.TapTalk.Listener.TapListener;
 import io.taptalk.TapTalk.Manager.TAPChatManager;
@@ -83,6 +85,7 @@ import io.taptalk.TapTalk.Manager.TapUI;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPContactResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetMultipleUserResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPGetRoomListResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapMutedRoomListModel;
 import io.taptalk.TapTalk.Model.TAPContactModel;
 import io.taptalk.TapTalk.Model.TAPErrorModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
@@ -93,6 +96,7 @@ import io.taptalk.TapTalk.Model.TAPUserModel;
 import io.taptalk.TapTalk.R;
 import io.taptalk.TapTalk.View.Activity.TapUIChatActivity;
 import io.taptalk.TapTalk.View.Adapter.TAPRoomListAdapter;
+import io.taptalk.TapTalk.View.BottomSheet.TapMuteBottomSheet;
 import io.taptalk.TapTalk.ViewModel.TAPRoomListViewModel;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.CLEAR_ROOM_LIST;
@@ -137,7 +141,7 @@ public class TapUIRoomListFragment extends Fragment {
     private HashMap<String, CountDownTimer> typingIndicatorTimeoutTimers;
     private RequestManager glide;
     private TapTalkDialog userNullErrorDialog;
-    private ListItemSwipeCallback listItemSwipeCallback;
+    private TapRoomListItemSwipeCallback tapRoomListItemSwipeCallback;
 
     private TAPChatListener chatListener;
 
@@ -414,10 +418,10 @@ public class TapUIRoomListFragment extends Fragment {
         } catch (Exception e) {
             clamp = 48f;
         }
-        listItemSwipeCallback = new ListItemSwipeCallback(instanceKey);
-        listItemSwipeCallback.setClamp(clamp);
-        listItemSwipeCallback.setListener(onMoveAndSwipeListener);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(listItemSwipeCallback);
+        tapRoomListItemSwipeCallback = new TapRoomListItemSwipeCallback(instanceKey);
+        tapRoomListItemSwipeCallback.setClamp(clamp, -clamp);
+        tapRoomListItemSwipeCallback.setListener(onMoveAndSwipeListener);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(tapRoomListItemSwipeCallback);
         itemTouchHelper.attachToRecyclerView(rvContactList);
         OverScrollDecoratorHelper.setUpOverScroll(rvContactList, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
         SimpleItemAnimator messageAnimator = (SimpleItemAnimator) rvContactList.getItemAnimator();
@@ -928,6 +932,20 @@ public class TapUIRoomListFragment extends Fragment {
         });
     }
 
+    private void getMutedRoomList() {
+        TapCoreRoomListManager.getInstance(instanceKey).getMutedChatRoomIDs(new TapCoreGetMutedChatRoomListener() {
+            @Override
+            public void onSuccess(@NonNull ArrayList<TapMutedRoomListModel> mutedRoomList) {
+                super.onSuccess(mutedRoomList);
+                for (TapMutedRoomListModel mutedRoom : mutedRoomList) {
+                    boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(mutedRoom.getRoomID());
+                    updateMutedRooms(mutedRoom.getRoomID(), isMuted);
+                    adapter.notifyItemChanged(vm.getRoomList().indexOf(vm.getRoomPointer().get(mutedRoom.getRoomID())));
+                }
+            }
+        });
+    }
+
     private TAPDefaultDataView<TAPGetRoomListResponse> roomListView = new TAPDefaultDataView<TAPGetRoomListResponse>() {
         @Override
         public void startLoading() {
@@ -940,6 +958,7 @@ public class TapUIRoomListFragment extends Fragment {
         @Override
         public void onSuccess(TAPGetRoomListResponse response) {
             vm.setDoneFirstSetup(true);
+
 
             if (response.getMessages().size() > 0) {
                 List<TAPMessageEntity> tempMessage = new ArrayList<>();
@@ -1023,6 +1042,7 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setFetchingMessageListAndUnread(false);
 
             getUnreadRoomList();
+            getMutedRoomList();
             TAPRoomListViewModel.setShouldNotLoadFromAPI(instanceKey, true);
         }
 
@@ -1093,6 +1113,7 @@ public class TapUIRoomListFragment extends Fragment {
                 } else {
                     messageModels.add(roomModel);
                 }
+                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1107,6 +1128,7 @@ public class TapUIRoomListFragment extends Fragment {
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
             getUnreadRoomList();
+            getMutedRoomList();
         }
 
         @Override
@@ -1134,6 +1156,7 @@ public class TapUIRoomListFragment extends Fragment {
                 } else {
                     messageModels.add(roomModel);
                 }
+                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1159,6 +1182,7 @@ public class TapUIRoomListFragment extends Fragment {
                 } else {
                     messageModels.add(roomModel);
                 }
+                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1173,7 +1197,7 @@ public class TapUIRoomListFragment extends Fragment {
 
     OnMoveAndSwipeListener onMoveAndSwipeListener = new OnMoveAndSwipeListener() {
         @Override
-        public void onItemClick(int position) {
+        public void onReadOrUnreadItem(int position) {
             TAPRoomListModel room = vm.getRoomList().get(position);
             String roomId = room.getLastMessage().getRoom().getRoomID();
             if (room.isMarkedAsUnread() || room.getNumberOfUnreadMessages() > 0) {
@@ -1188,7 +1212,64 @@ public class TapUIRoomListFragment extends Fragment {
             }
             adapter.notifyItemChanged(position);
         }
+
+        @Override
+        public void onMuteOrUnmuteItem(int position) {
+            TAPRoomListModel room = vm.getRoomList().get(position);
+            String roomId = room.getLastMessage().getRoom().getRoomID();
+            TapMuteBottomSheet muteBottomSheet;
+            if (room.isMuted()) {
+                muteBottomSheet = new TapMuteBottomSheet(roomId, position, muteListener, TapMuteBottomSheet.MenuType.UNMUTE);
+            } else {
+                muteBottomSheet = new TapMuteBottomSheet(roomId, position, muteListener);
+            }
+            muteBottomSheet.show(getChildFragmentManager(), "");
+        }
     };
+
+    TAPGeneralListener<TapMutedRoomListModel> muteListener = new TAPGeneralListener<>() {
+        @Override
+        public void onClick(int position, TapMutedRoomListModel item) {
+            super.onClick(position, item);
+            if (item.getExpiredAt() == -1) {
+                // unmute
+                TapCoreRoomListManager.getInstance(instanceKey).unmuteChatRoom(item.getRoomID(), muteRoomListener(position, item.getRoomID()));
+            } else {
+                // mute
+                TapCoreRoomListManager.getInstance(instanceKey).muteChatRoom(item.getRoomID(), item.getExpiredAt(), muteRoomListener(position, item.getRoomID()));
+            }
+        }
+    };
+
+    private TapCommonListener muteRoomListener(int position, String roomId) {
+        return new TapCommonListener() {
+            @Override
+            public void onSuccess(String successMessage) {
+                super.onSuccess(successMessage);
+                boolean isMuted = TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(roomId);
+                updateMutedRooms(roomId, isMuted);
+                if (null != getActivity()) {
+                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(position));
+                }
+            }
+
+            @Override
+            public void onError(String errorCode, String errorMessage) {
+                super.onError(errorCode, errorMessage);
+                showErrorDialog(errorMessage);
+            }
+        };
+    }
+
+    private void showErrorDialog(String errorMessage) {
+        new TapTalkDialog(new TapTalkDialog.Builder(activity)
+                .setDialogType(TapTalkDialog.DialogType.ERROR_DIALOG)
+                .setTitle(getString(R.string.tap_error))
+                .setMessage(errorMessage)
+                .setCancelable(false)
+                .setPrimaryButtonTitle(getString(R.string.tap_ok)))
+                .show();
+    }
 
     private void removeUnreadRoomFromPreference(String roomId) {
         ArrayList<String> unreadRoomListIds = TAPDataManager.getInstance(instanceKey).getUnreadRoomIDs();
@@ -1213,6 +1294,13 @@ public class TapUIRoomListFragment extends Fragment {
             if (!isMarkAsUnread) {
                 room.setNumberOfUnreadMessages(0);
             }
+        }
+    }
+
+    private void updateMutedRooms(String roomId, boolean isMuted) {
+        TAPRoomListModel room = vm.getRoomPointer().get(roomId);
+        if (room != null) {
+            room.setMuted(isMuted);
         }
     }
 

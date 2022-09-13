@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
@@ -27,15 +28,15 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
+import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
-import io.taptalk.TapTalk.Helper.TAPBroadcastManager
-import io.taptalk.TapTalk.Helper.TAPUtils
-import io.taptalk.TapTalk.Helper.TapTalk
-import io.taptalk.TapTalk.Helper.TapTalkDialog
+import io.taptalk.TapTalk.Helper.*
 import io.taptalk.TapTalk.Interface.TapTalkActionInterface
 import io.taptalk.TapTalk.Listener.TAPAttachmentListener
 import io.taptalk.TapTalk.Listener.TAPDatabaseListener
+import io.taptalk.TapTalk.Listener.TAPGeneralListener
+import io.taptalk.TapTalk.Listener.TapCommonListener
 import io.taptalk.TapTalk.Manager.*
 import io.taptalk.TapTalk.Manager.TAPGroupManager.Companion.getInstance
 import io.taptalk.TapTalk.Model.*
@@ -45,6 +46,7 @@ import io.taptalk.TapTalk.View.Activity.TAPGroupMemberListActivity.Companion.sta
 import io.taptalk.TapTalk.View.Adapter.PagerAdapter.TapProfilePicturePagerAdapter
 import io.taptalk.TapTalk.View.Adapter.TapChatProfileAdapter
 import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
+import io.taptalk.TapTalk.View.BottomSheet.TapMuteBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
 import kotlinx.android.synthetic.main.tap_activity_chat_profile.*
 import kotlinx.android.synthetic.main.tap_layout_basic_information.*
@@ -494,6 +496,35 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 menuItems.add(menuStarredMessages)
             }
         } else {
+            if (TapUI.getInstance(instanceKey).isMuteRoomListSwipeMenuEnabled) {
+                val menuLabel: String
+                val menuIcon: Int
+                val expiredAt: Long? = TAPDataManager.getInstance(instanceKey).mutedRoomIDs[vm!!.room.roomID]
+                if (expiredAt != null) {
+                    menuLabel = getString(R.string.tap_muted)
+                    menuIcon = R.drawable.tap_ic_mute_white
+                } else {
+                    menuLabel = getString(R.string.tap_mute)
+                    menuIcon = R.drawable.tap_ic_unmute_white
+                }
+                val menuMute = TapChatProfileItemModel(
+                    ChatProfileMenuType.MENU_MUTE,
+                    menuLabel,
+                    menuIcon,
+                    R.color.tapIconChatProfileMenuMute,
+                    R.style.tapChatProfileMenuMuteLabelStyle
+                )
+                menuMute.itemSubLabel = if (expiredAt != null)
+                 when {
+                    expiredAt > 0L -> {
+                        val timeString = TAPTimeFormatter.forwardDateStampString(this, expiredAt)
+                        "${getString(R.string.tap_until)} $timeString"
+                    }
+                    expiredAt == 0L -> getString(R.string.tap_always)
+                    else -> getString(R.string.tap_off)
+                } else getString(R.string.tap_off)
+                menuItems.add(menuMute)
+            }
             if (!vm!!.isGroupMemberProfile) {
                 // Notification
                 val menuNotification = TapChatProfileItemModel(
@@ -1154,6 +1185,51 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         TapSharedMediaActivity.start(this, instanceKey, vm!!.room)
     }
 
+    private fun showMuteBottomSheet() {
+        val roomId = vm?.room?.roomID
+        val muteBottomSheet: TapMuteBottomSheet = if (TAPDataManager.getInstance(instanceKey).mutedRoomIDs.containsKey(roomId)) {
+            TapMuteBottomSheet(roomId, muteListener, TapMuteBottomSheet.MenuType.UNMUTE)
+        } else {
+            TapMuteBottomSheet(roomId, muteListener)
+        }
+        muteBottomSheet.show(supportFragmentManager, "")
+    }
+
+    private val muteListener = object : TAPGeneralListener<TapMutedRoomListModel>() {
+        override fun onClick(position: Int, item: TapMutedRoomListModel) {
+            super.onClick(position, item)
+            if (item.expiredAt == -1L) {
+                // unmute
+                TapCoreRoomListManager.getInstance(instanceKey)
+                    .unmuteChatRoom(item.roomID, muteRoomListener())
+            } else {
+                // mute
+                TapCoreRoomListManager.getInstance(instanceKey).muteChatRoom(
+                    item.roomID,
+                    item.expiredAt,
+                    muteRoomListener()
+                )
+            }
+        }
+    }
+    private fun muteRoomListener(): TapCommonListener {
+        return object : TapCommonListener() {
+            override fun onSuccess(successMessage: String) {
+                super.onSuccess(successMessage)
+                // Reload UI in room list
+                getInstance(instanceKey).refreshRoomList = true
+                runOnUiThread {
+                    updateView()
+                }
+            }
+
+            override fun onError(errorCode: String, errorMessage: String) {
+                super.onError(errorCode, errorMessage)
+                showErrorDialog(getString(R.string.tap_error), errorMessage)
+            }
+        }
+    }
+
     private val profilePictureListener = object : TapProfilePicturePagerAdapter.ProfilePictureListener {
         override fun onLongClick(bitmap: BitmapDrawable) {
             if (vm!!.room.type == RoomType.TYPE_GROUP) {
@@ -1228,6 +1304,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 ChatProfileMenuType.MENU_REPORT -> triggerReportButtonTapped()
                 ChatProfileMenuType.MENU_STARRED_MESSAGES -> openStarredMessages()
                 ChatProfileMenuType.MENU_SHARED_MEDIA -> openSharedMedia()
+                ChatProfileMenuType.MENU_MUTE -> showMuteBottomSheet()
             }
         }
 

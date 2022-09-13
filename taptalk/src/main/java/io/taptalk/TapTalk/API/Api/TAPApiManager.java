@@ -82,6 +82,7 @@ import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateMessageStatusResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUpdateRoomResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TAPUploadFileResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapCheckDeleteAccountStateResponse;
+import io.taptalk.TapTalk.Model.ResponseModel.TapGetMutedRoomIdsResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetPhotoListResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetSharedContentResponse;
 import io.taptalk.TapTalk.Model.ResponseModel.TapGetUnreadRoomIdsResponse;
@@ -707,5 +708,22 @@ public class TAPApiManager {
         request.setMaxCreated(maxCreated);
         execute(homingPigeon.getSharedMedia(request), subscriber);
 
+    }
+
+    public void getMutedRoomIds(Subscriber<TAPBaseResponse<TapGetMutedRoomIdsResponse>> subscriber) {
+        execute(homingPigeon.getMutedRoomIds(), subscriber);
+    }
+
+    public void muteRoom(List<String> roomIds, Long expiredAt, Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        TapRoomIdsRequest request = new TapRoomIdsRequest();
+        request.setRoomIDs(roomIds);
+        request.setExpiredAt(expiredAt);
+        execute(homingPigeon.muteRoom(request), subscriber);
+    }
+
+    public void unmuteRoom(List<String> roomIds, Subscriber<TAPBaseResponse<TapGetUnreadRoomIdsResponse>> subscriber) {
+        TapRoomIdsRequest request = new TapRoomIdsRequest();
+        request.setRoomIDs(roomIds);
+        execute(homingPigeon.unmuteRoom(request), subscriber);
     }
 }

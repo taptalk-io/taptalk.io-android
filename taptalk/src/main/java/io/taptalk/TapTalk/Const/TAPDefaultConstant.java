@@ -443,6 +443,7 @@ public class TAPDefaultConstant {
         public static final int MENU_REPORT = 15;
         public static final int MENU_STARRED_MESSAGES = 16;
         public static final int MENU_SHARED_MEDIA = 17;
+        public static final int MENU_MUTE = 18;
     }
 
     public static final String K_REFRESH_TOKEN = "kTAPRefreshToken";
@@ -467,6 +468,7 @@ public class TAPDefaultConstant {
     public static final String K_IS_CONTACT_LIST_UPDATED = "kTAPIsContactListUpdated";
     public static final String K_UNREAD_ROOM_LIST = "kTAPUnreadRoomList";
     public static final String K_PINNED_MESSAGE = "kTAPPinnedMessage";
+    public static final String K_MUTED_ROOM_LIST = "kTAPMutedRoomList";
 
     public static final String ENCRYPTION_KEY = "kHT0sVGIKKpnlJE5BNkINYtuf19u6+Kk811iMuWQ5tM";
 
