@@ -21,7 +21,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +29,6 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import io.taptalk.TapTalk.API.View.TAPDefaultDataView
-import io.taptalk.TapTalk.Const.TAPDefaultConstant
 import io.taptalk.TapTalk.Const.TAPDefaultConstant.*
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity
 import io.taptalk.TapTalk.Helper.*
@@ -931,10 +929,11 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             .setMessage(this.getString(R.string.tap_leave_group_confirmation))
             .setPrimaryButtonTitle(this.getString(R.string.tap_ok))
             .setPrimaryButtonListener {
-                vm!!.loadingStartText = getString(R.string.tap_loading)
-                vm!!.loadingEndText = getString(R.string.tap_left_group)
-                TAPDataManager.getInstance(instanceKey)
-                    .leaveChatRoom(vm!!.room.roomID, deleteRoomView)
+                unpinRoom {
+                    vm!!.loadingStartText = getString(R.string.tap_loading)
+                    vm!!.loadingEndText = getString(R.string.tap_left_group)
+                    TAPDataManager.getInstance(instanceKey).leaveChatRoom(vm!!.room.roomID, deleteRoomView)
+                }
             }
             .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
             .setSecondaryButtonListener { }
@@ -1029,13 +1028,30 @@ class TAPChatProfileActivity : TAPBaseActivity() {
             .setMessage(this.getString(R.string.tap_delete_group_confirmation))
             .setPrimaryButtonTitle(this.getString(R.string.tap_ok))
             .setPrimaryButtonListener {
-                vm!!.loadingStartText = getString(R.string.tap_loading)
-                vm!!.loadingEndText = getString(R.string.tap_group_deleted)
-                TAPDataManager.getInstance(instanceKey).deleteChatRoom(vm!!.room, deleteRoomView)
+                unpinRoom {
+                    vm!!.loadingStartText = getString(R.string.tap_loading)
+                    vm!!.loadingEndText = getString(R.string.tap_group_deleted)
+                    TAPDataManager.getInstance(instanceKey).deleteChatRoom(vm!!.room, deleteRoomView)
+                }
             }
             .setSecondaryButtonTitle(this.getString(R.string.tap_cancel))
             .setSecondaryButtonListener { }
             .show()
+    }
+
+    private fun unpinRoom(onSuccess: () -> Unit) {
+        TapCoreRoomListManager.getInstance(instanceKey).unpinChatRoom(vm!!.room.roomID, object : TapCommonListener() {
+            override fun onSuccess(successMessage: String?) {
+                super.onSuccess(successMessage)
+                getInstance(instanceKey).refreshRoomList = true
+                onSuccess()
+            }
+
+            override fun onError(errorCode: String?, errorMessage: String?) {
+                super.onError(errorCode, errorMessage)
+                showErrorDialog(getString(R.string.tap_error), errorMessage.orEmpty())
+            }
+        })
     }
 
     private fun triggerReportButtonTapped() {
