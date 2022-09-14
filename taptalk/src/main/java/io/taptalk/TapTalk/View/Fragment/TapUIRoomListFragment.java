@@ -1233,13 +1233,12 @@ public class TapUIRoomListFragment extends Fragment {
         public void onMuteOrUnmuteItem(int position) {
             TAPRoomListModel room = vm.getRoomList().get(position);
             String roomId = room.getLastMessage().getRoom().getRoomID();
-            TapMuteBottomSheet muteBottomSheet;
             if (room.isMuted()) {
-                muteBottomSheet = new TapMuteBottomSheet(roomId, position, muteListener, TapMuteBottomSheet.MenuType.UNMUTE);
+                TapCoreRoomListManager.getInstance(instanceKey).unmuteChatRoom(roomId, muteRoomListener(position, roomId));
             } else {
-                muteBottomSheet = new TapMuteBottomSheet(roomId, position, muteListener);
+                TapMuteBottomSheet muteBottomSheet = new TapMuteBottomSheet(roomId, position, muteListener);
+                muteBottomSheet.show(getChildFragmentManager(), "");
             }
-            muteBottomSheet.show(getChildFragmentManager(), "");
         }
 
         @Override
