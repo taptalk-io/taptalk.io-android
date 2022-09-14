@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
@@ -18,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.GridLayoutManager
@@ -49,6 +51,7 @@ import io.taptalk.TapTalk.View.BottomSheet.TAPLongPressActionBottomSheet
 import io.taptalk.TapTalk.View.BottomSheet.TapMuteBottomSheet
 import io.taptalk.TapTalk.ViewModel.TAPProfileViewModel
 import kotlinx.android.synthetic.main.tap_activity_chat_profile.*
+import kotlinx.android.synthetic.main.tap_cell_profile_menu_button.*
 import kotlinx.android.synthetic.main.tap_layout_basic_information.*
 import kotlinx.android.synthetic.main.tap_layout_popup_loading_screen.*
 import java.util.*
@@ -406,6 +409,7 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         }
 
         // Update room menu
+        updateMuteMenu()
         vm!!.adapterItems.removeAll(vm!!.menuItems)
         vm!!.menuItems = generateChatProfileMenu(isSimpleProfile)
         vm!!.adapterItems.addAll(vm!!.menuItems)
@@ -480,6 +484,42 @@ class TAPChatProfileActivity : TAPBaseActivity() {
         }
     }
 
+    private fun updateMuteMenu() {
+        if (TapUI.getInstance(instanceKey).isMuteRoomListSwipeMenuEnabled) {
+            cl_mute.visibility = View.VISIBLE
+            val menuLabel: String
+            val menuIcon: Int
+            val expiredAt: Long? = TAPDataManager.getInstance(instanceKey).mutedRoomIDs[vm!!.room.roomID]
+            if (expiredAt != null) {
+                menuLabel = getString(R.string.tap_muted)
+                menuIcon = R.drawable.tap_ic_mute_white
+            } else {
+                menuLabel = getString(R.string.tap_mute)
+                menuIcon = R.drawable.tap_ic_unmute_white
+            }
+            tv_menu_label.text = menuLabel
+            tv_menu_info.text = if (expiredAt != null)
+                when {
+                    expiredAt > 0L -> {
+                        val timeString = TAPTimeFormatter.forwardDateStampString(this, expiredAt)
+                        "${getString(R.string.tap_until)} $timeString"
+                    }
+                    expiredAt == 0L -> getString(R.string.tap_always)
+                    else -> getString(R.string.tap_off)
+                } else getString(R.string.tap_off)
+
+            // Set menu icon
+            iv_menu_icon.setImageDrawable(ContextCompat.getDrawable(this, menuIcon))
+            ImageViewCompat.setImageTintList(iv_menu_icon, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.tapColorPrimary)))
+            cl_mute.setOnClickListener {
+                showMuteBottomSheet()
+            }
+            tv_menu_info.visibility = View.VISIBLE
+            iv_right_arrow.visibility = View.VISIBLE
+        } else {
+            cl_mute.visibility = View.GONE
+        }
+    }
 
     private fun generateChatProfileMenu(isSimpleProfile: Boolean = false): List<TapChatProfileItemModel> {
         val menuItems: MutableList<TapChatProfileItemModel> = ArrayList()
@@ -496,35 +536,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 menuItems.add(menuStarredMessages)
             }
         } else {
-            if (TapUI.getInstance(instanceKey).isMuteRoomListSwipeMenuEnabled) {
-                val menuLabel: String
-                val menuIcon: Int
-                val expiredAt: Long? = TAPDataManager.getInstance(instanceKey).mutedRoomIDs[vm!!.room.roomID]
-                if (expiredAt != null) {
-                    menuLabel = getString(R.string.tap_muted)
-                    menuIcon = R.drawable.tap_ic_mute_white
-                } else {
-                    menuLabel = getString(R.string.tap_mute)
-                    menuIcon = R.drawable.tap_ic_unmute_white
-                }
-                val menuMute = TapChatProfileItemModel(
-                    ChatProfileMenuType.MENU_MUTE,
-                    menuLabel,
-                    menuIcon,
-                    R.color.tapIconChatProfileMenuMute,
-                    R.style.tapChatProfileMenuMuteLabelStyle
-                )
-                menuMute.itemSubLabel = if (expiredAt != null)
-                 when {
-                    expiredAt > 0L -> {
-                        val timeString = TAPTimeFormatter.forwardDateStampString(this, expiredAt)
-                        "${getString(R.string.tap_until)} $timeString"
-                    }
-                    expiredAt == 0L -> getString(R.string.tap_always)
-                    else -> getString(R.string.tap_off)
-                } else getString(R.string.tap_off)
-                menuItems.add(menuMute)
-            }
             if (!vm!!.isGroupMemberProfile) {
                 // Notification
                 val menuNotification = TapChatProfileItemModel(
@@ -1304,7 +1315,6 @@ class TAPChatProfileActivity : TAPBaseActivity() {
                 ChatProfileMenuType.MENU_REPORT -> triggerReportButtonTapped()
                 ChatProfileMenuType.MENU_STARRED_MESSAGES -> openStarredMessages()
                 ChatProfileMenuType.MENU_SHARED_MEDIA -> openSharedMedia()
-                ChatProfileMenuType.MENU_MUTE -> showMuteBottomSheet()
             }
         }
 
