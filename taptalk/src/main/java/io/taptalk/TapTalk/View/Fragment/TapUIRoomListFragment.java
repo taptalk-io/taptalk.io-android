@@ -1129,6 +1129,7 @@ public class TapUIRoomListFragment extends Fragment {
                     messageModels.add(roomModel);
                 }
                 roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
+                roomModel.setPinned(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1173,6 +1174,7 @@ public class TapUIRoomListFragment extends Fragment {
                     messageModels.add(roomModel);
                 }
                 roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
+                roomModel.setPinned(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1199,6 +1201,7 @@ public class TapUIRoomListFragment extends Fragment {
                     messageModels.add(roomModel);
                 }
                 roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
+                roomModel.setPinned(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
