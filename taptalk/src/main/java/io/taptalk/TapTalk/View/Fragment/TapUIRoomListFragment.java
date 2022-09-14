@@ -1249,14 +1249,10 @@ public class TapUIRoomListFragment extends Fragment {
             if (room.isPinned()) {
                 // unpin button
                 TapCoreRoomListManager.getInstance(instanceKey).unpinChatRoom(roomId, pinRoomListener(position, roomId));
-                updatePinnedRooms(roomId, false);
             } else {
                 // pin button
                 TapCoreRoomListManager.getInstance(instanceKey).pinChatRoom(roomId, pinRoomListener(position, roomId));
-                //addUnreadRoomToPreference(roomId);
-                updatePinnedRooms(roomId, true);
             }
-            adapter.notifyItemChanged(position);
         }
     };
 

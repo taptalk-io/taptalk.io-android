@@ -342,7 +342,7 @@
                 android:visibility="gone"
                 tools:text="99+"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toStartOf="@id/iv_pin"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
