@@ -391,6 +391,7 @@ public class TAPDefaultConstant {
         public static final String GROUP_MAX_PARTICIPANTS = "groupMaxParticipants";
         public static final String ROOM_PHOTO_MAX_FILE_SIZE = "roomPhotoMaxFileSize";
         public static final String USER_PHOTO_MAX_FILE_SIZE = "userPhotoMaxFileSize";
+        public static final String ROOM_MAX_PINNED = "roomMaxPinned";
 
         public static final String USERNAME_IGNORE_CASE = "usernameIgnoreCase";
     }
@@ -478,6 +479,7 @@ public class TAPDefaultConstant {
     public static final String DEFAULT_USER_PHOTO_MAX_FILE_SIZE = "10485760";
     public static final String DEFAULT_GROUP_MAX_PARTICIPANTS = "100";
     public static final String DEFAULT_CHANNEL_MAX_PARTICIPANTS = "5000";
+    public static final String DEFAULT_ROOM_MAX_PINNED= "10";
 
     public static final int CHARACTER_LIMIT = 4000;
     public static final int MAX_ITEMS_PER_PAGE = 50;
