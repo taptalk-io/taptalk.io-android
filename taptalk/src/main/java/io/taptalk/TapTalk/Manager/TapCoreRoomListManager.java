@@ -29,13 +29,19 @@ import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPRoomListModel;
 import io.taptalk.TapTalk.Model.TAPRoomModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
+import io.taptalk.TapTalk.Model.TapConfigs;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_CHAT_ROOM_NOT_FOUND;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_EXCEEDED_MAX_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_INIT_TAPTALK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorCodes.ERROR_CODE_OTHERS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_ACTIVE_USER_NOT_FOUND;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ClientErrorMessages.ERROR_MESSAGE_INIT_TAPTALK;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_ROOM_MAX_PINNED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.DEFAULT_USER_PHOTO_MAX_FILE_SIZE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.ROOM_MAX_PINNED;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ProjectConfigKeys.USER_PHOTO_MAX_FILE_SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.RoomType.TYPE_PERSONAL;
 
 @Keep
@@ -748,6 +754,11 @@ public class TapCoreRoomListManager {
         unmuteChatRoom(roomIds, listener);
     }
 
+    public Integer getMaxPinnedRoom() {
+        String maxPinnedRoom = TapTalk.getCoreConfigs(instanceKey).get(ROOM_MAX_PINNED);
+        return null == maxPinnedRoom ? Integer.valueOf(DEFAULT_ROOM_MAX_PINNED) : Integer.valueOf(maxPinnedRoom);
+    }
+
     public void getPinnedChatRoomList(TapCoreGetStringArrayListener listener) {
         TAPDataManager.getInstance(instanceKey).getPinnedRoomIds(new TAPDefaultDataView<>() {
             @Override
@@ -774,35 +785,41 @@ public class TapCoreRoomListManager {
             }
         });
     }
+
     public void pinChatRoom(List<String> roomIDs, TapCommonListener listener) {
-        TAPDataManager.getInstance(instanceKey).pinRoom(roomIDs, new TAPDefaultDataView<>() {
-            @Override
-            public void onSuccess(TapGetUnreadRoomIdsResponse response) {
-                super.onSuccess(response);
-                ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
-                for (String roomId : response.getUnreadRoomIDs()) {
-                    if (!pinnedRooms.contains(roomId)) {
-                        pinnedRooms.add(roomId);
+        int pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().size();
+        if (pinnedRooms < getMaxPinnedRoom()) {
+            TAPDataManager.getInstance(instanceKey).pinRoom(roomIDs, new TAPDefaultDataView<>() {
+                @Override
+                public void onSuccess(TapGetUnreadRoomIdsResponse response) {
+                    super.onSuccess(response);
+                    ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
+                    for (String roomId : response.getUnreadRoomIDs()) {
+                        if (!pinnedRooms.contains(roomId)) {
+                            pinnedRooms.add(0, roomId);
+                        }
+                    }
+                    TAPDataManager.getInstance(instanceKey).savePinnedRoomIDs(pinnedRooms);
+                    listener.onSuccess("Successfully pin rooms");
+                }
+
+                @Override
+                public void onError(TAPErrorModel error) {
+                    if (null != listener) {
+                        listener.onError(error.getCode(), error.getMessage());
                     }
                 }
-                TAPDataManager.getInstance(instanceKey).savePinnedRoomIDs(pinnedRooms);
-                listener.onSuccess("Successfully pin rooms");
-            }
 
-            @Override
-            public void onError(TAPErrorModel error) {
-                if (null != listener) {
-                    listener.onError(error.getCode(), error.getMessage());
+                @Override
+                public void onError(String errorMessage) {
+                    if (null != listener) {
+                        listener.onError(ERROR_CODE_OTHERS, errorMessage);
+                    }
                 }
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                if (null != listener) {
-                    listener.onError(ERROR_CODE_OTHERS, errorMessage);
-                }
-            }
-        });
+            });
+        } else {
+            listener.onError(ERROR_CODE_EXCEEDED_MAX_SIZE, "You have reached the maximum of pinned chat rooms.");
+        }
     }
 
     public void pinChatRoom(String roomID, TapCommonListener listener) {
