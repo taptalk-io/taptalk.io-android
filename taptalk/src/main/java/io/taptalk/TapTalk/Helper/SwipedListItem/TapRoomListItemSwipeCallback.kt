@@ -197,6 +197,11 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
             dX > 0 -> {
                 hideRightButtons(viewHolder)
                 showLeftButtons(viewHolder)
+                if (dX > max / 2) {
+                    hidePinButton(viewHolder)
+                } else {
+                    showPinButton(viewHolder)
+                }
             }
             dX < 0 -> {
                 hideLeftButtons(viewHolder)
@@ -280,6 +285,17 @@ class TapRoomListItemSwipeCallback(private val instanceKey: String) : ItemTouchH
         if (pinButton.visibility == View.VISIBLE) {
             pinButton.visibility = View.INVISIBLE
         }
+    }
+
+    private fun hidePinButton(viewHolder: RecyclerView.ViewHolder) {
+        val pinButton = viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin)
+        if (pinButton.visibility == View.VISIBLE) {
+            pinButton.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun showPinButton(viewHolder: RecyclerView.ViewHolder) {
+        viewHolder.itemView.findViewById<LinearLayout>(R.id.ll_pin).visibility = View.VISIBLE
     }
 
     private fun hideRightButtons(viewHolder: RecyclerView.ViewHolder) {
