@@ -43,6 +43,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
@@ -1118,18 +1119,19 @@ public class TapUIRoomListFragment extends Fragment {
         public void onSelectFinishedWithUnreadCount(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             vm.getRoomPointer().clear();
+            HashMap<Integer, TAPRoomListModel> pinnedRooms = new HashMap<>();
             int count = 0; // FIXME Count to load room list every 10 items
             int limit = 25;
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
-                if (TAPUtils.isSavedMessagesRoom(model.getRoom().getRoomID(), instanceKey)) {
-                    messageModels.add(0, roomModel);
+                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
+                roomModel.setPinned(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(entity.getRoomID()));
+                if (roomModel.isPinned()) {
+                    pinnedRooms.put(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().indexOf(entity.getRoomID()), roomModel);
                 } else {
                     messageModels.add(roomModel);
                 }
-                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
-                roomModel.setPinned(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1140,6 +1142,10 @@ public class TapUIRoomListFragment extends Fragment {
                     activity.runOnUiThread(() -> adapter.setItems(vm.getRoomList()));
                     limit = limit * 2;
                 }
+            }
+
+            for (int i = 0; i < pinnedRooms.size(); i++) {
+                messageModels.add(i, pinnedRooms.get(i));
             }
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
@@ -1165,16 +1171,17 @@ public class TapUIRoomListFragment extends Fragment {
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
             vm.getRoomPointer().clear();
+            HashMap<Integer, TAPRoomListModel> pinnedRooms = new HashMap<>();
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
-                if (TAPUtils.isSavedMessagesRoom(model.getRoom().getRoomID(), instanceKey)) {
-                    messageModels.add(0, roomModel);
+                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
+                roomModel.setPinned(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(entity.getRoomID()));
+                if (roomModel.isPinned()) {
+                    pinnedRooms.put(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().indexOf(entity.getRoomID()), roomModel);
                 } else {
                     messageModels.add(roomModel);
                 }
-                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
-                roomModel.setPinned(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
@@ -1182,6 +1189,9 @@ public class TapUIRoomListFragment extends Fragment {
                 }
             }
 
+            for (int i = 0; i < pinnedRooms.size(); i++) {
+                messageModels.add(i, pinnedRooms.get(i));
+            }
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(false);
             calculateBadgeCount();
@@ -1192,21 +1202,25 @@ public class TapUIRoomListFragment extends Fragment {
         @Override
         public void onSelectedRoomList(List<TAPMessageEntity> entities, Map<String, Integer> unreadMap, Map<String, Integer> mentionMap) {
             List<TAPRoomListModel> messageModels = new ArrayList<>();
+            HashMap<Integer, TAPRoomListModel> pinnedRooms = new HashMap<>();
             for (TAPMessageEntity entity : entities) {
                 TAPMessageModel model = TAPMessageModel.fromMessageEntity(entity);
                 TAPRoomListModel roomModel = TAPRoomListModel.buildWithLastMessage(model);
-                if (TAPUtils.isSavedMessagesRoom(model.getRoom().getRoomID(), instanceKey)) {
-                    messageModels.add(0, roomModel);
+                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
+                roomModel.setPinned(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(entity.getRoomID()));
+                if (roomModel.isPinned()) {
+                    pinnedRooms.put(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().indexOf(entity.getRoomID()), roomModel);
                 } else {
                     messageModels.add(roomModel);
                 }
-                roomModel.setMuted(TAPDataManager.getInstance(instanceKey).getMutedRoomIDs().containsKey(entity.getRoomID()));
-                roomModel.setPinned(TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(entity.getRoomID()));
                 vm.addRoomPointer(roomModel);
                 if (null != vm.getRoomPointer().get(entity.getRoomID()) && null != unreadMap.get(entity.getRoomID())) {
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMessages(unreadMap.get(entity.getRoomID()));
                     vm.getRoomPointer().get(entity.getRoomID()).setNumberOfUnreadMentions(mentionMap.get(entity.getRoomID()));
                 }
+            }
+            for (int i = 0; i < pinnedRooms.size(); i++) {
+                messageModels.add(i, pinnedRooms.get(i));
             }
             vm.setRoomList(messageModels);
             reloadLocalDataAndUpdateUILogic(true);
@@ -1297,10 +1311,31 @@ public class TapUIRoomListFragment extends Fragment {
             @Override
             public void onSuccess(String successMessage) {
                 super.onSuccess(successMessage);
-                boolean isPinned = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(roomId);
+                ArrayList<String> pinnedRooms = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs();
+                boolean isPinned = pinnedRooms.contains(roomId);
                 updatePinnedRooms(roomId, isPinned);
+                int targetIndex = pinnedRooms.size();
+                if (isPinned) {
+                    targetIndex = 0;
+                } else {
+                    if (pinnedRooms.size() < vm.getRoomList().size()) {
+                        for (int i = pinnedRooms.size(); i < vm.getRoomList().size(); i++) {
+                            if (vm.getRoomList().get(position).getLastMessage().getCreated() > vm.getRoomList().get(i).getLastMessage().getCreated()) {
+                                targetIndex = i;
+                                break;
+                            }
+                        }
+                    } else {
+                        targetIndex = vm.getRoomList().size() - 1;
+                    }
+                }
+                vm.getRoomList().add(targetIndex, vm.getRoomList().remove(position));
                 if (null != getActivity()) {
-                    getActivity().runOnUiThread(() -> adapter.notifyItemChanged(position));
+                    int finalTargetIndex = targetIndex;
+                    getActivity().runOnUiThread(() -> {
+                        adapter.notifyItemMoved(position, finalTargetIndex);
+                        adapter.notifyItemChanged(finalTargetIndex);
+                    });
                 }
             }
 
