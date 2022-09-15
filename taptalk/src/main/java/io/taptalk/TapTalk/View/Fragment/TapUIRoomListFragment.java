@@ -665,21 +665,22 @@ public class TapUIRoomListFragment extends Fragment {
                     }
 
                     // Move room to top
-                    vm.getRoomList().remove(roomList);
                     int index;
-                    if (TAPUtils.isSavedMessagesRoom(roomList.getLastMessage().getRoom().getRoomID(), instanceKey) ||
-                        !TAPUtils.isSavedMessagesRoom(vm.getRoomList().get(0).getLastMessage().getRoom().getRoomID(), instanceKey)) {
-                        index = 0;
+                    if (!TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().contains(messageRoomID)) {
+                        vm.getRoomList().remove(roomList);
+                        index = TAPDataManager.getInstance(instanceKey).getPinnedRoomIDs().size();
+                        vm.getRoomList().add(index, roomList);
                     } else {
-                        index = 1;
+                        index = oldPos;
                     }
-                    vm.getRoomList().add(index, roomList);
 
                     if (null != activity) {
                         activity.runOnUiThread(() -> {
                             llRoomEmpty.setVisibility(View.GONE);
                             adapter.notifyItemChanged(oldPos);
-                            adapter.notifyItemMoved(oldPos, index);
+                            if (index != oldPos) {
+                                adapter.notifyItemMoved(oldPos, index);
+                            }
                             // Scroll to top
                             if (llm.findFirstCompletelyVisibleItemPosition() == 0)
                                 rvContactList.scrollToPosition(0);
