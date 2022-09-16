@@ -123,12 +123,83 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constrainedWidth="true"
-                app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp"
+                app:layout_constraintBottom_toTopOf="@id/cl_link"
                 app:layout_constraintEnd_toEndOf="@id/barrier_end"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cl_quote"
                 tools:text="Hey there, love your work!" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_link"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:visibility="visible"
+                app:layout_constraintTop_toBottomOf="@id/tv_message_body"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_message_timestamp">
+
+                <View
+                    android:id="@+id/v_decoration"
+                    android:layout_width="2dp"
+                    android:layout_height="0dp"
+                    android:background="@color/tapWhite"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_link_title"
+                    style="@style/tapRightBubbleQuoteTitleStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="4dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/v_decoration"
+                    app:layout_constraintTop_toTopOf="@id/v_decoration"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    app:layout_goneMarginStart="8dp"
+                    app:layout_goneMarginTop="0dp"
+                    tools:text="User Name" />
+
+                <TextView
+                    android:id="@+id/tv_link_content"
+                    style="@style/tapRightBubbleQuoteContentStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="4dp"
+                    android:ellipsize="end"
+                    android:maxLines="7"
+                    app:layout_constraintEnd_toEndOf="@id/tv_link_title"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toStartOf="@id/tv_link_title"
+                    app:layout_constraintTop_toBottomOf="@id/tv_link_title"
+                    tools:text="In hac habitasse platea dictumst. Vivamus adipiscing fermentum quam volutpat aliquam. Integer et elit" />
+
+                <io.taptalk.TapTalk.Helper.TAPRoundedCornerImageView
+                    android:id="@+id/rciv_link_image"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:cornerRadius="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/tv_link_title"
+                    app:layout_constraintEnd_toEndOf="@id/tv_link_title"
+                    app:layout_constraintTop_toBottomOf="@id/tv_link_content"
+                    tools:src="@drawable/tap_img_empty_shared_media" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
                 android:id="@+id/iv_pin"
@@ -173,14 +244,15 @@
                 style="@style/tapRightBubbleMessageTimestampStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="2dp"
                 android:layout_marginRight="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/iv_message_status"
-                app:layout_constraintTop_toBottomOf="@id/tv_message_body"
+                app:layout_constraintTop_toBottomOf="@id/cl_link"
                 app:layout_goneMarginEnd="0dp"
                 app:layout_goneMarginRight="0dp"
+                app:layout_goneMarginTop="2dp"
                 tools:text="17:05" />
 
             <ImageView
