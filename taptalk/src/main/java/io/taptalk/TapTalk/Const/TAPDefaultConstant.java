@@ -109,6 +109,11 @@ public class TAPDefaultConstant {
         public static final String LATITUDE = "latitude";
         public static final String LONGITUDE = "longitude";
         public static final String IS_PLAYING = "isPLaying";
+        public static final String TITLE = "title";
+        public static final String DESCRIPTION = "description";
+        public static final String SITE_NAME = "siteName";
+        public static final String IMAGE = "image";
+        public static final String TYPE = "type";
     }
 
     public static final class QuoteFileType {
