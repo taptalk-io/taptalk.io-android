@@ -123,6 +123,7 @@ public class TapUI {
     private boolean isSavedMessagesMenuDisabled;
     private boolean isPinMessageMenuDisabled;
     private boolean isMuteRoomListSwipeMenuDisabled;
+    private boolean isLinkPreviewInMessageDisabled;
 
     public enum LongPressMenuType {
         TYPE_TEXT_MESSAGE,
@@ -1167,6 +1168,17 @@ public class TapUI {
             return;
         }
         isMuteRoomListSwipeMenuDisabled = !isEnabled;
+    }
+
+    public boolean isLinkPreviewInMessageEnabled() {
+        return !isLinkPreviewInMessageDisabled;
+    }
+
+    public void setLinkPreviewInMessageEnabled(boolean isEnabled) {
+        if (!TapTalk.checkTapTalkInitialized()) {
+            return;
+        }
+        isLinkPreviewInMessageDisabled = !isEnabled;
     }
 
     /**
