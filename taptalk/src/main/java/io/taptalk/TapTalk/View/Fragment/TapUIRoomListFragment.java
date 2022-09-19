@@ -1336,6 +1336,7 @@ public class TapUIRoomListFragment extends Fragment {
                     getActivity().runOnUiThread(() -> {
                         adapter.notifyItemMoved(position, finalTargetIndex);
                         adapter.notifyItemChanged(finalTargetIndex);
+                        rvContactList.scrollToPosition(0);
                     });
                 }
             }
