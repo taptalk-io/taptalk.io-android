@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.HashMap;
 
+import io.taptalk.TapTalk.Const.TAPDefaultConstant;
 import io.taptalk.TapTalk.Data.Message.TAPMessageEntity;
 import io.taptalk.TapTalk.Helper.TAPTimeFormatter;
 import io.taptalk.TapTalk.Helper.TAPUtils;
@@ -24,9 +25,11 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_LINK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageType.TYPE_VIDEO;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.FILE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.IMAGE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.LINK;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.QuoteFileType.VIDEO;
 
 /**
@@ -179,10 +182,11 @@ public class TAPMessageModel implements Parcelable {
             quoteContent = quotedMessage.getBody();
         }
         String quoteFileID = null == quotedMessage.getData() ? "" : (String) quotedMessage.getData().get(FILE_ID);
-        String quoteImageURL = null == quotedMessage.getData() ? "" : null != quotedMessage.getData().get(FILE_URL) ? (String) quotedMessage.getData().get(FILE_URL) : (String) quotedMessage.getData().get(IMAGE_URL);
+        String quoteImageURL = null == quotedMessage.getData() ? "" : null != quotedMessage.getData().get(FILE_URL) ? (String) quotedMessage.getData().get(FILE_URL) : null != quotedMessage.getData().get(IMAGE_URL) ? (String) quotedMessage.getData().get(IMAGE_URL) : (String) quotedMessage.getData().get(TAPDefaultConstant.MessageData.IMAGE);
         String quoteFileType = quotedMessage.getType() == TYPE_IMAGE ? IMAGE :
                 quotedMessage.getType() == TYPE_VIDEO ? VIDEO :
-                        quotedMessage.getType() == TYPE_FILE ? FILE : "";
+                        quotedMessage.getType() == TYPE_FILE ? FILE :
+                                quotedMessage.getType() == TYPE_LINK ? LINK :"";
         TAPQuoteModel quote = new TAPQuoteModel(quoteTitle, quoteContent, quoteFileID, quoteImageURL, quoteFileType);
         TAPReplyToModel reply = new TAPReplyToModel(quotedMessage.getMessageID()
                 , quotedMessage.getLocalID(), quotedMessage.getType()
