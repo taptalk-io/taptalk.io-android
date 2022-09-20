@@ -2151,9 +2151,14 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 }
                 tvQuoteContent.setText(message.getBody());
                 tvQuoteContent.setMaxLines(1);
-            } else if (null != message.getData() && null != message.getData().get(IMAGE_URL)) {
+            } else if (null != message.getData() &&
+                    (null != message.getData().get(IMAGE_URL) || null != message.getData().get(IMAGE))) {
                 // Show image quote from image URL
-                glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
+                if (message.getData().get(IMAGE_URL) != null) {
+                    glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
+                } else {
+                    glide.load((String) message.getData().get(IMAGE)).into(rcivQuoteImage);
+                }
                 rcivQuoteImage.setColorFilter(null);
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
