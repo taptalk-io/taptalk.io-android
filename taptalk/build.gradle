@@ -124,6 +124,9 @@ dependencies {
     // Chrome Custom Tab
     implementation 'androidx.browser:browser:1.4.0'
 
+    // HTML Parser
+    implementation 'org.jsoup:jsoup:1.15.3'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 //    implementation 'com.mixpanel.android:mixpanel-android:5.7.0'
 }
