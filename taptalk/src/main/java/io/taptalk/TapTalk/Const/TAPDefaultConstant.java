@@ -120,6 +120,7 @@ public class TAPDefaultConstant {
         public static final String FILE = "file";
         public static final String IMAGE = "image";
         public static final String VIDEO = "video";
+        public static final String LINK = "link";
     }
 
     public static final class IntentType {
