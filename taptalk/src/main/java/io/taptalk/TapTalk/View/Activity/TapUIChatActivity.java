@@ -184,11 +184,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -3454,7 +3451,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             seekBar.setProgress(0);
             setDefaultState();
         } else if (recordingState == RECORDING_STATE.DEFAULT) {
-            etChat.setText("");
             if (vm.getQuotedMessage() != null && vm.getQuoteAction() == EDIT) {
                 // edit message
                 TAPMessageModel messageModel = vm.getQuotedMessage();
@@ -3493,15 +3489,27 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 });
                 hideQuoteLayout();
             } else if (!TextUtils.isEmpty(message)) {
-                // send message
-                TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
-                // TODO: 20/09/22 send link with data MU
+                String firstUrl = vm.getLinkHashMap().get(TAPDefaultConstant.MessageData.URL);
+                if (firstUrl != null && !firstUrl.isEmpty()) {
+                    // send message as link
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put(TITLE, vm.getLinkHashMap().get(TITLE));
+                    data.put(DESCRIPTION, vm.getLinkHashMap().get(DESCRIPTION));
+                    data.put(IMAGE, vm.getLinkHashMap().get(IMAGE));
+                    data.put(TYPE, vm.getLinkHashMap().get(TYPE));
+                    data.put(TAPDefaultConstant.MessageData.URL, firstUrl);
+                    TAPChatManager.getInstance(instanceKey).sendLinkMessage(message, data);
+                } else {
+                    // send message as text
+                    TAPChatManager.getInstance(instanceKey).sendTextMessage(message);
+                }
                 rvMessageList.post(this::scrollToBottom);
             } else {
                 TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
                 ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
                 ivButtonSend.setImageDrawable(ContextCompat.getDrawable(TapUIChatActivity.this, R.drawable.tap_bg_chat_composer_send_inactive));
             }
+            etChat.setText("");
         } else {
             TAPChatManager.getInstance(instanceKey).checkAndSendForwardedMessage(vm.getRoom());
             ivSend.setColorFilter(ContextCompat.getColor(TapTalk.appContext, R.color.tapIconChatComposerSendInactive));
@@ -4054,7 +4062,27 @@ public class TapUIChatActivity extends TAPBaseActivity {
                     })
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(linkObserver);
+                            .subscribe(new Observer<>() {
+                                @Override
+                                public void onNext(HashMap<String, String> linkMap) {
+                                    if (firstUrl.equals(TAPUtils.setUrlWithProtocol(TAPUtils.getFirstUrlFromString(etChat.getText().toString())))) {
+                                        vm.setLinkHashMap(linkMap);
+                                        updateLinkPreview(linkMap.get(TITLE), linkMap.get(DESCRIPTION), linkMap.get(IMAGE) == null ? "" : linkMap.get(IMAGE));
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    if (firstUrl.equals(TAPUtils.setUrlWithProtocol(TAPUtils.getFirstUrlFromString(etChat.getText().toString())))) {
+                                        hideLinkPreview(true);
+                                    }
+                                }
+
+                                @Override
+                                public void onCompleted() {
+
+                                }
+                            });
                 } else {
                     // Text only
                     hideLinkPreview(true);
@@ -4062,24 +4090,6 @@ public class TapUIChatActivity extends TAPBaseActivity {
             }
         };
     }
-
-    private final Observer<HashMap<String, String>> linkObserver = new Observer<>() {
-        @Override
-        public void onNext(HashMap<String, String> linkMap) {
-            vm.setLinkHashMap(linkMap);
-            updateLinkPreview(linkMap.get(TITLE), linkMap.get(DESCRIPTION), linkMap.get(IMAGE) == null? "" : linkMap.get(IMAGE));
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            hideLinkPreview(true);
-        }
-
-        @Override
-        public void onCompleted() {
-
-        }
-    };
 
     private TextWatcher chatWatcher = new TextWatcher() {
         @Override
