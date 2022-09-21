@@ -1,7 +1,5 @@
 package io.taptalk.TapTalk.Manager;
 
-import static androidx.core.util.PatternsCompat.WEB_URL;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -78,11 +76,15 @@ import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocke
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ConnectionEvent.kSocketUserOnlineStatus;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.FILEPROVIDER_AUTHORITY;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.CAPTION;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DESCRIPTION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.DURATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.FILE_URI;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.IMAGE_URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.SIZE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.THUMBNAIL;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TITLE;
+import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.TYPE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URL;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.URLS;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.MessageData.USER_INFO;
@@ -1590,12 +1592,15 @@ public class TAPChatManager {
                 if (data != null) {
                     data.put(URL, null);
                     data.put(URLS, null);
+                    data.put(TITLE, null);
+                    data.put(DESCRIPTION, null);
+                    data.put(IMAGE, null);
+                    data.put(TYPE, null);
                     message.setData(data);
                 }
                 message.setType(TYPE_TEXT);
             } else {
                 HashMap<String, Object> data = message.getData() == null ? new HashMap<>() : message.getData();
-                data.put(URL, urls.get(0));
                 data.put(URLS, urls);
                 message.setData(data);
                 message.setType(TYPE_LINK);
