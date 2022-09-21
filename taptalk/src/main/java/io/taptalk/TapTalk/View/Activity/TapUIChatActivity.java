@@ -2125,7 +2125,7 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 tvQuoteTitle.setText(TAPUtils.getFileDisplayName(message));
                 tvQuoteContent.setText(TAPUtils.getFileDisplayInfo(message));
                 tvQuoteContent.setMaxLines(1);
-            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE) {
+            } else if (null != message.getData() && null != message.getData().get(FILE_URL) && message.getType() != TYPE_VOICE && message.getType() != TYPE_LINK) {
                 // Show image quote from file URL
                 glide.load((String) message.getData().get(FILE_URL)).into(rcivQuoteImage);
                 rcivQuoteImage.setColorFilter(null);
@@ -2154,14 +2154,18 @@ public class TapUIChatActivity extends TAPBaseActivity {
                 // Show image quote from image URL
                 if (message.getData().get(IMAGE_URL) != null) {
                     glide.load((String) message.getData().get(IMAGE_URL)).into(rcivQuoteImage);
-                } else {
+                    vQuoteDecoration.setVisibility(View.GONE);
+                } else if (message.getData().get(IMAGE) != null){
+                    //show link image
                     glide.load((String) message.getData().get(IMAGE)).into(rcivQuoteImage);
+                    vQuoteDecoration.setVisibility(View.VISIBLE);
+                } else {
+                    vQuoteDecoration.setVisibility(View.GONE);
                 }
                 rcivQuoteImage.setColorFilter(null);
                 rcivQuoteImage.setBackground(null);
                 rcivQuoteImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 rcivQuoteImage.setVisibility(View.VISIBLE);
-                vQuoteDecoration.setVisibility(View.GONE);
 
                 if (quoteAction == FORWARD && message.getForwardFrom() != null && !message.getForwardFrom().getFullname().isEmpty()) {
                     tvQuoteTitle.setText(message.getForwardFrom().getFullname());
