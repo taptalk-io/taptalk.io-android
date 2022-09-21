@@ -529,8 +529,18 @@ public class TAPMessageAdapter extends TAPBaseAdapter<TAPMessageModel, TAPBaseCh
                     String image = (String) item.getData().get(IMAGE);
                     clLink.setVisibility(View.VISIBLE);
                     tvLinkTitle.setText(title);
-                    tvLinkContent.setText(description);
-                    glide.load(image).centerCrop().into(rcivLinkImage);
+                    if (description == null || description.isEmpty()) {
+                        tvLinkContent.setVisibility(View.GONE);
+                    } else {
+                        tvLinkContent.setVisibility(View.VISIBLE);
+                        tvLinkContent.setText(description);
+                    }
+                    if (image == null || image.isEmpty()) {
+                        rcivLinkImage.setVisibility(View.GONE);
+                    } else {
+                        rcivLinkImage.setVisibility(View.VISIBLE);
+                        glide.load(image).fitCenter().into(rcivLinkImage);
+                    }
                     clLink.setOnClickListener(view -> TAPUtils.openCustomTabLayout((Activity) itemView.getContext(), url));
                 } else {
                     clLink.setVisibility(View.GONE);
